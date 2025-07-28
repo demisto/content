@@ -267,6 +267,7 @@ FORMAT_HEX = [
     ("https%3A//foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
     ("https://foo.com/?key=foo%26bar%2F%2Fwww.foo.com", "https://foo.com/?key=foo&bar//www.foo.com"),  # disable-secrets-detection
     ("http://foo.r.us.me/L0/http:%2F%2Fwww.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
+    ("http:%2F%2ffoo.r.us.me/L0/http:www.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
 ]
 
 FAILS = [
@@ -346,6 +347,10 @@ FAILS = [
         "test.test/test",  # disable-secrets-detection
         pytest.raises(URLError),
     ),  # invalid tld
+    (
+        "test:",  # disable-secrets-detection
+        pytest.raises(URLError),
+    ),  # invalid input
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT + TRENDMICRO_REDIRECT

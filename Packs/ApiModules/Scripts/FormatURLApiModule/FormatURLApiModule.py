@@ -90,8 +90,8 @@ class URLCheck:
         else:
             raise URLError("Empty string given")
 
-        if any(map(self.modified_url[:8].__contains__, ["//", "%3A", "%3a"])):
-            # The URL seems to have a scheme indicated by presence of "//" or "%3A"
+        if any(map(self.modified_url[:14].__contains__, ["//", "%3A", "%3a", "%2F", "%2f"])):
+            # The URL seems to have a scheme indicated by presence of "//", "%3A" or "%2F"
             self.scheme_check()
 
         host_end_position = -1
@@ -99,7 +99,7 @@ class URLCheck:
 
         for char in special_chars:
             try:
-                host_end_position = self.modified_url[self.base :].index(char)
+                host_end_position = self.modified_url[self.base:].index(char)
                 break  # index for the end of the part found, breaking loop
             except ValueError:
                 continue  # no reserved char found, URL has no path, query or fragment parts.
@@ -149,37 +149,45 @@ class URLCheck:
         index = self.base
         scheme = ""
 
-        while self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", "."):
+        while index < len(self.modified_url) and (
+            self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", ".")
+        ):
             char = self.modified_url[index]
             if char in self.sub_delims:
                 raise URLError(f"Invalid character {char} at position {index}")
 
-            elif char == "%" or char == ":":
-                # The colon might appear as is or if the URL is quoted as "%3A"
+            elif char == "%" or char == ":" or char == "/":
+                # The colon or the slash might appear in there hex ecode
 
                 if char == "%":
-                    # If % is present in the scheme it must be followed by "3A" to represent a colon (":")
+                    # If % is present in the scheme it must be followed by "3A" or by "2F"
 
-                    if self.modified_url[index + 1 : index + 3].upper() != "3A":
-                        raise URLError(f"Invalid character {char} at position {index}")
+                    hex_encode = self.modified_url[index + 1: index + 3].upper()
 
-                    else:
+                    if hex_encode == "3A":
                         self.output += ":"
                         index += 3
                         self.quoted = True
+
+                    elif hex_encode == "2F":
+                        self.output += "/"
+                        index += 3
+                        self.quoted = True
+
+                    else:
+                        raise URLError(f"Invalid character {char} at position {index}")
 
                 if char == ":":
                     self.output += char
                     index += 1
 
-                if self.modified_url[index : index + 2] != "//":
-                    # If URL has ascii chars and ':' with no '//' it is invalid
-
-                    raise URLError(f"Invalid character {char} at position {index}")
+                if char == "/":
+                    self.output += char
+                    index += 1
 
                 else:
                     self.url.scheme = scheme
-                    self.output += self.modified_url[index : index + 2]
+                    self.output += self.modified_url[index: index + 2]
                     self.base = index + 2
 
                     if self.base == len(self.modified_url):
@@ -552,7 +560,7 @@ class URLCheck:
         """
 
         try:
-            int(self.modified_url[index + 1 : index + 3], 16)
+            int(self.modified_url[index + 1: index + 3], 16)
             return True
 
         except ValueError:
@@ -611,7 +619,7 @@ class URLCheck:
             self.modified_url = self.modified_url[beginning:]
 
         else:
-            self.modified_url = self.modified_url[beginning : end + 1]
+            self.modified_url = self.modified_url[beginning: end + 1]
 
 
 class ProofPointFormatter:
@@ -637,7 +645,7 @@ class ProofPointFormatter:
                 return character
             if token.startswith("**"):
                 run_length = self.v3_run_mapping[token[-1]]
-                run = self.dec_bytes[self.current_marker : self.current_marker + run_length]
+                run = self.dec_bytes[self.current_marker: self.current_marker + run_length]
                 self.current_marker += run_length
                 return run
             return ""
@@ -645,14 +653,14 @@ class ProofPointFormatter:
         def substitute_tokens(text, start_pos=0):
             match = self.v3_token_pattern.search(text, start_pos)
             if match:
-                start = text[start_pos : match.start()]
+                start = text[start_pos: match.start()]
                 built_string = start
-                token = text[match.start() : match.end()]
+                token = text[match.start(): match.end()]
                 built_string += replace_token(token)
                 built_string += substitute_tokens(text, match.end())
                 return built_string
             else:
-                return text[start_pos : len(text)]
+                return text[start_pos: len(text)]
 
         match = self.ud_pattern.search(self.url)
         if match and match.group(2) == "v3":
@@ -798,7 +806,7 @@ class URLFormatter:
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
-        url = url.replace("%2F", "/")
+        url = url.replace("%2F", "/").replace("%2f", "/")
         lower_url = url.lower()
         if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
