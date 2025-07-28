@@ -6,7 +6,7 @@ args:
   name: endpoint_ip
   isArray: true
 - description: List of agent hostnames of the endpoint to isolate.
-  name: endpoint_name
+  name: endpoint_hostname
   isArray: true
 - description: |-
     Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
@@ -25,9 +25,9 @@ args:
   - 'false'
 comment: This script isolates endpoints using multiple integrations and returns a success or failure message.
 commonfields:
-  id: isolate-endpoint
+  id: new-isolate-endpoint
   version: -1
-name: isolate-endpoint
+name: new-isolate-endpoint
 outputs:
 - contextPath: IsolateEndpointResults.EndpointName
   description: The endpoint's hostname.
