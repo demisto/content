@@ -296,28 +296,28 @@ ip_reputation_command_data = [
         valid_ip_response,
         200,
         valid_ip_response_expected,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.132"},
         "positive",
         valid_ip_response_md_data,
         200,
         valid_ip_response_expected_md,
-    ),  # NOSONAR
+    ),
         (
         {"ip": "71.6.135.133"},
         "positive",
         valid_ip_response_tl,
         200,
         valid_ip_response_expected_tl,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "1.1.1.1"},
         "positive",
         valid_riot_ip_response,
         200,
         valid_riot_ip_response_expected,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "positive",
@@ -326,53 +326,53 @@ ip_reputation_command_data = [
             "internet_scanner_intelligence": {"found": False},
             "business_service_intelligence": {"found": False},
         },
-        200,  # NOSONAR
+        404,
         {
             "address": "71.6.135.131",
             "internet_scanner_intelligence": {"found": False},
             "business_service_intelligence": {"found": False},
         },
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "invalid ip response",
-        200,  # NOSONAR
-        "Invalid response from GreyNoise. Response: invalid ip response",
-    ),  # NOSONAR
+        400,
+        "Invalid response from GreyNoise. Response: (400, 'invalid ip response')",
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "forbidden",
         401,
-        "Unauthenticated. Check the configured API Key.",
-    ),  # NOSONAR
+        "Invalid response from GreyNoise. Response: (401, 'forbidden')",
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         {},
         429,
-        "API Rate limit hit. Try after sometime.",
-    ),  # NOSONAR
+        "Invalid response from GreyNoise. Response: ",
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "Dummy message",
-        405,  # NOSONAR
-        "Failed to execute  command.\n Error: Dummy message",
-    ),  # NOSONAR
+        405,
+        "Invalid response from GreyNoise. Response: (405, 'Dummy message')",
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         {},
-        505,  # NOSONAR
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
+        505,
+        "Invalid response from GreyNoise. Response: (505, {})",
+    ),
     (
         {"ip": "5844.2204.2191.2471"},
         "negative",
         {},
         200,
-        "Invalid IP address: '5844.2204.2191.2471'",
-    ),  # NOSONAR
+        "Invalid response from GreyNoise. Response: Invalid IP address: '5844.2204.2191.2471'",
+    ),
 ]

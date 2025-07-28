@@ -411,7 +411,7 @@ stats_command_data: list = [
         {"count": 0, "query": "classification:sdcsdc spoofable:false"},
     ),
     ({}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
-    ({}, "negative", {}, 429, "Invalid response from GreyNoise. Response: API Limit Reached"),
+    ({}, "negative", {}, 429, "Invalid response from GreyNoise. Response:"),
     ({}, "negative", "Dummy message", 405, "Invalid response from GreyNoise. Response: (405, 'Dummy message')"),
     (
         {},

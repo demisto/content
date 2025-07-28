@@ -291,7 +291,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
     command_results = []
     for ip in ips:
         try:
-            logger.info(f"Querying GreyNoise with ip: {ip}")
+            demisto.debug(f"Querying GreyNoise with ip: {ip}")
             api_response = client.ip(ip)
         except Exception as e:
             demisto.debug(f"Error in ip_reputation_command: {e}")
