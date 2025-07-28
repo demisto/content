@@ -50,11 +50,11 @@ Customers using Reblaze version 5 can stream Reblaze WAF security events to Cort
 2. Click the Create Log Exporter button.
 3. In the configuration dialog, populate the following fields:
 
-* Name: Provide a descriptive name (e.g., "Cortex XSIAM Integration").
-* Transport: Select a protocol (TCP, UDP, or TCP and TLS).  
-    For a secure connection, TCP and TLS is recommended, which requires providing an SSL certificate.
-* Endpoint: Enter your Cortex XSIAM endpoint's IP address or hostname, followed by the listening port (e.g., 192.168.1.100:514).
-* Mode: Choose which events to forward—"Blocked only" (default) or "All" for comprehensive logging.
+    * Name: Provide a descriptive name (e.g., "Cortex XSIAM Integration").
+    * Transport: Select a protocol (TCP, UDP, or TCP and TLS).  
+        For a secure connection, TCP and TLS is recommended, which requires providing an SSL certificate.
+    * Endpoint: Enter your Cortex XSIAM endpoint's IP address or hostname, followed by the listening port (e.g., 192.168.1.100:514).
+    * Mode: Choose which events to forward—"Blocked only" (default) or "All" for comprehensive logging.
 
 Click Save to activate the exporter.
 
