@@ -12,8 +12,8 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ" # ISO8601 format with UTC, default in XSOAR
-TIME_ZONE = 'UTC'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+TIME_ZONE = "UTC"
 MAX_PAGE_SIZE = 50
 INCIDENT_TYPE_MAPPING = {"Network": "NETWORK", "Discover": "DISCOVER", "Endpoint": "ENDPOINT"}
 INCIDENT_SEVERITY_MAPPING = {"Info": 4, "Low": 3, "Medium": 2, "High": 1}
@@ -383,13 +383,9 @@ def get_severity_name_by_id(severity: Optional[int]):
 def parse_creation_date(creation_date: str):
     if creation_date:
         creation_date = dateparser.parse(
-            creation_date,
-            settings={
-                'TIMEZONE': TIME_ZONE,
-                'RETURN_AS_TIMEZONE_AWARE': True,
-                'TO_TIMEZONE': 'UTC'
-            }
-        ).strftime(DATE_FORMAT)
+            creation_date, settings={"TIMEZONE": TIME_ZONE, "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"}
+        ).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
     return creation_date
 
 
