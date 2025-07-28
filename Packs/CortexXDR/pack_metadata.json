@@ -2,7 +2,7 @@
     "name": "Cortex XDR by Palo Alto Networks",
     "description": "Automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
-    "currentVersion": "6.2.30",
+    "currentVersion": "6.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,10 +17,17 @@
         "Endpoint"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "Alerts",
+        "Attack",
+        "Incident Handling",
+        "Incident Response",
+        "Malware"
     ],
     "useCases": [
-        "Malware"
+        "Malware",
+        "Incident Response",
+        "Hunting"
     ],
     "keywords": [
         "adaptive cyber protection",

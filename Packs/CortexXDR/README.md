@@ -1,23 +1,13 @@
-[Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is a detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks. Responding and managing these attacks requires security teams to reconcile data from multiple sources. Valuable time is lost shuttling between screens and executing repeatable tasks while an attack continues to manifest.
+Gain efficient threat detection, analysis, and response with the **Cortex XDR** content pack, seamlessly integrated into your security workflow.
 
-This Cortex XDR content pack contains the **Palo Alto Networks Cortex XDR - Investigation and Response** integration that enables direct execution of Cortex XDR actions within Cortex XSOAR. The **Cortex XDR Incident Handling v3** playbook enables bidirectional incident updates between Cortex XDR and Cortex XSOAR.
+### What does this pack do?
 
-Note: This pack is also compatible with Cortex XSIAM when connecting to Cortex XSIAM from Cortex XSOAR.
+The Cortex XDR content pack enhances your security operations by integrating advanced threat detection, investigation, and response capabilities directly into your workflow. Designed for security analysts and incident responders, this pack streamlines the management of security incidents through automation and comprehensive data analysis.
 
-## What does this pack do?
+- **Automated Incident Synchronization**: Keeps incidents consistently updated between Cortex XDR and Cortex XSOAR, maintaining data integrity and reducing manual effort.
+- **Comprehensive Alert Management**: Automates alert handling, including enrichment, severity assessment, and remediation, for a streamlined incident response process.
+- **Advanced Threat Hunting**: Leverages the XQL Query Engine for in-depth data analysis, enabling proactive threat hunting and investigation.
+- **Ready-to-Use Playbooks**: A range of out-of-the-box playbooks optimized for common security workflows, allowing teams to quickly deploy effective responses with minimal configuration.
 
-The playbooks included in this pack help you save time and keep your incidents in sync. They also help automate repetitive tasks associated with Cortex XDR incidents:
-
-- Syncs and updates Cortex XDR incidents.
-- Triggers a sub-playbook to handle each alert by type.
-- Extracts and enriches all relevant indicators from the source alert.
-- Hunts for related IOCs.
-- Calculates the severity of the incident.
-- Interacts with the analyst to choose a remediation path or close the incident as a false positive based on the gathered information and incident severity.
-- Remediates the incident by blocking malicious indicators and isolating infected endpoints.
-
-As part of this pack, you will also get out-of-the-box Cortex XDR incident type views, with incident fields and a full layout to facilitate analyst investigation. All of these are easily customizable to suit the needs of your organization.
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/palo-alto-networks-cortex-xdr---investigation-and-response)_
-
-![Cortex XDR Lite - Incident Handling](doc_files/Cortex_XDR_Lite_-_Incident_Handling.png)
