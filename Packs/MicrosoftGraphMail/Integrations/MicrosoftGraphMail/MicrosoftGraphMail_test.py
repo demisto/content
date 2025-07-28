@@ -313,16 +313,14 @@ def test_list_mails_with_page_limit(mocker, client):
         assert "top=1" in mock_request.call_args_list[0].args[1]
 
 
-def test_list_mails_with_body(mocker):
-    """Unit test
+def test_list_mails_with_body():
+    """
     Given
-    - list_mails command with page_size set to 1
-    - one mail returned on the response
+    - list_mails command
     When
-    - mock the MicrosoftClient.http_request function
+    - The mail has a body
     Then
-    - run the list_mails_command using the Client
-    Validate that the http_request called properly with endpoint top=1
+    - Return the body.
     """
     mail = [{"value": [{"body": {"content": "This is an email body"}}]}]
     client = type("MockClient", (), {"list_mails": lambda *x, **y: mail})()
