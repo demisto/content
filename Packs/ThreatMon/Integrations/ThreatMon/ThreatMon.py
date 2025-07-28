@@ -6,6 +6,8 @@ from datetime import datetime
 from typing import Dict, Any, List, Optional, Tuple
 from CommonServerPython import * 
 
+THREATMON_PAGE_SIZE = 10
+
 class Client:
     def __init__(self, api_url, api_key):
         self.api_url = api_url
@@ -86,7 +88,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any]) -> Tuple[List[Dict
             last_incident_id = max(last_incident_id or 0, incident_id)
 
         # Stop fetching if we reach the last page
-        if len(alerts) < 10 or (total_records and len(incidents) >= total_records):
+        if len(alerts) < THREATMON_PAGE_SIZE or (total_records and len(incidents) >= total_records):
             break
         time.sleep(1)
     # Store last fetched page and last incident ID in XSOAR
