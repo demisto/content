@@ -786,32 +786,78 @@ class EC2:
         Args:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
-                - group_name (str): Name of the security group
-                - description (str): Description of the security group
-                - vpc_id (str, optional): VPC ID where security group will be created
-                - tags (str, optional): Tags to assign to the security group
+                - group_name (str): Name of the security group.
+                - description (str): Description of the security group.
+                - vpc_id (str, optional): VPC ID where security group will be created.
+                - tags (str, optional): Tags to assign to the security group.
 
         Returns:
             CommandResults: Results of the operation with security group creation details
         """
-        return CommandResults(readable_output="")
+        group_name = args.get("group_name")
+        description = args.get("description")
+        vpc_id = args.get("vpc_id")
+        tags = args.get("tags")
+        if tags:
+            try:
+                tags_json = json.loads(tags)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Invalid `tags` JSON: {e}")
+        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id, "TagSpecifications": tags_json}
+        try:
+            resp = client.create_security_group(**kwargs)
+            group_id = resp.get("GroupId")
+            if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and group_id:
+                return CommandResults(readable_output=f"Security group {group_id} was created successfully.")
+            else:
+                raise DemistoException(f"Unexpected response when creating security group: {resp}")
+        except ClientError as e:
+            raise DemistoException(f"Failed to create security group {group_name}: {e}")
 
     @staticmethod
     def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Deletes a security group from the specified VPC or EC2-Classic.
+        Deletes a security group.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
-                - group_id (str, optional): ID of the security group to delete
-                - group_name (str, optional): Name of the security group to delete
-                - vpc_id (str, optional): VPC ID where security group exists
+                - group_id (str, optional): ID of the security group to delete.
+                - group_name (str, optional): Name of the security group to delete.
 
         Returns:
             CommandResults: Results of the operation with deletion confirmation
         """
-        return CommandResults(readable_output="")
+        try:
+            group_id = args.get("group_id")
+            group_name = args.get("group_name")
+
+            if not group_id and not group_name:
+                raise DemistoException("Either group_id or group_name must be provided")
+
+            if group_id and group_name:
+                raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
+
+            kwargs = {}
+
+            if group_id:
+                kwargs["GroupId"] = group_id
+            else:
+                kwargs["GroupName"] = group_name
+
+            try:
+                delete_response = client.delete_security_group(GroupIds=[group_id])
+                if delete_response.get("GroupId"):
+                    return CommandResults(
+                        readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}"
+                    )
+            except ClientError:
+                kwargs = {}
+                # TODO
+
+        except Exception as e:
+            raise DemistoException(f"Unexpected error deleting security group: {str(e)}")
+        return CommandResults(readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}")
 
     @staticmethod
     def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -821,8 +867,8 @@ class EC2:
         Args:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
-                - group_ids (str, optional): Comma-separated list of security group IDs
-                - group_names (str, optional): Comma-separated list of security group names
+                - group_id (str, optional): Comma-separated list of security group IDs
+                - group_name (str, optional): Comma-separated list of security group names
                 - filters (str, optional): Custom filters to apply
                 - max_items (str, optional): Maximum number of items to return
 
@@ -834,22 +880,52 @@ class EC2:
     @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Adds one or more egress rules to a security group for use with a VPC.
+        Adds the specified outbound (egress) rules to a security group.
 
-        Args:
-            client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments including:
-                - group_id (str): ID of the security group
-                - ip_protocol (str): IP protocol for the rule
-                - from_port (str, optional): Start of port range
-                - to_port (str, optional): End of port range
-                - cidr_ip (str, optional): IPv4 CIDR range
-                - ip_permissions (str, optional): Complete IP permissions JSON
-
-        Returns:
-            CommandResults: Results of the operation with authorization details
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
         """
-        return CommandResults(readable_output="")
+
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
+        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.authorize_security_group_ingress(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+                return CommandResults(readable_output="The Security Group egress rule was authorized")
+            else:
+                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+
+        except Exception as e:
+            if "InvalidGroup.NotFound" in str(e):
+                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
+            elif "InvalidGroupId.NotFound" in str(e):
+                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
+            elif "InvalidPermission.Duplicate" in str(e):
+                raise DemistoException("The specified rule already exists in the security group")
+            else:
+                raise DemistoException(f"Failed to authorize security group egress rule: {str(e)}")
 
 
 class EKS:
