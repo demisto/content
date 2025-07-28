@@ -1277,9 +1277,11 @@ The default port is 8088.
 ## Troubleshooting
 
 ### Index Validation Issues
+
 In some cases, the Splunk API may not return a complete list of all available indexes. If you try to submit an event to an index that you know exists but the integration reports that it cannot be found, it may be due to this Splunk issue. The integration will log an error message specifying which indexes could not be verified.
 
 **Recommended Action:**
+
 1. Verify that the index name is spelled correctly in your request.
 2. If the index exists and is accessible in Splunk but is not found by the integration, please contact Splunk support for assistance, as this is a known limitation with the Splunk API.
 
