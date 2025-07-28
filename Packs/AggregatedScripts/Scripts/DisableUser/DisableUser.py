@@ -138,9 +138,13 @@ def disable_users(users: list[User]) -> list[dict]:
             res_cmd = command_func(user, user["Instance"])
             context += [
                 {
-                    "UserProfile": user,
-                    "Brand": user.pop("Brand"),
-                    "Instance": user.pop("Instance"),
+                    "UserProfile": {
+                        "Email": user["Email"],
+                        "ID": user["ID"],
+                        "Username": user["Username"]
+                    },
+                    "Brand": user["Brand"],
+                    "Instance": user["Instance"],
                 }
                 | res
                 for res in res_cmd

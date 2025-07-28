@@ -43,7 +43,7 @@ outputs:
   description: Whether the user is disabled.
   type: Boolean
 - contextPath: DisableUser.Result
-  description: 'Whether the disable action was successful. The result does not indicate whether the user is disabled. Possible values are: "Success", "Failed"'
+  description: 'Whether the disable action was successful. The result does not indicate whether the user is disabled. Possible values are: "Success", "Failed".'
   type: String
 - contextPath: DisableUser.Message
   description: The output message of the disable action.
