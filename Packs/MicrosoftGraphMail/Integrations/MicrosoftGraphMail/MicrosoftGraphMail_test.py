@@ -324,20 +324,12 @@ def test_list_mails_with_body(mocker):
     - run the list_mails_command using the Client
     Validate that the http_request called properly with endpoint top=1
     """
-    mail = {
-        "value": [
-            {
-                "body": {
-                    "content": "This is an email body"
-                }
-            }
-        ]
-    }
-    client = type("MockClient", (), {"list_mails": lambda **_: mail})()
-    
+    mail = [{"value": [{"body": {"content": "This is an email body"}}]}]
+    client = type("MockClient", (), {"list_mails": lambda *x, **y: mail})()
+
     result_entry = list_mails_command(client, {})
-    
-    assert result_entry[0]["MSGraphMail(val.ID && val.ID == obj.ID)"]["Body"] == "This is an email body"
+
+    assert result_entry["EntryContext"]["MSGraphMail(val.ID && val.ID == obj.ID)"][0]["Body"] == "This is an email body"
 
 
 @pytest.fixture()
