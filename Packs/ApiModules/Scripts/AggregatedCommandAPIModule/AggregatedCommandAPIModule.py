@@ -61,7 +61,8 @@ class Command:
         if not execution_results:
             demisto.debug(f"Got no execution response from command: {self}")
             return [], {}
-        entry_context: list[dict] = []
+        indicator_context: dict = {}
+        dbot_scores_context: list[dict] = []
         readable_command_results: dict[str, CommandResults] = {}
 
         for result in execution_results:
@@ -71,7 +72,7 @@ class Command:
                         get_error(result), is_error=True, brand_name=brand, data=self.args[self.indicator_type]
                     )
                 continue
-
+            
             if human_readable := result.get("HumanReadable"):
                 readable_command_results[brand] = self.prepare_human_readable(
                     human_readable, brand_name=brand, data=self.args[self.indicator_type]
@@ -80,8 +81,9 @@ class Command:
             if entry_context_item := result.get("EntryContext"):
                 entry_context_item["Brand"] = brand
                 entry_context.append(entry_context_item)
-
-        return entry_context, readable_command_results
+                
+            
+        return indicator_context, dbot_scores_context, readable_command_results
 
     @property
     def as_formatted_string(self) -> str:
@@ -279,15 +281,16 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 output["AdditionalFields"] = values
         return output
     
-    def execute_command(self, command: Command)-> tuple[list[dict], list[CommandResults]]:
+    def execute_command(self, commands: list[])-> tuple[list[dict], list[CommandResults]]:
         """
         Executes the reputation aggregated command.
         """
-        entry_context, readable_command_results = command.execute()
+        entry_context, readable_command_results = demisto.executeCommandBatch(commands)
         context_output: dict[str, list] = {}
         
         indicators_context: dict[str, list] = defaultdict(list)
         dbot_scores_context: list[dict[str, Any]] = []
+        
         for context_item in entry_context:
             score = Common.DBotScore.NONE
             if dbot_scores := context_item.get("DBotScore"):
@@ -307,11 +310,6 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
 
         context_output[command.type] = {"indicator": indicators_context, "DBotScore": dbot_scores_context}
         return context_output, readable_command_results
-
-
-                        
-        
-        
         
     def aggregated_command_main_loop(self):
         """
@@ -326,28 +324,18 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         context_output_tim, verbose_command_tim = self.search_indicators_in_tim()
         context.update(context_output_tim)
         verbose_command_results.update(verbose_command_tim)
-        for data in self.data_list:
-            if self.external_enrichment or self.external_brands:
-                enabled_brands = list(
-                    {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
-                )
-                brands_to_run_on = self.external_brands if self.external_brands else enabled_brands
-                reputation_command = Command(
-                    name=self.indicator_type,
-                    args={self.indicator_type: data, "using-brand": ",".join(brands_to_run_on)},
-                    type=CommandType.external,
-                    context_path=self.indicator_path
-                )
-                external_context_output, external_readable_command_results = self.execute_command(reputation_command)
-                context.update(external_context_output)
-                verbose_command_results.update(external_readable_command_results)
         
         for data in self.data_list:
-            if self.internal_enrichment and self.internal_brands:
-                for command in self.commands:
-                    internal_context_output, internal_readable_command_results = command.execute()
-                    context.update(internal_context_output)
-                    verbose_command_results.update(internal_readable_command_results)
+            commands = []
+            if self.external_enrichment or self.external_brands:
+                command = {self.indicator_type: {self.indicator_type: data}}
+                if self.external_brands:
+                    command[self.indicator_type]["using-brand"] = ",".join(self.external_brands)
+                commands.append(command)
+            for internal_command in self.commands:
+                command = {internal_command.name: {internal_command.args}}
+                commands.append(command)
+            self.execute_command(commands)
         
         command_results = self.summarize_command_results(context, verbose_command_results)
         if verbose:
