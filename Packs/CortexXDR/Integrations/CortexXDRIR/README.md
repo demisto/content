@@ -35,7 +35,6 @@ Key capabilities include retrieving incidents, isolating endpoints, executing re
 | Incident type | Determines the Incident type that is created for events ingested from this integration instance. If a classifier is selected, it will take precedence.| False|
 | Mapper (incoming)| Determines how incidents fields from Cortex XDR are mapped to Cortex XSOAR incident's fields. |False|
 | Mapper (outgoing) | Determines how Cortex XSOAR incident's fields are mapped to the Cortex XDR incident's fields. | False|
-| Incidents Fetch Interval | Scheduled time frame for fetching data from Cortex XDR. | False|
 | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
 | First fetch timestamp | The format should be: &lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days | False |
 | Custom close-reason mapping **Cortex XSOAR** -> **Cortex XDR** | Override the default close reason mapping defined by Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons. Acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other". Default: "Other=Other,Duplicate=Duplicate Incident,False Positive=False Positive,Resolved=True Positive”. Refer to the **Mirroring Directions** section for possible close-reasons | False |

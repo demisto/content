@@ -17,14 +17,14 @@ configuration:
   type: 9
   displaypassword: API Key ID
   hiddenusername: true
-  required: true
+  required: false
   section: Connect
 - display: ''
   name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
-  required: true
+  required: false
   section: Connect
 - display: API Key ID
   name: apikey_id
@@ -44,10 +44,30 @@ configuration:
   defaultvalue: 'true'
   required: false
   section: Collect
-- defaultvalue: '15'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  type: 19
+- additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
+  defaultvalue: 'true'
+  display: Auto Sync
+  name: autoSync
+  type: 8
+  required: false
+  section: Collect
+- additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the severity level of the indicator will be used.
+  display: Override severity value
+  name: severity
+  required: true
+  type: 15
+  options:
+  - info
+  - low
+  - medium
+  - high
+  - critical
+  section: Collect
+- display: Tags
+  name: feedTags
+  type: 0
+  additionalinfo: Supports CSV values.
+  defaultvalue: Cortex XDR
   required: false
   section: Collect
 - display: Sync Query
@@ -57,13 +77,20 @@ configuration:
   additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   section: Collect
-- display: Tags
-  name: feedTags
-  type: 0
-  additionalinfo: Supports CSV values.
-  defaultvalue: Cortex XDR
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  advanced: true
   required: false
-  section: Collect
+  section: Connect
+  additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified.
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  advanced: true
+  section: Connect
+  additionalinfo: Use system proxy settings is enabled only when an engine is selected
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
@@ -75,27 +102,6 @@ configuration:
   type: 18
   required: false
   section: Collect
-- additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
-  defaultvalue: 'true'
-  display: Auto Sync
-  name: autoSync
-  type: 8
-  required: false
-  section: Collect
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  advanced: true
-  required: false
-  section: Connect
-  additionalinfo: When enabled, bypasses certificate validation, allowing connections even if the certificates cannot be verified
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-  advanced: true
-  section: Connect
-  additionalinfo: Use system proxy settings is enabled only when an engine is selected
 - display: 'Source Reliability'
   name: feedReliability
   options:
@@ -142,6 +148,12 @@ configuration:
   hidden: true
   required: false
   section: Collect
+- defaultvalue: '15'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+  section: Collect
 - additionalinfo: The Cortex XSOAR indicator field used as severity.
   display: XSOAR Severity Field
   name: xsoar_severity_field
@@ -161,19 +173,14 @@ configuration:
   advanced: true
   required: false
   section: Collect
-- additionalinfo: If left blank, the original severity level of the indicator will be used.
-  display: Override severity value
-  name: severity
-  type: 15
-  options:
-  - info
-  - low
-  - medium
-  - high
-  - critical
-  advanced: true
-  section: Collect
+- defaultvalue: 'false'
+  additionalinfo: Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`.
+  display: Comments As Tags (CSV)
+  name: comments_as_tags
+  type: 8
   required: false
+  section: Collect
+  advanced: true
 - additionalinfo: When enabled, the severity value will be taken from the `Overriding severity value` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken from the field specified in the `XSOAR Severity Field` parameter.
   display: Override Severity
   name: override_severity
@@ -189,21 +196,13 @@ configuration:
   required: false
   section: Collect
   advanced: true
-- defaultvalue: 'false'
-  additionalinfo: Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`.
-  display: Comments As Tags (CSV)
-  name: comments_as_tags
-  type: 8
-  required: false
-  section: Collect
-  advanced: true
 - display: Extensive Logging
   additionalinfo: For debugging purposes. Do not use this option unless advised otherwise. Using this parameter may result in increased processing time.
   name: extensive_logs
   type: 8
-  section: Connect
   advanced: true
   required: false
+  section: Connect
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IOC
 name: Cortex XDR - IOC
