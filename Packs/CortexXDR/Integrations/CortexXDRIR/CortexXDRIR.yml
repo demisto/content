@@ -3570,7 +3570,7 @@ script:
       description: |-
         The string value to replace an active directory group or organizational unit.
       name: ad_type
-      predefined: 
+      predefined:
       - group
       - ou
     description: Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
