@@ -11,6 +11,8 @@ from CommonServerPython import *
 from dateutil.parser import parse
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
+import hashlib
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -4977,6 +4979,8 @@ def process_ancestry_command(client, args):  # pragma: no cover
     show_query = argToBoolean(args.pop("show_query", False))
     process_chain = None
     process_json = []
+    fields_to_hash = f"{device_name}{file_name}{file_pid}{sha1}{sha256}{md5}{device_id}{process_creation_time}"
+    process_chain_id = hashlib.md5(fields_to_hash.encode()).hexdigest()
     process_depth = 0
     queries = "### Queries Used\n"
     while True:
@@ -5006,6 +5010,7 @@ def process_ancestry_command(client, args):  # pragma: no cover
                         "ParentFileName": result["InitiatingProcessFileName"],
                         "ParentPID": result["InitiatingProcessId"],
                         "Depth": process_depth,
+                        "ProcessChainID": process_chain_id
                     }
                 )
                 process_depth += 1
@@ -5019,6 +5024,7 @@ def process_ancestry_command(client, args):  # pragma: no cover
                     "ParentFileName": result["InitiatingProcessParentFileName"],
                     "ParentPID": result["InitiatingProcessParentId"],
                     "Depth": process_depth,
+                    "ProcessChainID": process_chain_id,
                 }
             )
             process_depth += 1
@@ -5034,9 +5040,10 @@ def process_ancestry_command(client, args):  # pragma: no cover
                 {
                     "FileName": last_result["InitiatingProcessParentFileName"],
                     "ProcessId": last_result["InitiatingProcessParentId"],
-                    "ChildFileName": process_json[len(process_json)-1]["FileName"],
-                    "ChildPID": process_json[len(process_json)-1]["ProcessId"],
+                    "ChildFileName": process_json[len(process_json) - 1]["FileName"],
+                    "ChildPID": process_json[len(process_json) - 1]["ProcessId"],
                     "Depth": process_depth,
+                    "ProcessChainID": process_chain_id,
                 }
             )
             break
