@@ -1,62 +1,119 @@
-{
-    "id": "686bab0b-e6e2-4dbb-8c50-4895d21eca57",
-    "version": 1,
-    "packID": "Base",
-    "itemVersion": "1.0.0",
-    "toServerVersion": "6.10.0",
-    "name": "Drop-Duplicates",
-    "description": "Drop incoming incidents that are duplicates according to dbotMirrorId and update the existing incident's dropped count.",
-    "existingEventsFilters": [
-        [
-            {
-                "operator": "isIdenticalIncident",
-                "left": {
-                    "value": {
-                        "simple": "dbotMirrorId"
+[
+    {
+        "id": "686bab0b-e6e2-4dbb-8c50-4895d21eca57",
+        "version": 2,
+        "cacheVersn": 0,
+        "modified": "2025-07-28T18:04:33.218989994+03:00",
+        "created": "2025-07-28T18:02:38.369213566+03:00",
+        "sizeInBytes": 0,
+        "packID": "CheckPointXDR",
+        "packName": "Check Point XDR",
+        "itemVersion": "1.0.0",
+        "fromServerVersion": "6.10.0",
+        "toServerVersion": "",
+        "propagationLabels": [],
+        "packPropagationLabels": [
+            "all"
+        ],
+        "definitionId": "",
+        "vcShouldIgnore": false,
+        "vcShouldKeepItemLegacyProdMachine": false,
+        "commitMessage": "",
+        "shouldCommit": false,
+        "name": "Drop-Duplicates",
+        "newEventFilters": [
+            [
+                {
+                    "operator": "isEqualString",
+                    "left": {
+                        "value": {
+                            "simple": "sourceBrand"
+                        },
+                        "isContext": true
                     },
-                    "isContext": true
-                },
-                "right": {
-                    "value": {
-                        "simple": "${incident.dbotMirrorId}"
+                    "right": {
+                        "value": {
+                            "simple": "CheckPointXDR"
+                        },
+                        "isContext": false
                     },
-                    "isContext": true
-                },
-                "type": "shortText"
-            }
-        ]
-    ],
-    "readyExistingEventsFilters": [
-        [
-            {
-                "operator": "isIdenticalIncident",
-                "left": {
-                    "value": {
-                        "simple": "dbotMirrorId"
+                    "type": "sourceBrand"
+                }
+            ]
+        ],
+        "readyNewEventFilters": [
+            [
+                {
+                    "operator": "isEqualString",
+                    "left": {
+                        "value": {
+                            "simple": "sourceBrand"
+                        },
+                        "isContext": true
                     },
-                    "isContext": true
-                },
-                "right": {
-                    "value": {
-                        "simple": "${incident.dbotMirrorId}"
+                    "right": {
+                        "value": {
+                            "simple": "CheckPointXDR"
+                        },
+                        "isContext": false
                     },
-                    "isContext": true
-                },
-                "type": "shortText"
-            }
-        ]
-    ],
-    "searchClosed": false,
-    "period": {
-        "by": "days",
-        "fromValue": 30
-    },
-    "action": "dropAndUpdate",
-    "linkTo": "oldest",
-    "scriptName": "",
-    "enabled": true,
-    "index": 1,
-    "locked": false,
-    "system": false,
-    "fromVersion": "6.10.0"
-}
+                    "type": "sourceBrand"
+                }
+            ]
+        ],
+        "existingEventsFilters": [
+            [
+                {
+                    "operator": "isIdenticalIncident",
+                    "left": {
+                        "value": {
+                            "simple": "dbotMirrorId"
+                        },
+                        "isContext": true
+                    },
+                    "right": {
+                        "value": {
+                            "simple": "${incident.dbotMirrorId}"
+                        },
+                        "isContext": true
+                    },
+                    "type": "shortText"
+                }
+            ]
+        ],
+        "readyExistingEventsFilters": [
+            [
+                {
+                    "operator": "isIdenticalIncident",
+                    "left": {
+                        "value": {
+                            "simple": "dbotMirrorId"
+                        },
+                        "isContext": true
+                    },
+                    "right": {
+                        "value": {
+                            "simple": "${incident.dbotMirrorId}"
+                        },
+                        "isContext": true
+                    },
+                    "type": "shortText"
+                }
+            ]
+        ],
+        "searchClosed": false,
+        "period": {
+            "by": "days",
+            "fromValue": 30
+        },
+        "action": "dropAndUpdate",
+        "linkTo": "oldest",
+        "scriptName": "",
+        "scriptID": "",
+        "enabled": true,
+        "index": 1,
+        "locked": false,
+        "prevName": "Drop-Duplicates",
+        "system": true
+    }
+]
