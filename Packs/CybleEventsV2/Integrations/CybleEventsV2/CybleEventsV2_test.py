@@ -6,7 +6,7 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 from CommonServerPython import GetRemoteDataResponse, GetMappingFieldsResponse, CommandResults, DemistoException
 from CybleEventsV2 import (
     Client,
-    update_alert_data_command,
+    cyble_vision_update_alerts_command,
     get_remote_data_command,
     manual_fetch,
     update_remote_system,
@@ -1073,7 +1073,7 @@ def test_update_single_alert(mock_client_class, mock_get_alert):
     mock_get_alert.return_value = {"id": "id1", "service": "mock_service"}
     mock_client.update_alert.return_value = {"message": "Success"}
 
-    result = update_alert_data_command(mock_client, mock_url, mock_token, args)
+    result = cyble_vision_update_alerts_command(mock_client, mock_url, mock_token, args)
 
     assert isinstance(result, CommandResults)
     assert len(result.outputs) == 1
@@ -1102,7 +1102,7 @@ def test_update_alert_data_success_multiple(mock_get_alert, mock_update_alert):
     # Create Client instance
     client = Client(base_url=mock_url, headers={"Authorization": f"Bearer {mock_token}"}, verify=False, proxy=False)
 
-    result = update_alert_data_command(client, mock_url, mock_token, args)
+    result = cyble_vision_update_alerts_command(client, mock_url, mock_token, args)
 
     assert result.outputs_prefix == "CybleEvents.AlertUpdate"
     assert result.outputs[0]["id"] == "id1"

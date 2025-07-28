@@ -95,7 +95,7 @@ display: CybleEvents v2
 name: cybleeventsv2
 script:
   commands:
-    - name: update-alert-data
+    - name: cyble-vision-update-alerts-command
       description: Update multiple Cyble alerts with new status/severity. Service is auto-resolved per alert ID.
       arguments:
         - name: ids
