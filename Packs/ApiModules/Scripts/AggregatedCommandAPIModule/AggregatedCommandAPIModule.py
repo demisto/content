@@ -71,6 +71,7 @@ class Command:
                 readable_command_results[brand] = self.prepare_human_readable(
                         get_error(result), is_error=True, brand_name=brand, data=self.args[self.indicator_type]
                     )
+                
                 continue
             
             if human_readable := result.get("HumanReadable"):
@@ -281,35 +282,50 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 output["AdditionalFields"] = values
         return output
     
-    def execute_command(self, commands: list[])-> tuple[list[dict], list[CommandResults]]:
+    def execute_command(self, commands: list[dict], data:str)-> tuple[dict[str, list], list[dict], dict[str, list[CommandResults]]]:
         """
         Executes the reputation aggregated command.
         """
-        entry_context, readable_command_results = demisto.executeCommandBatch(commands)
-        context_output: dict[str, list] = {}
+        execution_results = flatten_list(demisto.executeCommandBatch(commands))
+        if not execution_results:
+            demisto.debug(f"Got no execution response from command: {self}")
+            return {}, [], {}
         
+        verbose_command_results: defaultdict[str, defaultdict[str, CommandResults]] = defaultdict(defaultdict(CommandResults))
         indicators_context: dict[str, list] = defaultdict(list)
         dbot_scores_context: list[dict[str, Any]] = []
         
-        for context_item in entry_context:
-            score = Common.DBotScore.NONE
-            if dbot_scores := context_item.get("DBotScore"):
-                dbot_scores_context.extend(dbot_scores)
-                score = max([score.get("Score") for score in dbot_scores])
-                
-            if indicators := get_from_context(context_item, command.context_path):
-                for indicator in indicators:
-                    if command.type == CommandType.external:
-                        indicator = construct_context_by_keys(indicator, self.main_keys, self.additional_fields)
-                        indicator["Brand"] = context_item["Brand"]
-                        indicator["Score"] = indicator.get("Score") or score
-                        indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(indicator["Score"], "Unknown")
-                        indicators_context[indicator[self.indicator_value_field]].append(indicator)
-                    elif command.type == CommandType.internal:
-                        indicators_context[indicator[self.indicator_value_field]].append(indicator)
+        
+        for result in execution_results:
+            brand = result.get("Metadata", {}).get("brand")
+            if is_error(result):
+                verbose_command_results[data][brand] = CommandResults(
+                    readable_output=f"#### Error for data={data} brand={brand}\n{get_error(result)}", entry_type=EntryType.ERROR
+                )
+                continue
+            
+            if human_readable := result.get("HumanReadable"):
+                verbose_command_results[data][brand] = CommandResults(
+                    readable_output=f"#### Result for data={data} brand={brand}\n{human_readable}"
+                )
 
-        context_output[command.type] = {"indicator": indicators_context, "DBotScore": dbot_scores_context}
-        return context_output, readable_command_results
+            if entry_context_item := result.get("EntryContext"):
+                score = Common.DBotScore.NONE
+                if dbot_scores := entry_context_item.get("DBotScore"):
+                    dbot_scores_context.extend(dbot_scores)
+                    score = max([score.get("Score") for score in dbot_scores])
+                if indicators := get_from_context(context_item, command.context_path):
+                    for indicator in indicators:
+                        if is_external(brand):
+                            indicator = construct_context_by_keys(indicator, self.main_keys, self.additional_fields)
+                            indicator["Brand"] = brand
+                            indicator["Score"] = indicator.get("Score") or score
+                            indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(indicator["Score"], "Unknown")
+                            indicators_context[data][brand].append(indicator)
+                        elif is_internal(brand):
+                            indicators_context[data][brand].append(indicator)
+
+        return indicators_context, dbot_scores_context, readable_command_results
         
     def aggregated_command_main_loop(self):
         """
