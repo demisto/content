@@ -426,7 +426,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
     :type reliability: ``String``
     :param reliability: string
     """
-    ips = argToList(args.get("ip"), ",")
+    ips = argToList(args["ip"])
     command_results = []
     for ip in ips:
         try:
@@ -740,7 +740,7 @@ def query_command(client: Client, args: dict) -> CommandResults:
         if not query_response.get("request_metadata", {}).get("complete"):
             human_readable += f"\n### Next Page Token: \n{query_response['request_metadata'].get('scroll')}"
 
-        query = query_response["request_metadata"].get("adjusted_query", "").replace(" ", "+")
+        query = query_response.get("request_metadata", {}).get("adjusted_query", "").replace(" ", "+")
         query_link = f"https://viz.greynoise.io/query/?gnql={query}"
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
@@ -749,11 +749,11 @@ def query_command(client: Client, args: dict) -> CommandResults:
         outputs = {
             QUERY_OUTPUT_PREFIX["IP"]: query_response.get("data", []),
             QUERY_OUTPUT_PREFIX["QUERY"]: {
-                "complete": query_response["request_metadata"].get("complete"),
-                "count": query_response["request_metadata"].get("count"),
-                "message": query_response["request_metadata"].get("message"),
-                "query": query_response["request_metadata"].get("adjusted_query"),
-                "scroll": query_response["request_metadata"].get("scroll"),
+                "complete": query_response.get("request_metadata", {}).get("complete"),
+                "count": query_response.get("request_metadata", {}).get("count"),
+                "message": query_response.get("request_metadata", {}).get("message"),
+                "query": query_response.get("request_metadata", {}).get("adjusted_query"),
+                "scroll": query_response.get("request_metadata", {}).get("scroll"),
             },
         }
     elif query_response["request_metadata"]["message"] == "No results. ":
@@ -791,9 +791,12 @@ def stats_command(client: Client, args: dict) -> Any:
        :rtype: ``CommandResults``
     """
     advanced_query = generate_advanced_query(args)
-    response = client.stats(query=advanced_query, count=args.get("size", "10"))
-    if not isinstance(response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
+    try:
+        logger.info(f"Querying GreyNoise with stats query: {advanced_query}")
+        response = client.stats(query=advanced_query, count=args.get("size", "10"))
+    except Exception as e:
+        demisto.debug(f"Error in stats_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
     if response["count"] > 0:
         human_readable = "### GreyNoise Internet Scanner Intelligence\n"
@@ -1077,18 +1080,20 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
     """
 
     ip = args.get("ip", "")
-    api_response = client.ip(ip)
-
-    if not isinstance(api_response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
+    try:
+        logger.info(f"Querying GreyNoise with ip: {ip}")
+        api_response = client.ip(ip)
+    except Exception as e:
+        demisto.debug(f"Error in context_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
     if "internet_scanner_intelligence" in api_response:
-        response = api_response["internet_scanner_intelligence"]
+        response = api_response.get("internet_scanner_intelligence", {})
         response["seen"] = response.get("found", False)
-        response["address"] = api_response["ip"]
-        response["ip"] = api_response["ip"]
+        response["address"] = api_response.get("ip", "")
+        response["ip"] = api_response.get("ip", "")
     else:
-        response = {"found": False, "address": api_response["ip"], "seen": False, "ip": api_response["ip"]}
+        response = {"found": False, "address": api_response.get("ip", ""), "seen": False, "ip": api_response.get("ip", "")}
 
     original_response = copy.deepcopy(api_response)
 

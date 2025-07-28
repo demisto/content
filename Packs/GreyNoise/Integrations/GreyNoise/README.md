@@ -75,7 +75,7 @@ Runs reputation on IPs.
 | GreyNoise.IP.metadata.source_city | string | The city where the IP is geographically located. |
 | GreyNoise.IP.metadata.source_country | string | The full name of the IP source country. |
 | GreyNoise.IP.metadata.source_country_code | string | The country code of the IP source country. |
-| GreyNoise.IP.tor | boolean | Whether or not the device is a known Tor exit node. |
+| GreyNoise.IP.tor | boolean | Whether the device is a known Tor exit node. |
 | GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
 | GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
 | GreyNoise.IP.raw_data.http.md5 | array | MD5 hashes of HTTP requests made by the device. |
@@ -92,8 +92,8 @@ Runs reputation on IPs.
 | GreyNoise.IP.raw_data.tls.cipher | array | TLS cipher suites used by the device. |
 | GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
-| GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. |
-| GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. |
+| GreyNoise.IP.seen | boolean | Whether the IP is in record with GreyNoise. |
+| GreyNoise.IP.spoofable | boolean | Whether the ip is spoofable. |
 | GreyNoise.IP.tags.category | string | The category of the given tag. |
 | GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
 | GreyNoise.IP.tags.description | string | A description of what the tag identifies. |
@@ -104,13 +104,13 @@ Runs reputation on IPs.
 | GreyNoise.IP.tags.references | string | A list of references used to create the tag. |
 | GreyNoise.IP.tags.slug | string | The unique slug of the tag. |
 | GreyNoise.IP.tags.updated_at | date | The date the tag was last updated. |
-| GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. |
+| GreyNoise.IP.vpn | boolean | Whether the device is a VPN endpoint or not. |
 | GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. |
 | GreyNoise.IP.category | string | The category of the business service. |
 | GreyNoise.IP.description | string | Description of the business service. |
 | GreyNoise.IP.explanation | string | Explanation of why the IP is considered a business service. |
 | GreyNoise.IP.riot | boolean | Whether the IP is a common business service. |
-| GreyNoise.IP.last_updated | date | When the business service information was last updated. |
+| GreyNoise.IP.last_updated | date | When was the last time the business service information was updated. |
 | GreyNoise.IP.name | string | The name of the business service. |
 | GreyNoise.IP.reference | string | Reference link for the business service. |
 | GreyNoise.IP.trust_level | string | If the IP is a business service, how trustworthy is the IP. |
@@ -121,6 +121,10 @@ Runs reputation on IPs.
 | IP.Hostname | string | The hostname that is mapped to IP address. |
 | IP.Malicious.Description | string | A description explaining why the IP address was reported as malicious. |
 | IP.Malicious.Vendor | string | The vendor reporting the IP address as malicious. |
+
+#### Command Example
+
+``` !ip ip="64.39.108.148" ```
 
 ### IP: 64.39.108.148 found with Reputation: Good
 
@@ -209,7 +213,7 @@ Get the information of IP based on the providence filters.
 | GreyNoise.IP.business_service_intelligence.description | string | Description of the business service. |
 | GreyNoise.IP.business_service_intelligence.explanation | string | Explanation of why the IP is considered a business service. |
 | GreyNoise.IP.business_service_intelligence.found | boolean | Whether the IP is a common business service. |
-| GreyNoise.IP.business_service_intelligence.last_updated | date | When the business service information was last updated. |
+| GreyNoise.IP.business_service_intelligence.last_updated | date | When was the last time the business service information was updated. |
 | GreyNoise.IP.business_service_intelligence.name | string | The name of the business service. |
 | GreyNoise.IP.business_service_intelligence.reference | string | Reference link for the business service. |
 | GreyNoise.IP.business_service_intelligence.trust_level | string | If the IP is a business service, how trustworthy is the IP. |
@@ -248,7 +252,7 @@ Get the information of IP based on the providence filters.
 | GreyNoise.IP.internet_scanner_intelligence.metadata.source_city | string | The city where the IP is geographically located. |
 | GreyNoise.IP.internet_scanner_intelligence.metadata.source_country | string | The full name of the IP source country. |
 | GreyNoise.IP.internet_scanner_intelligence.metadata.source_country_code | string | The country code of the IP source country. |
-| GreyNoise.IP.internet_scanner_intelligence.metadata.tor | boolean | Whether or not the device is a known Tor exit node. |
+| GreyNoise.IP.internet_scanner_intelligence.tor | boolean | Whether the device is a known Tor exit node. |
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.http.md5 | array | MD5 hashes of HTTP requests made by the device. |
@@ -265,8 +269,8 @@ Get the information of IP based on the providence filters.
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.tls.ja4 | array | JA4 TLS/SSL fingerprints. |
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
 | GreyNoise.IP.internet_scanner_intelligence.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
-| GreyNoise.IP.internet_scanner_intelligence.seen | boolean | IP is in record with GreyNoise. |
-| GreyNoise.IP.internet_scanner_intelligence.spoofable | boolean | Boolean indicates if IP is spoofable. |
+| GreyNoise.IP.internet_scanner_intelligence.seen | boolean | Whether the IP is in record with GreyNoise. |
+| GreyNoise.IP.internet_scanner_intelligence.spoofable | boolean | Whether the ip is spoofable. |
 | GreyNoise.IP.internet_scanner_intelligence.tags.category | string | The category of the given tag. |
 | GreyNoise.IP.internet_scanner_intelligence.tags.created | date | The date the tag was added to the GreyNoise system. |
 | GreyNoise.IP.internet_scanner_intelligence.tags.description | string | A description of what the tag identifies. |
@@ -277,7 +281,7 @@ Get the information of IP based on the providence filters.
 | GreyNoise.IP.internet_scanner_intelligence.tags.references | string | A list of references used to create the tag. |
 | GreyNoise.IP.internet_scanner_intelligence.tags.slug | string | The unique slug of the tag. |
 | GreyNoise.IP.internet_scanner_intelligence.tags.updated_at | date | The date the tag was last updated. |
-| GreyNoise.IP.internet_scanner_intelligence.vpn | boolean | Whether the device is VPN endpoint or not. |
+| GreyNoise.IP.internet_scanner_intelligence.vpn | boolean | Whether the device is a VPN endpoint or not. |
 | GreyNoise.IP.internet_scanner_intelligence.vpn_service | string | The name of the VPN service provider of the device. |
 | GreyNoise.Query.complete | boolean | Whether all results have been fetched or not. |
 | GreyNoise.Query.count | number | Count of the total matching records. |
@@ -509,7 +513,7 @@ Identifies IPs from known benign services and organizations that commonly cause 
 | GreyNoise.IP.description | String | The description of the IP if riot is "True". |
 | GreyNoise.IP.explanation | String | The explanation of the IP if riot is "True". |
 | GreyNoise.IP.found | String | Indicates if the IP is business service. |
-| GreyNoise.IP.last_updated | Date | The last updated time of the IP if the riot is "True". |
+| GreyNoise.IP.last_updated | Date | When was the last time the business service information was updated. |
 | GreyNoise.IP.ip | String | The IP to query. |
 | GreyNoise.IP.name | String | The name of the IP if the riot is "True". |
 | GreyNoise.IP.reference | String | The reference of the IP if riot is "True". |
@@ -592,7 +596,7 @@ Identifies IPs that have been observed mass-scanning the internet.
 | GreyNoise.IP.metadata.source_city | string | The city where the IP is geographically located. |
 | GreyNoise.IP.metadata.source_country | string | The full name of the IP source country. |
 | GreyNoise.IP.metadata.source_country_code | string | The country code of the IP source country. |
-| GreyNoise.IP.tor | boolean | Whether or not the device is a known Tor exit node. |
+| GreyNoise.IP.tor | boolean | Whether the device is a known Tor exit node. |
 | GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. |
 | GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. |
 | GreyNoise.IP.raw_data.http.md5 | array | MD5 hashes of HTTP requests made by the device. |
@@ -610,8 +614,8 @@ Identifies IPs that have been observed mass-scanning the internet.
 | GreyNoise.IP.raw_data.tls.ja4 | array | JA4 TLS/SSL fingerprints. |
 | GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. |
 | GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. |
-| GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. |
-| GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. |
+| GreyNoise.IP.seen | boolean | Whether the IP is in record with GreyNoise. |
+| GreyNoise.IP.spoofable | boolean | Whether the ip is spoofable. |
 | GreyNoise.IP.tags.category | string | The category of the given tag. |
 | GreyNoise.IP.tags.created | date | The date the tag was added to the GreyNoise system. |
 | GreyNoise.IP.tags.description | string | A description of what the tag identifies. |
@@ -622,7 +626,7 @@ Identifies IPs that have been observed mass-scanning the internet.
 | GreyNoise.IP.tags.references | string | A list of references used to create the tag. |
 | GreyNoise.IP.tags.slug | string | The unique slug of the tag. |
 | GreyNoise.IP.tags.updated_at | date | The date the tag was last updated. |
-| GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. |
+| GreyNoise.IP.vpn | boolean | Whether the device is a VPN endpoint or not. |
 | GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. |
 
 #### Example Command

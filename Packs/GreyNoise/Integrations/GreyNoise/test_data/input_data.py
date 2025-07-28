@@ -94,38 +94,38 @@ test_module_data = [
 ]
 
 ip_reputation_command_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected_modified),  # NOSONAR
+    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected_modified),
     (
         {"ip": "71.6.135.131"},
         "positive",
         {"ip": "71.6.135.131", "internet_scanner_intelligence": {"found": False}, "business_service_intelligence": {"found": False}},
-        200,  # NOSONAR
+        200,
         {"found": False, "seen": False, "address": "71.6.135.131", "ip": "71.6.135.131", "riot": False},
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "invalid ip response",
-        200,  # NOSONAR
+        200,
         "Invalid response from GreyNoise. Response: invalid ip response",
-    ),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", {}, 429, "Invalid response from GreyNoise. Response: "),  # NOSONAR
+    ),
+    ({"ip": "71.6.135.131"}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
+    ({"ip": "71.6.135.131"}, "negative", {}, 429, "Invalid response from GreyNoise. Response: "),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "Dummy message",
-        405,  # NOSONAR
+        405,
         "Invalid response from GreyNoise. Response: (405, 'Dummy message')",
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         {},
-        500,  # NOSONAR
+        500,
         "Invalid response from GreyNoise. Response: (500, {})",
-    ),  # NOSONAR
-    ({"ip": "5844.2204.2191.2471"}, "negative", {"error": "invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, {'error': 'invalid ip submitted'})"),  # NOSONAR
+    ),
+    ({"ip": "5844.2204.2191.2471"}, "negative", {"error": "invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, {'error': 'invalid ip submitted'})"),
 ]
 
 get_ip_reputation_score_data = [
@@ -186,45 +186,45 @@ for resp in valid_multiple_qc_resp_expected:
 
 # ip, test_scenario, api_response, status_code, expected_output
 ip_quick_check_command_data = [
-    ({"ip": "71.5.135.131"}, "positive", valid_quick_response, 200, valid_quick_response_expected),  # NOSONAR
+    ({"ip": "71.5.135.131"}, "positive", valid_quick_response, 200, valid_quick_response_expected),
     (
         {"ip": "71.5.135.131,8.8.8.8"},
         "positive",
         valid_multiple_qc_resp,
-        200,  # NOSONAR
+        200,
         valid_multiple_qc_resp_expected,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "custom",
         "invalid ip response",
-        200,  # NOSONAR
+        200,
         "Invalid response from GreyNoise. Response: invalid ip response",
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "forbidden",
-        401,  # NOSONAR
+        401,
         "Unauthenticated. Check the configured API Key.",
-    ),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", [], 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
+    ),
+    ({"ip": "71.6.135.131"}, "negative", [], 429, "API Rate limit hit. Try after sometime."),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "Dummy message",
-        405,  # NOSONAR
+        405,
         "Failed to execute greynoise-ip-quick-check command.\n Error: Dummy message",
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         [],
-        505,  # NOSONAR
+        505,
         "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
-    ({"ip": "5844.2204.2191.2471"}, "negative", [], 200, "Invalid IP address: '5844.2204.2191.2471'"),  # NOSONAR
-    ({"ip": ""}, "negative", [], 200, "Invalid IP address: ''"),  # NOSONAR
+    ),
+    ({"ip": "5844.2204.2191.2471"}, "negative", [], 200, "Invalid IP address: '5844.2204.2191.2471'"),
+    ({"ip": ""}, "negative", [], 200, "Invalid IP address: ''"),
 ]
 
 generate_advanced_query_data = [
@@ -347,25 +347,25 @@ valid_query_response_expected_output = {
 }
 
 query_command_data: list = [
-    ({}, "positive", valid_query_response, 200, valid_query_response_expected_output),  # NOSONAR
-    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),  # NOSONAR
+    ({}, "positive", valid_query_response, 200, valid_query_response_expected_output),
+    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),
     (
         {},
         "negative",
         {"request_metadata": {"message": "dummy_message"}},
-        200,  # NOSONAR
+        200,
         "GreyNoise request failed. Reason: dummy_message",
-    ),  # NOSONAR
-    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),  # NOSONAR
-    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
-    ({}, "negative", "Dummy message", 405, "Failed to execute greynoise-query command.\n Error: Dummy message"),  # NOSONAR  # NOSONAR
+    ),
+    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
+    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),
+    ({}, "negative", "Dummy message", 405, "Failed to execute greynoise-query command.\n Error: Dummy message"),
     (
         {},
         "negative",
         {},
-        505,  # NOSONAR
+        505,
         "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
+    ),
 ]
 
 valid_stats_response = {
@@ -401,25 +401,25 @@ invalid_stats_response = {
 invalid_stats_response_expected = copy.deepcopy(invalid_stats_response)
 valid_stats_response_expected = copy.deepcopy(valid_stats_response)
 stats_command_data: list = [
-    ({}, "positive", valid_stats_response, 200, valid_stats_response_expected),  # NOSONAR
-    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),  # NOSONAR
+    ({}, "positive", valid_stats_response, 200, valid_stats_response_expected),
+    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),
     (
         {},
         "positive",
         invalid_stats_response,
         200,
         {"count": 0, "query": "classification:sdcsdc spoofable:false"},
-    ),  # NOSONAR
-    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),  # NOSONAR
-    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
-    ({}, "negative", "Dummy message", 405, "Failed to execute greynoise-stats command.\n Error: Dummy message"),  # NOSONAR  # NOSONAR
+    ),
+    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
+    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),
+    ({}, "negative", "Dummy message", 405, "Failed to execute greynoise-stats command.\n Error: Dummy message"),
     (
         {},
         "negative",
         {},
-        505,  # NOSONAR
+        505,
         "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
+    ),
 ]
 
 valid_ip_context_data = {
@@ -500,7 +500,7 @@ valid_ip_context_data_response = [
         "VPN": True,
         "VPN Service": "dummy vpn",
         "Tor": False,
-        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",  # NOSONAR
+        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",
         "Seen": True,
         "Classification": "malicious",
         "First Seen": "2019-04-04",
@@ -557,7 +557,7 @@ valid_context_response_expected["ip"] = "71.6.135.131"
 valid_context_response_expected["address"] = "71.6.135.131"
 
 context_command_response_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_context_response_expected),  # NOSONAR
+    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_context_response_expected),
     (
         {"ip": "71.6.135.131"},
         "positive",
@@ -569,7 +569,7 @@ context_command_response_data = [
             "found": False,
             "classification": ""
             }},
-        200,  # NOSONAR
+        200,
        {
         "ip": "71.6.135.131",
         "found": False,
@@ -577,9 +577,9 @@ context_command_response_data = [
         "address": "71.6.135.131",
         "classification": ""
         },
-    ),  # NOSONAR
-    ({"ip": "123"}, "negative", "Invalid IP address: '123'", 200, "Invalid response from GreyNoise. Response: Invalid IP address: '123'"),  # NOSONAR
-    ({"ip": "abc"}, "negative", "forbidden", 200, "Invalid response from GreyNoise. Response: forbidden"),  # NOSONAR
+    ),
+    ({"ip": "123"}, "negative", "Invalid IP address: '123'", 200, "Invalid response from GreyNoise. Response: Invalid IP address: '123'"),
+    ({"ip": "abc"}, "negative", "forbidden", 200, "Invalid response from GreyNoise. Response: forbidden"),
 ]
 
 valid_similar_response = {
@@ -617,7 +617,7 @@ valid_similar_response = {
 valid_similar_response_expected = copy.deepcopy(valid_similar_response)
 
 similar_command_response_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_similar_response, 200, valid_similar_response_expected),  # NOSONAR
+    ({"ip": "71.6.135.131"}, "positive", valid_similar_response, 200, valid_similar_response_expected),
     (
         {"ip": "45.95.147.229"},
         "positive",
@@ -639,15 +639,15 @@ similar_command_response_data = [
         },
         200,
         valid_similar_response_expected,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "192.168.1.1"},
         "negative",
         "Non-Routable IP address: '192.168.1.1'",
         404,
         "Failed to execute greynoise-similar command.\n Error: \"Non-Routable IP address: '192.168.1.1'\"",
-    ),  # NOSONAR
-    ({"ip": "abc"}, "negative", "forbidden", 404, "Failed to execute greynoise-similar command.\n Error: forbidden"),  # NOSONAR
+    ),
+    ({"ip": "abc"}, "negative", "forbidden", 404, "Failed to execute greynoise-similar command.\n Error: forbidden"),
 ]
 
 valid_timeline_response = {
@@ -692,7 +692,7 @@ valid_timeline_response = {
 valid_timeline_response_expected = copy.deepcopy(valid_timeline_response)
 
 timeline_command_response_data = [
-    ({"ip": "45.95.147.229"}, "positive", valid_timeline_response, 200, valid_timeline_response_expected),  # NOSONAR
+    ({"ip": "45.95.147.229"}, "positive", valid_timeline_response, 200, valid_timeline_response_expected),
     (
         {"ip": "61.30.129.190"},
         "positive",
@@ -709,15 +709,15 @@ timeline_command_response_data = [
         },
         200,
         valid_timeline_response_expected,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "192.168.1.1"},
         "negative",
         "Non-Routable IP address: '192.168.1.1'",
         404,
         "Failed to execute greynoise-timeline command.\n Error: \"Non-Routable IP address: '192.168.1.1'\"",
-    ),  # NOSONAR
-    ({"ip": "abc"}, "negative", "forbidden", 404, "Failed to execute greynoise-timeline command.\n Error: forbidden"),  # NOSONAR
+    ),
+    ({"ip": "abc"}, "negative", "forbidden", 404, "Failed to execute greynoise-timeline command.\n Error: forbidden"),
 ]
 
 cve_command_response_data = [

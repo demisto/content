@@ -122,7 +122,7 @@ script:
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
@@ -131,7 +131,7 @@ script:
       description: The overt actor the device has been associated with.
       type: string
     - contextPath: GreyNoise.IP.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
       description: Whether the device has been categorized as unknown, benign, or malicious.
@@ -184,8 +184,8 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_country_code
       description: The country code of the IP source country.
       type: string
-    - contextPath: GreyNoise.IP.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
       type: boolean
     - contextPath: GreyNoise.IP.raw_data.scan.port
       description: The port number(s) the devices has been observed scanning.
@@ -260,10 +260,10 @@ script:
       description: The city where the IP is geographically located.
       type: string
     - contextPath: GreyNoise.IP.tor
-      description: Whether or not the device is a known Tor exit node.
+      description: Whether the device is a known Tor exit node.
       type: boolean
     - contextPath: GreyNoise.IP.vpn
-      description: Whether the device is VPN endpoint or not.
+      description: Whether the device is a VPN endpoint or not.
       type: boolean
     - contextPath: GreyNoise.IP.vpn_service
       description: The name of the VPN service provider of the device.
@@ -281,7 +281,7 @@ script:
       description: Whether the IP is a common business service.
       type: boolean
     - contextPath: GreyNoise.IP.last_updated
-      description: When the business service information was last updated.
+      description: When was the last time the business service information was updated.
       type: date
     - contextPath: GreyNoise.IP.name
       description: The name of the business service.
@@ -501,7 +501,7 @@ script:
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
@@ -540,7 +540,7 @@ script:
       description: The overt actor the device has been associated with.
       type: string
     - contextPath: GreyNoise.IP.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
       description: Whether the device has been categorized as unknown, benign, or malicious.
@@ -593,11 +593,11 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_country_code
       description: The country code of the IP source country.
       type: string
-    - contextPath: GreyNoise.IP.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
       type: boolean
     - contextPath: GreyNoise.IP.vpn
-      description: Whether the device is VPN endpoint or not.
+      description: Whether the device is a VPN endpoint or not.
       type: boolean
     - contextPath: GreyNoise.IP.vpn_service
       description: The name of the VPN service provider of the device.
@@ -639,7 +639,7 @@ script:
       description: Whether the IP is a common business service.
       type: boolean
     - contextPath: GreyNoise.IP.business_service_intelligence.last_updated
-      description: When the business service information was last updated.
+      description: When was the last time the business service information was updated.
       type: date
     - contextPath: GreyNoise.IP.business_service_intelligence.name
       description: The name of the business service.
@@ -755,8 +755,8 @@ script:
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.source_country_code
       description: The country code of the IP source country.
       type: string
-    - contextPath: GreyNoise.IP.internet_scanner_intelligence.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+    - contextPath: GreyNoise.IP.internet_scanner_intelligence.tor
+      description: Whether the device is a known Tor exit node.
       type: boolean
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.raw_data.hassh.fingerprint
       description: HASSH hash fingerprint string.
@@ -807,16 +807,16 @@ script:
       description: Any HTTP user-agents the device has been observed using while crawling the Internet.
       type: array
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.tags
       description: A list of the tags the device has been assigned over the past 90 days.
       type: array
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.vpn
-      description: Whether the device is VPN endpoint or not.
+      description: Whether the device is a VPN endpoint or not.
       type: boolean
     - contextPath: GreyNoise.IP.internet_scanner_intelligence.vpn_service
       description: The name of the VPN service provider of the device.
@@ -972,7 +972,7 @@ script:
       description: The explanation of the IP if riot is "True".
       type: String
     - contextPath: GreyNoise.Riot.last_updated
-      description: The last updated time of the IP if the riot is "True".
+      description: The last time the business service information was updated.
       type: Date
     - contextPath: GreyNoise.Riot.reference
       description: The reference of the IP if riot is "True".
@@ -998,7 +998,7 @@ script:
       description: The date the device was last observed by GreyNoise. Format is ISO8601.
       type: date
     - contextPath: GreyNoise.IP.seen
-      description: IP is in record with GreyNoise.
+      description: Whether the IP is in record with GreyNoise.
       type: boolean
     - contextPath: GreyNoise.IP.tags
       description: A list of the tags the device has been assigned over the past 90 days.
@@ -1037,7 +1037,7 @@ script:
       description: The overt actor the device has been associated with.
       type: string
     - contextPath: GreyNoise.IP.spoofable
-      description: Boolean indicates if IP is spoofable.
+      description: Whether the ip is spoofable.
       type: boolean
     - contextPath: GreyNoise.IP.classification
       description: Whether the device has been categorized as unknown, benign, or malicious.
@@ -1105,8 +1105,8 @@ script:
     - contextPath: GreyNoise.IP.metadata.source_city
       description: The city where the IP is geographically located.
       type: string
-    - contextPath: GreyNoise.IP.metadata.tor
-      description: Whether or not the device is a known Tor exit node.
+    - contextPath: GreyNoise.IP.tor
+      description: Whether the device is a known Tor exit node.
       type: boolean
     - contextPath: GreyNoise.IP.metadata.carrier
       description: The carrier information for the IP address.
@@ -1130,7 +1130,7 @@ script:
       description: Whether the IP targets a single destination.
       type: boolean
     - contextPath: GreyNoise.IP.vpn
-      description: Whether the device is VPN endpoint or not.
+      description: Whether the device is a VPN endpoint or not.
       type: boolean
     - contextPath: GreyNoise.IP.vpn_service
       description: The name of the VPN service provider of the device.

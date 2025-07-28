@@ -328,8 +328,6 @@ def test_get_ip_context_data(input_data, expected_output):
     for r, e in zip(response, expected_output):
         # Accept if either 'ip' or 'address' matches
         assert r.get("IP") == e.get("IP")
-    # Optionally check other fields if needed
-    # assert response == expected_output
 
 
 @pytest.mark.parametrize("test_scenario, status_code, input_data, expected", riot_command_response_data)
@@ -360,7 +358,6 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
     else:
         # For error cases, we need to mock the ip method to return a response without business_service_intelligence
         if status_code == 400:
-            # Mock a response that doesn't have business_service_intelligence field
             mocker.patch.object(client, "ip", return_value={"ip": input_data["ip"]})
             with pytest.raises(KeyError) as err:
                 _ = GreyNoise.riot_command(client, input_data, reliability)

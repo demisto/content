@@ -290,10 +290,12 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
     ips = argToList(args.get("ip"), ",")
     command_results = []
     for ip in ips:
-        api_response = client.ip(ip)
-
-        if not isinstance(api_response, dict):
-            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
+        try:
+            logger.info(f"Querying GreyNoise with ip: {ip}")
+            api_response = client.ip(ip)
+        except Exception as e:
+            demisto.debug(f"Error in ip_reputation_command: {e}")
+            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
         if "internet_scanner_intelligence" in api_response:
             response = copy.deepcopy(api_response["internet_scanner_intelligence"])
@@ -331,7 +333,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             malicious_description = ""
 
         # Prepare the output response - this should be the full API response with ip renamed to address
-        # But don't modify the nested objects
+        # without modifying the nested objects
         output_response = copy.deepcopy(original_response)
         if "ip" in output_response:
             output_response["address"] = output_response["ip"]
