@@ -82,17 +82,17 @@ def get_attachment_name(headers):
         if m:
             name = m.group(1)
 
-    if re.match("^.+\..{3,5}$", name):
+    if re.match(r"^.+\..{3,5}$", name):
         return name
 
-    extension = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt")).group(1)  # type: ignore
+    extension = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt")).group(1)
 
     return name + "." + extension
 
 
 def parse_base64(text):
-    if re.match("^=?.*?=$", text):
-        res = re.search("=\?.*?\?[A-Z]{1}\?(.*?)\?=", text, re.IGNORECASE)
+    if re.match(r"^=\?.*?=$", text):
+        res = re.search(r"=\?.*?\?[A-Z]{1}\?(.*?)\?=", text, re.IGNORECASE)
         if res:
             res = res.group(1)  # type: ignore
             return base64.b64decode(res)  # type: ignore
