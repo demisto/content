@@ -32,7 +32,7 @@ Example:
 
 Configuring Log Export to Cortex XSIAM
 
-For customers using Reblaze versions 2.12 and above (excluding version 5), the configuration of SIEM log exporting is managed by the Reblaze support team.
+For customers using Reblaze versions 2.12 and above (excluding version 5), the configuration of SIEM log exporting is managed by the Reblaze support team.  
 To initiate this process, please submit a support request with the following information:
 
 * SIEM Endpoint: The destination IP address or FQDN.
@@ -51,8 +51,8 @@ Customers using Reblaze version 5 can stream Reblaze WAF security events to Cort
 3. In the configuration dialog, populate the following fields:
 
 * Name: Provide a descriptive name (e.g., "Cortex XSIAM Integration").
-* Transport: Select a protocol (TCP, UDP, or TCP+TLS).
-For a secure connection, TCP+TLS is recommended, which requires providing an SSL certificate.
+* Transport: Select a protocol (TCP, UDP, or TCP and TLS).  
+    For a secure connection, TCP and TLS is recommended, which requires providing an SSL certificate.
 * Endpoint: Enter your Cortex XSIAM endpoint's IP address or hostname, followed by the listening port (e.g., 192.168.1.100:514).
 * Mode: Choose which events to forward—"Blocked only" (default) or "All" for comprehensive logging.
 
