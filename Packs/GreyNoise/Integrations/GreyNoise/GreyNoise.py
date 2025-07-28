@@ -707,7 +707,7 @@ def query_command(client: Client, args: dict) -> CommandResults:
     advanced_query = generate_advanced_query(args)
 
     try:
-        logger.info(f"Querying GreyNoise with query: {advanced_query}")
+        demisto.debug(f"Querying GreyNoise with query: {advanced_query}")
         query_response = client.query(query=advanced_query, size=args.get("size", "10"), scroll=args.get("next_token"))
     except Exception as e:
         demisto.debug(f"Error in query_command: {e}")
@@ -792,7 +792,7 @@ def stats_command(client: Client, args: dict) -> Any:
     """
     advanced_query = generate_advanced_query(args)
     try:
-        logger.info(f"Querying GreyNoise with stats query: {advanced_query}")
+        demisto.debug(f"Querying GreyNoise with stats query: {advanced_query}")
         response = client.stats(query=advanced_query, count=args.get("size", "10"))
     except Exception as e:
         demisto.debug(f"Error in stats_command: {e}")
@@ -988,7 +988,7 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
     """
     ip = args["ip"]
     try:
-        logger.info(f"Querying GreyNoise with ip: {ip}")
+        demisto.debug(f"Querying GreyNoise with ip: {ip}")
         api_response = client.ip(ip)
     except Exception as e:
         demisto.debug(f"Error in riot_command: {e}")
@@ -1081,7 +1081,7 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
 
     ip = args.get("ip", "")
     try:
-        logger.info(f"Querying GreyNoise with ip: {ip}")
+        demisto.debug(f"Querying GreyNoise with ip: {ip}")
         api_response = client.ip(ip)
     except Exception as e:
         demisto.debug(f"Error in context_command: {e}")

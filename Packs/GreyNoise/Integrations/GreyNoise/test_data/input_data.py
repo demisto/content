@@ -348,7 +348,7 @@ valid_query_response_expected_output = {
 
 query_command_data: list = [
     ({}, "positive", valid_query_response, 200, valid_query_response_expected_output),
-    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),
+    ({}, "negative", "dummy message", 400, "Invalid response from GreyNoise. Response: (400, 'dummy message')"),
     (
         {},
         "negative",
@@ -356,15 +356,15 @@ query_command_data: list = [
         200,
         "GreyNoise request failed. Reason: dummy_message",
     ),
-    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
-    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),
-    ({}, "negative", "Dummy message", 405, "Failed to execute greynoise-query command.\n Error: Dummy message"),
+    ({}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
+    ({}, "negative", {}, 429, "Invalid response from GreyNoise. Response: API Limit Reached"),
+    ({}, "negative", "Dummy message", 405, "Invalid response from GreyNoise. Response: (405, 'Dummy message')"),
     (
         {},
         "negative",
         {},
         505,
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
+        "Invalid response from GreyNoise. Response: (505, [])",
     ),
 ]
 
@@ -402,7 +402,7 @@ invalid_stats_response_expected = copy.deepcopy(invalid_stats_response)
 valid_stats_response_expected = copy.deepcopy(valid_stats_response)
 stats_command_data: list = [
     ({}, "positive", valid_stats_response, 200, valid_stats_response_expected),
-    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),
+    ({}, "negative", "dummy message", 400, "Invalid response from GreyNoise. Response: (400, 'dummy message')"),
     (
         {},
         "positive",
@@ -410,15 +410,15 @@ stats_command_data: list = [
         200,
         {"count": 0, "query": "classification:sdcsdc spoofable:false"},
     ),
-    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),
-    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),
-    ({}, "negative", "Dummy message", 405, "Failed to execute greynoise-stats command.\n Error: Dummy message"),
+    ({}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
+    ({}, "negative", {}, 429, "Invalid response from GreyNoise. Response: API Limit Reached"),
+    ({}, "negative", "Dummy message", 405, "Invalid response from GreyNoise. Response: (405, 'Dummy message')"),
     (
         {},
         "negative",
         {},
         505,
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
+        "Invalid response from GreyNoise. Response: (505, [])",
     ),
 ]
 
@@ -539,16 +539,11 @@ valid_riot_response_2 = {
     "\n### GreyNoise Business Service Intelligence Lookup\n|IP|Business Service|\n|---|---|\n| 114.119.130.178 | false |\n",
 }
 
-invalid_riot_response = {
-    "output": {"message": "IP provided is not a routable IPv4 address"},
-    "error_message": "Invalid response from GreyNoise. Response: Invalid IP address: '{}'",
-}
-
 riot_command_response_data = [
     ("positive", 200, {"ip": "8.8.8.8"}, valid_riot_response),
     ("positive", 200, {"ip": "114.119.130.178"}, valid_riot_response_2),
-    ("negative", 400, {"ip": "123"}, invalid_riot_response),
-    ("negative", 400, {"ip": "abc"}, invalid_riot_response),
+    ("negative", 400, {"ip": "123"}, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
+    ("negative", 400, {"ip": "abc"}, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
 ]
 
 valid_context_response_expected = copy.deepcopy(valid_ip_response_expected["internet_scanner_intelligence"])
@@ -578,8 +573,8 @@ context_command_response_data = [
         "classification": ""
         },
     ),
-    ({"ip": "123"}, "negative", "Invalid IP address: '123'", 200, "Invalid response from GreyNoise. Response: Invalid IP address: '123'"),
-    ({"ip": "abc"}, "negative", "forbidden", 200, "Invalid response from GreyNoise. Response: forbidden"),
+    ({"ip": "123"}, "negative", {"error":"invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
+    ({"ip": "abc"}, "negative", {"error":"invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
 ]
 
 valid_similar_response = {

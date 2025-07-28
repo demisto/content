@@ -249,10 +249,12 @@ def test_query_command(args, test_scenario, api_response, status_code, expected_
         )
     else:
         # For error cases, we need to mock the query method to raise an exception
-        if status_code == 401:
+        if status_code == 400:
+            mocker.patch.object(client, "query", side_effect=GreyNoise.exceptions.RequestFailure(400, "dummy message"))
+        elif status_code == 401:
             mocker.patch.object(client, "query", side_effect=GreyNoise.exceptions.RequestFailure(401, "forbidden"))
         elif status_code == 429:
-            mocker.patch.object(client, "query", side_effect=GreyNoise.exceptions.RateLimitError())
+            mocker.patch.object(client, "query", side_effect=GreyNoise.exceptions.RateLimitError("API Limit Reached"))
         elif status_code == 405:
             mocker.patch.object(client, "query", side_effect=GreyNoise.exceptions.RequestFailure(405, "Dummy message"))
         elif status_code == 505:
@@ -263,13 +265,7 @@ def test_query_command(args, test_scenario, api_response, status_code, expected_
         with pytest.raises(Exception) as err:
             _ = GreyNoise.query_command(client, args)
 
-        # For the 405 case, the error message includes the command name
-        if status_code == 405:
-            expected_error = "Failed to execute greynoise-query command.\n Error: Dummy message"
-        else:
-            expected_error = expected_output
-
-        assert str(err.value) == expected_error
+        assert str(err.value) == expected_output
 
 
 @pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", stats_command_data)
@@ -296,10 +292,12 @@ def test_stats_command(args, test_scenario, api_response, status_code, expected_
         assert response.outputs == expected_output
     else:
         # For error cases, we need to mock the stats method to raise an exception
-        if status_code == 401:
+        if status_code == 400:
+            mocker.patch.object(client, "stats", side_effect=GreyNoise.exceptions.RequestFailure(400, "dummy message"))
+        elif status_code == 401:
             mocker.patch.object(client, "stats", side_effect=GreyNoise.exceptions.RequestFailure(401, "forbidden"))
         elif status_code == 429:
-            mocker.patch.object(client, "stats", side_effect=GreyNoise.exceptions.RateLimitError())
+            mocker.patch.object(client, "stats", side_effect=GreyNoise.exceptions.RateLimitError("API Limit Reached"))
         elif status_code == 405:
             mocker.patch.object(client, "stats", side_effect=GreyNoise.exceptions.RequestFailure(405, "Dummy message"))
         elif status_code == 505:
@@ -310,13 +308,7 @@ def test_stats_command(args, test_scenario, api_response, status_code, expected_
         with pytest.raises(Exception) as err:
             _ = GreyNoise.stats_command(client, args)
 
-        # For the 405 case, the error message includes the command name
-        if status_code == 405:
-            expected_error = "Failed to execute greynoise-stats command.\n Error: Dummy message"
-        else:
-            expected_error = expected_output
-
-        assert str(err.value) == expected_error
+        assert str(err.value) == expected_output
 
 
 @pytest.mark.parametrize("input_data, expected_output", get_ip_context_data_data)
@@ -356,16 +348,23 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
         assert response.outputs == expected_output
         assert response.readable_output == expected["readable"]
     else:
-        # For error cases, we need to mock the ip method to return a response without business_service_intelligence
-        if status_code == 400:
-            mocker.patch.object(client, "ip", return_value={"ip": input_data["ip"]})
-            with pytest.raises(KeyError) as err:
-                _ = GreyNoise.riot_command(client, input_data, reliability)
-            assert str(err.value) == "'business_service_intelligence'"
-            return
+        # For error cases, we need to mock the ip method to raise an exception
+        if status_code == 401:
+            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(401, "forbidden"))
+        elif status_code == 400:
+            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(400, "invalid ip submitted"))
+        elif status_code == 429:
+            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RateLimitError())
+        elif status_code == 405:
+            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(405, "Dummy message"))
+        elif status_code == 505:
+            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(505, []))
+        else:
+            mocker.patch.object(client, "ip", return_value={})
+
         with pytest.raises(Exception) as err:
             _ = GreyNoise.riot_command(client, input_data, reliability)
-        assert str(err.value) == expected["error_message"].format(input_data["ip"])
+        assert str(err.value) == expected
 
 
 @pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", context_command_response_data)
@@ -392,6 +391,8 @@ def test_context_command(mocker, args, test_scenario, api_response, status_code,
         # For error cases, we need to mock the ip method to raise an exception
         if status_code == 401:
             mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(401, "forbidden"))
+        elif status_code == 400:
+            mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RequestFailure(400, "invalid ip submitted"))
         elif status_code == 429:
             mocker.patch.object(client, "ip", side_effect=GreyNoise.exceptions.RateLimitError())
         elif status_code == 405:
