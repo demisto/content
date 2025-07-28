@@ -116,8 +116,9 @@ class AggregatedCommandAPIModule(ABC):
         self.verbose = verbose
         self.additional_fields = additional_fields
         self.commands = commands
+        self.brands_to_run = self.get_brands_to_run()
     
-    def get_active_brands(self) -> list[str]:
+    def get_brands_to_run(self) -> list[str]:
         """
         Returns a list of active brands to run on from the given brands.
         if no brands are given, returns all active brands.
@@ -145,6 +146,20 @@ class AggregatedCommandAPIModule(ABC):
         This method handles the main execution loop for aggregated commands.
         """
         raise NotImplementedError
+    
+    def prepare_commands(self):
+        """
+        Prepares the commands to execute.
+        """
+        commands = []
+        brands_to_run_input = ",".join(self.brands_to_run)
+        for command in self.commands:
+            if command.type == CommandType.INTERNAL or (self.external_enrichment and command.type == CommandType.EXTERNAL_ENRICHMENT):
+                args = command.args
+                args["using-brand"] = brands_to_run_input
+                command = {command.name: args}
+                commands.append(command)
+        return commands
     
 class ReputationAggregatedCommand(AggregatedCommandAPIModule):
     def __init__(self,
@@ -325,17 +340,10 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         context.update(context_output_tim)
         verbose_command_results.update(verbose_command_tim)
         
-        for data in self.data_list:
-            commands = []
-            if self.external_enrichment or self.external_brands:
-                command = {self.indicator_type: {self.indicator_type: data}}
-                if self.external_brands:
-                    command[self.indicator_type]["using-brand"] = ",".join(self.external_brands)
-                commands.append(command)
-            for internal_command in self.commands:
-                command = {internal_command.name: {internal_command.args}}
-                commands.append(command)
-            self.execute_command(commands)
+        
+        commands_to_execute = self.prepare_commands()
+        
+        results = self.execute_command(commands_to_execute)
         
         command_results = self.summarize_command_results(context, verbose_command_results)
         if verbose:
