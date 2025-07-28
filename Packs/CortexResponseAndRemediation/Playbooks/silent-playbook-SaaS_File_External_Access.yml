@@ -2760,7 +2760,7 @@ tasks:
       - "52"
     scriptarguments:
       closeNotes:
-        simple: Handled by the playbook "test5"
+        simple: Handled by the playbook "SaaS File External Access"
       closeReason:
         simple: Resolved - True Positive
     separatecontext: false
