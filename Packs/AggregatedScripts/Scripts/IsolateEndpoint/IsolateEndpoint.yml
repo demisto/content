@@ -5,9 +5,6 @@ args:
 - description: List of agent IPs of the endpoint to isolate.
   name: endpoint_ip
   isArray: true
-- description: List of agent hostnames of the endpoint to isolate.
-  name: endpoint_hostname
-  isArray: true
 - description: |-
     Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
   name: brands

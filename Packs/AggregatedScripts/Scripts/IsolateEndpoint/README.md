@@ -22,7 +22,6 @@ The isolation action can be executed using the next integrations:
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | endpoint_id | List of agent IDs of the endpoint to isolate. | False        |
 | endpoint_ip | List of agent IPs of the endpoint to isolate. | False        |
-| endpoint_hostname | List of agent hostnames of the endpoint to isolate. | False        |
 | brands | Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Active Directory Query v2, CrowdstrikeFalcon'. |
 | verbose | Set to true to display human-readable output for each step of the command. Set to false \(default\) to only display the final result.                                                                                                       |
 
@@ -30,10 +29,10 @@ The isolation action can be executed using the next integrations:
 
 ---
 
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| IsolateEndpointResults.EndpointName | The endpoint's hostname. | String |
-| IsolateEndpointResults.Results | The results of the isolation. | Array |
-| IsolateEndpointResults.Results.Result | The result of the isolation. | String |
-| IsolateEndpointResults.Results.Brand | The used brand for the isolation. | String |
+| **Path** | **Description**                                   | **Type** |
+| --- |---------------------------------------------------| --- |
+| IsolateEndpointResults.EndpointName | The endpoint's id, ip or hostname.                | String |
+| IsolateEndpointResults.Results | The results of the isolation.                     | Array |
+| IsolateEndpointResults.Results.Result | The result of the isolation.                      | String |
+| IsolateEndpointResults.Results.Brand | The used brand for the isolation.                 | String |
 | IsolateEndpointResults.Results.Message | An informative message for the isolation results. | String |

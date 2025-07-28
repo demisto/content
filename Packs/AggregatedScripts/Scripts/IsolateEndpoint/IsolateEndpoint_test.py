@@ -157,7 +157,7 @@ def test_check_which_args_missing_in_output(mock_create_message):
         {'agent_id': '', 'agent_ip': '192', 'agent_hostname': 'host1'},
         {'agent_id': '456', 'agent_ip': '', 'agent_hostname': 'host2'}
     ]
-    check_which_args_missing_in_output(
+    check_missing_executed_args_in_output(
         zipped_args, valid_args, outputs, human_readable_outputs
     )
     assert mock_create_message.call_count == 3
