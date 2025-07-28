@@ -313,6 +313,33 @@ def test_list_mails_with_page_limit(mocker, client):
         assert "top=1" in mock_request.call_args_list[0].args[1]
 
 
+def test_list_mails_with_body(mocker):
+    """Unit test
+    Given
+    - list_mails command with page_size set to 1
+    - one mail returned on the response
+    When
+    - mock the MicrosoftClient.http_request function
+    Then
+    - run the list_mails_command using the Client
+    Validate that the http_request called properly with endpoint top=1
+    """
+    mail = {
+        "value": [
+            {
+                "body": {
+                    "content": "This is an email body"
+                }
+            }
+        ]
+    }
+    client = type("MockClient", (), {"list_mails": lambda **_: mail})()
+    
+    result_entry = list_mails_command(client, {})
+    
+    assert result_entry[0]["MSGraphMail(val.ID && val.ID == obj.ID)"]["Body"] == "This is an email body"
+
+
 @pytest.fixture()
 def expected_incident():
     with open("test_data/expected_incident") as emails_json:
