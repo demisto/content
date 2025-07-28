@@ -36,7 +36,7 @@ configuration:
   name: longRunning
   type: 8
   required: false
-- additionalinfo: The DetectionSummaryEvent event type will be deprecated as of September 30th, 2025. Make sure to adjust the event type to fetch.
+- additionalinfo: The DetectionSummaryEvent event type will be deprecated as of September 30th, 2025. Make sure to adjust the Event type to fetch parameter.
   defaultvalue: DetectionSummaryEvent
   display: Event type to fetch
   name: event_type
