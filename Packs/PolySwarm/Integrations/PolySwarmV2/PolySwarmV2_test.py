@@ -91,11 +91,20 @@ def test_file_scan(mocker):
 
 
 @pytest.mark.vcr()
-@pytest.mark.parametrize("kind,scan_target,results_id", [
-    ("domain", TEST_SCAN_DOMAIN, 'bd870bed700771f4fbe8992b5022fa655df743a397278c60cc40f4d25dac4052'),  # test Domain scan reputation
-    ("ip", TEST_SCAN_IP, 'af0169d053b43eb83b886fd65a8bc7df1d76bcc2b068c862ec1048e8cf1df8a2'),  # test IP scan reputation
-    ("url", TEST_SCAN_URL, 'dca3fb56531786e4141a7fdcdfaf0e74b64755b2514c2712881124e0449ba41d' ),  # test URL scan reputation
-])
+@pytest.mark.parametrize(
+    "kind,scan_target,results_id",
+    [
+        pytest.param(
+            "domain", TEST_SCAN_DOMAIN, "bd870bed700771f4fbe8992b5022fa655df743a397278c60cc40f4d25dac4052", id="domain"
+        ),  # test Domain scan reputation
+        pytest.param(
+            "ip", TEST_SCAN_IP, "af0169d053b43eb83b886fd65a8bc7df1d76bcc2b068c862ec1048e8cf1df8a2", id="ip"
+        ),  # test IP scan reputation
+        pytest.param(
+            "url", TEST_SCAN_URL, "dca3fb56531786e4141a7fdcdfaf0e74b64755b2514c2712881124e0449ba41d", id="url"
+        ),  # test URL scan reputation
+    ],
+)
 def test_reputation(mocker, kind, scan_target, results_id):
     mocker.patch.object(demisto, "debug", return_value=None)
 
