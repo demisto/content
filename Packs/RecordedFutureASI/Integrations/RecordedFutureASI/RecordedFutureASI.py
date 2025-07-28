@@ -46,7 +46,7 @@ class Client(BaseClient):
         :param min_severity: the minimum rule severity to check for changes
         :param host_incident_limit: the max number of host incidents to return
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, retries=3, status_forcelist=(502, 503, 504), **kwargs)
         self.project_id = project_id
         self.min_severity = min_severity
         self.host_incident_limit = host_incident_limit
@@ -69,12 +69,15 @@ class Client(BaseClient):
         :param last_run: can be a timestamp or a snapshot in DATE_FORMAT
         :return: Dict with a data key that is an array of diffs between snapshots
         """
+        params = {
+            "rule_action": "added",
+            "start": last_run,
+            "classification": MIN_SEVERITY_MAPPING[self.min_severity],
+        }
         return self._http_request(
             method="GET",
-            url_suffix=f"/rules/history/{self.project_id}/activity?"
-            f"rule_action=added&"
-            f"start={last_run}&"
-            f"classification={MIN_SEVERITY_MAPPING[self.min_severity]}",
+            url_suffix=f"/rules/history/{self.project_id}/activity",
+            params=params,
         )
 
     def get_recent_issues_by_host(self, last_run: str | int) -> dict:
@@ -84,13 +87,16 @@ class Client(BaseClient):
         :param last_run: can be a timestamp or a snapshot in DATE_FORMAT
         :return: Dict with a data key that is an array of diffs between snapshots
         """
+        params = {
+            "rule_action": "added",
+            "last_checked": last_run,
+            "classification": MIN_SEVERITY_MAPPING[self.min_severity],
+            "limit": self.host_incident_limit,
+        }
         return self._http_request(
             method="GET",
-            url_suffix=f"/rules/history/{self.project_id}/activity/by_host/compare?"
-            f"rule_action=added&"
-            f"last_checked={last_run}&"
-            f"classification={MIN_SEVERITY_MAPPING[self.min_severity]}&"
-            f"limit={self.host_incident_limit}",
+            url_suffix=f"/rules/history/{self.project_id}/activity/by_host/compare",
+            params=params,
         )
 
 
