@@ -54,13 +54,13 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @SamuelFain @YuvHayun
-validation_config.toml @YuvHayun
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun @yedidyacohenpalo
+validation_config.toml @YuvHayun @yedidyacohenpalo
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @tcarmeli1 @jlevypaloalto
-/Packs/Core/Integrations/ @tcarmeli1 @jlevypaloalto
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1 @jlevypaloalto
+/Packs/CortexXDR/Integrations/ @jlevypaloalto
+/Packs/Core/Integrations/ @jlevypaloalto
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
