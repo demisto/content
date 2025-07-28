@@ -1,5 +1,4 @@
 import copy
-
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -90,8 +89,6 @@ class Client(BaseClient):  # pragma: no cover
             Pull all the incident IDs from the API, using pagination mechanizm with respect to max_fetch
         Args:
             start_time: from what time to start pulling
-            max_fetch: max number of incidents to fetch
-            last_id: last id from the last run
         Returns:
             List of incident IDs
         """
@@ -185,7 +182,6 @@ def get_incident_ids_to_fetch(
     client: Client,
     first_fetch: datetime,
     last_id: Optional[int],
-    max_fetch,
 ) -> List[int]:
     incident_ids: List[int] = client.get_incident_ids(first_fetch)
     if not incident_ids:
@@ -234,7 +230,16 @@ def get_events_command(client: Client, args: dict[str, Any]) -> tuple[CommandRes
     return result, events
 
 
-def get_new_last_id(last_timestamp, incident, new_last_ids, client: Client):
+def get_new_last_id(last_timestamp, incident, new_last_ids):
+    """
+        check if the id came after or in the same time as the previous incident, and update the ids array and the timestamp
+    Args:
+        last_timestamp: the old last timestamp
+        incident: the incident to check
+        new_last_ids: array of the ids with the same timestamp as last_timestamp
+    Returns:
+        the new last timestamp and the array of ids
+    """
     incident_time = arg_to_datetime(incident.get("first_reported_date"))
     inc_id = incident.get("incident_id")
     # Make sure that time format is comparable
@@ -257,7 +262,6 @@ def all_incidents_trimmer(
     max_fetch: int,
     last_timestamp_ids: List[int],
     last_timestamp: datetime,
-    last_id: int | None,
 ):
     """
     In all_incidents case, we will save a list of the ids that share the same timestamp as the last id.
@@ -271,30 +275,41 @@ def all_incidents_trimmer(
         last_timestamp (_type_): the last timestamp that we pulled
     """
     events: List[dict[str, Any]] = []
-    new_last_ids: set[int] = set(last_timestamp_ids)  # type: ignore # the new ids to save for the next run
-    last_timestamp_ids = set(last_timestamp_ids)  # type: ignore # for better runtime
+    new_last_ids: set[int] = set(last_timestamp_ids)  # type: ignore # The new ids to save for the next run
+    last_timestamp_ids = set(last_timestamp_ids)  # type: ignore # For better runtime
     for i in incident_ids:
-        # remove ids that already pulled
+        # Remove ids that already pulled
         if last_timestamp_ids and i in last_timestamp_ids:
             continue
         try:
             incident = client.get_incident(i)  # get incident details
-            events.extend(incident_to_events(incident))  # incident_to_events returns a list of events!
+            events.extend(incident_to_events(incident))  # incident_to_events returns a list of events
         except Exception as e:
             demisto.debug(f"Error in getting incident id {i} details, error: {e}")
             # Note: The IronScales endpoint does not support retrieving details for events of type ATO and MTS.
             continue
 
-        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids, client)  # type: ignore # we use the original
-        # incident! not the one with "_time" field
+        # We are sending incident, not the one with "_time" field
+        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)  # type: ignore # we use the original
         if len(events) >= max_fetch:
             break
     new_last_ids: list[int] = list(new_last_ids)
-    last_id = new_last_ids[-1] if new_last_ids else last_id
-    return events, last_id, new_last_ids
+    return events, new_last_ids
 
 
 def open_incidents_trimmer(incident_ids, client, max_fetch, last_id):
+    """
+    Only open incidents case, will loop over the incidents and add the only those we didn't see yet.
+
+    Args:
+        incident_ids (_type_): the new ids that we pulled
+        client (_type_): client
+        max_fetch (_type_): max fetch
+        last_id : the last id from the last run
+
+    Returns:
+        the processed ids and the new last id
+    """
     events: List[dict[str, Any]] = []
     for i in incident_ids:
         incident = client.get_incident(i)
@@ -326,18 +341,15 @@ def fetch_events_command(
             - A list of new events.
             - ID of the most recent incident ingested in the current run.
     """
-    incident_ids: List[int] = get_incident_ids_to_fetch(
-        client=client, first_fetch=first_fetch, last_id=last_id, max_fetch=max_fetch
-    )
+    incident_ids: List[int] = get_incident_ids_to_fetch(client=client, first_fetch=first_fetch, last_id=last_id)
     last_id = last_id or -1
     if client.all_incident:
-        events, last_id, last_timestamp_ids = all_incidents_trimmer(
+        events, last_timestamp_ids = all_incidents_trimmer(
             incident_ids,
             client,
             max_fetch,
             last_timestamp_ids,  # type: ignore
             first_fetch,
-            last_id,
         )
     else:
         events, last_id, last_timestamp_ids = open_incidents_trimmer(incident_ids, client, max_fetch, last_id)

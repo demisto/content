@@ -1,5 +1,6 @@
 import demistomock as demisto
 import pytest
+from datetime import datetime, timedelta, UTC
 from IronscalesEventCollector import (
     DATEPARSER_SETTINGS,
     Client,
@@ -83,7 +84,7 @@ def test_incident_to_events():
     """
     dummy_incident = {
         "incident_id": 1,
-        "first_reported_date": "2023-05-11T11:39:53.104571Z",
+        "first_reported_date": "2023-05-11T11:39:53.104571.0Z",
         "reports": [
             {
                 "name": "dummy name 1",
@@ -145,10 +146,6 @@ def test_test_module(mocker, params, is_valid, result_msg):
 
 
 ###### get all incidents tests #######
-# timezone.utc
-from datetime import datetime, timedelta, UTC
-
-UTC = UTC
 
 
 def test_no_incidents(mocker):
@@ -225,8 +222,8 @@ def test_multiple_pages(mocker):
         all_incident=True,
     )
     responses = [
-        {"total_pages": 2, "incidents": [{"incidentID": 1, "created": "2019-08-24T14:15:22Z"}]},
-        {"total_pages": 2, "incidents": [{"incidentID": 2, "created": "2019-08-24T14:15:22Z"}]},
+        {"total_pages": 2, "incidents": [{"incidentID": 1, "created": "2019-08-24T14:15:22.0Z"}]},
+        {"total_pages": 2, "incidents": [{"incidentID": 2, "created": "2019-08-24T14:15:22.0Z"}]},
         {"total_pages": 2, "incidents": []},
     ]
 
@@ -260,15 +257,17 @@ def test_respects_max_fetch(mocker):
             yield {
                 "total_pages": 50,
                 "incidents": [
-                    {"incidentID": i, "created": "2019-08-24T14:15:22Z"},
-                    {"incidentID": i + 1, "created": "2019-08-24T14:15:22Z"},
+                    {"incidentID": i, "created": "2019-08-24T14:15:22.0Z"},
+                    {"incidentID": i + 1, "created": "2019-08-24T14:15:22.0Z"},
                 ],
             }
             i += 2
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client,
+        "get_incident",
+        side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22.0Z"},
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
@@ -279,7 +278,7 @@ def test_respects_max_fetch(mocker):
     )
     assert len(res) == 10
     assert res[0].get("incident_id") == 1
-    assert last_run == 10
+    assert last_run == -1
     assert last_timestamp_ids == [10]
 
 
@@ -304,15 +303,15 @@ def test_all_incidents_last_id(mocker):
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 1, "created": "2019-08-24T14:15:22Z"},
-                {"incidentID": 2, "created": "2019-08-24T14:15:22Z"},
+                {"incidentID": 1, "created": "2019-08-24T14:15:22.0Z"},
+                {"incidentID": 2, "created": "2019-08-24T14:15:22.0Z"},
             ],
         },
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 3, "created": "2019-08-24T14:15:22Z"},
-                {"incidentID": 4, "created": "2019-08-24T14:15:22Z"},
+                {"incidentID": 3, "created": "2019-08-24T14:15:22.0Z"},
+                {"incidentID": 4, "created": "2019-08-24T14:15:22.0Z"},
             ],
         },
         {"total_pages": 2, "incidents": []},
@@ -320,11 +319,13 @@ def test_all_incidents_last_id(mocker):
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client,
+        "get_incident",
+        side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22.0Z"},
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
-    res, last_run, _ = fetch_events_command(
+    res, _, _ = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
@@ -333,14 +334,26 @@ def test_all_incidents_last_id(mocker):
     )
     assert len(res) == 3
     assert res[0].get("incident_id") == 2
-    assert last_run == 4
 
 
 def test_all_incidents_last_id_complex(mocker):
     """
-    Given: A page where we already seen the last incident in it
-    When: running fetch_events_command with all_incidents = True and we already pulled some incidents
-    Then: ignore this page and pull only new incidents. also test max_fetch respect
+    Tests that the fetch_events_command function correctly handles pagination
+    and incident deduplication when fetching all incidents.
+
+    Given:
+        - A scenario where the current page contains some incidents that were already fetched
+          (their IDs are included in last_timestamp_ids).
+
+    When:
+        - Running fetch_events_command with `all_incidents=True`
+        - A `last_id` is provided to indicate the last seen incident
+        - `max_fetch=10` is set to limit the number of new incidents to fetch
+
+    Then:
+        - Previously fetched incidents (based on ID) are ignored
+        - Only new incidents are returned
+        - The number of fetched incidents does not exceed max_fetch
     """
     mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
     client = Client(
@@ -359,19 +372,21 @@ def test_all_incidents_last_id_complex(mocker):
             yield {
                 "total_pages": 50,
                 "incidents": [
-                    {"incidentID": i, "created": "2019-08-24T14:15:22Z"},
-                    {"incidentID": i + 1, "created": "2019-08-24T14:15:22Z"},
+                    {"incidentID": i, "created": "2019-08-24T14:15:22.0Z"},
+                    {"incidentID": i + 1, "created": "2019-08-24T14:15:22.0Z"},
                 ],
             }
             i += 2
 
     mocker.patch.object(client, "_http_request", side_effect=ids_generator())
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client,
+        "get_incident",
+        side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22.0Z"},
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
-    res, last_run, _ = fetch_events_command(
+    res, _, _ = fetch_events_command(
         client,
         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
@@ -380,16 +395,30 @@ def test_all_incidents_last_id_complex(mocker):
     )
     assert len(res) == 10
     assert res[0].get("incident_id") == 3
-    assert last_run == 12
 
 
 def test_last_run_from_context(mocker):
+    """
+    Tests that the integration correctly resumes fetching incidents from the last saved state.
+
+    Given:
+        - The integration previously ran and stored `last_id` and `last_incident_time` in the context.
+        - The command being executed is 'fetch-events'.
+        - The Client is mocked to return sequential incidents from an HTTP request.
+
+    When:
+        - Running the `main()` function (which eventually triggers `fetch-events` logic).
+
+    Then:
+        - The integration should use the values from `getLastRun` to avoid re-fetching already seen incidents.
+        - No errors raise
+    """
     import IronscalesEventCollector
 
     mocker.patch.object(IronscalesEventCollector, "send_events_to_xsiam")
     mocker.patch.object(demisto, "setLastRun")
 
-    mocker.patch.object(demisto, "getLastRun", return_value={"last_id": 5, "last_incident_time": "2019-08-24T14:15:22Z"})
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_id": 5, "last_incident_time": "2019-08-24T14:15:22.0Z"})
     mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
     mocker.patch.object(Client, "get_incident_ids", return_value=[])
     mocker.patch.object(Client, "get_incident")
@@ -415,8 +444,18 @@ def test_last_run_from_context(mocker):
 
 def test_sort_incidents(mocker):
     """
-    When: pulling all incidents
-    Then: return the incidents sorted by timestamps
+    Tests that incidents returned by get_all_incident_ids are sorted by their creation timestamps.
+
+    Given:
+        - Multiple pages of incident data, with incidents returned in non-chronological order.
+        - Each incident has a `created` timestamp.
+
+    When:
+        - Calling `get_all_incident_ids'.
+
+    Then:
+        - The function returns incident IDs sorted in ascending order based on their `created` timestamps.
+        - The number of incidents returned matches the total number of incidents across all pages.
     """
     mocker.patch.object(Client, "get_jwt_token", return_value="mocked_jwt")
     client = Client(
@@ -433,15 +472,15 @@ def test_sort_incidents(mocker):
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 1, "created": "2019-08-24T14:15:22Z"},
-                {"incidentID": 13, "created": "2019-08-24T14:15:25Z"},
+                {"incidentID": 1, "created": "2019-08-24T14:15:22.0Z"},
+                {"incidentID": 13, "created": "2019-08-24T14:15:25.0Z"},
             ],
         },
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 5, "created": "2019-08-24T14:15:20Z"},
-                {"incidentID": 2, "created": "2019-08-24T14:15:00Z"},
+                {"incidentID": 5, "created": "2019-08-24T14:15:20.0Z"},
+                {"incidentID": 2, "created": "2019-08-24T14:15:00.0Z"},
             ],
         },
         {"total_pages": 2, "incidents": []},
@@ -449,7 +488,9 @@ def test_sort_incidents(mocker):
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
     mocker.patch.object(
-        client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22Z"}
+        client,
+        "get_incident",
+        side_effect=lambda x: {"incident_id": x, "first_reported_date": f"{str(2019+x)}-08-24T14:15:22.0Z"},
     )
     mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [x])
 
@@ -480,20 +521,20 @@ def test_same_timestamp(mocker):
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 1, "created": "2024-08-24T14:15:12Z"},
-                {"incidentID": 2, "created": "2024-08-24T14:15:20Z"},
+                {"incidentID": 1, "created": "2024-08-24T14:15:12.0Z"},
+                {"incidentID": 2, "created": "2024-08-24T14:15:20.0Z"},
             ],
         },
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 3, "created": "2024-08-24T14:15:22Z"},
-                {"incidentID": 4, "created": "2024-08-24T14:15:22Z"},
+                {"incidentID": 3, "created": "2024-08-24T14:15:22.0Z"},
+                {"incidentID": 4, "created": "2024-08-24T14:15:22.0Z"},
             ],
         },
         {"total_pages": 2, "incidents": []},
     ]
-    times = ["2024-08-24T14:15:12Z", "2024-08-24T14:15:20Z", "2024-08-24T14:15:22Z", "2024-08-24T14:15:22Z"]
+    times = ["2024-08-24T14:15:12.0Z", "2024-08-24T14:15:20.0Z", "2024-08-24T14:15:22.0Z", "2024-08-24T14:15:22.0Z"]
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
     mocker.patch.object(client, "get_incident", side_effect=lambda x: {"incident_id": x, "first_reported_date": times[x - 1]})
@@ -501,7 +542,7 @@ def test_same_timestamp(mocker):
 
     res, last_run, last_timestamp_ids = fetch_events_command(
         client,
-        first_fetch=arg_to_datetime("2019-08-24T14:15:02Z", settings=DATEPARSER_SETTINGS),  # type: ignore
+        first_fetch=arg_to_datetime("2019-08-24T14:15:02.0Z", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
         last_id=0,
         last_timestamp_ids=[0],
@@ -532,15 +573,15 @@ def test_unknown_incident_id(mocker):
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 1, "created": "2024-08-24T14:15:12Z"},
-                {"incidentID": 2, "created": "2024-08-24T14:15:20Z"},
+                {"incidentID": 1, "created": "2024-08-24T14:15:12.0Z"},
+                {"incidentID": 2, "created": "2024-08-24T14:15:20.0Z"},
             ],
         },
         {
             "total_pages": 2,
             "incidents": [
-                {"incidentID": 3, "created": "2024-08-24T14:15:22Z"},
-                {"incidentID": 4, "created": "2024-08-24T14:15:22Z"},
+                {"incidentID": 3, "created": "2024-08-24T14:15:22.0Z"},
+                {"incidentID": 4, "created": "2024-08-24T14:15:22.0Z"},
             ],
         },
         {"total_pages": 2, "incidents": []},
@@ -551,7 +592,7 @@ def test_unknown_incident_id(mocker):
             return {"incident_id": incident, "first_reported_date": times[incident - 1]}
         raise ValueError("Incident 13500 not found for company")
 
-    times = ["2024-08-24T14:15:12Z", "2024-08-24T14:15:20Z", "2024-08-24T14:15:22Z", "2024-08-24T14:15:22Z"]
+    times = ["2024-08-24T14:15:12.0Z", "2024-08-24T14:15:20.0Z", "2024-08-24T14:15:22.0Z", "2024-08-24T14:15:22.0Z"]
 
     mocker.patch.object(client, "_http_request", side_effect=responses)
     mocker.patch.object(client, "get_incident", side_effect=new_get_incident)
@@ -559,7 +600,7 @@ def test_unknown_incident_id(mocker):
 
     res, last_run, last_timestamp_ids = fetch_events_command(
         client,
-        first_fetch=arg_to_datetime("2019-08-24T14:15:02Z", settings=DATEPARSER_SETTINGS),  # type: ignore
+        first_fetch=arg_to_datetime("2019-08-24T14:15:02.0Z", settings=DATEPARSER_SETTINGS),  # type: ignore
         max_fetch=10,
         last_id=0,
         last_timestamp_ids=[0],

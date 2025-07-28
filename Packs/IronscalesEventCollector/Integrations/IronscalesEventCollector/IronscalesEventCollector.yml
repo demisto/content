@@ -45,7 +45,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-  additionalinfo: Show all the incidents instead of only the open ones
+  additionalinfo: Fetch all the event instead of only the open events.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
