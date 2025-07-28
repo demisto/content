@@ -413,7 +413,15 @@ def test_demisto_upload_file_error(mocker):
         upload_file_command({"incidentId": "1", "entryID": "12@12", "body": "test_bark"})
 
 
-@pytest.mark.parametrize(argnames="target, service", argvalues=[("incident attachment", "incident"), ("war room entry", "entry")])
+@pytest.mark.parametrize(
+    argnames="target, service",
+    argvalues=[
+        ("incident attachment", "incident"),
+        ("war room entry", "entry"),
+        ("alert attachment", "incident"),
+        ("issue attachment", "incident"),
+    ],
+)
 def test_demisto_upload_file_as_attachment(mocker, target, service):
     """
     Given:

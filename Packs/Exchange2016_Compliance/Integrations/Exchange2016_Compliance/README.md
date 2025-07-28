@@ -150,7 +150,7 @@
 <pre>{
     "EWS": {
         "ComplianceSearch": {
-            "Status": "Starting", 
+            "Status": "Starting",
             "Name": "DemistoSearch939b54bcd2bb4848bb0885dc4071d366"
         }
     }
@@ -238,7 +238,7 @@
 <pre>{
     "EWS": {
         "ComplianceSearch": {
-            "Status": "InProgress", 
+            "Status": "InProgress",
             "Name": "DemistoSearch939b54bcd2bb4848bb0885dc4071d366"
         }
     }
@@ -326,7 +326,7 @@
 <pre>{
     "EWS": {
         "ComplianceSearch": {
-            "Status": "Removed", 
+            "Status": "Removed",
             "Name": "DemistoSearch939b54bcd2bb4848bb0885dc4071d366"
         }
     }
@@ -396,7 +396,7 @@
 <pre>{
     "EWS": {
         "ComplianceSearch": {
-            "Status": "Purging", 
+            "Status": "Purging",
             "Name": "DemistoSearch939b54bcd2bb4848bb0885dc4071d366"
         }
     }
@@ -466,7 +466,7 @@
 <pre>{
     "EWS": {
         "ComplianceSearch": {
-            "Status": "Purging", 
+            "Status": "Purging",
             "Name": "DemistoSearch939b54bcd2bb4848bb0885dc4071d366"
         }
     }

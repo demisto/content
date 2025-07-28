@@ -3588,5 +3588,114 @@
         "Contents": null
       }
     }
+  },
+  "######### Outputs - RequestURL, ResultURL, ExecutionID",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2024-12-14T15:33:34+00:00",
+      "latest_time": "2024-12-15T15:33:34+00:00"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      },
+      "RequestURL": "/xql/xql-search?phrase=Dummy%20XQL&timeframe=%7B%22from%22%3A%201734190414000%2C%20%22to%22%3A%201734276814000%7D",
+      "ResultURL": "/xql/xql-search/xxxxxxxxx",
+      "ExecutionID": "xxxxxxxxx"
+    }
+  },
+  "######### output_recordset: false",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "output_recordset": "false"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      },
+      "RecordSet": []
+    }
+  },
+  "######### output_recordset: true",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "output_recordset": "true"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 1234
+        }
+      },
+      "RecordSet": [
+        {
+          "_duration": 1234
+        }
+      ]
+    }
   }
 ]

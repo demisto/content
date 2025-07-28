@@ -1,5 +1,5 @@
 import re
-
+from unittest.mock import Mock
 import Qualysv2
 import pytest
 import requests
@@ -1136,7 +1136,9 @@ class TestClientClass:
 
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(
+            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+        )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
             "vm_scan_date_after": since_datetime,
@@ -1950,3 +1952,76 @@ def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
         is_finished = sleep_delay(sleep_time)
 
     assert is_finished == expected_is_finished
+
+
+@pytest.fixture
+def mock_client():
+    client = Mock()
+    return client
+
+
+def test_get_qid_for_cve_single_qid(mock_client):
+    """
+    Given:
+        - A single CVE
+
+    When:
+        - When executing the get_qid_for_cve function
+
+    Then:
+        - Ensure the function returns CommandResults
+        - Ensure the outputs contain the right value
+        - Ensure the outputs_prefix
+    """
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN>
+                <QID>12345</QID>
+            </VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
+
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
+
+    from Qualysv2 import get_qid_for_cve  # Replace 'your_module' with your filename (without .py)
+
+    result = get_qid_for_cve(mock_client, "CVE-2024-0001")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == ["12345"]
+    assert result.outputs_prefix == "Qualys.QID"
+
+
+def test_get_qid_for_cve_multiple_qids(mock_client):
+    """
+    Given:
+        - A single CVE
+
+    When:
+        - When executing the get_qid_for_cve function
+
+    Then:
+        - Ensure the outputs contain the right values ( in this case there are 2 qids for the given CVE)
+    """
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN><QID>12345</QID></VULN>
+            <VULN><QID>67890</QID></VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
+
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
+
+    from Qualysv2 import get_qid_for_cve
+
+    result = get_qid_for_cve(mock_client, "CVE-2024-9999")
+
+    assert result.outputs == ["12345", "67890"]

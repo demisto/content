@@ -73,9 +73,8 @@ name: Zoom_IAM
 script:
   commands:
   - arguments:
-    - description: >
-        A User Profile indicator.
-        For example: `{"email": "john.doe@example.com"}`
+    - description: >-
+        A User Profile indicator. For example: `{"email": "john.doe@example.com"}`.
       name: user-profile
       required: true
     description: Disable an active user.
@@ -112,11 +111,13 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
-    - description: >
+    - description: >-
         A User Profile indicator.
 
-        For example: `{"email": "john.doe@example.com"}`
+        For example: `{"email": "john.doe@example.com"}`.
       name: user-profile
       required: true
     description: Enable a deactivated user.
@@ -156,15 +157,15 @@ script:
   - description: Retrieves a single user resource.
     name: iam-get-user
     arguments:
-    - description: >
-        A User Profile indicator.          
+    - description: >-
+        A User Profile indicator.
 
-        For example: `{"email": "john.doe@example.com"}`
+        For example: `{"email": "john.doe@example.com"}`.
       name: user-profile
       required: true
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/auth-utils:1.0.0.115527
+  dockerimage: demisto/auth-utils:1.0.0.3639076
   ismappable: true
   isremotesyncout: true
   script: '-'

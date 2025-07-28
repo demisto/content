@@ -165,12 +165,16 @@ script:
       but does not terminate an existing session. Supported only in a self deployed app flow with the
       Permission: Directory.AccessAsUser.All(Delegated).
     name: msgraph-user-account-disable
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
       required: true
     description: Unblock a user.
     name: msgraph-user-unblock
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: User ID or userPrincipalName to update properties for.
       name: user
@@ -228,6 +232,8 @@ script:
       Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application).
     execution: true
     name: msgraph-user-delete
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -360,10 +366,10 @@ script:
     - description: User ID or userPrincipalName.
       name: user
       required: true
-    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone".'
+    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". For the list of possible properties and the relevant permissions, if needed, visit: https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties'
       name: properties
     description: |-
-      Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+      Retrieves the properties and relationships of a user object. For more information, visit: https://learn.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0&tabs=http.
       Permissions: - User.Read (Delegated) - User.Read.All (Application).
     name: msgraph-user-get
     outputs:
@@ -620,6 +626,8 @@ script:
       Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
     execution: true
     name: msgraph-user-change-password
+    compliantpolicies:
+    - User Soft Remediation
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
@@ -627,15 +635,17 @@ script:
       name: user
       required: true
     description: |-
-      Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user.
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The Azure AD user ID.
       name: user_id
       required: true
-    description:  |-
+    description: |-
       Lists all TAP policies for a user.
       This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
       Permission:UserAuthenticationMethod.Read.All
@@ -675,26 +685,26 @@ script:
       required: false
       defaultValue: 60
     - description: |-
-        Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. 
-        A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   
+        Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting.
+        A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.
       name: is_usable_once
       required: false
       defaultValue: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - description: |-
         The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",
         for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days".
       name: start_time
       required: false
       defaultValue: now
-    description:  |-
+    description: |-
       Create a new TAP policy for a user.
-      During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+      During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password.
       A user can only have one Temporary Access Pass that's usable within its specified lifetime.
-      Permission:UserAuthenticationMethod.ReadWrite.All  
+      Permission:UserAuthenticationMethod.ReadWrite.All
     name: msgraph-user-tap-policy-create
     outputs:
     - contextPath: MSGraphUser.TAPPolicy.ID
@@ -733,7 +743,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3174650
+  dockerimage: demisto/crypto:1.0.0.3539024
   runonce: false
   script: '-'
   subtype: python3
