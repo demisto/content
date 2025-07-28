@@ -706,9 +706,12 @@ def query_command(client: Client, args: dict) -> CommandResults:
     """
     advanced_query = generate_advanced_query(args)
 
-    query_response = client.query(query=advanced_query, size=args.get("size", "10"), scroll=args.get("next_token"))
-    if not isinstance(query_response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(query_response))
+    try:
+        logger.info(f"Querying GreyNoise with query: {advanced_query}")
+        query_response = client.query(query=advanced_query, size=args.get("size", "10"), scroll=args.get("next_token"))
+    except Exception as e:
+        demisto.debug(f"Error in query_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
     if query_response["request_metadata"].get("message") not in ["ok", "No results. ", ""]:
         raise DemistoException(
@@ -734,7 +737,7 @@ def query_command(client: Client, args: dict) -> CommandResults:
             name="GreyNoise Internet Scanner Intelligence", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
         )
 
-        if not query_response["request_metadata"].get("complete"):
+        if not query_response.get("request_metadata", {}).get("complete"):
             human_readable += f"\n### Next Page Token: \n{query_response['request_metadata'].get('scroll')}"
 
         query = query_response["request_metadata"].get("adjusted_query", "").replace(" ", "+")
@@ -980,10 +983,16 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
     :type reliability: ``String``
     :param reliability: string
     """
-    ip = args.get("ip", "")
-    api_response = client.ip(ip)
-    response = api_response["business_service_intelligence"]
-    response["ip"] = api_response["ip"]
+    ip = args["ip"]
+    try:
+        logger.info(f"Querying GreyNoise with ip: {ip}")
+        api_response = client.ip(ip)
+    except Exception as e:
+        demisto.debug(f"Error in riot_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
+
+    response = api_response.get("business_service_intelligence", {})
+    response["ip"] = api_response.get("ip", "")
     response["riot"] = response.get("found", False)
     original_response = copy.deepcopy(api_response)
     response = remove_empty_elements(response)
