@@ -157,7 +157,7 @@ class URLCheck:
                 raise URLError(f"Invalid character {char} at position {index}")
 
             elif char == "%" or char == ":" or char == "/":
-                # The colon or the slash might appear in there hex ecode
+                # The colon or the slash might appear in their hex code
 
                 if char == "%":
                     # If % is present in the scheme it must be followed by "3A" or by "2F"
