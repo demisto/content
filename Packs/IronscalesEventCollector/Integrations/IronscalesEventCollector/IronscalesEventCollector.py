@@ -109,7 +109,7 @@ class Client(BaseClient):  # pragma: no cover
         incidents: List = []
         # handle paging
         while page <= total_pages:
-            params["page"] = page  # type: ignore
+            params["page"] = page
             response = self._http_request(method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params, retries=4)
             total_pages = response.get("total_pages")
             new_incidents = response.get("incidents", [])
@@ -191,7 +191,7 @@ def get_incident_ids_to_fetch(
         return incident_ids
     if isinstance(last_id, int):
         # We filter out only events with ID greater than the last_id
-        return list(filter(lambda i: i > last_id, incident_ids))  # type: ignore
+        return list(filter(lambda i: i > last_id, incident_ids))
     return get_incident_ids_by_time(
         client,
         incident_ids,
@@ -243,12 +243,12 @@ def get_new_last_id(last_timestamp, incident, new_last_ids):
     incident_time = arg_to_datetime(incident.get("first_reported_date"))
     inc_id = incident.get("incident_id")
     # Make sure that time format is comparable
-    incident_time = incident_time.isoformat()  # type: ignore
+    incident_time = incident_time.isoformat()
     incident_time = arg_to_datetime(incident_time)
     last_timestamp = last_timestamp.isoformat()
     last_timestamp = arg_to_datetime(last_timestamp)
     # compare the datetime
-    if last_timestamp is None or incident_time > last_timestamp:  # type: ignore
+    if last_timestamp is None or incident_time > last_timestamp:
         new_last_ids = {inc_id}
         last_timestamp = incident_time
     else:
@@ -275,8 +275,8 @@ def all_incidents_trimmer(
         last_timestamp (_type_): the last timestamp that we pulled
     """
     events: List[dict[str, Any]] = []
-    new_last_ids: set[int] = set(last_timestamp_ids)  # type: ignore # The new ids to save for the next run
-    last_timestamp_ids = set(last_timestamp_ids)  # type: ignore # For better runtime
+    new_last_ids: set[int] = set(last_timestamp_ids)  # The new ids to save for the next run
+    last_timestamp_ids = set(last_timestamp_ids)  # For better runtime
     for i in incident_ids:
         # Remove ids that already pulled
         if last_timestamp_ids and i in last_timestamp_ids:
@@ -289,8 +289,9 @@ def all_incidents_trimmer(
             # Note: The IronScales endpoint does not support retrieving details for events of type ATO and MTS.
             continue
 
+        # we use the original incident
+        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)
         # We are sending incident, not the one with "_time" field
-        last_timestamp, new_last_ids = get_new_last_id(last_timestamp, incident, new_last_ids)  # type: ignore # we use the original
         if len(events) >= max_fetch:
             break
     new_last_ids: list[int] = list(new_last_ids)
@@ -348,7 +349,7 @@ def fetch_events_command(
             incident_ids,
             client,
             max_fetch,
-            last_timestamp_ids,  # type: ignore
+            last_timestamp_ids,
             first_fetch,
         )
     else:
