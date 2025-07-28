@@ -5051,6 +5051,10 @@ def process_ancestry_command(client, args):  # pragma: no cover
     readable_output = f"### Process Ancestry\n{process_chain}"
     if show_query:
         readable_output = f"{queries}\n{readable_output}"
+    readable_table = tableToMarkdown(
+        "Process Ancestry Results", process_json, removeNull=True
+    )
+    readable_output += f"\n\n{readable_table}"
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"MicrosoftATP.HuntProcessAncestry.Result",
