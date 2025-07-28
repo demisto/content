@@ -52,40 +52,140 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 
 ## Commands
 
-The integration provides the following commands:
+### test-module
 
-### 1. `test-module`
+***
+Tests the connection to Check Point XDR.
 
-- **Description**: Tests the connection to Check Point XDR.
-- **Usage**: Run this command to ensure the integration is configured correctly.
+#### Base Command
 
-### 2. `fetch-incidents`
+`test-module`
 
-- **Description**: Fetches incidents from Check Point XDR and converts them into Cortex XSOAR format.
-- **Usage**: This command is executed automatically when the "Fetches incidents" option is enabled.
+#### Input
 
-### 3. `get-mapping-fields`
+None
 
-- **Description**: Returns the fields available for mapping incoming incidents to Cortex XSOAR fields.
-- **Usage**: Used internally when setting up field mapping under Settings → Integrations → Field Mapping (incoming)
+#### Context Output
 
-### 4. `update-remote-system`
+There is no context output for this command.
 
-- **Description**: Sends updates from Cortex XSOAR to the corresponding incident in Check Point XDR, such as status changes or ownership updates.
-- **Usage**: Executed automatically when bidirectional mirroring is enabled and a change is made locally.
+#### Command Example
 
+
+#### Human Readable Output
+
+> ✅ Success! Connection to Check Point XDR verified.
+
+---
+
+### fetch-incidents
+
+***
+Fetches incidents from Check Point XDR and converts them into Cortex XSOAR format.
+
+#### Base Command
+
+`fetch-incidents`
+
+#### Input
+
+This command uses the parameters from the integration instance configuration:
+
+- **First fetch time**
+- **Max fetch**
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+|---------|----------|-----------------|
+| incident.name | string | Incident name |
+| incident.type | string | Incident type |
+| incident.severity | number | Incident severity |
+| incident.occurred | date | Incident timestamp |
+| incident.xdrstatus | string | Incident status |
+| incident.xdrid | string | Unique ID of the incident |
+| incident.insights | string | Associated insights |
+| incident.assets | string | Affected assets |
+| incident.mitre | string | MITRE TTPs |
+
+#### Command Example
+
+
+#### Human Readable Output
+
+> ✅ Successfully fetched X incidents.
+
+---
+
+### get-mapping-fields
+
+***
+Returns the fields available for mapping incoming incidents to Cortex XSOAR fields.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+None
+
+#### Context Output
+
+The fields available in XSOAR for incident mapping.
+
+#### Command Example
+
+
+#### Human Readable Output
+
+> Displays the supported incident fields for mapping from Check Point XDR.
+
+---
+
+### update-remote-system
+
+***
+Sends updates from Cortex XSOAR to the corresponding incident in Check Point XDR, such as status changes or ownership updates.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|-------------------|------------------|--------------|
+| remoteId | The ID of the incident in Check Point XDR. | True |
+| data | The fields to update (status, owner, etc). | True |
+| entries | Entries (comments, notes) to be pushed. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+
+#### Human Readable Output
+
+> ✅ Remote incident successfully updated.
+
+---
 
 ## Incident Fields
 
-The following fields are mapped from Check Point XDR incidents to Cortex XSOAR:
+| **Field** | **Description** |
+|-----------|-----------------|
+| xdrid | Unique identifier of the incident |
+| xdrstatus | Current status (e.g. New, In Progress, Resolved) |
+| severity | Incident severity mapped to XSOAR levels |
+| summary | Short summary of the incident |
+| insights | Detailed related alerts and context |
+| assets | Affected hosts, users, and services |
+| mitre | Associated MITRE ATT&CK tactics and techniques |
 
-- **Incident ID**: The unique identifier of the incident.
-- **Severity**: The severity level of the incident (mapped to XSOAR severity levels).
-- **Status**: The current status of the incident (e.g., new, in-progress).
-- **Summary**: A brief description of the incident.
-- **Insights**: Detailed insights and alerts associated with the incident.
-- **Assets**: Affected hosts and users.
-- **MITRE Tactics and Techniques**: Associated MITRE ATT&CK tactics and techniques.
+---
 
 ## Example Use Case
 

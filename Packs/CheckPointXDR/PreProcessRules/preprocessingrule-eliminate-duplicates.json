@@ -1,10 +1,11 @@
 {
     "id": "686bab0b-e6e2-4dbb-8c50-4895d21eca57",
-    "version": -1,
-    "packID": "",
-    "itemVersion": "",
-    "toServerVersion": "",
+    "version": 1,
+    "packID": "Base",
+    "itemVersion": "1.0.0",
+    "toServerVersion": "6.10.0",
     "name": "Drop-Duplicates",
+    "description": "Drop incoming incidents that are duplicates according to dbotMirrorId and update the existing incident's dropped count.",
     "existingEventsFilters": [
         [
             {
