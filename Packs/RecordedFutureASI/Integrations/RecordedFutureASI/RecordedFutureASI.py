@@ -46,7 +46,7 @@ class Client(BaseClient):
         :param min_severity: the minimum rule severity to check for changes
         :param host_incident_limit: the max number of host incidents to return
         """
-        super().__init__(*args, retries=3, status_forcelist=(502, 503, 504), **kwargs)
+        super().__init__(*args, **kwargs)
         self.project_id = project_id
         self.min_severity = min_severity
         self.host_incident_limit = host_incident_limit
@@ -60,7 +60,12 @@ class Client(BaseClient):
         :param snapshot: date string formatted in DATE_FORMAT
         :return: Dict with a data key that is an array of issues
         """
-        return self._http_request(method="GET", url_suffix=f"/rules/{self.project_id}/{snapshot}/issues")
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/rules/{self.project_id}/{snapshot}/issues",
+            retries=3,
+            status_list_to_retry=(502, 503, 504),
+        )
 
     def get_recent_issues(self, last_run: str | int) -> dict:
         """
@@ -78,6 +83,8 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/rules/history/{self.project_id}/activity",
             params=params,
+            retries=3,
+            status_list_to_retry=(502, 503, 504),
         )
 
     def get_recent_issues_by_host(self, last_run: str | int) -> dict:
@@ -97,6 +104,8 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/rules/history/{self.project_id}/activity/by_host/compare",
             params=params,
+            retries=3,
+            status_list_to_retry=(502, 503, 504),
         )
 
 
