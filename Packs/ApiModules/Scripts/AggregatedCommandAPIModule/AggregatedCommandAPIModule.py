@@ -18,7 +18,7 @@ class CommandType(Enum):
     internal = "internal"
     external = "external"
 class Command:
-    def __init__(self, name: str, args: dict, type: CommandType, context_path: str = None) -> None:
+    def __init__(self, name: str, args: dict, type: CommandType = CommandType.internal, context_path: str = None) -> None:
         """
         Initializes a Command object.
         Args:
@@ -31,84 +31,26 @@ class Command:
         self.type: CommandType = type
         self.context_path: str = context_path
 
-    def prepare_human_readable(
-        self, human_readable: str, is_error: bool = False, brand_name: str = None, data: str = None
-    ) -> CommandResults:
+    def to_batch_item(self, brands = "") -> dict:
         """
-        Prepare human-readable output for a command execution.
-        Args:
-            human_readable (str): The human-readable output of the command.
-            is_error (bool): Whether the command resulted in an error. Defaults to False.
-            brand_name (str): Brand name associated with the command.
-            data (str): Data associated with the command.
-        Returns:
-            CommandResults: CommandResult object with the formatted output.
+        Convert to the dict format expected by executeCommandBatch.
         """
-        if not is_error:
-            return CommandResults(readable_output=f"#### Result for !{self.name}={data} brand={brand_name}\n{human_readable}")
-        return CommandResults(
-            readable_output=f"#### Error for !{self.name}={data} brand={brand_name}\n{human_readable}", entry_type=EntryType.ERROR
-        )
+        args = self.args
+        args["using-brand"] = brands
+        return {self.name: args}
 
-    def execute(self) -> tuple[list[dict], list[CommandResults]]:
-        """
-        Executes the specified command with given arguments, handles any errors, and parses the execution results.
-        Returns:
-            tuple[list[dict], list[CommandResults]]: A tuple of entry context dictionaries and human-readable CommandResults.
-        """
-        demisto.debug(f"Starting to execute command: {self}.")
-        execution_results = demisto.executeCommand(self.name, self.args)
+class BatchExecutor:
+    def __init__(self, commands: list[dict]):
+        self.commands = commands
+    
+    def execute(self, data_list: list[str], main_keys: list[str], additional_fields: bool) -> tuple[dict, list, dict]:
+        execution_results = demisto.executeCommandBatch(self.commands)
         if not execution_results:
             demisto.debug(f"Got no execution response from command: {self}")
-            return [], {}
-        indicator_context: dict = {}
-        dbot_scores_context: list[dict] = []
-        readable_command_results: dict[str, CommandResults] = {}
-
-        for result in execution_results:
-            brand = result.get("Metadata", {}).get("brand")
-            if is_error(result):
-                readable_command_results[brand] = self.prepare_human_readable(
-                        get_error(result), is_error=True, brand_name=brand, data=self.args[self.indicator_type]
-                    )
-                
-                continue
-            
-            if human_readable := result.get("HumanReadable"):
-                readable_command_results[brand] = self.prepare_human_readable(
-                    human_readable, brand_name=brand, data=self.args[self.indicator_type]
-                )
-
-            if entry_context_item := result.get("EntryContext"):
-                entry_context_item["Brand"] = brand
-                entry_context.append(entry_context_item)
-                
-            
-        return indicator_context, dbot_scores_context, readable_command_results
-
-    @property
-    def as_formatted_string(self) -> str:
-        """
-        Formats the command and its argument names and values.
-        Returns:
-            str: A formatted string of the command name and its arguments.
-        """
-        formatted_args: list[str] = []
-        for arg, value in self.args.items():
-            if value:
-                if isinstance(value, dict):
-                    value = json.dumps(value).replace('"', '\\\\"')
-                formatted_args.append(f'{arg}="{value}"')
-        return f"!{self.name} {' '.join(formatted_args)}"
-
-    def __str__(self) -> str:
-        """Formatted string representation for human-readable output and logging"""
-        return self.as_formatted_string
-
-    def __repr__(self) -> str:
-        """Raw string representation for debugging"""
-        return f"Command: {self.as_formatted_string}"
-    
+            return {}, [], {}
+        
+        
+        
 # Disable insecure warnings
 class AggregatedCommandAPIModule(ABC):
     def __init__(self, main_keys: list[str], brands: list[str], verbose: bool, additional_fields: bool, commands: list[Command] = []):
@@ -142,6 +84,13 @@ class AggregatedCommandAPIModule(ABC):
         return brands_to_execute
     
     @abstractmethod
+    def process_batch_results(self, execution_results: list[dict[str, Any]]):
+        """Abstract method that must be implemented by subclasses.
+        This method handles the main execution loop for aggregated commands.
+        """
+        raise NotImplementedError
+    
+    @abstractmethod
     def aggregated_command_main_loop(self):
         """Abstract method that must be implemented by subclasses.
         This method handles the main execution loop for aggregated commands.
@@ -159,7 +108,7 @@ class AggregatedCommandAPIModule(ABC):
                 args = command.args
                 args["using-brand"] = brands_to_run_input
                 command = {command.name: args}
-                commands.append(command)
+                commands.append(command.to_batch_item(brands_to_run_input))
         return commands
     
 class ReputationAggregatedCommand(AggregatedCommandAPIModule):
@@ -279,29 +228,11 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             
         return context_output, verbose_command_results
     
-    def construct_context_by_keys(self, context: dict[str, Any]):
-        """
-        Constructs a context dictionary by extracting values from the given context item based on the specified keys.
-        Args:
-            context_item (dict): The context item to extract values from.
-            keys (list[str]): List of keys to extract values from the context item.
-            additional_fields (bool): Whether to include additional fields in the context. Defaults to False.
-        Returns:
-            dict: Constructed context dictionary.
-        """
-        output: dict[str, Any] = {}
-        for key, values in context.items():
-            if key in self.main_keys:
-                output[key] = values
-            elif self.additional_fields:
-                output["AdditionalFields"] = values
-        return output
-    
-    def execute_command(self, commands: list[dict], data:str)-> tuple[dict[str, list], list[dict], dict[str, list[CommandResults]]]:
+    def execute_command(self, commands: list[dict])-> tuple[dict[str, list], list[dict], dict[str, list[CommandResults]]]:
         """
         Executes the reputation aggregated command.
         """
-        execution_results = flatten_list(demisto.executeCommandBatch(commands))
+        execution_results = demisto.executeCommandBatch(commands)
         if not execution_results:
             demisto.debug(f"Got no execution response from command: {self}")
             return {}, [], {}
@@ -310,37 +241,17 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         indicators_context: dict[str, list] = defaultdict(list)
         dbot_scores_context: list[dict[str, Any]] = []
         
-        
-        for result in execution_results:
-            brand = result.get("Metadata", {}).get("brand")
-            if is_error(result):
-                verbose_command_results[data][brand] = CommandResults(
-                    readable_output=f"#### Error for data={data} brand={brand}\n{get_error(result)}", entry_type=EntryType.ERROR
-                )
-                continue
-            
-            if human_readable := result.get("HumanReadable"):
-                verbose_command_results[data][brand] = CommandResults(
-                    readable_output=f"#### Result for data={data} brand={brand}\n{human_readable}"
-                )
-
-            if entry_context_item := result.get("EntryContext"):
-                score = Common.DBotScore.NONE
-                if dbot_scores := entry_context_item.get("DBotScore"):
+        for data,execution_result in zip(self.data_list,execution_results):
+            for result in execution_result:
+                brand = result.get("Metadata", {}).get("brand")
+                indicator, dbot_scores, human_readable = self.parse_result(result, data)
+                verbose_command_results[data][brand] = human_readable
+                if indicator:
+                    indicators_context[data][brand].append(indicator)
+                if dbot_scores:
                     dbot_scores_context.extend(dbot_scores)
-                    score = max([score.get("Score") for score in dbot_scores])
-                if indicators := get_from_context(context_item, command.context_path):
-                    for indicator in indicators:
-                        if is_external(brand):
-                            indicator = construct_context_by_keys(indicator, self.main_keys, self.additional_fields)
-                            indicator["Brand"] = brand
-                            indicator["Score"] = indicator.get("Score") or score
-                            indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(indicator["Score"], "Unknown")
-                            indicators_context[data][brand].append(indicator)
-                        elif is_internal(brand):
-                            indicators_context[data][brand].append(indicator)
-
-        return indicators_context, dbot_scores_context, readable_command_results
+        
+        return indicators_context, dbot_scores_context, verbose_command_results
         
     def aggregated_command_main_loop(self):
         """
@@ -358,8 +269,10 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         
         
         commands_to_execute = self.prepare_commands()
+        bathch_executor = BatchExecutor(commands_to_execute)
+        batch_results = bathch_executor.execute()
         
-        results = self.execute_command(commands_to_execute)
+        indicators_context, dbot_scores_context, verbose_command_results = self.process_batch_results(batch_results)
         
         command_results = self.summarize_command_results(context, verbose_command_results)
         if verbose:
@@ -498,28 +411,88 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             outputs=self.merge_context(context_output),
             readable_output=tableToMarkdown(name=f"URL Enrichment result for {', '.join(url_list)}", t=summaries),
         )
-
+    
+    def process_batch_results(self, execution_results: list[dict[str, Any]], data_list: list[str], main_keys: list[str], additional_fields: bool):
+        verbose_command_results: defaultdict[str, defaultdict[str, CommandResults]] = defaultdict(defaultdict(CommandResults))
+        batch_context: dict[str, list] = defaultdict(list)
+        dbot_scores_context: list[dict[str, Any]] = []
         
+        for data,execution_result in zip(data_list,execution_results):
+            for result in execution_result:
+                brand = result.get("Metadata", {}).get("brand")
+                indicator, dbot_scores, human_readable = parse_result(result, data, main_keys, additional_fields)
+                verbose_command_results[data][brand] = human_readable
+                if indicator:
+                    batch_context[data][brand].append(indicator)
+                if dbot_scores:
+                    dbot_scores_context.extend(dbot_scores)
+        
+        return batch_context, dbot_scores_context, verbose_command_results
         
         
         
         
             
         
-def flatten_list(nested_list: list[Any]) -> list[Any]:
+
+
+def parse_result(result: dict[str, Any], data: str, main_keys: list[str], additional_fields: bool)-> dict[str, Any]:
     """
-    Flattens a nested list of lits.
+    Parses the result of a reputation command.
     Args:
-        nested_list (list): A list of that could have lists nested inside.
+        result (dict[str, Any]): The result of a reputation command.
+        data (str): The data associated with the result.
     Returns:
-        list: A flattened list.
+        dict[str, Any]: The parsed result.
     """
-    flattened: list[Any] = []
-
-    for item in nested_list:
-        if isinstance(item, list):
-            flattened.extend(flatten_list(item))  # Recursive call for nested lists
+    human_readable: CommandResults | None = None
+    indicators_context: dict[str, list] = defaultdict(list)
+    dbot_scores_context: list[dict[str, Any]] = []
+    brand = result.get("Metadata", {}).get("brand")
+    if is_error(result):
+        human_readable = CommandResults(
+            readable_output=f"#### Error for data={data} brand={brand}\n{get_error(result)}", entry_type=EntryType.ERROR
+        )
+        return
+    if human_readable := result.get("HumanReadable"):
+        human_readable = CommandResults(
+            readable_output=f"#### Result for data={data} brand={brand}\n{human_readable}"
+        )
+    if entry_context_item := result.get("EntryContext"):
+        if is_external(brand):
+            indicators_context, dbot_scores_context = parse_indicator(entry_context_item, brand, main_keys, additional_fields)
         else:
-            flattened.append(item)
+            indicators_context = entry_context_item
+            
+    return indicators_context, dbot_scores_context, human_readable
 
-    return flattened
+def construct_context_by_keys(context: dict[str, Any], main_keys: list[str], additional_fields: bool):
+        """
+        Constructs a context dictionary by extracting values from the given context item based on the specified keys.
+        Args:
+            context_item (dict): The context item to extract values from.
+            keys (list[str]): List of keys to extract values from the context item.
+            additional_fields (bool): Whether to include additional fields in the context. Defaults to False.
+        Returns:
+            dict: Constructed context dictionary.
+        """
+        output: dict[str, Any] = {}
+        for key, values in context.items():
+            if key in main_keys:
+                output[key] = values
+            elif additional_fields:
+                output["AdditionalFields"] = values
+        return output
+    
+def parse_indicator(indicator: dict[str, Any], brand: str, main_keys: list[str], additional_fields: bool)-> tuple[dict[str, Any], list[dict[str, Any]]]:
+    score = Common.DBotScore.NONE
+    dbot_scores = []
+    if dbot_scores := entry_context_item.get("DBotScore"):
+        score = max([score.get("Score") for score in dbot_scores])
+    if indicators := get_from_context(context_item, command.context_path):
+        for indicator in indicators:
+            indicator = construct_context_by_keys(indicator, main_keys, additional_fields)
+            indicator["Brand"] = brand
+            indicator["Score"] = indicator.get("Score") or score
+            indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(indicator["Score"], "Unknown")
+    return indicator, dbot_scores
