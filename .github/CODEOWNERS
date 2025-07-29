@@ -54,25 +54,25 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @SamuelFain @YuvHayun
-validation_config.toml @YuvHayun
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun @yedidyacohenpalo
+validation_config.toml @YuvHayun @yedidyacohenpalo
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @tcarmeli1
-/Packs/Core/Integrations/ @tcarmeli1
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
+/Packs/CortexXDR/Integrations/ @jlevypaloalto
+/Packs/Core/Integrations/ @jlevypaloalto
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
 
 # TIM Related
-/Packs/TAXIIServer/Integrations/* @MLainer1
-/Packs/FeedTAXII/Integrations/* @MLainer1
-/Packs/EDL/Integrations/* @MLainer1
-/Packs/FeedJSON/Integrations/* @MLainer1
-/Packs/FeedMitreAttackv2/* @MLainer1
-/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MLainer1
-/Packs/ApiModules/Scripts/NGINXApiModule/* @MLainer1
+/Packs/TAXIIServer/Integrations/* @MosheEichler
+/Packs/FeedTAXII/Integrations/* @MosheEichler
+/Packs/EDL/Integrations/* @MosheEichler
+/Packs/FeedJSON/Integrations/* @MosheEichler
+/Packs/FeedMitreAttackv2/* @MosheEichler
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MosheEichler
+/Packs/ApiModules/Scripts/NGINXApiModule/* @MosheEichler
 
 # ML scripts
 /Packs/ML/ @jlevypaloalto

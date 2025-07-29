@@ -26,6 +26,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+
 from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
@@ -42,7 +43,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -333,6 +334,100 @@ class FileAttachmentType(object):
     :rtype: ``str``
     """
     ATTACHED = "attached_file"
+
+
+class QuickActionPreview(object):
+    """
+    A container class for storing quick action data previews.
+    This class is intended to be populated by commands like `!get-remote-data-preview`
+    and placed directly into the root context under `QuickActionPreview`.
+
+    :return: None
+    :rtype: ``None``.
+    """
+    def __init__(self, id=None, title=None, description=None, status=None,
+                 assignee=None, creation_date=None, severity=None):
+        """
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+        Attributes:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+        :return: None
+        :rtype: ``None``
+        """
+        self.id = id
+        self.title = title
+        self.description = description
+        self.status = status
+        self.assignee = assignee
+        self.creation_date = creation_date
+        self.severity = severity
+
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+        if missing_fields:
+            demisto.debug("Missing fields: {}".format(', '.join(missing_fields)))
+
+    def to_context(self):
+        """
+        Converts the instance to a dictionary.
+
+        :return: Dictionary representation of the QuickActionPreview instance.
+        :rtype: dict
+        """
+        return self.__dict__
+
+
+class MirrorObject(object):
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    :return: None
+    :rtype: ``None``.
+    """
+    def __init__(self, object_url=None, object_id=None, object_name=None):
+        """
+        A container class for storing ticket metadata used in mirroring integrations.
+        This class is intended to be populated by commands like `!jira-create-issue`
+        and placed directly into the root context under `MirrorObject`.
+        Attributes:
+            object_url (Optional[str]): Direct URL to the created ticket for preview/use.
+            object_id (Optional[str]): Unique identifier of the created ticket.
+        :return: None
+        :rtype: ``None``.
+        """
+        self.object_url = object_url
+        self.object_id = object_id
+        self.object_name = object_name
+
+        missing_fields_list = []
+        if self.object_url is None:
+            missing_fields_list.append('object_url')
+        if self.object_id is None:
+            missing_fields_list.append('object_id')
+        if self.object_name is None:
+            missing_fields_list.append('object_name')
+
+        if missing_fields_list:
+            debug_message = "MirrorObject: Initialized with missing mandatory fields: {}"
+            demisto.debug(debug_message.format(', '.join(missing_fields_list)))
+
+    def to_context(self):
+        """
+        Converts the instance to a dictionary.
+
+        :return: Dictionary representation of the MirrorObject instance.
+        :rtype: dict
+        """
+        return self.__dict__
 
 
 brands = {
@@ -1997,6 +2092,20 @@ def argToBoolean(value):
     else:
         raise ValueError('Argument is neither a string nor a boolean')
 
+def arg_to_bool_or_none(value):
+    """
+    Converts a value to a boolean or None.
+
+    :type value: ``Any``
+    :param value: The value to convert to boolean or None.
+
+    :return: Returns None if the input is None, otherwise returns the boolean representation of the value using the argToBoolean function.
+    :rtype: ``bool`` or ``None``
+    """
+    if value is None:
+        return None
+    else:
+        return argToBoolean(value)
 
 def appendContext(key, data, dedup=False):
     """
@@ -7222,6 +7331,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type extended_payload: ``dict``
+    :param extended_payload: (Optional) A dictionary representing the contents of ExtendedPayload for synchronization.
+
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
@@ -7255,9 +7367,10 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
+                 extended_payload=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7298,6 +7411,7 @@ class CommandResults:
         self.tags = tags
         self.scheduled_command = scheduled_command
         self.relationships = relationships
+        self.extended_payload = extended_payload
         self.execution_metrics = execution_metrics
         self.replace_existing = replace_existing
 
@@ -7393,6 +7507,10 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relationships
         }
+
+        if self.extended_payload:
+            return_entry['ExtendedPayload'] = self.extended_payload
+
         if tags:
             # This is for backward compatibility reasons
             return_entry['Tags'] = tags
@@ -11260,97 +11378,20 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
-def get_pack_version(pack_name=''):
+def get_pack_version():
     """
-    Get a pack version.
-    The version can be retrieved either by a pack name or by the calling script/integration in which
-    script/integration is part of.
+    Get the pack version.
+    The version can be retrieved only for the pack that contains the running script or integration.
 
-    To get the version of the pack in which the calling script/integration is part of,
-    just call the function without pack_name.
-
-    :type pack_name: ``str``
-    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
-            use only if querying by a pack name.
-
-    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
-        case provided. in case not found returns empty string.
+    :return: The pack version in which the integration/script is part of, in case not found returns empty string.
     :rtype: ``str``
     """
-
-    def _get_packs_by_query(_body_request):
-        packs_body_response = demisto.internalHttpRequest(
-            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
-        )
-        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
-
-    def _load_response(_response):
-        try:
-            return json.loads(_response)
-        except json.JSONDecodeError:  # type: ignore[attr-defined]
-            demisto.debug('Unable to load response {response}'.format(response=_response))
-            return {}
-
-    def _extract_current_pack_version(_packs, _query_type, _entity_name):
-        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
-        if query_type == 'automation' or query_type == 'integration':
-            for pack in _packs:
-                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
-                    if (content_entity.get('name') or '') == _entity_name:
-                        return pack.get('currentVersion') or ''
-        else:
-            for pack in _packs:
-                if pack.get('name') == _entity_name:
-                    return pack.get('currentVersion') or ''
-        return ''
-
-    def _extract_integration_display_name(_integration_brand):
-        integrations_body_response = demisto.internalHttpRequest(
-            'POST', uri='/settings/integration/search', body=json.dumps({})
-        )
-        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
-        integrations = integrations_body_response.get('configurations') or []
-
-        for integration in integrations:
-            integration_display_name = integration.get('display')
-            if integration.get('id') == _integration_brand and integration_display_name:
-                return integration_display_name
-        return ''
-
-    # query by pack name
-    if pack_name:
-        entity_name = pack_name
-        body_request = {'packsQuery': entity_name}
-        query_type = 'pack'
-    # query by integration name
-    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
-        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
-        body_request = {'integrationsQuery': entity_name}
-        query_type = 'integration'
-    # query by script/automation name
+    global_name = "CONSTANT_PACK_VERSION"
+    global_vars = globals()
+    if global_name in global_vars:
+        return global_vars[global_name]
     else:
-        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
-        body_request = {'automationQuery': entity_name}
-        query_type = 'automation'
-
-    pack_version = _extract_current_pack_version(
-        _packs=_get_packs_by_query(_body_request=body_request),
-        _query_type=query_type,
-        _entity_name=entity_name
-    )
-    if not pack_version and query_type == 'integration':
-        # handle the case where the display name of the integration is not the same as the integration brand
-        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
-        if integration_display and integration_display != entity_name:
-            body_request['integrationsQuery'] = integration_display
-
-            return _extract_current_pack_version(
-                _packs=_get_packs_by_query(_body_request=body_request),
-                _query_type=query_type,
-                _entity_name=integration_display
-            )
         return ''
-    return pack_version
 
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
@@ -12676,7 +12717,11 @@ def execute_polling_command(
     default_polling_timeout=600,
 ):
     r"""
-    Continuously executes a specified command until the command indicates polling is done or a
+    ###########################################
+    DO NOT USE THIS UNLESS ABOLUTLY NECESSERY!
+    ###########################################
+    This is intended only for special cases where polling is not supported.
+    Continuously executes a specified command and sleeps until the command indicates polling is done or a
     timeout is reached.
     :param command_name: The name of the initial Demisto command to execute.
     :type command_name: ``str``
