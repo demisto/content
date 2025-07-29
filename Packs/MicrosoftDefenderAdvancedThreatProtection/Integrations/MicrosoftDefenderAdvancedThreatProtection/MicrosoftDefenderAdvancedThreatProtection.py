@@ -4946,7 +4946,7 @@ def iterate_ancestry(client,     timeout = None,
     if device_name:
         query += f'| where DeviceName == "{device_name}"'
     if device_id:
-        query += f'| where DeviceID == "{device_id}"'
+        query += f'| where DeviceId == "{device_id}"'
     query += f'| where ProcessId == "{file_pid}"'
     if sha1:
         query += f'| where SHA1 == "{sha1}"'
