@@ -10,25 +10,27 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
+* Cortex Core - Platform
 * Jira V3
-* Microsoft Teams
+* Microsoft Teams via Webhook
 * ServiceNow v2
 * SlackV3
 * mail-sender
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Print
 
 ### Commands
 
+* core-get-asset-details
 * jira-create-issue-quick-action
 * jira-issue-add-comment
+* ms-teams-message
 * send-mail
 * servicenow-create-ticket-quick-action
 * servicenow-update-ticket
 * slack-send-notification-quick-action
-* teams-send-notification-quick-action
 
 ## Playbook Inputs
 
@@ -36,16 +38,13 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Preferred ticketing platform | Possible values:<br/>- Jira<br/>- ServiceNow<br/>- Both<br/><br/>Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step. |  | Optional |
-| Preferred notification platform | Possible values:<br/>- Microsoft Teams<br/>- Slack<br/><br/>Note: If you leave this blank, no notification message will be sent and the playbook will skip this step. |  | Optional |
-| Notification email recipients | Provide the email address to send email notifications.<br/><br/>Note: If you leave this blank, no email notification will be sent and the playbook will skip this step. |  | Optional |
-| System Input - Asset details | Note: No input is required here; issue asset details will be automatically pulled from the remediation playbook. |  | Optional |
-| System Input - Issue State | Note: No input is required here; issue state value will be automatically entered from the remediation playbook. |  | Optional |
-| System Input -ServiceNow Ticket ID | Note: No input is required here; ServiceNow ticket ID will be automatically pulled from the remediation playbook. |  | Optional |
-| System Input -Jira Ticket ID | Note: No input is required here; Jira ticket ID will be automatically pulled from the remediation playbook. |  | Optional |
+| Do you want to create a ticket? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: If set to 'Yes', a configured ServiceNow and/or Jira integration is required.  <br/>If using Jira, the Jira Project Key input must also be provided. |  | Required |
+| Do you want to send a message notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: If set to 'Yes', Microsoft Teams and/or Slack integration must be configured.<br/>If using Slack, the Slack Channel Name input must also be provided. |  | Required |
+| Do you want to send a email notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: To send email notifications, specify the Notification Email Recipients input. |  | Required |
 | Jira Project Key | Provide Jira project key where the issue will be created. |  | Optional |
-| Teams Channel Name | Provide Microsoft Teams channel name to which to send messages. |  | Optional |
 | Slack Channel Name | Provide Slack channel name to which to send messages. |  | Optional |
+| Notification Email Recipients | Provide the email address to send email notifications. |  | Optional |
+| Issue State | Possible values:<br/>- Create<br/>- Update |  | Optional |
 
 ## Playbook Outputs
 
@@ -53,8 +52,8 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Ticket.Id | Jira Ticket ID. | string |
-| ServiceNow.Ticket.ID | Service Now Ticket ID. | string |
+| Ticket.Id | Jira Ticket ID | string |
+| ServiceNow.Ticket.ID | Service Now Ticket ID | string |
 
 ## Playbook Image
 

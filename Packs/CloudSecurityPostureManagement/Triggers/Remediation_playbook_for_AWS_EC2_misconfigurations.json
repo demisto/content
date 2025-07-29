@@ -1,5 +1,5 @@
 {
-  "trigger_id": "191b38b56434421885675b733135c36e",
+  "trigger_id": "722804802fa1404fa90db7b95c2ee616",
   "trigger_name": "Remediation playbook for AWS EC2 misconfigurations",
   "playbook_id": "AWS EC2 Instance Misconfiguration - Remediate and Notify",
   "suggestion_reason": "Recommended for AWS EC2 Instance Misconfiguration Issues",
@@ -21,5 +21,3 @@
       "X5"
     ]
 }
-
-ged_EC2_IMDSv2	detection rule id = 81c165ce-f66e-441a-8ea0-56a107175ccc	AWS EC2 Instance Misconfiguration - Remediate and Notify		1	User	Automation rule for imdsv2 playbook trigger	Shashi Kiran N	Jul 17th 2025 19:11:59	
