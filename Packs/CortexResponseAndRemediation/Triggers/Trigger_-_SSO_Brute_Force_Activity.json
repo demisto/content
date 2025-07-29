@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "4c039023b3a5216ba6774484bf1859ea",
   "playbook_id": "SSO Brute Force",
   "suggestion_reason": "Recommended for 'SSO Brute Force Threat Detected' and 'SSO Brute Force Activity Observed' alerts",
@@ -28,6 +29,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

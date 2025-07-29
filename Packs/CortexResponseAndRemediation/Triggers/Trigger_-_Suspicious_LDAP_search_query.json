@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "c028aba32791548292993fec8cec5af4",
   "playbook_id": "Suspicious LDAP search query",
   "suggestion_reason": "Recommended for 'Suspicious LDAP search query executed' and 'Possible LDAP enumeration by unsigned process' alerts",
@@ -47,6 +48,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

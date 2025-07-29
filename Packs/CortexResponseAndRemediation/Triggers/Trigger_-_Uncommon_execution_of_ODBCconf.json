@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "214d2812b0ffe67e5459f0ee54049d3a",
   "playbook_id": "Uncommon execution of ODBCConf",
   "suggestion_reason": "Recommended for the 'Uncommon execution of ODBCConf' alert.",
@@ -29,6 +30,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

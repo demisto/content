@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "274ea382e50cb02c3d1ae7b5858b98c5",
   "playbook_id": "Intense SSO failures with suspicious characteristics",
   "suggestion_reason": "Recommended for 'Intense SSO failures with suspicious characteristics' alert",
@@ -16,6 +17,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

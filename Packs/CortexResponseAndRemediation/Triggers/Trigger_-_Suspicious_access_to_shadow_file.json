@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "41f9310c50c55b761fdc0aa5c48d6459",
   "playbook_id": "Uncommon creation or access operation of sensitive shadow copy by a high-risk process",
   "suggestion_reason": "Recommended for the 'Uncommon creation or access operation of sensitive shadow copy by a high-risk process' alert",
@@ -20,6 +21,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

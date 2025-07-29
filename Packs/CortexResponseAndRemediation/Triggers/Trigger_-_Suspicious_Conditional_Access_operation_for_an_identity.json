@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "3a347780e43332295aad0ac01b34d6d8",
   "playbook_id": "Suspicious Conditional Access operation for an identity",
   "suggestion_reason": "Recommended for 'Suspicious Conditional Access operation for an identity' alert",
@@ -21,6 +22,5 @@
     }
   },
   "issilent": false,
-  "fromVersion": "8.9.0",
-  "auto_enabled": true
+  "fromVersion": "8.9.0"
 }

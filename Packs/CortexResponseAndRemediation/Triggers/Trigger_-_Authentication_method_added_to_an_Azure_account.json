@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "adebb4b10ded975f41ee4caaddbdd145",
   "playbook_id": "Authentication method added to an Azure account",
   "suggestion_reason": "Recommended for 'Suspicious authentication method addition to Azure account' alert",
@@ -16,6 +17,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "e316852d358f8de8192842f6a7156142",
   "playbook_id": "Suspicious SaaS Access From a TOR Exit Node",
   "suggestion_reason": "Recommended for Suspicious SaaS Access From a TOR Exit Node alerts",
@@ -38,6 +39,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

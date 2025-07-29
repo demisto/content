@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "06fd5112c09b4312c1a8e92bcb5aa30f",
   "playbook_id": "Successful guest user invitation",
   "suggestion_reason": "Recommended for Valid Accounts alerts involving successful guest user invitations.",
@@ -20,6 +21,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

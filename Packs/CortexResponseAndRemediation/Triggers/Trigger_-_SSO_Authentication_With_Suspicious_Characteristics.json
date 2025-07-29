@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "44d98a2e42036c1d90a3d45c23bb3282",
   "playbook_id": "SSO Authentication With Suspicious Characteristics",
   "suggestion_reason": "Recommended for SSO Authentication With Suspicious Characteristics alerts",
@@ -28,6 +29,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

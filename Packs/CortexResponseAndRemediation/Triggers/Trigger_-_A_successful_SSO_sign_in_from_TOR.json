@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "4a90702e6a1e31ff82c4a5b8e27360cd",
   "playbook_id": "A successful SSO sign-in from TOR",
   "suggestion_reason": "Recommended for 'A successful SSO sign-in from TOR' and 'A successful SSO sign-in from TOR via a mobile device' alerts",
@@ -28,6 +29,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "a8782c70ecf48029bd6c6634f1b5beb5",
   "playbook_id": "Unprivileged process opened a registry hive",
   "suggestion_reason": "Recommended for 'Unprivileged process opened a registry hive' alert",
@@ -19,6 +20,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

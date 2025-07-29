@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "b0becdc3d9a6a5636191dd23bf5998b1",
   "playbook_id": "Uncommon remote scheduled task created",
   "suggestion_reason": "Recommended for the 'Uncommon remote scheduled task created' alert",
@@ -19,6 +20,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

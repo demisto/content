@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "1cd448c4fd80325a570d3fb806ee8313",
   "playbook_id": "SPNs cleared from a machine account",
   "suggestion_reason": "Recommended for SPNs cleared from a machine account alerts.",
@@ -25,6 +26,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }

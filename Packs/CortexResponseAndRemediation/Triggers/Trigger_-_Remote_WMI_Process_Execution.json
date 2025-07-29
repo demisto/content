@@ -1,4 +1,5 @@
 {
+  "auto_enabled": true,
   "trigger_id": "edbc729e3551d463dc2e16d3838c9af3",
   "playbook_id": "Remote WMI Process Execution",
   "suggestion_reason": "Recommended for Remote WMI Process Execution alerts",
@@ -28,6 +29,5 @@
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }
