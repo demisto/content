@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import cached_property
 import json
 from collections.abc import Callable
 from nturl2path import url2pathname
@@ -19,8 +20,9 @@ DBOT_SCORE_TO_VERDICT = {
 class CommandType(Enum):
     internal = "internal"
     external = "external"
+    regular = "regular"
 class Command:
-    def __init__(self, name: str, args: dict, type: CommandType = CommandType.internal, context_path: str = None) -> None:
+    def __init__(self, name: str, args: dict, type: CommandType = CommandType.regular, context_path: str = None) -> None:
         """
         Initializes a Command object.
         Args:
@@ -41,6 +43,9 @@ class Command:
         args = self.args
         args["using-brand"] = brands
         return {self.name: args}
+    
+    def execute(self) -> dict:
+        return execute_command(self.name, self.args)
 
 class BatchExecutor:
     def __init__(self, commands: list[dict]):
@@ -55,15 +60,24 @@ class BatchExecutor:
         
 # Disable insecure warnings
 class AggregatedCommandAPIModule(ABC):
-    def __init__(self, args: dict, main_keys: list[str], brands: list[str], verbose: bool, additional_fields: bool, commands: list[Command] = [], validate_input_function: Callable[[dict], bool] = lambda: True):
+    def __init__(self, args: dict, main_keys: list[str], brands: list[str], verbose: bool, commands: list[Command] = [], validate_input_function: Callable[[dict], bool] = lambda: True):
+        """_summary_
+
+        Args:
+            args (dict): _description_
+            main_keys (list[str]): _description_
+            brands (list[str]): _description_
+            verbose (bool): _description_
+            commands (list[Command], optional): _description_. Defaults to [].
+            validate_input_function (Callable[[dict], bool]): Function to validate the input, the function should receive args, validate the inputs, and raise an error if the input is invalid. Defaults to lambda:True.
+        """
         self.main_keys = main_keys
         self.brands = brands
         self.verbose = verbose
-        self.additional_fields = additional_fields
         self.commands = commands
         self.args = args
-        self.brands_to_run = self.get_brands_to_run()
         self.validate_input_function = validate_input_function
+        self.validate_input_function(args)
 
     
     def get_brands_to_run(self) -> list[str]:
@@ -114,6 +128,10 @@ class AggregatedCommandAPIModule(ABC):
                 commands.append(command.to_batch_item(brands_to_run_input))
         return commands
     
+    @cached_property
+    def brands_to_run(self):
+        return self.get_brands_to_run()
+    
 class ReputationAggregatedCommand(AggregatedCommandAPIModule):
     def __init__(self,
                  main_keys: list[str] = [],
@@ -126,7 +144,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                  indicator_value_field: str = "",
                  validate_input_function: Callable[[dict], bool] = lambda: True,
                  args: dict = {},
-                 commands: list[Command] = []):
+                 commands: list[Command] = [],
+                 data: dict = {}):
         """
         Initializes the reputation aggregated command.
         
@@ -139,21 +158,22 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             context_path (str): Path to the context to extract to.
             indicator_path (str): Path to the indicator to extract from.
             indicator_value_field (str): Field to extract the indicator value from.
-            validate_input_function (Callable[[dict], bool]): Function to validate the input.
+            validate_input_function (Callable[[dict], bool]): Function to validate the input, the function should receive args, validate the inputs, and raise an error if the input is invalid. Defaults to lambda:True.
             commands (list[Command]): List of commands to run.
         """
-        super().__init__(args, main_keys, brands, verbose, additional_fields, commands, validate_input_function)
+        super().__init__(args, main_keys, brands, verbose, commands, validate_input_function)
         self.external_enrichment = external_enrichment
         self.context_path = context_path
         self.indicator_path = indicator_path
         self.indicator_value_field = indicator_value_field
+        self.additional_fields = additional_fields
+        self.data = data
 
     def aggregated_command_main_loop(self):
         """
         Main loop for the aggregated command.
         """
-        self.validate_input_function()
-        demisto.debug("Starting aggregated command main loop.")
+        demisto.debug("Starting Reputation aggregated command main loop.")
         tim_context_output, dbot_scores_context_tim, verbose_command_tim = self.get_indicators_from_tim()
         
         demisto.debug("Preparing commands to execute.")
@@ -171,6 +191,14 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         return command_results
     
     def search_indicators_in_tim(self, indicator_type: str, data_list: list[str]):
+        """
+        Searches for indicators in TIM.
+        Args:
+            indicator_type (str): The type of indicator to search for.
+            data_list (list[str]): The list of indicators to search for.
+        Returns:
+            tuple[dict[str, list], dict[str, dict[str, list[CommandResults]]]]: The search results and verbose command results.
+        """
         verbose_command_results: dict[str, dict[str, list[CommandResults]]] = defaultdict(lambda: defaultdict(list))
         try:
             indicators = " or ".join({f"value: {indicator}" for indicator in data_list})
@@ -199,41 +227,40 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         tim_context_output: dict[str,dict[str, list]] = {}
         dbot_scores_context: list[dict[str, Any]] = []
         
-        for indicator_type, data_list in zip([self.indicator_type], [self.data_list]): #TODO remove zip use args
+        for indicator_type, data_list in self.data.items():
             demisto.debug(f"Starting to search for {indicator_type} indicator with values: {data_list}.")
-            search_results,verbose_results = self.search_indicators_in_tim(indicator_type,data_list)
+            search_results, verbose_results = self.search_indicators_in_tim(indicator_type,data_list)
             if not search_results:
-                verbose_command_results.extend(verbose_results)
-                demisto.debug(f"Could not find indicator with value: {data_list}.")
+                verbose_command_results.extend(verbose_results)  # TODO: discuss the types.
                 continue
             
-            iocs = flatten_list([result.get("iocs") or [] for result in search_results])
+            demisto.debug(f"going to process tim results for indicator type: {indicator_type}.")
             
-            for ioc in iocs:
-                # Extract indicators context
-                demisto.debug(f"Current ioc: {json.dumps(ioc, indent=2)}")
-                indicator_context_list = ioc.get("insightCache").get("scores")
-                for brand, indicators in indicator_context_list.items():
-                    score = indicators.get("score", 0)
-                    context = indicators.get("context", {})
-                    parsed_indicators_context, parsed_dbot_scores_context = self.parse_indicator(context, brand, score)
-                    demisto.debug(f"Parsed indicators context before merging: {json.dumps(parsed_indicators_context, indent=2)}")
+            process_tim_results(search_results)d
+            
+            def process_tim_results(search_results):
+                iocs = flatten_list([result.get("iocs") or [] for result in search_results])
+                
+                for ioc in iocs:
+                    # Extract indicators context
+                    demisto.debug(f"Current ioc: {json.dumps(ioc, indent=2)}")
+                    indicator_context_list = ioc.get("insightCache").get("scores")
+                    for brand, indicators in indicator_context_list.items():
+                        score = indicators.get("score", 0)
+                        context = indicators.get("context", {})
+                        parsed_indicators_context, parsed_dbot_scores_context = self.parse_indicator(context, brand, score)
+                        demisto.debug(f"Parsed indicators context before merging: {json.dumps(parsed_indicators_context, indent=2)}")
+                        
+                        merge_nested_dicts_in_place(tim_context_output, parsed_indicators_context)
+                        demisto.debug(f"Parsed indicators context after merging: {json.dumps(tim_context_output, indent=2)}")
+                        dbot_scores_context.extend(parsed_dbot_scores_context)
                     
-                    merge_nested_dicts_in_place(tim_context_output, parsed_indicators_context)
-                    demisto.debug(f"Parsed indicators context after merging: {json.dumps(tim_context_output, indent=2)}")
-                    dbot_scores_context.extend(parsed_dbot_scores_context)
-                   
-                table = tableToMarkdown(name="Found Indicators", t=tim_context_output)
-                readable_command_results = CommandResults(readable_output=f"#### Result for Search Indicators\n{table}")
-                verbose_command_results.append(readable_command_results)
+                    table = tableToMarkdown(name="Found Indicators", t=tim_context_output)
+                    readable_command_results = CommandResults(readable_output=f"#### Result for Search Indicators\n{table}")
+                    verbose_command_results.append(readable_command_results)
             
         return tim_context_output, dbot_scores_context, verbose_command_results
         
-    
-
-                
-                
-                
     def merge_context(self, context_output: dict[str, list]) -> dict[str, list]:
         """
         Merges the context output from all the executed commands.
