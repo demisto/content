@@ -8,14 +8,14 @@ from PolySwarmV2 import PolyswarmConnector
 import pytest
 import vcr as libvcr
 
-pytest_plugins = 'vendored_pytest_vcr'
+pytest_plugins = "vendored_pytest_vcr"
 
 TEST_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
 TEST_SCAN_UUID = "95039375646493045"
-TEST_SCAN_DOMAIN = "preesallmobilevalating23-gmail[.]com".replace('[.]', '.')
-TEST_SCAN_IP = "205[.]210[.]31[.]208".replace('[.]', '.')
-TEST_SCAN_URL = "http://preesallmobilevalating23-gmail[.]com".replace('[.]', '.')
+TEST_SCAN_DOMAIN = "preesallmobilevalating23-gmail[.]com".replace("[.]", ".")
+TEST_SCAN_IP = "205[.]210[.]31[.]208".replace("[.]", ".")
+TEST_SCAN_URL = "http://preesallmobilevalating23-gmail[.]com".replace("[.]", ".")
 TEST_HASH_FILE = "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
 TEST_ENTRY_ID = "XXXXX"
 
@@ -34,26 +34,26 @@ MOCK_PARAMS = {
 MOCK_FILE_INFO = {"name": "MaliciousFile.exe", "path": "/path/MaliciousFile.exe"}
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def vcr_config():
     redacted_data = [
-        ('authorization', 'XXXXXXXXXXXXXXXXXXXXXXXXXX'),
-        ('X-Amz-Credential', 'AKIADEADBEEFCREDENTIAL'),
-        ('X-Amz-Signature', '2345678deadbeefdeadbeef2345678deadbeefdeadbeef2345678deadbeef'),
-        ('X-Billing-ID', '876543218765'),
+        ("authorization", "XXXXXXXXXXXXXXXXXXXXXXXXXX"),
+        ("X-Amz-Credential", "AKIADEADBEEFCREDENTIAL"),
+        ("X-Amz-Signature", "2345678deadbeefdeadbeef2345678deadbeefdeadbeef2345678deadbeef"),
+        ("X-Billing-ID", "876543218765"),
     ]
 
     def redact_response(response):
         for name, new_value in redacted_data:
-            if name in response['headers']:
-                response['headers'][name] = new_value
+            if name in response["headers"]:
+                response["headers"][name] = new_value
         return response
 
     return dict(
-        serializer='yaml',
-        cassette_library_dir=os.path.join(TEST_FOLDER, 'fixtures/vcr/'),
-        path_transformer=libvcr.VCR.ensure_suffix('.tape'),
-        record_mode=libvcr.record_mode.RecordMode.ONCE, # .ALL, # .NONE
+        serializer="yaml",
+        cassette_library_dir=os.path.join(TEST_FOLDER, "fixtures/vcr/"),
+        path_transformer=libvcr.VCR.ensure_suffix(".tape"),
+        record_mode=libvcr.record_mode.RecordMode.ONCE,  # .ALL, # .NONE
         filter_headers=redacted_data,
         filter_post_data_parameters=redacted_data,
         filter_query_parameters=redacted_data,
@@ -118,8 +118,11 @@ def test_reputation(mocker, kind, scan_target, results_id):
     assert results["Contents"]["Positives"] >= "1"
     assert results["Contents"]["Total"] >= "3"
     assert results["Contents"]["Scan_UUID"] == scan_target
-    assert results["Contents"]["Permalink"].startswith(f'{POLYSWARM_URL_RESULTS_BASE}/{results_id}/'), f'REALITY: {results["Contents"]["Permalink"]}'
+    assert results["Contents"]["Permalink"].startswith(
+        f"{POLYSWARM_URL_RESULTS_BASE}/{results_id}/"
+    ), f'REALITY: {results["Contents"]["Permalink"]}'
     assert results["Contents"]["Artifact"] == scan_target
+
 
 @pytest.mark.vcr()
 def test_polyswarm_get_report(mocker):
@@ -151,7 +154,6 @@ def test_file_rescan(mocker):
 
     param = {"hash": TEST_HASH_FILE}
 
-
     results = polyswarm.rescan_file(param["hash"])
     results = results[0].to_context()
 
@@ -175,6 +177,7 @@ def test_get_file(mocker):
     results = polyswarm.get_file(param["hash"])
 
     assert results["File"] == TEST_HASH_FILE
+
 
 @pytest.mark.vcr()
 def test_file(mocker):
