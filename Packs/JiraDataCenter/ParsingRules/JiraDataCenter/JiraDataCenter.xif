@@ -1,0 +1,3 @@
+[INGEST:vendor="jira", product="datacenter", target_dataset="jira_datacenter_raw", no_hit = keep]
+alter 
+    _time = to_timestamp(to_integer(_raw_log -> timestamp.epochSecond),"SECONDS");
