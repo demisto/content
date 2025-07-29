@@ -17,14 +17,14 @@ configuration:
   type: 9
   displaypassword: API Key ID
   hiddenusername: true
-  required: true
+  required: false
   section: Connect
 - display: ''
   name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
-  required: true
+  required: false
   section: Connect
 - display: API Key ID
   name: apikey_id

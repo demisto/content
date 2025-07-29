@@ -37,12 +37,12 @@ configuration:
   hiddenusername: true
   display: ''
   section: Connect
-  required: true
+  required: false
 - display: ''
   name: apikey_creds
   type: 9
   section: Connect
-  required: true
+  required: false
   displaypassword: API Key
   hiddenusername: true
 - display: Incident Mirroring Direction
