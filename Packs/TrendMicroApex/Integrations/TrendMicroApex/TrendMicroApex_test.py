@@ -430,6 +430,87 @@ def test_prodagent_isolate_command(mocker):
     assert result.readable_output == "### Apex One ProductAgent Isolate\n|agentGuid|\n|---|\n| 12345 |\n"
 
 
+def test_prodagent_restore_command(mocker):
+    """
+    Given:
+    - The entity_id argument is provided.
+
+    When:
+    - Calling the prodagent_restore_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected outputs.
+    """
+    from TrendMicroApex import prodagent_restore_command
+
+    args = {"entity_id": "12345"}
+
+    mocker.patch.object(client, "prodagent_restore", return_value={"result_content": [{"agentGuid": "12345"}]})
+
+    result = prodagent_restore_command(client, args)
+
+    assert result.outputs_prefix == "TrendMicroApex.ProductAgent"
+    assert result.outputs == [{"agentGuid": "12345"}]
+    assert result.readable_output == "### Apex One ProductAgent Restore\n|agentGuid|\n|---|\n| 12345 |\n"
+
+
+def test_remove_unnecessary_fields_from_response():
+    from TrendMicroApex import Client
+    response = {
+        "Data": {
+            "some_key": "some_value",
+            "FeatureCtrl": "test",
+            "Meta": "test",
+            "PermissionCtrl": "test",
+            "SystemCtrl": "test",
+        }
+    }
+    Client.remove_unnecessary_fields_from_response(response)
+    assert "FeatureCtrl" not in response.get("Data", {})
+    assert "Meta" not in response.get("Data", {})
+    assert "PermissionCtrl" not in response.get("Data", {})
+    assert "SystemCtrl" not in response.get("Data", {})
+    assert "some_key" in response.get("Data", {})
+
+
+def test_build_query_string():
+    """
+    Given:
+        - Different combinations of query parameters.
+    When:
+        - Calling the build_query_string function.
+    Then:
+        - Ensure the generated query string is correct.
+    """
+    from TrendMicroApex import Client
+
+    # Test case 1: All parameters provided
+    query = Client.build_query_string(
+        entity_id="guid",
+        ip_address="1.1.1.1",
+        mac_address="00-00-00-00-00-00",
+        host_name="hostname",
+        product="product",
+        managing_server_id="server_guid",
+    )
+    assert "m_szEntityId=guid" in query
+    assert "m_szIp=1.1.1.1" in query
+    assert "m_szMac=00-00-00-00-00-00" in query
+    assert "m_szHostName=hostname" in query
+    assert "m_szProduct=product" in query
+    assert "m_szManagingServerId=server_guid" in query
+
+    # Test case 2: Some parameters provided
+    query = Client.build_query_string(ip_address="1.1.1.1", host_name="hostname")
+    assert "m_szIp=1.1.1.1" in query
+    assert "m_szHostName=hostname" in query
+    assert "m_szEntityId" not in query
+
+    # Test case 3: No parameters provided
+    query = Client.build_query_string()
+    assert query == ""
+
+
 @pytest.mark.parametrize(
     "http_method, api_path, headers, request_body, expected_checksum",
     [
