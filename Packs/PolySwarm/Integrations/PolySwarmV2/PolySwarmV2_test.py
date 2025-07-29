@@ -34,6 +34,16 @@ MOCK_PARAMS = {
 MOCK_FILE_INFO = {"name": "MaliciousFile.exe", "path": "/path/MaliciousFile.exe"}
 
 
+@pytest.fixture(autouse=True)
+def patch_VCRHTTPResponse_version_string():
+    # FROM: https://github.com/kevin1024/vcrpy/issues/888#issuecomment-2561302419
+    # Can be removed after vcrpy gets updated
+    from vcr.stubs import VCRHTTPResponse
+    if not hasattr(VCRHTTPResponse, 'version_string'):
+        VCRHTTPResponse.version_string = None
+    yield
+
+
 @pytest.fixture(scope="module")
 def vcr_config():
     redacted_data = [
