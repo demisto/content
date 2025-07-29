@@ -1169,6 +1169,132 @@ script:
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
 
+  - name: aws-ec2-security-group-ingress-revoke-block-quick-action
+    description: 'Revokes one or more ingress rules in a security group.'
+    prettyname: Block Inbound Traffic from (0.0.0.0/0)
+    quickaction: true
+    hidden: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+
+    - name: group_id
+      description: 'The ID of the security group.'
+      required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
+      required: false
+    - name: ip_permissions
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
+
+  - name: aws-ec2-security-group-ingress-revoke-stop-quick-action
+    description: 'Revokes one or more ingress rules in a security group.'
+    prettyname: Stop Inbound Traffic on Port
+    quickaction: true
+    hidden: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+
+    - name: group_id
+      description: 'The ID of the security group.'
+      required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
+      required: false
+    - name: ip_permissions
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
+
   - name: aws-ec2-security-group-ingress-authorize
     description: 'Adds the specified inbound (ingress) rules to a security group.'
     arguments:
@@ -1229,9 +1355,70 @@ script:
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
 
+  - name: aws-ec2-security-group-ingress-authorize-quick-action
+    prettyname: Limit Network Access
+    quickaction: true
+    hidden: true
+    description: 'Adds the specified inbound (ingress) rules to a security group.'
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+
+    - name: group_id
+      description: 'The ID of the security group.'
+      required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
+      required: false
+    - name: ip_permissions
+      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
+
   - name: aws-ec2-security-group-egress-revoke
-
-
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
     arguments:
     - name: account_id
@@ -1290,8 +1477,71 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
+  - name: aws-ec2-security-group-egress-revoke-quick-action
+    prettyname: Block Outbound Traffic to Internet
+    quickaction: true
+    hidden: true
+    description: 'Removes the specified outbound (egress) rules from the specified security group.'
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
 
+    - name: group_id
+      description: 'The ID of the security group.'
+      required: true
+    - name: protocol
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      required: false
+    - name: port
+      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+      required: false
+    - name: cidr
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
+      required: false
+    - name: ip_permissions
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
+  
   - name: aws-ec2-security-group-egress-authorize
+    execution: true
     description: 'Adds the specified inbound (egress) rules to a security group.'
     arguments:
     - name: account_id
@@ -1812,6 +2062,7 @@ script:
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
   - name: aws-ec2-security-group-create
+    execution: true
     description: Creates a security group.
     arguments:
     - name: account_id
@@ -1866,7 +2117,24 @@ script:
     - name: tag_specifications
       description: 'The tags to assign to the security group in JSON format. Example: [{"ResourceType": "security-group", "Tags": [{"Key": "Environment", "Value": "Production"}, {"Key": "Team", "Value": "Security"}]}]'
       required: false
+    outputs:
+    - contextPath: AWS.EC2.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.Description
+      description: A description for the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   - name: aws-ec2-security-group-delete
+    execution: true
     description: Deletes a security group.
     arguments:
     - name: account_id
@@ -1965,6 +2233,127 @@ script:
     - name: filters
       description: Custom filters to apply. Format - Name=value pairs (e.g., description=web-server,vpc-id=vpc-12345678).
       isArray: true
+    outputs:
+    - contextPath: AWS.EC2.SecurityGroups.Description
+      description: A description of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.FromPort
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types.
+      type: number
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpProtocol
+      description: The IP protocol name (tcp , udp , icmp ) or number.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
+      description: The IPv4 CIDR range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.Description
+      description: A description for the security group rule that references this IPv4 address range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.Ipv6Ranges.CidrIpv6
+      description: The IPv6 CIDR range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.Ipv6Ranges.Description
+      description: A description for the security group rule that references this IPv6 address range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.PrefixListIds.Description
+      description: A description for the security group rule that references this prefix list ID.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.PrefixListIds.PrefixListId
+      description: The ID of the prefix.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.ToPort
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code.
+      type: number
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.Description
+      description: A description for the security group rule that references this user ID group pair.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.PeeringStatus
+      description: The status of a VPC peering connection, if applicable.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.UserId
+      description: The ID of an AWS account.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.VpcId
+      description: The ID of the VPC for the referenced security group, if applicable.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.VpcPeeringConnectionId
+      description: The ID of the VPC peering connection, if applicable.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.OwnerId
+      description: The AWS account ID of the owner of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.FromPort
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number.
+      type: number
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpProtocol
+      description: The IP protocol name (tcp , udp , icmp) or number.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.CidrIp
+      description: The IPv4 CIDR range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.Description
+      description: A description for the security group rule that references this IPv4 address range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.Ipv6Ranges.CidrIpv6
+      description: The IPv6 CIDR range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.Ipv6Ranges.Description
+      description: A description for the security group rule that references this IPv6 address range.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.PrefixListIds.Description
+      description: A description for the security group rule that references this prefix list ID.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.PrefixListIds.PrefixListId
+      description: The ID of the prefix.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.ToPort
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.Description
+      description: A description for the security group rule that references this user ID group pair.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.PeeringStatus
+      description: The status of a VPC peering connection, if applicable.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.UserId
+      description: The ID of an AWS account.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.VpcId
+      description: The ID of the VPC for the referenced security group, if applicable.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.VpcPeeringConnectionId
+      description: The ID of the VPC peering connection, if applicable.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.VpcId
+      description: The ID of the VPC for the security group.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.SecurityGroups.AccountId
+      description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string
   isfetch: false
   runonce: false
   script: '-'

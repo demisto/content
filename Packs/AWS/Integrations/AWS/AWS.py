@@ -25,6 +25,20 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def parse_filter_field(filter_str):
+    filters = []
+    regex = re.compile(r"name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)", flags=re.I)
+    for f in filter_str.split(";"):
+        match = regex.match(f)
+        if match is None:
+            demisto.debug(f"could not parse filter: {f}")
+            continue
+
+        filters.append({"Name": match.group(1), "Values": match.group(2).split(",")})
+
+    return filters
+
+
 class AWSServices(str, Enum):
     S3 = "s3"
     IAM = "iam"
@@ -808,7 +822,17 @@ class EC2:
             resp = client.create_security_group(**kwargs)
             group_id = resp.get("GroupId")
             if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and group_id:
-                return CommandResults(readable_output=f"Security group {group_id} was created successfully.")
+                data = {
+                    "GroupName": args.get("groupName"),
+                    "Description": args.get("description", ""),
+                    "VpcId": args.get("vpcId"),
+                    "GroupId": resp["GroupId"],
+                }
+                return CommandResults(
+                    outputs=data,
+                    outputs_prefix="AWS.EC2.SecurityGroups",
+                    readable_output=tableToMarkdown("AWS EC2 Security Groups", data),
+                )
             else:
                 raise DemistoException(f"Unexpected response when creating security group: {resp}")
         except ClientError as e:
@@ -863,19 +887,60 @@ class EC2:
     def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Describes one or more security groups in your account.
+        Returns detailed information about security groups including their rules, tags, and associated VPC information.
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including:
-                - group_id (str, optional): Comma-separated list of security group IDs
-                - group_name (str, optional): Comma-separated list of security group names
+                - group_ids (str, optional): Comma-separated list of security group IDs
+                - group_names (str, optional): Comma-separated list of security group names
                 - filters (str, optional): Custom filters to apply
-                - max_items (str, optional): Maximum number of items to return
+
 
         Returns:
             CommandResults: Results containing security group details
         """
-        return CommandResults(readable_output="")
+        kwargs = {}
+        data = []
+        if args.get("filters") is not None:
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("groupIds") is not None:
+            kwargs.update({"GroupIds": parse_resource_ids(args.get("groupIds"))})
+        if args.get("groupNames") is not None:
+            kwargs.update({"GroupNames": parse_resource_ids(args.get("groupNames"))})
+
+        response = client.describe_security_groups(**kwargs)
+
+        if len(response["SecurityGroups"]) == 0:
+            return CommandResults(readable_output="No security groups were found.")
+        for i, sg in enumerate(response["SecurityGroups"]):
+            data.append(
+                {
+                    "Description": sg["Description"],
+                    "GroupName": sg["GroupName"],
+                    "OwnerId": sg["OwnerId"],
+                    "GroupId": sg["GroupId"],
+                    "VpcId": sg["VpcId"],
+                    "Region": args.get("region"),
+                }
+            )
+
+            if "Tags" in sg:
+                for tag in sg["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        try:
+            output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw[0].update({"Region": args.get("region")})
+        except ValueError as err_msg:
+            raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.SecurityGroups",
+            outputs_key_field="GroupId",
+            readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data),
+        )
 
     @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1299,8 +1364,12 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-revoke-stop-quick-action": EC2.revoke_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-revoke-block-quick-action": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-authorize-quick-action": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-security-group-egress-revoke-quick-action": EC2.revoke_security_group_egress_command,
     "aws-ec2-security-group-create": EC2.create_security_group_command,
     "aws-ec2-security-group-delete": EC2.delete_security_group_command,
     "aws-ec2-security-group-describe": EC2.describe_security_group_command,
