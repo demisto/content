@@ -698,6 +698,7 @@ def get_changes(client: Client):
 
 def module_test(client: Client):
     params = demisto.params()
+    print(demisto.params())
     feed_fetch_interval = arg_to_number(params.get("feedFetchInterval"))
     if params.get("feed") and feed_fetch_interval and feed_fetch_interval < 15:
         raise DemistoException(

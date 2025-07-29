@@ -1399,6 +1399,7 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     try:
         if command == "test-module":
+            print(demisto.params())
             client.test_module(first_fetch_time)
             demisto.results("ok")
 
