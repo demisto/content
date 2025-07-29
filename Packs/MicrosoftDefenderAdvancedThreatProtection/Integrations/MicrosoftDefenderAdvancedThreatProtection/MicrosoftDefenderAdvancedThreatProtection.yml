@@ -5305,8 +5305,8 @@ script:
     - description: Process ID of the process ancestry entrypoint.
       required: true
       name: file_pid
-    - description: Process Creation Time of the process ancestry entrypoint.
-      required: true
+    - description: Process Creation Time of the process ancestry entrypoint. Not mandatory but helpful.
+      required: false
       name: process_creation_time
     - name: time_range
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.

@@ -4956,8 +4956,9 @@ def iterate_ancestry(client,     timeout = None,
         query += f'| where MD5 == "{md5}"'
     if file_name:
         query += f'| where FileName == "{file_name}"'
-    query += f'| extend timediff = datetime_diff("second", datetime({process_creation_time}), Timestamp)'
-    query += '| order by timediff asc'
+    if process_creation_time:
+        query += f'| extend timediff = datetime_diff("second", datetime({process_creation_time}), Timestamp)'
+        query += '| order by timediff asc'
     query += '| limit 1'
 
     # send request + return results and query used
@@ -5007,10 +5008,12 @@ def process_ancestry_command(client, args):  # pragma: no cover
                     {
                         "FileName": result["FileName"],
                         "ProcessId": result["ProcessId"],
+                        "CommandLine": result["ProcessCommandLine"],
+                        # "ParentCommandLine": result["InitiatingProcessCommandLine"],
                         "ParentFileName": result["InitiatingProcessFileName"],
                         "ParentPID": result["InitiatingProcessId"],
                         "Depth": process_depth,
-                        "ProcessChainID": process_chain_id
+                        "ProcessChainID": process_chain_id,
                     }
                 )
                 process_depth += 1
@@ -5019,6 +5022,8 @@ def process_ancestry_command(client, args):  # pragma: no cover
                 {
                     "FileName": result["InitiatingProcessFileName"],
                     "ProcessId": result["InitiatingProcessId"],
+                    # "ChildCommandLine": result["ProcessCommandLine"],
+                    "CommandLine": result["InitiatingProcessCommandLine"],
                     "ChildFileName": process_json[len(process_json) - 1]["FileName"],
                     "ChildPID": process_json[len(process_json) - 1]["ProcessId"],
                     "ParentFileName": result["InitiatingProcessParentFileName"],
@@ -5040,6 +5045,7 @@ def process_ancestry_command(client, args):  # pragma: no cover
                 {
                     "FileName": last_result["InitiatingProcessParentFileName"],
                     "ProcessId": last_result["InitiatingProcessParentId"],
+                    # "ChildCommandLine": process_json[len(process_json) - 1]["CommandLine"],
                     "ChildFileName": process_json[len(process_json) - 1]["FileName"],
                     "ChildPID": process_json[len(process_json) - 1]["ProcessId"],
                     "Depth": process_depth,
@@ -5052,7 +5058,17 @@ def process_ancestry_command(client, args):  # pragma: no cover
     if show_query:
         readable_output = f"{queries}\n{readable_output}"
     readable_table = tableToMarkdown(
-        "Process Ancestry Results", process_json, removeNull=True
+        "Process Ancestry Results",
+        process_json,
+        headers=[
+            "FileName",
+            "CommandLine",
+            "ProcessId",
+            "ParentFileName",
+            "ParentPID",
+            "Depth",
+        ],
+        removeNull=True,
     )
     readable_output += f"\n\n{readable_table}"
     return CommandResults(
