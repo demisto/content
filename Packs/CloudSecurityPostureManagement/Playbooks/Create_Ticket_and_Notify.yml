@@ -312,10 +312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 3dae6fbf-c89d-401a-8054-7785f1118a34
+    taskid: 2ff0e02c-dec9-4466-aa39-7cfefa773624
     type: condition
     task:
-      id: 3dae6fbf-c89d-401a-8054-7785f1118a34
+      id: 2ff0e02c-dec9-4466-aa39-7cfefa773624
       version: -1
       name: Is Jira Project Key Input Provided?
       type: condition
@@ -350,7 +350,7 @@ tasks:
             value:
               simple: inputs.Jira Project Key
             iscontext: true
-        - operator: isEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: Please Provide Jira Project Key.Answers.0
@@ -1003,10 +1003,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 77688af7-15fb-45a5-bddb-771eba8b3cc0
+    taskid: 99ec3f30-17f2-46d0-84ce-ac9a564d9a0f
     type: condition
     task:
-      id: 77688af7-15fb-45a5-bddb-771eba8b3cc0
+      id: 99ec3f30-17f2-46d0-84ce-ac9a564d9a0f
       version: -1
       name: Check Notification Email Recipients Inputs
       type: condition
@@ -1059,7 +1059,7 @@ tasks:
             value:
               simple: inputs.Notification Email Recipients
             iscontext: true
-        - operator: isEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: Please Provide Notification Email Recipients.Answers.0
@@ -1483,10 +1483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 25b4fa00-5752-4f72-813c-8a8b3769569e
+    taskid: 668a80e1-5360-4fba-afc4-f98b1ed4b271
     type: condition
     task:
-      id: 25b4fa00-5752-4f72-813c-8a8b3769569e
+      id: 668a80e1-5360-4fba-afc4-f98b1ed4b271
       version: -1
       name: Is Slack Channel Name Input Provided?
       type: condition
@@ -1509,7 +1509,7 @@ tasks:
             iscontext: true
           right:
             value: {}
-        - operator: isEmpty
+      - - operator: isEmpty
           left:
             value:
               simple: Please Provide Slack Channel Name.Answers.0
