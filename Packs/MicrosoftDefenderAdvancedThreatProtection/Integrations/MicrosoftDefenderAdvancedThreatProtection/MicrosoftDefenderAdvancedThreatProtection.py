@@ -5009,7 +5009,6 @@ def process_ancestry_command(client, args):  # pragma: no cover
                         "FileName": result["FileName"],
                         "ProcessId": result["ProcessId"],
                         "CommandLine": result["ProcessCommandLine"],
-                        # "ParentCommandLine": result["InitiatingProcessCommandLine"],
                         "ParentFileName": result["InitiatingProcessFileName"],
                         "ParentPID": result["InitiatingProcessId"],
                         "Depth": process_depth,
@@ -5022,7 +5021,6 @@ def process_ancestry_command(client, args):  # pragma: no cover
                 {
                     "FileName": result["InitiatingProcessFileName"],
                     "ProcessId": result["InitiatingProcessId"],
-                    # "ChildCommandLine": result["ProcessCommandLine"],
                     "CommandLine": result["InitiatingProcessCommandLine"],
                     "ChildFileName": process_json[len(process_json) - 1]["FileName"],
                     "ChildPID": process_json[len(process_json) - 1]["ProcessId"],
@@ -5040,12 +5038,15 @@ def process_ancestry_command(client, args):  # pragma: no cover
             sha1 = None
             sha256 = None
         else:
+            if "last_result" not in locals():
+                return CommandResults(
+                    readable_output="No entries",
+                )
             process_chain = f'{last_result["InitiatingProcessParentFileName"]}[{last_result["InitiatingProcessParentId"]}] > {process_chain}'
             process_json.append(
                 {
                     "FileName": last_result["InitiatingProcessParentFileName"],
                     "ProcessId": last_result["InitiatingProcessParentId"],
-                    # "ChildCommandLine": process_json[len(process_json) - 1]["CommandLine"],
                     "ChildFileName": process_json[len(process_json) - 1]["FileName"],
                     "ChildPID": process_json[len(process_json) - 1]["ProcessId"],
                     "Depth": process_depth,
