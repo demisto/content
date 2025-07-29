@@ -36,5 +36,6 @@
         }
     },
     "issilent": true,
+    "auto_enabled": true,
     "fromVersion": "8.9.0"
 }

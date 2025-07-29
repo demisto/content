@@ -5,6 +5,7 @@
     "description": "This trigger is responsible for handling the 'Intense SSO failures with suspicious characteristics' alert",
     "trigger_name": "silent-Intense SSO failures with suspicious characteristics",
     "issilent": true,
+    "auto_enabled": true,
     "fromVersion": "8.9.0",
     "alerts_filter":
     {

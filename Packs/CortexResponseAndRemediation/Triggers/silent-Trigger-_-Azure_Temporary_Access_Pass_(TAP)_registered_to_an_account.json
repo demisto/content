@@ -6,6 +6,7 @@
   "trigger_name": "silent-Azure Temporary Access Pass (TAP) registered to an account",
   "fromVersion": "8.9.0",
   "issilent": true,
+  "auto_enabled": true,
   "alerts_filter": {
     "filter": {
       "AND": [
