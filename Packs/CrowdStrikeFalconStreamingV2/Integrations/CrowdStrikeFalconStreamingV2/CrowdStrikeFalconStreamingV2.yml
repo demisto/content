@@ -44,7 +44,7 @@ configuration:
   type: 8
   section: Connect
   required: false
-- additionalinfo: The DetectionSummaryEvent event type will be deprecated as of September 30th, 2025. Make sure to adjust the Event type to fetch parameter.
+- additionalinfo: The DetectionSummaryEvent event type will be deprecated on September 30th, 2025. Use the EppDetectionSummaryEvent event type instead.
   defaultvalue: DetectionSummaryEvent
   display: Event type to fetch
   name: event_type
@@ -83,7 +83,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- additionalinfo: Because this is a push-based streaming integration, it cannot fetch sample events in the mapping wizard. In order to view sample events, you need to enable events storage and run the crowdstrike-falcon-streaming-get-sample-events command. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
+- additionalinfo: As this is a push-based streaming integration, it cannot fetch sample events in the mapping wizard. To view sample events, you need to enable events storage and run the crowdstrike-falcon-streaming-get-sample-events command. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
   display: Store sample events for mapping
   name: store_samples
   type: 8
