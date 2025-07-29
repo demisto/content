@@ -22,19 +22,18 @@ class CommandType(Enum):
     external = "external"
     regular = "regular"
 class Command:
-    def __init__(self, name: str, args: dict, type: CommandType = CommandType.regular, mapping: dict[str, str] = {}, extract_indicator: bool = False) -> None:
+    def __init__(self, name: str, args: dict, type: CommandType = CommandType.regular, mapping: dict[str, str] = {}) -> None:
         """
         Initializes a Command object.
         Args:
             name (str): The name of the command.
             args (dict): A dictionary containing the command arguments.
-            brand (str): Brand associated with the command.
+            type (CommandType): The type of the command.
         """
         self.name: str = name
         self.args: dict = args
         self.type: CommandType = type
         self.mapping: dict[str, str] = mapping
-        self.extract_indicator: bool = extract_indicator
 
     # @property
     def to_batch_item(self, brands_to_run: list[str] = []) -> dict:
@@ -47,6 +46,10 @@ class Command:
     
     def execute(self) -> dict:
         return execute_command(self.name, self.args)
+    
+class ReputationCommand(Command):
+    def __init__(self, name: str, args: dict,mapping: dict[str, str] = {}) -> None:
+        super().__init__(name, args ,CommandType.external, mapping)
 
 class BatchExecutor:
     def __init__(self, commands: list[Command], brands_to_run: list[str] = []):
@@ -381,7 +384,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
     
     def process_batch_results(self,
                               execution_results: list[list[dict[str, Any]]],
-                              commands_to_execute: list[dict[str, Any]],
+                              commands_to_execute: list[Command],
                               ) -> tuple[defaultdict[str, defaultdict[str, list]],
                                          list[dict[str, Any]],
                                          defaultdict[str, defaultdict[str, CommandResults]]]:
@@ -419,56 +422,42 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         indicators_context: dict[str, list] = defaultdict(list)
         dbot_scores_context: list[dict[str, Any]] = []
         if is_error(result):
-            result_entry.update({"status": "Failed", "message": get_error(result)})
+            result_entry.update({"status": "Failure", "message": get_error(result)})
             
         if self.verbose and (human_readable := result.get("HumanReadable")):
             human_readable = f"#### Result for name={command.name} args={command.args} brand={brand}\n{human_readable}"
             
         if entry_context_item := result.get("EntryContext"):
             # parse_command_result
-            if command.extract_indicator:
-                indicators_context, dbot_scores_context = self.parse_indicator(entry_context_item, command, brand)
+            if isinstance(command, ReputationCommand):
+                indicators_context, dbot_scores_context = self.parse_indicator(entry_context_item, brand, command=command)
             else:
                 indicators_context = self.parse_command_result(entry_context_item, command)
                 
         return indicators_context, dbot_scores_context, human_readable, result_entry
     
     def parse_command_result(self, entry_context_item: dict[str, Any], command: Command):
+        if not command.mapping:
+            return entry_context_item
         final_command_context: list[defaultdict(lambda: defaultdict(list))] = []
         entry_context_item = flatten_list([value for key, value in entry_context_item.items() if key.startswith(self.indicator_path)])
         for command_context_item in entry_context_item:
             current_command_context = defaultdict(lambda: defaultdict(list))
             for src, dst in command.mapping.items():
-                set_dict_value(current_command_context, dst, command_context_item[src])
+                set_dict_value(current_command_context, dst, get_dict_value(command_context_item, src))
+            if self.additional_fields:
+                set_dict_value(current_command_context, "AdditionalFields", command_context_item)
             final_command_context.append(current_command_context)
         
         return final_command_context
-    def construct_context_by_keys(self, context: dict[str, Any]):
-            """
-            Constructs a context dictionary by extracting values from the given context item based on the specified keys.
-            Args:
-                context_item (dict): The context item to extract values from.
-                keys (list[str]): List of keys to extract values from the context item.
-                additional_fields (bool): Whether to include additional fields in the context. Defaults to False.
-            Returns:
-                dict: Constructed context dictionary.
-            """
-            output: dict[str, Any] = {}
-            for key, values in context.items():
-                if key in self.main_keys:
-                    output[key] = values
-                elif self.additional_fields:
-                    output["AdditionalFields"] = values
-            return output
-        
-    def parse_indicator(self, entry_context_item: dict[str, Any], brand: str, score: int = Common.DBotScore.NONE)-> tuple[dict[str, Any], list[dict[str, Any]]]:
-        
+    
+    def parse_indicator(self, entry_context_item: dict[str, Any], brand: str, score: int = Common.DBotScore.NONE, command: Command = None)-> tuple[dict[str, Any], list[dict[str, Any]]]:
         indicators_context = defaultdict(lambda: defaultdict(list))
         dbot_list = flatten_list([value for key, value in entry_context_item.items() if key.startswith("DBotScore")])
-        
+        score = score or max([dbot.get("Score") for dbot in dbot_list], default=Common.DBotScore.NONE)
         entry_context_item = flatten_list([value for key, value in entry_context_item.items() if key.startswith(self.indicator_path)])
         for indicator in entry_context_item:
-            indicator = self.construct_context_by_keys(indicator)
+            indicator = self.construct_context_by_keys(indicator, command.mapping.keys())
             indicator["Brand"] = brand
             indicator["Score"] = score
             indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(indicator["Score"], "Unknown")
@@ -476,6 +465,24 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         
         return indicators_context, dbot_list
     
+    def construct_context_by_keys(self, context: dict[str, Any], main_keys: list[str]):
+        """
+        Constructs a context dictionary by extracting values from the given context item based on the specified keys.
+        Args:
+            context_item (dict): The context item to extract values from.
+            keys (list[str]): List of keys to extract values from the context item.
+            additional_fields (bool): Whether to include additional fields in the context. Defaults to False.
+        Returns:
+            dict: Constructed context dictionary.
+        """
+        output: dict[str, Any] = {}
+        for key, values in context.items():
+            if key in main_keys:
+                output[key] = values
+            elif self.additional_fields:
+                output["AdditionalFields"] = values
+        return output
+        
 def merge_nested_dicts_in_place(dict1: dict, dict2: dict) -> None:
     """
     Merges dict2 into dict1 in-place for nested dictionaries of the form:
@@ -535,6 +542,7 @@ def get_dict_value(d: Mapping[str, Any], path: str, default: Any = None) -> Any:
     """
     Retrieves a value from a nested dictionary given a dot-separated path.
     Returns `default` if any key along the path doesn’t exist.
+    after getting remove the item from the dict
 
     Args:
         d (Mapping[str, Any]): Dictionary to get nested key from.
@@ -553,6 +561,9 @@ def get_dict_value(d: Mapping[str, Any], path: str, default: Any = None) -> Any:
     for part in path.split("."):
         if isinstance(current, Mapping) and part in current:
             current = current[part]
+            del d[part]
         else:
             return default
     return current
+
+
