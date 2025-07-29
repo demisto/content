@@ -145,7 +145,7 @@ class Client:
                 event_count = res["result"][0].get("event_count", 0)
 
             # Ensure event_count is always a valid integer
-            if not isinstance(event_count, int) or event_count < 0:
+            if not isinstance(event_count, int):
                 demisto.debug(f"Invalid event_count received: {event_count}, defaulting to 0")
                 event_count = 0
 
@@ -343,8 +343,7 @@ async def handle_event_type_async(
         demisto.debug(f"Retry succeeded for type={event_type}, params={params}")
 
     if not success_res and failures and not is_re_fetch_failed_fetch:
-        # this case mean that there is no success fetch/send, so need to raise exception
-        # and stay with the previous next_fetch_start_time
+        # if there are no success fetch/send, raise an exception and keep the previous next_fetch_start_time
         e: DemistoException = failures[0]
         demisto.error(f"Failed to fetch events for type={event_type}, params={params}: {str(e)}")
         if hasattr(e, "exception") and hasattr(e.exception, "status"):
@@ -370,8 +369,8 @@ async def handle_event_type_async(
     res_dict = {"events": events, "failures": failures_data}
     demisto.debug(f"Fetched {len(events)} {event_type} events")
     if not is_re_fetch_failed_fetch:
-        # in case of is_re_fetch_failed_fetch=True, it's mean we are trying to fetch a chunk from previous fetch that failed
-        # so, no aditional info is needed.
+        # if we are retrying a failed fetch (is_re_fetch_failed_fetch=True)
+        # no additional info is needed, as we are only trying to fetch the same chunk again.
         if len(events) == limit:
             # meaning, there may be another events to fetch for the current time "window"
             # save the start_time and end_time and the next offset
@@ -436,7 +435,7 @@ async def fetch_and_send_events_async(
 
     async def _handle_all_pages():
         try:
-            # the `offset` shouldnt be in the get_events_count request
+            # the `offset` should not be in the get_events_count request
             init_offset = int(request_params.pop("offset", 0))
 
             if is_re_fetch_failed_fetch:
