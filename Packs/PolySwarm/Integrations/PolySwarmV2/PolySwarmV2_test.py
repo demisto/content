@@ -52,7 +52,6 @@ def vcr_config():
     return dict(
         serializer="yaml",
         cassette_library_dir=os.path.join(TEST_FOLDER, "fixtures/vcr/"),
-        path_transformer=libvcr.VCR.ensure_suffix(".tape"),
         record_mode=libvcr.record_mode.RecordMode.ONCE,  # .ALL, # .NONE
         filter_headers=redacted_data,
         filter_post_data_parameters=redacted_data,
