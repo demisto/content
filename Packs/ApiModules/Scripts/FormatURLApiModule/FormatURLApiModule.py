@@ -99,7 +99,7 @@ class URLCheck:
 
         for char in special_chars:
             try:
-                host_end_position = self.modified_url[self.base:].index(char)
+                host_end_position = self.modified_url[self.base :].index(char)
                 break  # index for the end of the part found, breaking loop
             except ValueError:
                 continue  # no reserved char found, URL has no path, query or fragment parts.
@@ -162,7 +162,7 @@ class URLCheck:
                 if char == "%":
                     # If % is present in the scheme it must be followed by "3A" or by "2F"
 
-                    hex_encode = self.modified_url[index + 1: index + 3].upper()
+                    hex_encode = self.modified_url[index + 1 : index + 3].upper()
 
                     if hex_encode == "3A":
                         self.output += ":"
@@ -187,7 +187,7 @@ class URLCheck:
 
                 else:
                     self.url.scheme = scheme
-                    self.output += self.modified_url[index: index + 2]
+                    self.output += self.modified_url[index : index + 2]
                     self.base = index + 2
 
                     if self.base == len(self.modified_url):
@@ -560,7 +560,7 @@ class URLCheck:
         """
 
         try:
-            int(self.modified_url[index + 1: index + 3], 16)
+            int(self.modified_url[index + 1 : index + 3], 16)
             return True
 
         except ValueError:
@@ -619,7 +619,7 @@ class URLCheck:
             self.modified_url = self.modified_url[beginning:]
 
         else:
-            self.modified_url = self.modified_url[beginning: end + 1]
+            self.modified_url = self.modified_url[beginning : end + 1]
 
 
 class ProofPointFormatter:
@@ -645,7 +645,7 @@ class ProofPointFormatter:
                 return character
             if token.startswith("**"):
                 run_length = self.v3_run_mapping[token[-1]]
-                run = self.dec_bytes[self.current_marker: self.current_marker + run_length]
+                run = self.dec_bytes[self.current_marker : self.current_marker + run_length]
                 self.current_marker += run_length
                 return run
             return ""
@@ -653,14 +653,14 @@ class ProofPointFormatter:
         def substitute_tokens(text, start_pos=0):
             match = self.v3_token_pattern.search(text, start_pos)
             if match:
-                start = text[start_pos: match.start()]
+                start = text[start_pos : match.start()]
                 built_string = start
-                token = text[match.start(): match.end()]
+                token = text[match.start() : match.end()]
                 built_string += replace_token(token)
                 built_string += substitute_tokens(text, match.end())
                 return built_string
             else:
-                return text[start_pos: len(text)]
+                return text[start_pos : len(text)]
 
         match = self.ud_pattern.search(self.url)
         if match and match.group(2) == "v3":
