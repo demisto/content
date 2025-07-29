@@ -6,6 +6,7 @@
   "trigger_name": "silent-WmiPrvSe.exe Rare Child Command Line",
   "fromVersion": "8.9.0",
   "issilent": true,
+  "auto_enabled": true,
   "alerts_filter": {
     "filter": {
       "AND": [

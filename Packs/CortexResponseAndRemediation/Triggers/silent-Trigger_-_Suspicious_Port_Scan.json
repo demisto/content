@@ -6,6 +6,7 @@
   "trigger_name": "silent-Suspicious Port Scan",
   "fromVersion": "8.9.0",
   "issilent": true,
+  "auto_enabled": true,
   "alerts_filter": {
     "filter": {
         "AND": [

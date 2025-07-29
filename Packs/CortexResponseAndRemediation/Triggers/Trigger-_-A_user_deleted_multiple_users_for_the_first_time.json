@@ -16,9 +16,10 @@
               "SEARCH_TYPE": "EQ",
               "SEARCH_VALUE": "A user deleted multiple users for the first time"
             }
-        ]
+          ]
         }
       ]
     }
-  }
+  },
+  "auto_enabled": true
 }

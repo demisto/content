@@ -6,18 +6,19 @@
   "trigger_name": "Unprivileged process opened a registry hive",
   "alerts_filter": {
     "filter": {
-        "AND": [
-          {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Unprivileged process opened a registry hive"
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Unprivileged process opened a registry hive"
         },
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "NEQ",
-            "SEARCH_VALUE": "Correlation"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
         }
-        ]
-      }
-  }
+      ]
+    }
+  },
+  "auto_enabled": true
 }

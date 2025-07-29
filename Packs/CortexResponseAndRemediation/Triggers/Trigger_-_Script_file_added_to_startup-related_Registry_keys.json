@@ -7,23 +7,23 @@
   "fromVersion": "8.9.0",
   "alerts_filter": {
     "filter": {
-        "AND": [
+      "AND": [
+        {
+          "OR": [
             {
-            "OR": [
-                {
-                "SEARCH_FIELD": "alert_name",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "Script file added to startup-related Registry keys"
-                }
-                ]
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Script file added to startup-related Registry keys"
+            }
+          ]
         },
-      {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "NEQ",
-            "SEARCH_VALUE": "Correlation"
-      }
-        ]
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
     }
-  }
+  },
+  "auto_enabled": true
 }
-

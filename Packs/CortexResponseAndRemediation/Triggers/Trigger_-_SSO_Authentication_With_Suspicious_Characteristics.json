@@ -15,17 +15,19 @@
               "SEARCH_VALUE": "SSO authentication attempt with suspicious characteristics"
             },
             {
-                "SEARCH_FIELD": "alert_name",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "Successful SSO authentication with suspicious characteristics"
+              "SEARCH_FIELD": "alert_name",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Successful SSO authentication with suspicious characteristics"
             }
           ]
         },
-      {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "NEQ",
-            "SEARCH_VALUE": "Correlation"
-      }      ]
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "NEQ",
+          "SEARCH_VALUE": "Correlation"
+        }
+      ]
     }
-  }
+  },
+  "auto_enabled": true
 }

@@ -20,5 +20,6 @@
       ]
     }
   },
-  "issilent": true
+  "issilent": true,
+  "auto_enabled": true
 }
