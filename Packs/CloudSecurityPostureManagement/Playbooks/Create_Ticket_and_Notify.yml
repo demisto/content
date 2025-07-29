@@ -1,28 +1,9 @@
 id: Create Ticket and Notify
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cloud Security Posture Management Playbooks
-    itemVersion: 1.0.0
-    fromServerVersion: 6.10.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-    isoverridable: false
-    supportedModules: []
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Create Ticket and Notify
-description: This playbook automates the handling of issues, sending them through
-  ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams,
-  or email. You have the flexibility to create or update a ticket using Jira or ServiceNow,
-  to notify other teams using Slack or Microsoft Teams, or to send an email. You can
-  choose to only create or update a ticket and skip the notification, skip creating
-  or updating a ticket and send only a notification, or both create or update a ticket
-  and notify relevant parties. This playbook requires existing integrations with Jira,
-  ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these
-  integrations are found in your account, the playbook will post message to the Issue
-  War Room notifying the missing integrations.
+description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
 starttaskid: "0"
 fromversion: 6.10.0
 tasks:
@@ -36,7 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -67,7 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -92,10 +73,10 @@ tasks:
       id: cc7a75f1-d811-41ff-8f33-752cf39de2b3
       version: -1
       name: Check State Input
+      description: Checks if State Input is Create / Update
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       Create:
       - "42"
@@ -151,7 +132,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -206,7 +186,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -259,7 +238,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "60"
@@ -290,7 +269,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "63"
@@ -318,10 +297,10 @@ tasks:
       id: 2ff0e02c-dec9-4466-aa39-7cfefa773624
       version: -1
       name: Is Jira Project Key Input Provided?
+      description: Checks if Jira Project Key exists
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "51"
@@ -381,7 +360,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -414,7 +393,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -465,7 +443,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams via Webhook
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -511,7 +488,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -559,7 +535,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams via Webhook
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -608,7 +583,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -656,7 +630,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -699,12 +672,10 @@ tasks:
       id: 79236f70-1fd3-46f3-83b9-ceff407c698a
       version: -1
       name: Is there an existing ServiceNow Ticket?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -775,14 +746,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
       value:
-        simple: No MS Teams or Slack integration connected to your Cortex tenant.
-          Please configure either one of these to send a message notification.
+        simple: No MS Teams or Slack integration connected to your Cortex tenant. Please configure either one of these to send a message notification.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -807,10 +776,10 @@ tasks:
       id: a41fc0c7-51e7-4286-805c-3d8992622b18
       version: -1
       name: Get Jira Project Key
+      description: Gets Jira Project Key Input from User
       type: collection
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "52"
@@ -827,13 +796,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -873,12 +842,10 @@ tasks:
       id: 5abff33e-c09c-43da-8e52-f7d2575f9315
       version: -1
       name: Is there an existing Jira Ticket?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -943,10 +910,10 @@ tasks:
       id: 84a26d02-b03b-454a-8f1c-03c02f716365
       version: -1
       name: Get Slack Channel Name
+      description: Gets Slack Channel Name from User
       type: collection
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "65"
@@ -963,13 +930,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1009,10 +976,10 @@ tasks:
       id: 99ec3f30-17f2-46d0-84ce-ac9a564d9a0f
       version: -1
       name: Check Notification Email Recipients Inputs
+      description: Cheks if Notification Email Recipients is set to Yes and email address is provided
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       Input:
       - "58"
@@ -1098,10 +1065,10 @@ tasks:
       id: 69f8709c-233b-47ad-8b57-19bce30c17da
       version: -1
       name: Get Notification Email Recipients
+      description: Gets Notification Email Recipients input from user
       type: collection
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "69"
@@ -1118,13 +1085,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1164,10 +1131,10 @@ tasks:
       id: 523cb8e0-8539-4f05-83ac-295e085710f2
       version: -1
       name: Check ServiceNow and Jira Integration
+      description: Check if ticketing input is set to Yes and the configured module
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "71"
@@ -1283,10 +1250,10 @@ tasks:
       id: cb2443e0-269e-4bd3-83e1-3191642fa1fb
       version: -1
       name: Is Asset Details Exists?
+      description: Checks if Asset details exists
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "62"
@@ -1338,7 +1305,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - Platform
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "30"
@@ -1369,10 +1335,10 @@ tasks:
       id: 6bb3a039-dda0-4f6c-84a2-317bd618c2b4
       version: -1
       name: Check Microsoft Teams and Slack Integration
+      description: Checks if message notification is set to Yes and the integrated module.
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "49"
@@ -1489,10 +1455,10 @@ tasks:
       id: 668a80e1-5360-4fba-afc4-f98b1ed4b271
       version: -1
       name: Is Slack Channel Name Input Provided?
+      description: Checks if Slack Channel Name Input is provided
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "56"
@@ -1549,10 +1515,10 @@ tasks:
       id: 8c422ee2-a2da-41b0-8e1e-2ce2ab14eebe
       version: -1
       name: Check State Input
+      description: Checks if State Input is Create / Update
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       Create:
       - "36"
@@ -1608,63 +1574,16 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       htmlBody:
-        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
-          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
-          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
-          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
-          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
-          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size:
-          14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected.\n
-          \   </p>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom:
-          20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td
-          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
-          font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding:
-          10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
-          #f9f9f9; font-weight: bold;\">Severity</td>\n        <td style=\"padding:
-          10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n      </tr>\n
-          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
-          background-color: #f9f9f9; font-weight: bold;\">Details</td>\n        <td
-          style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
-          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n
-          \     </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size:
-          14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color:
-          #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color:
-          #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\",
-          \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align:
-          center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
-          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
-          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
-          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
-          \        View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color: #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align: center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom: 25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size: 14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected.\n    </p>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n      </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size: 14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color: #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color: #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\", \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\" \n         target=\"_blank\"\n         style=\"display: inline-block; padding: 10px 24px; background-color: #0067b8; color: white !important; text-decoration: none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n         View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
       subject:
         simple: 'Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}'
       to:
-        simple: ${inputs.Notification Email Recipients},${Please Provide Notification
-          Email Recipients.Answers.0}
+        simple: ${inputs.Notification Email Recipients},${Please Provide Notification Email Recipients.Answers.0}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1694,49 +1613,16 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       htmlBody:
-        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
-          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
-          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
-          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
-          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
-          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width:
-          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
-          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
-          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
-          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
-          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
-          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
-          bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n
-          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
-          background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td
-          style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
-          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
-          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
-          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation</td>\n
-          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">Success</td>\n
-          \     </tr>\n    </table>\n    <div style=\"text-align: center; margin:
-          30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
-          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
-          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
-          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
-          \        View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color: #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align: center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom: 25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">Success</td>\n      </tr>\n    </table>\n    <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\" \n         target=\"_blank\"\n         style=\"display: inline-block; padding: 10px 24px; background-color: #0067b8; color: white !important; text-decoration: none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n         View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
       subject:
         simple: Issue Resolved for Asset - ${Core.CoreAsset.xdm__asset__name}
       to:
-        simple: ${inputs.Notification Email Recipients},${Please Provide Notification
-          Email Recipients.Answers.0}
+        simple: ${inputs.Notification Email Recipients},${Please Provide Notification Email Recipients.Answers.0}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1761,10 +1647,10 @@ tasks:
       id: 621a5eef-c83e-4e65-80db-5013582deddf
       version: -1
       name: Check State Input
+      description: Checks if State Input is Create / Update
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       Create:
       - "67"
@@ -1820,14 +1706,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
     scriptarguments:
       value:
-        simple: No ServiceNow or Jira integration connected to your Cortex tenant.
-          Please configure either one of these to send a ticket
+        simple: No ServiceNow or Jira integration connected to your Cortex tenant. Please configure either one of these to send a ticket
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1883,10 +1767,8 @@ inputs:
 - key: Do you want to create a ticket?
   value: {}
   required: true
-  description: "Possible values:\n- Yes\n- No\n\nNote: If set to 'Yes', a configured
-    ServiceNow and/or Jira integration is required.  \nIf using Jira, the Jira Project
-    Key input must also be provided."
-  playbookInputQuery: null
+  description: "Possible values:\n- Yes\n- No\n\nNote: If set to 'Yes', a configured ServiceNow and/or Jira integration is required.  \nIf using Jira, the Jira Project Key input must also be provided."
+  playbookInputQuery:
 - key: Do you want to send a message notification?
   value: {}
   required: true
@@ -1897,7 +1779,7 @@ inputs:
 
     Note: If set to 'Yes', Microsoft Teams and/or Slack integration must be configured.
     If using Slack, the Slack Channel Name input must also be provided.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Do you want to send an email notification?
   value: {}
   required: true
@@ -1907,22 +1789,22 @@ inputs:
     - No
 
     Note: To send email notifications, specify the Notification Email Recipients input.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Notification Email Recipients
   value: {}
   required: false
   description: Provide the email address to send email notifications.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Issue State
   value: {}
   required: false
@@ -1930,7 +1812,7 @@ inputs:
     Possible values:
     - Create
     - Update
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - Do you want to create a ticket?
@@ -1953,20 +1835,19 @@ outputSections:
   description: Generic group for outputs
 outputs:
 - contextPath: Ticket.Id
-  description: Jira Ticket ID
+  description: Jira Ticket ID.
   type: string
 - contextPath: ServiceNow.Ticket.ID
-  description: Service Now Ticket ID
+  description: Service Now Ticket ID.
   type: string
 - contextPath: Please Provide Jira Project Key.Answers.0
-  description: Jira Project Key
+  description: Jira Project Key.
   type: shortText
 - contextPath: Please Provide Slack Channel Name.Answers.0
-  description: Slack Channel Name
+  description: Slack Channel Name.
   type: shortText
 - contextPath: Please Provide Notification Email Recipients.Answers.0
-  description: Notification Email Recipients
+  description: Notification Email Recipients.
   type: shortText
-sourceplaybookid: Create Ticket and Notify
-dirtyInputs: true
-adopted: true
+tests:
+- No tests (auto formatted)
