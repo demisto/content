@@ -94,9 +94,9 @@ def run_iam_disable_user(user: User, using: str) -> list[CmdFuncRes]:
     )
     return [
         CmdFuncRes(
-            Disabled=(not dict_safe_get(res, ("Contents", "IAM", "Vendor", "active"))),
-            Result=("Failed" if is_error(res) or not dict_safe_get(res, ("Contents", "IAM", "Vendor", "success")) else "Success"),
-            Message=str(dict_safe_get(res, ("Contents", "IAM", "Vendor", "errorMessage")) or res.get("HumanReadable")),
+            Disabled=(not dict_safe_get(res, ("Contents", "active"))),
+            Result=("Failed" if is_error(res) or not dict_safe_get(res, ("Contents", "success")) else "Success"),
+            Message=str(dict_safe_get(res, ("Contents", "errorMessage")) or res.get("HumanReadable")),
         )
         for res in res_cmd
     ]
@@ -109,7 +109,7 @@ def run_gsuiteadmin(user: User, using: str) -> list[CmdFuncRes]:
     )
     return [
         CmdFuncRes(
-            Disabled=bool(dict_safe_get(res, ("Contents", "GSuite", "User", "suspended"))),
+            Disabled=bool(dict_safe_get(res, ("Contents", "suspended"))),
             Result="Failed" if is_error(res) else "Success",
             Message=str(res.get("HumanReadable") or res.get("Contents")),
         )
@@ -182,7 +182,7 @@ def main():
             )
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute DisableUser. Error: {str(ex)}")
+        return_error(f"Failed to execute DisableUser. Error: {ex}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
