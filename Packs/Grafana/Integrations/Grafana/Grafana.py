@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
-import urllib3
 from CommonServerPython import *  # noqa: F401
+import urllib3
+
 from pytz import utc
 
-from CommonServerUserPython import *  # noqa
 
 """ CONSTANTS """
 
@@ -19,6 +19,7 @@ MAX_INCIDENTS_TO_FETCH = 200
 FETCH_DEFAULT_TIME = "3 days"
 
 """ CLIENT CLASS """
+# test
 
 
 class Client(BaseClient):
@@ -315,7 +316,8 @@ def calculate_fetch_start_time(last_fetch: str = None, first_fetch: str = FETCH_
 
 def filter_alerts_by_time(alerts: List[Dict[str, Any]], last_fetch: datetime):
     # ignoring microsecond because date_to_timestamp doesn't know how to handle it
-    return [alert for alert in alerts if dateparser.parse(alert["newStateDate"]).replace(tzinfo=utc, microsecond=0) >= last_fetch]  # type: ignore
+    # type: ignore
+    return [alert for alert in alerts if dateparser.parse(alert["newStateDate"]).replace(tzinfo=utc, microsecond=0) >= last_fetch]
 
 
 def filter_alerts_by_id(alerts: List[Dict[str, Any]], last_fetch: datetime, last_id_fetched: int):
