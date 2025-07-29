@@ -123,7 +123,6 @@ Creates an instance resource in the specified project using the data included in
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-get-image-from-family
 
 ***
@@ -193,7 +192,6 @@ Returns the latest image that is part of an image family and is not deprecated.
 | GoogleCloudCompute.Images.sourceSnapshotEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
 | GoogleCloudCompute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. |
 | GoogleCloudCompute.Images.kind | string | Type of the resource. Always compute\#image for images. |
-
 
 ### gcp-compute-get-network
 
@@ -892,7 +890,6 @@ Retrieves the specified zone-specific Operations resource.
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-list-zone-operation
 
 ***
@@ -1032,7 +1029,6 @@ Deletes the specified zone-specific Operations resource.
 ##### Context Output
 
 There is no context output for this command.
-
 
 ### gcp-compute-get-instance
 
@@ -1323,7 +1319,6 @@ Deletes the specified Instance resource. For more information, see Stopping or D
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-start-instance
 
 ***
@@ -1551,7 +1546,6 @@ Performs a reset on the instance. This is a hard reset the VM does not do a grac
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-set-instance-labels
 
 ***
@@ -1606,7 +1600,6 @@ Sets labels on an instance. To learn more about labels, read the Labeling Resour
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-set-instance-metadata
 
 ***
@@ -1660,7 +1653,6 @@ Sets metadata for the specified instance to the data included in the request.
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-set-instance-machine-type
 
@@ -1803,7 +1795,6 @@ Retrieves the specified region-specific Operations resource.
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-list-region-operation
 
 ***
@@ -1918,7 +1909,6 @@ Deletes the specified region-specific Operations resource.
 
 There is no context output for this command.
 
-
 ### gcp-compute-list-global-operation
 
 ***
@@ -2029,7 +2019,6 @@ Deletes the specified Operations resource.
 ##### Context Output
 
 There is no context output for this command.
-
 
 ### gcp-compute-delete-address
 
@@ -3530,7 +3519,6 @@ Sets the labels on a disk.
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-aggregated-list-disk-types
 
 ***
@@ -3813,7 +3801,6 @@ Returns the specified image. Gets a list of available images by making a list() 
 | GoogleCloudCompute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA\-256 hash of the customer\-supplied encryption key that protects this resource. |
 | GoogleCloudCompute.Images.kind | string | Type of the resource. Always compute\#image for images. |
 
-
 ### gcp-compute-list-images
 
 ***
@@ -3958,7 +3945,6 @@ Deletes the specified image.
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-set-image-labels
 
 ***
@@ -4011,7 +3997,6 @@ Sets the labels on an image.
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-insert-image
 
@@ -4090,7 +4075,6 @@ Creates an image in the specified project using the data included in the request
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-instance-groups-add-instances
 
 ***
@@ -4143,7 +4127,6 @@ Adds a list of instances to the specified instance group. All of the instances i
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-aggregated-list-instance-groups
 
@@ -4261,7 +4244,6 @@ Deletes the specified instance group. The instances in the group are not deleted
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-get-instance-group
 
@@ -4392,7 +4374,6 @@ Creates an instance group in the specified project using the parameters that are
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-list-instance-groups
 
@@ -4607,7 +4588,6 @@ Removes one or more instances from the specified instance group, but does not de
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-set-group-instance-named-ports
 
@@ -5152,7 +5132,6 @@ Retrieves an aggregated list of machine types.
 | GoogleCloudCompute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared\-core machine types for more information. |
 | GoogleCloudCompute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
 
-
 ### gcp-compute-get-machine-type
 
 ***
@@ -5369,7 +5348,6 @@ Adds a peering to the specified network.
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-delete-network
 
@@ -5674,7 +5652,6 @@ Removes a peering from the specified network.
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-wait-for-zone-operation
 
 ***
@@ -5694,7 +5671,6 @@ Wait for a zone operation to complete ,NOTE this command will occupy a system re
 ##### Context Output
 
 There is no context output for this command.
-
 
 ### gcp-compute-wait-for-region-operation
 
@@ -5716,7 +5692,6 @@ Wait for a region operation to complete ,NOTE this command will occupy a system 
 
 There is no context output for this command.
 
-
 ### gcp-compute-wait-for-global-operation
 
 ***
@@ -5735,7 +5710,6 @@ Wait for a global operation to complete ,NOTE this command will occupy a system 
 ##### Context Output
 
 There is no context output for this command.
-
 
 ### gcp-compute-insert-firewall
 
@@ -6181,7 +6155,6 @@ Deletes the specified firewall.
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
 
-
 ### gcp-compute-set-snapshot-labels
 
 ***
@@ -6234,7 +6207,6 @@ Sets the labels on a snapshot.
 | GoogleCloudCompute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
 | GoogleCloudCompute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GoogleCloudCompute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
-
 
 ### gcp-compute-list-snapshots
 
