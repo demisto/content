@@ -3101,12 +3101,12 @@ tasks:
                   simple: MsGraphFiles.Activities.action.share
                 iscontext: true
           transformers:
-          - operator: FirstArrayElement
           - operator: jmespath
             args:
               expression:
                 value:
                   simple: "{\nUPN: actor.user.userPrincipalName, \nFileLastSharedDatetime: times.recordedDateTime\n}"
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3152,12 +3152,12 @@ tasks:
                   simple: MsGraphFiles.Activities.action.create
                 iscontext: true
           transformers:
-          - operator: FirstArrayElement
           - operator: jmespath
             args:
               expression:
                 value:
                   simple: "{\nUPN: actor.user.userPrincipalName, \nFileCreatedDatetime: times.recordedDateTime\n}"
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3311,12 +3311,12 @@ tasks:
                 iscontext: true
               ignorecase: true
           transformers:
-          - operator: FirstArrayElement
           - operator: jmespath
             args:
               expression:
                 value:
                   simple: "{\nUserID: actors[?user.knownUser].user.knownUser.personName|[0] \nFileLastSharedDatetime: timestamp\n}"
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
