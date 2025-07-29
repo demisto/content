@@ -49,15 +49,15 @@ def vcr_config():
                 response["headers"][name] = new_value
         return response
 
-    return dict(
-        serializer="yaml",
-        cassette_library_dir=os.path.join(TEST_FOLDER, "fixtures/vcr/"),
-        record_mode=libvcr.record_mode.RecordMode.ONCE,  # .ALL, # .NONE
-        filter_headers=redacted_data,
-        filter_post_data_parameters=redacted_data,
-        filter_query_parameters=redacted_data,
-        before_record_response=redact_response,
-    )
+    return {
+        "serializer": "yaml",
+        "cassette_library_dir": os.path.join(TEST_FOLDER, "fixtures/vcr/"),
+        "record_mode": libvcr.record_mode.RecordMode.ONCE,  # .ALL, # .NONE
+        "filter_headers": redacted_data,
+        "filter_post_data_parameters": redacted_data,
+        "filter_query_parameters": redacted_data,
+        "before_record_response": redact_response,
+    }
 
 
 @pytest.mark.vcr()
