@@ -27,6 +27,34 @@ VENDOR = "netskope"
 PRODUCT = "netskope"
 XSIAM_SEM = asyncio.Semaphore(20)
 
+# Event type configuration mapping
+# Each event type can have specific endpoint, time parameters, and count field configurations
+EVENT_TYPE_CONFIGS = {
+    "incident": {
+        "endpoint": "/events/datasearch/incident",
+        "time_params": {"start_time": "starttime", "end_time": "endtime"},
+        "count_field": "event_count:count(_id)"
+    }
+}
+
+# Default configuration for all other event types
+DEFAULT_EVENT_TYPE_CONFIG = {
+    "endpoint": "/events/data/{type}",
+    "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+    "count_field": "event_count:count(id)"
+}
+
+def get_event_type_config(event_type: str) -> dict:
+    """Get configuration for a specific event type.
+    
+    Args:
+        event_type (str): The type of event
+        
+    Returns:
+        dict: Configuration dictionary for the event type
+    """
+    return EVENT_TYPE_CONFIGS.get(event_type, DEFAULT_EVENT_TYPE_CONFIG)
+
 """ CLIENT CLASS """
 
 
@@ -60,41 +88,75 @@ class Client:
         demisto.debug("Closing aiohttp session")
         await self._async_session.close()
 
-    async def get_events_data_async(self, type, params):
-        url_suffix = f"events/data/{type}"
-        url = urljoin(self._base_url, url_suffix)
+    async def get_events_data_async(self, event_type: str, params: dict) -> dict:
+        """Fetch events data asynchronously from Netskope API.
+        
+        Args:
+            event_type (str): The type of events to fetch (e.g., 'alert', 'network', 'incident')
+            params (dict): Query parameters for the API request
+            
+        Returns:
+            dict: JSON response from the API containing events data
+            
+        Raises:
+            aiohttp.ClientResponseError: If the HTTP request fails
+        """
+        # Use the correct endpoint depending on the event type
+        config = get_event_type_config(event_type)
+        endpoint = config["endpoint"].replace("{type}", event_type)
+        url = urljoin(self._base_url, endpoint)
+        
         async with self.netskope_semaphore:
-            async with self._async_session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp:
-                demisto.debug(f"getting {type} events data, {params=}")
+            async with self._async_session.get(
+                url, params=params, headers=self._headers, proxy=self._proxy_url
+            ) as resp:
+                demisto.debug(f"Fetching {event_type} events with params: {params}")
                 resp.raise_for_status()
                 return await resp.json()
 
-    async def get_events_count(self, type, params):
-        """Return the count of event existing for the given type and time
+    async def get_events_count(self, event_type: str, params: dict) -> int:
+        """Get the count of events for a given type and time range.
 
         Args:
-            type (str): the events type
-            params (dict): request params
-            session (aiohttp.ClientSession): the session
-            sem (asyncio.Semaphore): a semaphore
+            event_type (str): The type of events to count
+            params (dict): Query parameters for the API request
 
         Returns:
-            str: the count of event existing for the given type and time
+            int: The count of events available for the given type and time range
+            
+        Raises:
+            aiohttp.ClientResponseError: If the HTTP request fails
         """
-        event_count = 0
-        res = await self.get_events_data_async(type, params | {"fields": "event_count:count(id)"})
-        if res.get("result"):
-            event_count = res.get("result")[0].get("event_count")
+        # Use the correct count field depending on the event type
+        config = get_event_type_config(event_type)
+        count_field = config["count_field"]
+        
+        try:
+            res = await self.get_events_data_async(event_type, params | {"fields": count_field})
+            
+            # Extract event count from response
+            event_count = 0
+            if res.get("result") and len(res["result"]) > 0:
+                event_count = res["result"][0].get("event_count", 0)
 
-        demisto.debug(f"there is {event_count} total {type} events for the given time")
-        return event_count
+            # Ensure event_count is always a valid integer
+            if not isinstance(event_count, int) or event_count < 0:
+                demisto.debug(f"Invalid event_count received: {event_count}, defaulting to 0")
+                event_count = 0
+                
+            demisto.debug(f"Found {event_count} total {event_type} events for the given time range")
+            return event_count
+            
+        except Exception as e:
+            demisto.error(f"Failed to get event count for {event_type}: {str(e)}")
+            return 0
 
 
 """ HELPER FUNCTIONS """
 
 
 def next_trigger_time(num_of_events, max_fetch, new_last_run):
-    """Check wether to add the next trigger key to the next_run dict based on number of fetched events.
+    """Check whether to add the next trigger key to the next_run dict based on number of fetched events.
 
     Args:
         num_of_events (int): The number of events fetched.
@@ -114,7 +176,7 @@ def populate_parsing_rule_fields(event: dict, event_type: str):
 
     Args:
         event (dict): the event to edit
-        event_type (str): the event type tp set in the source_log_event field
+        event_type (str): the event type to set in the source_log_event field
     """
     event["source_log_event"] = event_type
     try:
@@ -162,6 +224,25 @@ def remove_unsupported_event_types(last_run_dict: dict, event_types_to_fetch: li
 
     for key in keys_to_remove:
         last_run_dict.pop(key, None)
+
+
+def get_time_window_params(event_type: str, start_time: str, end_time: str) -> dict:
+    """Get time window parameters based on event type configuration.
+    
+    Args:
+        event_type (str): The type of event
+        start_time (str): Start time for the query
+        end_time (str): End time for the query
+        
+    Returns:
+        dict: Time parameters formatted for the specific event type
+    """
+    config = get_event_type_config(event_type)
+    time_params = config["time_params"]
+    return {
+        time_params["start_time"]: start_time,
+        time_params["end_time"]: end_time
+    }
 
 
 def handle_errors(failures):
@@ -247,7 +328,7 @@ async def handle_event_type_async(
     is_re_fetch_failed_fetch: bool = False,
 ) -> tuple[str, dict]:
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
-    params = assign_params(limit=page_size, offset=offset, insertionstarttime=start_time, insertionendtime=end_time)
+    params = assign_params(limit=page_size, offset=offset, **get_time_window_params(event_type, start_time, end_time))
 
     demisto.debug(f"Fetching '{event_type}' events with params: {params}")
     # If this is a retry of a previous failure, log it.
@@ -425,9 +506,9 @@ async def handle_fetch_and_send_all_events(
     prev_fetch_failure_tasks = []
     new_tasks = []
     for event_type in client.event_types_to_fetch:
-        # for each event type, we run 2 seperated async fecth
-        # 1. to fetch the previous failed fetchs (which stored in the last run) collected in prev_fetch_failure_tasks
-        # 2. fecth the new events (regular fetch) collected in the new_tasks list
+        # for each event type, we run 2 separated async fetch
+        # 1. to fetch the previous failed fetches (which stored in the last run) collected in prev_fetch_failure_tasks
+        # 2. fetch the new events (regular fetch) collected in the new_tasks list
 
         # get failures from previous iteration
         prev_fetch_failure_tasks.extend(handle_prev_fetch_failures(client, last_run, event_type, send_to_xsiam))

@@ -345,3 +345,113 @@ def test_populate_parsing_rule_fields():
     event = {}
     populate_parsing_rule_fields(event, "alert")
     assert event["source_log_event"] == "alert"
+
+
+@pytest.mark.parametrize("event_type,expected_config", [
+    # Incident event type (specific configuration)
+    ("incident", {
+        "endpoint": "/events/datasearch/incident",
+        "time_params": {"start_time": "starttime", "end_time": "endtime"},
+        "count_field": "event_count:count(_id)"
+    }),
+    # Standard event types (default configuration)
+    ("alert", {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)"
+    }),
+    ("network", {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)"
+    }),
+    ("application", {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)"
+    }),
+    ("audit", {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)"
+    }),
+    ("page", {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)"
+    }),
+    # Unknown event type (should return default configuration)
+    ("unknown_type", {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)"
+    })
+])
+def test_get_event_type_config(event_type, expected_config):
+    """
+    Given:
+        - Various event types including incident, standard, and unknown event types.
+    When:
+        - Calling get_event_type_config.
+    Then:
+        - The correct configuration should be returned for each event type.
+    """
+    from NetskopeEventCollector_v2 import get_event_type_config
+    
+    config = get_event_type_config(event_type)
+    assert config == expected_config, f"Expected {expected_config} for {event_type}, got {config}"
+
+
+@pytest.mark.parametrize("mock_config,start_time,end_time,expected_params", [
+    # Test incident-style config (starttime/endtime)
+    ({
+        "time_params": {"start_time": "starttime", "end_time": "endtime"}
+    }, "1680000000", "1680086400", {
+        "starttime": "1680000000",
+        "endtime": "1680086400"
+    }),
+    # Test standard config (insertionstarttime/insertionendtime)
+    ({
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"}
+    }, "1680000000", "1680086400", {
+        "insertionstarttime": "1680000000",
+        "insertionendtime": "1680086400"
+    }),
+    # Test with different time values
+    ({
+        "time_params": {"start_time": "starttime", "end_time": "endtime"}
+    }, "1234567890", "1234567999", {
+        "starttime": "1234567890",
+        "endtime": "1234567999"
+    }),
+    # Test with custom parameter names
+    ({
+        "time_params": {"start_time": "custom_start", "end_time": "custom_end"}
+    }, "9999999999", "9999999998", {
+        "custom_start": "9999999999",
+        "custom_end": "9999999998"
+    })
+])
+def test_get_time_window_params(mocker, mock_config, start_time, end_time, expected_params):
+    """
+    Given:
+        - A mocked configuration with specific time parameter names.
+        - Start and end time values.
+    When:
+        - Calling get_time_window_params.
+    Then:
+        - The function should correctly map the time values to the parameter names from the config.
+        - This test focuses on the key mapping logic, not the config retrieval (which is tested separately).
+    """
+    from NetskopeEventCollector_v2 import get_time_window_params
+    
+    # Mock get_event_type_config to return our test config
+    mock_get_config = mocker.patch('NetskopeEventCollector_v2.get_event_type_config', return_value=mock_config)
+    
+    params = get_time_window_params("any_event_type", start_time, end_time)
+    
+    # Verify the config was retrieved
+    mock_get_config.assert_called_once_with("any_event_type")
+    
+    # Verify the key mapping worked correctly
+    assert params == expected_params, f"Expected {expected_params}, got {params}"
