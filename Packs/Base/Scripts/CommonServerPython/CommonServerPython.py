@@ -345,6 +345,7 @@ class QuickActionPreview(object):
     :return: None
     :rtype: ``None``.
     """
+
     def __init__(self, id=None, title=None, description=None, status=None,
                  assignee=None, creation_date=None, severity=None):
         """
@@ -393,6 +394,7 @@ class MirrorObject(object):
     :return: None
     :rtype: ``None``.
     """
+
     def __init__(self, object_url=None, object_id=None, object_name=None):
         """
         A container class for storing ticket metadata used in mirroring integrations.
@@ -2068,7 +2070,7 @@ def remove_duplicates_from_list_arg(args, field):
     return list(set(convert_to_list))
 
 
-def argToBoolean(value):
+def argToBoolean(value: str | bool) -> bool:
     """
         Boolean-ish arguments that are passed through demisto.args() could be type bool or type string.
         This command removes the guesswork and returns a value of type bool, regardless of the input value's type.
@@ -2077,20 +2079,21 @@ def argToBoolean(value):
         :param value: the value to evaluate
         :type value: ``string|bool``
 
-        :return: a boolean representatation of 'value'
+        :return: a boolean representation of 'value'
         :rtype: ``bool``
     """
     if isinstance(value, bool):
         return value
     if isinstance(value, STRING_OBJ_TYPES):
-        if value.lower() in ['true', 'yes']:
+        if value.lower() in ('y', 'yes', 't', 'true', 'on', '1'):
             return True
-        elif value.lower() in ['false', 'no']:
+        elif value.lower() in ('n', 'no', 'f', 'false', 'off', '0'):
             return False
         else:
             raise ValueError('Argument does not contain a valid boolean-like value')
     else:
         raise ValueError('Argument is neither a string nor a boolean')
+
 
 def arg_to_bool_or_none(value):
     """
@@ -2106,6 +2109,7 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
+
 
 def appendContext(key, data, dedup=False):
     """
@@ -12743,7 +12747,7 @@ def execute_polling_command(
     :raises DemistoException: If no command result entry is received, or if the polling times out.
     """
     polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
-    polling_timeout =  arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
+    polling_timeout = arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
 
     if using_brand:
         args["using-brand"] = using_brand
@@ -12780,7 +12784,8 @@ def execute_polling_command(
             command_results.append(CommandResults(readable_output=human_readable, outputs=context_output))
 
         metadata = execution_result.get("Metadata", {})
-        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(command_name=command_name, metadata=metadata))
+        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(
+            command_name=command_name, metadata=metadata))
         if not metadata.get("polling"):
             demisto.debug("Finished running command: {command_name} with args: {args}. Returning results to war room.".format(
                 command_name=command_name, args=args))
@@ -12791,7 +12796,8 @@ def execute_polling_command(
         if using_brand:
             args["using-brand"] = using_brand
 
-        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
+        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(
+            polling_interval=polling_interval))
         time.sleep(polling_interval)  # pylint: disable=E9003
 
     raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
