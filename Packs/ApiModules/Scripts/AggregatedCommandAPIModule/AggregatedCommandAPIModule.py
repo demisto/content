@@ -427,13 +427,12 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         
     def parse_indicator(self, entry_context_item: dict[str, Any], brand: str, score: int = Common.DBotScore.NONE)-> tuple[dict[str, Any], list[dict[str, Any]]]:
         demisto.debug(f"Parsing the following indicators: {json.dumps(entry_context_item, indent=2)}")
-        dbot_scores = []
         indicators_context = defaultdict(lambda: defaultdict(list))
         dbot_list = flatten_list([value for key, value in entry_context_item.items() if key.startswith("DBotScore")])
         demisto.debug(f"DBot scores: {dbot_list}")
         if dbot_list:
             score = max([score.get("Score") for score in dbot_list],default=Common.DBotScore.NONE)
-            dbot_scores.extend(dbot_list)
+            dbot_scores = dbot_list
             demisto.debug(f"DBot scores: {score}")
         entry_context_item = flatten_list([value for key, value in entry_context_item.items() if key.startswith(self.indicator_path)])
         for indicator in entry_context_item:
