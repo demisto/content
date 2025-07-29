@@ -79,7 +79,7 @@ class Client:
         self._base_url = base_url
         self._verify = verify
         self._proxy_url = handle_proxy().get("http") if proxy else None
-        self._async_session = None
+        self._async_session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         demisto.debug("Opening the aiohttp session")
@@ -88,7 +88,8 @@ class Client:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         demisto.debug("Closing aiohttp session")
-        await self._async_session.close()
+        if self._async_session is not None:
+            await self._async_session.close()
 
     async def get_events_data_async(self, event_type: str, params: dict) -> dict:
         """Fetch events data asynchronously from Netskope API.
@@ -108,11 +109,15 @@ class Client:
         endpoint = config["endpoint"].replace("{type}", event_type)
         url = urljoin(self._base_url, endpoint)
 
-        async with self.netskope_semaphore:
-            async with self._async_session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp:
-                demisto.debug(f"Fetching {event_type} events with params: {params}")
-                resp.raise_for_status()
-                return await resp.json()
+        if self._async_session is None:
+            raise RuntimeError("ClientSession not initialized. Use 'async with' context manager.")
+        async with (
+            self.netskope_semaphore,
+            self._async_session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp,
+        ):
+            demisto.debug(f"Fetching {event_type} events with params: {params}")
+            resp.raise_for_status()
+            return await resp.json()
 
     async def get_events_count(self, event_type: str, params: dict) -> int:
         """Get the count of events for a given type and time range.
@@ -353,7 +358,10 @@ async def handle_event_type_async(
         elif "Cannot connect to host" in e.message:
             msg = "Connection Error: please validate your Server URL."
         else:
-            msg = f"Fetching event_type_start_time_end_time_offset: {event_type}_{start_time}_{end_time}_{offset} Failed, {str(failures[0])}"
+            msg = (
+                f"Fetching event_type_start_time_end_time_offset: {event_type}_{start_time}_{end_time}_{offset} "
+                f"Failed, {str(failures[0])}"
+            )
         demisto.error(msg)
         raise DemistoException(msg, exception=failures[0])
     failures_data = handle_errors(failures)
@@ -523,7 +531,10 @@ async def handle_fetch_and_send_all_events(
         # meaning, all the tasks was failed
         raise DemistoException(failures_tasks[0])
     new_last_run: dict = {}
-    for event_type, event_type_res in success_tasks:
+    for task_result in success_tasks:
+        if isinstance(task_result, BaseException):
+            continue  # Skip exceptions (shouldn't happen since we filtered them out)
+        event_type, event_type_res = task_result
         # event_type_res is in structure of:
         # {'events':[...], ''failures':[...], additional data like next_run_start_time, next_run_offset}
         all_events.extend(event_type_res.pop("events", []))
