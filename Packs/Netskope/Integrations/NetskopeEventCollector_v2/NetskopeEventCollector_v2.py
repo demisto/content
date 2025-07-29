@@ -33,7 +33,7 @@ EVENT_TYPE_CONFIGS = {
     "incident": {
         "endpoint": "/events/datasearch/incident",
         "time_params": {"start_time": "starttime", "end_time": "endtime"},
-        "count_field": "event_count:count(_id)"
+        "count_field": "event_count:count(_id)",
     }
 }
 
@@ -41,19 +41,21 @@ EVENT_TYPE_CONFIGS = {
 DEFAULT_EVENT_TYPE_CONFIG = {
     "endpoint": "/events/data/{type}",
     "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-    "count_field": "event_count:count(id)"
+    "count_field": "event_count:count(id)",
 }
+
 
 def get_event_type_config(event_type: str) -> dict:
     """Get configuration for a specific event type.
-    
+
     Args:
         event_type (str): The type of event
-        
+
     Returns:
         dict: Configuration dictionary for the event type
     """
     return EVENT_TYPE_CONFIGS.get(event_type, DEFAULT_EVENT_TYPE_CONFIG)
+
 
 """ CLIENT CLASS """
 
@@ -90,14 +92,14 @@ class Client:
 
     async def get_events_data_async(self, event_type: str, params: dict) -> dict:
         """Fetch events data asynchronously from Netskope API.
-        
+
         Args:
             event_type (str): The type of events to fetch (e.g., 'alert', 'network', 'incident')
             params (dict): Query parameters for the API request
-            
+
         Returns:
             dict: JSON response from the API containing events data
-            
+
         Raises:
             aiohttp.ClientResponseError: If the HTTP request fails
         """
@@ -105,11 +107,9 @@ class Client:
         config = get_event_type_config(event_type)
         endpoint = config["endpoint"].replace("{type}", event_type)
         url = urljoin(self._base_url, endpoint)
-        
+
         async with self.netskope_semaphore:
-            async with self._async_session.get(
-                url, params=params, headers=self._headers, proxy=self._proxy_url
-            ) as resp:
+            async with self._async_session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp:
                 demisto.debug(f"Fetching {event_type} events with params: {params}")
                 resp.raise_for_status()
                 return await resp.json()
@@ -123,17 +123,17 @@ class Client:
 
         Returns:
             int: The count of events available for the given type and time range
-            
+
         Raises:
             aiohttp.ClientResponseError: If the HTTP request fails
         """
         # Use the correct count field depending on the event type
         config = get_event_type_config(event_type)
         count_field = config["count_field"]
-        
+
         try:
             res = await self.get_events_data_async(event_type, params | {"fields": count_field})
-            
+
             # Extract event count from response
             event_count = 0
             if res.get("result") and len(res["result"]) > 0:
@@ -143,10 +143,10 @@ class Client:
             if not isinstance(event_count, int) or event_count < 0:
                 demisto.debug(f"Invalid event_count received: {event_count}, defaulting to 0")
                 event_count = 0
-                
+
             demisto.debug(f"Found {event_count} total {event_type} events for the given time range")
             return event_count
-            
+
         except Exception as e:
             demisto.error(f"Failed to get event count for {event_type}: {str(e)}")
             return 0
@@ -228,21 +228,18 @@ def remove_unsupported_event_types(last_run_dict: dict, event_types_to_fetch: li
 
 def get_time_window_params(event_type: str, start_time: str, end_time: str) -> dict:
     """Get time window parameters based on event type configuration.
-    
+
     Args:
         event_type (str): The type of event
         start_time (str): Start time for the query
         end_time (str): End time for the query
-        
+
     Returns:
         dict: Time parameters formatted for the specific event type
     """
     config = get_event_type_config(event_type)
     time_params = config["time_params"]
-    return {
-        time_params["start_time"]: start_time,
-        time_params["end_time"]: end_time
-    }
+    return {time_params["start_time"]: start_time, time_params["end_time"]: end_time}
 
 
 def handle_errors(failures):

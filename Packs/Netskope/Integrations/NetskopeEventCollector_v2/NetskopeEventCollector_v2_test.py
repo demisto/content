@@ -5,10 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 import demistomock as demisto
 
-from NetskopeEventCollector_v2 import (
-    ALL_SUPPORTED_EVENT_TYPES,
-    Client
-)
+from NetskopeEventCollector_v2 import ALL_SUPPORTED_EVENT_TYPES, Client
 
 # Mark all tests in this module as asyncio
 pytestmark = pytest.mark.asyncio
@@ -96,8 +93,12 @@ async def test_get_all_events(requests_mock):
     assert isinstance(new_last_run, dict), f"Expected new_last_run to be a dict, got {type(new_last_run)}"
     assert len(events) == 26, f"Expected 26 events, got {len(events)}"
     assert events[0].get("event_id") == "1", f"Expected first event_id to be '1', got {events[0].get('event_id')}"
-    assert events[0].get("_time") == "2023-05-22T10:30:16.000Z", f"Expected first _time to be '2023-05-22T10:30:16.000Z', got {events[0].get('_time')}"
-    assert all(new_last_run[event_type]["operation"] == "next" for event_type in ALL_SUPPORTED_EVENT_TYPES), "Not all event types have 'next' operation in new_last_run"
+    assert (
+        events[0].get("_time") == "2023-05-22T10:30:16.000Z"
+    ), f"Expected first _time to be '2023-05-22T10:30:16.000Z', got {events[0].get('_time')}"
+    assert all(
+        new_last_run[event_type]["operation"] == "next" for event_type in ALL_SUPPORTED_EVENT_TYPES
+    ), "Not all event types have 'next' operation in new_last_run"
 
 
 async def test_get_events_command(mocker):
@@ -118,7 +119,6 @@ async def test_get_events_command(mocker):
     mocker.patch.object(client, "get_events_data_async", return_value={"result": MOCK_ENTRY})
     result = await handle_event_type_async(client, "alert", "start", "end", 0, 10, False)
     assert result is not None, "Expected result to not be None"
-
 
 
 @pytest.mark.parametrize(
@@ -150,9 +150,9 @@ async def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_para
     """
     from NetskopeEventCollector_v2 import handle_event_types_to_fetch
 
-    assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value, (
-    f"Expected {expected_value}, got {handle_event_types_to_fetch(event_types_to_fetch_param)} for param {event_types_to_fetch_param}"
-)
+    assert (
+        handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value
+    ), f"Expected {expected_value}, got {handle_event_types_to_fetch(event_types_to_fetch_param)} for param {event_types_to_fetch_param}"
 
 
 @pytest.mark.parametrize(
@@ -181,9 +181,9 @@ def test_next_trigger_time(num_fetched_events, max_fetch_events, new_next_run, e
     from NetskopeEventCollector_v2 import next_trigger_time
 
     next_trigger_time(num_fetched_events, max_fetch_events, new_next_run)
-    assert new_next_run == expected_result, (
-    f"Expected new_next_run={expected_result}, got {new_next_run} for fetched={num_fetched_events}, max_fetch={max_fetch_events}"
-)
+    assert (
+        new_next_run == expected_result
+    ), f"Expected new_next_run={expected_result}, got {new_next_run} for fetched={num_fetched_events}, max_fetch={max_fetch_events}"
 
 
 @pytest.mark.parametrize(
@@ -224,9 +224,9 @@ def test_fix_last_run(last_run, supported_event_types, expected_result):
     from NetskopeEventCollector_v2 import remove_unsupported_event_types
 
     remove_unsupported_event_types(last_run, supported_event_types)
-    assert last_run == expected_result, (
-    f"Expected last_run={expected_result}, got {last_run} for supported_event_types={supported_event_types}"
-)
+    assert (
+        last_run == expected_result
+    ), f"Expected last_run={expected_result}, got {last_run} for supported_event_types={supported_event_types}"
 
 
 @pytest.mark.asyncio
@@ -242,24 +242,21 @@ async def test_incident_endpoint(mocker):
     from NetskopeEventCollector_v2 import handle_event_type_async
 
     mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_instance"}})
-    mocker.patch.object(
-        __import__('NetskopeEventCollector_v2'), "is_execution_time_exceeded", return_value=False
-    )
+    mocker.patch.object(__import__("NetskopeEventCollector_v2"), "is_execution_time_exceeded", return_value=False)
     mocker.patch("NetskopeEventCollector_v2.print_event_statistics_logs")
     client = Client(BASE_URL, "dummy_token", False, False, event_types_to_fetch=["incident"])
     mock_response = MagicMock()
     mock_response.json.return_value = {"result": EVENTS_RAW["result"], "wait_time": 0}
     request_mock = mocker.patch.object(Client, "_http_request", return_value=mock_response)
-    await handle_event_type_async(
-        client, "incident", "next", "end", 0, 50, False
-    )
+    await handle_event_type_async(client, "incident", "next", "end", 0, 50, False)
     kwargs = request_mock.call_args.kwargs
-    assert kwargs["url_suffix"] == "events/data/incident", (
-        f"Expected url_suffix 'events/data/incident', got {kwargs['url_suffix']}"
-    )
-    assert kwargs["params"] == {"index": "xsoar_collector_test_instance_incident", "operation": "next"}, (
-        f"Expected params {{'index': 'xsoar_collector_test_instance_incident', 'operation': 'next'}}, got {kwargs['params']}"
-    )
+    assert (
+        kwargs["url_suffix"] == "events/data/incident"
+    ), f"Expected url_suffix 'events/data/incident', got {kwargs['url_suffix']}"
+    assert kwargs["params"] == {
+        "index": "xsoar_collector_test_instance_incident",
+        "operation": "next",
+    }, f"Expected params {{'index': 'xsoar_collector_test_instance_incident', 'operation': 'next'}}, got {kwargs['params']}"
 
 
 @pytest.mark.asyncio
@@ -274,6 +271,7 @@ async def test_client_context_manager():
     """
     import aiohttp
     from NetskopeEventCollector_v2 import Client
+
     client = Client(BASE_URL, "token", False, False, ["alert"])
     async with client:
         assert isinstance(client._async_session, aiohttp.ClientSession)
@@ -291,6 +289,7 @@ async def test_get_events_count(mocker):
         - The correct event count should be returned.
     """
     from NetskopeEventCollector_v2 import Client
+
     client = Client(BASE_URL, "token", False, False, ["alert"])
     mocker.patch.object(client, "get_events_data_async", return_value={"result": [{"event_count": 42}]})
     count = await client.get_events_count("alert", {})
@@ -308,6 +307,7 @@ async def test_honor_rate_limiting_async(mocker):
         - The function should sleep for the correct duration and return True/False as appropriate.
     """
     from NetskopeEventCollector_v2 import honor_rate_limiting_async, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET
+
     # Should sleep for reset value
     headers = {RATE_LIMIT_REMAINING: "0", RATE_LIMIT_RESET: "2"}
     sleep_mock = mocker.patch("asyncio.sleep", return_value=None)
@@ -337,6 +337,7 @@ def test_populate_parsing_rule_fields():
         - If timestamp is missing, _time should not be set and no error should be raised.
     """
     from NetskopeEventCollector_v2 import populate_parsing_rule_fields
+
     event = {"timestamp": 1680000000}
     populate_parsing_rule_fields(event, "alert")
     assert event["source_log_event"] == "alert"
@@ -347,46 +348,70 @@ def test_populate_parsing_rule_fields():
     assert event["source_log_event"] == "alert"
 
 
-@pytest.mark.parametrize("event_type,expected_config", [
-    # Incident event type (specific configuration)
-    ("incident", {
-        "endpoint": "/events/datasearch/incident",
-        "time_params": {"start_time": "starttime", "end_time": "endtime"},
-        "count_field": "event_count:count(_id)"
-    }),
-    # Standard event types (default configuration)
-    ("alert", {
-        "endpoint": "/events/data/{type}",
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)"
-    }),
-    ("network", {
-        "endpoint": "/events/data/{type}",
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)"
-    }),
-    ("application", {
-        "endpoint": "/events/data/{type}",
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)"
-    }),
-    ("audit", {
-        "endpoint": "/events/data/{type}",
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)"
-    }),
-    ("page", {
-        "endpoint": "/events/data/{type}",
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)"
-    }),
-    # Unknown event type (should return default configuration)
-    ("unknown_type", {
-        "endpoint": "/events/data/{type}",
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)"
-    })
-])
+@pytest.mark.parametrize(
+    "event_type,expected_config",
+    [
+        # Incident event type (specific configuration)
+        (
+            "incident",
+            {
+                "endpoint": "/events/datasearch/incident",
+                "time_params": {"start_time": "starttime", "end_time": "endtime"},
+                "count_field": "event_count:count(_id)",
+            },
+        ),
+        # Standard event types (default configuration)
+        (
+            "alert",
+            {
+                "endpoint": "/events/data/{type}",
+                "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+                "count_field": "event_count:count(id)",
+            },
+        ),
+        (
+            "network",
+            {
+                "endpoint": "/events/data/{type}",
+                "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+                "count_field": "event_count:count(id)",
+            },
+        ),
+        (
+            "application",
+            {
+                "endpoint": "/events/data/{type}",
+                "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+                "count_field": "event_count:count(id)",
+            },
+        ),
+        (
+            "audit",
+            {
+                "endpoint": "/events/data/{type}",
+                "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+                "count_field": "event_count:count(id)",
+            },
+        ),
+        (
+            "page",
+            {
+                "endpoint": "/events/data/{type}",
+                "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+                "count_field": "event_count:count(id)",
+            },
+        ),
+        # Unknown event type (should return default configuration)
+        (
+            "unknown_type",
+            {
+                "endpoint": "/events/data/{type}",
+                "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+                "count_field": "event_count:count(id)",
+            },
+        ),
+    ],
+)
 def test_get_event_type_config(event_type, expected_config):
     """
     Given:
@@ -397,41 +422,44 @@ def test_get_event_type_config(event_type, expected_config):
         - The correct configuration should be returned for each event type.
     """
     from NetskopeEventCollector_v2 import get_event_type_config
-    
+
     config = get_event_type_config(event_type)
     assert config == expected_config, f"Expected {expected_config} for {event_type}, got {config}"
 
 
-@pytest.mark.parametrize("mock_config,start_time,end_time,expected_params", [
-    # Test incident-style config (starttime/endtime)
-    ({
-        "time_params": {"start_time": "starttime", "end_time": "endtime"}
-    }, "1680000000", "1680086400", {
-        "starttime": "1680000000",
-        "endtime": "1680086400"
-    }),
-    # Test standard config (insertionstarttime/insertionendtime)
-    ({
-        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"}
-    }, "1680000000", "1680086400", {
-        "insertionstarttime": "1680000000",
-        "insertionendtime": "1680086400"
-    }),
-    # Test with different time values
-    ({
-        "time_params": {"start_time": "starttime", "end_time": "endtime"}
-    }, "1234567890", "1234567999", {
-        "starttime": "1234567890",
-        "endtime": "1234567999"
-    }),
-    # Test with custom parameter names
-    ({
-        "time_params": {"start_time": "custom_start", "end_time": "custom_end"}
-    }, "9999999999", "9999999998", {
-        "custom_start": "9999999999",
-        "custom_end": "9999999998"
-    })
-])
+@pytest.mark.parametrize(
+    "mock_config,start_time,end_time,expected_params",
+    [
+        # Test incident-style config (starttime/endtime)
+        (
+            {"time_params": {"start_time": "starttime", "end_time": "endtime"}},
+            "1680000000",
+            "1680086400",
+            {"starttime": "1680000000", "endtime": "1680086400"},
+        ),
+        # Test standard config (insertionstarttime/insertionendtime)
+        (
+            {"time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"}},
+            "1680000000",
+            "1680086400",
+            {"insertionstarttime": "1680000000", "insertionendtime": "1680086400"},
+        ),
+        # Test with different time values
+        (
+            {"time_params": {"start_time": "starttime", "end_time": "endtime"}},
+            "1234567890",
+            "1234567999",
+            {"starttime": "1234567890", "endtime": "1234567999"},
+        ),
+        # Test with custom parameter names
+        (
+            {"time_params": {"start_time": "custom_start", "end_time": "custom_end"}},
+            "9999999999",
+            "9999999998",
+            {"custom_start": "9999999999", "custom_end": "9999999998"},
+        ),
+    ],
+)
 def test_get_time_window_params(mocker, mock_config, start_time, end_time, expected_params):
     """
     Given:
@@ -444,14 +472,14 @@ def test_get_time_window_params(mocker, mock_config, start_time, end_time, expec
         - This test focuses on the key mapping logic, not the config retrieval (which is tested separately).
     """
     from NetskopeEventCollector_v2 import get_time_window_params
-    
+
     # Mock get_event_type_config to return our test config
-    mock_get_config = mocker.patch('NetskopeEventCollector_v2.get_event_type_config', return_value=mock_config)
-    
+    mock_get_config = mocker.patch("NetskopeEventCollector_v2.get_event_type_config", return_value=mock_config)
+
     params = get_time_window_params("any_event_type", start_time, end_time)
-    
+
     # Verify the config was retrieved
     mock_get_config.assert_called_once_with("any_event_type")
-    
+
     # Verify the key mapping worked correctly
     assert params == expected_params, f"Expected {expected_params}, got {params}"
