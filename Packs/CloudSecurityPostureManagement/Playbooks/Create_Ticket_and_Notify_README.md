@@ -1,4 +1,4 @@
-This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will send an email with the issue details directly to the selected issue owner.
+This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
 
 ## Dependencies
 
@@ -40,7 +40,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | Do you want to create a ticket? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: If set to 'Yes', a configured ServiceNow and/or Jira integration is required.  <br/>If using Jira, the Jira Project Key input must also be provided. |  | Required |
 | Do you want to send a message notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: If set to 'Yes', Microsoft Teams and/or Slack integration must be configured.<br/>If using Slack, the Slack Channel Name input must also be provided. |  | Required |
-| Do you want to send a email notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: To send email notifications, specify the Notification Email Recipients input. |  | Required |
+| Do you want to send an email notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: To send email notifications, specify the Notification Email Recipients input. |  | Required |
 | Jira Project Key | Provide Jira project key where the issue will be created. |  | Optional |
 | Slack Channel Name | Provide Slack channel name to which to send messages. |  | Optional |
 | Notification Email Recipients | Provide the email address to send email notifications. |  | Optional |
@@ -54,6 +54,9 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- |
 | Ticket.Id | Jira Ticket ID | string |
 | ServiceNow.Ticket.ID | Service Now Ticket ID | string |
+| Please Provide Jira Project Key.Answers.0 | Jira Project Key | shortText |
+| Please Provide Slack Channel Name.Answers.0 | Slack Channel Name | shortText |
+| Please Provide Notification Email Recipients.Answers.0 | Notification Email Recipients | shortText |
 
 ## Playbook Image
 
