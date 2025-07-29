@@ -2356,7 +2356,6 @@ script:
       type: string
   isfetch: false
   runonce: false
-  supportsquickactions: true
   script: '-'
   type: python
   subtype: python3
@@ -2368,3 +2367,4 @@ sectionOrder:
 - Connect
 - Collect
 isCloudProviderIntegration: true
+supportsquickactions: true
