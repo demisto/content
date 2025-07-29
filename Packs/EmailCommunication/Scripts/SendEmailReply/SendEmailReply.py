@@ -967,17 +967,66 @@ def convert_internal_url_to_base64(match):
     return f'src="data:image/{image_type};base64,{base64_data_image}"'
 
 
-def format_body(new_email_body):
+def get_previous_message_content(incident_email_threads, email_selected_thread):
     """
-        Converts markdown included in the email body to HTML
+    Retrieves the content of previous messages in the selected email thread for inclusion in replies.
+    
+    Args:
+        incident_email_threads: Dict containing all threads present on the incident
+        email_selected_thread: Thread Number currently selected
+    
+    Returns:
+        tuple: (previous_text_content, previous_html_content) - The content of previous messages in plain text and HTML formats
+    """
+    previous_text_content = ""
+    previous_html_content = ""
+    thread_messages = []
+    
+    # First, collect all messages from the selected thread
+    if isinstance(incident_email_threads, dict):
+        if str(incident_email_threads.get("EmailCommsThreadNumber", "")) == str(email_selected_thread):
+            thread_messages.append(incident_email_threads)
+    elif isinstance(incident_email_threads, list):
+        for thread_entry in incident_email_threads:
+            if str(thread_entry.get("EmailCommsThreadNumber", "")) == str(email_selected_thread):
+                thread_messages.append(thread_entry)
+    
+    # Sort messages by time to ensure proper order
+    thread_messages.sort(key=lambda x: x.get("MessageTime", ""))
+    
+    # Build the previous message content
+    for message in thread_messages:
+        sender = message.get("EmailFrom", "")
+        time = message.get("MessageTime", "")
+        text_body = message.get("EmailBody", "")
+        html_body = message.get("EmailHTML", "")
+        
+        # Format the header for the previous message
+        header = f"\nOn {time}, {sender} wrote:\n"
+        html_header = (f"<br><div style='border-left: 1px solid #ccc; margin: 10px 0; padding-left: 10px;'>"
+                      f"<p><b>On {time}, {sender} wrote:</b></p>")
+        
+        # Add the message content to the accumulated content
+        if text_body:
+            # For plain text, indent each line with "> "
+            indented_text = "\n".join([f"> {line}" for line in text_body.split("\n")])
+            previous_text_content += f"{header}{indented_text}\n"
+        
+        if html_body:
+            previous_html_content += f"{html_header}{html_body}</div>"
+    
+    return previous_text_content, previous_html_content
+
+
+def format_body(new_email_body, previous_text_content="", previous_html_content=""):
+    """
+        Converts markdown included in the email body to HTML and optionally includes previous message content
     Args:
         new_email_body (str): Email body text with or without Markdown formatting included
+        previous_text_content (str, optional): Previous message content in plain text format
+        previous_html_content (str, optional): Previous message content in HTML format
     Returns: (str) HTML email body
     """
-    use_raw_body = argToBoolean(demisto.incident().get("CustomFields").get("sendbodyasrawnomarkdown", False))
-    if use_raw_body:  # it true, will send the body as is and won't use markdown
-        return new_email_body, new_email_body
-
     # 1. Apply your direction tags first
     md_with_direction = process_directions(new_email_body)
 
@@ -986,6 +1035,10 @@ def format_body(new_email_body):
 
     # 3. Replace Atlassian color/background tags with inline HTML spans
     fixed_body = replace_atlassian_tags(fixed_body)
+    
+    # 4. Append previous message content in plain text format if available
+    if previous_text_content:
+        fixed_body += previous_text_content
 
     context_html_body = markdown(
         fixed_body,
@@ -1002,11 +1055,16 @@ def format_body(new_email_body):
     if "<table>" in context_html_body:
         context_html_body = context_html_body.replace(
             "<table>",
-            '<table border="1" cellpadding="6" cellspacing="0" ' 'style="border-collapse: collapse; border: 1px solid #999;">',
+            '<table border="1" cellpadding="6" cellspacing="0" '
+            'style="border-collapse: collapse; border: 1px solid #999;">',
         )
 
     saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
     html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
+    
+    # 5. Append previous message content in HTML format if available
+    if previous_html_content:
+        html_body += previous_html_content
     return context_html_body, html_body
 
 
@@ -1422,8 +1480,12 @@ def multi_thread_reply(
             # Get a list of entry ID's for attachments that were fetched as files
             entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-            # Format any markdown in the email body as HTML
-            context_html_body, reply_html_body = format_body(new_email_body)
+            # Get previous message content from the thread
+            previous_text_content, previous_html_content = get_previous_message_content(
+                incident_email_threads, email_selected_thread)
+            
+            # Format any markdown in the email body as HTML and include previous message content
+            context_html_body, reply_html_body = format_body(new_email_body, previous_text_content, previous_html_content)
 
             # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
             reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
