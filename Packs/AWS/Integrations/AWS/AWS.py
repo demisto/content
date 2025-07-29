@@ -905,9 +905,9 @@ class EC2:
         if args.get("filters") is not None:
             kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
         if args.get("groupIds") is not None:
-            kwargs.update({"GroupIds": parse_resource_ids(args.get("groupIds"))})
+            kwargs.update({"GroupIds": parse_resource_ids(args.get("group_ids"))})
         if args.get("groupNames") is not None:
-            kwargs.update({"GroupNames": parse_resource_ids(args.get("groupNames"))})
+            kwargs.update({"GroupNames": parse_resource_ids(args.get("group_names"))})
 
         response = client.describe_security_groups(**kwargs)
 

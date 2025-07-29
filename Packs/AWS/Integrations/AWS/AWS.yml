@@ -2109,13 +2109,13 @@ script:
       description: The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC.
       required: true
     - name: description
-      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*'
+      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*.'
       required: true
     - name: vpc_id
       description: The ID of the VPC. Required for a nondefault VPC.
       required: false
     - name: tag_specifications
-      description: 'The tags to assign to the security group in JSON format. Example: [{"ResourceType": "security-group", "Tags": [{"Key": "Environment", "Value": "Production"}, {"Key": "Team", "Value": "Security"}]}]'
+      description: 'The tags to assign to the security group in JSON format. Example: [{"ResourceType": "security-group", "Tags": [{"Key": "Environment", "Value": "Production"}, {"Key": "Team", "Value": "Security"}]}].'
       required: false
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.GroupName
@@ -2224,10 +2224,10 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - name: group_id
+    - name: group_ids
       description: Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321).
       isArray: true
-    - name: group_name
+    - name: group_names
       description: Comma-separated list of security group names.
       isArray: true
     - name: filters
@@ -2356,6 +2356,7 @@ script:
       type: string
   isfetch: false
   runonce: false
+  supportsquickactions: true
   script: '-'
   type: python
   subtype: python3
