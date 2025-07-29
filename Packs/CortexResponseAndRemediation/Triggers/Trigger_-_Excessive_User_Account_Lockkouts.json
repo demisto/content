@@ -17,22 +17,22 @@
               "SEARCH_VALUE": "Excessive user account lockouts"
             },
             {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Excessive account lockouts on suspicious users"
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Excessive account lockouts on suspicious users"
             },
             {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Excessive user account lockouts from a suspicious source"
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Excessive user account lockouts from a suspicious source"
             }
           ]
         },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
       ]
     }
   }

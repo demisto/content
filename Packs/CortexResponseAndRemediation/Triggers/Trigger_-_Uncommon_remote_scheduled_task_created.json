@@ -9,15 +9,15 @@
     "filter": {
       "AND": [
         {
-          "SEARCH_FIELD": "alert_name",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Uncommon remote scheduled task created"
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Uncommon remote scheduled task created"
         },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
       ]
     }
   }

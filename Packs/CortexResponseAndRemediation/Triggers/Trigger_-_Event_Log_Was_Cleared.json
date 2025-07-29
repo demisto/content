@@ -8,52 +8,53 @@
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
-      "AND": [
-        {
-          "OR": [
+        "AND": [
             {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Windows Event Log was cleared using wevtutil.exe"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Security Event Log was cleared using wevtutil.exe"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "A Sensitive Windows Event Log was cleared using wevtutil.exe"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Windows event logs were cleared with PowerShell"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Suspicious clear or delete security provider event logs with PowerShell"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Suspicious clear or delete default providers event logs with PowerShell"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Windows event logs cleared using wmic.exe"
-            }
-          ]
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Windows Event Log was cleared using wevtutil.exe"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Security Event Log was cleared using wevtutil.exe"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "A Sensitive Windows Event Log was cleared using wevtutil.exe"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Windows event logs were cleared with PowerShell"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Suspicious clear or delete security provider event logs with PowerShell"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Suspicious clear or delete default providers event logs with PowerShell"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Windows event logs cleared using wmic.exe"
+                }
+                ]
         },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
-      ]
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
     }
   }
 }
+

@@ -7,27 +7,28 @@
   "trigger_name": "SSO Brute Force",
   "alerts_filter": {
     "filter": {
-      "AND": [
-        {
-          "OR": [
+        "AND": [
             {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "SSO Brute Force Threat Detected"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "SSO Brute Force Activity Observed"
-            }
-          ]
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "SSO Brute Force Threat Detected"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "SSO Brute Force Activity Observed"
+                }
+                ]
         },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
-      ]
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]    
     }
   }
 }
+

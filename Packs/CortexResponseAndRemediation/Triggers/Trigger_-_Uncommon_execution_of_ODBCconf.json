@@ -10,24 +10,24 @@
     "filter": {
       "AND": [
         {
-          "OR": [
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Uncommon execution of ODBCConf"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Uncommon execution of ODBCConf to load dll directly"
-            }
-          ]
+            "OR": [
+                { 
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Uncommon execution of ODBCConf"
+                },
+                {
+                    "SEARCH_FIELD": "alert_name",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Uncommon execution of ODBCConf to load dll directly"
+                } 
+            ]
         },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
+            {
+                  "SEARCH_FIELD": "alert_type",
+                  "SEARCH_TYPE": "NEQ",
+                  "SEARCH_VALUE": "Correlation"
+            }
       ]
     }
   }

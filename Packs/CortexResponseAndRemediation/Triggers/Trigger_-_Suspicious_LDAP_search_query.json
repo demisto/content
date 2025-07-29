@@ -8,45 +8,46 @@
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
-      "AND": [
-        {
-          "OR": [
+        "AND": [
             {
-              "AND": [
-                {
-                  "SEARCH_FIELD": "alert_name",
-                  "SEARCH_TYPE": "EQ",
-                  "SEARCH_VALUE": "Possible LDAP enumeration by unsigned process"
-                },
-                {
-                  "SEARCH_FIELD": "severity",
-                  "SEARCH_TYPE": "EQ",
-                  "SEARCH_VALUE": "SEV_030_MEDIUM"
-                }
-              ]
-            },
-            {
-              "AND": [
-                {
-                  "SEARCH_FIELD": "alert_name",
-                  "SEARCH_TYPE": "EQ",
-                  "SEARCH_VALUE": "Suspicious LDAP search query executed"
-                },
-                {
-                  "SEARCH_FIELD": "severity",
-                  "SEARCH_TYPE": "EQ",
-                  "SEARCH_VALUE": "SEV_040_HIGH"
-                }
-              ]
-            }
-          ]
+                "OR": [
+                  {
+                    "AND": [
+                      {
+                        "SEARCH_FIELD": "alert_name",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Possible LDAP enumeration by unsigned process"
+                      },
+                      {
+                        "SEARCH_FIELD": "severity",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "SEV_030_MEDIUM"
+                      }
+                    ]
+                  },
+                  {
+                    "AND": [
+                      {
+                        "SEARCH_FIELD": "alert_name",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Suspicious LDAP search query executed"
+                      },
+                      {
+                        "SEARCH_FIELD": "severity",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "SEV_040_HIGH"
+                      }
+                    ]
+                  }
+                ]
         },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
-      ]
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]    
     }
   }
 }
+

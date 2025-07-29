@@ -8,42 +8,42 @@
   "fromVersion": "8.8.0",
   "alerts_filter": {
     "filter": {
-      "AND": [
-        {
-          "OR": [
+        "AND": [
             {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a commonly abused process"
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a commonly abused process"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed process hollowing injection"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed queue APC injection"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a sensitive process"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Unsigned and unpopular process performed injection into svchost.exe"
+                }
+                ]
             },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Unsigned and unpopular process performed process hollowing injection"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Unsigned and unpopular process performed queue APC injection"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Unsigned and unpopular process performed injection into a sensitive process"
-            },
-            {
-              "SEARCH_FIELD": "alert_name",
-              "SEARCH_TYPE": "EQ",
-              "SEARCH_VALUE": "Unsigned and unpopular process performed injection into svchost.exe"
-            }
-          ]
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "NEQ",
-          "SEARCH_VALUE": "Correlation"
-        }
-      ]
+          {
+                "SEARCH_FIELD": "alert_type",
+                "SEARCH_TYPE": "NEQ",
+                "SEARCH_VALUE": "Correlation"
+          }
+        ]    
     }
   }
 }
