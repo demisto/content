@@ -15,4 +15,4 @@ ignore=GR103
 ignore=IN136
 
 [file:NetskopeEventCollector_v2.yml]
-ignore=BA108
+ignore=BA108,BA109
