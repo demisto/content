@@ -2593,37 +2593,16 @@ Deletes a policy rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rulename | The name of the rule to delete. | Required |
-| pre_post | The pre-rule or post-rule (Panorama instances). Possible values are: pre-rulebase, post-rulebase. | Optional |
-| device-group | The device group where the rule is configured (Panorama instances). | Optional |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-| rulebase | The rulebase from which to delete the rule. Possible values are: security, application-override, authentication, decryption, nat, pbf. Default is security. | Required |
-| vsys | The Firewall VSYS to delete the rule from. Use for deleting local rules from a firewall via Panorama or to specify a different VSYS than set in Integration parameters. Default is vsys1. | Optional |
+| rulename | The name of the rule to delete. | Required | 
+| pre_post | The pre-rule or post-rule (Panorama instances). Possible values are: pre-rulebase, post-rulebase. | Optional | 
+| device-group | The device group for which to return addresses for the rule (Panorama instances). | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.SecurityRule.Name | string | The rule name. |
-| Panorama.SecurityRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.NAT.Name | string | The rule name. |
-| Panorama.NAT.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.SSLRule.Name | string | The rule name. |
-| Panorama.SSLRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.PBF.Name | string | The rule name. |
-| Panorama.PBF.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.AuthRule.Name | string | The rule name. |
-| Panorama.AuthRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.AppOverride.Name | string | The rule name. |
-| Panorama.AppOverride.DeviceGroup | string | The device group for the rule \(Panorama instances\). |
-| Panorama.CleanedUpRules.Category | string | The category of the rule that was cleaned up \(Local or Panorama\). |
-| Panorama.CleanedUpRules.AppliedAction | string | The applied cleanup action \(Disabled or Deleted\). |
-| Panorama.CleanedUpRules.DeviceGroup | string | The device group where the rule was cleaned up from \(Panorama instances\). |
-| Panorama.CleanedUpRules.PrePost | string | The location where the rule was cleaned up from \(Panorama instances\). |
-| Panorama.CleanedUpRules.RuleName | string | The name of the rule. |
-| Panorama.CleanedUpRules.Rulebase | string | The rulebase where the rule was cleaned up from \(e.g. 'security', 'nat'\). |
-| Panorama.CleanedUpRules.Target | string | The target firewall serial number, if provided. |
-| Panorama.CleanedUpRules.Vsys | string | The VSYS where the rule was cleaned up from. |
+| Panorama.SecurityRule.Name | string | The rule name. | 
+| Panorama.SecurityRule.DeviceGroup | string | The device group for the rule \(Panorama instances\). | 
 
 ### pan-os-list-applications
 
@@ -4025,9 +4004,30 @@ Downloads the latest app/threat dynamic update.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Content.Download.JobID | String | The job ID of the app/threat download. |
-| Panorama.Content.Download.Status | String | The app/threat download status. |
-| Panorama.Content.Download.Details | String | The download job details. |
+### pan-os-download-latest-content-update
 
+***
+Downloads the latest content update.
+
+#### Base Command
+
+`pan-os-download-latest-content-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Download.JobID | String | The job ID of the content download. | 
+| Panorama.Content.Download.Status | String | The content download status. | 
+
+| Panorama.Content.Download.Status | String | Download status. |
+| Panorama.Content.Download.Details | String | Job ID details. |
 ### pan-os-content-update-download-status
 
 ***
@@ -4041,33 +4041,33 @@ Checks the download status of a content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-| job_id | Job ID to check.                                                                             | Required |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | The job ID to check. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Download.JobID | String | Job ID to monitor. |
-| Panorama.Content.Download.Status | String | Download status. |
-| Panorama.Content.Download.Details | String | Job ID details. |
+| Panorama.Content.Download.JobID | String | The job ID to monitor. | 
+| Panorama.Content.Download.Status | String | The download status. | 
+| Panorama.Content.Download.Details | String | The job ID details. | 
 
-#### Command Example
 
-```!pan-os-content-update-download-status job_id=678```
+### pan-os-content-update-install-status
 
-#### Human Readable Output
+***
+Gets the installation status of the content update.
 
->### Content download status
->
->|JobID|Status|Details|
->|---|---|---|
->| 678 | Completed | download succeeded with warnings |
+#### Base Command
+
+`pan-os-content-update-install-status`
+
+#### Input
 
 ### pan-os-install-latest-content-update
 
 ***
-Installs the latest app/threat dynamic update.
+Installs the latest content update.
 
 #### Base Command
 
@@ -4077,17 +4077,17 @@ Installs the latest app/threat dynamic update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-| polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Install.JobID | String | The job ID of the installation. |
-| Panorama.Content.Install.Status | String | The installation status. |
-| Panorama.Content.Install.Details | String | The install job details. |
+| Panorama.Content.Install.JobID | String | The job ID of the installation. | 
+| Content.Install.Status | String | The installation status. | 
 
+
+### pan-os-check-latest-panos-software
 ### pan-os-content-update-install-status
 
 ***
@@ -4101,66 +4101,17 @@ Gets the installation status of the content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-| job_id | Job ID of the content installation. | Required |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | The job ID of the content installation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Install.JobID | String | Job ID of the content installation. |
-| Panorama.Content.Install.Status | String | Content installation status. |
-| Panorama.Content.Install.Details | String | Content installation status details. |
+| Panorama.Content.Install.JobID | String | The job ID of the content installation. | 
+| Panorama.Content.Install.Status | String | The content installation status. | 
+| Panorama.Content.Install.Details | String | The content installation status details. | 
 
-#### Command Example
-
-```!pan-os-content-update-install-status job_id=878```
-
-#### Human Readable Output
-
->### Content install status
->
->|JobID|Status|Details|
->|---|---|---|
->| 878 | Completed | installation succeeded with warnings |
-
-### pan-os-check-latest-panos-software
-
-***
-Checks the PAN-OS software version from the repository.
-
-#### Base Command
-
-`pan-os-check-latest-panos-software`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.LatestVersions | unknown | Latest software versions. |
-
-#### Command Example
-
-```!pan-os-check-latest-panos-software```
-
-### pan-os-download-panos-version
-
-***
-Downloads the target PAN-OS software version to install on the target device.
-
-#### Base Command
-
-`pan-os-download-panos-version`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 | target_version | The target version number to install. | Required |
@@ -9610,26 +9561,71 @@ List the exceptions in a Vulnerability Protection profile or Anti Spyware profil
 
 #### Command example
 
-```!pan-os-list-profile-exception profile_name="test1" profile_type="Vulnerability Protection Profile"```
+### pan-os-add-profile-exception
+
+***
+Add an exception to a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-add-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to add. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required |
+| threat | The requested threat name/CVE/ID to delete. | Required |
+### pan-os-list-profile-exception
+
+***
+List the exceptions in a Vulnerability Protection profile or Anti Spyware profile.
+
+#### Base Command
+
+`pan-os-list-profile-exception`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | The profile name. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Vulnerability.Name | String | The profile name. |
-| Panorama.Vulnerability.Exception.name | String | The exception name. |
-| Panorama.Vulnerability.Exception.id | String | The exception ID. |
-| Panorama.Vulnerability.Exception.CVE | String | The exception CVE if exist. |
-| Panorama.Vulnerability.Exception.action | String | The exception action. |
-| Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt ID. |
-| Panorama.Vulnerability.Exception.packet-capture | String | The exception packet capture. |
-| Panorama.Spyware.Name | String | The profile name. |
-| Panorama.Spyware.Exception.name | String | The exception name. |
-| Panorama.Spyware.Exception.id | String | The exception ID. |
-| Panorama.Spyware.Exception.CVE | String | The exception CVE if exist. |
-| Panorama.Spyware.Exception.action | String | The exception action. |
-| Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. |
-| Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. |
+| Panorama.Vulnerability.Name | String | The profile name. | 
+| Panorama.Vulnerability.Exception.name | String | The exception name. | 
+| Panorama.Vulnerability.Exception.id | String | The exception ID. | 
+| Panorama.Vulnerability.Exception.CVE | String | The exception CVE if exist. | 
+| Panorama.Vulnerability.Exception.action | String | The exception action. | 
+| Panorama.Vulnerability.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Vulnerability.Exception.packet-capture | String | The exception packet capture. | 
+| Panorama.Spyware.Name | String | The profile name. | 
+| Panorama.Spyware.Exception.name | String | The exception name. | 
+| Panorama.Spyware.Exception.id | String | The exception ID. | 
+| Panorama.Spyware.Exception.CVE | String | The exception CVE if exist. | 
+| Panorama.Spyware.Exception.action | String | The exception action. | 
+| Panorama.Spyware.Exception.exempt-id | String | The exception exempt ID. | 
+| Panorama.Spyware.Exception.packet-capture | String | The exception packet capture. | 
 
 ### pan-os-delete-profile-exception
 
@@ -9644,18 +9640,13 @@ Delete an exception to a Vulnerability Protection profile or Anti Spyware profil
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | The profile name. | Required |
-| threat | The requested threat name/CVE/ID to delete. | Required |
-| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional |
-
-#### Command example
-
-```!pan-os-delete-profile-exception profile_name="test2" threat="10005" profile_type="Vulnerability Protection Profile"```
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to delete. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### pan-os-edit-profile-exception
 
 ***
@@ -9669,78 +9660,19 @@ Edit an exception to a Vulnerability Protection profile or Anti Spyware profile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | The profile name. | Required |
-| threat | The requested threat name/CVE/ID to edit. | Required |
-| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional |
-| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional |
-| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional |
-| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional |
-| device_group | Device group. This will override any configured device group or vsys. | Optional |
-| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional |
-| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional |
-
-#### Command example
-
-```!pan-os-edit-profile-exception profile_name="test1" threat="10002" action="Drop"```
+| profile_name | The profile name. | Required | 
+| threat | The requested threat name/CVE/ID to edit. | Required | 
+| profile_type | The profile type. Possible values are: Vulnerability Protection Profile, Anti Spyware Profile. | Optional | 
+| action | The action type of the exception. Default value is 'default'. Possible values are: Alert, Allow, Block IP, Drop, Reset Both, Reset Client, Reset Server. | Optional | 
+| packet_capture | To configure the firewall to take a packet capture when it detects a threat. Possible values are: Disable, Single Packet, Extended Capture. | Optional | 
+| exempt_ip | An IP address. Configure an exempt IP address to enforce a threat exception only when the associated session has either a matching source or destination IP address; for all other sessions, the threat is enforced based on the default signature action. | Optional | 
+| device_group | Device group. This will override any configured device group or vsys. | Optional | 
+| ip_track_by | Specify whether to Track By and block the IP address using the IP source or the IP source and destination. If action = Block IP , this argument is mandatory. Possible values are: Source, Source And Destination. | Optional | 
+| ip_duration_sec | Specify the time period (in seconds) after which to trigger the action. If action = Block IP , this argument is mandatory. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
-### pan-os-create-master-key
-
-***
-Create a default master key that encrypts all the private keys and passwords in the configuration.
-
-**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
-
-#### Base Command
-
-`pan-os-create-master-key`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| master_key | The encryption master key. Must be exactly 16 characters. | Required |
-| lifetime_in_hours | The lifetime of the key in hours. | Required |
-| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required |
-
-#### Limitations
-
-* All changes to the configuration of the Palo Alto firewall or Panorama need to be committed before running this command. This can be done using using the [pan-os-commit](#pan-os-commit) and [pan-os-push-status](#pan-os-push-status) commands.
-
-* The command invalidates the current API key and requires obtaining a new one using the instructions in [the PAN-OS and Panorama API usage guide](https://docs.paloaltonetworks.com/pan-os/11-1/pan-os-panorama-api/pan-os-api-authentication/get-your-api-key). All subsequent commands will raise an "Invalid Credential" error until a new API key is obtained and the integration instance is updated accordingly.
-
-#### Command example
-
-```!pan-os-create-master-key master_key="MyFakeMasterKey1" lifetime_in_hours=2160 reminder_in_hours=1992```
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Human Readable Output
-
->Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 1234.
->
->⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
-
-### pan-os-update-master-key
-
-***
-Update the default master key that encrypts all the private keys and passwords in the configuration.
-
-**This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.**
-
-#### Base Command
-
-`pan-os-update-master-key`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
 | current_master_key | The current encryption master key. | Required |
 | new_master_key | The new encryption master key. Must be exactly 16 characters. | Required |
 | lifetime_in_hours | The lifetime of the key in hours. | Required |
@@ -9755,45 +9687,26 @@ Update the default master key that encrypts all the private keys and passwords i
 #### Command example
 
 ```!pan-os-update-master-key current_master_key="MyFakeMasterKey1" new_master_key="MyFakeMasterKey2" lifetime_in_hours=2160 reminder_in_hours=1992```
+### pan-os-create-master-key
+
+***
+Create a default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.
+
+#### Base Command
+
+`pan-os-create-master-key`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| master_key | The encryption master key. Must be exactly 16 characters. | Required | 
+| lifetime_in_hours | The lifetime of the key in hours. | Required | 
+| reminder_in_hours | The time to be notified of the key's expiration in hours. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Human Readable Output
-
->Master key changed successfully. All key material has been re-encrypted with new master key and committed via jobid 2468.
->
->⚠️ The current API key is no longer valid! (by design). Generate a new API key and update it in the integration instance configuration to keep using the integration.
-
-### pan-os-get-master-key-details
-
-***
-Show the details of the default master key that encrypts all the private keys and passwords in the configuration.
-
-#### Base Command
-
-`pan-os-get-master-key-details`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Command example
-
-```!pan-os-get-master-key-details```
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.MasterKey.auto-renew-mkey | String | Whether the master key will be automatically renewed on expiry. |
-| Panorama.MasterKey.expire-at | String | The date and time when the key is set to expire. |
-| Panorama.MasterKey.hours-to-expiry | String | The number of hours remaining before the key expires. |
-| Panorama.MasterKey.hours-to-reminder | String | The number of hours remaining before being notified that the key is set to expire. |
-| Panorama.MasterKey.minutes-to-expiry | String | The number of minutes remaining before the key expires. |
-| Panorama.MasterKey.minutes-to-reminder | String | The number of minutes remaining before being notified that the key is set to expire. |
-| Panorama.MasterKey.on-hsm | String | Whether the master key is encrypted using a key stored on a Hardware Security Module (HSM). |
 | Panorama.MasterKey.remind-at | String | The date and time when to be notified that the key is set to expire. |
 | Panorama.MasterKey.seconds-to-expiry | String | The number of seconds remaining before the key expires. |
 | Panorama.MasterKey.seconds-to-reminder | String | The number of seconds remaining before being notified that the key is set to expire. |
@@ -9813,87 +9726,36 @@ There are no input arguments for this command.
             "on-hsm": "no",
             "remind-at": "2024/11/27 04:26:05",
             "seconds-to-expiry": "7697336",
-            "seconds-to-reminder": "7171200"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Master Key Details
->
->| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
->| --- | --- | --- | --- |
->| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
-
-### pan-os-get-certificate-info
+### pan-os-update-master-key
 
 ***
-Gathers the name, expiration date, and expiration status of certificates configured locally on a Firewall or pushed from Panorama, as seen under Certificate Management.
+Update the default master key that encrypts all the private keys and passwords in the configuration. This command is harmful because it invalidates the current API key and requires re-configuration of the integration instance.
 
 #### Base Command
 
-`pan-os-get-certificate-info`
+`pan-os-update-master-key`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| show_expired_only | Show only expired certificates. | Optional |
-
-#### Command example
-
-```!pan-os-get-certificate-info show_expired_only=true```
+| new_master_key | The new encryption master key. Must be exactly 16 characters. | Required | 
+| current_master_key | The current encryption master key. | Required | 
+| lifetime_in_hours | The lifetime of the new key in hours. | Required | 
+| reminder_in_hours | The time to be notified of new the new key's expiration in hours. | Required | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.Certificate.name | String | Name of the certificate. |
-| Panorama.Certificate.device | String | Device where this certificate was found. |
-| Panorama.Certificate.subject | String | Subject of the certificate. |
-| Panorama.Certificate.expiration_date | String | Expiration date of the certificate. |
-| Panorama.Certificate.expiration_status | String | Status of certificate - Expired, Expiring in 30 days, Expiring in 60 days, Expiring in 90 days or Valid. |
-| Panorama.Certificate.location | String | Where this certificate was configured - Firewall or Panorama. |
-| Panorama.Certificate.cert_type | String | Whether this certificate was pushed from Panorama, Local to Firewall, or Predefined on Panorama or a Firewall. |
-| Panorama.Certificate.devices_using_certificate | Unknown | List of devices using this certificate if it was pushed from Panorama. |
-
-#### Context Example
-
-```json
-{
-    "Panorama": {
-        "Certificate": [
-            {
-                "name": "ACME Root CA",
-                "device": "panorama.test",
-                "subject": "/CN=acme-root-ca.acme.com",
-                "expiration_date": "May  9 16:35:16 2026 GMT",
-                "expiration_status": "Valid",
-                "location": "Panorama",
-                "cert_type": "Pushed",
-                "devices_using_certificate": [
-                                                "111111111111111"
-                                            ]
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Certificates Information
->
->| name | device | subject | expiration_date | expiration_status | location | cert_type | devices_using_certificate |
->| --- | --- | --- | --- | --- | --- | --- | --- |
->| ACME Root CA | panorama.test | /CN=acme-root-ca.acme.com | May  9 16:35:16 2026 GMT | Valid | Panorama | Pushed | 111111111111111 |
-
-### pan-os-check-dynamic-updates-status
-
-***
-Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+There is no context output for this command.
+| Panorama.MasterKey.expire-at | String | The date and time when the key is set to expire. | 
+| Panorama.MasterKey.hours-to-expiry | String | The number of hours remaining before the key expires. | 
+| Panorama.MasterKey.hours-to-reminder | String | The number of hours remaining before being notified that the key is set to expire. | 
+| Panorama.MasterKey.minutes-to-expiry | String | The number of minutes remaining before the key expires. | 
+| Panorama.MasterKey.minutes-to-reminder | String | The number of minutes remaining before being notified that the key is set to expire. | 
+| Panorama.MasterKey.on-hsm | String | Whether the master key is encrypted using a key stored on a Hardware Security Module \(HSM\). | 
+| Panorama.MasterKey.remind-at | String | The date and time when to be notified that the key is set to expire. | 
+| Panorama.MasterKey.seconds-to-expiry | String | The number of seconds remaining before the key expires. | 
+| Panorama.MasterKey.seconds-to-reminder | String | The number of seconds remaining before being notified that the key is set to expire. | 
 
 #### Base Command
 
