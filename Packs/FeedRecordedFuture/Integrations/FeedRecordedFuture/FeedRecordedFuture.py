@@ -520,7 +520,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                         "recordedfutureevidencedetails": lower_case_evidence_details_keys,
                         "tags": client.tags,
                         "recordedfutureriskscore": risk,
-                        "recordedfutureriskrulecount": raw_json.get("RiskString", ""),
+                        "fieldrecordedfutureriskrules": raw_json.get("RiskString", ""),
                         "recordedfuturefeedthreatassessment": raw_json.get("Criticality Label", ""),
                     },
                     "score": score,
