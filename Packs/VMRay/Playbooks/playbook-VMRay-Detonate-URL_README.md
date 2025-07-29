@@ -18,12 +18,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* vmray-get-sample
 * vmray-get-analysis-by-sample
-* vmray-get-threat-indicators
 * vmray-get-iocs
-* vmray-upload-url
+* vmray-get-sample
 * vmray-get-submission
+* vmray-get-threat-indicators
+* vmray-upload-url
 
 ## Playbook Inputs
 
@@ -107,4 +107,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Detonate URL - VMRay](../doc_files/Detonate_URL_-_VMRay.png)
+![Detonate URL - VMRay](../doc_files/VMRay-Detonate-URL.png)
