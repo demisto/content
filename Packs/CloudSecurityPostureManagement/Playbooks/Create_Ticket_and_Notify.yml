@@ -493,7 +493,7 @@ tasks:
       - "34"
     scriptarguments:
       channel:
-        simple: ${inputs.Slack Channel Name}${Please Provide Slack Channel Name.Answers.0}
+        simple: ${inputs.Slack Channel Name}
       message:
         simple: |-
           Issue Resolved for Asset: ${Core.CoreAsset.xdm__asset__name}
