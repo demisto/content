@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "breachScript": "SendEmailOnSLABreach",
+    "caseInsensitive": true,
+    "cliName": "slatest",
+    "closeForm": false,
+    "content": true,
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_slatest",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "slatest",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 10,
+    "system": false,
+    "threshold": 0.08333333333333333,
+    "type": "timer",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
