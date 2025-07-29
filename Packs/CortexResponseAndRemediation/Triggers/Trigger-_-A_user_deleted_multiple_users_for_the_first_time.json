@@ -6,6 +6,7 @@
   "trigger_name": "A user deleted multiple users for the first time",
   "fromVersion": "8.9.0",
   "issilent": false,
+  "auto_enabled": true,
   "alerts_filter": {
     "filter": {
       "AND": [
@@ -16,10 +17,9 @@
               "SEARCH_TYPE": "EQ",
               "SEARCH_VALUE": "A user deleted multiple users for the first time"
             }
-          ]
+        ]
         }
       ]
     }
-  },
-  "auto_enabled": true
+  }
 }
