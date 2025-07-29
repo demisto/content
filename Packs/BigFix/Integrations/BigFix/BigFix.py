@@ -535,7 +535,7 @@ def deploy_patch(site_name, computer_ids, fixlet_id, action_id):
     fullurl = BASE_URL + "/api/actions"
     res = requests.post(fullurl, auth=(USERNAME, PASSWORD), verify=VERIFY_CERTIFICATE, data=request_body)
 
-    LOG(f"deploy_patch - raw response: {res.content}")
+    LOG(f"deploy_patch - raw response: {res.content.decode('utf-8', errors='replace')}")
     if res.status_code < 200 or res.status_code >= 300:
         return_error(
             f"Failed to deploy patch {fixlet_id}.\nRequest URL: {fullurl}"
