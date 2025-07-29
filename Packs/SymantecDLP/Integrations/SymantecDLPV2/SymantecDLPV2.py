@@ -3,6 +3,7 @@ from typing import Any
 import dateparser
 import demistomock as demisto  # noqa: F401
 import requests
+import pytz
 
 # Disable insecure warnings
 import urllib3
@@ -12,6 +13,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+TIME_ZONE = "UTC"
 MAX_PAGE_SIZE = 50
 INCIDENT_TYPE_MAPPING = {"Network": "NETWORK", "Discover": "DISCOVER", "Endpoint": "ENDPOINT"}
 INCIDENT_SEVERITY_MAPPING = {"Info": 4, "Low": 3, "Medium": 2, "High": 1}
@@ -380,8 +382,17 @@ def get_severity_name_by_id(severity: Optional[int]):
 
 def parse_creation_date(creation_date: str):
     if creation_date:
-        creation_date = dateparser.parse(creation_date).strftime(DATE_FORMAT)  # type: ignore
+        creation_date = dateparser.parse(
+            creation_date, settings={"TIMEZONE": TIME_ZONE, "RETURN_AS_TIMEZONE_AWARE": True, "TO_TIMEZONE": "UTC"}
+        ).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
     return creation_date
+
+
+def set_time_zone(timezone_str: str):
+    global TIME_ZONE
+    if timezone_str in pytz.all_timezones:
+        TIME_ZONE = timezone_str
 
 
 def get_readable_output_incidents_list(incidents_list: List[dict]):
@@ -1172,6 +1183,7 @@ def main() -> None:
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
+        set_time_zone(params.get("incidents_time_zone"))
         fetch_time = params.get("first_fetch", "3 days").strip()
         try:
             fetch_limit: int = int(params.get("max_fetch", 10))
