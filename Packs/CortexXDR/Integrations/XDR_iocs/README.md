@@ -3,7 +3,7 @@
 ---
 The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (IOCs) seamlessly within Cortex XDR from Cortex XSOAR. This integration enables security teams to add, update, and remove IOCs efficiently, streamlining threat intelligence workflows and bolstering incident response capabilities.
 
-### Key Features:
+### Key Features
 
 - Add IOCs (e.g., IPs, domains, hashes) to Cortex XDR.
 - Retrieve and update existing IOCs.
@@ -17,6 +17,7 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 - Simplify IOC lifecycle management with automated workflows for creation, updates, and removal.
 
 ## Configure Cortex XDR - IOC in Cortex
+
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
 | Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL. | True |  
@@ -41,7 +42,7 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 | Indicator Reputation | Indicator Reputation. | False |
 | XSOAR Severity Field | The Cortex XSOAR indicator field used as severity. | True |
 | XSOAR Comment Field Exporting To XDR | The Cortex XSOAR field where comments are stored. The default is comments. Expecting an XSOAR IOC format of a comment (nested dictionary). See *Comments As Tags* argument for more.| True |
-| Overriding severity value | If left blank, the original severity level of the indicator will be used. | True | 
+| Overriding severity value | If left blank, the original severity level of the indicator will be used. | True |
 | Comments as tags (CSV) | Whether to consider the value at `XSOAR Comment Field Exporting To XDR` as CSV. Requires specifying a `XSOAR Comment Field Exporting To XDR` value different than the default `comments`. | True |
 | Bypass exclusion list | Bypass exclusion list. | False |
   

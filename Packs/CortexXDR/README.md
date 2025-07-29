@@ -9,5 +9,4 @@ The Cortex XDR content pack enhances your security operations by integrating adv
 - **Advanced Threat Hunting**: Leverages the XQL Query Engine for in-depth data analysis, enabling proactive threat hunting and investigation.
 - **Ready-to-Use Playbooks**: A range of out-of-the-box playbooks optimized for common security workflows, allowing teams to quickly deploy effective responses with minimal configuration.
 
-
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/palo-alto-networks-cortex-xdr---investigation-and-response)_

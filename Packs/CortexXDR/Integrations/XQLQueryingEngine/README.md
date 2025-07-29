@@ -3,7 +3,7 @@
 ---
 The **Cortex XDR - XQL Query Engine** integration enables you to execute XQL queries on your data sources within Cortex XSOAR, facilitating advanced threat hunting and data analysis.
 
-### Key Features:
+### Key Features
 
 - Execute XQL Queries: Run complex queries across your data to identify threats and anomalies.
 - Data Retrieval: Access and analyze data from various sources integrated with Cortex XDR.
