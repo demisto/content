@@ -69,8 +69,6 @@ None
 
 There is no context output for this command.
 
-#### Command Example
-
 
 #### Human Readable Output
 
@@ -108,8 +106,6 @@ This command uses the parameters from the integration instance configuration:
 | incident.assets | string | Affected assets |
 | incident.mitre | string | MITRE TTPs |
 
-#### Command Example
-
 
 #### Human Readable Output
 
@@ -136,6 +132,7 @@ The fields available in XSOAR for incident mapping.
 
 #### Command Example
 
+`!get-mapping-fields`
 
 #### Human Readable Output
 
