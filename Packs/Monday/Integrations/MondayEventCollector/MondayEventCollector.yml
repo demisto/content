@@ -15,7 +15,6 @@ configuration:
 - display: Client ID
   name: client_id
   type: 0
-  hidden: true
   section: Connect
   required: false
 - display: Client secret
@@ -23,13 +22,16 @@ configuration:
   type: 4
   section: Connect
   required: false
-  hidden: true
 - display: Authorization code
   name: auth_code
   type: 4
   section: Connect
   required: false
-  hidden: true
+- display: Access token
+  name: access_token
+  type: 4
+  section: Connect
+  required: false
 - display: Board IDs
   name: board_ids
   required: false
@@ -51,7 +53,6 @@ configuration:
   type: 4
   section: Connect
   required: false
-  hidden: true
   additionalinfo: "In the Admin section of your account, click into the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button."
 - display: Maximum number of Audit Logs per fetch
   defaultvalue: 50000
