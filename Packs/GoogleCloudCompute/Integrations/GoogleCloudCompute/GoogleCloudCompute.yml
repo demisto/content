@@ -8,6 +8,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Collect
 - displaypassword: Service Account Private Key file contents (JSON)
   name: credentials_service_account_json
   hiddenusername: true
