@@ -362,7 +362,7 @@ def test_fetch_indicators_command(mocker):
             "recordedfutureriskscore": None,
             "tags": [],
             "recordedfuturefeedthreatassessment": "",
-            "recordedfutureriskrulecount": "",
+            "fieldrecordedfutureriskrules": "",
         },
         "rawJSON": {"Name": "192.168.0.1", "a": "3", "type": "IP", "value": "192.168.0.1"},
         "score": 0,
@@ -400,7 +400,7 @@ def test_fetch_indicators_risk_threshold_command(mocker):
             "recordedfutureriskscore": "80",
             "tags": [],
             "recordedfuturefeedthreatassessment": "Malicious",
-            "recordedfutureriskrulecount": "",
+            "fieldrecordedfutureriskrules": "",
         },
         "rawJSON": {
             "Criticality Label": "Malicious",
