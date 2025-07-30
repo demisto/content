@@ -125,6 +125,7 @@ def test_module(client):
     try:
         short_url = "https://bit.ly/3DKWm5t"
         client.unshorten_request(short_url=short_url)
+        return 'ok'
     except DemistoException as e:
         return f"Error: {e}"
 
