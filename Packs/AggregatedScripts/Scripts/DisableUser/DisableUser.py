@@ -9,7 +9,7 @@ from collections.abc import Callable
 HUMAN_READABLES = []
 
 
-class CmdFuncRes(TypedDict):
+class DisabledUserResult(TypedDict):
     Disabled: bool
     Result: Literal["Success", "Failed"]
     Message: str
@@ -32,7 +32,7 @@ def execute_command(cmd: str, args: dict) -> list[dict]:
 
 def get_module_command_func(
     module: str,
-) -> Callable[[User, str], list[CmdFuncRes]]:
+) -> Callable[[User, str], list[DisabledUserResult]]:
     try:
         return {
             "Active Directory Query v2": run_active_directory_query_v2,
@@ -46,7 +46,7 @@ def get_module_command_func(
         raise DemistoException(f"Unable to find module: {module!r}")
 
 
-def run_active_directory_query_v2(user: User, using: str) -> list[CmdFuncRes]:
+def run_active_directory_query_v2(user: User, using: str) -> list[DisabledUserResult]:
     res_cmd = execute_command(
         "ad-disable-account", {"username": user["Username"], "using": using}
     )
@@ -54,14 +54,14 @@ def run_active_directory_query_v2(user: User, using: str) -> list[CmdFuncRes]:
     for res in res_cmd:
         res_msg = res["Contents"]
         func_res.append(
-            CmdFuncRes(Disabled=True, Result="Success", Message=res_msg)
+            DisabledUserResult(Disabled=True, Result="Success", Message=res_msg)
             if res_msg == f"User {user['Username']} was disabled"
-            else CmdFuncRes(Disabled=False, Result="Failed", Message=res_msg)
+            else DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         )
     return func_res
 
 
-def run_microsoft_graph_user(user: User, using: str) -> list[CmdFuncRes]:
+def run_microsoft_graph_user(user: User, using: str) -> list[DisabledUserResult]:
     res_cmd = execute_command(
         "msgraph-user-account-disable", {"user": user["Username"], "using": using}
     )
@@ -69,15 +69,15 @@ def run_microsoft_graph_user(user: User, using: str) -> list[CmdFuncRes]:
     for res in res_cmd:
         res_hr = res["HumanReadable"]
         func_res.append(
-            CmdFuncRes(Disabled=True, Result="Success", Message=res_hr)
+            DisabledUserResult(Disabled=True, Result="Success", Message=res_hr)
             if res_hr
             == f'user: "{user["Username"]}" account has been disabled successfully.'
-            else CmdFuncRes(Disabled=False, Result="Failed", Message=res["Content"])
+            else DisabledUserResult(Disabled=False, Result="Failed", Message=res["Content"])
         )
     return func_res
 
 
-def run_okta_v2(user: User, using: str) -> list[CmdFuncRes]:
+def run_okta_v2(user: User, using: str) -> list[DisabledUserResult]:
     res_cmd = execute_command(
         "okta-suspend-user", {"username": user["Username"], "using": using}
     )
@@ -85,22 +85,22 @@ def run_okta_v2(user: User, using: str) -> list[CmdFuncRes]:
     for res in res_cmd:
         res_msg = res["Contents"]
         if res_msg == f"### {user['Username']} status is Suspended":
-            cfr = CmdFuncRes(Disabled=True, Result="Success", Message=res_msg)
+            cfr = DisabledUserResult(Disabled=True, Result="Success", Message=res_msg)
         elif "Cannot suspend a user that is not active" in res_msg:
-            cfr = CmdFuncRes(Disabled=True, Result="Failed", Message=res_msg)
+            cfr = DisabledUserResult(Disabled=True, Result="Failed", Message=res_msg)
         else:
-            cfr = CmdFuncRes(Disabled=False, Result="Failed", Message=res_msg)
+            cfr = DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         func_res.append(cfr)
     return func_res
 
 
-def run_iam_disable_user(user: User, using: str) -> list[CmdFuncRes]:
+def run_iam_disable_user(user: User, using: str) -> list[DisabledUserResult]:
     res_cmd = execute_command(
         "iam-disable-user",
         {"user-profile": f"{{\"email\":\"{user['Email']}\"}}", "using": using},
     )
     return [
-        CmdFuncRes(
+        DisabledUserResult(
             Disabled=(not dict_safe_get(res, ("Contents", "active"))),
             Result=(
                 "Failed"
@@ -116,13 +116,13 @@ def run_iam_disable_user(user: User, using: str) -> list[CmdFuncRes]:
     ]
 
 
-def run_gsuiteadmin(user: User, using: str) -> list[CmdFuncRes]:
+def run_gsuiteadmin(user: User, using: str) -> list[DisabledUserResult]:
     res_cmd = execute_command(
         "gsuite-user-update",
         {"user_key": user["Email"], "suspended": "true", "using": using},
     )
     return [
-        CmdFuncRes(
+        DisabledUserResult(
             Disabled=bool(dict_safe_get(res, ("Contents", "suspended"))),
             Result="Failed" if is_error(res) else "Success",
             Message=str(res.get("HumanReadable") or res.get("Contents")),

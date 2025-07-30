@@ -15,7 +15,7 @@ from DisableUser import (
     main,
     HUMAN_READABLES,
     User,
-    CmdFuncRes,
+    DisabledUserResult,
 )
 
 
@@ -120,7 +120,7 @@ def test_run_active_directory_query_v2_success(mock_execute_command):
     }
     mock_execute_command.return_value = [{"Contents": "User testuser was disabled"}]
     result = run_active_directory_query_v2(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": True, "Result": "Success", "Message": "User testuser was disabled"}]
+    expected: list[DisabledUserResult] = [{"Disabled": True, "Result": "Success", "Message": "User testuser was disabled"}]
     assert result == expected
     mock_execute_command.assert_called_with("ad-disable-account", {"username": "testuser", "using": "inst1"})
 
@@ -141,7 +141,7 @@ def test_run_active_directory_query_v2_failure(mock_execute_command):
     }
     mock_execute_command.return_value = [{"Contents": "Error disabling user"}]
     result = run_active_directory_query_v2(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": False, "Result": "Failed", "Message": "Error disabling user"}]
+    expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "Error disabling user"}]
     assert result == expected
 
 
@@ -161,7 +161,7 @@ def test_run_microsoft_graph_user_success(mock_execute_command):
     }
     mock_execute_command.return_value = [{"HumanReadable": 'user: "testuser" account has been disabled successfully.'}]
     result = run_microsoft_graph_user(user, "inst1")
-    expected: list[CmdFuncRes] = [
+    expected: list[DisabledUserResult] = [
         {
             "Disabled": True,
             "Result": "Success",
@@ -188,7 +188,7 @@ def test_run_microsoft_graph_user_failure(mock_execute_command):
     }
     mock_execute_command.return_value = [{"HumanReadable": "Error disabling user", "Content": "Error details"}]
     result = run_microsoft_graph_user(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": False, "Result": "Failed", "Message": "Error details"}]
+    expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "Error details"}]
     assert result == expected
 
 
@@ -208,7 +208,7 @@ def test_run_okta_v2_success(mock_execute_command):
     }
     mock_execute_command.return_value = [{"Contents": "### testuser status is Suspended"}]
     result = run_okta_v2(user, "inst1")
-    expected: list[CmdFuncRes] = [
+    expected: list[DisabledUserResult] = [
         {
             "Disabled": True,
             "Result": "Success",
@@ -235,7 +235,7 @@ def test_run_okta_v2_cannot_suspend_inactive(mock_execute_command):
     }
     mock_execute_command.return_value = [{"Contents": "Cannot suspend a user that is not active"}]
     result = run_okta_v2(user, "inst1")
-    expected: list[CmdFuncRes] = [
+    expected: list[DisabledUserResult] = [
         {
             "Disabled": True,
             "Result": "Failed",
@@ -261,7 +261,7 @@ def test_run_okta_v2_failure(mock_execute_command):
     }
     mock_execute_command.return_value = [{"Contents": "Unknown Okta error"}]
     result = run_okta_v2(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": False, "Result": "Failed", "Message": "Unknown Okta error"}]
+    expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "Unknown Okta error"}]
     assert result == expected
 
 
@@ -287,7 +287,7 @@ def test_run_okta_iam_success(mock_execute_command):
         }
     ]
     result = run_iam_disable_user(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": True, "Result": "Success", "Message": "User disabled."}]
+    expected: list[DisabledUserResult] = [{"Disabled": True, "Result": "Success", "Message": "User disabled."}]
     assert result == expected
     mock_execute_command.assert_called_with(
         "iam-disable-user",
@@ -324,7 +324,7 @@ def test_run_okta_iam_failure_error_message(mock_execute_command):
         }
     ]
     result = run_iam_disable_user(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": False, "Result": "Failed", "Message": "IAM error."}]
+    expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "IAM error."}]
     assert result == expected
 
 
@@ -350,7 +350,7 @@ def test_run_gsuiteadmin_success(mock_execute_command):
         }
     ]
     result = run_gsuiteadmin(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": True, "Result": "Success", "Message": "User suspended in GSuite."}]
+    expected: list[DisabledUserResult] = [{"Disabled": True, "Result": "Success", "Message": "User suspended in GSuite."}]
     assert result == expected
     mock_execute_command.assert_called_with(
         "gsuite-user-update",
@@ -374,7 +374,7 @@ def test_run_gsuiteadmin_failure(mock_execute_command):
     }
     mock_execute_command.return_value = [{"Type": 4, "Contents": "Error in GSuite", "HumanReadable": "GSuite error HR."}]
     result = run_gsuiteadmin(user, "inst1")
-    expected: list[CmdFuncRes] = [{"Disabled": False, "Result": "Failed", "Message": "GSuite error HR."}]
+    expected: list[DisabledUserResult] = [{"Disabled": False, "Result": "Failed", "Message": "GSuite error HR."}]
     assert result == expected
 
 
