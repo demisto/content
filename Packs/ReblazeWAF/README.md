@@ -56,7 +56,7 @@ Customers using Reblaze version 5 can stream Reblaze WAF security events to Cort
     * Endpoint: Enter your Cortex XSIAM endpoint's IP address or hostname, followed by the listening port (e.g., 192.168.1.100:514).
     * Mode: Choose which events to forward—"Blocked only" (default) or "All" for comprehensive logging.
 
-Click Save to activate the exporter.
+4. Click Save to activate the exporter.
 
 Note for SIEM Configuration: Reblaze transmits logs using the Syslog (RFC 5424) protocol.  
 The message body contains a detailed, structured JSON object representing the security event.
