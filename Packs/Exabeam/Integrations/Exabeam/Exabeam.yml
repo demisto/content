@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam_copy
+  id: Exabeam
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
@@ -164,8 +164,8 @@ configuration:
   required: false
   type: 19
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam_copy
-name: Exabeam_copy
+display: Exabeam Advanced Analytics
+name: Exabeam
 script:
   commands:
   - arguments:
