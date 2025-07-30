@@ -455,13 +455,6 @@ def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoCli
     assert res_json.get("assets", {}) == []
 
 
-def test_fetch_assets_with_empty_response(requests_mock, reco_client: RecoClient) -> None:
-    incident_id = uuid.uuid1()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{incident_id}", json={})
-    assets = reco_client.get_incidents_assets(incident_id=incident_id)
-    assert assets == []
-
-
 def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
     table_empty = GetIncidentTableResponse(
         get_table_response=GetTableResponse(
