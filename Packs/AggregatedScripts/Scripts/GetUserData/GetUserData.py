@@ -136,7 +136,6 @@ def create_user(
         "Email": email_address,
         "RiskLevel": risk_level,
     }
-
     if additional_fields:
         user["AdditionalFields"] = kwargs  # type: ignore
     return remove_empty_elements(user) | {
@@ -917,20 +916,21 @@ def main():
             )
             if readable_output and outputs:
                 users_readables.extend(readable_output)
-                if outputs.get("id") and additional_fields:
-                    msgraph_user_get_manager_command = Command(
-                        brand="Microsoft Graph User",
-                        name="msgraph-user-get-manager",
-                        args={"user": user_id},
-                    )
-                    manager_output = msgraph_user_get_manager(
-                        msgraph_user_get_manager_command, additional_fields
-                    )
-                    outputs["AdditionalFields"].extend(manager_output)
+                for output in outputs:
+                    if output.get("id") and additional_fields:
+                        msgraph_user_get_manager_command = Command(
+                            brand="Microsoft Graph User",
+                            name="msgraph-user-get-manager",
+                            args={"user": user_id},
+                        )
+                        manager_output = msgraph_user_get_manager(
+                            msgraph_user_get_manager_command, additional_fields
+                        )
+                        output["AdditionalFields"].extend(manager_output)
                 users_outputs.extend(outputs)
 
             #################################
-            ### Running for Azure Risky Users	 ###
+            ### Running for Azure Risky User ###
             #################################
             readable_output, outputs = get_data(
                 modules=modules,
@@ -1015,53 +1015,53 @@ def main():
                 users_outputs.extend(outputs)
                 users_readables.extend(readable_output)
 
-        #################################
-        ### Running for Okta IAM ###
-        #################################
-        readable_output, outputs = get_data(
-            modules=modules,
-            brand_name="Okta IAM",
-            command_name="iam-get-user",
-            arg_name="user-profile",
-            arg_value=f'{{"email":"{user_email}"}}',
-            cmd=iam_get_user,
-            additional_fields=additional_fields,
-        )
-        if readable_output and outputs:
-            users_outputs.extend(outputs)
-            users_readables.extend(readable_output)
+            #################################
+            ### Running for Okta IAM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="Okta IAM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f'{{"email":"{user_email}"}}',
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
 
-        #################################
-        ### Running for AWS-ILM ###
-        #################################
-        readable_output, outputs = get_data(
-            modules=modules,
-            brand_name="AWS-ILM",
-            command_name="iam-get-user",
-            arg_name="user-profile",
-            arg_value=f'{{"email":"{user_email}"}}',
-            cmd=iam_get_user,
-            additional_fields=additional_fields,
-        )
-        if readable_output and outputs:
-            users_outputs.extend(outputs)
-            users_readables.extend(readable_output)
+            #################################
+            ### Running for AWS-ILM ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="AWS-ILM",
+                command_name="iam-get-user",
+                arg_name="user-profile",
+                arg_value=f'{{"email":"{user_email}"}}',
+                cmd=iam_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
 
-        #################################
-        ### Running for GSuiteAdmin ###
-        #################################
-        readable_output, outputs = get_data(
-            modules=modules,
-            brand_name="GSuiteAdmin",
-            command_name="gsuite-user-get",
-            arg_name="user",
-            arg_value=user_email,
-            cmd=gsuite_get_user,
-            additional_fields=additional_fields,
-        )
-        if readable_output and outputs:
-            users_outputs.extend(outputs)
-            users_readables.extend(readable_output)
+            #################################
+            ### Running for GSuiteAdmin ###
+            #################################
+            readable_output, outputs = get_data(
+                modules=modules,
+                brand_name="GSuiteAdmin",
+                command_name="gsuite-user-get",
+                arg_name="user",
+                arg_value=user_email,
+                cmd=gsuite_get_user,
+                additional_fields=additional_fields,
+            )
+            if readable_output and outputs:
+                users_outputs.extend(outputs)
+                users_readables.extend(readable_output)
 
         if verbose:
             command_results_list.extend(users_readables)
@@ -1070,13 +1070,12 @@ def main():
         command_results_list.append(
             CommandResults(
                 outputs_prefix="UserData",
-                # because if source1 and source2 got the same username, we don't want any of the sources to overrides the other
-                outputs_key_field=["Username", "Source"],
+                outputs_key_field=["Username", "Instance"],
                 outputs=users_outputs,
                 readable_output=tableToMarkdown(
                     name="User(s) data",
                     t=users_outputs,
-                    headers=["Source", "ID", "Username", "Email", "Status"],
+                    headers=["Source", "Instance", "ID", "Username", "Email", "Status"],
                     removeNull=False,
                 ),
             )

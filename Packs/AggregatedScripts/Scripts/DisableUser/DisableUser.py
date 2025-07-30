@@ -9,7 +9,6 @@ from collections.abc import Callable
 HUMAN_READABLES = []
 
 
-
 class CmdFuncRes(TypedDict):
     Disabled: bool
     Result: Literal["Success", "Failed"]
@@ -48,7 +47,9 @@ def get_module_command_func(
 
 
 def run_active_directory_query_v2(user: User, using: str) -> list[CmdFuncRes]:
-    res_cmd = execute_command("ad-disable-account", {"username": user["Username"], "using": using})
+    res_cmd = execute_command(
+        "ad-disable-account", {"username": user["Username"], "using": using}
+    )
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
@@ -61,20 +62,25 @@ def run_active_directory_query_v2(user: User, using: str) -> list[CmdFuncRes]:
 
 
 def run_microsoft_graph_user(user: User, using: str) -> list[CmdFuncRes]:
-    res_cmd = execute_command("msgraph-user-account-disable", {"user": user["Username"], "using": using})
+    res_cmd = execute_command(
+        "msgraph-user-account-disable", {"user": user["Username"], "using": using}
+    )
     func_res = []
     for res in res_cmd:
         res_hr = res["HumanReadable"]
         func_res.append(
             CmdFuncRes(Disabled=True, Result="Success", Message=res_hr)
-            if res_hr == f'user: "{user["Username"]}" account has been disabled successfully.'
+            if res_hr
+            == f'user: "{user["Username"]}" account has been disabled successfully.'
             else CmdFuncRes(Disabled=False, Result="Failed", Message=res["Content"])
         )
     return func_res
 
 
 def run_okta_v2(user: User, using: str) -> list[CmdFuncRes]:
-    res_cmd = execute_command("okta-suspend-user", {"username": user["Username"], "using": using})
+    res_cmd = execute_command(
+        "okta-suspend-user", {"username": user["Username"], "using": using}
+    )
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
@@ -96,8 +102,15 @@ def run_iam_disable_user(user: User, using: str) -> list[CmdFuncRes]:
     return [
         CmdFuncRes(
             Disabled=(not dict_safe_get(res, ("Contents", "active"))),
-            Result=("Failed" if is_error(res) or not dict_safe_get(res, ("Contents", "success")) else "Success"),
-            Message=str(dict_safe_get(res, ("Contents", "errorMessage")) or res.get("HumanReadable")),
+            Result=(
+                "Failed"
+                if is_error(res) or not dict_safe_get(res, ("Contents", "success"))
+                else "Success"
+            ),
+            Message=str(
+                dict_safe_get(res, ("Contents", "errorMessage"))
+                or res.get("HumanReadable")
+            ),
         )
         for res in res_cmd
     ]
@@ -120,7 +133,9 @@ def run_gsuiteadmin(user: User, using: str) -> list[CmdFuncRes]:
 
 def validate_input(args: dict):
     if not (args.get("user_id") or args.get("user_name") or args.get("user_email")):
-        raise DemistoException("At least one of the following arguments must be specified: user_id, user_name or user_email.")
+        raise DemistoException(
+            "At least one of the following arguments must be specified: user_id, user_name or user_email."
+        )
 
 
 def get_users(args: dict) -> list[User]:
@@ -142,7 +157,7 @@ def disable_users(users: list[User]) -> list[dict]:
                     "UserProfile": {
                         "Email": user["Email"],
                         "ID": user["ID"],
-                        "Username": user["Username"]
+                        "Username": user["Username"],
                     },
                     "Brand": user["Brand"],
                     "Instance": user["Instance"],
