@@ -55,6 +55,7 @@ SUBMISSION_PARAMETERS = (
 
 IN_PROGRESS_STATES = ["IN_PROGRESS", "RUNNING"]
 
+
 class Client(BaseClient):
     def get_environments(self) -> List[dict]:
         return self._http_request(method="GET", url_suffix="/system/environments")
