@@ -1,30 +1,28 @@
 category: Analytics & SIEM
-sectionorder:
-  - Connect
-  - Collect
 commonfields:
-  id: Exabeam
+  id: Exabeam_copy
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
   name: url
   required: true
-  type: 0
   section: Connect
+  type: 0
 - display: Username
   name: credentials
-  type: 9
   required: false
   section: Connect
+  type: 9
 - additionalinfo: Cluster Authentication Token
   display: Username
   displaypassword: API Token
-  name: api_token
-  type: 9
   hiddenusername: true
+  name: api_token
   required: false
   section: Connect
-- defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials, cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage, malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
+  type: 9
+- advanced: true
+  defaultvalue: generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials, cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage, malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection
   display: Exabeam Incident Type
   name: incident_type
   options:
@@ -52,11 +50,11 @@ configuration:
   - privilegedActivity
   - ransomware
   - workforceProtection
-  type: 16
   required: false
   section: Collect
-  advanced: true
-- defaultvalue: low,medium,high,critical
+  type: 16
+- advanced: true
+  defaultvalue: low,medium,high,critical
   display: Priority
   name: priority
   options:
@@ -64,13 +62,11 @@ configuration:
   - medium
   - high
   - critical
-  type: 16
   required: false
   section: Collect
-  advanced: true
+  type: 16
 - defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
   display: Status
-  section: Connect
   name: status
   options:
   - closed
@@ -79,86 +75,97 @@ configuration:
   - new
   - pending
   - resolved
-  type: 16
   required: false
-- display: Fetch incidents
+  section: Connect
+  type: 16
+- advanced: true
+  display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
   section: Collect
-  advanced: true
-- defaultvalue: '50'
+  type: 8
+- defaultvalue: "50"
   display: Max incidents per fetch
   name: max_fetch
-  type: 0
   required: false
   section: Collect
+  type: 0
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  type: 0
   required: false
   section: Collect
-- display: 'Advanced: Minutes to look back when fetching'
-  name: look_back
   type: 0
-  section: Connect
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: "1"
+  display: 'Advanced: Minutes to look back when fetching'
+  name: look_back
   required: false
-  defaultvalue: 1
-  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  section: Connect
+  type: 0
 - display: Incident type
   name: incidentType
+  required: false
   section: Connect
   type: 13
-  required: false
-- display: Trust any certificate (not secure)
+- advanced: true
+  display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
   section: Connect
-  advanced: true
-- display: Use system proxy settings
+  type: 8
+- advanced: true
+  display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
   section: Connect
-  advanced: true
-- display: Fetch Type
-  defaultvalue: Exabeam Incident
+  type: 8
+- defaultvalue: Exabeam Incident
+  display: Fetch Type
   name: fetch_type
-  type: 16
   options:
   - Exabeam Incident
   - Exabeam Notable User
+  required: false
   section: Collect
-- display: Max Users Per Fetch
+  type: 16
+- additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.
+  defaultvalue: "50"
+  display: Max Users Per Fetch
   name: max_fetch_users
-  additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.
+  required: false
+  section: Collect
   type: 0
-  section: Collect
-  defaultvalue: 50
-- display: Notable Users Fetch Interval
-  name: notable_users_fetch_interval
-  additionalinfo: The interval, in whole hours, between consecutive fetch operations.
-  defaultvalue: "60"
-  type: 19
-  section: Collect
+- additionalinfo: The interval, in whole hours, between consecutive fetch operations.
   advanced: true
-- defaultvalue: 3 months
+  defaultvalue: "60"
+  display: Notable Users Fetch Interval
+  name: notable_users_fetch_interval
+  required: false
+  section: Collect
+  type: 19
+- advanced: true
+  defaultvalue: 3 months
   display: Notable Users First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: notable_users_first_fetch
-  type: 0
+  required: false
   section: Collect
-  advanced: true
-- display: Minimum Risk Score To Fetch Users
+  type: 0
+- advanced: true
+  defaultvalue: "90"
+  display: Minimum Risk Score To Fetch Users
   name: minimum_risk_score_to_fetch_users
-  type: 0
+  required: false
   section: Collect
-  advanced: true
-  defaultvalue: 90
+  type: 0
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam Advanced Analytics
-name: Exabeam
+display: Exabeam_copy
+name: Exabeam_copy
 script:
   commands:
   - arguments:
@@ -166,7 +173,7 @@ script:
       isArray: true
       name: time_period
       required: true
-    - defaultValue: '10'
+    - defaultValue: "10"
       description: The maximum number of returned results.
       name: limit
       required: true
@@ -215,7 +222,7 @@ script:
       isArray: true
       name: time_period
       required: true
-    - defaultValue: '10'
+    - defaultValue: "10"
       description: The maximum number of returned results.
       name: limit
       required: true
@@ -258,7 +265,8 @@ script:
     - contextPath: Exabeam.User.NotableUser
       description: Whether the user is a notable user.
       type: Boolean
-  - deprecated: true
+  - arguments: []
+    deprecated: true
     description: Returns all watchlist IDs and titles.
     name: get-watchlists
     outputs:
@@ -271,7 +279,8 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-  - description: Returns all watchlist IDs and titles.
+  - arguments: []
+    description: Returns all watchlist IDs and titles.
     name: exabeam-get-watchlists
     outputs:
     - contextPath: Exabeam.Watchlist.Category
@@ -283,14 +292,16 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-  - deprecated: true
+  - arguments: []
+    deprecated: true
     description: Returns all peer groups.
     name: get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-  - description: Returns all peer groups.
+  - arguments: []
+    description: Returns all peer groups.
     name: exabeam-get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
@@ -389,14 +400,16 @@ script:
     - contextPath: Exabeam.User.AccountNames
       description: The account name of the user.
       type: String
-  - deprecated: true
+  - arguments: []
+    deprecated: true
     description: Returns all labels of the user.
     name: get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
-  - description: Returns all labels of the user.
+  - arguments: []
+    description: Returns all labels of the user.
     name: exabeam-get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
@@ -640,7 +653,7 @@ script:
     - description: ID of the asset to fetch info for.
       name: asset_id
       required: true
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: The maximal number of users.
       name: max_users_number
     description: Returns asset information for given asset ID (hostname or IP address).
@@ -686,16 +699,16 @@ script:
     - description: The event time, e.g. "2 years ago" or "2019-02-27".
       name: event_time
       required: true
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Preffered number of events.
       name: number_of_events
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether to return only anomaly events.
       name: anomaly_only
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - description: A comma-separated list of event types.
       name: event_types
     - auto: PREDEFINED
@@ -791,7 +804,7 @@ script:
       predefined:
       - asc
       - desc
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximal number of results.
       name: limit
     description: Gets security alerts for a given asset.
@@ -893,10 +906,10 @@ script:
       required: true
     - description: The search filter.
       name: filter
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximal number of rules to retrieve.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: Results page number.
       name: page
     description: Searches for rules by a keyword.
@@ -993,10 +1006,10 @@ script:
       - all
       - custom
       - default
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: Which page of results to return.
       name: page
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximal number of results.
       name: limit
     description: Gets all rules.
@@ -1146,7 +1159,7 @@ script:
       name: items
     - description: The entry ID of the CSV file.
       name: csv_entry_id
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Number of days until asset is automatically removed from the watchlist.
       name: watch_until_days
     - auto: PREDEFINED
@@ -1168,23 +1181,23 @@ script:
     - description: The watchlist ID.
       name: watchlist_id
       required: true
-    - defaultValue: '30'
+    - defaultValue: "30"
       description: Maximum nmber of results to retrieve.
       name: limit
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether or not the item is exclusive on watchlist.
       name: is_exclusive
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Whether or not to search the item by its IP.
       name: search_by_ip
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
     description: Gets the assets of a specified watchlist according to a keyword.
     name: exabeam-watchlist-asset-search
     outputs:
@@ -1236,10 +1249,10 @@ script:
     - description: The name of the context table.
       name: context_table_name
       required: true
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of results to return.
       name: limit
-    - defaultValue: '1'
+    - defaultValue: "1"
       description: The offset number to begin (starts from 1).
       name: offset
     description: Returns a list of a context table records.
@@ -1353,8 +1366,8 @@ script:
       description: Indicates whether the file has a header.
       name: has_header
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
       required: true
     - description: The entry ID of the CSV file from which records will be added.
       name: file_entry_id
@@ -1496,7 +1509,7 @@ script:
       predefined:
       - asc
       - desc
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of results.
       name: limit
     description: Returns notable session details.
@@ -1564,10 +1577,10 @@ script:
       name: start_time
     - description: The end time of the time range. For example, 2018-08-01T11:50:16.
       name: end_time
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of rules to retrieve.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: Results page number.
       name: page
     description: Returns sequence details for the given asset ID and time range.
@@ -1621,10 +1634,10 @@ script:
       required: true
     - description: String to search for inside display name.
       name: search_str
-    - defaultValue: '50'
+    - defaultValue: "50"
       description: Maximum number of rules to retrieve.
       name: limit
-    - defaultValue: '0'
+    - defaultValue: "0"
       description: Results page number.
       name: page
     description: Returns sequence event types for the given asset sequence ID and time range.
@@ -1655,50 +1668,50 @@ script:
       name: query
     - auto: PREDEFINED
       description: Incident type to filter in Exabeam.
-      predefined:
-      - "generic"
-      - "abnormalAuth"
-      - "accountManipulation"
-      - "accountTampering"
-      - "ueba"
-      - "bruteForce"
-      - "compromisedCredentials"
-      - "cryptomining"
-      - "dataAccessAbuse"
-      - "dataExfiltration"
-      - "dlp"
-      - "departedEmployee"
-      - "dataDestruction"
-      - "evasion"
-      - "lateralMovement"
-      - "alertTriage"
-      - "malware"
-      - "phishing"
-      - "privilegeAbuse"
-      - "physicalSecurity"
-      - "privilegeEscalation"
-      - "privilegedActivity"
-      - "ransomware"
-      - "workforceProtection"
       name: incident_type
+      predefined:
+      - generic
+      - abnormalAuth
+      - accountManipulation
+      - accountTampering
+      - ueba
+      - bruteForce
+      - compromisedCredentials
+      - cryptomining
+      - dataAccessAbuse
+      - dataExfiltration
+      - dlp
+      - departedEmployee
+      - dataDestruction
+      - evasion
+      - lateralMovement
+      - alertTriage
+      - malware
+      - phishing
+      - privilegeAbuse
+      - physicalSecurity
+      - privilegeEscalation
+      - privilegedActivity
+      - ransomware
+      - workforceProtection
     - auto: PREDEFINED
       description: Incident priority to filter in Exabeam.
-      predefined:
-      - "low"
-      - "medium"
-      - "high"
-      - "critical"
       name: priority
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
     - auto: PREDEFINED
       description: Incident status to filter in Exabeam.
-      predefined:
-      - "closed"
-      - "closedFalsePositive"
-      - "inprogress"
-      - "new"
-      - "pending"
-      - "resolved"
       name: status
+      predefined:
+      - closed
+      - closedFalsePositive
+      - inprogress
+      - new
+      - pending
+      - resolved
     - description: Number of total results to query. Default is 50.
       name: limit
     - description: Specific page to query.
@@ -1746,14 +1759,31 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
+  - arguments:
+    - description: Incident ID to add a comment to.
+      name: incident_id
+      required: true
+    - description: Comment to add.
+      name: comment
+      required: true
+    description: Add a comment to an incident.
+    name: exabeam-add-comment
+  - arguments:
+    - description: Incident ID to change status of.
+      name: incident_id
+      required: true
+    - description: New status to change to.
+      name: status
+      required: true
+    description: Change incident status.
+    name: exabeam-change-incident-status
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-tests:
-- Exabeam - Test
-fromversion: 5.0.0
-defaultclassifier: "Exabeam Classifier"
-defaultmapperin: "Exabeam mapping"
+sectionorder:
+- Connect
+- Collect
+sourcemoduleid: Exabeam

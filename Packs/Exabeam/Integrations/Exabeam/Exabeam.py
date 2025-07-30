@@ -725,6 +725,16 @@ class Client(BaseClient):
             json_data=query,
         )
 
+    def create_comment(self, incident_id, comment):
+        resp = self._http_request('POST', full_url=f'{self._base_url}/ir/api/incident/{incident_id}/comment',
+                                  json_data={"text": comment, "commentType": "case_note"})
+        return resp
+
+    def incident_change_status(self, incident_id, status):
+        resp = self._http_request('POST', full_url=f'{self._base_url}/ir/api/incident/update',
+                                  json_data={"incidentId": incident_id, "fields": {"status": status}})
+        return resp
+
 
 """ HELPER FUNCTIONS """
 
@@ -2273,6 +2283,22 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
     return incidents, last_run_obj
 
 
+def create_comment_command(client: Client, args: dict[str, str]):
+    incident_id = args.get('incident_id')
+    comment = args.get('comment')
+    create_comment_raw_data = client.create_comment(incident_id, comment)
+
+    return f"Added comment to incident {incident_id}.", {}, create_comment_raw_data
+
+
+def change_incident_status_command(client: Client, args: dict[str, str]):
+    incident_id = args.get('incident_id')
+    status = args.get('status')
+    status_change_raw_data = client.incident_change_status(incident_id, status)
+
+    return f"Changed status of incident {incident_id} to {status}.", {}, status_change_raw_data
+
+
 def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2327,6 +2353,8 @@ def main():  # pragma: no cover
         "exabeam-get-notable-session-details": get_notable_session_details,
         "exabeam-get-sequence-eventtypes": get_notable_sequence_event_types,
         "exabeam-list-incident": list_incidents,
+        "exabeam-add-comment": create_comment_command,
+        "exabeam-change-incident-status": change_incident_status_command
     }
     client = None
     try:
@@ -2374,3 +2402,4 @@ def main():  # pragma: no cover
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
+
