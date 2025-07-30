@@ -40,61 +40,35 @@ const brandConfig = {
 Object.keys(all).forEach(function(m) {
     var isShouldBeTesting = all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1;
     if (all[m].state === 'active' && isShouldBeTesting) {
-        var retries = 3
-        var success = false;
-        var attempts = 1;
+        var cmd = m.replace(/\s/g,'_') + '-test-module';
+        var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{
+            Type: entryTypes.note,
+            Contents: 'testing **' + m + '**',
+            HumanReadable: 'testing **' + m + '**',
+            ContentsFormat: formats.markdown
+        }])});
 
-        while (attempts <= retries && !success){
-            var cmd = m.replace(/\s/g,'_') + '-test-module';
-            var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{
-                Type: entryTypes.note,
-                Contents: 'testing **' + m + '**',
-                HumanReadable: 'testing **' + m + '**',
-                ContentsFormat: formats.markdown
-            }])});
+        var res =  executeCommand(cmd, {});
+        var content = res[0].Contents
+        var brand = all[m].brand;
+        var config = brandConfig[brand];
 
-            var res =  executeCommand(cmd, {});
-            var content = res[0].Contents
-            var brand = all[m].brand;
-            var config = brandConfig[brand];
-
-            if (
-                config &&
-                content.includes(config.message)
-            ) {
-                logDebug("Enhanced test logic triggered for brand: \"{0}\", instance: \"{1}\".".format(brand, m));
-                logDebug("Detected message: \"{0}\". Running command: \"{1}\".".format(config.message, config.command));
-                cmd = config.command;
-                res = executeCommand(cmd, { using: m });
-                logDebug("Command \"{0}\" executed for instance: \"{1}\". Result: {2}".format(cmd, m, res[0].Contents));
-            }
-
-            if (res[0].Type === entryTypes.error) {
-                executeCommand("addEntries", {"entries": JSON.stringify([{
-                    Type: entryTypes.note,
-                    Contents: 'Done testing **' + m + '** with attempt number ' + attempts.toString() + ':\n' + res[0].Contents + '\nWill try again with up to ' + retries + ' retries.',
-                    HumanReadable: 'Done testing **' + m + '** with attempt number ' + attempts.toString() + ':\n' + res[0].Contents + '\nWill try again with up to ' + retries + ' retries.',
-                    ContentsFormat: formats.markdown
-                }])});
-            }
-            else {
-                executeCommand("addEntries", {"entries": JSON.stringify([{
-                    Type: entryTypes.note,
-                    Contents: 'Done testing **' + m + '** with attempt number ' + attempts.toString() + ':\n' + res[0].Contents,
-                    HumanReadable: 'Done testing **' + m + '** with attempt number ' + attempts.toString() + ':\n' + res[0].Contents,
-                    ContentsFormat: formats.markdown
-                }])});
-                success = true;
-            }
-            attempts++;
-            if (attempts <= retries && !success){
-                const start = Date.now();
-                while (Date.now() < start + 30000) {
-                    // waits for 30 seconds between failed attempts
-                }                   
-            }
+        if (
+            config &&
+            content.includes(config.message)
+        ) {
+            logDebug("Enhanced test logic triggered for brand: \"{0}\", instance: \"{1}\".".format(brand, m));
+            logDebug("Detected message: \"{0}\". Running command: \"{1}\".".format(config.message, config.command));
+            cmd = config.command;
+            res = executeCommand(cmd, { using: m });
+            logDebug("Command \"{0}\" executed for instance: \"{1}\". Result: {2}".format(cmd, m, res[0].Contents));
         }
-
+        executeCommand("addEntries", {"entries": JSON.stringify([{
+            Type: entryTypes.note,
+            Contents: 'done testing **' + m + '**:\n' + res[0].Contents,
+            HumanReadable: 'done testing **' + m + '**:\n' + res[0].Contents,
+            ContentsFormat: formats.markdown
+        }])});
         if (res[0].Type === entryTypes.error) {
             countFailed++;
         }
@@ -113,8 +87,8 @@ Object.keys(all).forEach(function(m) {
             var errorMessage = 'The instance is in an error state, potentially due to an issue with the engine.';
             executeCommand("addEntries", {"entries": JSON.stringify([{
                 Type: entryTypes.note,
-                Contents: 'Done testing **' + m + '**:\n' + errorMessage,
-                HumanReadable: 'Done testing **' + m + '**:\n' + errorMessage,
+                Contents: 'done testing **' + m + '**:\n' + errorMessage,
+                HumanReadable: 'done testing **' + m + '**:\n' + errorMessage,
                 ContentsFormat: formats.markdown
             }])});
             countFailed++;
