@@ -4263,12 +4263,34 @@ script:
     - contextPath: Core.Indicator.vendors
       description: List representing the vendors who reported this indicator.
       type: List
-
+  - arguments:
+    - description: The alert ID's from where to retrieve the contributing events.
+      isArray: true
+      name: alert_ids
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of contributing events to retrieve.
+      name: limit
+    - defaultValue: '1'
+      description: The page number to retrieve. Minimum is 1.
+      name: page_number
+    - defaultValue: '50'
+      description: The page size.
+      name: page_size
+    description: Retrieves contributing events for a specific correlation alert.
+    name: core-get-contributing-event
+    outputs:
+    - contextPath: Core.ContributingEvent.alertID
+      description: The alert ID.
+      type: String
+    - contextPath: Core.ContributingEvent.events
+      description: The contributing events.
+      type: Unknown
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.2941324
+  dockerimage: demisto/google-cloud-storage:1.0.0.3708421
 tests:
 - No tests
 supportsquickactions: true
