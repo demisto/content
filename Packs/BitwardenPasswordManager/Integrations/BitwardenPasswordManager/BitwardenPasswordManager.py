@@ -46,9 +46,10 @@ class Client(BaseClient):
         return utc_now > expires_datetime
 
     def create_new_token(self, json_data: dict) -> str:
+        full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
         access_token_obj = self._http_request(
             method="POST",
-            full_url=AUTHENTICATION_FULL_URL,
+            full_url=full_url,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data=json_data,
         )
