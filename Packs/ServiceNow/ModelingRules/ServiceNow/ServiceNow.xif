@@ -70,7 +70,6 @@ filter source_log_type = "case"
     get_impact = to_string(impact),
     get_urgency = to_string(urgency),
     get_escalation = to_string(escalation),
-    get_state = to_string(state),
     get_category = to_string(category),
     get_priority = to_string(priority)
 | alter
@@ -80,16 +79,8 @@ filter source_log_type = "case"
 | alter
     xdm.event.type = "Case",
     xdm.event.id = sys_id,
-    xdm.alert.original_alert_id = number,
+    xdm.alert.original_alert_id = coalesce(number, case_report),
     xdm.alert.risks = arraycreate(check_impact, check_urgency, check_escalation),
-    xdm.alert.status = if(
-        get_state = "1", XDM_CONST.ALERT_STATUS_PENDING, 
-        get_state = "3", XDM_CONST.ALERT_STATUS_DONE, 
-        get_state = "6", XDM_CONST.ALERT_STATUS_DONE, 
-        get_state = "10", XDM_CONST.ALERT_STATUS_IN_REVIEW, 
-        get_state = "18", XDM_CONST.ALERT_STATUS_IN_REVIEW,
-        get_state = null, null, to_string(state)
-    ),
     xdm.event.description = object_create("active", active, "made_sla", made_sla, "knowledge", knowledge, "time_worked", time_worked, "upon_reject", upon_reject, "upon_approval", upon_approval, "follow_the_sun", follow_the_sun),
     xdm.event.outcome = if(
         approval = "approved", XDM_CONST.OUTCOME_SUCCESS, 
@@ -105,22 +96,19 @@ filter source_log_type = "case"
     xdm.alert.category = if(get_category = "0", "Question", get_category = "1", "Issue", get_category = "2", "Feature"),
     xdm.alert.severity = if(get_priority = "1", "Low", get_priority = "2", "Moderate", get_priority = "3", "High", get_priority = "4", "Critical"),
     xdm.source.user.identifier = opened_by,
-    xdm.source.user.domain = sys_domain,
-    xdm.alert.original_alert_id = case_report,
+    xdm.source.user.domain = concat(sys_domain_path, sys_domain),
     xdm.alert.subcategory = if(subcategory != null, "Question", null),
     xdm.source.interface = contact_type,
     xdm.observer.content_version = to_string(object_create("N_of_CaseUpdates", sys_mod_count, "N_of_CaseReassign", reassignment_count)),
     xdm.database.tables = arraycreate(sys_class_name),
     xdm.source.user.username = sys_created_by,
-    xdm.source.user.domain = sys_domain_path,
     xdm.alert.description = coalesce(short_description, description),
     xdm.observer.name = assigned_to,
     xdm.observer.type = assignment_group,
     xdm.target.location.city = account -> city,
     xdm.target.location.country = account -> country,
-    xdm.target.location.latitude = account -> latitude,
-    xdm.target.location.longitude = account -> longitude,
+    xdm.target.location.latitude = to_float(account -> latitude),
+    xdm.target.location.longitude = to_float(account -> longitude),
     xdm.target.user.username = account -> name,
     xdm.target.user.identifier = account -> number,
-    xdm.target.user.roles = arraycreate(account -> rank_tier),
     xdm.target.url = account -> website;
