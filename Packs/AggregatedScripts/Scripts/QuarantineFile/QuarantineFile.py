@@ -135,7 +135,7 @@ class Command:
         for result in raw_response:
             if is_error(result):
                 # Log the full error for debugging, then raise to halt execution for this brand
-                demisto.error(f"Error executing {self.name}:\n{get_error(entry)}")
+                demisto.error(f"Error executing {self.name}:\n{get_error(result)}")
                 hr = f"Error executing {self.name}:\n{get_error(result)}"
             else:
                 hr = result.get("HumanReadable", f"Successfully executed {self.name}")
@@ -285,7 +285,8 @@ class EndpointBrandMapper:
         demisto.debug("[EndpointBrandMapper] Fetching endpoint data.")
 
         demisto.debug(
-            f"[EndpointBrandMapper] Querying get-endpoint-data limited to brands: {self.script_args.get(QuarantineOrchestrator.BRANDS_ARG)}"
+            f"[EndpointBrandMapper] Querying get-endpoint-data limited to brands: "
+            f"{self.script_args.get(QuarantineOrchestrator.BRANDS_ARG)}"
         )
         command_args = {
             "endpoint_id": self.endpoint_ids_to_map,
@@ -315,9 +316,6 @@ class EndpointBrandMapper:
                     break
             if endpoint_data:
                 break
-
-        if not endpoint_data:
-            demisto.warning("[EndpointBrandMapper] Could not find a valid 'EndpointData' list in the EntryContext.")
 
         demisto.debug(f"[EndpointBrandMapper] Fetched data for {len(endpoint_data)} endpoints.")
         demisto.debug(f"[EndpointBrandMapper] Endpoint data: {endpoint_data}")
@@ -386,8 +384,9 @@ class EndpointBrandMapper:
 
         unprocessed_ids = [eid for eid in self.endpoint_ids_to_map if eid not in all_found_ids]
         if unprocessed_ids:
-            demisto.warning(
-                f"[EndpointBrandMapper] Error in get-endpoint-data command. Endpoints not found in any the response: {unprocessed_ids}"
+            demisto.error(
+                f"[EndpointBrandMapper] Error in get-endpoint-data command. "
+                f"Endpoints not found in any the response: {unprocessed_ids}"
             )
             for endpoint_id in unprocessed_ids:
                 self.initial_results.append(
@@ -792,7 +791,8 @@ class QuarantineOrchestrator:
             QuarantineResult(**res) for res in (demisto.get(demisto.context(), self.CONTEXT_COMPLETED_RESULTS) or [])
         ]
         demisto.debug(
-            f"[Orchestrator] Loaded state. Pending jobs: {len(self.pending_jobs)}, Completed results: {len(self.completed_results)}"
+            f"[Orchestrator] Loaded state. Pending jobs: {len(self.pending_jobs)}, "
+            f"Completed results: {len(self.completed_results)}"
         )
 
     def _verify_and_dedup_endpoint_ids(self):
@@ -877,7 +877,8 @@ class QuarantineOrchestrator:
         if not any(brand in brands_to_run for brand in supported_brands_for_hash):
             raise DemistoException(
                 "Could not find enabled integrations for the requested hash type.\n"
-                f"For hash_type {hash_type.upper()} please use one of the following brands: {', '.join(supported_brands_for_hash)}"
+                f"For hash_type {hash_type.upper()} please use one of the following brands: "
+                f"{', '.join(supported_brands_for_hash)}"
             )
 
     def _sanitize_and_validate_args(self):
