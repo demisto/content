@@ -4374,8 +4374,8 @@ Gets all warninglists from MISP
 | MISP.Warninglist.Type | string | MISP warninglist type |
 | MISP.Warninglist.Description | string | Description of the warninglist |
 | MISP.Warninglist.Version | number | The warninglist version number |
-| MISP.Warninglist.Enabled | boolean | Is the MISP warninglist enabled/disabled? |
-| MISP.Warninglist.Default | boolean | Is the MISP warninglist set as default? |
+| MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
+| MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
 | MISP.Warninglist.EntryCount | number | The amount of entries (integer) in the warninglist |
 
 #### Command Example
@@ -4474,8 +4474,8 @@ Get a specific warninglist by its ID.
 | MISP.Warninglist.Type | string | MISP warninglist type |
 | MISP.Warninglist.Description | string | Description of the warninglist |
 | MISP.Warninglist.Version | number | The warninglist version number |
-| MISP.Warninglist.Enabled | boolean | Is the MISP warninglist enabled/disabled? |
-| MISP.Warninglist.Default | boolean | Is the MISP warninglist set as default? |
+| MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
+| MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
 | MISP.Warninglist.Category | string | The category of the MISP warninglist |
 | MISP.Warninglist.Entries | unknown | The warninglist entries |
 | MISP.Warninglist.ValidAttributes| unknown | The valid attribute types for this warninglist |

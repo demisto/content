@@ -2760,10 +2760,10 @@ script:
       description: The warninglist version number
       type: number
     - contextPath: MISP.Warninglist.Enabled
-      description: Is the MISP warninglist enabled/disabled?
+      description: True if the warninglist is enabled, False otherwise.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: Is the MISP warninglist set as default?
+      description: True if the warninglist is set as default, False otherwise.
       type: boolean
     - contextPath: MISP.Warninglist.Category
       description: The category of the MISP warninglist
@@ -2792,10 +2792,10 @@ script:
       description: The warninglist version number
       type: number
     - contextPath: MISP.Warninglist.Enabled
-      description: Is the MISP warninglist enabled/disabled?
+      description: True if the warninglist is enabled, False otherwise.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: Is the MISP warninglist set as default?
+      description: True if the warninglist is set as default, False otherwise.
       type: boolean
     - contextPath: MISP.Warninglist.EntryCount
       type: number
@@ -2811,18 +2811,17 @@ script:
     - name: description
       description: Updated description of the warninglist.
     - name: enabled
-      description: Whether the warninglist should be enabled or disabled.
+      description: True if the warninglist is enabled, False otherwise.
       type: boolean
     - name: version
       description: Updated version number of the warninglist.
     - name: default
-      description: Whether the warninglist should be set as default.
+      description: True if the warninglist is set as default, False otherwise.
       type: boolean
     - name: values
       description: Updated values of the warninglist.
     - name: types
       description: Updated valid attribute types for the warninglist.
-
     description: Changes a warninglist in MISP.
     name: misp-change-warninglist
     outputs:
