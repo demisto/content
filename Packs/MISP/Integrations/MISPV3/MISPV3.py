@@ -252,6 +252,10 @@ ATTRIBUTE_FIELDS = [
 ]
 
 
+WARNINGLIST_HEADERS = ["ID", "Name", "Type", "Description", "Version", "Enabled", "Default", "Category"]
+WARNINGLIST_ENTRY_HEADERS = ["ID", "Value", "Comment"]
+WARNINGLIST_TYPE_HEADERS = ["ID", "Type"]
+
 def extract_error(error: list) -> list[dict]:
     """
     Extracting errors raised by PYMISP into readable response, for more information and examples
@@ -1888,18 +1892,6 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    warninglist_headers = [
-        "ID",
-        "Name",
-        "Type",
-        "Description",
-        "Version",
-        "Enabled",
-        "Default",
-        "Category",
-        "EntryCount",
-        "ValidAttributes",
-    ]  # noqa: E501
     response = PYMISP.warninglists()
     if "errors" in response:
         raise DemistoException(f"Warninglists: No warninglist have been found in MISP: \nError message: {response}")
@@ -1923,7 +1915,7 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
 
         warninglists_output.append(res)
 
-    human_readable = tableToMarkdown("MISP Warninglists", warninglists_output, headers=warninglist_headers, removeNull=True)
+    human_readable = tableToMarkdown("MISP Warninglists", warninglists_output, headers=WARNINGLIST_HEADERS, removeNull=True)
 
     return CommandResults(
         outputs_prefix="MISP.Warninglist",
@@ -1939,10 +1931,6 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
     Returns the values of a specific MISP warninglist  based on ID
     """
     warninglist_id = argToList(demisto_args["id"])
-
-    warninglist_headers = ["ID", "Name", "Type", "Description", "Version", "Enabled", "Default", "Category"]
-    warninglist_entry_headers = ["ID", "Value", "Comment"]
-    warninglist_type_headers = ["ID", "Type"]
 
     warninglist_id = demisto_args["id"]
 
@@ -1981,17 +1969,17 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
     warninglist_entries_output = warninglist_output.get("Entries", [])
     warninglist_attributes_output = warninglist_output.get("ValidAttributes", [])
 
-    human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=warninglist_headers, removeNull=True)
+    human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
     human_readable += tableToMarkdown(
         "Entries in MISP Warninglist",
         warninglist_entries_output,
-        headers=warninglist_entry_headers,
+        headers=WARNINGLIST_ENTRY_HEADERS,
         removeNull=True,
     )
     human_readable += tableToMarkdown(
         "Valid Attributes in MISP Warninglist",
         warninglist_attributes_output,
-        headers=warninglist_type_headers,
+        headers=WARNINGLIST_TYPE_HEADERS,
         removeNull=True,
     )
 
@@ -2052,10 +2040,6 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
             f"Warninglist change: An error has occurred performing a change on warninglist {warninglist_id}: \nError message: {response}"  # noqa: E501
         )
 
-    warninglist_headers = ["ID", "Name", "Type", "Description", "Version", "Enabled", "Default", "Category"]
-    warninglist_entry_headers = ["ID", "Value", "Comment"]
-    warninglist_type_headers = ["ID", "Type"]
-
     resp_json = response.json()
     warninglist_output = {}
     if entity := resp_json.get("Warninglist", {}):
@@ -2091,17 +2075,17 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     warninglist_entries_output = warninglist_output.get("Entries", [])
     warninglist_attributes_output = warninglist_output.get("ValidAttributes", [])
 
-    human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=warninglist_headers, removeNull=True)
+    human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
     human_readable += tableToMarkdown(
         "Entries in MISP Warninglist",
         warninglist_entries_output,
-        headers=warninglist_entry_headers,
+        headers=WARNINGLIST_ENTRY_HEADERS,
         removeNull=True,
     )
     human_readable += tableToMarkdown(
         "Valid Attributes in MISP Warninglist",
         warninglist_attributes_output,
-        headers=warninglist_type_headers,
+        headers=WARNINGLIST_TYPE_HEADERS,
         removeNull=True,
     )
     return CommandResults(
