@@ -33,10 +33,10 @@ class QuarantineResult:
 
     class Messages:
         """A namespace for standardized human-readable messages."""
-        GENERAL_FAILURE = "Failed to quarantine file."
+        GENERAL_FAILURE = "Failed to quarantine file. See logs for more details."
         ALREADY_QUARANTINED = "Already quarantined."
         SUCCESS = "File successfully quarantined."
-        ENDPOINT_OFFLINE = "Failed to quarantine file. The endpoint is offline or unreachable."
+        ENDPOINT_OFFLINE = "Failed to quarantine file. The endpoint is offline or unreachable, please try again later."
         ENDPOINT_STATUS_UNKNOWN = "Failed to quarantine file. Endpoint status is '{status}'."
         ENDPOINT_NOT_FOUND = "Endpoint not found by any active integration."
         FAILED_WITH_REASON = "Failed to quarantine file. {reason}"
