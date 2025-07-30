@@ -11,6 +11,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
+MAX_PAGINATION_DURATION_SECONDS = 240
 
 
 class EVENT_TYPE:
@@ -147,6 +148,7 @@ class Client(BaseClient):
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
+        start_time = datetime.now()
         try:
             while next and (len(results) < max_fetch):
                 if len(results) < max_fetch:
@@ -157,6 +159,14 @@ class Client(BaseClient):
                 current_results = raw_response.get("data", {}).get("results", [])
                 results.extend(current_results)
                 demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+
+                if next and (datetime.now() - start_time).total_seconds() >= MAX_PAGINATION_DURATION_SECONDS:
+                    demisto.debug(
+                        f"info-log: Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s, "
+                        f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
+                    )
+                    break
+
         except Exception as e:
             demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
