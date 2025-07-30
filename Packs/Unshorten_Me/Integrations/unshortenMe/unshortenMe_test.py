@@ -92,3 +92,4 @@ def test_test_module_command(client, mocker):
 
     # Assert
     assert result == 'ok'
+    
