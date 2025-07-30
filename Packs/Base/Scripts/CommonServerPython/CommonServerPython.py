@@ -11358,6 +11358,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name, False)):
                 ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
+
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
                     else poll_result.continue_to_poll()
                 if not should_poll:
