@@ -978,9 +978,8 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     fetch_severities = get_fetch_severities(incident_severity)
     demisto.debug(f"[cyble_events] Retrieved fetch_severities: {fetch_severities}")
 
-    demisto.debug(f"[cyble_events] gte: {input_params.get("gte")}")
-    demisto.debug(f"[cyble_events] lte: {input_params.get("lte")}")
-
+    demisto.debug(f"[cyble_events] gte: {input_params.get('gte')}")
+    demisto.debug(f"[cyble_events] lte: {input_params.get('lte')}")
 
     input_params.update(
         {

@@ -138,7 +138,7 @@ Update the status and/or severity of one or more alerts by ID.
 
 #### Base Command
 
-`update-alert-data`
+`cyble-vision-update-alerts`
 
 #### Input
 
