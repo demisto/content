@@ -1,6 +1,6 @@
 fromversion: 8.4.0
-id: Jira_Datacenter_ModelingRule
-name: Jira Datacenter Modeling Rule
+id: Atlassian_Jira_ModelingRule
+name: Atlassian Jira Modeling Rule
 rules: ''
 schema: ''
 tags: ''

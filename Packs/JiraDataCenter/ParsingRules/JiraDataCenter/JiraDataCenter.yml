@@ -1,6 +1,6 @@
 
-id: Jira_Datacenter_ParsingRule
-name: Jira Datacenter Parsing Rule
+id: Atlassian_Jira_ParsingRule
+name: Atlassian Jira Parsing Rule
 fromversion: 8.4.0  
 tags: []
 rules: ''

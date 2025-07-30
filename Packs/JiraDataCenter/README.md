@@ -69,8 +69,8 @@ For more inofrmation use the following guide [here](https://confluence.atlassian
                     processors: 
                     - add_fields: 
                         fields: 
-                            vendor: jira
-                            product: datacenter
+                            vendor: atlassian
+                            product: jira
            ```
    4. Apply the configured Filebeat profile to the target jira datacenter server by attaching it to a policy as described on [Apply profiles to collection machine policies](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Apply-profiles-to-collection-machine-policies).
     

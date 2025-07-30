@@ -1,6 +1,6 @@
 {
-    "name": "Jira Data Center",
-    "description": "Jira Data Center Audit events",
+    "name": "Atlassian Jira",
+    "description": "Atlassian Jira Data Center Audit events",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
