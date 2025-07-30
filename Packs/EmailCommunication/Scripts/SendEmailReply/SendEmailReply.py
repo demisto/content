@@ -123,24 +123,39 @@ def replace_atlassian_tags(md: str) -> str:
     return md
 
 
-def append_email_signature(html_body):
+def append_email_signature(html_body: str) -> str:
     """
-        Retrieve the user defined email signature to include on new messages, if present.
+    Retrieve the user defined email signature to include on new messages, if present.
     Args: (string) html_body
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
-    demisto.debug("append_email_signature")
+    demisto.debug(f"Starting to append email signature. HTML body: {html_body!r}.")
+
+    list_name = "XSOAR - Email Communication Signature"
+    demisto.debug(f"Trying to load the `{list_name}` list.")
+
+    # For backwards compatibility, only when `fail_on_error` is set to False, two values will be returned, this confuses type checker, hence 'type: ignore'
     is_succeed, email_signature = execute_command(
-        "getList", {"listName": "XSOAR - Email Communication Signature"}, extract_contents=False, fail_on_error=False
-    )
-    if is_succeed:
-        # Find the position of the closing </html> tag and insert the signature there
-        if re.search("(?i)</body>", html_body):
-            html_body = re.sub("(?i)</body>", f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
+        "getList",
+        {"listName": list_name},
+        extract_contents=False,
+        fail_on_error=False,
+    )  # type: ignore
+    if not is_succeed:
+        demisto.debug(f"Error occurred while trying to load the `{list_name}` list. No signature added to email.")
+        return html_body
+
+    email_signature_contents = email_signature[0]["Contents"] if (email_signature and isinstance(email_signature, list)) else ""
+    demisto.debug(f"Successfully loaded the `{list_name}` list. Found signature: {email_signature_contents!r}.")
+
+    # Find the position of the closing </body> tag and insert the signature before closing tag
+    if re.search("(?i)</body>", html_body):
+        html_body = re.sub("(?i)</body>", f"\r\n{email_signature_contents}\r\n</body>", html_body)
+        demisto.debug(f"Appended signature before HTML body closing tag. HTML body: {html_body!r}.")
+    # Otherwise, if no closing </body> tag, concatenate the signature to the end of the string
     else:
-        demisto.debug(
-            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
-        )
+        html_body += email_signature_contents
+        demisto.debug(f"Appended signature to the end of the HTML body string. HTML body: {html_body!r}.")
 
     return html_body
 
