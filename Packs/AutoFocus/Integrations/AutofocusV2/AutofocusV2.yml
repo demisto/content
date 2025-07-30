@@ -33,6 +33,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
