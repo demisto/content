@@ -2,7 +2,7 @@ commonfields:
   id: quarantine-file
   version: -1
 args:
-- name: endpoint_ids
+- name: endpoint_id
   description: 'A comma-separated list of endpoint IDs.'
   required: true
   isArray: true
