@@ -941,7 +941,7 @@ def get_fetch_severities(incident_severity):
 
 
 def get_gte_limit(curr_gte: str) -> str:
-    server_gte = datetime.utcnow() - timedelta(days=7)
+    server_gte = datetime.utcnow() - timedelta(hours=3)
     return max(curr_gte, server_gte.astimezone(pytz.UTC).isoformat())
 
 
@@ -961,7 +961,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     initial_interval = demisto.params().get("first_fetch_timestamp", 1)
     if "event_pull_start_date" not in last_run:
-        event_pull_start_date = datetime.utcnow().astimezone(pytz.UTC) - timedelta(days=int(initial_interval))
+        event_pull_start_date = datetime.utcnow().astimezone(pytz.UTC) - timedelta(hours=int(initial_interval))
         input_params["gte"] = get_gte_limit(event_pull_start_date.isoformat())
         demisto.debug(f"[cyble_events] event_pull_start_date not in last_run, setting to: {event_pull_start_date.isoformat()}")
 
