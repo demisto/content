@@ -1,0 +1,81 @@
+comment: This script runs a security and compliance search and retrieves the search results
+name: o365-security-compliance-search
+commonfields:
+  id: o365-security-compliance-search
+  version: -1
+args:
+- name: search_name
+  description: The name of the compliance search
+  required: true
+- name: force
+  description: Overwrite the existing search if true, or use the existing search without modifying any search parameters if false.
+  predefined:
+  - 'true'
+  - 'false'
+- name: preview
+  description: Preview results using the search action.
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+- name: case
+  description: The name of a Core eDiscovery case to associate with the new compliance search.
+- name: kql_search
+  description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
+- name: include_mailboxes
+  description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'true'
+- name: exchange_location
+  description: Comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all.
+  isArray: true
+  defaultValue: 'All'
+- name: exchange_location_exclusion
+  description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
+  isArray: true
+- name: public_folder_location
+  description: Comma-separated list of public folders to include, or use the value "All" to include all.
+  isArray: true
+  defaultValue: 'All'
+- name: share_point_location
+  description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or use the value "All" to include all sites.
+  isArray: true
+  defaultValue: 'All'
+- name: share_point_location_exclusion
+  description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
+  isArray: true
+- name: polling_interval
+  description: Compliance search polling interval.
+  defaultValue: '3'
+- name: polling_timeout
+  description: Compliance search polling timeout.
+  defaultValue: '45'
+outputs:
+  - contextPath: O365SecurityAndComplianceSearch.Search.Name
+    description: The search name
+    type: String
+  - contextPath: O365SecurityAndComplianceSearch.Search.Status
+    description: The search status
+    type: String
+  - contextPath: O365SecurityAndComplianceSearch.Search.Results
+    description: The search results
+    type: Array
+  - contextPath: O365SecurityAndComplianceSearch.Preview.Name
+    description: The preview name
+    type: String
+  - contextPath: O365SecurityAndComplianceSearch.Preview.Status
+    description: The preview status
+    type: String
+  - contextPath: O365SecurityAndComplianceSearch.Preview.Results
+    description: The preview results
+    type: Array
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
