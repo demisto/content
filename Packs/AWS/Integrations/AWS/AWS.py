@@ -921,20 +921,14 @@ class EC2:
                     "OwnerId": sg["OwnerId"],
                     "GroupId": sg["GroupId"],
                     "VpcId": sg["VpcId"],
-                    "Region": args.get("region"),
                 }
             )
-
             if "Tags" in sg:
                 for tag in sg["Tags"]:
                     data[i].update({tag["Key"]: tag["Value"]})
 
-        try:
-            output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
-            raw = json.loads(output)
-            raw[0].update({"Region": args.get("region")})
-        except ValueError as err_msg:
-            raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+        output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+        raw = json.loads(output)
         return CommandResults(
             outputs=raw,
             outputs_prefix="AWS.EC2.SecurityGroups",

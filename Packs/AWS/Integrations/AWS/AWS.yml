@@ -2240,107 +2240,16 @@ script:
     - contextPath: AWS.EC2.SecurityGroups.GroupName
       description: The name of the security group.
       type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.FromPort
-      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of -1 indicates all ICMP/ICMPv6 types.
-      type: number
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpProtocol
-      description: The IP protocol name (tcp , udp , icmp ) or number.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.CidrIp
-      description: The IPv4 CIDR range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.IpRanges.Description
-      description: A description for the security group rule that references this IPv4 address range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.Ipv6Ranges.CidrIpv6
-      description: The IPv6 CIDR range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.Ipv6Ranges.Description
-      description: A description for the security group rule that references this IPv6 address range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.PrefixListIds.Description
-      description: A description for the security group rule that references this prefix list ID.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.PrefixListIds.PrefixListId
-      description: The ID of the prefix.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.ToPort
-      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code.
-      type: number
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.Description
-      description: A description for the security group rule that references this user ID group pair.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.GroupId
-      description: The ID of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.GroupName
-      description: The name of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.PeeringStatus
-      description: The status of a VPC peering connection, if applicable.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.UserId
-      description: The ID of an AWS account.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.VpcId
-      description: The ID of the VPC for the referenced security group, if applicable.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissions.UserIdGroupPairs.VpcPeeringConnectionId
-      description: The ID of the VPC peering connection, if applicable.
-      type: string
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissions
+      description: The inbound rules associated with the security group.
     - contextPath: AWS.EC2.SecurityGroups.OwnerId
       description: The AWS account ID of the owner of the security group.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.GroupId
       description: The ID of the security group.
       type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.FromPort
-      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number.
-      type: number
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpProtocol
-      description: The IP protocol name (tcp , udp , icmp) or number.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.CidrIp
-      description: The IPv4 CIDR range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.IpRanges.Description
-      description: A description for the security group rule that references this IPv4 address range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.Ipv6Ranges.CidrIpv6
-      description: The IPv6 CIDR range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.Ipv6Ranges.Description
-      description: A description for the security group rule that references this IPv6 address range.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.PrefixListIds.Description
-      description: A description for the security group rule that references this prefix list ID.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.PrefixListIds.PrefixListId
-      description: The ID of the prefix.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.ToPort
-      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.Description
-      description: A description for the security group rule that references this user ID group pair.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.GroupId
-      description: The ID of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.GroupName
-      description: The name of the security group.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.PeeringStatus
-      description: The status of a VPC peering connection, if applicable.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.UserId
-      description: The ID of an AWS account.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.VpcId
-      description: The ID of the VPC for the referenced security group, if applicable.
-      type: string
-    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress.UserIdGroupPairs.VpcPeeringConnectionId
-      description: The ID of the VPC peering connection, if applicable.
+    - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress
+      description: The outbound rules associated with the security group.
       type: string
     - contextPath: AWS.EC2.SecurityGroups.VpcId
       description: The ID of the VPC for the security group.
