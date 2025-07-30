@@ -1899,18 +1899,20 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
     warninglists_output = []
     for iter in response:
         res = {}
-        warninglist: dict = iter["Warninglist"]  # type: ignore
-        res["ID"] = warninglist.get("id")
-        res["Name"] = warninglist.get("name")
-        res["Type"] = warninglist.get("type")
-        res["Description"] = warninglist.get("description")
-        res["Version"] = warninglist.get("version")
-        res["Enabled"] = warninglist.get("enabled")
-        res["Default"] = warninglist.get("default")
-        res["Category"] = warninglist.get("category")
-        res["EntryCount"] = warninglist.get("warninglist_entry_count")
+        warninglist: dict = iter["Warninglist"]
+        res = {
+            "ID": warninglist["id"],
+            "Name": warninglist["name"],
+            "Type": warninglist["type"],
+            "Description": warninglist["description"],
+            "Version": warninglist["version"],
+            "Enabled": warninglist["enabled"],
+            "Default": warninglist["default"],
+            "Category": warninglist["category"],
+            "EntryCount": warninglist.get("warninglist_entry_count")
+        }
         # Parse valid attributes from the "valid_attributes" field if present
-        valid_attributes = warninglist.get("valid_attributes", [])
+        valid_attributes = warninglist["valid_attributes"]
         res["ValidAttributes"] = valid_attributes.split(",")
 
         warninglists_output.append(res)
@@ -1940,14 +1942,16 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
 
     warninglist_output = {}
     if entity := response.get("Warninglist", {}):
-        warninglist_output["ID"] = entity.get("id")
-        warninglist_output["Name"] = entity.get("name")
-        warninglist_output["Type"] = entity.get("type")
-        warninglist_output["Description"] = entity.get("description")
-        warninglist_output["Version"] = entity.get("version")
-        warninglist_output["Enabled"] = entity.get("enabled")
-        warninglist_output["Default"] = entity.get("default")
-        warninglist_output["Category"] = entity.get("category")
+        warninglist_output = {
+            "ID": entity["id"],
+            "Name": entity["name"],
+            "Type": entity["type"],
+            "Description": entity["description"],
+            "Version": entity["version"],
+            "Enabled": entity["enabled"],
+            "Default": entity["default"],
+            "Category": entity["category"],
+        }
         # Parse valid attributes from the "valid_attributes" field if present
         warninglist_output["Entries"] = [
             {
@@ -1966,8 +1970,8 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
             }
             for entry in (entity.get("WarninglistType") or [])
         ]
-    warninglist_entries_output = warninglist_output.get("Entries", [])
-    warninglist_attributes_output = warninglist_output.get("ValidAttributes", [])
+    warninglist_entries_output = warninglist_output["Entries"]
+    warninglist_attributes_output = warninglist_output["ValidAttributes"]
 
     human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
     human_readable += tableToMarkdown(
@@ -1996,16 +2000,16 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     """
     Appends new values to supplied warninglist
     """
-    warninglist_id = demisto_args.get("id")
-    warninglist_name = demisto_args.get("name")
-    warninglist_type = demisto_args.get("type")
-    warninglist_description = demisto_args.get("description")
-    warninglist_enabled = demisto_args.get("enabled")
-    warninglist_default = demisto_args.get("default")
-    warninglist_category = demisto_args.get("category")
-    warninglist_version = demisto_args.get("version")
-    warninglist_values = argToList(demisto_args.get("values"))
-    warninglist_types = argToList(demisto_args.get("types"))
+    warninglist_id = demisto_args["id"]
+    warninglist_name = demisto_args["name"]
+    warninglist_type = demisto_args["type"]
+    warninglist_description = demisto_args["description"]
+    warninglist_enabled = demisto_args["enabled"]
+    warninglist_default = demisto_args["default"]
+    warninglist_category = demisto_args["category"]
+    warninglist_version = demisto_args["version"]
+    warninglist_values = argToList(demisto_args["values"])
+    warninglist_types = argToList(demisto_args["types"])
 
     data = {}
     if warninglist_name:
@@ -2043,14 +2047,16 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     resp_json = response.json()
     warninglist_output = {}
     if entity := resp_json.get("Warninglist", {}):
-        warninglist_output["ID"] = entity.get("id")
-        warninglist_output["Name"] = entity.get("name")
-        warninglist_output["Type"] = entity.get("type")
-        warninglist_output["Description"] = entity.get("description")
-        warninglist_output["Version"] = entity.get("version")
-        warninglist_output["Enabled"] = entity.get("enabled")
-        warninglist_output["Default"] = entity.get("default")
-        warninglist_output["Category"] = entity.get("category")
+        warninglist_output = {
+            "ID": entity["id"],
+            "Name": entity["name"],
+            "Type": entity["type"],
+            "Description": entity["description"],
+            "Version": entity["version"],
+            "Enabled": entity["enabled"],
+            "Default": entity["default"],
+            "Category": entity["category"],
+        }
 
     if entity := resp_json.get("WarninglistEntry", []):
         warninglist_output["Entries"] = [
