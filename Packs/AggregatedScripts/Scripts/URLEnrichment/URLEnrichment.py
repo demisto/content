@@ -41,14 +41,15 @@ def url_enrichment_script(
                "Score":"Score",
                "Brand":"Brand"}
     
-    commands = [ReputationCommand(name="url", args={"url": data_list}, mapping=mapping)]
+    commands = [ReputationCommand(name="url", args={"url": data_list}, mapping=mapping),
+                Command(name="wildfire-get-verdict", args={"url": data_list}, direct_mapping="WildFire.Verdicts(val.url && val.url == obj.url)")]
     urlreputation = ReputationAggregatedCommand(
         main_keys={"Data":"Data",
                    "DetectionEngines":"DetectionEngines",
                    "PositiveDetections":"PositiveDetections",
                    "Score":"Score",
                    "Brand":"Brand"},
-        brands =[],
+        brands = enrichment_brands,
         verbose=True,
         commands = commands,
         validate_input_function=lambda args: True,
