@@ -1,7 +1,5 @@
 id: AWS EC2 Instance Misconfiguration - Remediate and Notify
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: AWS EC2 Instance Misconfiguration - Remediate and Notify
 description: |-
   This playbook helps you fix cloud security misconfigurations on your AWS EC2 Instances. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services.
@@ -15,10 +13,10 @@ fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: f86faf0d-dc8c-4c97-81c2-d4873b78db5f
+    taskid: 9204d739-560c-4127-840e-677ad2a8abd2
     type: start
     task:
-      id: f86faf0d-dc8c-4c97-81c2-d4873b78db5f
+      id: 9204d739-560c-4127-840e-677ad2a8abd2
       version: -1
       name: ""
       iscommand: false
@@ -45,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 26645909-a67f-4139-8ed5-ae53f81abd50
+    taskid: e04a26fc-3a92-49c4-89f0-564398f6ca92
     type: regular
     task:
-      id: 26645909-a67f-4139-8ed5-ae53f81abd50
+      id: e04a26fc-3a92-49c4-89f0-564398f6ca92
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -80,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 41eb1943-54c1-4475-8f4e-032611134ced
+    taskid: 341afcb9-75dc-41e4-873c-89d7af1ef2af
     type: title
     task:
-      id: 41eb1943-54c1-4475-8f4e-032611134ced
+      id: 341afcb9-75dc-41e4-873c-89d7af1ef2af
       version: -1
       name: Done
       type: title
@@ -108,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 54ade2e2-bf80-4bc2-841c-e982b78e6965
+    taskid: 3d7085ca-0321-462f-8755-7d78da6dc397
     type: condition
     task:
-      id: 54ade2e2-bf80-4bc2-841c-e982b78e6965
+      id: 3d7085ca-0321-462f-8755-7d78da6dc397
       version: -1
       name: Send email for review consent
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -147,7 +145,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: ${inputs.Reviewer email address}
+        simple: ${inputs.Reviewer Email Address}
       subject:
         simple: 'Action Required: Review Detected Issue and Remediation Plan for Asset – ${Core.CoreAsset.xdm__asset__type__name}'
       body:
@@ -173,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6e6f9967-e40b-4725-801f-b24f09f3865d
+    taskid: 823fc4df-c034-46d6-8e72-f27626c9977f
     type: condition
     task:
-      id: 6e6f9967-e40b-4725-801f-b24f09f3865d
+      id: 823fc4df-c034-46d6-8e72-f27626c9977f
       version: -1
       name: Is remediation available?
       description: Check if remediation is available for the issue ruleid.
@@ -243,10 +241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 506b5c9a-1bd8-4bc0-8c05-2dfe22b07446
+    taskid: f8fa633e-6fca-41ab-8ef4-455a4ceb7d73
     type: regular
     task:
-      id: 506b5c9a-1bd8-4bc0-8c05-2dfe22b07446
+      id: f8fa633e-6fca-41ab-8ef4-455a4ceb7d73
       version: -1
       name: Update Issue  details to War Room
       description: Prints text to war room (Markdown supported)
@@ -282,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 6e893695-4b7d-4799-8de7-71af698517f8
+    taskid: bd4ebeb7-8a7a-44e0-861d-437e4fe84ed8
     type: regular
     task:
-      id: 6e893695-4b7d-4799-8de7-71af698517f8
+      id: bd4ebeb7-8a7a-44e0-861d-437e4fe84ed8
       version: -1
       name: Update Issue status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -317,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 6af6be69-9317-41b7-83e0-f324db379e5c
+    taskid: 79948897-9960-4d73-8137-e1d0bc96a071
     type: regular
     task:
-      id: 6af6be69-9317-41b7-83e0-f324db379e5c
+      id: 79948897-9960-4d73-8137-e1d0bc96a071
       version: -1
       name: 'Update AWS EC2 Instance Metadata Service '
       description: Modify the EC2 instance metadata parameters on a running or stopped instance.
@@ -360,10 +358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 43ef8008-a756-4c3d-814a-ddca27d374eb
+    taskid: 020ec69b-383e-44cb-8cb0-da47c7cebe26
     type: condition
     task:
-      id: 43ef8008-a756-4c3d-814a-ddca27d374eb
+      id: 020ec69b-383e-44cb-8cb0-da47c7cebe26
       version: -1
       name: Is AWS integration available?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -397,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1d3c6b76-418b-4391-8792-1301e7186398
+    taskid: 12b89609-ba7c-4c79-8b26-e76d4dccb942
     type: condition
     task:
-      id: 1d3c6b76-418b-4391-8792-1301e7186398
+      id: 12b89609-ba7c-4c79-8b26-e76d4dccb942
       version: -1
       name: Check if auto-remediation or reviewer is set
       description: Check if reviewer email address is provided in playbook inputs.
@@ -430,7 +428,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Reviewer email address
+              simple: inputs.Reviewer Email Address
             iscontext: true
           right:
             value:
@@ -460,7 +458,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: inputs.Reviewer email address
+              simple: inputs.Reviewer Email Address
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -479,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 585ebd10-8f95-4e6b-bf4c-783f1ccd5d17
+    taskid: fc0f3d73-5161-45eb-b8bc-436da6d1caa8
     type: playbook
     task:
-      id: 585ebd10-8f95-4e6b-bf4c-783f1ccd5d17
+      id: fc0f3d73-5161-45eb-b8bc-436da6d1caa8
       version: -1
       name: Create Ticket and Notify
       description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
@@ -508,7 +506,7 @@ tasks:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
         simple: ${inputs.Slack Channel Name}
-    separatecontext: false
+    separatecontext: true
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -531,10 +529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: e3f00151-68fe-42d2-9a56-7de8d286dc01
+    taskid: ebdd4d07-db59-4863-8983-66e0bd5ea8e6
     type: playbook
     task:
-      id: e3f00151-68fe-42d2-9a56-7de8d286dc01
+      id: ebdd4d07-db59-4863-8983-66e0bd5ea8e6
       version: -1
       name: Update Ticket and Notify
       description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
@@ -555,7 +553,7 @@ tasks:
       Issue State:
         simple: Update
       Jira Project Key:
-        simple: ${inputs.Jira project key}
+        simple: ${inputs.Jira Project Key}
       Notification Email Recipients:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
@@ -583,10 +581,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 88a825fa-a843-45a7-8e62-90884794d23e
+    taskid: dd34e673-eaff-4b49-a664-d85f5fcd82af
     type: condition
     task:
-      id: 88a825fa-a843-45a7-8e62-90884794d23e
+      id: dd34e673-eaff-4b49-a664-d85f5fcd82af
       version: -1
       name: Confirm AWS Pack Integration
       description: Confirm if AWS dependency pack is installed and integrated.
@@ -614,7 +612,11 @@ tasks:
       to:
       subject:
       body:
-        simple: This playbook needs the AWS dependency pack to run remediation commands. Please reply 'Yes' to confirm it's integrated, or 'No' to end the playbook.
+        simple: |-
+          This playbook requires an active AWS integration to run remediation.
+          Please reply 'Yes' to confirm it’s configured, or 'No' to end the playbook.
+
+          To configure: Go to Settings → Data Sources → Select the AWS account -> Enable 'Automations' under 'Additional Security Capabilities'
       methods: []
       format: ""
       bcc:
@@ -634,10 +636,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 02f18779-1c0f-415f-87c8-309e1b736fe0
+    taskid: 3f43f98c-1906-477b-8287-ee85fdeb73c9
     type: condition
     task:
-      id: 02f18779-1c0f-415f-87c8-309e1b736fe0
+      id: 3f43f98c-1906-477b-8287-ee85fdeb73c9
       version: -1
       name: Is AWS integration available?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -671,10 +673,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 6bc15a95-b7fd-4121-a4d6-8e2ff3c3c035
+    taskid: 0b0f5b32-6de6-4c9e-8e8f-0dd16fdce75d
     type: condition
     task:
-      id: 6bc15a95-b7fd-4121-a4d6-8e2ff3c3c035
+      id: 0b0f5b32-6de6-4c9e-8e8f-0dd16fdce75d
       version: -1
       name: Is Asset details Exists?
       description: Checks if Asset details exists
@@ -721,10 +723,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d62183b7-46eb-4fac-87bd-ed68aeb2c412
+    taskid: 6ed7340c-cb81-45d4-88f2-9b01d669355d
     type: collection
     task:
-      id: d62183b7-46eb-4fac-87bd-ed68aeb2c412
+      id: 6ed7340c-cb81-45d4-88f2-9b01d669355d
       version: -1
       name: Get Reviewer Email Address
       description: Gets reviewer email address from user
@@ -787,10 +789,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 77021af6-46eb-4008-8d67-f2396505ef9b
+    taskid: d5a13e1e-81ca-43b2-8219-52de4b050ee5
     type: condition
     task:
-      id: 77021af6-46eb-4008-8d67-f2396505ef9b
+      id: d5a13e1e-81ca-43b2-8219-52de4b050ee5
       version: -1
       name: Send email for review consent
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -921,12 +923,12 @@ inputs:
 
     Note: To send email notifications, specify the Notification Email Recipients input.
   playbookInputQuery:
-- key: Reviewer email address
+- key: Reviewer Email Address
   value: {}
   required: false
   description: Provide the designated reviewer's email address to request approval for executing the remediation command.
   playbookInputQuery:
-- key: Jira project key
+- key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
@@ -947,8 +949,8 @@ inputSections:
   - Do you want to create a ticket?
   - Do you want to send a message notification?
   - Do you want to send an email notification?
-  - Reviewer email address
-  - Jira project key
+  - Reviewer Email Address
+  - Jira Project Key
   - Slack Channel Name
   - Notification Email Recipients
   name: General (Inputs group)

@@ -1,7 +1,5 @@
 id: Create Ticket and Notify
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Create Ticket and Notify
 description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
 starttaskid: "0"
@@ -9,10 +7,10 @@ fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: dc498787-a95b-4ed3-8113-06188f8bbd22
+    taskid: 4c9ff4d2-6fa7-48b2-8324-0c74710027e7
     type: start
     task:
-      id: dc498787-a95b-4ed3-8113-06188f8bbd22
+      id: 4c9ff4d2-6fa7-48b2-8324-0c74710027e7
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: be95f837-2f84-4e90-8eee-aff56c818131
+    taskid: c60bb9ed-2f1b-4929-84d0-c7fc63091bc8
     type: title
     task:
-      id: be95f837-2f84-4e90-8eee-aff56c818131
+      id: c60bb9ed-2f1b-4929-84d0-c7fc63091bc8
       version: -1
       name: Done
       type: title
@@ -67,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: cc7a75f1-d811-41ff-8f33-752cf39de2b3
+    taskid: be775625-5f6b-430c-8e2c-de5435f33e36
     type: condition
     task:
-      id: cc7a75f1-d811-41ff-8f33-752cf39de2b3
+      id: be775625-5f6b-430c-8e2c-de5435f33e36
       version: -1
       name: Check State Input
       description: Checks if State Input is Create / Update
@@ -121,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 2c289e73-23eb-4fa5-8667-ff76094b61be
+    taskid: a89e868a-4ca6-4221-8b07-76f3c4600d1a
     type: regular
     task:
-      id: 2c289e73-23eb-4fa5-8667-ff76094b61be
+      id: a89e868a-4ca6-4221-8b07-76f3c4600d1a
       version: -1
       name: Create Issue ServiceNow ticket
       description: Creates new ServiceNow ticket.
@@ -175,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8f153463-ca34-4aa8-832d-4122dc84fb04
+    taskid: f8fbb774-977b-4298-8745-786c6175f79c
     type: regular
     task:
-      id: 8f153463-ca34-4aa8-832d-4122dc84fb04
+      id: f8fbb774-977b-4298-8745-786c6175f79c
       version: -1
       name: Create Issue Jira ticket
       description: Creates a new issue in Jira.
@@ -229,10 +227,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 18608ca0-e21d-48ed-8530-b57b2adea9ab
+    taskid: 2d4ec522-bb98-431a-8c4a-006d5b73de16
     type: title
     task:
-      id: 18608ca0-e21d-48ed-8530-b57b2adea9ab
+      id: 2d4ec522-bb98-431a-8c4a-006d5b73de16
       version: -1
       name: Create or Update Issue ticket
       type: title
@@ -260,10 +258,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: a7fd79d5-4f16-4776-87a2-894261efc10b
+    taskid: 6886cbbe-d71c-4654-84fd-5e912414f120
     type: title
     task:
-      id: a7fd79d5-4f16-4776-87a2-894261efc10b
+      id: 6886cbbe-d71c-4654-84fd-5e912414f120
       version: -1
       name: Notification via Teams / Slack
       type: title
@@ -291,10 +289,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 2ff0e02c-dec9-4466-aa39-7cfefa773624
+    taskid: e7a7ec4f-def3-45f5-8172-47d5b569d403
     type: condition
     task:
-      id: 2ff0e02c-dec9-4466-aa39-7cfefa773624
+      id: e7a7ec4f-def3-45f5-8172-47d5b569d403
       version: -1
       name: Is Jira Project Key Input Provided?
       description: Checks if Jira Project Key exists
@@ -351,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b59b4217-52e3-48d5-8fde-4c3ae8c3b112
+    taskid: 5c820c10-21f3-4606-85f0-cc7a69265ef0
     type: title
     task:
-      id: b59b4217-52e3-48d5-8fde-4c3ae8c3b112
+      id: 5c820c10-21f3-4606-85f0-cc7a69265ef0
       version: -1
       name: Email Notification
       type: title
@@ -382,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 1ee1d774-ba40-44b1-8c67-44d281102578
+    taskid: 791d6ffb-ea45-4639-885d-ba9925aa7820
     type: regular
     task:
-      id: 1ee1d774-ba40-44b1-8c67-44d281102578
+      id: 791d6ffb-ea45-4639-885d-ba9925aa7820
       version: -1
       name: Send Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -432,10 +430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 24f139be-383b-47ab-8193-4f00470ec6df
+    taskid: 9486150a-f06c-40bd-84b0-3e999f8b8199
     type: regular
     task:
-      id: 24f139be-383b-47ab-8193-4f00470ec6df
+      id: 9486150a-f06c-40bd-84b0-3e999f8b8199
       version: -1
       name: Update Microsoft Teams Notification
       description: Send a message to Microsoft Teams via Incoming Webhook.
@@ -477,10 +475,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 98a9aaf3-adf7-4662-a645-7d0bac652317
+    taskid: 5f2062cf-7c4a-41ce-89aa-cc99c9a5c533
     type: regular
     task:
-      id: 98a9aaf3-adf7-4662-a645-7d0bac652317
+      id: 5f2062cf-7c4a-41ce-89aa-cc99c9a5c533
       version: -1
       name: Update Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -493,7 +491,7 @@ tasks:
       - "34"
     scriptarguments:
       channel:
-        simple: ${inputs.Slack Channel Name}
+        simple: ${inputs.Slack Channel Name}${Please Provide Slack Channel Name.Answers.0}
       message:
         simple: |-
           Issue Resolved for Asset: ${Core.CoreAsset.xdm__asset__name}
@@ -524,10 +522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 6001a418-1a42-4481-8b65-ac494f439bb3
+    taskid: f490b6c0-7929-49cc-88c2-c03d47b815e8
     type: regular
     task:
-      id: 6001a418-1a42-4481-8b65-ac494f439bb3
+      id: f490b6c0-7929-49cc-88c2-c03d47b815e8
       version: -1
       name: Send Microsoft Teams Notification
       description: Send a message to Microsoft Teams via Incoming Webhook.
@@ -572,10 +570,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 7e771f4d-de73-4f6d-85da-65efbe4d0567
+    taskid: fd432e30-d500-41c2-8326-660116b43141
     type: regular
     task:
-      id: 7e771f4d-de73-4f6d-85da-65efbe4d0567
+      id: fd432e30-d500-41c2-8326-660116b43141
       version: -1
       name: Update Issue ServiceNow ticket
       description: Updates the specified ticket.
@@ -619,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 64f42a99-ee05-4a33-8832-c5f9985fd633
+    taskid: 5ae1be77-ca9c-447f-874e-855c804d7356
     type: regular
     task:
-      id: 64f42a99-ee05-4a33-8832-c5f9985fd633
+      id: 5ae1be77-ca9c-447f-874e-855c804d7356
       version: -1
       name: Update Issue Jira ticket
       description: Adds a new comment to an existing Jira issue.
@@ -666,10 +664,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 79236f70-1fd3-46f3-83b9-ceff407c698a
+    taskid: 47669741-76a4-4e47-8d6f-494b20c25b1d
     type: condition
     task:
-      id: 79236f70-1fd3-46f3-83b9-ceff407c698a
+      id: 47669741-76a4-4e47-8d6f-494b20c25b1d
       version: -1
       name: Is there an existing ServiceNow Ticket?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -735,10 +733,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 27836e79-d69c-4708-8489-a6ab8d1754e4
+    taskid: 19596cca-41f4-4266-8cbb-d6dd6c473230
     type: regular
     task:
-      id: 27836e79-d69c-4708-8489-a6ab8d1754e4
+      id: 19596cca-41f4-4266-8cbb-d6dd6c473230
       version: -1
       name: Notify Microsoft Teams and Slack Integration status to War Room
       description: Prints text to war room (Markdown supported)
@@ -770,10 +768,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: a41fc0c7-51e7-4286-805c-3d8992622b18
+    taskid: 4bec67bd-7e7f-4985-8861-85bf3f536e9d
     type: collection
     task:
-      id: a41fc0c7-51e7-4286-805c-3d8992622b18
+      id: 4bec67bd-7e7f-4985-8861-85bf3f536e9d
       version: -1
       name: Get Jira Project Key
       description: Gets Jira Project Key Input from User
@@ -836,10 +834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 5abff33e-c09c-43da-8e52-f7d2575f9315
+    taskid: 7c484f72-ede1-4e98-8d7b-ccc9b895250d
     type: condition
     task:
-      id: 5abff33e-c09c-43da-8e52-f7d2575f9315
+      id: 7c484f72-ede1-4e98-8d7b-ccc9b895250d
       version: -1
       name: Is there an existing Jira Ticket?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -904,10 +902,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 84a26d02-b03b-454a-8f1c-03c02f716365
+    taskid: 028b8dba-9c3c-450b-8056-5e4014192f35
     type: collection
     task:
-      id: 84a26d02-b03b-454a-8f1c-03c02f716365
+      id: 028b8dba-9c3c-450b-8056-5e4014192f35
       version: -1
       name: Get Slack Channel Name
       description: Gets Slack Channel Name from User
@@ -970,10 +968,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 99ec3f30-17f2-46d0-84ce-ac9a564d9a0f
+    taskid: 4f6bec04-7e29-4648-83ca-7949180abdcd
     type: condition
     task:
-      id: 99ec3f30-17f2-46d0-84ce-ac9a564d9a0f
+      id: 4f6bec04-7e29-4648-83ca-7949180abdcd
       version: -1
       name: Check Notification Email Recipients Inputs
       description: Cheks if Notification Email Recipients is set to Yes and email address is provided
@@ -1059,10 +1057,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 69f8709c-233b-47ad-8b57-19bce30c17da
+    taskid: 8f3ff7ea-9dd0-46d5-8bc6-5b6af7e6d39b
     type: collection
     task:
-      id: 69f8709c-233b-47ad-8b57-19bce30c17da
+      id: 8f3ff7ea-9dd0-46d5-8bc6-5b6af7e6d39b
       version: -1
       name: Get Notification Email Recipients
       description: Gets Notification Email Recipients input from user
@@ -1125,10 +1123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 523cb8e0-8539-4f05-83ac-295e085710f2
+    taskid: f9ce7163-a098-4a0b-8fed-6f2eb1947206
     type: condition
     task:
-      id: 523cb8e0-8539-4f05-83ac-295e085710f2
+      id: f9ce7163-a098-4a0b-8fed-6f2eb1947206
       version: -1
       name: Check ServiceNow and Jira Integration
       description: Check if ticketing input is set to Yes and the configured module
@@ -1244,10 +1242,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: cb2443e0-269e-4bd3-83e1-3191642fa1fb
+    taskid: 3ae2dcf5-6026-4d5b-8b16-2ee9f476f7a0
     type: condition
     task:
-      id: cb2443e0-269e-4bd3-83e1-3191642fa1fb
+      id: 3ae2dcf5-6026-4d5b-8b16-2ee9f476f7a0
       version: -1
       name: Is Asset Details Exists?
       description: Checks if Asset details exists
@@ -1294,10 +1292,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: b1840d9e-d5e6-4503-8712-e82c8875fd35
+    taskid: f6f78d83-7ef6-496b-8c0c-3e2086320814
     type: regular
     task:
-      id: b1840d9e-d5e6-4503-8712-e82c8875fd35
+      id: f6f78d83-7ef6-496b-8c0c-3e2086320814
       version: -1
       name: Get Asset Details
       description: Get asset information.
@@ -1329,10 +1327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 6bb3a039-dda0-4f6c-84a2-317bd618c2b4
+    taskid: bf5b0f24-aa9c-4049-846b-b714060614f9
     type: condition
     task:
-      id: 6bb3a039-dda0-4f6c-84a2-317bd618c2b4
+      id: bf5b0f24-aa9c-4049-846b-b714060614f9
       version: -1
       name: Check Microsoft Teams and Slack Integration
       description: Checks if message notification is set to Yes and the integrated module.
@@ -1449,10 +1447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 668a80e1-5360-4fba-afc4-f98b1ed4b271
+    taskid: 44b47b97-8b79-4da6-8316-1e70af365dd3
     type: condition
     task:
-      id: 668a80e1-5360-4fba-afc4-f98b1ed4b271
+      id: 44b47b97-8b79-4da6-8316-1e70af365dd3
       version: -1
       name: Is Slack Channel Name Input Provided?
       description: Checks if Slack Channel Name Input is provided
@@ -1509,10 +1507,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 8c422ee2-a2da-41b0-8e1e-2ce2ab14eebe
+    taskid: b1d0c85a-f041-48f1-8ced-7f34aee2f55b
     type: condition
     task:
-      id: 8c422ee2-a2da-41b0-8e1e-2ce2ab14eebe
+      id: b1d0c85a-f041-48f1-8ced-7f34aee2f55b
       version: -1
       name: Check State Input
       description: Checks if State Input is Create / Update
@@ -1563,10 +1561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 9d715113-bed6-44f7-a542-8c65e4f559d3
+    taskid: 11c875c9-3b34-46a1-87ce-15f357fcce58
     type: regular
     task:
-      id: 9d715113-bed6-44f7-a542-8c65e4f559d3
+      id: 11c875c9-3b34-46a1-87ce-15f357fcce58
       version: -1
       name: Send Email Notification
       description: commands.server.mail.sendmail
@@ -1602,10 +1600,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: a157d0e4-87c9-462f-8dbf-b45cfec6e40a
+    taskid: 40170c14-a5bf-4bdf-8c25-f1fda621a93c
     type: regular
     task:
-      id: a157d0e4-87c9-462f-8dbf-b45cfec6e40a
+      id: 40170c14-a5bf-4bdf-8c25-f1fda621a93c
       version: -1
       name: Update Email Notification
       description: commands.server.mail.sendmail
@@ -1641,10 +1639,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 621a5eef-c83e-4e65-80db-5013582deddf
+    taskid: 4bde6f1d-2665-43d5-8b89-b609cc5eddb3
     type: condition
     task:
-      id: 621a5eef-c83e-4e65-80db-5013582deddf
+      id: 4bde6f1d-2665-43d5-8b89-b609cc5eddb3
       version: -1
       name: Check State Input
       description: Checks if State Input is Create / Update
@@ -1695,10 +1693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: cc81dad3-0ae5-4a70-89f7-8c2eb0a3a21b
+    taskid: b283c9e9-48b2-4d74-88c9-79b0be25a395
     type: regular
     task:
-      id: cc81dad3-0ae5-4a70-89f7-8c2eb0a3a21b
+      id: b283c9e9-48b2-4d74-88c9-79b0be25a395
       version: -1
       name: Notify ServiceNow and Jira status to War Room
       description: Prints text to war room (Markdown supported)

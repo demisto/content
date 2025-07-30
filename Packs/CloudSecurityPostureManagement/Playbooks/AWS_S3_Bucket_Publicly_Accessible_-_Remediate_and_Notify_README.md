@@ -4,7 +4,7 @@ You have the flexibility to fully automate the fix or include an analyst review 
 This playbook can fix the following misconfigurations.
 
 - AWS S3 bucket publicly readable
-- AWS S3 bucket publicly writable
+- AWS S3 bucket publicly writable.
 
 ## Dependencies
 
@@ -41,8 +41,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Do you want to create a ticket? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: If set to 'Yes', a configured ServiceNow and/or Jira integration is required.  <br/>If using Jira, the Jira Project Key input must also be provided. | No | Required |
 | Do you want to send a message notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: If set to 'Yes', Microsoft Teams and/or Slack integration must be configured.<br/>If using Slack, the Slack Channel Name input must also be provided. | No | Required |
 | Do you want to send an email notification? | Possible values:<br/>- Yes<br/>- No<br/><br/>Note: To send email notifications, specify the Notification Email Recipients input. | No | Optional |
-| Reviewer email address | Provide the designated reviewer's email address to request approval for executing the remediation command. |  | Optional |
-| Jira project key | Provide Jira project key where the issue will be created. |  | Optional |
+| Reviewer Email Address | Provide the designated reviewer's email address to request approval for executing the remediation command. |  | Optional |
+| Jira Project Key | Provide Jira project key where the issue will be created. |  | Optional |
 | Slack Channel Name | Provide Slack channel name to which to send messages. |  | Optional |
 | Notification Email Recipients | Provide the email address to send email notifications.<br/><br/>Note: If you leave this blank, no email notification will be sent and the playbook will skip this step. |  | Optional |
 

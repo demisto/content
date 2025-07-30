@@ -1,7 +1,5 @@
 id: AWS S3 Bucket Publicly Accessible - Remediate and Notify
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: AWS S3 Bucket Publicly Accessible - Remediate and Notify
 description: |-
   This playbook helps you fix cloud security misconfigurations related to your AWS S3 bucket. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services.
@@ -16,10 +14,10 @@ fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: 0fece0a6-f35c-4b0b-835b-6d98ee49d5d4
+    taskid: 0450a70e-0cf5-438c-8c19-d9cd5683b139
     type: start
     task:
-      id: 0fece0a6-f35c-4b0b-835b-6d98ee49d5d4
+      id: 0450a70e-0cf5-438c-8c19-d9cd5683b139
       version: -1
       name: ""
       iscommand: false
@@ -46,10 +44,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d72292fc-11ec-4d39-88ec-e986b0e0e953
+    taskid: 747719eb-ac53-4a12-8d8f-804e6cb93d56
     type: regular
     task:
-      id: d72292fc-11ec-4d39-88ec-e986b0e0e953
+      id: 747719eb-ac53-4a12-8d8f-804e6cb93d56
       version: -1
       name: Get Asset details
       description: Get asset information.
@@ -81,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b8a2a9a4-fc0b-4fd7-80f5-39737b0e8012
+    taskid: 25c117c8-a580-4afb-82bb-acf39a509da4
     type: title
     task:
-      id: b8a2a9a4-fc0b-4fd7-80f5-39737b0e8012
+      id: 25c117c8-a580-4afb-82bb-acf39a509da4
       version: -1
       name: Done
       type: title
@@ -109,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c5b593e7-628a-4939-8f01-88f64ab93fc3
+    taskid: d0c3b717-4864-4108-8196-82052d22b162
     type: condition
     task:
-      id: c5b593e7-628a-4939-8f01-88f64ab93fc3
+      id: d0c3b717-4864-4108-8196-82052d22b162
       version: -1
       name: Send email for review consent
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -169,10 +167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ddeb5801-f033-4095-8884-e90e1b71e33e
+    taskid: 956ad2d8-3314-4330-893b-3d1eb06bf584
     type: condition
     task:
-      id: ddeb5801-f033-4095-8884-e90e1b71e33e
+      id: 956ad2d8-3314-4330-893b-3d1eb06bf584
       version: -1
       name: Is remediation available?
       description: Check if remediation is available for the issue ruleid.
@@ -271,10 +269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 166ecff1-ed6f-4bf9-8655-04ec5ada8bbb
+    taskid: 04222ab7-f0c1-4a1b-836f-736a35c5b8a9
     type: regular
     task:
-      id: 166ecff1-ed6f-4bf9-8655-04ec5ada8bbb
+      id: 04222ab7-f0c1-4a1b-836f-736a35c5b8a9
       version: -1
       name: 'Update Issue details to War Room '
       description: Prints text to war room (Markdown supported)
@@ -309,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 12670dce-cc1f-4996-8137-ddd01230d997
+    taskid: 7ae311dd-baff-46a1-8117-21a916b80419
     type: regular
     task:
-      id: 12670dce-cc1f-4996-8137-ddd01230d997
+      id: 7ae311dd-baff-46a1-8117-21a916b80419
       version: -1
       name: Update Issue Status to Resolved - Fixed
       description: commands.local.cmd.set.alert.status
@@ -344,10 +342,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: fd224b85-4217-49d6-8afd-731ae3e1e7f3
+    taskid: 0f49ba5e-4426-463d-809d-791e07317dd6
     type: condition
     task:
-      id: fd224b85-4217-49d6-8afd-731ae3e1e7f3
+      id: 0f49ba5e-4426-463d-809d-791e07317dd6
       version: -1
       name: Check if auto-remediation or reviewer is set
       description: Check if reviewer email address is provided in playbook inputs.
@@ -377,7 +375,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Reviewer email address
+              simple: inputs.Reviewer Email Address
             iscontext: true
           right:
             value:
@@ -407,7 +405,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: inputs.Reviewer email address
+              simple: inputs.Reviewer Email Address
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -426,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 3408cf6a-a44d-43d2-8795-b5dbd4f0aed0
+    taskid: f0dda6aa-5333-48bb-8e14-a75c9a59e532
     type: condition
     task:
-      id: 3408cf6a-a44d-43d2-8795-b5dbd4f0aed0
+      id: f0dda6aa-5333-48bb-8e14-a75c9a59e532
       version: -1
       name: Is AWS integration available ?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -463,10 +461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 95fedc18-8bbc-4b31-81f8-bb56fa84d1fe
+    taskid: 4aff32c5-c90a-4cbe-87b8-4b4f052b1766
     type: regular
     task:
-      id: 95fedc18-8bbc-4b31-81f8-bb56fa84d1fe
+      id: 4aff32c5-c90a-4cbe-87b8-4b4f052b1766
       version: -1
       name: Update AWS S3 Block Public Access setting
       description: Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
@@ -510,10 +508,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 58b78659-8abe-4285-864b-954e3f871cff
+    taskid: 517f5c44-3b64-4c1e-89ae-30e419a0c1d2
     type: playbook
     task:
-      id: 58b78659-8abe-4285-864b-954e3f871cff
+      id: 517f5c44-3b64-4c1e-89ae-30e419a0c1d2
       version: -1
       name: Create Ticket and/or Notify
       description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
@@ -534,7 +532,7 @@ tasks:
       Issue State:
         simple: Create
       Jira Project Key:
-        simple: ${inputs.Jira project key}
+        simple: ${inputs.Jira Project Key}
       Notification Email Recipients:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
@@ -562,10 +560,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: c7d44bcf-f81f-4e58-9170-66658913cf55
+    taskid: 9b424d2a-42f9-4580-8a88-0930f7895340
     type: playbook
     task:
-      id: c7d44bcf-f81f-4e58-9170-66658913cf55
+      id: 9b424d2a-42f9-4580-8a88-0930f7895340
       version: -1
       name: Update Ticket and/or Notify
       description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
@@ -586,7 +584,7 @@ tasks:
       Issue State:
         simple: Update
       Jira Project Key:
-        simple: ${inputs.Jira project key}
+        simple: ${inputs.Jira Project Key}
       Notification Email Recipients:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
@@ -614,10 +612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: f4ce1253-d9d2-4093-8467-c2fa80d71e78
+    taskid: d2aa9623-5968-4338-8d33-63280afc0a36
     type: condition
     task:
-      id: f4ce1253-d9d2-4093-8467-c2fa80d71e78
+      id: d2aa9623-5968-4338-8d33-63280afc0a36
       version: -1
       name: Confirm AWS Pack Integration
       description: Confirm if AWS dependency pack is installed and integrated.
@@ -665,10 +663,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 6fb9d945-9e6d-4b17-8ae2-959748bad86a
+    taskid: b9d85751-da9f-47cb-88aa-ce639854e0e8
     type: condition
     task:
-      id: 6fb9d945-9e6d-4b17-8ae2-959748bad86a
+      id: b9d85751-da9f-47cb-88aa-ce639854e0e8
       version: -1
       name: Is AWS integration available ?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
@@ -702,10 +700,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 28e4fb24-e447-4cd7-83e9-85a213ac1f3d
+    taskid: b497f377-4ceb-4fa1-8369-960ed73ec535
     type: collection
     task:
-      id: 28e4fb24-e447-4cd7-83e9-85a213ac1f3d
+      id: b497f377-4ceb-4fa1-8369-960ed73ec535
       version: -1
       name: Get Reviewer Email Address
       description: Gets reviewer email address from user
@@ -773,10 +771,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 45d33849-d1f7-40ac-8944-e771fe4fbb79
+    taskid: 4794c89b-62aa-4c9d-8f38-6214cd4886a9
     type: condition
     task:
-      id: 45d33849-d1f7-40ac-8944-e771fe4fbb79
+      id: 4794c89b-62aa-4c9d-8f38-6214cd4886a9
       version: -1
       name: Is Asset Details Exists?
       description: Checks if Asset details exists
@@ -823,10 +821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 0023f3b0-e2e6-44ff-8d40-c1262395c1ff
+    taskid: c472454b-15b6-4faf-8319-b96b37621bc3
     type: condition
     task:
-      id: 0023f3b0-e2e6-44ff-8d40-c1262395c1ff
+      id: c472454b-15b6-4faf-8319-b96b37621bc3
       version: -1
       name: Send email for review consent
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -947,12 +945,12 @@ inputs:
 
     Note: To send email notifications, specify the Notification Email Recipients input.
   playbookInputQuery:
-- key: Reviewer email address
+- key: Reviewer Email Address
   value: {}
   required: false
   description: Provide the designated reviewer's email address to request approval for executing the remediation command.
   playbookInputQuery:
-- key: Jira project key
+- key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
@@ -976,8 +974,8 @@ inputSections:
   - Do you want to create a ticket?
   - Do you want to send a message notification?
   - Do you want to send an email notification?
-  - Reviewer email address
-  - Jira project key
+  - Reviewer Email Address
+  - Jira Project Key
   - Slack Channel Name
   - Notification Email Recipients
   name: General (Inputs group)
