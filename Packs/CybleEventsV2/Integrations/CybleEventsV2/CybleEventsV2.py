@@ -21,7 +21,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-MAX_ALERTS = 500
+MAX_ALERTS = 300
 LIMIT_EVENT_ITEMS = 200
 MAX_RETRIES = 3
 MAX_THREADS = 1
