@@ -2,9 +2,6 @@ args:
 - description: Data address to enrich.
   name: data
   required: true
-- description: Indicator type to enrich.
-  name: indicator_type
-  required: true
 - name: external_enrichment
   description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module (TIM) will be retrieved.
   auto: PREDEFINED

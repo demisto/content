@@ -351,7 +351,22 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             elif self.additional_fields:
                 output["AdditionalFields"] = values
         return output
-        
+    
+    def summarize_command_results(self, context, verbose_command_results):
+        """
+        Summarizes the results of a reputation command.
+        Args:
+            command_results (list[str]): List of command results.
+        Returns:
+            list[str]: Summarized command results.
+        """
+        # TODO: implement summarize_command_results
+        pass 
+
+
+"""HELPER FUNCTIONS"""
+
+
 def merge_nested_dicts_in_place(dict1: dict, dict2: dict) -> None:
     """
     Merges dict2 into dict1 in-place for nested dictionaries of the form:
