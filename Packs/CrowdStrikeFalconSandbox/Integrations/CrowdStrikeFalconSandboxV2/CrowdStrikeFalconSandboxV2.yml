@@ -53,7 +53,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4284848
   commands:
   - name: cs-falcon-sandbox-report-summary
     polling: true
@@ -210,7 +210,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Gets summary information for a given MD5, SHA1, or SHA256 and all the reports generated for any environment ID.
+    description: Gets summary information for a job_id or sha256
   - name: cs-falcon-sandbox-scan
     depercated: true
     polling: true
