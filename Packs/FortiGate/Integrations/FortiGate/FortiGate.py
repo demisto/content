@@ -208,7 +208,7 @@ class Client(BaseClient):
         Returns:
             response: requests.Response
         """
-        
+
         response: requests.Response = self._http_request(
             method="POST",
             full_url=urljoin(self.server, "logincheck"),
@@ -220,25 +220,25 @@ class Client(BaseClient):
             resp_type="response",
             error_handler=Client._error_handler,
         )
-        
+
         demisto.debug(f"Got response {str(response)} with {response.text=}")
 
         if response.text == "0":
             demisto.debug("Retrying the login process due to error")
             # retry for authorization errors
             retry_response: requests.Response = self._http_request(
-            method="POST",
-            full_url=urljoin(self.server, "logincheck"),
-            data={
-                "username": self.username,
-                "secretkey": self.password,
-                "ajax": "1",
-            },
-            resp_type="response",
-            error_handler=Client._error_handler,
-        )
+                method="POST",
+                full_url=urljoin(self.server, "logincheck"),
+                data={
+                    "username": self.username,
+                    "secretkey": self.password,
+                    "ajax": "1",
+                },
+                resp_type="response",
+                error_handler=Client._error_handler,
+            )
             demisto.debug(f"Got retry response {str(retry_response)} with {retry_response.text=}")
-            
+
             if retry_response.text == "0":
                 raise DemistoException(AUTHORIZATION_ERROR)
 
@@ -246,7 +246,7 @@ class Client(BaseClient):
 
         if response.text == "2":
             raise DemistoException("Too many login attempts. Please wait and try again.")
-        
+
         return response
 
     def logout(self) -> None:
