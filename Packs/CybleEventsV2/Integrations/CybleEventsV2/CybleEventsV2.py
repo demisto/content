@@ -941,7 +941,7 @@ def get_fetch_severities(incident_severity):
 
 
 def get_gte_limit(curr_gte: str) -> str:
-    server_gte = datetime.utcnow() - timedelta(days=7)
+    server_gte = datetime.utcnow() - timedelta(hours=3)
     return max(curr_gte, server_gte.astimezone(pytz.UTC).isoformat())
 
 
