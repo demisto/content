@@ -134,7 +134,8 @@ def append_email_signature(html_body: str) -> str:
     list_name = "XSOAR - Email Communication Signature"
     demisto.debug(f"Trying to load the `{list_name}` list.")
 
-    # For backwards compatibility, only when `fail_on_error` is set to False, two values will be returned, this confuses type checker, hence 'type: ignore'
+    # For backwards compatibility, only when `fail_on_error` is set to False, two values will be returned
+    # this confuses type checker, hence 'type: ignore'
     is_succeed, email_signature = execute_command(
         "getList",
         {"listName": list_name},

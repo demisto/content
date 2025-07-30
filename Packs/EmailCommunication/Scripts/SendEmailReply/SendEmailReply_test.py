@@ -59,7 +59,7 @@ def test_append_email_signature_fails(mocker):
     debug_mocker_call_args = debug_mocker.call_args
     assert (
         debug_mocker_call_args.args[0] == "Error occurred while trying to load the `XSOAR - Email Communication "
-        "Signature` list. No signature added to email"
+        "Signature` list. No signature added to email."
     )
     assert html_body == "<html><body>Simple HTML message.\r\n</body></html>"
 
