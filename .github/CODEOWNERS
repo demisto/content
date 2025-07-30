@@ -15,7 +15,7 @@
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @jlevypaloalto
+/Packs/PAN-OS/Integrations/ @lironcohen272
 
 # Important Integrations
 /Packs/QRadar/Integrations/QRadar_v3/* @jbabazadeh
@@ -54,13 +54,13 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @SamuelFain @YuvHayun
-validation_config.toml @YuvHayun
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun @yedidyacohenpalo
+validation_config.toml @YuvHayun @yedidyacohenpalo
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @tcarmeli1
-/Packs/Core/Integrations/ @tcarmeli1
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
+/Packs/CortexXDR/Integrations/ @jlevypaloalto
+/Packs/Core/Integrations/ @jlevypaloalto
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
