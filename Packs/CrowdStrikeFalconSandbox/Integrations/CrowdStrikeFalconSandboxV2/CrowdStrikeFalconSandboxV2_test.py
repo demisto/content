@@ -227,7 +227,7 @@ def test_crowdstrike_scan_command_polling_true(mocker, requests_mock):
       - result response in progress
 
     Then:
-      - Get a 404 result
+      - Scheduled command is created and arguments are correct
     """
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     file_hash = "filehash"
@@ -248,7 +248,7 @@ def test_crowdstrike_scan_command_polling_false(requests_mock):
       - result response in progress
 
     Then:
-      - Get a 404 result
+      - Scheduled command is None and output state is IN_PROGRESS
     """
     file_hash = "filehash"
     mocked_res = {"state": "IN_PROGRESS", "sha256": "123", "threat_level": 2}

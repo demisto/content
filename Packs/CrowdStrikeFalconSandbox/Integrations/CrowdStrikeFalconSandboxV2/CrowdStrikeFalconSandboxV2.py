@@ -53,8 +53,7 @@ SUBMISSION_PARAMETERS = (
     "environment_variable",
 )
 
-ERROR_STATES = ["ERROR", "FAILED"]
-
+IN_PROGRESS_STATES = ["IN_PROGRESS", "RUNNING"]
 
 class Client(BaseClient):
     def get_environments(self) -> List[dict]:
@@ -444,7 +443,7 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
             ),
         )
 
-    continue_to_poll = any(state in ["IN_PROGRESS", "RUNNING"] for res in scan_response for state in [res["state"]])
+    continue_to_poll = any(state in IN_PROGRESS_STATES for res in scan_response for state in [res["state"]])
 
     command_result = [
         CommandResults(
