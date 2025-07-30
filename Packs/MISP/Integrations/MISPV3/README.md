@@ -4386,7 +4386,7 @@ Gets all warninglists from MISP
 
 >### MISP
 >
->|ID|Name|Type|Description}Version|Enabled|Default|Category|EntryCount|ValidAttributes|
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|EntryCount|ValidAttributes|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 1 | List | string | An example list | 1 | true | true | false_positive | 2 | hostname |
 >| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | 20 | url |
@@ -4433,7 +4433,7 @@ This command only changes the values supplied through the parameters of this com
 >
 >### MISP Warninglist
 >
->|ID|Name|Type|Description}Version|Enabled|Default|Category|
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|
 >|---|---|---|---|---|---|---|---|
 >| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive |
 >
@@ -4488,7 +4488,7 @@ Get a specific warninglist by its ID.
 
 >### MISP Warninglist
 >
->|ID|Name|Type|Description}Version|Enabled|Default|Category|
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|
 >|---|---|---|---|---|---|---|---|
 >| 1234 | Example List Name | string | An example of a warninglist in MISP | 1 | true | true | false_positive |
 >
