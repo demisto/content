@@ -241,7 +241,9 @@ def test_get_events_command_success_single_page(mocker):
 
     events_list, cmd_results = get_events_command(mock_client_instance, report_id, args)
 
-    # # Assert the returned values
+    # Check calls to http_request
+    assert mock_client_instance.http_request.call_count == 1
+
     assert events_list == expected_events
     assert cmd_results.raw_response == expected_events
     assert f"### Events from {SAP_CLOUD}" in cmd_results.readable_output
@@ -467,34 +469,34 @@ def test_fetch_events_first_fetch_success(mocker):
     assert next_run == {"last_fetch": last_fetch.strftime(STRFTIME_FORMAT), "timezone_offset": timestamp_offset_hour}
 
 
-def test_fetch_events_report_id_missing():
-    """
-    Tests the behavior of `fetch_events` when the 'report_id' is missing from the parameters.
+UTC_FORMAT_TIMESTAMP_TEST_CASES = [
+    (
+        # UTC-6 case
+        [
+            {"CTIMESTAMP": "14.07.2025 13:30:40 UTC-6"},
+            {"CTIMESTAMP": "01.01.2024 00:00:00 UTC-6"},
+        ],
+        [
+            {"CTIMESTAMP": "14.07.2025 13:30:40 UTC-6", "_time": "2025-07-14T19:30:40Z"},
+            {"CTIMESTAMP": "01.01.2024 00:00:00 UTC-6", "_time": "2024-01-01T06:00:00Z"},
+        ],
+    ),
+    (
+        # UTC+2 case
+        [
+            {"CTIMESTAMP": "30.07.2025 10:15:00 UTC+2"},
+            {"CTIMESTAMP": "01.01.2024 06:00:00 UTC+2"},
+        ],
+        [
+            {"CTIMESTAMP": "30.07.2025 10:15:00 UTC+2", "_time": "2025-07-30T08:15:00Z"},
+            {"CTIMESTAMP": "01.01.2024 06:00:00 UTC+2", "_time": "2024-01-01T04:00:00Z"},
+        ],
+    ),
+]
 
-    This test verifies that the `fetch_events` function correctly raises a
-    `DemistoException` when the mandatory 'report_id' is not provided in the
-    `params` dictionary, ensuring proper error handling for missing configuration.
 
-    When:
-        - Calling `fetch_events` with the mocked client and missing `report_id` parameter.
-    Then:
-        Verify that:
-        - A `DemistoException` is raised.
-        - The exception message contains the specific error text:
-          "Report ID must be provided in the integration parameters and must be a string."
-    """
-    from SAPCloudForCustomerC4C import fetch_events
-
-    mock_client_instance = mock_client()
-    params = {"max_fetch": 10}  # Missing report_id
-
-    with pytest.raises(DemistoException) as excinfo:
-        fetch_events(mock_client_instance, params, last_run={})
-
-    assert "Report ID must be provided in the integration parameters and must be a string." in str(excinfo.value)
-
-
-def test_add_time_to_events():
+@pytest.mark.parametrize("input_events, expected_output", UTC_FORMAT_TIMESTAMP_TEST_CASES)
+def test_add_time_to_events(input_events, expected_output):
     """
     Tests the basic functionality of `add_time_to_events` for correct conversion and addition of `_time`.
 
@@ -512,18 +514,28 @@ def test_add_time_to_events():
     """
     from SAPCloudForCustomerC4C import add_time_to_events
 
-    events = [
-        {
-            "CTIMESTAMP": "14.07.2025 13:30:40 UTC-6",
-        },
-        {"CTIMESTAMP": "01.01.2024 00:00:00 UTC-6"},
-    ]
-    expected = [
-        {"CTIMESTAMP": "14.07.2025 13:30:40 UTC-6", "_time": "2025-07-14T19:30:40Z"},
-        {"CTIMESTAMP": "01.01.2024 00:00:00 UTC-6", "_time": "2024-01-01T06:00:00Z"},
-    ]
-    add_time_to_events(events)
-    assert events == expected
+    result = add_time_to_events(input_events)
+    assert result == expected_output
+
+
+def test_add_time_to_events_no_events():
+    """
+    Tests the behavior of `add_time_to_events` when given an empty event list.
+
+    This test verifies that the function correctly handles the edge case where no events are provided.
+
+    When:
+        - The `add_time_to_events` function is called with an empty list.
+
+    Then:
+        Verify that:
+        - The returned value is also an empty list.
+        - No errors are raised.
+    """
+    from SAPCloudForCustomerC4C import add_time_to_events
+
+    events = add_time_to_events([])
+    assert events == []
 
 
 IS_VALID_TIMESTAMP_TEST_CASES = [
@@ -567,3 +579,143 @@ def test_is_valid_timestamp_parameterized(mocker, timestamp_str: str, expected_r
         result = is_valid_timestamp(timestamp_str)
         assert result is expected_result
         mock_demisto_debug.assert_not_called()
+
+
+def test_get_timestamp_offset_hour(mocker):
+    """
+    Tests the basic functionality of `get_timestamp_offset_hour` for correct UTC offset calculation.
+
+    This test verifies that the `get_timestamp_offset_hour` function correctly extracts a timestamp
+    from the API response, parses the UTC offset, and returns it as a float representing the number of hours.
+
+    When:
+        - The API response contains a valid "CTIMESTAMP" value in the format "DD.MM.YYYY HH:MM:SS UTC±Num".
+
+    Then:
+        Verify that:
+        - The function parses the timestamp correctly.
+        - The returned offset matches the expected offset in hours (e.g., 2.0 for UTC+2).
+    """
+    from SAPCloudForCustomerC4C import get_timestamp_offset_hour
+
+    mock_client_instance = mock_client()
+
+    # Example timestamp string with UTC+2 offset
+    timestamp_with_offset = "23.07.2025 12:00:51 UTC+2"
+    expected_event = [{"CTIMESTAMP": timestamp_with_offset}]
+
+    mocker.patch.object(mock_client_instance, "http_request", return_value={"d": {"results": expected_event}})
+    report_id = "general_reportID"
+
+    # Call the function under test
+    offset_hour = get_timestamp_offset_hour(mock_client_instance, report_id)
+
+    # Parse the timestamp manually to calculate expected offset for comparison
+    dt_object = dateparser.parse(timestamp_with_offset)
+    expected_offset = dt_object.tzinfo.utcoffset(dt_object).total_seconds() / 3600
+
+    # Assert that the returned offset matches the expected offset (2.0 in this case)
+    assert offset_hour == expected_offset
+
+
+GET_EVENTS_INVALID_RESPONSES = [
+    pytest.param(None, f"Empty response received from {SAP_CLOUD} API.", id="empty_response_none"),
+    pytest.param(
+        {},
+        f"Empty response received from {SAP_CLOUD} API.",
+    ),
+    pytest.param({"d": {}}, f"Unexpected response structure from {SAP_CLOUD} API.", id="missing_results_key"),
+]
+
+
+@pytest.mark.parametrize("mock_response, expected_error_msg", GET_EVENTS_INVALID_RESPONSES)
+def test_get_events_api_call_invalid_responses(mocker, mock_response, expected_error_msg):
+    """
+    Tests `get_events_api_call` with invalid or empty API responses.
+
+    This test ensures the function raises `DemistoException` in cases such as:
+    - The API response is `None`.
+    - The response is missing required keys like 'd' or 'results'.
+
+    When:
+        - `client.http_request()` returns invalid response structures.
+
+    Then:
+        Verify that:
+        - A `DemistoException` is raised with an appropriate error message.
+    """
+    from SAPCloudForCustomerC4C import get_events_api_call
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+
+    mocker.patch.object(mock_client_instance, "http_request", return_value=mock_response)
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_events_api_call(mock_client_instance, report_id=report_id, params={})
+    assert expected_error_msg in str(excinfo.value)
+
+
+UTC_TIMESTAMP_TEST_CASES = [
+    # UTC+2
+    (datetime(2025, 7, 30, 12, 0, 0, tzinfo=timezone.utc), 2.0, "2025-07-30T14:00:00+02:00"),
+    # UTC-5
+    (datetime(2025, 7, 30, 12, 0, 0, tzinfo=timezone.utc), -5.0, "2025-07-30T07:00:00-05:00"),
+    # UTC+0
+    (datetime(2025, 7, 30, 12, 0, 0, tzinfo=timezone.utc), 0.0, "2025-07-30T12:00:00+00:00"),
+    # UTC+5.5 (e.g., India)
+    (datetime(2025, 7, 30, 12, 0, 0, tzinfo=timezone.utc), 5.5, "2025-07-30T17:30:00+05:30"),
+]
+
+
+@pytest.mark.parametrize("utc_input, offset_hour, expected_iso", UTC_TIMESTAMP_TEST_CASES)
+def test_convert_utc_to_offset(utc_input, offset_hour, expected_iso):
+    """
+    Tests the `convert_utc_to_offset` function for correct datetime conversion to specified UTC offset.
+
+    When:
+        - The function is called with a UTC datetime and a target offset in hours.
+
+    Then:
+        Verify that:
+        - It should return a datetime object in the correct timezone offset,
+          with the ISO 8601 string matching the expected output.
+    """
+    from SAPCloudForCustomerC4C import convert_utc_to_offset
+
+    converted = convert_utc_to_offset(utc_input, offset_hour)
+    assert converted.isoformat() == expected_iso
+
+
+def test_get_events_command_no_response(mocker):
+    """
+    Tests the fallback behavior of `get_events_command` when no events are returned from the API.
+
+    When:
+        - The `get_events` function returns an empty response (e.g., no more events exist).
+    Then:
+        Verify that:
+        - The function should log the debug message and return an empty result list.
+        - The returned CommandResults should include a readable markdown table with no data.
+    """
+    from SAPCloudForCustomerC4C import get_events_command
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+
+    mocker.patch("SAPCloudForCustomerC4C.get_events", return_value=[])
+
+    mock_debug = mocker.patch("SAPCloudForCustomerC4C.demisto.debug")
+
+    args = {
+        "start_date": "25-07-2025 10:00:00",
+        "limit": "5",
+        "days_from_start": "1",
+    }
+
+    events, results = get_events_command(mock_client_instance, report_id=report_id, args=args)
+
+    assert events == []
+    assert isinstance(results, CommandResults)
+    assert f"Events from {SAP_CLOUD}" in results.readable_output
+    mock_debug.assert_called_with("No more events exist or no response received, breaking...")

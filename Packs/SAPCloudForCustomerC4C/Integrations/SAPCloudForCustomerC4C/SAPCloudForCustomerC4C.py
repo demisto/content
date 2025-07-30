@@ -76,6 +76,7 @@ class Client(BaseClient):
         if res.status_code == 401:
             raise DemistoException(f"{SAP_CLOUD} - Got unauthorized from the server. Check the credentials. {res.text}")
         elif res.status_code == 204:
+            demisto.debug("There is no content to return in the response.")
             return
         elif res.status_code == 404:
             raise DemistoException(f"{SAP_CLOUD} - The resource was not found at {res.url}. {res.text}")
@@ -101,7 +102,7 @@ def encode_to_base64(input_string: str) -> str:
     return encoded_string
 
 
-def client_api_call(client: Client, report_id: str, params: dict):
+def get_events_api_call(client: Client, report_id: str, params: dict):
     """
     Executes a GET request to the SAP Cloud API for a specific report.
 
@@ -117,18 +118,38 @@ def client_api_call(client: Client, report_id: str, params: dict):
 
     Returns:
         dict: The parsed JSON response from the SAP Cloud API.
+
+    Raises:
+        DemistoException: If the response is empty or not in expected format.
+
+    Notes:
+        Time Format Requirements:
+        - Timestamps must follow the format: DD.MM.YYYY HH:MM:SS UTC±Offset
+        - This format specifies the date, time, and UTC offset explicitly.
+        - Examples:
+            "23.07.2025 12:00:51 UTC-2"   # UTC-2
+            "26.07.2025 21:04:32"   # UTC
+            "15.08.2025 18:30:00 UTC+05:00"   # UTC+5
+
     """
     res = client.http_request(
         method="GET",
         url_suffix=f"{URL_SUFFIX}{report_id}?",
         params=params,
     )
+
+    if not res:
+        raise DemistoException(f"Empty response received from {SAP_CLOUD} API.")
+
+    if "d" not in res or "results" not in res["d"]:
+        raise DemistoException(f"Unexpected response structure from {SAP_CLOUD} API.")
+
     return res
 
 
 def is_valid_timestamp(timestamp_str: str):
     """
-    Validates if a given timestamp string is parseable by dateparser.
+    Validates if a given timestamp string is parsable by dateparser.
 
     This function attempts to parse the input timestamp string. If parsing fails,
     it logs a debug message and raises a DemistoException, indicating a potential
@@ -145,8 +166,10 @@ def is_valid_timestamp(timestamp_str: str):
     """
     if not dateparser.parse(timestamp_str):
         demisto.debug(f"Parsing Error: Could not parse CTIMESTAMP '{timestamp_str}'.")
-        raise DemistoException("""SAP timezone configuration is not supported, kindly see the readme and description file on how
-                               to configure the correct timezone""")
+        raise DemistoException(f"""SAP timezone configuration is not supported. The current timestamp is: {timestamp_str},
+                               while the integration supports UTC time formats (for example: 'UTC -2', 'UTC +3').
+                               For more information, see the Timezone configuration section in the integration documentation file.
+                               """)
 
 
 def test_module(client: Client, report_id: str) -> str:
@@ -159,10 +182,16 @@ def test_module(client: Client, report_id: str) -> str:
         str: 'ok' if the test passed, otherwise raises an exception.
     """
     if not report_id:
-        raise DemistoException("Report ID is a mandatory parameter for test-module. Please provide a Report ID.")
+        raise DemistoException("Report ID is a mandatory parameter, please provide it.")
 
+    # Query parameters for the API request:
+    # $inlinecount: Request to include a count of all matching records.
+    # $filter: Filter condition to retrieve records where CUSER equals 'ASAHAYA'.
+    # $top: Limit the number of results returned to 2.
+    # $format: Request JSON format for the response.
+    # $select: Only retrieve the 'CTIMESTAMP' field from the results.
     params = {"$inlinecount": "allpages", "$filter": "CUSER eq 'ASAHAYA'", "$top": 2, "$format": "json", "$select": "CTIMESTAMP"}
-    res = client_api_call(client, report_id, params)
+    res = get_events_api_call(client, report_id, params)
     timestamp_str = res["d"]["results"][0]["CTIMESTAMP"]
     is_valid_timestamp(timestamp_str)
     return "ok"
@@ -223,27 +252,41 @@ def get_end_date(start_date_str: str, days: int = 2) -> str:
     return end_date.strftime(STRFTIME_FORMAT)
 
 
-def add_time_to_events(events: list):
-    """Adds the _time key to the events.
+def add_time_to_events(events: list[dict]) -> list[dict]:
+    """
+    Adds the '_time' key to each event, converting the original timestamp to UTC.
 
-    This function iterates through a list of event dictionaries and, for each event,
-    adds a new key "_time". The value for "_time" is taken from the existing "CTIMESTAMP" key
-    within the same event dictionary. If the "CTIMESTAMP" key does not exist, "_time" will be None.
+    This function iterates through a list of event dictionaries and creates a new list
+    where each event includes a '_time' field. The '_time' value is derived from the
+    existing 'CTIMESTAMP' key, parsed and converted to UTC timezone.
+
+    If 'CTIMESTAMP' is missing or invalid in any event, an exception may be raised.
 
     Args:
-        events (list[Any]): A list of dictionaries, where each dictionary represents an event.
-                             Each event dictionary is expected to potentially contain a "CTIMESTAMP" key.
+        events (list[dict]): A list of dictionaries representing events. Each event is
+                             expected to contain a 'CTIMESTAMP' key with a timestamp string.
 
     Returns:
-        None: This function modifies the input `events` list in-place and does not return a new object.
+        list[dict]: A new list of events, each with an added '_time' field in UTC format.
     """
+
+    if not events:
+        return []
+
+    # Validate the first timestamp format before processing the full list
     is_valid_timestamp(events[0]["CTIMESTAMP"])
 
+    updated_events = []
     for event in events:
-        parsed_datetime = dateparser.parse(event.get("CTIMESTAMP"))
+        c_timestamp = event.get("CTIMESTAMP")
+        parsed_datetime = dateparser.parse(c_timestamp)  # type: ignore
         utc_datetime = parsed_datetime.astimezone(timezone.utc)  # type: ignore
         formatted_time = utc_datetime.strftime(DATE_FORMAT)
-        event["_time"] = formatted_time
+        new_event = event.copy()
+        new_event["_time"] = formatted_time
+        updated_events.append(new_event)
+
+    return updated_events
 
 
 def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List[Dict], CommandResults]:
@@ -304,8 +347,18 @@ def get_events(
         skip (int): Number of items to skip for pagination.
         top (int): Maximum number of events to return in this request.
         start_date (str): Fetch events that are newer than or equal to this time (formatted as DD-MM-YYYY HH:MM:SS).
-        end_date (str): Fetch events that are older than or equal to this time
-        (formatted as DD-MM-YYYY HH:MM:SS). Defaults to None.
+        end_date (str): Fetch events that are older than or equal to this time (formatted as DD-MM-YYYY HH:MM:SS).
+
+            Note: Although the filter uses `le` (less than or equal), based on testing,
+            the API does **not** include events that exactly match the upper bound (`end_date`).
+            This means `le` behaves as **less than** (`<`) rather than less than or equal (`<=`).
+            For example, the filter:
+                CTIMESTAMP ge '28-07-2025 10:11:00' and CTIMESTAMP le '28-07-2025 10:12:00'
+            actually retrieves events where:
+                '28-07-2025 10:11:00' <= event timestamp < '28-07-2025 10:12:00'
+
+            The API does not support the `lt` operator, so `le` is used instead, but it effectively
+            acts as a strict upper bound.
 
     Returns:
         Optional[List[Dict[str, Any]]]: A list of events, or None if an error occurs.
@@ -314,8 +367,8 @@ def get_events(
     filter = f"CTIMESTAMP ge '{start_date}' and CTIMESTAMP le '{end_date}'"
     params = {"$filter": filter, "$skip": skip, "$top": top, "$format": "json", "$inlinecount": "allpages"}
 
-    res = client_api_call(client, report_id, params)
-    demisto.debug(f"{params=}")
+    res = get_events_api_call(client, report_id, params)
+    demisto.debug(f"Performing the get events call with - {params=}.")
 
     return res.get("d", {}).get("results", [])
 
@@ -337,8 +390,9 @@ def get_timestamp_offset_hour(client: Client, report_id: str) -> float:
         float: The timezone offset from UTC in hours (e.g., 2.0 for UTC+2, -5.0 for UTC-5).
     """
     params = {"$inlinecount": "allpages", "$filter": "CUSER eq 'OSAWYERR'", "$top": 1, "$format": "json"}
-    res = client_api_call(client, report_id, params)
+    res = get_events_api_call(client, report_id, params)
     timestamp_str = res["d"]["results"][0]["CTIMESTAMP"]
+    demisto.debug(f"Original timestamp from response: {timestamp_str}")
     is_valid_timestamp(timestamp_str)
     dt_object = dateparser.parse(timestamp_str)
     offset_timedelta = dt_object.tzinfo.utcoffset(dt_object)  # type: ignore
@@ -351,7 +405,8 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
     Fetches events from SAP Cloud API based on a specified report ID and date range.
 
     Prerequisites:
-    - The technical user configured in SAP C4C for this integration must have its timezone set to a UTC format.
+    - The technical user configured in SAP C4C for this integration must have its timezone set to a UTC format
+        (UTC with an offset, for example 'UTC -2', 'UTC +3').
         This is crucial for accurate timestamp filtering and to prevent errors during event fetching.
         Refer to the integration's documentation for more details.
 
@@ -368,22 +423,18 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
                 - 'timezone_offset' (float): The timestamp offset in hours used for the current fetch.
             - The second element is a list of dictionaries, where each dictionary represents a fetched event.
               Events are retrieved in batches until 'max_events_per_fetch' is reached or no more events are available.
-
-    Raises:
-        DemistoException: If 'report_id' is not provided in 'params' or is not a string.
     """
     now_utc = get_current_utc_time()
     demisto.debug(f"the last run is {last_run=}")
     demisto.debug("Starting the SAP C4C fetch events command.")
 
-    report_id = params.get("report_id")
-    if not isinstance(report_id, str):
-        raise DemistoException("Report ID must be provided in the integration parameters and must be a string.")
+    report_id = str(params.get("report_id"))
     max_events_per_fetch = arg_to_number(params.get("max_fetch")) or MAX_EVENTS_PER_FETCH
     all_events: list[dict[str, Any]] = []
     skip_count = INIT_SKIP
 
     timestamp_offset_hour = last_run.get("timezone_offset")
+    # If this is the first fetch, calculate the timezone offset by using an API call.
     if not timestamp_offset_hour:
         timestamp_offset_hour = get_timestamp_offset_hour(client, report_id)
     demisto.debug(f"Using timezone offset: {timestamp_offset_hour} hours.")
@@ -397,8 +448,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
         start_date_for_filter_dt = end_date_for_filter_dt - timedelta(minutes=1)
         start_date_for_filter_str = start_date_for_filter_dt.strftime(STRFTIME_FORMAT)
 
-    demisto.debug(f"Getting events from: {start_date_for_filter_str}")
-    demisto.debug(f"Getting events until: {end_date_for_filter_str}")
+    demisto.debug(f"Getting events from: {start_date_for_filter_str} to: {end_date_for_filter_str}")
 
     while max_events_per_fetch > 0:
         top = min(DEFAULT_TOP, max_events_per_fetch)
@@ -417,7 +467,7 @@ def fetch_events(client: Client, params: dict, last_run: dict) -> tuple[dict, li
             break
 
     demisto.debug(f"Finished fetching. Total events collected: {len(all_events)}.")
-    # Set next_run to the current time marking the start of this fetch
+    # Setting the next_run - last_fetch to the current time (which is the end time of this fetch)
     next_run = {"last_fetch": end_date_for_filter_str, "timezone_offset": timestamp_offset_hour}
     return next_run, all_events
 
@@ -437,7 +487,7 @@ def main():
     server_url = params.get("url", "").strip("/")
     report_id = params.get("report_id")
     try:
-        base64String = encode_to_base64(user_name + ":" + password)  # type: ignore
+        base64String = encode_to_base64(f"{user_name}:{password}")  # type: ignore
         client = Client(
             base_url=server_url,
             base64String=base64String,
@@ -452,7 +502,7 @@ def main():
             events, results = get_events_command(client, report_id, args)
             should_push_events = argToBoolean(args.get("should_push_events", "false"))
             if should_push_events and events:
-                add_time_to_events(events)
+                events = add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             return_results(results)
 
@@ -460,7 +510,7 @@ def main():
             last_run = demisto.getLastRun() or {}
             next_run, events = fetch_events(client, params, last_run)
             if events:
-                add_time_to_events(events)
+                events = add_time_to_events(events)
                 demisto.debug("Successfully added _time to events")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)

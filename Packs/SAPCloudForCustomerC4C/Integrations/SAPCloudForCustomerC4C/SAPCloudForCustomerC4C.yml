@@ -21,6 +21,7 @@ configuration:
 - display: Report ID
   name: report_id
   type: 0
+  additionalinfo: The unique identifier of the report to retrieve data from SAP Cloud for Customer (C4C).
   required: true
   defaultvalue: ""
   section: Connect
@@ -40,8 +41,8 @@ configuration:
   type: 0
   required: false
   defaultvalue: '10000'
-description: 'SAP Cloud for Customer (C4C) is SAPs CRM solution that lets you automatically fetch audit events via its OData Analytics API to boost security monitoring and compliance.'
-display: SAP Cloud For Customer C4C
+description: 'Integrates with SAP Cloud for Customer (C4C) - a CRM solution that  automatically fetches audit events via its OData Analytics API to boost security monitoring and compliance.'
+display: SAP Cloud For Customer (C4C)
 name: SAPCloudForCustomerC4C
 script:
   commands: 
@@ -74,7 +75,7 @@ script:
       defaultValue: '10'
       name: limit
       required: false
-    description: Retrieves events from the SAP Cloud for Customer API using date range, limit, and event creation options.
+    description: Retrieves events from the SAP Cloud for Customer API.
     name: sap-cloud-get-events
   runonce: false
   script: '-'

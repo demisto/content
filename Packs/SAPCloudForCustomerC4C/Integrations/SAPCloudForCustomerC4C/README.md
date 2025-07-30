@@ -1,16 +1,15 @@
-Use the SAP Cloud for Customer C4C Integration to fetch events from SAP Cloud.
+Use the SAP Cloud for Customer C4C integration to fetch events from SAP Cloud.
 
 ## Configure SAP Cloud For Customer C4C in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | | True |
 | Server URL | Confirm that the pre-filled URL matches the correct API endpoint for your SAP C4C integration instance. | True |
-| Username |  | True |
-| Password | | True |
-| Report ID | The unique identifier of the report to retrieve data from in SAP Cloud for Customer (C4C). | True |
+| Username | The credentials to associate with the instance. | True |
+| Password | The password to set for the user. | True |
+| Report ID | The unique identifier of the report to retrieve data from SAP Cloud for Customer (C4C). | True |
 | Trust any certificate (not secure) | |  False |
-| Use system proxy settings |  | False |
+| Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
 | Maximum number of audit events per fetch | Maximum number of events to retrieve per fetch. The default value is 10000. | False |
 
 ## Commands
@@ -21,7 +20,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### sap-cloud-get-events
 
 ***
-Retrieves events from the SAP Cloud for Customer API based on specified filters.
+Retrieves events from the SAP Cloud for Customer API.
 
 #### Base Command
 
