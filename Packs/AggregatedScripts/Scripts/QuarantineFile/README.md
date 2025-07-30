@@ -15,7 +15,7 @@ This script executes the 'quarantine-file' command on a specified file via the a
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| endpoint_ids | A comma-separated list of endpoint IDs. |
+| endpoint_id | A comma-separated list of endpoint IDs. |
 | file_hash | The hash of the file to quarantine. Supported types are: SHA1, SHA256. |
 | file_path | The path of the file to quarantine. |
 | timeout | The polling timeout in seconds for the quarantine commands. |
