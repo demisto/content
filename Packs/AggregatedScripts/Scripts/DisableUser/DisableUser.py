@@ -9,6 +9,7 @@ from collections.abc import Callable
 HUMAN_READABLES = []
 
 
+
 class CmdFuncRes(TypedDict):
     Disabled: bool
     Result: Literal["Success", "Failed"]
@@ -153,15 +154,18 @@ def disable_users(users: list[User]) -> list[dict]:
 
 
 def main():
-    try:
-        args = demisto.args()
+    args = demisto.args()
 
+    try:
         validate_input(args)
         users = get_users(args)
         outputs = disable_users(users)
 
-        if args.get("verbose"):
+        if argToBoolean(args.get("verbose")):
             return_results(HUMAN_READABLES)
+
+        if not users:
+            raise DemistoException("User(s) not found.")
 
         if any(res["Disabled"] for res in outputs):
             return_results(
@@ -180,6 +184,7 @@ def main():
                     readable_output=tableToMarkdown("Disable User Failed", outputs),
                 )
             )
+
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute DisableUser. Error: {ex}")

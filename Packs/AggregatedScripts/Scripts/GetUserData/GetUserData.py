@@ -302,7 +302,7 @@ def run_execute_command(
     entry_context_list = []
     for entry in res:
         entry_context_list.append(
-            entry.get("EntryContext", {}) | {"instance": entry.get("ModuleName")}
+            (entry.get("EntryContext") or {}) | {"instance": entry.get("ModuleName")}
         )
         if is_error(entry):
             errors_command_results.extend(
