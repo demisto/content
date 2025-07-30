@@ -950,7 +950,7 @@ class QuarantineOrchestrator:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
             demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
             demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_simple_list(self.completed_results))
-            interim_results = CommandResults(readable_output=f"Quarantine file script is still running...")
+            interim_results = CommandResults(readable_output="Quarantine file script is still running...")
             return PollResult(
                 response=interim_results, continue_to_poll=True, args_for_next_run=self.args, partial_result=interim_results
             )
