@@ -212,7 +212,7 @@ script:
       type: number
     description: Gets summary information for a job_id or sha256
   - name: cs-falcon-sandbox-scan
-    depercated: true
+    deprecated: true
     polling: true
     arguments:
     - name: file
