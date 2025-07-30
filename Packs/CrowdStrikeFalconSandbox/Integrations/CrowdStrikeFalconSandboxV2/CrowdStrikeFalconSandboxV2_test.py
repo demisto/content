@@ -185,10 +185,10 @@ def test_results_in_progress_polling_true_with_file(mocker, requests_mock):
 
     assert file_result["Type"] == 9
     assert file_result["File"].endswith("pdf")
-    assert len(scan_result) == len(hash_response_json) + 1
-    assert [o["state"] for o in scan_result[0].outputs] == ["SUCCESS", "SUCCESS"]
-    assert [o["verdict"] for o in scan_result[0].outputs] == ["malicious", "malicious"]
-    assert [o.bwc_fields["url_analysis"] for o in (x.indicator for x in scan_result[1:])] == [False, False]
+    assert len(scan_result) == len([hash_response_json]) + 1
+    assert [o["state"] for o in scan_result[0].outputs] == ["SUCCESS"]
+    assert [o["verdict"] for o in scan_result[0].outputs] == ["malicious"]
+    assert [o.bwc_fields["url_analysis"] for o in (x.indicator for x in scan_result[1:])] == [False]
 
 
 def test_results_in_progress_polling_false(requests_mock):
@@ -221,7 +221,7 @@ def test_crowdstrike_scan_command_polling_true(mocker, requests_mock):
     """
 
     Given:
-      - result request, polling false
+      - result request, polling true
 
     When:
       - result response in progress
@@ -231,7 +231,8 @@ def test_crowdstrike_scan_command_polling_true(mocker, requests_mock):
     """
     mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
     file_hash = "filehash"
-    requests_mock.get(BASE_URL + f"/report/{file_hash}/summary", json={"message":"Failed to get summary. Possibly requested sample does not exist."})
+    mocked_res = {"state": "IN_PROGRESS", "sha256": "123", "threat_level": 2}
+    requests_mock.get(BASE_URL + f"/report/{file_hash}/summary", json=mocked_res)
     response = crowdstrike_scan_command({"file": file_hash, "polling": True}, client)
     assert response.scheduled_command._args["file"] == file_hash
     assert response.scheduled_command._args["hide_polling_output"]
@@ -249,11 +250,13 @@ def test_crowdstrike_scan_command_polling_false(requests_mock):
     Then:
       - Get a 404 result
     """
-    requests_mock.post(BASE_URL + "/search/hashes", json=[])
+    file_hash = "filehash"
+    mocked_res = {"state": "IN_PROGRESS", "sha256": "123", "threat_level": 2}
+    requests_mock.get(BASE_URL + f"/report/{file_hash}/summary", json=mocked_res)
     response = crowdstrike_scan_command({"file": "filehash", "polling": "false"}, client)
     assert len(response) == 1
     assert response[0].scheduled_command is None
-    assert response[0].outputs == []
+    assert response[0].outputs == [{"sha256": "123", "state": "IN_PROGRESS", "threat_level": 2}]
 
 
 def test_results_in_progress_polling_true_error_state(mocker, requests_mock):
@@ -379,8 +382,7 @@ def test_crowdstrike_submit_url_command_poll(requests_mock, mocker):
     submit_response = util_load_json("test_data/submission_response.json")
     mocker.patch.object(demisto, "results")
     submit_call = requests_mock.post(BASE_URL + "/submit/url", json=submit_response)
-    search_call = requests_mock.post(BASE_URL + "/search/hashes", json=[])
-    state_call = requests_mock.get(BASE_URL + "/report/12345/state", json={"state": "IN_PROGRESS"})
+    search_call = requests_mock.get(BASE_URL + "/report/12345/summary", json={"state": "IN_PROGRESS"})
 
     result = crowdstrike_submit_url_command(
         client, {"url": BASE_URL, "environmentID": 300, "comment": "some comment", "polling": True}
@@ -388,7 +390,6 @@ def test_crowdstrike_submit_url_command_poll(requests_mock, mocker):
 
     assert submit_call.called
     assert search_call.called
-    assert state_call.called
 
     assert submit_response in [args.args[0]["Contents"] for args in list(demisto.results.call_args_list)]
     assert result.scheduled_command is not None

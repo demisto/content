@@ -55,7 +55,164 @@ script:
   type: python
   dockerimage: demisto/python3:3.12.8.3296088
   commands:
+  - name: cs-falcon-sandbox-report-summary
+    polling: true
+    arguments:
+    - name: file
+      description: "A comma-separated list of file hashes (SHA256), followed by an environment ID. Each pair is separated by a colon (:), eg: SHA256_1:ENV_ID_1,SHA256_2:ENV_ID_2. Provide either this argument or job_id."
+      required: false
+      isArray: true
+    - name: polling
+      description: "Whether to poll until there is at least one result."
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: job_id
+      description: "A comma-separated list of JobIDs to check the state of when polling. Provide either this argument or file."
+      isArray: true
+    - name: hide_polling_output
+      deprecated: true
+      description: ''
+    outputs:
+    - contextPath: CrowdStrike.Report.job_id
+      description: 'The report job ID.'
+      type: String
+    - contextPath: CrowdStrike.Report.environment_id
+      description: 'The report environment ID.'
+      type: Number
+    - contextPath: CrowdStrike.Report.environment_description
+      description: 'The environment description.'
+      type: String
+    - contextPath: CrowdStrike.Report.size
+      description: 'The file size.'
+      type: Number
+    - contextPath: CrowdStrike.Report.type
+      description: 'The file type.'
+      type: String
+    - contextPath: CrowdStrike.Report.type_short
+      description: 'The short description of the file type.'
+      type: String
+    - contextPath: CrowdStrike.Report.target_url
+      description: 'The target url.'
+      type: String
+    - contextPath: CrowdStrike.Report.state
+      description: 'The report state.'
+      type: String
+    - contextPath: CrowdStrike.Report.error_type
+      description: 'The error type.'
+      type: String
+    - contextPath: CrowdStrike.Report.error_origin
+      description: 'The error origin.'
+      type: String
+    - contextPath: CrowdStrike.Report.submit_name
+      description: 'The name of the file when submitted.'
+      type: String
+    - contextPath: CrowdStrike.Report.md5
+      description: 'The MD5 hash of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.sha1
+      description: 'The SHA1 hash of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.sha256
+      description: 'The SHA256 hash of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.sha512
+      description: 'The SHA512 hash of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.ssdeep
+      description: 'The SSDeep hash of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.imphash
+      description: 'The imphash hash of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.av_detect
+      description: 'The AV Multiscan range, for example 50-70 (min 0, max 100).'
+      type: Number
+    - contextPath: CrowdStrike.Report.vx_family
+      description: 'The file malware family.'
+      type: String
+    - contextPath: CrowdStrike.Report.url_analysis
+      description: 'Whether this report is url analysis.'
+      type: Boolean
+    - contextPath: CrowdStrike.Report.analysis_start_time
+      description: 'The start time of the analysis.'
+      type: Date
+    - contextPath: CrowdStrike.Report.threat_score
+      description: 'The file threat score.'
+      type: Number
+    - contextPath: CrowdStrike.Report.interesting
+      description: 'Whether the file was found to be interesting.'
+      type: Boolean
+    - contextPath: CrowdStrike.Report.threat_level
+      description: 'The file threat level.'
+      type: Number
+    - contextPath: CrowdStrike.Report.verdict
+      description: 'The file verdict.'
+      type: String
+    - contextPath: CrowdStrike.Report.total_network_connections
+      description: 'The total number of network connections.'
+      type: Number
+    - contextPath: CrowdStrike.Report.total_processes
+      description: 'The total number of processes.'
+      type: Number
+    - contextPath: CrowdStrike.Report.total_signatures
+      description: 'The total number of signatures.'
+      type: Number
+    - contextPath: CrowdStrike.Report.file_metadata
+      description: 'The file metadata.'
+      type: Object
+    - contextPath: CrowdStrike.Report.submissions.submission_id
+      description: 'The submission ID.'
+      type: String
+    - contextPath: CrowdStrike.Report.submissions.filename
+      description: 'The name of the file.'
+      type: String
+    - contextPath: CrowdStrike.Report.submissions.url
+      description: 'The url.'
+      type: String
+    - contextPath: CrowdStrike.Report.submissions.created_at
+      description: 'When the submission was created.'
+      type: Date
+    - contextPath: CrowdStrike.Report.network_mode
+      description: 'The network mode.'
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: string
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: The file submission name.
+      type: string
+    - contextPath: File.MalwareFamily
+      description: The file family classification.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that decided the file was malicious.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: The reason the vendor decided the file was malicious.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    description: Gets summary information for a given MD5, SHA1, or SHA256 and all the reports generated for any environment ID.
   - name: cs-falcon-sandbox-scan
+    depercated: true
     polling: true
     arguments:
     - name: file
@@ -209,7 +366,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Gets summary information for a given MD5, SHA1, or SHA256 and all the reports generated for any environment ID.
+    description: Deprecated. Use cs-falcon-sandbox-report-summary instead.
   - name: crowdstrike-scan
     polling: true
     deprecated: true

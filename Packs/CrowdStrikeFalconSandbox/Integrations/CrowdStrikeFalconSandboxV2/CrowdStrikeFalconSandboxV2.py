@@ -53,6 +53,8 @@ SUBMISSION_PARAMETERS = (
     "environment_variable",
 )
 
+ERROR_STATES = ["ERROR", "FAILED"]
+
 
 class Client(BaseClient):
     def get_environments(self) -> List[dict]:
@@ -279,7 +281,7 @@ def submission_response(client, response, polling) -> List[CommandResults]:
         return [submission_res]
     else:
         return_results(submission_res)  # return early
-    return crowdstrike_scan_command({"file": response.get("sha256"), "JobID": response.get("job_id"), "polling": True}, client)
+    return crowdstrike_scan_command({"job_id": response.get("job_id"), "polling": True}, client)
 
 
 def crowdstrike_submit_url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
@@ -396,12 +398,19 @@ def crowdstrike_search_command(client: Client, args: dict[str, Any]) -> List[Com
 
 @polling_function("cs-falcon-sandbox-scan")
 def crowdstrike_scan_command(args: dict[str, Any], client: Client):
-    hashes = args["file"].split(",")
     scan_response = []
-    for hash in hashes:
-        report = client.scan(hash)
-        if report:
-            scan_response.append(report)
+    if not args.get("file") and not args.get("job_id"):
+        raise ValueError("No file or job_id provided.")
+    if args.get("file") and args.get("job_id"):
+        raise ValueError("Must supply either file or job_id, not both.")
+    if args.get("file"):
+        hashes = args["file"].split(",")
+        for hash in hashes:
+            scan_response.append(client.scan(hash))
+    else:
+        job_ids = args["job_id"].split(",")
+        for job_id in job_ids:
+            scan_response.append(client.scan(job_id))
 
     def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(
@@ -435,6 +444,8 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
             ),
         )
 
+    continue_to_poll = any(state in ["IN_PROGRESS", "RUNNING"] for res in scan_response for state in [res["state"]])
+
     command_result = [
         CommandResults(
             outputs_prefix="CrowdStrike.Report",
@@ -442,18 +453,10 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
             outputs=scan_response,
             readable_output=f"Scan returned {len(scan_response)} results",
         ),
-        *[file_with_bwc_fields(res) for res in scan_response],
+        *[file_with_bwc_fields(res) for res in scan_response if not continue_to_poll],
     ]
-    if len(scan_response) != 0:
-        return PollResult(command_result)
-    try:
-        if len(hashes) == 1:
-            key = get_api_id(args)
-            demisto.debug(f"key found for poll state: {key}")
-            return PollResult(continue_to_poll=lambda: not has_error_state(client, key), response=command_result)
-    except ValueError:
-        demisto.debug(f"Cannot get a key to check state for {hashes}")
-    return PollResult(continue_to_poll=True, response=command_result)
+
+    return PollResult(continue_to_poll=continue_to_poll, response=command_result)
 
 
 def crowdstrike_analysis_overview_summary_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -607,7 +610,7 @@ def main() -> None:
             command_func = test_module
         elif demisto_command in ["cs-falcon-sandbox-search", "crowdstrike-search"]:
             command_func = crowdstrike_search_command
-        elif demisto_command in ["cs-falcon-sandbox-scan", "crowdstrike-scan", "file"]:
+        elif demisto_command in ["cs-falcon-sandbox-report-summary", "cs-falcon-sandbox-scan", "crowdstrike-scan", "file"]:
             return_results(crowdstrike_scan_command(args, client))
             return
         elif demisto_command in ["crowdstrike-get-environments", "cs-falcon-sandbox-get-environments"]:
