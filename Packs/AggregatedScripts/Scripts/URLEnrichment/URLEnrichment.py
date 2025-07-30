@@ -182,13 +182,15 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug(f"Tim result entries: {json.dumps(result_entries_tim, indent=2)}")
         demisto.debug("Preparing commands to execute.")
         commands_to_execute = self.prepare_commands()
-        demisto.debug(f"Commands to execute: {json.dumps([command.to_batch_item() for command in commands_to_execute], indent=2)}")
+        demisto.debug(f"Commands to execute: {commands_to_execute}")
         batch_executor = BatchExecutor(commands_to_execute, self.brands_to_run)
         demisto.debug("Executing BatchExecutor.")
         batch_results = batch_executor.execute()
-        
-        indicators_context, dbot_scores_context_commands, verbose_command_results = self.process_batch_results(batch_results, commands_to_execute)
-        
+        demisto.debug(f"Batch results: {json.dumps(batch_results, indent=2)}")
+        indicators_context, dbot_scores_context_commands, verbose_command_results, entry_results = self.process_batch_results(batch_results, commands_to_execute)
+        demisto.debug(f"Indicators context: {json.dumps(indicators_context, indent=2)}")
+        demisto.debug(f"DBot scores context: {json.dumps(dbot_scores_context_commands, indent=2)}")
+        demisto.debug(f"Entry results: {json.dumps(entry_results, indent=2)}")
         command_results = self.summarize_command_results(context, verbose_command_results)
     
         return command_results
@@ -270,11 +272,12 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                                   
         verbose_command_results: list[str] = []
         entry_results: list[dict[str, Any]] = []
-        batch_context: defaultdict[str, defaultdict[str, list]] = defaultdict(defaultdict(list))
+        batch_context: defaultdict[str, defaultdict[str, list]] = defaultdict(lambda: defaultdict(list))
         dbot_scores_context: list[dict[str, Any]] = []
         
         for command, execution_result in zip(commands_to_execute, execution_results):
             for result in execution_result:
+                
                 brand = result.get("Metadata", {}).get("brand")
                 indicator, dbot_scores, human_readable, result_entry = self.parse_result(result, command, brand)
                 if indicator:
@@ -282,7 +285,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 dbot_scores_context.extend(dbot_scores)
                 entry_results.append(result_entry)
                 verbose_command_results.append(human_readable)
-        return batch_context, dbot_scores_context, verbose_command_results
+        return batch_context, dbot_scores_context, verbose_command_results, entry_results
 
     def parse_result(self, result: dict[str, Any], command: Command, brand: str)-> dict[str, Any]:
         """
