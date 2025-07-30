@@ -12,7 +12,6 @@ class Command:
         name: str,
         arg_mapping: dict,
         hard_coded_args: dict = None,
-        pre_command_check: Callable = None
     ):
         """
         Args:
@@ -21,12 +20,10 @@ class Command:
             arg_mapping (dict): A dictionary containing the command arguments. The commands in this script must include at
              least one argument from this dictionary.
             hard_coded_args (dict): Additional arguments to add for the command, arguments with hard-coded values.
-            pre_command_check (Callable): The function used to check the command before it is executed.
         """
         self.brand = brand
         self.name = name
         self.arg_mapping = arg_mapping
-        self.pre_command_check = pre_command_check
         self.hard_coded_args = hard_coded_args
 
 
@@ -52,12 +49,11 @@ def initialize_commands() -> list:
             arg_mapping={'agentId': 'endpoint_id', 'hostName': 'endpoint_hostname'},  # command can use agentId or hostName
         ),
         Command(
-            brand='Microsoft Defender Advanced Threat Protection',  # TODO Maybe Microsoft Defender ATP as in get endpoint data?
+            brand='Microsoft Defender ATP',  # TODO Maybe Microsoft Defender ATP as in get endpoint data?
             name='microsoft-atp-isolate-machine',
             arg_mapping={'machine_id': 'endpoint_id'},
             hard_coded_args={'isolation_type': 'Full',
                              'comment': 'Isolated endpoint with IsolateEndpoint command.'},
-            pre_command_check=check_conditions_microsoft_atp_isolate_machine
         ),
     ]
     return commands
@@ -123,39 +119,6 @@ class ModuleManager:
         return command.brand in self._enabled_brands
 
 
-""" PREPROCESS FUNCTIONS """
-
-
-def check_conditions_microsoft_atp_isolate_machine(endpoint_output: dict, human_readable_outputs: list, args: dict,
-                                                   endpoint_data: dict) -> bool:
-    """
-    Validates if the Microsoft ATP isolate machine command can be executed.
-    The command is allowed only if the endpoint is online and has a valid agent ID. Ensures 'endpoint_id' is set in args if missing.
-
-    Args:
-        endpoint_output (dict): Stores endpoint-related data.
-        human_readable_outputs (list): Stores human-readable messages.
-        args (dict): Command arguments, possibly updated with 'endpoint_id'.
-        endpoint_data (dict): Contains endpoint status and ID.
-
-    Returns:
-        bool: True if execution is allowed, False otherwise.
-    """
-    status = endpoint_data.get('Status')
-    endpoint_id = endpoint_data.get('ID', {}).get('Value', '')
-    if status == 'Offline' or not endpoint_id:
-        create_message_to_context_and_hr(endpoint_args=args,
-                                         result='Fail',
-                                         message='Can not execute microsoft-atp-isolate-machine command',
-                                         endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs)
-        return False
-
-    if not args.get('endpoint_id'):  # Appending endpoint_id as it's required for microsoft-atp-isolate-machine.
-        args['endpoint_id'] = endpoint_id
-    return True
-
-
 """ HELPER FUNCTIONS """
 
 
@@ -165,7 +128,6 @@ def check_module_and_args_for_command(command: Command, endpoint_output: dict,
     Validates whether a command can be executed by checking the brand's availability and required arguments.
 
     Args:
-        module_manager (ModuleManager): The manager responsible for handling integrations and their availability.
         command (Command): An instance containing the command's metadata and argument mapping.
         endpoint_output (dict): The dictionary to store output results.
         human_readable_outputs (list): The list to store human-readable messages.
@@ -174,15 +136,6 @@ def check_module_and_args_for_command(command: Command, endpoint_output: dict,
     Returns:
         bool: True if the command can be executed, False otherwise.
     """
-    # if not module_manager.is_brand_available(command):  # checks if brand is enable
-    #     demisto.debug(f'Brand {command.brand} is unavailable for command.name')
-    #     create_message_to_context_and_hr(args=args,
-    #                                      result='Fail',
-    #                                      message=f'{command.brand} integration is available.',
-    #                                      endpoint_output=endpoint_output,
-    #                                      human_readable_outputs=human_readable_outputs)
-    #     return False
-
     missing_args = are_there_missing_args(command, args)  # checks if there are missing args
     if missing_args:
         demisto.debug(f'Missing the next args {missing_args} for command.name')
@@ -195,7 +148,7 @@ def check_module_and_args_for_command(command: Command, endpoint_output: dict,
     return True
 
 
-def is_endpoint_isolatable(endpoint_data: dict, endpoint_args: dict, endpoint_output: dict, human_readable_outputs: list) -> bool:
+def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpoint_output: dict, human_readable_outputs: list) -> bool:
     """
     Determines whether an endpoint can be isolated based on its current isolation status.
 
@@ -208,16 +161,18 @@ def is_endpoint_isolatable(endpoint_data: dict, endpoint_args: dict, endpoint_ou
     Returns:
         bool: True if the endpoint is eligible for isolation, False otherwise.
     """
-    demisto.debug(f"Got endpoint {endpoint_data} with field isisolated{endpoint_data.get('IsIsolated', {})}")
-    is_isolated = endpoint_data.get('IsIsolated', {}).get('Value', 'No')
+    demisto.debug(f"Got endpoint {endpoint_data} with field isisolated{endpoint_data.get('IsIsolated')}")
+    is_isolated = endpoint_data.get('IsIsolated', 'No')
+    print(f"this is the field for isisolated {is_isolated}")
     if is_isolated == 'Yes':
         message = 'The endpoint is already isolated.'
-        create_message_to_context_and_hr(args=endpoint_args,
+        create_message_to_context_and_hr(endpoint_args=endpoint_args,
                                          result='Fail',
                                          message=message,
                                          endpoint_output=endpoint_output,
                                          human_readable_outputs=human_readable_outputs)
-        return False
+        return True
+    return False
 
 
 def create_message_to_context_and_hr(endpoint_args: dict, result: str, message: str, endpoint_output: dict,
@@ -226,7 +181,7 @@ def create_message_to_context_and_hr(endpoint_args: dict, result: str, message: 
     Generates a structured message for context and human-readable outputs.
 
     Args:
-        args (dict): A dictionary containing endpoint details such as hostname, ID, or IP.
+        endpoint_args (dict): A dictionary containing endpoint details such as hostname, ID, or IP.
         result (str): The result status, e.g., "Success" or "Fail".
         message (str): A message explaining the result.
         endpoint_output (dict): A list to store the structured output for context.
@@ -291,7 +246,6 @@ def map_zipped_args(endpoint_ids: list, endpoint_ips: list) -> list:
     Args:
         endpoint_ids (list): A list of agent IDs.
         endpoint_ips (list): A list of agent IPs.
-        endpoint_hostnames (list): A list of agent hostnames.
 
     Returns:
         list: A list of dictionaries, each containing 'endpoint_id', 'endpoint_ip', and 'endpoint_hostnames'.
@@ -341,18 +295,11 @@ def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
     Returns:
         dict: A dictionary with extracted values, including 'endpoint_id', 'endpoint_hostname', 'endpoint_ip', and 'endpoint_brand'.
     """
-    print(f"this is the endpoint data {endpoint_data}")
-    endpoint_id = endpoint_data.get("ID", "")
-    endpoint_brand = endpoint_data.get("Brand", "")
-    endpoint_ip = endpoint_data.get("IPAddress", "")
-    endpoint_hostname = endpoint_data.get("Hostname", "")
-    endpoint_message = endpoint_data.get("Message", "")
-
-    return ({'endpoint_id': endpoint_id,
-             'endpoint_ip': endpoint_ip,
-             'endpoint_brand': endpoint_brand,
-             'endpoint_hostname': endpoint_hostname,
-             'endpoint_message': endpoint_message
+    return ({'endpoint_id': endpoint_data.get("ID", ""),
+             'endpoint_ip': endpoint_data.get("IPAddress", ""),
+             'endpoint_brand': endpoint_data.get("Brand", ""),
+             'endpoint_hostname': endpoint_data.get("Hostname", ""),
+             'endpoint_message': endpoint_data.get("Message", "")
              })
 
 
@@ -442,15 +389,11 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_data
         results (list): A list to collect the final results from command execution.
         verbose (bool): Flag to control verbosity of debugging information.
     """
+    print(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
     for command in commands:
         if command.brand != endpoint_args.get('endpoint_brand'):
             demisto.debug(
                 f'Skipping command {command.name} with {endpoint_args=}, as its brand does not match the endpoint brand.')
-            continue
-
-        demisto.debug(f'Executing command {command.name} with {endpoint_args=}')
-        if command.pre_command_check and not command.pre_command_check(endpoint_output, human_readable_outputs, endpoint_args,
-                                                                       endpoint_data):
             continue
 
         missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
@@ -464,8 +407,10 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_data
             continue
 
         mapped_args = map_args(command, endpoint_args)
+
+        print(f'Executing command {command.name} with {endpoint_args=}')
         raw_response = demisto.executeCommand(command.name, mapped_args)
-        demisto.debug(f'Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}')
+        print(f'Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}')
         command_results = handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output,
                                                       human_readable_outputs,
                                                       verbose)
@@ -495,7 +440,7 @@ def main():
         endpoint_ids = argToList(endpoint_args.get("endpoint_id"))
         endpoint_ips = argToList(endpoint_args.get("endpoint_ip"))
         verbose = argToBoolean(endpoint_args.get("verbose", False))
-        brands_to_run = argToList(endpoint_args.get("brands", []))
+        # brands_to_run = argToList(endpoint_args.get("brands", []))
         commands = initialize_commands()
         zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
 
@@ -509,27 +454,27 @@ def main():
         human_readable_outputs: list = []
         args_from_endpoint_data: list = []
 
-        for endpoint_data in endpoint_data_results:  # clearing the isolated endpoints and the failed found args
+        for endpoint_data in endpoint_data_results:
             endpoint_output: dict = {}
             endpoint_args = get_args_from_endpoint_data(endpoint_data)
-            print(f"Those are the args from get-endpoint-data {endpoint_args}")
-            if 'fail' in endpoint_args.get('endpoint_message', '').lower():
+            print(f"Got args {endpoint_args=}")
+            if 'fail' in endpoint_args.get('endpoint_message', '').lower():  # Skip the failing endpoints from get-data-endpoint
+                print(f"skiping this endpoint {endpoint_args} because of failing")
                 continue
 
-            if not is_endpoint_isolatable(endpoint_data, endpoint_args, endpoint_output, human_readable_outputs):
+            print(f"not skiping this endpoint {endpoint_args}")
+            if is_endpoint_already_isolated(endpoint_data, endpoint_args, endpoint_output, human_readable_outputs):
+                print(f"skiping this endpoint {endpoint_args} because its already isolated")
                 outputs.append(endpoint_output)
                 continue
 
-            print(f"the endpoint is isolatable, appending the args")
             args_from_endpoint_data.append(endpoint_args)
-
-        for endpoint_data in args_from_endpoint_data:
-            endpoint_output: dict = {}
             run_commands_for_endpoint(commands, endpoint_args, endpoint_data, endpoint_output, human_readable_outputs,
                                       results, verbose)
             search_and_add_endpoint_output(outputs, endpoint_output)
 
-        # comparing the executed args as the inout args
+
+        # comparing the executed args for isolated-endpoint with the input args
         check_missing_executed_args_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs)
 
         readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=human_readable_outputs, removeNull=True)
