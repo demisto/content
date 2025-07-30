@@ -1,3 +1,12 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+from typing import Any
+from collections import defaultdict
+import json
+from collections.abc import Callable
+
+from abc import ABC
 from enum import Enum
 from functools import cached_property
 import json
@@ -8,12 +17,6 @@ from CommonServerPython import *
 from collections import defaultdict
 from abc import ABC
 
-DBOT_SCORE_TO_VERDICT = {
-    0: "Unknown",
-    1: "Benign",
-    2: "Suspicious",
-    3: "Malicious",
-}
 
 class CommandType(Enum):
     internal = "internal"
@@ -60,12 +63,12 @@ class BatchExecutor:
         
 # Disable insecure warnings
 class AggregatedCommandAPIModule(ABC):
-    def __init__(self, args: dict, main_keys: dict[str, str], brands: list[str], verbose: bool, commands: list[Command] = [], validate_input_function: Callable[[dict], bool] = lambda: True):
+    def __init__(self, args: dict, main_keys: list[str], brands: list[str], verbose: bool, commands: list[Command] = [], validate_input_function: Callable[[dict], bool] = lambda: True):
         """_summary_
 
         Args:
             args (dict): _description_
-            main_keys (dict[str, str]): _description_
+            main_keys (list[str]): _description_
             brands (list[str]): _description_
             verbose (bool): _description_
             commands (list[Command], optional): _description_. Defaults to [].
@@ -174,9 +177,12 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         """
         demisto.debug("Starting Reputation aggregated command main loop.")
         tim_context_output, dbot_scores_context_tim, result_entries_tim = self.get_indicators_from_tim()
-        
+        demisto.debug(f"Tim context output: {json.dumps(tim_context_output, indent=2)}")
+        demisto.debug(f"Tim dbot scores context: {json.dumps(dbot_scores_context_tim, indent=2)}")
+        demisto.debug(f"Tim result entries: {json.dumps(result_entries_tim, indent=2)}")
         demisto.debug("Preparing commands to execute.")
         commands_to_execute = self.prepare_commands()
+        demisto.debug(f"Commands to execute: {json.dumps([command.to_batch_item() for command in commands_to_execute], indent=2)}")
         batch_executor = BatchExecutor(commands_to_execute, self.brands_to_run)
         demisto.debug("Executing BatchExecutor.")
         batch_results = batch_executor.execute()
@@ -250,7 +256,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             for brand, indicators in indicator_context_list.items():
                 score = indicators.get("score", 0)
                 context = indicators.get("context", {})
-                parsed_indicators_context, parsed_dbot_scores_context = self.parse_indicator(context, brand, score, self.main_keys)
+                parsed_indicators_context, parsed_dbot_scores_context = self.parse_indicator(context, brand, score,)
                 merge_nested_dicts_in_place(tim_context_output, parsed_indicators_context)
                 dbot_scores_context.extend(parsed_dbot_scores_context)
         
@@ -304,7 +310,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         if entry_context_item := result.get("EntryContext"):
             # parse_command_result
             if isinstance(command, ReputationCommand):
-                indicators_context, dbot_scores_context = self.parse_indicator(entry_context_item, brand, command.mapping)
+                indicators_context, dbot_scores_context = self.parse_indicator(entry_context_item, brand, mapping=command.mapping)
             else:
                 indicators_context = self.map_command_context(entry_context_item, command.mapping)
                 
@@ -435,3 +441,90 @@ def get_dict_value(d: dict[str, Any], path: str, default: Any = None) -> Any:
         else:
             return default
     return current
+
+
+"""Constants"""
+
+
+class ContextPaths(Enum):
+    URL_ENRICHMENT = "URLEnrichment(" "val.Brand && val.Brand == obj.Brand && (" "val.Data && val.Data == obj.Data))"
+
+    DBOT_SCORE = Common.DBotScore.CONTEXT_PATH
+    URL = Common.URL.CONTEXT_PATH
+
+
+CONTEXT_PATH = {"url": Common.URL.CONTEXT_PATH, "domain": Common.Domain.CONTEXT_PATH}
+INDICATOR_PATH = {"url": "URL", "domain": "Domain", "ip": "IP"}
+INDICATOR_VALUE_FIELDS = {"url": "Data", "domain": "Name", "ip": "Address"}
+
+DBOT_SCORE_TO_VERDICT = {
+    0: "Unknown",
+    1: "Benign",
+    2: "Suspicious",
+    3: "Malicious",
+}
+
+MAIN_KEYS = ["Address", "Name", "Brand", "Data", "DetectionEngines", "PositiveDetections", "Score"]
+""" COMMAND CLASS """
+
+""" COMMAND FUNCTION """
+
+
+def url_enrichment_script(
+    data_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False, indicator_type="url"
+):
+    """
+    Enriches URL data with information from various integrations
+    """
+    mapping = {"Data":"Data",
+               "DetectionEngines":"DetectionEngines",
+               "PositiveDetections":"PositiveDetections",
+               "Score":"Score",
+               "Brand":"Brand"}
+    
+    commands = [ReputationCommand(name="url", args={"url": data_list}, mapping=mapping)]
+    urlreputation = ReputationAggregatedCommand(
+        main_keys={"Data":"Data",
+                   "DetectionEngines":"DetectionEngines",
+                   "PositiveDetections":"PositiveDetections",
+                   "Score":"Score",
+                   "Brand":"Brand"},
+        brands =[],
+        verbose=True,
+        commands = commands,
+        validate_input_function=lambda args: True,
+        additional_fields=True,
+        external_enrichment=True,
+        indicator_path="URL(",
+        indicator_value_field="Data",
+        context_path="URL",
+        args=demisto.args(),
+        data={"url":data_list}
+        
+    )
+    return urlreputation.aggregated_command_main_loop()
+    
+
+""" MAIN FUNCTION """
+
+
+def main():
+    args = demisto.args()
+    data_list = argToList(args.get("data"))
+    indicator_type = args.get("indicator_type")
+    external_enrichment = argToBoolean(args.get("external_enrichment", False))
+    verbose = argToBoolean(args.get("verbose", False))
+    brands = argToList(args.get("brands"))
+    additional_fields = argToBoolean(args.get("additional_fields", False))
+
+    try:
+        return_results(url_enrichment_script(data_list, external_enrichment, verbose, brands, additional_fields, indicator_type))
+    except Exception as ex:
+        return_error(f"Failed to execute URLEnrichment. Error: {str(ex)}")
+
+
+""" ENTRY POINT """
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+    main()
