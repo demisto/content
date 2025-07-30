@@ -59,78 +59,16 @@ def initialize_commands() -> list:
     return commands
 
 
-""" MODULE MANAGER CLASS """
-
-
-class ModuleManager:
-    def __init__(self, modules: dict[str, Any], brands_to_run: list[str]) -> None:
-        """
-        Initializes the instance of ModuleManager.
-
-        Args:
-            modules (dict[str, Any]): A dictionary where keys represent module names
-                                      and values are dictionaries containing module
-                                      details such as 'brand' and 'state'.
-            brands_to_run (list[str]): A list of brands to be run.
-
-        Attributes:
-            modules_context (dict[str, Any]): Stores the provided modules dictionary.
-            _brands_to_run (list[str]): Stores the provided list of brands to run.
-            _enabled_brands (set[str]): Stores a set of brands where the module's state is 'active'.
-        """
-        self.modules_context = modules
-        self._brands_to_run = brands_to_run
-        self._enabled_brands = {
-            module.get("brand")
-            for module in self.modules_context.values()
-            if module.get("state") == "active"
-        }
-
-    def is_brand_in_brands_to_run(self, command: Command) -> bool:
-        """
-        Checks if the brand associated with the given command is in the list of brands to run.
-
-        Args:
-            command (Command): An instance of MappedCommand that contains the brand information.
-
-        Returns:
-            bool: True if the brand is in the list of brands to run, or if the list is empty; False otherwise.
-        """
-        if self._brands_to_run:
-            return command.brand in self._brands_to_run
-        return True
-
-    def is_brand_available(self, command: Command) -> bool:
-        """
-        Checks if the brand associated with the given command is available.
-
-        This function first checks if the brand is in the list of brands to run. If it is,
-        it then checks if the brand is in the set of enabled brands.
-
-        Args:
-            command (Command): An instance of MappedCommand that contains the brand information.
-
-        Returns:
-            bool: True if the brand is in both the list of brands to run and the set of enabled brands;
-                  False otherwise.
-        """
-        if not self.is_brand_in_brands_to_run(command):
-            return False
-        return command.brand in self._enabled_brands
-
-
 """ HELPER FUNCTIONS """
 
 
-def check_module_and_args_for_command(command: Command, endpoint_output: dict,
-                                      human_readable_outputs: list, args: dict) -> bool:
+def check_inputs_for_command(command: Command, endpoint_output: dict, args: dict) -> bool:
     """
     Validates whether a command can be executed by checking the brand's availability and required arguments.
 
     Args:
         command (Command): An instance containing the command's metadata and argument mapping.
         endpoint_output (dict): The dictionary to store output results.
-        human_readable_outputs (list): The list to store human-readable messages.
         args (dict): The dictionary containing the specific arguments for the command.
 
     Returns:
@@ -139,16 +77,16 @@ def check_module_and_args_for_command(command: Command, endpoint_output: dict,
     missing_args = are_there_missing_args(command, args)  # checks if there are missing args
     if missing_args:
         demisto.debug(f'Missing the next args {missing_args} for command.name')
-        create_message_to_context_and_hr(endpoint_args=args,
+        create_message_to_context_and_hr(is_isolated=False,
+                                         endpoint_args=args,
                                          result='Fail',
                                          message=f'Missing the next args: {missing_args} for {command.name}.',
-                                         endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs)
+                                         endpoint_output=endpoint_output)
         return False
     return True
 
 
-def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpoint_output: dict, human_readable_outputs: list) -> bool:
+def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpoint_output: dict) -> bool:
     """
     Determines whether an endpoint can be isolated based on its current isolation status.
 
@@ -156,54 +94,48 @@ def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpo
         endpoint_data (dict): A dictionary containing endpoint details.
         endpoint_args (dict): The arguments used in the command execution.
         endpoint_output (dict): A list to store structured output results.
-        human_readable_outputs (list): A list to store human-readable messages.
 
     Returns:
         bool: True if the endpoint is eligible for isolation, False otherwise.
     """
-    demisto.debug(f"Got endpoint {endpoint_data} with field isisolated{endpoint_data.get('IsIsolated')}")
+    demisto.debug(f"Got endpoint {endpoint_data} with field isIsolated{endpoint_data.get('IsIsolated')}")
     is_isolated = endpoint_data.get('IsIsolated', 'No')
-    print(f"this is the field for isisolated {is_isolated}")
+    print(f"this is the field for isIsolated {is_isolated}")
     if is_isolated == 'Yes':
         message = 'The endpoint is already isolated.'
-        create_message_to_context_and_hr(endpoint_args=endpoint_args,
+        create_message_to_context_and_hr(is_isolated=True,
+                                         endpoint_args=endpoint_args,
                                          result='Fail',
                                          message=message,
-                                         endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs)
+                                         endpoint_output=endpoint_output)
         return True
     return False
 
 
-def create_message_to_context_and_hr(endpoint_args: dict, result: str, message: str, endpoint_output: dict,
-                                     human_readable_outputs: list) -> None:
+def create_message_to_context_and_hr(is_isolated: bool, endpoint_args: dict, result: str, message: str, endpoint_output: dict) \
+    -> None:
     """
     Generates a structured message for context and human-readable outputs.
 
     Args:
+        is_isolated (bool): Whether the endpoint is isolated.
         endpoint_args (dict): A dictionary containing endpoint details such as hostname, ID, or IP.
         result (str): The result status, e.g., "Success" or "Fail".
         message (str): A message explaining the result.
         endpoint_output (dict): A list to store the structured output for context.
-        human_readable_outputs (list): A list to store human-readable messages.
     """
     endpoint_hostname = endpoint_args.get('endpoint_id') or endpoint_args.get('endpoint_ip') or endpoint_args.get(
         'endpoint_hostname')
-    brand = endpoint_args.get('endpoint_brand', '')  # TODO
-    if not endpoint_output:
-        endpoint_output['EndpointName'] = endpoint_hostname
-        endpoint_output['Results'] = []
+    brand = endpoint_args.get('endpoint_brand', '')
 
-    endpoint_output['Results'].append({
-        'Result': result,
-        'Brand': brand,
-        'Message': message
-    })
-    human_readable_outputs.append({
-        'Result': result,
-        'Entity': endpoint_hostname,
-        'Message': message
-    })
+    endpoint_output['Endpoint'] = endpoint_hostname
+    endpoint_output['Result'] = result
+    endpoint_output['Source'] = brand
+    endpoint_output['Message'] = message
+    if is_isolated:
+        endpoint_output["Isolated"] = 'Yes'
+    else:
+        endpoint_output["Isolated"] = 'No'
 
 
 def are_there_missing_args(command: Command, args: dict) -> bool:
@@ -256,7 +188,7 @@ def map_zipped_args(endpoint_ids: list, endpoint_ips: list) -> list:
     ]
 
 
-def check_missing_executed_args_in_output(zipped_args: list, valid_args: list, outputs: list, human_readable_outputs: list) -> None:
+def check_missing_executed_args_in_output(zipped_args: list, valid_args: list, outputs: list) -> None:
     """
     Checks if any of the given agent details (ID, IP, or hostname) exist in a list of valid arguments.
     If no match is found, a failure message is added to the context and human-readable outputs.
@@ -265,24 +197,25 @@ def check_missing_executed_args_in_output(zipped_args: list, valid_args: list, o
         zipped_args (list): A list of dictionaries, each containing 'endpoint_id', 'endpoint_ip', and 'endpoint_hostname'.
         valid_args (list): A list of dictionaries representing valid agents with corresponding details.
         outputs (list): A list to store structured output results.
-        human_readable_outputs (list): A list to store human-readable messages.
     """
     for args in zipped_args:
         endpoint_id = args.get('endpoint_id', '')
         endpoint_ip = args.get('endpoint_ip', '')
         are_args_found = False
         for entry in valid_args:
-            if ((endpoint_id and entry.get('endpoint_id') == endpoint_id) or
-                (endpoint_ip and entry.get('endpoint_ip') == endpoint_ip)):  # Checks if any of the args exists in valid_args
+            # Checks if any of the args exists in valid_args
+            if (endpoint_id and entry.get('endpoint_id') == endpoint_id) or (endpoint_ip and entry.get('endpoint_ip')
+                                                                             == endpoint_ip):
                 are_args_found = True
         if not are_args_found:
-            endpoint_data: dict = {}
-            create_message_to_context_and_hr(endpoint_args=args,
+            endpoint_context_output: dict = {}
+
+            create_message_to_context_and_hr(is_isolated=False,
+                                             endpoint_args=args,
                                              result='Fail',
                                              message='Did not find information on endpoint in any available brand.',
-                                             endpoint_output=endpoint_data,
-                                             human_readable_outputs=human_readable_outputs)
-            outputs.append(endpoint_data)
+                                             endpoint_output=endpoint_context_output)
+            outputs.append(endpoint_context_output)
 
 
 def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
@@ -293,14 +226,15 @@ def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
         endpoint_data (dict): A dictionary containing endpoint details such as hostname, ID, IP address, and brand.
 
     Returns:
-        dict: A dictionary with extracted values, including 'endpoint_id', 'endpoint_hostname', 'endpoint_ip', and 'endpoint_brand'.
+        dict: A dictionary with extracted values, including 'endpoint_id', 'endpoint_hostname',
+         'endpoint_ip', and 'endpoint_brand'.
     """
-    return ({'endpoint_id': endpoint_data.get("ID", ""),
-             'endpoint_ip': endpoint_data.get("IPAddress", ""),
-             'endpoint_brand': endpoint_data.get("Brand", ""),
-             'endpoint_hostname': endpoint_data.get("Hostname", ""),
-             'endpoint_message': endpoint_data.get("Message", "")
-             })
+    return {'endpoint_id': endpoint_data.get("ID", ""),
+            'endpoint_ip': endpoint_data.get("IPAddress", ""),
+            'endpoint_brand': endpoint_data.get("Brand", ""),
+            'endpoint_hostname': endpoint_data.get("Hostname", ""),
+            'endpoint_message': endpoint_data.get("Message", "")
+            }
 
 
 def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> list:
@@ -329,7 +263,6 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
 
 
 def handle_raw_response_results(command: Command, raw_response: dict, endpoint_args: dict, endpoint_output: dict,
-                                human_readable_outputs: list,
                                 verbose: bool) -> CommandResults | None:
     """
     Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
@@ -339,26 +272,26 @@ def handle_raw_response_results(command: Command, raw_response: dict, endpoint_a
         raw_response (dict): The raw response returned from the command execution.
         endpoint_args (dict): The arguments used in the command execution.
         endpoint_output (dict): A list to store structured output results.
-        human_readable_outputs (list): A list to store human-readable messages.
         verbose (bool): Flag to control verbosity.
     Returns:
         CommandResults | None: If verbose=true, returns the CommandResults for this executed command.
     """
     entry_human_readable = []
     if is_error(raw_response):
-        create_message_to_context_and_hr(endpoint_args=endpoint_args,
+        print(f"Got an error from raw_response with {endpoint_args}")
+        create_message_to_context_and_hr(is_isolated=False,
+                                         endpoint_args=endpoint_args,
                                          result='Fail',
                                          message=f'Failed to execute command {command.name}.'
                                                  f'Error:{get_error(raw_response)}',
-                                         endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs)
+                                         endpoint_output=endpoint_output)
 
     else:
-        create_message_to_context_and_hr(endpoint_args=endpoint_args,
+        create_message_to_context_and_hr(is_isolated=True,
+                                         endpoint_args=endpoint_args,
                                          result='Success',
                                          message=f'Command {command.name} was executed successfully.',
-                                         endpoint_output=endpoint_output,
-                                         human_readable_outputs=human_readable_outputs)
+                                         endpoint_output=endpoint_output)
     if verbose:
         for entry in raw_response:
             entry_human_readable.append(entry.get("HumanReadable") or "")
@@ -374,8 +307,14 @@ def handle_raw_response_results(command: Command, raw_response: dict, endpoint_a
     return None
 
 
-def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_data: dict, endpoint_output: dict,
-                              human_readable_outputs: list, results: list,
+def find_command_by_brand(commands: list, brand: str):
+    for command in commands:
+        if command.brand == brand:
+            return command
+    return None
+
+
+def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, results: list,
                               verbose) -> None:
     """
     Processes an endpoint by executing isolation commands and updating outputs accordingly.
@@ -383,55 +322,30 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_data
     Args:
         commands (list): A list of available commands for isolation.
         endpoint_args (dict): The arguments provided for the isolation operation.
-        endpoint_data (dict): The endpoint data retrieved for processing.
         endpoint_output (dict): A dictionary to store structured output results.
-        human_readable_outputs (list): A list to store human-readable messages.
         results (list): A list to collect the final results from command execution.
         verbose (bool): Flag to control verbosity of debugging information.
     """
     print(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
-    for command in commands:
-        if command.brand != endpoint_args.get('endpoint_brand'):
-            demisto.debug(
-                f'Skipping command {command.name} with {endpoint_args=}, as its brand does not match the endpoint brand.')
-            continue
+    command = find_command_by_brand(commands, endpoint_args.get('endpoint_brand', ""))
 
-        missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
-        if missing_args:
-            demisto.debug(f'Missing the next args {endpoint_args} for command.name')
-            create_message_to_context_and_hr(endpoint_args=endpoint_args,
-                                             result='Fail',
-                                             message=f'Missing args: {missing_args} for {command.name}.',
-                                             endpoint_output=endpoint_output,
-                                             human_readable_outputs=human_readable_outputs)
-            continue
+    missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
+    if missing_args:
+        demisto.debug(f'Missing the next args {endpoint_args} for command.name')
+        create_message_to_context_and_hr(is_isolated=False,
+                                         endpoint_args=endpoint_args,
+                                         result='Fail',
+                                         message=f'Missing args: {missing_args} for {command.name}.',
+                                         endpoint_output=endpoint_output)
+        return
 
-        mapped_args = map_args(command, endpoint_args)
-
-        print(f'Executing command {command.name} with {endpoint_args=}')
-        raw_response = demisto.executeCommand(command.name, mapped_args)
-        print(f'Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}')
-        command_results = handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output,
-                                                      human_readable_outputs,
-                                                      verbose)
-        if command_results:
-            results.append(command_results)
-
-
-def search_and_add_endpoint_output(outputs, endpoint_output) -> None:
-    """
-    Updates the outputs list by adding or merging endpoint results.
-
-    Args:
-        outputs (list): A list of dictionaries containing endpoint output records.
-        endpoint_output (dict): A dictionary containing an endpoint name and results.
-
-    """
-    for output in outputs:
-        if output.get('EndpointName') == endpoint_output.get('EndpointName'):
-            output.get('Results', []).extend(endpoint_output.get('Results'))
-            return
-    outputs.append(endpoint_output)
+    mapped_args = map_args(command, endpoint_args)
+    print(f'Executing command {command.name} with {endpoint_args=}')
+    raw_response = demisto.executeCommand(command.name, mapped_args)
+    print(f'Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}')
+    command_results = handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output, verbose)
+    if command_results:
+        results.append(command_results)
 
 
 def main():
@@ -450,38 +364,37 @@ def main():
         print(f'These are the structured data from structure_endpoints_data {endpoint_data_results}')
 
         results: list = []
-        outputs: list = []
-        human_readable_outputs: list = []
+        context_outputs: list = []
         args_from_endpoint_data: list = []
 
         for endpoint_data in endpoint_data_results:
-            endpoint_output: dict = {}
+            endpoint_context_output: dict = {}
+
             endpoint_args = get_args_from_endpoint_data(endpoint_data)
             print(f"Got args {endpoint_args=}")
             if 'fail' in endpoint_args.get('endpoint_message', '').lower():  # Skip the failing endpoints from get-data-endpoint
-                print(f"skiping this endpoint {endpoint_args} because of failing")
+                print(f"skipping this endpoint {endpoint_args} because of failing")
                 continue
 
-            print(f"not skiping this endpoint {endpoint_args}")
-            if is_endpoint_already_isolated(endpoint_data, endpoint_args, endpoint_output, human_readable_outputs):
-                print(f"skiping this endpoint {endpoint_args} because its already isolated")
-                outputs.append(endpoint_output)
+            if is_endpoint_already_isolated(endpoint_data, endpoint_args, endpoint_context_output):
+                print(f"skipping this endpoint {endpoint_args} because its already isolated")
+                context_outputs.append(endpoint_context_output)
                 continue
 
+            print(f"not skipping this endpoint {endpoint_args}")
             args_from_endpoint_data.append(endpoint_args)
-            run_commands_for_endpoint(commands, endpoint_args, endpoint_data, endpoint_output, human_readable_outputs,
-                                      results, verbose)
-            search_and_add_endpoint_output(outputs, endpoint_output)
+            run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output, results, verbose)
 
+            context_outputs.append(endpoint_context_output)
 
         # comparing the executed args for isolated-endpoint with the input args
-        check_missing_executed_args_in_output(zipped_args, args_from_endpoint_data, outputs, human_readable_outputs)
+        check_missing_executed_args_in_output(zipped_args, args_from_endpoint_data, context_outputs)
 
-        readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=human_readable_outputs, removeNull=True)
+        readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=context_outputs, removeNull=True)
         results.append(CommandResults(
             outputs_prefix='IsolateEndpoint',
             outputs_key_field='EndpointName',
-            outputs=outputs,
+            outputs=context_outputs,
             readable_output=readable_output,
         ))
         return_results(results)
