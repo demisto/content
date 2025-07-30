@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AutoFocus V2
   version: -1
@@ -8,12 +11,14 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   required: false
+  section: Connect
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Source Reliability
   name: integrationReliability
   required: true
@@ -32,25 +37,30 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Suppress errors for non found indicators
   name: handle_error
   type: 8
   defaultvalue: 'true'
   required: false
+  section: Collect
 - display: Additional malicious verdicts
   name: mark_as_malicious
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Create relationships between indicators as part of Enrichment.
   defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
+  section: Collect
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most important threats from everyday commodity attacks.
 display: Palo Alto Networks AutoFocus v2
 name: AutoFocus V2

@@ -669,7 +669,7 @@ def test_search_session(mocker, autofocusv2_client, range_num, res_count):
     mocker.patch.object(autofocusv2_client, "_http_request", return_value=response)
 
     ips = [f"{i}.{i}.{i}.{i}" for i in range(range_num)]
-    res = search_sessions(client=autofocusv2_client, ip=ips)
+    res = search_sessions(client=autofocusv2_client, ip=ips, use_batches=True)
 
     assert len(res) == res_count
     for r in res:
@@ -696,7 +696,7 @@ def test_search_samples(mocker, autofocusv2_client, range_num, res_count):
     mocker.patch.object(autofocusv2_client, "_http_request", return_value=response)
 
     ips = [f"{i}.{i}.{i}.{i}" for i in range(range_num)]
-    res = search_samples(client=autofocusv2_client, ip=ips)
+    res = search_samples(client=autofocusv2_client, ip=ips, use_batches=True)
 
     assert len(res) == res_count
     for r in res:
