@@ -812,6 +812,7 @@ class EC2:
         description = args.get("description")
         vpc_id = args.get("vpc_id")
         tags = args.get("tags")
+        tags_json = {}
         if tags:
             try:
                 tags_json = json.loads(tags)
