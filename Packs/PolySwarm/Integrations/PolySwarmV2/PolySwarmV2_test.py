@@ -178,7 +178,6 @@ def test_file_rescan(mocker):
 @pytest.mark.vcr()
 def test_get_file(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
-
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
 
     polyswarm = PolyswarmConnector()
@@ -187,7 +186,12 @@ def test_get_file(mocker):
 
     results = polyswarm.get_file(param["hash"])
 
-    assert results["File"] == TEST_HASH_FILE
+    try:
+        assert results["File"] == TEST_HASH_FILE
+    finally:
+        # Cannot mock fileResult as we are testing also its return value.
+        # Instead, lets cleanup its leftovers
+        os.unlink("1_" + results["FileID"])
 
 
 @pytest.mark.vcr()
