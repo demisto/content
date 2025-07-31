@@ -877,6 +877,9 @@ class EC2:
                     return CommandResults(
                         readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}"
                     )
+                else:
+                    # If group_id was not found or no GroupId in response, raise an exception
+                    raise DemistoException("Failed to delete security group: Unexpected response")
             except ClientError as e:
                 error_code = e.response["Error"]["Code"]
                 error_message = e.response["Error"]["Message"]
@@ -886,6 +889,7 @@ class EC2:
 
         except Exception as e:
             raise DemistoException(f"Unexpected error deleting security group: {str(e)}")
+        return CommandResults(readable_output="")
 
     @staticmethod
     def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
