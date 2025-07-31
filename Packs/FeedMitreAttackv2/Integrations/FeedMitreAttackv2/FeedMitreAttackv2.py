@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 from stix2 import Filter, TAXIICollectionSource
 from taxii2client.v21 import ApiRoot, Collection, Server
 
-""" CONSTANT VARIABLES """
+"""  CONSTANT VARIABLES """
 MITRE_TYPE_TO_DEMISTO_TYPE = {  # pragma: no cover
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
