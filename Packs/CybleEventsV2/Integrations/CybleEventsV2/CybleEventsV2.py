@@ -21,7 +21,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-MAX_ALERTS = 300
+MAX_ALERTS = None
 LIMIT_EVENT_ITEMS = 200
 MAX_RETRIES = 3
 MAX_THREADS = 1
@@ -1391,6 +1391,10 @@ def main():
     demisto.debug(f"params are: {params}")
     incident_collections = params.get("incident_collections", [])
     incident_severity = params.get("incident_severity", [])
+
+    global MAX_ALERTS
+    MAX_ALERTS = int(params.get("max_fetch", "300"))
+
     try:
         client = Client(base_url=params.get("base_url"), verify=verify_certificate, proxy=proxy)
         args = demisto.args()
