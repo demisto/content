@@ -2007,9 +2007,8 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
                 readable_output=human_readable,
                 raw_response=response,
             )
-    
     except PyMISPError as e:
-        raise DemistoException(f"Error in `{demisto.command()}` command: {e}"
+        raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
 
 
 def get_warninglist_command(demisto_args: dict) -> CommandResults:
