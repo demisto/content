@@ -1,0 +1,1 @@
+This integration queries the Cloudflare API. Please note that there are two accounts under Cloudflare, each having multiple websites(zones).
