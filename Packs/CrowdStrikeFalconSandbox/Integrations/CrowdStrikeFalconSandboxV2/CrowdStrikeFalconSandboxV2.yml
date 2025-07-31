@@ -59,7 +59,7 @@ script:
     polling: true
     arguments:
     - name: file
-      description: "A comma-separated list of file hashes (SHA256), followed by an environment ID. Each pair is separated by a colon (:), eg: SHA256_1:ENV_ID_1,SHA256_2:ENV_ID_2. Provide either this argument or job_id."
+      description: "A comma-separated list of file hashes (SHA256), followed by an environment ID, separated by colon (:). For example, SHA256_1:ENV_ID_1,SHA256_2:ENV_ID_2. Use this argument or the job_id argument."
       required: false
       isArray: true
     - name: polling
@@ -69,7 +69,7 @@ script:
       - "true"
       - "false"
     - name: job_id
-      description: "A comma-separated list of JobIDs to check the state of when polling. Provide either this argument or file."
+      description: "A comma-separated list of JobIDs to check the state of when polling. Use this argument or the file argument"
       isArray: true
     - name: hide_polling_output
       deprecated: true
