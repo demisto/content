@@ -4421,8 +4421,8 @@ This command only changes the values supplied through the parameters of this com
 | MISP.Warninglist.Type | string | The updated warninglist type |
 | MISP.Warninglist.Description | string | The updated description of the warninglist |
 | MISP.Warninglist.Version | number | The updated warninglist version number |
-| MISP.Warninglist.Enabled | boolean | The updated enabled/disabled status of the warninglist |
-| MISP.Warninglist.Default | boolean | The updated default status of the warninglist |
+| MISP.Warninglist.Enabled | boolean | True if the warninglist is set enabled, False otherwise. |
+| MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
 | MISP.Warninglist.Category | string | The updated category of the warninglist |
 
 #### Command Example

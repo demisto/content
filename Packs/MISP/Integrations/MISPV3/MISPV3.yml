@@ -2841,10 +2841,10 @@ script:
       description: The updated warninglist version number
       type: number
     - contextPath: MISP.Warninglist.Enabled
-      description: The updated enabled/disabled status of the warninglist
+      description: True if the warninglist is enabled, False otherwise.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: The updated default status of the warninglist
+      description: True if the warninglist is set as default, False otherwise.
       type: boolean
     - contextPath: MISP.Warninglist.Category
       description: The updated category of the warninglist
