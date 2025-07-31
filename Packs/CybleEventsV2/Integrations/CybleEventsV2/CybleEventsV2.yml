@@ -54,14 +54,6 @@ configuration:
     type: 8
     required: false
     section: Connect
-  - display: Incident Fetch Limit
-    name: max_fetch
-    type: 0
-    required: false
-    additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
-    defaultvalue: '1'
-    hidden: true
-    section: Collect
   - display: Incident type
     name: incidentType
     type: 13
