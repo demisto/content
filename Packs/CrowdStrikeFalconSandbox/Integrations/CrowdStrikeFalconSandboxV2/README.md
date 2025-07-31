@@ -3066,7 +3066,7 @@ Gets the report state for the given ID.
 ### cs-falcon-sandbox-report-summary
 
 ***
-Gets summary information for a job_id or sha256
+Retrieves summary information for the job_id or the SHA256.
 
 #### Base Command
 
