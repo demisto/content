@@ -882,7 +882,7 @@ class EC2:
                 error_message = e.response["Error"]["Message"]
                 if error_code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
                     raise DemistoException(f"Security group {group_id} not found.")
-            raise DemistoException(f"Failed to delete security group: {error_message}")
+                raise DemistoException(f"Failed to delete security group: {error_message}")
 
         except Exception as e:
             raise DemistoException(f"Unexpected error deleting security group: {str(e)}")
