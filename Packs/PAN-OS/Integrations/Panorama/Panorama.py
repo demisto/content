@@ -10828,11 +10828,7 @@ def panorama_disable_or_delete_rule_command(
             "Target": target,
             "Vsys": vsys,
             "AppliedAction": applied_action,
-        },
-        f"Panorama.{Rulebase_to_ContextPrefix_Map.get(rulebase)}(val.Name == obj.Name)": {
-            "Name": rulename,
-            "DeviceGroup": DEVICE_GROUP,
-        },
+        }
     }
 
     result = CommandResults(
@@ -16219,7 +16215,7 @@ def main():  # pragma: no cover
 
         # Service groups commands
         elif command == "panorama-list-service-groups" or command == "pan-os-list-service-groups":
-            panorama_list_service_groups_command(args.get("tags"))
+            panorama_list_service_groups_command(args.get("tag"))
 
         elif command == "panorama-get-service-group" or command == "pan-os-get-service-group":
             panorama_get_service_group_command(args.get("name"))
