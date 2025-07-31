@@ -1482,7 +1482,8 @@ def multi_thread_reply(
 
             # Get previous message content from the thread
             previous_text_content, previous_html_content = get_previous_message_content(
-                incident_email_threads, email_selected_thread)
+                incident_email_threads, email_selected_thread
+            )
             
             # Format any markdown in the email body as HTML and include previous message content
             context_html_body, reply_html_body = format_body(new_email_body, previous_text_content, previous_html_content)
