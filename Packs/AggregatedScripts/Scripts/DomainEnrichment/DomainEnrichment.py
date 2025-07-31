@@ -36,9 +36,9 @@ def domain_enrichment_script(
                "Brand":"Brand"}
     
     commands = [ReputationCommand(name="domain", args={"domain": data_list}, mapping=mapping),
-                Command(name="wildfire-get-verdict", args={"domain": data_list}, type=CommandType.internal),
-                TIMCommand(mapping=mapping, indicator_context_path="Domain("),
-                ]
+                Command(name="core-get-domain-analytics-prevalence", args={"domain_name": data_list}, type=CommandType.internal),
+                TIMCommand(mapping=mapping, indicator_context_path="Domain(")
+    ]
     domain_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
