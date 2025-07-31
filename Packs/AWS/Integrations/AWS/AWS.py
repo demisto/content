@@ -1060,9 +1060,6 @@ class RDS:
             raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
 
 
-class CloudTrail:
-    service = AWSServices.CloudTrail
-
 class Ce:
     service = AWSServices.CE
     @staticmethod
@@ -1192,7 +1189,10 @@ class Budgets:
     def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         max_results = int(args.get("max_result", 50))
         token = args.get("next_page_token")
-        request = {"MaxResults": max_results}
+        request = {
+            "AccountId": args["account_id"],
+            "MaxResults": max_results
+        }
         if token:
             request["NextToken"] = token
         response = client.describe_budgets(**request)
@@ -1244,6 +1244,9 @@ class Budgets:
             outputs=outputs,
             raw_response=response,
         )
+class CloudTrail:
+    service = AWSServices.CloudTrail
+
 
     @staticmethod
     def start_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1383,7 +1386,18 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "ce:GetCostAndUsage",
+    "ce:GetCostForecast",
+    "budgets:DescribeBudgets",
+    "budgets:DescribeNotificationsForBudget"
 ]
+
+COMMAND_SERVICE_MAP = {
+    "aws-billing-cost-usage-list": "ce",
+    "aws-billing-forecast-list": "ce",
+    "aws-billing-budgets-list": "budgets",
+    "aws-billing-budget-notification-list": "budgets"
+}
 
 
 def test_module(params):
@@ -1509,6 +1523,8 @@ def get_service_client(
     )
 
     # Resolve service name
+    if command in COMMAND_SERVICE_MAP:
+        service_name = COMMAND_SERVICE_MAP[command]
     service_name = service_name or command.split("-")[1]
     service = AWSServices(service_name)
 
