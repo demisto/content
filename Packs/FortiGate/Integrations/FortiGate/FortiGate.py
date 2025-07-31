@@ -212,7 +212,7 @@ class Client(BaseClient):
         Raises:
             DemistoException: If login fails or too many login attempts were made.
         """
-        
+
         def send_login_request() -> requests.Response:
             return self._http_request(
                 method="POST",
