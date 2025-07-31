@@ -92,7 +92,7 @@ AMSI = [
 
 LATERAL_MOVEMENT = [
     r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
-    r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
+    r"(?i)\b(?P<filename>cmd[.]exe)[\"']?(?P<flags>(?:\s+/[qc])+)(?P<args>.+?[\S])\s+(?:1>\s*)(?P<export_path>.+?)\s*?(?:2>&1)\b",
     r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
     r"\bmstsc(\.exe)?",
     r"\bnet use \\\\.*\\IPC\$\b",
