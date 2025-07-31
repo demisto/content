@@ -20,6 +20,9 @@ args:
 - defaultValue: "25"
   description: The number of indicators to return, defaults to a max of 25.
   name: size
+- description: 'A comma-separated list of indicator verdicts to filter the search results by. Options: Malicious, Suspicious, Good, or Unknown.'
+  name: verdict
+  required: false
 comment: |-
   This script searches indicators by specified fields.
 commonfields:

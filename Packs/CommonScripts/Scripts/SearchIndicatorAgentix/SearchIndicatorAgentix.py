@@ -41,6 +41,7 @@ def prepare_query(args: dict) -> str:
 def search_indicators(args):
     # search for indicators
     query = prepare_query(args)
+    demisto.debug(f"Query for search_indicators: {query}")
     indicators = demisto.executeCommand("findIndicators", {"query": query, "size": args.get("size")})[0]["Contents"]
 
     # return specific information for found indicators
