@@ -2,7 +2,9 @@ import os
 import io
 
 import demistomock as demisto
+from CommonServerPython import EntryType
 
+import PolySwarmV2
 from PolySwarmV2 import PolyswarmConnector
 
 import pytest
@@ -74,10 +76,9 @@ def vcr_config():
 @pytest.mark.vcr()
 def test_file_scan(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
-
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
-
     mocker.patch.object(demisto, "getFilePath", return_value=MOCK_FILE_INFO)
+    mocker.patch.object(PolySwarmV2, "fileResult", return_value={"Type": EntryType.ENTRY_INFO_FILE})
 
     polyswarm = PolyswarmConnector()
 
@@ -117,8 +118,8 @@ def test_file_scan(mocker):
 )
 def test_reputation(mocker, kind, scan_target, results_id):
     mocker.patch.object(demisto, "debug", return_value=None)
-
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(PolySwarmV2, "fileResult", return_value={"Type": EntryType.ENTRY_INFO_FILE})
 
     polyswarm = PolyswarmConnector()
 
@@ -137,8 +138,8 @@ def test_reputation(mocker, kind, scan_target, results_id):
 @pytest.mark.vcr()
 def test_polyswarm_get_report(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
-
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(PolySwarmV2, "fileResult", return_value={"Type": EntryType.ENTRY_INFO_FILE})
 
     polyswarm = PolyswarmConnector()
 
@@ -157,8 +158,8 @@ def test_polyswarm_get_report(mocker):
 @pytest.mark.vcr()
 def test_file_rescan(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
-
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(PolySwarmV2, "fileResult", return_value={"Type": EntryType.ENTRY_INFO_FILE})
 
     polyswarm = PolyswarmConnector()
 
@@ -192,8 +193,8 @@ def test_get_file(mocker):
 @pytest.mark.vcr()
 def test_file(mocker):
     mocker.patch.object(demisto, "debug", return_value=None)
-
     mocker.patch.object(demisto, "params", return_value=MOCK_PARAMS)
+    mocker.patch.object(PolySwarmV2, "fileResult", return_value={"Type": EntryType.ENTRY_INFO_FILE})
 
     polyswarm = PolyswarmConnector()
 
