@@ -2,95 +2,23 @@ from IsolateEndpoint import *
 import pytest
 from unittest.mock import patch
 
-
-@pytest.fixture
-def setup_for_test_module_manager():
-    modules = {
-        "module1": {"brand": "BrandA", "state": "active"},
-        "module2": {"brand": "BrandB", "state": "inactive"},
-    }
-    brands_to_run = ["BrandA", "BrandC"]
-    module_manager = ModuleManager(modules=modules, brands_to_run=brands_to_run)
-    command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
-    return module_manager, command, modules, brands_to_run
-
-
-class TestModuleManager:
-
-    def test_is_brand_in_brands_to_run(self, setup_for_test_module_manager):
-        """
-        Given:
-            A module manager and a command
-        When:
-            The command's brand is in brands_to_run
-        Then:
-            The is_brand_in_brands_to_run function should return True. Otherwise, False.
-        """
-        module_manager, command, _, _ = setup_for_test_module_manager
-
-        assert module_manager.is_brand_in_brands_to_run(command) is True
-
-        command.brand = "BrandB"
-        assert module_manager.is_brand_in_brands_to_run(command) is False
-
-        command.brand = "BrandC"
-        assert module_manager.is_brand_in_brands_to_run(command) is True
-
-        command.brand = "BrandD"
-        assert module_manager.is_brand_in_brands_to_run(command) is False
-
-    def test_is_brand_available(self, setup_for_test_module_manager):
-        """
-        Given:
-            A ModuleManager instance with an enabled brand that is in the brands to run.
-
-        When:
-            is_brand_available is called with a Command for that brand.
-
-        Then:
-            The method should return True. Otherwise, False.
-        """
-        module_manager, command, _, _ = setup_for_test_module_manager
-
-        assert module_manager.is_brand_available(command) is True
-
-        command.brand = "BrandB"
-        assert module_manager.is_brand_available(command) is False
-
-        command.brand = "BrandC"
-        assert module_manager.is_brand_available(command) is False
-
-        command.brand = "BrandD"
-        assert module_manager.is_brand_available(command) is False
-
-
 @pytest.mark.parametrize(
     "endpoint_data, expected_output",
     [
         (
             {
-                "Hostname": {"Value": "host123", "Source": "brand"},
-                "ID": {"Value": "agent"},
-                "IPAddress": {"Value": "8.8.1.1"},
+                "Hostname": "host123",
+                "ID": "endpoint",
+                "IPAddress": "8.8.1.1",
+                "Brand": "brand",
+                "Message": "Fail"
             },
             {
-                "agent_id": "agent",
-                "agent_hostname": "host123",
-                "agent_ip": "8.8.1.1",
-                "agent_brand": "brand",
-            }
-        ),
-        (
-            {
-                "Hostname": [{"Value": "host1", "Source": "brand1"}, {"Value": "host2", "Source": "brand2"}],
-                "ID": [{"Value": "agent1"}, {"Value": "agent2"}],
-                "IPAddress": [{"Value": "8.8.2.2"}, {"Value": "8.8.3.3"}],
-            },
-            {
-                "agent_id": "agent1",
-                "agent_hostname": "host1",
-                "agent_ip": "8.8.2.2",
-                "agent_brand": "brand1",
+                "endpoint_id": "endpoint",
+                "endpoint_hostname": "host123",
+                "endpoint_ip": "8.8.1.1",
+                "endpoint_brand": "brand",
+                "endpoint_message": "Fail",
             }
         ),
     ]
@@ -105,7 +33,7 @@ def test_get_args_from_endpoint_data(endpoint_data, expected_output):
         It extracts and returns the correct values in a structured dictionary.
     """
     result = get_args_from_endpoint_data(endpoint_data)
-    assert result == expected_output, f"Failed for input: {endpoint_data}"
+    assert result == expected_output
 
 
 def test_structure_endpoints_data():
@@ -135,60 +63,57 @@ def test_structure_endpoints_data():
 def test_check_which_args_missing_in_output(mock_create_message):
     """
     Given:
-        - Different cases where `zipped_args` contain agent details that may or may not be in `valid_args`.
+        - Different cases where `zipped_args` contain endpoint details that may or may not be in `valid_args`.
     When:
         - The `check_which_args_missing_in_output` function is called.
     Then:
-        - It should call `create_message_to_context_and_hr` when an agent is missing.
-        - It should not call `create_message_to_context_and_hr` when an agent is found.
+        - It should call `create_message_to_context_and_hr` when an endpoint is missing.
+        - It should not call `create_message_to_context_and_hr` when an endpoint is found.
     """
-    valid_args = [
-        {'agent_id': '123', 'agent_ip': '192', 'agent_hostname': 'host1'},
-        {'agent_id': '789', 'agent_ip': '193', 'agent_hostname': 'host3'}
+    executed_args = [
+        {'endpoint_id': '123', 'endpoint_ip': '192'},
+        {'endpoint_id': '789', 'endpoint_ip': '193'}
     ]
     outputs = []
-    human_readable_outputs = []
     zipped_args = [
-        {'agent_id': '', 'agent_ip': '194', 'agent_hostname': 'host4'},
-        {'agent_id': '555', 'agent_ip': '195', 'agent_hostname': ''},
-        {'agent_id': '123', 'agent_ip': '', 'agent_hostname': ''},
-        {'agent_id': '', 'agent_ip': '192', 'agent_hostname': ''},
-        {'agent_id': '', 'agent_ip': '', 'agent_hostname': 'host1'},
-        {'agent_id': '', 'agent_ip': '192', 'agent_hostname': 'host1'},
-        {'agent_id': '456', 'agent_ip': '', 'agent_hostname': 'host2'}
+        {'endpoint_id': '', 'endpoint_ip': '194'},
+        {'endpoint_id': '555', 'endpoint_ip': '195'},
+        {'endpoint_id': '123', 'endpoint_ip': ''},
+        {'endpoint_id': '', 'endpoint_ip': '192'},
+        {'endpoint_id': '', 'endpoint_ip': ''},
+        {'endpoint_id': '', 'endpoint_ip': '192'},
+        {'endpoint_id': '456', 'endpoint_ip': ''}
     ]
     check_missing_executed_args_in_output(
-        zipped_args, valid_args, outputs, human_readable_outputs
+        zipped_args, executed_args, outputs
     )
-    assert mock_create_message.call_count == 3
+    assert mock_create_message.call_count == 4
 
 
 def test_map_zipped_args():
     """
     Given:
-        Three lists of agent_ids, agent_ips, and agent_hostnames with varying lengths.
+        Three lists of endpoint_ids, endpoint_ips, and endpoint_hostnames with varying lengths.
     When:
         The map_zipped_args function is called.
     Then:
         It correctly maps the elements into a list of dictionaries, filling missing values with empty strings.
     """
-    agent_ids = ["123", "456"]
-    agent_ips = ["192.168.1.1", "192.168.1.2"]
-    agent_hostnames = ["host1", "host2"]
+    endpoint_ids = ["123", "456"]
+    endpoint_ips = ["192.168.1.1", "192.168.1.2"]
     expected_output = [
-        {"agent_id": "123", "agent_hostname": "host1", "agent_ip": "192.168.1.1"},
-        {"agent_id": "456", "agent_hostname": "host2", "agent_ip": "192.168.1.2"},
+        {"endpoint_id": "123", "endpoint_ip": "192.168.1.1"},
+        {"endpoint_id": "456", "endpoint_ip": "192.168.1.2"},
     ]
-    assert map_zipped_args(agent_ids, agent_ips, agent_hostnames) == expected_output
+    assert map_zipped_args(endpoint_ids, endpoint_ips) == expected_output
 
-    agent_ids = ["123"]
-    agent_ips = ["192.168.1.1", "192.168.1.2"]
-    agent_hostnames = ["host1"]
+    endpoint_ids = ["123"]
+    endpoint_ips = ["192.168.1.1", "192.168.1.2"]
     expected_output = [
-        {"agent_id": "123", "agent_hostname": "host1", "agent_ip": "192.168.1.1"},
-        {"agent_id": "", "agent_hostname": "", "agent_ip": "192.168.1.2"},
+        {"endpoint_id": "123", "endpoint_ip": "192.168.1.1"},
+        {"endpoint_id": "", "endpoint_ip": "192.168.1.2"},
     ]
-    assert map_zipped_args(agent_ids, agent_ips, agent_hostnames) == expected_output
+    assert map_zipped_args(endpoint_ids, endpoint_ips) == expected_output
 
 
 def test_map_args():
@@ -271,18 +196,11 @@ def test_is_endpoint_isolatable():
     Then:
         - Return the correct boolean value and message based on the conditions.
     """
-    endpoint_data = {
-        "IsIsolated": {"Value": "No"},
-        "Status": {"Value": "Online"}
-    }
+    endpoint_data = {"IsIsolated": "No"}
+    assert is_endpoint_already_isolated(endpoint_data, endpoint_args={}, endpoint_output={}) is False
 
-    assert is_endpoint_isolatable(endpoint_data, args={}, endpoint_output={}, human_readable_outputs=[]) is True
-
-    endpoint_data["IsIsolated"]["Value"] = "Yes"
-    assert is_endpoint_isolatable(endpoint_data, args={}, endpoint_output={}, human_readable_outputs=[]) is False
-
-    endpoint_data["Status"]["Value"] = "Offline"
-    assert is_endpoint_isolatable(endpoint_data, args={}, endpoint_output={}, human_readable_outputs=[]) is False
+    endpoint_data["IsIsolated"] = "Yes"
+    assert is_endpoint_already_isolated(endpoint_data, endpoint_args={}, endpoint_output={}) is True
 
 
 @patch('IsolateEndpoint.is_error')
@@ -301,20 +219,18 @@ def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_i
     raw_response = {'status': 'error'}
     args = {'arg1': 'value1'}
     outputs = {}
-    human_readable_outputs = []
     verbose = False
 
     mock_is_error.return_value = True
     mock_get_error.return_value = 'Some error occurred'
 
-    handle_raw_response_results(command, raw_response, args, outputs, human_readable_outputs, verbose)
+    handle_raw_response_results(command, raw_response, args, outputs, verbose)
 
     mock_create_message.assert_called_once_with(
         args=args,
         result='Fail',
         message='Failed to execute command TestCommand. Error:Some error occurred',
-        endpoint_output=outputs,
-        human_readable_outputs=human_readable_outputs,
+        endpoint_output=outputs
     )
 
 
@@ -330,10 +246,8 @@ def test_initialize_commands():
     commands = initialize_commands()
     expected_command_names = {
         'core-isolate-endpoint',
-        'xdr-endpoint-isolate',
         'cs-falcon-contain-host',
         'fireeye-hx-host-containment',
-        'cb-edr-quarantine-device',
         'microsoft-atp-isolate-machine',
     }
 
@@ -348,7 +262,7 @@ def test_run_commands_for_endpoint():
         - A list of command objects with specified brands and arguments.
         - A module manager with modules in different states (active and inactive).
         - A set of brands to run commands for, including valid and invalid brands.
-        - Endpoint data and arguments related to a specific agent.
+        - Endpoint data and arguments related to a specific endpoint.
     When:
         - Running the test_run_commands_for_endpoint function with different arguments, including those that match the brand
          and others that don't.
@@ -363,32 +277,29 @@ def test_run_commands_for_endpoint():
         "module2": {"brand": "BrandB", "state": "inactive"},
     }
     brands_to_run = ["BrandA", "BrandC"]
-    module_manager = ModuleManager(modules=modules, brands_to_run=brands_to_run)
-    endpoint_data = {"id": "1234"}
     endpoint_output = {}
-    human_readable_outputs = []
     results = []
     verbose = True
 
-    args = {"agent_hostname": "host1", "agent_brand": "BrandB"}
-    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
-                              results, verbose)
+    args = {"endpoint_hostname": "host1", "endpoint_brand": "BrandB"}
+    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
+                              results=results, verbose=verbose)
     assert results == []
 
-    args = {"agent_hostname": "host1", "agent_brand": "BrandA"}
-    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
-                              results, verbose)
+    args = {"endpoint_hostname": "host1", "endpoint_brand": "BrandA"}
+    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
+                              results=results, verbose=verbose)
     assert len(results) == 1
     assert "Result" in results[0].readable_output
 
     commands = [Command(brand="BrandB", name="command1", arg_mapping={})]
-    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
-                              results, verbose)
+    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
+                              results=results, verbose=verbose)
     assert len(results) == 1  # No new results added because module is inactive
 
-    commands = [Command(brand="BrandA", name="command1", arg_mapping={"agent_id": "ida"})]
-    run_commands_for_endpoint(commands, args, module_manager, endpoint_data, endpoint_output, human_readable_outputs,
-                              results, verbose)
+    commands = [Command(brand="BrandA", name="command1", arg_mapping={"endpoint_id": "ida"})]
+    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
+                              results=results, verbose=verbose)
     assert len(results) == 1  # No new results added because not matching args
 
 
