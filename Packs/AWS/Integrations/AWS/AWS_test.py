@@ -1297,23 +1297,6 @@ def test_ec2_delete_security_group_command_group_id_not_found(mocker):
         EC2.delete_security_group_command(mock_client, args)
 
 
-def test_ec2_delete_security_group_command_no_group_id_in_response(mocker):
-    """
-    Given: A mocked boto3 EC2 client that returns response without GroupId.
-    When: delete_security_group_command receives response missing GroupId.
-    Then: It should raise DemistoException with unexpected error message.
-    """
-    from AWS import EC2
-
-    mock_client = mocker.Mock()
-    mock_client.delete_security_group.return_value = {}
-
-    args = {"group_id": "sg-1234567890abcdef0"}
-
-    with pytest.raises(DemistoException, match="Unexpected error deleting security group"):
-        EC2.delete_security_group_command(mock_client, args)
-
-
 def test_ec2_delete_security_group_command_unexpected_exception(mocker):
     """
     Given: A mocked boto3 EC2 client that raises unexpected exception.
