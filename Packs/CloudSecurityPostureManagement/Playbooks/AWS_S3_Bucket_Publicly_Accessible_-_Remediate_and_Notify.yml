@@ -141,7 +141,7 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: ${inputs.Reviewer email address}
+        simple: ${inputs.Reviewer Email Address}
       subject:
         simple: 'Action Required: Review Detected Issue and Remediation Plan for Asset – ${Core.CoreAsset.xdm__asset__name}'
       body:
