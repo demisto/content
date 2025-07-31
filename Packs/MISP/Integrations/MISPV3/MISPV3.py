@@ -1337,6 +1337,86 @@ def event_to_human_readable(response: dict):
         )
     return event_highlights
 
+def warninglist_to_human_readable(warninglist_response: dict):
+    """
+    Converts the warninglist response to a human-readable format.
+    Args:
+        warninglist_response (dict): The response from the MISP warninglist search.
+
+    Returns:
+        list: A list of dictionaries containing the warninglist information.
+    """
+
+    ## TODO: This requires a check to see if there are multiple Warninglist items, or just a singular one
+    md_list = []
+
+    if values := warninglist_response.get("Warninglists"):
+        multiple_warninglists = True
+    if values := warninglist_response.get("Warninglist"):
+        multiple_warninglists = False
+
+    for value in values.items():
+        md_item = {
+            "ID": value.get("id"),
+            "Name": value.get("name"),
+            "Type": value.get("type"),
+            "Description": value.get("description"),
+            "Version": value.get("version"),
+            "Enabled": value.get("enabled"),
+            "Default": value.get("default"),
+            "Category": value.get("category"),
+        }
+
+        if multiple_warninglists:
+            md_item["Entries"] = value.get("warninglist_entry_count")
+            md_item["Attributes"] = value.get("valid_attributes")
+            md_list.append(md_item)
+        else:
+            return [md_item]
+
+    return md_list
+
+
+def warninglist_entries_to_human_readable(warninglist_entries_response: dict):
+    """
+    Converts the warninglist entries response to a human-readable format.
+    Args:
+        warninglist_entries_response (dict): The response from the MISP warninglist entries search.
+
+    Returns:
+        list: A list of dictionaries containing the warninglist entries information.
+    """
+    md_list = []
+    if values := warninglist_entries_response.get("WarninglistEntries"): # TO-DO: Warninglist.WarninglistEntry[Dict]
+        for value in values:
+            md_item = {
+                "ID": value.get("id"),
+                "Value": value.get("value"),
+                "Warninglist ID": value.get("warninglist_id"),
+                "Comment": value.get("comment"),
+            }
+            md_list.append(md_item)
+    return md_list
+
+def warninglist_types_to_human_readable(warninglist_types_response: dict):
+    """
+    Converts the warninglist types response to a human-readable format.
+    Args:
+        warninglist_types_response (dict): The response from the MISP warninglist types search.
+
+    Returns:
+        list: A list of dictionaries containing the warninglist types information.
+    """
+    md_list = []
+    if values := warninglist_types_response.get("WarninglistTypes"): # TO-DO: Warninglist.WarninglistType[Dict]
+        for value in values:
+            md_item = {
+                "ID": value.get("id"),
+                "Type": value.get("type"),
+                "Warninglist ID": value.get("warninglist_id"),
+            }
+            md_list.append(md_item)
+    return md_list
 
 def search_events(demisto_args: dict) -> CommandResults:
     """
