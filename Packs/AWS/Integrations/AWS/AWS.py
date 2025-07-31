@@ -25,16 +25,24 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
-def parse_filter_field(filter_str):
-    filters = []
-    regex = re.compile(r"name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)", flags=re.I)
-    for f in filter_str.split(";"):
-        match = regex.match(f)
-        if match is None:
-            demisto.debug(f"could not parse filter: {f}")
-            continue
+def parse_filter_field(filter_string: str | None):
+    """
+    Parses a list representation of name and values with the form of 'name=<name>,values=[<value>].
+    Args:
+        filter_list: The name and values list
 
-        filters.append({"Name": match.group(1), "Values": match.group(2).split(",")})
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    regex = re.compile(r"name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)", flags=re.I)
+    for filter in list_filters:
+        match_filter = regex.match(filter)
+        if match_filter is None:
+            demisto.debug(f"could not parse filter: {filter}")
+            continue
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")})
 
     return filters
 
@@ -811,14 +819,7 @@ class EC2:
         group_name = args.get("group_name")
         description = args.get("description")
         vpc_id = args.get("vpc_id")
-        tags = args.get("tags")
-        tags_json = {}
-        if tags:
-            try:
-                tags_json = json.loads(tags)
-            except json.JSONDecodeError as e:
-                raise DemistoException(f"Invalid `tags` JSON: {e}")
-        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id, "TagSpecifications": tags_json}
+        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id}
         try:
             resp = client.create_security_group(**kwargs)
             group_id = resp.get("GroupId")

@@ -721,7 +721,6 @@ Creates a security group.
 | group_name | The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC. | Required |
 | description | A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&amp;;{}!$*. | Required |
 | vpc_id | The ID of the VPC. Required for a nondefault VPC. | Optional |
-| tag_specifications | The tags to assign to the security group in JSON format. Example: [{"ResourceType": "security-group", "Tags": [{"Key": "Environment", "Value": "Production"}, {"Key": "Team", "Value": "Security"}]}]. | Optional |
 
 #### Context Output
 
@@ -772,7 +771,7 @@ Describes one or more security groups in your account. Returns detailed informat
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_ids | Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321). | Optional |
 | group_names | Comma-separated list of security group names. | Optional |
-| filters | Custom filters to apply. Format - Name=value pairs (e.g., description=web-server,vpc-id=vpc-12345678). | Optional |
+| filters | One or more custom filters to apply separated by ';'. Format - Name=value pairs (e.g., Name=web-server,Values=value). | Optional |
 
 #### Context Output
 

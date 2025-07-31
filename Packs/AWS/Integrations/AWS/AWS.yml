@@ -2121,13 +2121,10 @@ script:
       description: The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC.
       required: true
     - name: description
-      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*.'
+      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
       required: true
     - name: vpc_id
       description: The ID of the VPC. Required for a nondefault VPC.
-      required: false
-    - name: tag_specifications
-      description: 'The tags to assign to the security group in JSON format. Example: [{"ResourceType": "security-group", "Tags": [{"Key": "Environment", "Value": "Production"}, {"Key": "Team", "Value": "Security"}]}].'
       required: false
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.GroupName
@@ -2243,7 +2240,7 @@ script:
       description: Comma-separated list of security group names.
       isArray: true
     - name: filters
-      description: Custom filters to apply. Format - Name=value pairs (e.g., description=web-server,vpc-id=vpc-12345678).
+      description: One or more custom filters to apply separated by ';'. Format - Name=value pairs (e.g., Name=<name>,Values=[<value>]).
       isArray: true
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.Description
