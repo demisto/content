@@ -126,13 +126,16 @@ ignore=PB118
 ignore=PB118
 
 [file:playbook-Detonate_URL_-_Generic_v1.5.yml]
-ignore=GR107
+ignore=GR107,RM116
 
 [file:playbook-Endpoint_Enrichment_-_Generic_v2.1.yml]
-ignore=GR107
+ignore=GR107,RM116
 
 [file:playbook-Block_Email_-_Generic_v2.yml]
 ignore=GR107
 
 [file:playbook-Isolate_Endpoint_-_Generic_V2.yml]
 ignore=GR107
+
+[file:playbook-Endpoint_Enrichment_-_Generic_v2.1_6_8.yml]
+ignore=RM116

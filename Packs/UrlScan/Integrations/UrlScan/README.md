@@ -113,6 +113,7 @@
 <h5>Command Example</h5>
 <p><code>!urlscan-search searchParameter=8.8.8.8</code></p>
 <p><code>!urlscan-search searchType=advanced searchParameter="filename:logo.png AND date:>now-24h"</code></p>
+<p><code>!urlscan-search searchType=raw searchParameter="q=meta%3Asearchhit.search.04eb755f-468d-4421-ab86-210a01ee1bdd&datasource=hostnames&search_after="</code></p>
 <h3 id="h_872696191351541575062805">2. (Deprecated) Submit a URL directly to urlscan.io</h3>
 <hr>
 <p>Submits a URL to urlscan.io.</p>

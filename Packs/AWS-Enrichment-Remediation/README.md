@@ -63,4 +63,4 @@ Automation to determine which interface on an EC2 instance has an over-permissiv
 
 Automation to determine AWS account hierarchy by looking up parent objects until the organization level is reached.
 
-![AWSAccountHierarchy](https://raw.githubusercontent.com/demisto/content/2651e6ea5f37c64e3b3e9b18e4d815f5094d6fb2/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Enrichment.png)
+![AWSAccountHierarchy](doc_files/AWSAccountHierarchy.png)

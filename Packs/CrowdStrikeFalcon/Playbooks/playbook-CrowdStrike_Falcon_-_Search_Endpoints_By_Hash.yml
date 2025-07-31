@@ -920,7 +920,7 @@ outputs:
 - contextPath: CrowdStrike.IOC.Type
   description: The type of the IOC.
 - contextPath: Endpoint.IPAddress
-  description: The endpoint's IP address.
+  description: The endpoint's IP address or list of IP addresses.
 - contextPath: CrowdStrike.IOC.Value
   description: The string representation of the indicator.
 - contextPath: Endpoint.OS

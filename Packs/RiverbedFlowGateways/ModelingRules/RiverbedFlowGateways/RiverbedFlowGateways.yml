@@ -1,0 +1,6 @@
+fromversion: 8.9.0  # Will be updated with XSIAM version updates
+id: Riverbed_Flow_Gateways_ModelingRule
+name: Riverbed Flow Gateways Modeling Rule
+rules: ''
+schema: ''
+tags: ''

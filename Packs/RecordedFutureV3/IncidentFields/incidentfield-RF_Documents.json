@@ -1,0 +1,64 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"RF Classic Alert"
+	],
+	"caseInsensitive": true,
+	"cliName": "rfdocuments",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Title",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "title",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "URL",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "url",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": true,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"editForm": true,
+	"group": 0,
+	"hidden": false,
+	"id": "incident_rfdocuments",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "RF Documents",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -1882,10 +1882,6 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     standard_endpoints = []
     for single_endpoint in endpoints:
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
-        # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
-        # in the `endpoint` command we use the standard
-        if ip_as_string and ip and isinstance(ip, list):
-            ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get("os_type", ""))
         endpoint = Common.Endpoint(
             id=single_endpoint.get("endpoint_id"),

@@ -216,7 +216,7 @@ tasks:
       id: 2967545d-ba7a-4934-89fc-84f4a41ff124
       version: -1
       name: Search for recent malware alerts on client IP
-      description: Searches for alerts that happened in the past day with Malware category where the host IP is the client IP of the current alert.
+      description: Searches for Malware category alerts that occurred in the past day with host IP equal to the client IP of the current alert.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -294,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a685af16-c239-4712-81ff-00dbcca78bca
+    taskid: e7e2c5dc-46a4-466f-a6ef-ec40b094423b
     type: condition
     task:
-      id: a685af16-c239-4712-81ff-00dbcca78bca
+      id: e7e2c5dc-46a4-466f-a6ef-ec40b094423b
       version: -1
       name: Ensure that a single client IP exists
       description: Ensures that the alert contains only 1 client IP. LDAP enumeration query alerts containing multiple IPs are not supported by the playbook.
@@ -313,6 +313,20 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.client
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.event.client
+            iscontext: true
+          right:
+            value:
+              simple: 127.0.0.1
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -335,14 +349,6 @@ tasks:
           right:
             value:
               simple: "3"
-      - - operator: isNotEqualString
-          left:
-            value:
-              simple: Core.OriginalAlert.event.client
-            iscontext: true
-          right:
-            value:
-              simple: 127.0.0.1
     continueonerrortype: ""
     view: |-
       {
@@ -382,6 +388,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1659,7 +1666,7 @@ tasks:
       id: e64d505f-b741-489d-8513-9b68a04129f1
       version: -1
       name: Check that client OS is Windows and client role is not Server
-      description: Ensures that the client is not a server, not the domain controller, and runs the Windows operating system (required for automatic remediation).
+      description: Ensures that the client is not a server or domain controller and is running the Windows operating system, which is necessary for automatic remediation.
       type: condition
       iscommand: false
       brand: ""
@@ -1892,7 +1899,7 @@ tasks:
       id: 9cdd928b-40cc-4abe-9f62-11968d3d8326
       version: -1
       name: Get user session results
-      description: Retrieves results from the "quser" command for the user - which can be used to tell if the user is currently logged in.
+      description: Retrieves the output of the "quser" command for the user, which can indicate whether the user is currently logged in.
       script: '|||core-get-script-execution-results'
       type: regular
       iscommand: true
@@ -1927,7 +1934,7 @@ tasks:
       id: e53a7044-64ba-47db-8470-d9d23b475850
       version: -1
       name: Check for active session of the user
-      description: Checks if the execution results show that there is currently an active session for the user - which means the user is currently logged in.
+      description: Checks whether the execution results indicate an active session for the user, confirming the user is currently logged in.
       type: condition
       iscommand: false
       brand: ""

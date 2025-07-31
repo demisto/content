@@ -1495,3 +1495,29 @@ Update inputs for case hold policies.
 #### Context Output
 
 There is no context output for this command.
+
+### o365-sc-email-security-search-and-delete-email-office-365-quick-action
+
+***
+Deletes an email for all recipients.
+On first run, creates and starts a search (if it already exists – returns its status).
+Then runs polling until the deletion is complete.
+The force parameter allows creating a new search even if one already exists (default: false).
+
+#### Base Command
+
+`o365-sc-email-security-search-and-delete-email-office-365-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| internet_message_id | The unique identifier of the email message, e.g., &lt;abc123@mail.example.com&gt;. | Required |
+| exchange_location | Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow). Default is All. | Optional |
+| force | If true, creates a new search even if one already exists. Possible values are: false, true. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. |

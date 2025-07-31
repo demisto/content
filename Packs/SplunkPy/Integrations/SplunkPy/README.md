@@ -184,7 +184,10 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
 You can use Splunk to define a user lookup table and then configure the SplunkPy integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
 
-**note:** Owner field in Cortex XSOAR incident can only be uses for mirroring-out and cannot be changed according to Splunk values. Mirroring-in will be available via the *Assigned User* incident field.
+**Note:**
+
+- When mapping users, the specified Cortex XSOAR user must be a valid user in the system.
+- The Cortex XSOAR `Owner` incident field can only be used for mirroring changes out to Splunk, you cannot use it to update Cortex XSOAR incidents based on values from Splunk. To mirror changes in from Splunk, use the `Assigned User` incident field.
 
 **Configure User Mapping Using Splunk**  
 
@@ -242,6 +245,7 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 
 **Important Notes***
 
+- Mirroring-in is not supported when multiple Splunk integration instances are connected to the same Splunk server.
 - This feature is available from Cortex XSOAR version 6.0.0.
 - This feature is supported by Splunk Enterprise Security only.
 - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.

@@ -158,6 +158,7 @@ tasks:
       ignore-outputs:
         simple: "false"
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {

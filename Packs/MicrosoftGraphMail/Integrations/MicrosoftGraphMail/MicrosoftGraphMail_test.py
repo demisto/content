@@ -313,6 +313,23 @@ def test_list_mails_with_page_limit(mocker, client):
         assert "top=1" in mock_request.call_args_list[0].args[1]
 
 
+def test_list_mails_with_body():
+    """
+    Given
+    - list_mails command
+    When
+    - The mail has a body
+    Then
+    - Return the body.
+    """
+    mail = [{"value": [{"body": {"content": "This is an email body"}}]}]
+    client = type("MockClient", (), {"list_mails": lambda *x, **y: mail})()
+
+    result_entry = list_mails_command(client, {})
+
+    assert result_entry["EntryContext"]["MSGraphMail(val.ID && val.ID == obj.ID)"][0]["Body"] == "This is an email body"
+
+
 @pytest.fixture()
 def expected_incident():
     with open("test_data/expected_incident") as emails_json:

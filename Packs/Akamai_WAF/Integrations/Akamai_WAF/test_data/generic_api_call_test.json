@@ -1,0 +1,11 @@
+{
+    "raw_response": {
+        "key": "value"
+    },
+    "human_readable": "API call returned successfully",
+    "context_entry": {
+        "Akamai": {
+            "key": "value"
+        }
+    }
+}

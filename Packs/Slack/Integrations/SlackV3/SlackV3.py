@@ -59,7 +59,7 @@ APP_TOKEN: str
 PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
-ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
+ASYNC_CLIENT: AsyncWebClient
 CLIENT: slack_sdk.WebClient
 USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
@@ -1597,9 +1597,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) > 0:
                 channel = data.get("channel", {}).get("id", "")
                 entitlement_json = actions[0].get("value")
-                entitlement_string = json.loads(entitlement_json)
                 if entitlement_json is None:
                     return
+                entitlement_string = json.loads(entitlement_json)
                 if actions[0].get("action_id") == "xsoar-button-submit":
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
@@ -1653,8 +1653,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await process_mirror(channel, text, user)
         reset_listener_health()
         return
-    except Exception as e:
-        await handle_listen_error(f"Error occurred while listening to Slack: {e}")
+    except Exception:
+        await handle_listen_error(f"Error occurred while listening to Slack:\n{traceback.format_exc()}")
 
 
 async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:

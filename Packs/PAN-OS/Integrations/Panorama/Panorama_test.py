@@ -10,6 +10,7 @@ import requests_mock
 from CommonServerPython import CommandResults, DemistoException
 from defusedxml import ElementTree
 from freezegun import freeze_time
+from datetime import datetime
 from panos.device import Vsys
 from panos.firewall import Firewall
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
@@ -9031,3 +9032,122 @@ class TestDynamicUpdateCommands:
                     },
                 }
             }
+
+
+@pytest.mark.parametrize(
+    ("vsys", "rules", "no_new_hits_since", "expected_cmd", "expected_datetime"),
+    [
+        (
+            "vsys1",
+            "Rule1",
+            "",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
+            b"</rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "Rule1",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
+            b"</list></rules></entry></rule-base></all></vsys></rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "all",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><all /></rules></entry>'
+            b"</rule-base></all></vsys></rule-hit-count></show>",
+            None,
+        ),
+        (
+            "all",
+            "Rule1, Rule2, Rule3",
+            "",
+            b'<show><rule-hit-count><vsys><all><rule-base><entry name="security"><rules><list><member>Rule1</member>'
+            b"<member>Rule2</member><member>Rule3</member></list></rules></entry></rule-base></all></vsys>"
+            b"</rule-hit-count></show>",
+            None,
+        ),
+        (
+            "vsys1",
+            "Rule1",
+            "2025/06/01 00:00:00",
+            b'<show><rule-hit-count><vsys><vsys-name><entry name="vsys1"><rule-base><entry name="security"><rules>'
+            b"<list><member>Rule1</member></list></rules></entry></rule-base></entry></vsys-name></vsys>"
+            b"</rule-hit-count></show>",
+            datetime.strptime("2025/06/01 00:00:00", "%Y/%m/%d %H:%M:%S"),
+        ),
+    ],
+)
+def test_get_rule_hitcounts(vsys, rules, no_new_hits_since, expected_cmd, expected_datetime, mock_topology, mocker):
+    """Test the get_rule_hitcounts function with various parameter combinations.  Verify that it properly
+        constructs the API call to retrieve the specified rule hitcount data.
+
+    Args:
+        vsys: Virtual system name or "all" for all virtual systems
+        rules: Rule names (single rule, multiple comma-separated rules, or "all")
+        no_new_hits_since: Date string for filtering rules with no new hits since this time
+        expected_cmd: Expected XML command that should be generated
+        expected_datetime: Expected parsed datetime object from no_new_hits_since
+        mock_topology: Mocked topology fixture
+        mocker: Pytest mocker fixture
+    """
+    from Panorama import get_rule_hitcounts
+
+    mock_get_hitcounts = mocker.patch("Panorama.FirewallCommand.get_hitcounts", return_value=True)
+
+    get_rule_hitcounts(mock_topology, "", "1.2.3.4", "security", vsys, rules, "false", no_new_hits_since)
+
+    cmd_result = mock_get_hitcounts.call_args[0][1]
+    no_new_hits_since_dt = mock_get_hitcounts.call_args[0][3]
+
+    assert cmd_result == expected_cmd
+    assert no_new_hits_since_dt == expected_datetime
+
+
+@freeze_time("2025-06-26 13:00:00 UTC")
+@pytest.mark.parametrize(
+    ("rulebase_type", "unused_only", "no_new_hits_since_dt", "length_expected"),
+    [
+        ("security", "false", None, 10),  # Should result in 10 returned records.
+        ("security", "true", None, 6),  # Should result in 6 returned records.
+        (
+            "security",
+            "false",
+            datetime.strptime("2025/06/26 00:00:00Z", "%Y/%m/%d %H:%M:%SZ"),
+            8,
+        ),  # Should result in 8 returned records.
+    ],
+)
+def test_get_hitcounts(rulebase_type, unused_only, no_new_hits_since_dt, length_expected, mock_topology, mocker):
+    """Test the FirewallCommand.get_hitcounts method with various filter parameters.  Verify it returns the correct
+        number of rules from the sample data based on the filter conditions.
+
+    Args:
+        rulebase_type: The type of rulebase to query (e.g., "security")
+        unused_only: Whether to filter for unused rules only ("true"/"false")
+        no_new_hits_since_dt: Optional datetime to filter rules with no new hits since this time
+        length_expected: Expected number of rules in the result
+        mock_topology: Mocked topology fixture
+        mocker: Pytest mocker fixture
+    """
+    from Panorama import FirewallCommand
+
+    rule_hitcounts_data = "test_data/get_rule_hitcounts_rule_hits.xml"
+    pushed_policy_data = "test_data/get_rule_hitcounts_pushed_policy.xml"
+    mocker.patch(
+        "Panorama.run_op_command",
+        side_effect=[
+            load_xml_root_from_test_file(rule_hitcounts_data),
+            load_xml_root_from_test_file(pushed_policy_data),
+        ],
+    )
+
+    mocker.patch("Panorama.demisto.callingContext", return_value={"context": {"IntegrationInstance": "Panorama_test_instance"}})
+
+    result = FirewallCommand.get_hitcounts(mock_topology, "", rulebase_type, no_new_hits_since_dt, None, None, unused_only)
+    assert result is not None
+    assert len(result) == length_expected
