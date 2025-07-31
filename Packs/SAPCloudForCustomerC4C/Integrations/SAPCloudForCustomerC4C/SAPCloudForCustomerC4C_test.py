@@ -201,7 +201,7 @@ def test_get_events_command_success_single_page(mocker):
           and specified arguments.
     Then:
         Verify that:
-        - The `http_request` method of the mocked client is called exactly once.
+        - The `http_request` method of the mocked client is called exactly twice.
         - The `events_list` returned by the command matches the `expected_events`.
         - The `raw_response` in `cmd_results` matches the `expected_events`.
         - The `readable_output` in `cmd_results` contains the expected
@@ -241,8 +241,8 @@ def test_get_events_command_success_single_page(mocker):
 
     events_list, cmd_results = get_events_command(mock_client_instance, report_id, args)
 
-    # Check calls to http_request
-    assert mock_client_instance.http_request.call_count == 1
+    # Check calls to http_request (test call and real call)
+    assert mock_client_instance.http_request.call_count == 2
 
     assert events_list == expected_events
     assert cmd_results.raw_response == expected_events
@@ -252,29 +252,25 @@ def test_get_events_command_success_single_page(mocker):
 
 def test_get_events_command_success_multiple_pages(mocker):
     """
-    Tests the successful execution of the `get_events_command` function,
-    retrieving events that require multiple API calls (pagination).
+    Tests the `get_events_command` function for correctly handling paginated API responses.
 
-    This test simulates a scenario where the total number of events to be retrieved
-    exceeds the `DEFAULT_TOP` limit, necessitating multiple paginated API calls
-    to fetch all the data. It verifies that the `get_events_command` correctly
-    handles pagination and aggregates results from successive API responses.
+    This test simulates retrieving events across multiple pages when the total requested
+    events exceed the API's maximum per-request limit. It verifies that `get_events_command`
+    makes multiple API calls as needed, aggregates all results, and returns them properly.
 
     Given:
-        - `mocker`: A pytest fixture for mocking objects and methods.
+        - A mocked client with a patched `http_request` method to simulate paginated responses.
+        - A report ID and arguments that request more events than fit in a single page.
+
     When:
-        - Running the `get_events_command` function with the mocked client
-          and specified arguments.
+        - Calling `get_events_command` with the mocked client and arguments.
+
     Then:
         Verify that:
-        - The `http_request` method of the mocked client is called the expected
-          number of times (e.g., 3 calls for 2 pages of data plus a final
-          call to confirm no more data).
-        - The `events_list` returned by the command contains all events
-          from all paginated responses, matching `expected_all_events`.
-        - The `raw_response` in `cmd_results` matches `expected_all_events`.
-        - The `readable_output` in `cmd_results` contains the expected
-          header for the events.
+        - The client's `http_request` method is called the expected number of times to retrieve all pages.
+        - The combined list of events includes all events from each paginated response.
+        - The returned `CommandResults` object contains the full aggregated response.
+        - The readable output includes the expected header indicating the source of the events.
     """
     from SAPCloudForCustomerC4C import get_events_command
 
@@ -283,6 +279,7 @@ def test_get_events_command_success_multiple_pages(mocker):
     start_date_str = "01-01-2025 00:00:00"
     limit_val = 7  # Requires 2 calls (5 events then 2 events)
     args = {"start_date": start_date_str, "limit": limit_val, "days_from_start": 2}
+    expected = [{"CTIMESTAMP": "01-01-2025 00:00:00"}]
 
     expected_events_page1 = [
         {
@@ -332,6 +329,7 @@ def test_get_events_command_success_multiple_pages(mocker):
         mock_client_instance,
         "http_request",
         side_effect=[
+            {"d": {"results": expected}},  # Tesh Call
             {"d": {"results": expected_events_page1}},  # First call
             {"d": {"results": expected_events_page2}},  # Second call
             {"d": {"results": []}},  # Third call signals end of data
@@ -341,8 +339,7 @@ def test_get_events_command_success_multiple_pages(mocker):
     events_list, cmd_results = get_events_command(mock_client_instance, report_id, args)
 
     # Check calls to http_request
-    assert mock_client_instance.http_request.call_count == 3
-
+    assert mock_client_instance.http_request.call_count == 4
     assert events_list == expected_all_events
     assert cmd_results.raw_response == expected_all_events
     assert f"### Events from {SAP_CLOUD}" in cmd_results.readable_output
@@ -538,49 +535,6 @@ def test_add_time_to_events_no_events():
     assert events == []
 
 
-IS_VALID_TIMESTAMP_TEST_CASES = [
-    # Valid timestamps
-    pytest.param("22.07.2025 09:11:14 UTC-2", None, None, id="valid_sap_format_with_offset"),
-    pytest.param("2023-01-15 10:30:00 UTC+05:00", None, None, id="valid_iso_format_with_offset"),
-    pytest.param("2023-05-10 12:00:00", None, None, id="valid_without_timezone"),  # dateparser can often parse these
-    # Invalid timestamps - should raise DemistoException
-    pytest.param("22.07.2025 09:11:14 INDIA", False, DemistoException, id="invalid_timezone_format_INDIA"),
-    pytest.param("22.07.2025 09:11:14 GMTUK", False, DemistoException, id="invalid_timezone_format_GMTUK"),
-    pytest.param("22.07.2025 09:11:14 INVALID-OFFSET", False, DemistoException, id="invalid_timezone_format"),
-]
-
-
-@pytest.mark.parametrize("timestamp_str, expected_result, expected_exception", IS_VALID_TIMESTAMP_TEST_CASES)
-def test_is_valid_timestamp_parameterized(mocker, timestamp_str: str, expected_result: bool, expected_exception: type):
-    """
-    Tests `is_valid_timestamp` with various timestamp formats.
-
-    Verifies that:
-    - Valid timestamps return `True` and do not call `demisto.debug`.
-    - Invalid timestamps raise `DemistoException` and call `demisto.debug` with an error message.
-
-    Args:
-        mocker: Pytest fixture for mocking.
-        timestamp_str (str): The timestamp string to test.
-        expected_result (bool): Expected return value (`True` for valid, `False` for invalid).
-        expected_exception (type): Expected exception type (`DemistoException` for invalid, `None` for valid).
-    """
-    from SAPCloudForCustomerC4C import is_valid_timestamp
-
-    mock_demisto_debug = mocker.patch("SAPCloudForCustomerC4C.demisto.debug")
-
-    if expected_exception:
-        with pytest.raises(expected_exception) as excinfo:
-            is_valid_timestamp(timestamp_str)
-        assert "SAP timezone configuration is not supported" in str(excinfo.value)
-        expected_debug_message = f"Parsing Error: Could not parse CTIMESTAMP '{timestamp_str}'."
-        mock_demisto_debug.assert_called_once_with(expected_debug_message)
-    else:
-        result = is_valid_timestamp(timestamp_str)
-        assert result is expected_result
-        mock_demisto_debug.assert_not_called()
-
-
 def test_get_timestamp_offset_hour(mocker):
     """
     Tests the basic functionality of `get_timestamp_offset_hour` for correct UTC offset calculation.
@@ -618,44 +572,6 @@ def test_get_timestamp_offset_hour(mocker):
     assert offset_hour == expected_offset
 
 
-GET_EVENTS_INVALID_RESPONSES = [
-    pytest.param(None, f"Empty response received from {SAP_CLOUD} API.", id="empty_response_none"),
-    pytest.param(
-        {},
-        f"Empty response received from {SAP_CLOUD} API.",
-    ),
-    pytest.param({"d": {}}, f"Unexpected response structure from {SAP_CLOUD} API.", id="missing_results_key"),
-]
-
-
-@pytest.mark.parametrize("mock_response, expected_error_msg", GET_EVENTS_INVALID_RESPONSES)
-def test_get_events_api_call_invalid_responses(mocker, mock_response, expected_error_msg):
-    """
-    Tests `get_events_api_call` with invalid or empty API responses.
-
-    This test ensures the function raises `DemistoException` in cases such as:
-    - The API response is `None`.
-    - The response is missing required keys like 'd' or 'results'.
-
-    When:
-        - `client.http_request()` returns invalid response structures.
-
-    Then:
-        Verify that:
-        - A `DemistoException` is raised with an appropriate error message.
-    """
-    from SAPCloudForCustomerC4C import get_events_api_call
-
-    mock_client_instance = mock_client()
-    report_id = "general_reportID"
-
-    mocker.patch.object(mock_client_instance, "http_request", return_value=mock_response)
-
-    with pytest.raises(DemistoException) as excinfo:
-        get_events_api_call(mock_client_instance, report_id=report_id, params={})
-    assert expected_error_msg in str(excinfo.value)
-
-
 UTC_TIMESTAMP_TEST_CASES = [
     # UTC+2
     (datetime(2025, 7, 30, 12, 0, 0, tzinfo=timezone.utc), 2.0, "2025-07-30T14:00:00+02:00"),
@@ -689,20 +605,28 @@ def test_convert_utc_to_offset(utc_input, offset_hour, expected_iso):
 
 def test_get_events_command_no_response(mocker):
     """
-    Tests the fallback behavior of `get_events_command` when no events are returned from the API.
+    Tests `get_events_command` behavior when no events are returned from the `get_events` function.
+
+    This test ensures that the command handles an empty event list gracefully without raising errors,
+    and still produces a valid `CommandResults` object with appropriate messaging.
 
     When:
-        - The `get_events` function returns an empty response (e.g., no more events exist).
+        - `get_events` returns an empty list (indicating no events are available).
+        - A valid timestamp exists in the API response, but no events match the filters.
+
     Then:
         Verify that:
-        - The function should log the debug message and return an empty result list.
-        - The returned CommandResults should include a readable markdown table with no data.
+        - An empty list is returned for the events.
+        - A `CommandResults` object is returned with appropriate headers and empty data.
+        - A debug log message is written indicating that no more events exist.
     """
     from SAPCloudForCustomerC4C import get_events_command
 
     mock_client_instance = mock_client()
     report_id = "general_reportID"
 
+    mock_response = {"d": {"results": [{"CTIMESTAMP": "25-07-2025 10:00:00"}]}}
+    mocker.patch("SAPCloudForCustomerC4C.get_events_api_call", return_value=mock_response)
     mocker.patch("SAPCloudForCustomerC4C.get_events", return_value=[])
 
     mock_debug = mocker.patch("SAPCloudForCustomerC4C.demisto.debug")
@@ -719,3 +643,97 @@ def test_get_events_command_no_response(mocker):
     assert isinstance(results, CommandResults)
     assert f"Events from {SAP_CLOUD}" in results.readable_output
     mock_debug.assert_called_with("No more events exist or no response received, breaking...")
+
+
+VALID_TIMESTAMP_TEST_CASES = [
+    "30.07.2025 14:35:00 UTC+2",
+    "2025-07-30T14:35:00+02:00",
+    "July 30, 2025 2:35 PM +02:00",
+    "2025/07/30 14:35:00 UTC+02",
+]
+
+
+@pytest.mark.parametrize("valid_timestamp", VALID_TIMESTAMP_TEST_CASES)
+def test_is_valid_timestamp_success(mocker, valid_timestamp):
+    """
+    Tests `is_valid_timestamp` with various valid timestamp formats to ensure correct handling.
+
+    This parametrized test verifies that the `is_valid_timestamp` function correctly
+    processes a variety of well-formed timestamp strings returned by the API and
+    returns them unchanged without raising any exceptions.
+
+    When:
+        - `get_events_api_call` is mocked to return a response containing a valid
+          `CTIMESTAMP` string in one of several common timestamp formats.
+
+    Then:
+        Verify that:
+        - The function returns the original timestamp string exactly as received.
+        - No exceptions are raised during parsing or validation.
+    """
+    from SAPCloudForCustomerC4C import is_valid_timestamp
+
+    mock_response = {"d": {"results": [{"CTIMESTAMP": valid_timestamp}]}}
+
+    mocker.patch("SAPCloudForCustomerC4C.get_events_api_call", return_value=mock_response)
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+
+    result = is_valid_timestamp(mock_client_instance, report_id, {"$top": 1})
+    assert result == valid_timestamp
+
+
+@pytest.mark.parametrize(
+    "mock_response, expected_error, expected_debug_msg",
+    [
+        # Empty response case
+        (None, f"Empty response received from {SAP_CLOUD} API.", None),
+        # Missing "d" key in response
+        ({"wrong_key": {}}, f"Unexpected response structure from {SAP_CLOUD} API.", None),
+        # Missing "results" key inside "d"
+        ({"d": {"wrong_key": []}}, f"Unexpected response structure from {SAP_CLOUD} API.", None),
+        # Invalid timestamp format
+        (
+            {"d": {"results": [{"CTIMESTAMP": "INVALID_TIMESTAMP"}]}},
+            "SAP timezone configuration is not supported",
+            "Parsing Error: Could not parse CTIMESTAMP 'INVALID_TIMESTAMP'.",
+        ),
+    ],
+)
+def test_is_valid_timestamp_failure(mocker, mock_response, expected_error, expected_debug_msg):
+    """
+    Tests `is_valid_timestamp` for various failure scenarios where the timestamp is invalid or response is malformed.
+
+    This parametrized test verifies that `is_valid_timestamp` raises a `DemistoException` with the correct error message
+    when:
+        - The API response is empty.
+        - The API response structure is missing expected keys ("d" or "results").
+        - The timestamp string in the response cannot be parsed due to invalid format or unsupported timezone.
+
+    When:
+        - `get_events_api_call` is mocked to return a response representing each failure scenario.
+        - `is_valid_timestamp` is called with the mocked response.
+
+    Then:
+        Verify that:
+        - A `DemistoException` is raised with the expected error message.
+        - If applicable, a debug message is logged indicating the parsing failure.
+    """
+    from SAPCloudForCustomerC4C import is_valid_timestamp
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+
+    mocker.patch("SAPCloudForCustomerC4C.get_events_api_call", return_value=mock_response)
+    if expected_debug_msg:
+        mock_debug = mocker.patch("SAPCloudForCustomerC4C.demisto.debug")
+    else:
+        mock_debug = None
+
+    with pytest.raises(DemistoException) as exc_info:
+        is_valid_timestamp(mock_client_instance, report_id, params={"$top": 1})
+
+    assert expected_error in str(exc_info.value)
+
+    if mock_debug:
+        mock_debug.assert_called_with(expected_debug_msg)
