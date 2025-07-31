@@ -1781,7 +1781,6 @@ script:
 sectionorder:
 - Connect
 - Collect
-sourcemoduleid: Exabeam
 tests:
 - Exabeam - Test
 fromversion: 5.0.0
