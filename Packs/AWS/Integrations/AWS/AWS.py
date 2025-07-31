@@ -25,6 +25,28 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def parse_filter_field(filter_string: str | None):
+    """
+    Parses a list representation of name and values with the form of 'name=<name>,values=[<value>].
+    Args:
+        filter_list: The name and values list
+
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    regex = re.compile(r"name=([\w\d_:.-]{1,40}),values=([ /\w\d@_,.*-:]+)", flags=re.I)
+    for filter in list_filters:
+        match_filter = regex.match(filter)
+        if match_filter is None:
+            demisto.debug(f"could not parse filter: {filter}")
+            continue
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")})
+
+    return filters
+
+
 class AWSServices(str, Enum):
     S3 = "s3"
     IAM = "iam"
@@ -778,6 +800,200 @@ class EC2:
                 raise DemistoException(f"Security group {group_id} not found.")
             raise DemistoException(f"Failed to revoke egress rule: {e}")
 
+    @staticmethod
+    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a new security group in the specified VPC or EC2-Classic.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_name (str): Name of the security group.
+                - description (str): Description of the security group.
+                - vpc_id (str, optional): VPC ID where security group will be created.
+
+        Returns:
+            CommandResults: Results of the operation with security group creation details
+        """
+        group_name = args.get("group_name")
+        description = args.get("description")
+        vpc_id = args.get("vpc_id")
+        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id}
+        try:
+            resp = client.create_security_group(**kwargs)
+            group_id = resp.get("GroupId")
+            if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and group_id:
+                data = {
+                    "GroupName": args.get("groupName"),
+                    "Description": args.get("description", ""),
+                    "VpcId": args.get("vpcId"),
+                    "GroupId": resp["GroupId"],
+                }
+                return CommandResults(
+                    outputs=data,
+                    outputs_prefix="AWS.EC2.SecurityGroups",
+                    readable_output=tableToMarkdown("AWS EC2 Security Groups", data),
+                )
+            else:
+                raise DemistoException(f"Unexpected response when creating security group: {resp}")
+        except ClientError as e:
+            error_details = e.response["Error"]["Code"]
+            raise DemistoException(f"Failed to create security group {group_name}: {e}, {error_details}")
+
+    @staticmethod
+    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes a security group.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_id (str, optional): ID of the security group to delete.
+                - group_name (str, optional): Name of the security group to delete.
+
+        Returns:
+            CommandResults: Results of the operation with deletion confirmation
+        """
+        try:
+            group_id = args.get("group_id")
+            group_name = args.get("group_name")
+
+            if not group_id and not group_name:
+                raise DemistoException("Either group_id or group_name must be provided")
+
+            if group_id and group_name:
+                raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
+
+            kwargs = {}
+
+            if group_id:
+                kwargs["GroupId"] = group_id
+            else:
+                kwargs["GroupName"] = group_name
+
+            try:
+                delete_response = client.delete_security_group(GroupIds=[group_id])
+                if delete_response.get("GroupId"):
+                    return CommandResults(
+                        readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}"
+                    )
+                else:
+                    # If group_id was not found or no GroupId in response, raise an exception
+                    raise DemistoException("Failed to delete security group: Unexpected response")
+            except ClientError as e:
+                error_code = e.response["Error"]["Code"]
+                error_message = e.response["Error"]["Message"]
+                if error_code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
+                    raise DemistoException(f"Security group {group_id} not found.")
+                raise DemistoException(f"Failed to delete security group: {error_message}")
+
+        except Exception as e:
+            raise DemistoException(f"Unexpected error deleting security group: {str(e)}")
+        return CommandResults(readable_output="")
+
+    @staticmethod
+    def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more security groups in your account.
+        Returns detailed information about security groups including their rules, tags, and associated VPC information.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_ids (str, optional): Comma-separated list of security group IDs
+                - group_names (str, optional): Comma-separated list of security group names
+                - filters (str, optional): Custom filters to apply
+
+
+        Returns:
+            CommandResults: Results containing security group details
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters") is not None:
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("groupIds") is not None:
+            kwargs.update({"GroupIds": parse_resource_ids(args.get("group_ids"))})
+        if args.get("groupNames") is not None:
+            kwargs.update({"GroupNames": parse_resource_ids(args.get("group_names"))})
+
+        response = client.describe_security_groups(**kwargs)
+
+        if len(response["SecurityGroups"]) == 0:
+            return CommandResults(readable_output="No security groups were found.")
+        for i, sg in enumerate(response["SecurityGroups"]):
+            data.append(
+                {
+                    "Description": sg["Description"],
+                    "GroupName": sg["GroupName"],
+                    "OwnerId": sg["OwnerId"],
+                    "GroupId": sg["GroupId"],
+                    "VpcId": sg["VpcId"],
+                }
+            )
+            if "Tags" in sg:
+                for tag in sg["Tags"]:
+                    data[i].update({tag["Key"]: tag["Value"]})
+
+        output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+        raw = json.loads(output)
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.SecurityGroups",
+            outputs_key_field="GroupId",
+            readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data),
+        )
+
+    @staticmethod
+    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds the specified outbound (egress) rules to a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
+        """
+
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
+        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            response = client.authorize_security_group_ingress(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+                return CommandResults(readable_output="The Security Group egress rule was authorized")
+            else:
+                raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+
+        except Exception as e:
+            if "InvalidGroup.NotFound" in str(e):
+                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
+            elif "InvalidGroupId.NotFound" in str(e):
+                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
+            elif "InvalidPermission.Duplicate" in str(e):
+                raise DemistoException("The specified rule already exists in the security group")
+            else:
+                raise DemistoException(f"Failed to authorize security group egress rule: {str(e)}")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -1150,8 +1366,16 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-snapshot-attribute-modify": EC2.modify_snapshot_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-revoke-stop-quick-action": EC2.revoke_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-revoke-block-quick-action": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
+    "aws-ec2-security-group-ingress-authorize-quick-action": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-security-group-egress-revoke-quick-action": EC2.revoke_security_group_egress_command,
+    "aws-ec2-security-group-create": EC2.create_security_group_command,
+    "aws-ec2-security-group-delete": EC2.delete_security_group_command,
+    "aws-ec2-security-group-describe": EC2.describe_security_group_command,
+    "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
@@ -1162,16 +1386,15 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
 }
 
 REQUIRED_ACTIONS: list[str] = [
-    "iam:PassRole",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
+    "rds:AddTagsToResource",
+    "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
@@ -1180,20 +1403,28 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
+    "s3:PutBucketPublicAccessBlock",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
+    "ec2:CreateSecurityGroup",
+    "ec2:CreateTags",
+    "ec2:DeleteSecurityGroup",
+    "ec2:DescribeInstances",
+    "ec2:DescribeSecurityGroups",
+    "ec2:AuthorizeSecurityGroupEgress",
+    "ec2:AuthorizeSecurityGroupIngress",
+    "ec2:ModifyInstanceMetadataOptions",
     "eks:UpdateClusterConfig",
+    "iam:PassRole",
     "iam:DeleteLoginProfile",
     "iam:PutUserPolicy",
     "iam:RemoveRoleFromInstanceProfile",
     "iam:UpdateAccessKey",
     "iam:GetAccountPasswordPolicy",
     "iam:UpdateAccountPasswordPolicy",
-    "s3:PutBucketPublicAccessBlock",
-    "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
 ]
 
