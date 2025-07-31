@@ -537,7 +537,7 @@ tasks:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
         simple: ${inputs.Slack Channel Name}
-    separatecontext: false
+    separatecontext: true
     continueonerrortype: ""
     loop:
       iscommand: false
@@ -589,7 +589,7 @@ tasks:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
         simple: ${inputs.Slack Channel Name}
-    separatecontext: false
+    separatecontext: true
     continueonerrortype: ""
     loop:
       iscommand: false

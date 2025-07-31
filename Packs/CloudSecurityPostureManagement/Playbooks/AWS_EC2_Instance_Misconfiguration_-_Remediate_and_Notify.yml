@@ -482,7 +482,7 @@ tasks:
     task:
       id: fc0f3d73-5161-45eb-b8bc-436da6d1caa8
       version: -1
-      name: Create Ticket and Notify
+      name: Create Ticket and/or Notify
       description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
       playbookName: Create Ticket and Notify
       type: playbook
@@ -534,7 +534,7 @@ tasks:
     task:
       id: ebdd4d07-db59-4863-8983-66e0bd5ea8e6
       version: -1
-      name: Update Ticket and Notify
+      name: Update Ticket and/or Notify
       description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
       playbookName: Create Ticket and Notify
       type: playbook
@@ -558,7 +558,7 @@ tasks:
         simple: ${inputs.Notification Email Recipients}
       Slack Channel Name:
         simple: ${inputs.Slack Channel Name}
-    separatecontext: false
+    separatecontext: true
     continueonerrortype: ""
     loop:
       iscommand: false
