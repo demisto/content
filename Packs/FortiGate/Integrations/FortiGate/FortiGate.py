@@ -2865,7 +2865,6 @@ def test_module(client: Client) -> str:
         demisto.debug(f"Got error: {str(exc)}")
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.FORBIDDEN:
-                demisto.debug("Returning authorization error")
                 return AUTHORIZATION_ERROR
 
             if exc.res.status_code == http.HTTPStatus.UNAUTHORIZED:
