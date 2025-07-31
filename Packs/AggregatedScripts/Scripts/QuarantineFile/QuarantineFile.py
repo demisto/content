@@ -1,6 +1,8 @@
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 from dataclasses import dataclass, asdict
+from enum import StrEnum
+from abc import ABC, abstractmethod
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -8,10 +10,18 @@ from CommonServerPython import *
 """ CONSTANTS """
 DEFAULT_TIMEOUT = 300
 
-BRAND_CORE_IR = "Cortex Core - IR"
-BRAND_XDR_IR = "Cortex XDR - IR"
+class Brands(StrEnum):
+    """
+    Enum representing different integration brands.
+    """
 
-VALID_BRANDS = [BRAND_CORE_IR, BRAND_XDR_IR]
+    CORTEX_XDR_IR = "Cortex XDR - IR"
+    CORTEX_CORE_IR = "Cortex Core - IR"
+
+    @classmethod
+    def values(cls):
+        return [b.value for b in cls]
+
 
 """ DATA STRUCTURES """
 
@@ -70,7 +80,7 @@ class QuarantineResult:
         )
 
     @staticmethod
-    def to_simple_list(results_list: list) -> list[dict]:
+    def to_context_entry(results_list: list) -> list[dict]:
         """
         Converts a list of QuarantineResult objects into a list of dictionaries.
 
@@ -130,11 +140,12 @@ class Command:
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
         raw_response = demisto.executeCommand(self.name, self.args)
         demisto.debug(f"[Command] Received response for '{self.name}'.")
+        demisto.debug(f"[Command] Raw response: {raw_response}")
+
 
         verbose_results = []
         for result in raw_response:
             if is_error(result):
-                # Log the full error for debugging, then raise to halt execution for this brand
                 demisto.error(f"Error executing {self.name}:\n{get_error(result)}")
                 hr = f"Error executing {self.name}:\n{get_error(result)}"
             else:
@@ -257,8 +268,8 @@ class EndpointBrandMapper:
 
         online_endpoints = self._filter_endpoint_data(endpoint_data)
         if not online_endpoints:
-            demisto.debug("[EndpointBrandMapper] No online endpoints found. Skipping.")
-            raise DemistoException("No online endpoints found. Please verify the endpoints are online and try again later.")
+            demisto.debug("[EndpointBrandMapper] No online endpoints found. Not running quarantine.")
+            return {}
 
         grouped_endpoints: dict[str, list] = {}
         for endpoint_id, brand in online_endpoints.items():
@@ -354,7 +365,7 @@ class EndpointBrandMapper:
                 demisto.debug(f"[EndpointBrandMapper] Found 'Online' status for endpoint {endpoint_id}.")
                 online_endpoints[endpoint_id] = result.get("Brand")
 
-        # Second pass: Create failure results for any endpoint that was found, but not as 'Online'.
+        # Second pass: Create failure results for any endpoint that was not found or offline.
         for result in endpoint_data:
             endpoint_id = result.get("ID")
             if not endpoint_id or endpoint_id in all_found_ids:
@@ -369,7 +380,8 @@ class EndpointBrandMapper:
             if result.get("Message") == "Command successful":
                 message = QuarantineResult.Messages.ENDPOINT_STATUS_UNKNOWN.format(status=result.get("Status", "Unknown"))
             else:  # Message is not 'Command successful', i.e. "Command failed - no endpoint found"
-                message = result.get("Message", QuarantineResult.Messages.ENDPOINT_OFFLINE)
+                get_endpoint_status_message = result.get("Message", QuarantineResult.Messages.ENDPOINT_OFFLINE)
+                message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=get_endpoint_status_message)
 
             demisto.debug(f"[EndpointBrandMapper] Creating failure result for endpoint {endpoint_id}. Reason: {message}")
             self.initial_results.append(
@@ -406,7 +418,7 @@ class EndpointBrandMapper:
 """ BRAND HANDLER INTERFACE & FACTORY """
 
 
-class BrandHandler:
+class BrandHandler(ABC):
     """Abstract base class (Interface) for all brand-specific handlers."""
 
     def __init__(self, brand: str, orchestrator):
@@ -420,42 +432,33 @@ class BrandHandler:
         self.brand = brand
         self.orchestrator = orchestrator
 
+    @abstractmethod
     def validate_args(self, args: dict) -> None:
         """
         Validates that all required arguments for this brand are present.
-
-        Raises:
-            NotImplementedError: This method must be implemented by a subclass.
-            ValueError: If a required argument is missing.
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
         """
         Runs brand-specific pre-checks, like checking if a file is already quarantined.
-
-        Raises:
-            NotImplementedError: This method must be implemented by a subclass.
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def initiate_quarantine(self, args: dict) -> dict:
         """
         Initiates the quarantine action for the brand and returns a polling job object.
-
-        Raises:
-            NotImplementedError: This method must be implemented by a subclass.
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def finalize(self, job: dict, last_poll_response: list) -> list[QuarantineResult]:
         """
         Processes the final results of a completed polling job for the brand.
-
-        Raises:
-            NotImplementedError: This method must be implemented by a subclass.
         """
-        raise NotImplementedError
+        pass
 
 
 class XDRHandler(BrandHandler):
@@ -473,7 +476,7 @@ class XDRHandler(BrandHandler):
             orchestrator (QuarantineOrchestrator): The main orchestrator instance.
         """
         super().__init__(brand, orchestrator)
-        self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == BRAND_CORE_IR else self.XDR_COMMAND_PREFIX
+        self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
 
     def validate_args(self, args: dict) -> None:
         """
@@ -750,7 +753,7 @@ def handler_factory(brand: str, orchestrator) -> BrandHandler:
         ValueError: If no handler is available for the specified brand.
     """
     demisto.debug(f"[Factory] Creating handler for brand: '{brand}'")
-    if brand in [BRAND_CORE_IR, BRAND_XDR_IR]:
+    if brand in [Brands.CORTEX_CORE_IR, Brands.CORTEX_XDR_IR]:
         demisto.debug("[Factory] Selected XDRHandler.")
         return XDRHandler(brand, orchestrator)
     raise ValueError(f"No handler available for brand: {brand}")
@@ -767,9 +770,9 @@ class QuarantineOrchestrator:
     ENDPOINT_IDS_ARG = "endpoint_id"
     FILE_HASH_ARG = "file_hash"
     FILE_PATH_ARG = "file_path"
-    BRANDS_ARG = "quarantine_brands"
+    BRANDS_ARG = "brands"
 
-    HASH_TYPE_TO_BRANDS = {"sha256": [BRAND_CORE_IR, BRAND_XDR_IR]}
+    HASH_TYPE_TO_BRANDS = {"sha256": [Brands.CORTEX_CORE_IR, Brands.CORTEX_XDR_IR]}
 
     def __init__(self, args: dict):
         """
@@ -815,7 +818,7 @@ class QuarantineOrchestrator:
 
     def _verify_and_get_valid_brands(self):
         """
-        Verifies the 'quarantine_brands' argument and filters for active integrations.
+        Verifies the 'brands' argument and filters for active integrations.
 
         It determines the final list of brands to run actions on by intersecting the
         user-provided brands (or all valid brands if none are provided) with the
@@ -828,16 +831,16 @@ class QuarantineOrchestrator:
             DemistoException: If an invalid brand is specified or no valid, enabled
                               integrations are found.
         """
-        user_given_brands: list = argToList(self.args.get("quarantine_brands"))
+        user_given_brands: list = argToList(self.args.get(QuarantineOrchestrator.BRANDS_ARG))
 
         # Verify if brands are given, that they are ALL valid
         for brand in user_given_brands:
-            if brand not in VALID_BRANDS:
-                raise DemistoException(f"Invalid brand: {brand}. Valid brands are: {VALID_BRANDS}")
+            if brand not in Brands.values():
+                raise DemistoException(f"Invalid brand: {brand}. Valid brands are: {Brands.values()}")
 
         enabled_brands = {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
 
-        brands_to_consider = set(user_given_brands) if user_given_brands else set(VALID_BRANDS)
+        brands_to_consider = set(user_given_brands) if user_given_brands else set(Brands.values())
 
         # The final list of brands to run on is the intersection of the brands we
         # should consider and the brands that are actually enabled.
@@ -897,7 +900,7 @@ class QuarantineOrchestrator:
         self.args[self.ENDPOINT_IDS_ARG] = unique_ids
 
         brands_to_run = self._verify_and_get_valid_brands()
-        self.args["quarantine_brands"] = brands_to_run
+        self.args[QuarantineOrchestrator.BRANDS_ARG] = brands_to_run
 
         self._verify_file_hash(brands_to_run)
 
@@ -950,8 +953,8 @@ class QuarantineOrchestrator:
         if self.pending_jobs:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
             demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
-            demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_simple_list(self.completed_results))
-            interim_results = CommandResults(readable_output="Quarantine file script is still running...")
+            demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
+            interim_results = CommandResults(readable_output="Quarantine of file on endpoints is still running...")
             return PollResult(
                 response=interim_results, continue_to_poll=True, args_for_next_run=self.args, partial_result=interim_results
             )
@@ -1067,13 +1070,13 @@ class QuarantineOrchestrator:
         """
         demisto.debug("[Orchestrator] Formatting final results.")
         # Clean up the context keys before returning the final result
-        demisto.debug("[Orchestrator] Cleaning up context keys.")
+        demisto.debug("[Orchestrator] Deleting context keys.")
         demisto.executeCommand(
             "DeleteContext",
             {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
         )
 
-        results_list = QuarantineResult.to_simple_list(self.completed_results)
+        results_list = QuarantineResult.to_context_entry(self.completed_results)
 
         # Build final report
         final_readable_output = tableToMarkdown(
@@ -1130,7 +1133,7 @@ def main():
     It sets up the arguments, calls the main polling function, and handles
     any top-level exceptions, returning an error to the user if one occurs.
     """
-    demisto.debug(f"--- quarantine-file script started with arguments: {demisto.args()} ---")
+    demisto.debug(f"Command being called is quarantine-file,  with arguments: {demisto.args()} ---")
     try:
         args = demisto.args()
         args["polling"] = True
