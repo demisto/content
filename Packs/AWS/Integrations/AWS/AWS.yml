@@ -2240,7 +2240,7 @@ script:
       description: Comma-separated list of security group names.
       isArray: true
     - name: filters
-      description: One or more custom filters to apply separated by ';'. Format - Name=value pairs (e.g., Name=<name>,Values=[<value>]).
+      description: One or more custom filters to apply separated by ';' (e.g., name=<name>,values=[<value>]).
       isArray: true
     outputs:
     - contextPath: AWS.EC2.SecurityGroups.Description

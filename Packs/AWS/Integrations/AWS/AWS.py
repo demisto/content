@@ -36,7 +36,7 @@ def parse_filter_field(filter_string: str | None):
     """
     filters = []
     list_filters = argToList(filter_string, separator=";")
-    regex = re.compile(r"name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)", flags=re.I)
+    regex = re.compile(r"name=([\w\d_:.-]{1,40}),values=([ /\w\d@_,.*-:]+)", flags=re.I)
     for filter in list_filters:
         match_filter = regex.match(filter)
         if match_filter is None:
