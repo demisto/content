@@ -1171,7 +1171,7 @@ script:
 
   - name: aws-ec2-security-group-ingress-revoke-block-quick-action
     description: 'Revokes one or more ingress rules in a security group.'
-    prettyname: Block Inbound Traffic from (0.0.0.0/0)
+    prettyname: Block Inbound Traffic from Internet
     quickaction: true
     hidden: true
     arguments:
@@ -1179,6 +1179,7 @@ script:
       description: The AWS account ID.
       required: true
     - name: region
+      prettyname: Region
       description: The AWS region.
       required: true
       auto: PREDEFINED
@@ -1217,15 +1218,19 @@ script:
       - sa-east-1
 
     - name: group_id
+      prettyname: Security Group ID
       description: 'The ID of the security group.'
       required: true
     - name: protocol
+      prettyname: Protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
       required: false
     - name: port
+      prettyname: Port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
       required: false
     - name: cidr
+      prettyname: CIDR
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
       required: false
     - name: ip_permissions
@@ -1242,6 +1247,7 @@ script:
       description: The AWS account ID.
       required: true
     - name: region
+      prettyname: Region
       description: The AWS region.
       required: true
       auto: PREDEFINED
@@ -1281,6 +1287,7 @@ script:
 
     - name: group_id
       description: 'The ID of the security group.'
+      prettyname: Security Group
       required: true
     - name: protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
@@ -1487,6 +1494,7 @@ script:
       description: The AWS account ID.
       required: true
     - name: region
+      prettyname: Region
       description: The AWS region.
       required: true
       auto: PREDEFINED
@@ -1526,14 +1534,18 @@ script:
 
     - name: group_id
       description: 'The ID of the security group.'
+      prettyname: Security Group ID
       required: true
     - name: protocol
+      prettyname: Protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
       required: false
     - name: port
+      prettyname: Port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
       required: false
     - name: cidr
+      prettyname: CIDR
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
       required: false
     - name: ip_permissions
