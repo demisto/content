@@ -1132,11 +1132,46 @@ class CloudTrail:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
 
+def s3_list_buckets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    """List all Amazon S3 buckets in the account.
+
+    Args:
+        client (BotoClient): The boto3 S3 client.
+        args (Dict[str, Any]): Command arguments (unused).
+
+    Returns:
+        CommandResults: Command execution results containing the list of buckets.
+    """
+    try:
+        response = client.list_buckets()
+        buckets = [
+            {
+                "Name": bucket.get("Name"),
+                "CreationDate": bucket.get("CreationDate").strftime("%Y-%m-%dT%H:%M:%S")
+                if bucket.get("CreationDate")
+                else None,
+            }
+            for bucket in response.get("Buckets", [])
+        ]
+
+        readable_output = tableToMarkdown("S3 Buckets", buckets)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.S3.Bucket",
+            outputs_key_field="Name",
+            outputs=buckets,
+            raw_response=response,
+        )
+    except Exception as e:
+        raise DemistoException(f"Failed to list S3 buckets. Error: {str(e)}")
+
+
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
     "aws-s3-bucket-acl-put": S3.put_bucket_acl_command,
+    "aws-s3-list-buckets": s3_list_buckets_command,
     "aws-s3-bucket-policy-put": S3.put_bucket_policy_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
@@ -1179,6 +1214,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketAcl",
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
+    "s3:ListAllMyBuckets",
     "s3:PutBucketPolicy",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
