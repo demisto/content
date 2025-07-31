@@ -1,0 +1,770 @@
+id: AWS S3 Bucket Publicly Accessible - Remediate and Notify
+version: -1
+name: AWS S3 Bucket Publicly Accessible - Remediate and Notify
+description: |-
+  This playbook helps you fix cloud security misconfigurations related to your AWS S3 bucket. It also makes it easy to involve your team by creating tickets and sending notifications through your chosen services.
+  You have the flexibility to fully automate the fix or include an analyst review and approval step before any changes are made. Ticketing and notifications are handled by a sub-playbook, which you need to set up with your preferred integrations. To get started, provide inputs to select your desired ticketing and notification channels. If you want an analyst to approve the fix, you need to provide their email address. The playbook will send them the issue details and wait for their decision before applying any changes.
+
+  Caution: If you do not provide a reviewer email, the playbook will automatically apply the fix without an approval step.
+
+  This playbook can fix the following misconfigurations.
+
+  - AWS S3 bucket publicly readable
+  - AWS S3 bucket publicly writable.
+starttaskid: "0"
+fromversion: 6.10.0
+tasks:
+  "0":
+    id: "0"
+    taskid: fe287f50-55d6-4e06-8eec-0bbf3546154e
+    type: start
+    task:
+      id: fe287f50-55d6-4e06-8eec-0bbf3546154e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b34f5b2e-6361-4712-a671-a9ebe063a99b
+    type: regular
+    task:
+      id: b34f5b2e-6361-4712-a671-a9ebe063a99b
+      version: -1
+      name: Get Asset details
+      description: Get asset information.
+      script: Cortex Core - Platform|||core-get-asset-details
+      type: regular
+      iscommand: true
+      brand: Cortex Core - Platform
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      asset_id:
+        simple: ${issue.asset_ids}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1076c054-e8f8-4658-8416-b3a717d7e708
+    type: title
+    task:
+      id: 1076c054-e8f8-4658-8416-b3a717d7e708
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9f2c9d4f-8c12-45e1-82f3-d20729c9f47c
+    type: condition
+    task:
+      id: 9f2c9d4f-8c12-45e1-82f3-d20729c9f47c
+      version: -1
+      name: Send email for review consent
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Approve:
+      - "29"
+      Reject:
+      - "10"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 0
+      days: 0
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.Reviewer email address}
+      subject:
+        simple: Detected Issue - ${issue.details}
+      body:
+        simple: "A cloud misconfiguration has been detected and requires your review.<br><br>\n<b>Issue ID</b>: ${issue.id}<br>\n<b>Issue Details</b>: ${issue.details}<br>\n<b>Resource</b>: ${Core.CoreAsset.xdm__asset__name}<br>\n<b>Cloud Provider</b>: ${Core.CoreAsset.xdm__asset__provider}<br>\n<b>Misconfiguration Type</b>: CSPM<br>\n<b>Severity Level</b>: ${issue.severity}<br>\n<b>Region</b>: ${Core.CoreAsset.xdm__asset__cloud__region}<br>\n<b>Issue URL</b>: ${demistoUrls.workPlan}<br><br>\nPlease select <b>Approve</b> to approve the recommended remediation in the issue work plan, or \n<b>Reject</b> to reject and handle it manually.<br><br>"
+      methods:
+      - email
+      format: html
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Approve
+      - Reject
+      defaultOption: Reject
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6618c4f7-da18-4f96-84cc-fd75abc49bc2
+    type: condition
+    task:
+      id: 6618c4f7-da18-4f96-84cc-fd75abc49bc2
+      version: -1
+      name: Is remediation available?
+      description: Check if remediation is available for the issue ruleid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "10"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: 70b5bb02-aafd-4c23-ac4b-4872b3aced30
+        - operator: isEqualString
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: 1c513ad3-7db5-4fbf-abdd-39969f222f13
+        - operator: isEqualString
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: 70b5bb02-aafd-4c23-ac4b-4872b3aced30
+        - operator: isEqualString
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: 1c513ad3-7db5-4fbf-abdd-39969f222f13
+    - label: "No"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: 70b5bb02-aafd-4c23-ac4b-4872b3aced30
+        - operator: isNotEqualString
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: 1c513ad3-7db5-4fbf-abdd-39969f222f13
+        - operator: isNotEqualString
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: 70b5bb02-aafd-4c23-ac4b-4872b3aced30
+        - operator: isNotEqualString
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: 1c513ad3-7db5-4fbf-abdd-39969f222f13
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4cacb705-70a7-4887-86f7-9f0060028baf
+    type: regular
+    task:
+      id: 4cacb705-70a7-4887-86f7-9f0060028baf
+      version: -1
+      name: 'Update Issue details to War Room '
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 451a370d-539a-4b47-88ba-e7cb60a78ed3
+    type: regular
+    task:
+      id: 451a370d-539a-4b47-88ba-e7cb60a78ed3
+      version: -1
+      name: Update Issue Status to Resolved - Fixed
+      description: commands.local.cmd.set.alert.status
+      script: Builtin|||setIssueStatus
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      status:
+        simple: Resolved - Fixed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 9b7fb6ef-bb5e-4368-8e51-c18bf3a42676
+    type: condition
+    task:
+      id: 9b7fb6ef-bb5e-4368-8e51-c18bf3a42676
+      version: -1
+      name: Is reviewer assigned?
+      description: Check if reviewer email address is provided in playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "29"
+      "Yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Reviewer email address
+            iscontext: true
+          right:
+            value: {}
+    - label: "No"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.Reviewer email address
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: d5fc6a15-b1fb-4a80-826b-bb2231a9e380
+    type: condition
+    task:
+      id: d5fc6a15-b1fb-4a80-826b-bb2231a9e380
+      version: -1
+      name: Is AWS integration available ?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "33"
+      "yes":
+      - "26"
+    scriptarguments:
+      brandname:
+        simple: AWS
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b7c1424a-d59a-4626-87c9-207d9ba178a1
+    type: regular
+    task:
+      id: b7c1424a-d59a-4626-87c9-207d9ba178a1
+      version: -1
+      name: Update AWS S3 Block Public Access setting
+      description: Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
+      script: AWS|||aws-s3-public-access-block-update
+      type: regular
+      iscommand: true
+      brand: AWS
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      account_id:
+        simple: ${Core.CoreAsset.xdm__asset__realm}
+      block_public_acls:
+        simple: "true"
+      block_public_policy:
+        simple: "true"
+      bucket:
+        simple: ${Core.CoreAsset.xdm__asset__name}
+      ignore_public_acls:
+        simple: "true"
+      region:
+        simple: ${Core.CoreAsset.xdm__asset__cloud__region}
+      restrict_public_buckets:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ca8c9e9c-49c0-4dcb-815d-ffb82cb17542
+    type: playbook
+    task:
+      id: ca8c9e9c-49c0-4dcb-815d-ffb82cb17542
+      version: -1
+      name: Create Ticket and Notify
+      description: 'This playbook automates the dispatching of issues through ServiceNow v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email. With this playbook you can choose to create or update a ticket using Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It gives you the flexibility to create a ticket only and skip the notification step, skip the creation of a ticket and notify only, or choose to create a ticket and notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations to perform the ticketing and notification actions. If none of these integrations are found in your account, then the playbook sends an email with the issue details to the selected issue owner. '
+      playbookName: Create Ticket and Notify
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      Jira Project Key:
+        simple: ${inputs.Jira project key}
+      Notification email recipients:
+        simple: ${inputs.Notification email recipients}
+      Preferred notification platform:
+        simple: ${inputs.Preferred notification platform}
+      Preferred ticketing platform:
+        simple: ${inputs.Preferred ticketing platform}
+      Slack Channel Name:
+        simple: ${inputs.Slack Channel Name}
+      System Input - Asset details:
+        simple: ${Core.CoreAsset}
+      System Input - Issue State:
+        simple: Create
+      System Input -Jira Ticket ID:
+        simple: ${Ticket.Id}
+      System Input -ServiceNow Ticket ID:
+        simple: ${ServiceNow.Ticket.ID}
+      Teams Channel Name:
+        simple: ${inputs.Teams Channel Name}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: e36e0a90-aaea-481b-829f-df67c9720c73
+    type: playbook
+    task:
+      id: e36e0a90-aaea-481b-829f-df67c9720c73
+      version: -1
+      name: Update Ticket and Notify
+      description: 'This playbook automates the dispatching of issues through ServiceNow v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email. With this playbook you can choose to create or update a ticket using Jira or ServiceNow, notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It gives you the flexibility to create a ticket only and skip the notification step, skip the creation of a ticket and notify only, or choose to create a ticket and notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow, Slack, or Microsoft Teams integrations to perform the ticketing and notification actions. If none of these integrations are found in your account, then the playbook sends an email with the issue details to the selected issue owner. '
+      playbookName: Create Ticket and Notify
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      Jira Project Key:
+        simple: ${inputs.Jira project key}
+      Notification email recipients:
+        simple: ${inputs.Notification email recipients}
+      Preferred notification platform:
+        simple: ${inputs.Preferred notification platform}
+      Preferred ticketing platform:
+        simple: ${inputs.Preferred ticketing platform}
+      Slack Channel Name:
+        simple: ${inputs.Slack Channel Name}
+      System Input - Asset details:
+        simple: ${Core.CoreAsset}
+      System Input - Issue State:
+        simple: Update
+      System Input -Jira Ticket ID:
+        simple: ${Ticket.Id}
+      System Input -ServiceNow Ticket ID:
+        simple: ${ServiceNow.Ticket.ID}
+      Teams Channel Name:
+        simple: ${inputs.Teams Channel Name}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: fed4a6aa-71c5-4909-829d-6686f4c8712a
+    type: condition
+    task:
+      id: fed4a6aa-71c5-4909-829d-6686f4c8712a
+      version: -1
+      name: Confirm AWS Pack Integration
+      description: Confirm if AWS dependency pack is installed and integrated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "10"
+      "Yes":
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Is AWS dependency pack installed and integrated?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e8055ed1-f4b5-49fe-8d9c-1d312f88f47e
+    type: condition
+    task:
+      id: e8055ed1-f4b5-49fe-8d9c-1d312f88f47e
+      version: -1
+      name: Is AWS integration available ?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "26"
+    scriptarguments:
+      brandname:
+        simple: AWS
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_10_Reject": 0.1,
+      "11_29_Approve": 0.58,
+      "14_10_No": 0.1,
+      "14_27_Yes": 0.62,
+      "26_11_Yes": 0.43,
+      "26_29_No": 0.54,
+      "27_26_yes": 0.54,
+      "33_10_No": 0.1,
+      "33_34_Yes": 0.58,
+      "34_10_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2710,
+        "width": 1290,
+        "x": -260,
+        "y": -940
+      }
+    }
+  }
+inputs:
+- key: Preferred ticketing platform
+  value: {}
+  required: false
+  description: |-
+    Possible values:
+    - Jira
+    - ServiceNow
+    - Both
+
+    Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step.
+  playbookInputQuery:
+- key: Preferred notification platform
+  value: {}
+  required: false
+  description: |-
+    Possible values:
+    - Microsoft Teams
+    - Slack
+
+    Note: If you leave this blank, no notification message will be sent and the playbook will skip this step.
+  playbookInputQuery:
+- key: Notification email recipients
+  value: {}
+  required: false
+  description: |-
+    Provide the email address to send email notifications.
+
+    Note: If you leave this blank, no email notification will be sent and the playbook will skip this step.
+  playbookInputQuery:
+- key: Reviewer email address
+  value: {}
+  required: false
+  description: |-
+    Provide the designated reviewer's email address to request approval for executing the remediation command.
+
+    Note: If you leave this blank, no email notification will be sent for reviewer approval, and the playbook will skip directly to execute the remediation command.
+  playbookInputQuery:
+- key: Jira project key
+  value: {}
+  required: false
+  description: Provide Jira project key where the issue will be created.
+  playbookInputQuery:
+- key: Teams Channel Name
+  value: {}
+  required: false
+  description: Provide Microsoft Teams channel name to which to send messages.
+  playbookInputQuery:
+- key: Slack Channel Name
+  value: {}
+  required: false
+  description: Provide Slack channel name to which to send messages.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - Preferred ticketing platform
+  - Preferred notification platform
+  - Notification email recipients
+  - Reviewer email address
+  - Jira project key
+  - Teams Channel Name
+  - Slack Channel Name
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- No tests (auto formatted)
