@@ -10,6 +10,7 @@ from CommonServerPython import *
 """ CONSTANTS """
 DEFAULT_TIMEOUT = 300
 
+
 class Brands(StrEnum):
     """
     Enum representing different integration brands.
@@ -141,7 +142,6 @@ class Command:
         raw_response = demisto.executeCommand(self.name, self.args)
         demisto.debug(f"[Command] Received response for '{self.name}'.")
         demisto.debug(f"[Command] Raw response: {raw_response}")
-
 
         verbose_results = []
         for result in raw_response:
@@ -437,28 +437,24 @@ class BrandHandler(ABC):
         """
         Validates that all required arguments for this brand are present.
         """
-        pass
 
     @abstractmethod
     def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
         """
         Runs brand-specific pre-checks, like checking if a file is already quarantined.
         """
-        pass
 
     @abstractmethod
     def initiate_quarantine(self, args: dict) -> dict:
         """
         Initiates the quarantine action for the brand and returns a polling job object.
         """
-        pass
 
     @abstractmethod
     def finalize(self, job: dict, last_poll_response: list) -> list[QuarantineResult]:
         """
         Processes the final results of a completed polling job for the brand.
         """
-        pass
 
 
 class XDRHandler(BrandHandler):
