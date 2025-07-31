@@ -574,10 +574,10 @@ def main() -> None:  # pragma: no cover
     pack_version = "2.0.0"
     if isinstance(packs, list):
         for pack in packs:
-            if pack["name"] == "GreyNoise_Community":
+            if pack["name"] == "GreyNoise":
                 pack_version = pack["currentVersion"]
     else:  # packs is a dict
-        if packs.get("name") == "GreyNoise_Community":
+        if packs.get("name") == "GreyNoise":
             pack_version = packs.get("currentVersion")
 
     api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("api_key")
