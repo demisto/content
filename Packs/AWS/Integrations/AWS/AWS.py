@@ -811,7 +811,6 @@ class EC2:
                 - group_name (str): Name of the security group.
                 - description (str): Description of the security group.
                 - vpc_id (str, optional): VPC ID where security group will be created.
-                - tags (str, optional): Tags to assign to the security group.
 
         Returns:
             CommandResults: Results of the operation with security group creation details
@@ -838,7 +837,8 @@ class EC2:
             else:
                 raise DemistoException(f"Unexpected response when creating security group: {resp}")
         except ClientError as e:
-            raise DemistoException(f"Failed to create security group {group_name}: {e}")
+            error_details = e.response["Error"]["Code"]
+            raise DemistoException(f"Failed to create security group {group_name}: {e}, {error_details}")
 
     @staticmethod
     def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -877,13 +877,15 @@ class EC2:
                     return CommandResults(
                         readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}"
                     )
-            except ClientError:
-                kwargs = {}
-                # TODO
+            except ClientError as e:
+                error_code = e.response["Error"]["Code"]
+                error_message = e.response["Error"]["Message"]
+                if error_code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
+                    raise DemistoException(f"Security group {group_id} not found.")
+            raise DemistoException(f"Failed to delete security group: {error_message}")
 
         except Exception as e:
             raise DemistoException(f"Unexpected error deleting security group: {str(e)}")
-        return CommandResults(readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}")
 
     @staticmethod
     def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1403,6 +1405,13 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifyInstanceAttribute",
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
+    "ec2:CreateSecurityGroup",
+    "ec2:CreateTags",
+    "ec2:DeleteSecurityGroup",
+    "ec2:DescribeInstances",
+    "ec2:DescribeSecurityGroups",
+    "ec2:AuthorizeSecurityGroupEgress",
+    "ec2:AuthorizeSecurityGroupIngress",
     "ec2:ModifyInstanceMetadataOptions",
     "eks:UpdateClusterConfig",
     "iam:PassRole",

@@ -1069,3 +1069,764 @@ def test_register_proxydome_header_adds_correct_header(mocker):
     header_function(mock_request)
 
     assert mock_request.headers["x-caller-id"] == "test-token-123"
+
+
+def test_ec2_create_security_group_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid security group creation arguments.
+    When: create_security_group_command is called successfully.
+    Then: It should return CommandResults with security group details and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_security_group.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "GroupId": "sg-1234567890abcdef0",
+    }
+
+    args = {"group_name": "test-security-group", "description": "Test security group", "vpc_id": "vpc-12345678"}
+
+    result = EC2.create_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.SecurityGroups"
+    assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
+
+
+def test_ec2_create_security_group_command_without_vpc(mocker):
+    """
+    Given: A mocked boto3 EC2 client and security group arguments without VPC ID.
+    When: create_security_group_command is called for EC2-Classic.
+    Then: It should return CommandResults with security group created in EC2-Classic.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_security_group.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "GroupId": "sg-1234567890abcdef0",
+    }
+
+    args = {"group_name": "classic-security-group", "description": "EC2-Classic security group"}
+
+    result = EC2.create_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
+
+
+def test_ec2_create_security_group_command_client_error(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises ClientError.
+    When: create_security_group_command encounters a client error.
+    Then: It should raise DemistoException with error details.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {"Error": {"Code": "InvalidGroup.Duplicate", "Message": "The security group already exists"}}
+    mock_client.create_security_group.side_effect = ClientError(error_response, "CreateSecurityGroup")
+
+    args = {"group_name": "duplicate-group", "description": "Duplicate security group", "vpc_id": "vpc-12345678"}
+
+    with pytest.raises(DemistoException, match="Failed to create security group duplicate-group"):
+        EC2.create_security_group_command(mock_client, args)
+
+
+def test_ec2_create_security_group_command_unexpected_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning unexpected response status.
+    When: create_security_group_command receives non-200 status code.
+    Then: It should raise DemistoException with unexpected response message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_security_group.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "GroupId": "sg-1234567890abcdef0",
+    }
+
+    args = {"group_name": "test-group", "description": "Test group", "vpc_id": "vpc-12345678"}
+
+    with pytest.raises(DemistoException, match="Unexpected response when creating security group"):
+        EC2.create_security_group_command(mock_client, args)
+
+
+def test_ec2_create_security_group_command_missing_group_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning response without GroupId.
+    When: create_security_group_command receives response missing GroupId.
+    Then: It should raise DemistoException with unexpected response message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"group_name": "test-group", "description": "Test group", "vpc_id": "vpc-12345678"}
+
+    with pytest.raises(DemistoException, match="Unexpected response when creating security group"):
+        EC2.create_security_group_command(mock_client, args)
+
+
+def test_ec2_create_security_group_command_output_format(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid security group creation arguments.
+    When: create_security_group_command is called successfully.
+    Then: It should return CommandResults with properly formatted outputs and table.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.create_security_group.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "GroupId": "sg-1234567890abcdef0",
+    }
+
+    args = {"group_name": "formatted-group", "description": "Formatted security group", "vpc_id": "vpc-12345678"}
+
+    result = EC2.create_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "AWS EC2 Security Groups" in result.readable_output
+    assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
+    assert result.outputs["Description"] == "Formatted security group"
+
+
+def test_ec2_delete_security_group_command_success_with_group_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid group_id argument.
+    When: delete_security_group_command is called successfully with group_id.
+    Then: It should return CommandResults with success message about group deletion.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_security_group.return_value = {"GroupId": "sg-1234567890abcdef0"}
+
+    args = {"group_id": "sg-1234567890abcdef0"}
+
+    result = EC2.delete_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deleted security group: sg-1234567890abcdef0" in result.readable_output
+
+
+def test_ec2_delete_security_group_command_success_with_group_name(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid group_name argument.
+    When: delete_security_group_command is called successfully with group_name.
+    Then: It should return CommandResults with success message about group deletion.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_security_group.return_value = {"GroupId": "sg-1234567890abcdef0"}
+
+    args = {"group_name": "test-security-group"}
+
+    result = EC2.delete_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deleted security group: sg-1234567890abcdef0" in result.readable_output
+
+
+def test_ec2_delete_security_group_command_no_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and no group identification arguments.
+    When: delete_security_group_command is called without group_id or group_name.
+    Then: It should raise DemistoException requiring one of the parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Either group_id or group_name must be provided"):
+        EC2.delete_security_group_command(mock_client, args)
+
+
+def test_ec2_delete_security_group_command_both_parameters(mocker):
+    """
+    Given: A mocked boto3 EC2 client and both group_id and group_name arguments.
+    When: delete_security_group_command is called with both parameters.
+    Then: It should raise DemistoException prohibiting both parameters.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    args = {"group_id": "sg-1234567890abcdef0", "group_name": "test-group"}
+
+    with pytest.raises(DemistoException, match="Cannot specify both group_id and group_name. Please provide only one."):
+        EC2.delete_security_group_command(mock_client, args)
+
+
+def test_ec2_delete_security_group_command_group_not_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidGroup.NotFound error.
+    When: delete_security_group_command encounters group not found error.
+    Then: It should raise DemistoException with group not found message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "The security group does not exist"}}
+    mock_client.delete_security_group.side_effect = ClientError(error_response, "DeleteSecurityGroup")
+
+    args = {"group_id": "sg-nonexistent"}
+
+    with pytest.raises(DemistoException, match="Security group sg-nonexistent not found."):
+        EC2.delete_security_group_command(mock_client, args)
+
+
+def test_ec2_delete_security_group_command_group_id_not_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidGroupId.NotFound error.
+    When: delete_security_group_command encounters group ID not found error.
+    Then: It should raise DemistoException with group not found message.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {"Error": {"Code": "InvalidGroupId.NotFound", "Message": "The security group ID does not exist"}}
+    mock_client.delete_security_group.side_effect = ClientError(error_response, "DeleteSecurityGroup")
+
+    args = {"group_id": "sg-invalid"}
+
+    with pytest.raises(DemistoException, match="Security group sg-invalid not found."):
+        EC2.delete_security_group_command(mock_client, args)
+
+
+def test_ec2_delete_security_group_command_no_group_id_in_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client that returns response without GroupId.
+    When: delete_security_group_command receives response missing GroupId.
+    Then: It should raise DemistoException with unexpected error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_security_group.return_value = {}
+
+    args = {"group_id": "sg-1234567890abcdef0"}
+
+    with pytest.raises(DemistoException, match="Unexpected error deleting security group"):
+        EC2.delete_security_group_command(mock_client, args)
+
+
+def test_ec2_delete_security_group_command_unexpected_exception(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises unexpected exception.
+    When: delete_security_group_command encounters unexpected error.
+    Then: It should raise DemistoException with unexpected error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.delete_security_group.side_effect = Exception("Unexpected error")
+
+    args = {"group_id": "sg-1234567890abcdef0"}
+
+    with pytest.raises(DemistoException, match="Unexpected error deleting security group: Unexpected error"):
+        EC2.delete_security_group_command(mock_client, args)
+
+
+def test_ec2_describe_security_group_command_success_with_group_ids(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid group_ids argument.
+    When: describe_security_group_command is called with group IDs.
+    Then: It should return CommandResults with security group details and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_security_groups.return_value = {
+        "SecurityGroups": [
+            {
+                "GroupId": "sg-1234567890abcdef0",
+                "GroupName": "test-sg",
+                "Description": "Test security group",
+                "OwnerId": "123456789012",
+                "VpcId": "vpc-12345678",
+                "IpPermissions": [],
+                "IpPermissionsEgress": [],
+                "Tags": [{"Key": "Environment", "Value": "Test"}],
+            }
+        ]
+    }
+
+    args = {"group_ids": "sg-1234567890abcdef0"}
+
+    result = EC2.describe_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.SecurityGroups"
+    assert result.outputs_key_field == "GroupId"
+    assert len(result.outputs) == 1
+    assert "AWS EC2 SecurityGroups" in result.readable_output
+
+
+def test_ec2_describe_security_group_command_success_with_group_names(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid group_names argument.
+    When: describe_security_group_command is called with group names.
+    Then: It should return CommandResults with security group details.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_security_groups.return_value = {
+        "SecurityGroups": [
+            {
+                "GroupId": "ssg-1234567890abcdef0",
+                "GroupName": "production-sg",
+                "Description": "Production security group",
+                "OwnerId": "123456789012",
+                "VpcId": "vpc-12345678",
+                "IpPermissions": [],
+                "IpPermissionsEgress": [],
+            }
+        ]
+    }
+
+    args = {"group_names": "production-sg"}
+
+    result = EC2.describe_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs[0]["GroupName"] == "production-sg"
+    assert "production-sg" in result.readable_output
+
+
+def test_ec2_describe_security_group_command_with_multiple_groups(mocker):
+    """
+    Given: A mocked boto3 EC2 client and multiple group IDs.
+    When: describe_security_group_command is called with comma-separated group IDs.
+    Then: It should return CommandResults with all security groups.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_security_groups.return_value = {
+        "SecurityGroups": [
+            {
+                "GroupId": "sg-1111111111111111",
+                "GroupName": "1sg",
+                "Description": "Description",
+                "OwnerId": "123456789012",
+                "VpcId": "vpc-11111111",
+                "IpPermissions": [],
+                "IpPermissionsEgress": [],
+            },
+            {
+                "GroupId": "sg-2222222222222222",
+                "GroupName": "2sg",
+                "Description": "Description",
+                "OwnerId": "123456789012",
+                "VpcId": "vpc-22222222",
+                "IpPermissions": [],
+                "IpPermissionsEgress": [],
+            },
+        ]
+    }
+
+    args = {"group_ids": "sg-1111111111111111, sg-2222222222222222"}
+
+    result = EC2.describe_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["GroupId"] == "sg-1111111111111111"
+    assert result.outputs[1]["GroupId"] == "sg-2222222222222222"
+
+
+def test_ec2_describe_security_group_command_no_security_groups_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning empty security groups list.
+    When: describe_security_group_command is called with non-existent group ID.
+    Then: It should return CommandResults with no security groups message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_security_groups.return_value = {"SecurityGroups": []}
+
+    args = {"group_ids": "sg-nonexistent123"}
+
+    result = EC2.describe_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No security groups were found."
+    assert result.outputs is None
+
+
+def test_ec2_describe_security_group_command_with_tags(mocker):
+    """
+    Given: A mocked boto3 EC2 client and security group with multiple tags.
+    When: describe_security_group_command is called successfully.
+    Then: It should return CommandResults with tags included in the table data.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.describe_security_groups.return_value = {
+        "SecurityGroups": [
+            {
+                "GroupId": "sg-1234567890abcdef0",
+                "GroupName": "tagged-test-sg",
+                "Description": "Security group with tags",
+                "OwnerId": "123456789012",
+                "VpcId": "vpc-12345678",
+                "IpPermissions": [],
+                "IpPermissionsEgress": [],
+                "Tags": [
+                    {"Key": "Environment", "Value": "Production"},
+                    {"Key": "Team", "Value": "DevOps"},
+                    {"Key": "Application", "Value": "WebApp"},
+                ],
+            }
+        ]
+    }
+
+    args = {"group_ids": "sg-1234567890abcdef0"}
+
+    result = EC2.describe_security_group_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Environment" in result.readable_output
+    assert "Production" in result.readable_output
+    assert "Team" in result.readable_output
+
+
+def test_ec2_authorize_security_group_egress_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid security group egress arguments.
+    When: authorize_security_group_egress_command is called successfully.
+    Then: It should return CommandResults with success message about egress rule authorization.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+    }
+
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "000", "cidr": "cidr"}
+
+    result = EC2.authorize_security_group_egress_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The Security Group egress rule was authorized" in result.readable_output
+
+
+def test_ec2_authorize_security_group_egress_command_with_port_range(mocker):
+    """
+    Given: A mocked boto3 EC2 client and egress arguments with port range.
+    When: authorize_security_group_egress_command is called with port range format.
+    Then: It should return CommandResults and properly parse the port range.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+    }
+
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "0000-0000", "cidr": "cidr"}
+
+    result = EC2.authorize_security_group_egress_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The Security Group egress rule was authorized" in result.readable_output
+
+
+def test_ec2_authorize_security_group_egress_command_with_ip_permissions_json(mocker):
+    """
+    Given: A mocked boto3 EC2 client and egress arguments with ip_permissions JSON.
+    When: authorize_security_group_egress_command is called with complex ip_permissions.
+    Then: It should return CommandResults and properly parse the JSON ip_permissions.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+    }
+
+    ip_permissions = json.dumps([{"IpProtocol": "tcp", "FromPort": 000, "ToPort": 000, "IpRanges": [{"CidrIp": "CidrIp"}]}])
+
+    args = {"group_id": "sg-1234567890abcdef0", "ip_permissions": ip_permissions}
+
+    result = EC2.authorize_security_group_egress_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The Security Group egress rule was authorized" in result.readable_output
+
+
+def test_ec2_authorize_security_group_egress_command_invalid_json(mocker):
+    """
+    Given: A mocked boto3 EC2 client and egress arguments with invalid JSON in ip_permissions.
+    When: authorize_security_group_egress_command is called with malformed JSON.
+    Then: It should raise DemistoException with JSON decode error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {"group_id": "sg-1234567890abcdef0", "ip_permissions": "invalid-json-string"}
+
+    with pytest.raises(DemistoException, match="Received invalid `ip_permissions` JSON object"):
+        EC2.authorize_security_group_egress_command(mock_client, args)
+
+
+def test_ec2_authorize_security_group_egress_command_security_group_not_found(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidGroup.NotFound error.
+    When: authorize_security_group_egress_command encounters security group not found error.
+    Then: It should raise DemistoException with security group not found message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidGroup.NotFound")
+
+    args = {"group_id": "sg-nonexistent", "protocol": "tcp", "port": "0000", "cidr": "cidr"}
+
+    with pytest.raises(DemistoException, match="Security group sg-nonexistent not found"):
+        EC2.authorize_security_group_egress_command(mock_client, args)
+
+
+def test_ec2_authorize_security_group_egress_command_invalid_group_id(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidGroupId.NotFound error.
+    When: authorize_security_group_egress_command encounters invalid group ID error.
+    Then: It should raise DemistoException with invalid group ID message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidGroupId.NotFound")
+
+    args = {"group_id": "sg-invalid", "protocol": "tcp", "port": "0000", "cidr": "cidr"}
+
+    with pytest.raises(DemistoException, match="Invalid security group ID: sg-invalid"):
+        EC2.authorize_security_group_egress_command(mock_client, args)
+
+
+def test_ec2_authorize_security_group_egress_command_duplicate_rule(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises InvalidPermission.Duplicate error.
+    When: authorize_security_group_egress_command encounters duplicate rule error.
+    Then: It should raise DemistoException with duplicate rule message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidPermission.Duplicate")
+
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "0000", "cidr": "cidr"}
+
+    with pytest.raises(DemistoException, match="The specified rule already exists in the security group"):
+        EC2.authorize_security_group_egress_command(mock_client, args)
+
+
+def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker):
+    """
+    Given: A mocked boto3 EC2 client returning unexpected response format.
+    When: authorize_security_group_egress_command receives unexpected response.
+    Then: It should raise DemistoException with unexpected response message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Return": False,
+    }
+
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "00", "cidr": "cidr"}
+
+    with pytest.raises(DemistoException, match="Unexpected response from AWS - EC2"):
+        EC2.authorize_security_group_egress_command(mock_client, args)
+
+
+def test_ec2_authorize_security_group_egress_command_without_port(mocker):
+    """
+    Given: A mocked boto3 EC2 client and egress arguments without port specification.
+    When: authorize_security_group_egress_command is called without port parameter.
+    Then: It should return CommandResults and handle None port values properly.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Return": True,
+    }
+
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "protocol", "cidr": "cidr"}
+
+    result = EC2.authorize_security_group_egress_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "The Security Group egress rule was authorized" in result.readable_output
+
+
+def test_ec2_authorize_security_group_egress_command_generic_exception(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises a generic exception.
+    When: authorize_security_group_egress_command encounters unexpected error.
+    Then: It should raise DemistoException with generic error message.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.authorize_security_group_ingress.side_effect = Exception("Unexpected error occurred")
+
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "port": "000", "cidr": "cidr"}
+
+    with pytest.raises(DemistoException, match="Failed to authorize security group egress rule: Unexpected error occurred"):
+        EC2.authorize_security_group_egress_command(mock_client, args)
+
+
+def test_parse_filter_field_with_valid_single_filter():
+    """
+    Given: A single valid filter string with name and values.
+    When: parse_filter_field function processes the input.
+    Then: It should return a list with one filter dict containing Name and Values.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-state-name,values=running")
+    assert len(result) == 1
+    assert result[0]["Name"] == "instance-state-name"
+    assert result[0]["Values"] == ["running"]
+
+
+def test_parse_filter_field_with_multiple_filters():
+    """
+    Given: Multiple valid filter strings separated by semicolons.
+    When: parse_filter_field function processes the input.
+    Then: It should return a list with multiple filter dicts.
+    """
+    from AWS import parse_filter_field
+
+    filter_string = "name=instance-state-name,values=running;name=tag:Environment,values=production,staging"
+    result = parse_filter_field(filter_string)
+    assert len(result) == 2
+    assert result[0]["Name"] == "instance-state-name"
+    assert result[0]["Values"] == ["running"]
+    assert result[1]["Name"] == "tag:Environment"
+    assert result[1]["Values"] == ["production", "staging"]
+
+
+def test_parse_filter_field_with_multiple_values():
+    """
+    Given: A filter string with multiple comma-separated values.
+    When: parse_filter_field function processes the input.
+    Then: It should return a filter dict with Values as a list of multiple items.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-type,values=1,2,3")
+    assert len(result) == 1
+    assert result[0]["Name"] == "instance-type"
+    assert result[0]["Values"] == ["1", "2", "3"]
+
+
+def test_parse_filter_field_with_none_input():
+    """
+    Given: A None value passed to parse_filter_field function.
+    When: The function attempts to process the None input.
+    Then: It should return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field(None)
+    assert result == []
+
+
+def test_parse_filter_field_with_empty_string():
+    """
+    Given: An empty string passed to parse_filter_field function.
+    When: The function attempts to process the empty input.
+    Then: It should return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("")
+    assert result == []
+
+
+def test_parse_filter_field_with_invalid_format():
+    """
+    Given: A filter string that doesn't match the expected regex pattern.
+    When: parse_filter_field function processes the malformed input.
+    Then: It should skip the invalid filter and return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("invalid-filter-format")
+    assert result == []
+
+
+def test_parse_filter_field_with_mixed_valid_invalid_filters():
+    """
+    Given: Multiple filter strings where some are valid and some are invalid.
+    When: parse_filter_field function processes the mixed input.
+    Then: It should return only the valid filters and skip invalid ones.
+    """
+    from AWS import parse_filter_field
+
+    filter_string = "name=valid-filter,values=test;invalid-format;name=another-valid,values=value1,value2"
+    result = parse_filter_field(filter_string)
+    assert len(result) == 2
+    assert result[0]["Name"] == "valid-filter"
+    assert result[0]["Values"] == ["test"]
+    assert result[1]["Name"] == "another-valid"
+    assert result[1]["Values"] == ["value1", "value2"]
+
+
+def test_parse_filter_field_with_spaces_in_values():
+    """
+    Given: A filter string with spaces in the values field.
+    When: parse_filter_field function processes the input with spaces.
+    Then: It should successfully parse the filter preserving spaces in values.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=tag:Name,values=My App Server,Test Instance")
+    assert len(result) == 1
+    assert result[0]["Name"] == "tag:Name"
+    assert result[0]["Values"] == ["My App Server", "Test Instance"]
+
+
+def test_parse_filter_field_with_missing_values():
+    """
+    Given: A filter string with name but missing values part.
+    When: parse_filter_field function processes the incomplete input.
+    Then: It should skip the invalid filter and return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-state-name")
+    assert result == []
+
+
+def test_parse_filter_field_with_missing_name():
+    """
+    Given: A filter string with values but missing name part.
+    When: parse_filter_field function processes the incomplete input.
+    Then: It should skip the invalid filter and return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("values=running,stopped")
+    assert result == []
+
+
+def test_parse_filter_field_with_colon_in_value():
+    """
+    Given: A filter string with values but missing name part.
+    When: parse_filter_field function processes the incomplete input.
+    Then: It should skip the invalid filter and return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-state-name,values=running:active,stopped:inactive")
+    expected = [{"Name": "instance-state-name", "Values": ["running:active", "stopped:inactive"]}]
+    assert result == expected

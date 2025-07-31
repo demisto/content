@@ -2121,7 +2121,7 @@ script:
       description: The name of the security group. Up to 255 characters in length. Cannot start with sg-. Names are case-insensitive and must be unique within the VPC.
       required: true
     - name: description
-      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*'
+      description: 'A description for the security group. This is informational only. Up to 255 characters in length. Valid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*.'
       required: true
     - name: vpc_id
       description: The ID of the VPC. Required for a nondefault VPC.
