@@ -8,7 +8,7 @@ from PolySwarmV2 import PolyswarmConnector
 import pytest
 import vcr as libvcr
 
-pytest_plugins = "PolySwarmV2_vendored_pytest_vcr"
+pytest_plugins = "test_data.vendored_pytest_vcr"
 
 TEST_FOLDER = os.path.dirname(os.path.abspath(__file__))
 
@@ -62,6 +62,7 @@ def vcr_config():
     return {
         "serializer": "yaml",
         "cassette_library_dir": os.path.join(TEST_FOLDER, "test_data/fixtures/vcr/"),
+        "path_transformer": libvcr.VCR.ensure_suffix(".tape"),
         "record_mode": libvcr.record_mode.RecordMode.ONCE,  # .ALL, # .NONE
         "filter_headers": redacted_data,
         "filter_post_data_parameters": redacted_data,
