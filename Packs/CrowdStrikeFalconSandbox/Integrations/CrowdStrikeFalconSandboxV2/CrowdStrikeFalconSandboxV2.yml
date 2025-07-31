@@ -69,7 +69,7 @@ script:
       - "true"
       - "false"
     - name: job_id
-      description: "A comma-separated list of JobIDs to check the state of when polling. Use this argument or the file argument"
+      description: "A comma-separated list of JobIDs to check the state of when polling. Use this argument or the file argument."
       isArray: true
     - name: hide_polling_output
       deprecated: true
