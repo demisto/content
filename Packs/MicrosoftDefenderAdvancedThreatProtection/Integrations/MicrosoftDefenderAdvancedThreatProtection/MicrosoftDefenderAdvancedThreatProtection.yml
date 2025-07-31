@@ -5337,7 +5337,6 @@ script:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
       description: The query results for process_excecution_powershell query_purpose.
       type: String
-    #polling: true
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     arguments:
