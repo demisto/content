@@ -5287,7 +5287,7 @@ script:
     - description: Device name to look for. Device Name or Device ID must be entered.
       name: device_name
       defaultValue: ''
-    - description: Device ID to look for.Device Name or Device ID must be entered.
+    - description: Device ID to look for. Device Name or Device ID must be entered.
       name: device_id
       defaultValue: ''
     - name: sha1
@@ -5337,7 +5337,7 @@ script:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
       description: The query results for process_excecution_powershell query_purpose.
       type: String
-    polling: true
+    #polling: true
   - name: microsoft-atp-advanced-hunting-network-connections
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     arguments:

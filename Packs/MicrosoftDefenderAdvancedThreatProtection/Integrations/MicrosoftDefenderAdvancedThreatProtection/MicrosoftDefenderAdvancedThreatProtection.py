@@ -4967,7 +4967,7 @@ def iterate_ancestry(client,     timeout = None,
 
 
 def process_ancestry_command(client, args):  # pragma: no cover
-    timeout = int(args.pop("timeout", 10))
+    timeout = arg_to_number(args.get("timeout", 10))
     time_range = args.pop("time_range", None)
     device_name = args.get("device_name")
     file_name = args.get("file_name")
@@ -4976,7 +4976,7 @@ def process_ancestry_command(client, args):  # pragma: no cover
     sha256 = args.get("sha256")
     md5 = args.get("md5")
     device_id = args.get("device_id")
-    process_creation_time = args.get("process_creation_time")
+    process_creation_time = arg_to_datetime(args.get("process_creation_time"))
     show_query = argToBoolean(args.pop("show_query", False))
     process_chain = None
     process_json = []
