@@ -4969,7 +4969,7 @@ def iterate_ancestry(client,     timeout = None,
     return response.get("Results"), query
 
 
-def process_ancestry_command(client, args):  # pragma: no cover
+def process_ancestry_command(client, args):
     timeout = arg_to_number(args.get("timeout", 10))
     time_range = args.pop("time_range", None)
     device_name = args.get("device_name")
