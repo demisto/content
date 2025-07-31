@@ -109,7 +109,7 @@ class Client(BaseClient):  # pragma: no cover
         incidents: List = []
         # handle paging
         while page <= total_pages:
-            params["page"] = page
+            params["page"] = page  # type: ignore
             response = self._http_request(method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params, retries=4)
             total_pages = response.get("total_pages")
             new_incidents = response.get("incidents", [])
@@ -243,12 +243,12 @@ def get_new_last_id(last_timestamp, incident, new_last_ids):
     incident_time = arg_to_datetime(incident.get("first_reported_date"))
     inc_id = incident.get("incident_id")
     # Make sure that time format is comparable
-    incident_time = incident_time.isoformat()
+    incident_time = incident_time.isoformat()  # type: ignore
     incident_time = arg_to_datetime(incident_time)
     last_timestamp = last_timestamp.isoformat()
     last_timestamp = arg_to_datetime(last_timestamp)
     # compare the datetime
-    if last_timestamp is None or incident_time > last_timestamp:
+    if last_timestamp is None or incident_time > last_timestamp:  # type: ignore
         new_last_ids = {inc_id}
         last_timestamp = incident_time
     else:
@@ -326,7 +326,7 @@ def fetch_events_command(
     first_fetch: datetime,
     max_fetch: int,
     last_id: Optional[int] = None,
-    last_timestamp_ids: Optional[List[int]] = [],
+    last_timestamp_ids: List[int] = [],
 ) -> tuple[List[dict[str, Any]], int, list[Any] | None]:
     """Fetches IRONSCALES incidents as events to XSIAM.
     Note: each report of incident will be considered as an event.
