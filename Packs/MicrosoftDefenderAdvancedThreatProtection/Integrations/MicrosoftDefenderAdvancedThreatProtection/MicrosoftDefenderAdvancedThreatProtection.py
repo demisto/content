@@ -4962,7 +4962,10 @@ def iterate_ancestry(client,     timeout = None,
     query += '| limit 1'
 
     # send request + return results and query used
-    response = client.get_advanced_hunting(query, timeout, time_range)
+    try:
+        response = client.get_advanced_hunting(query, timeout, time_range)
+    except Exception as e:
+        raise Exception(f"Could not get process ancestry. error: {e!s}")
     return response.get("Results"), query
 
 
