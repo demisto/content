@@ -42,25 +42,20 @@ def url_enrichment_script(
                "Brand":"Brand"}
     
     commands = [ReputationCommand(name="url", args={"url": data_list}, mapping=mapping),
-                Command(name="wildfire-get-verdict", args={"url": data_list}, direct_mapping="WildFire.Verdicts(val.url && val.url == obj.url)")]
+                Command(name="wildfire-get-verdict", args={"url": data_list}, type=CommandType.internal),
+                TIMCommand(mapping=mapping, indicator_context_path="URL("),
+                ]
     urlreputation = ReputationAggregatedCommand(
-        main_keys={"Data":"Data",
-                   "DetectionEngines":"DetectionEngines",
-                   "PositiveDetections":"PositiveDetections",
-                   "Score":"Score",
-                   "Brand":"Brand"},
         brands = enrichment_brands,
-        verbose=True,
+        verbose=verbose,
         commands = commands,
-        validate_input_function=lambda args: True,
-        additional_fields=True,
-        external_enrichment=True,
-        indicator_path="URL(",
         indicator_value_field="Data",
-        context_path="URL",
+        validate_input_function=lambda args: True,
+        additional_fields=additional_fields,
+        external_enrichment=external_enrichment,
+        final_context_path="URLEnrichment",
         args=demisto.args(),
-        data={"url":data_list}
-        
+        data={"url": data_list}
     )
     return urlreputation.aggregated_command_main_loop()
     
