@@ -20,10 +20,22 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-EMAIL_SIGNATURE_APPENDED = "<html><body>Simple HTML message.\r\n\r\nTest email signature.\r\n</body></html>"
-
-
-def test_append_email_signature(mocker):
+@pytest.mark.parametrize(
+    "inputted_body, expected_body",
+    [
+        pytest.param(
+            '<html><body style="font-family: Arial">Formatted HTML message.\r\n</body></html>',
+            '<html><body style="font-family: Arial">Formatted HTML message.\r\n\r\nTest email signature.\r\n</body></html>',
+            id="HTML Body",
+        ),
+        pytest.param(
+            "<p>Plain text message.</p>",
+            "<p>Plain text message.</p>\r\nTest email signature.\r\n",
+            id="Plain Text Body",
+        ),
+    ],
+)
+def test_append_email_signature(mocker, inputted_body: str, expected_body: str):
     """
     Given
     - Email signature stored in XSOAR List
@@ -36,8 +48,8 @@ def test_append_email_signature(mocker):
 
     signature_list = util_load_json("test_data/getList_signature_success.json")
     mocker.patch.object(demisto, "executeCommand", return_value=signature_list)
-    result = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
-    assert result == EMAIL_SIGNATURE_APPENDED
+    email_body = append_email_signature(inputted_body)
+    assert email_body == expected_body
 
 
 def test_append_email_signature_fails(mocker):
