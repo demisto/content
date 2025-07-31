@@ -2108,7 +2108,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
             outputs_prefix="MISP.Warninglist",
             outputs_key_field="ID",
             outputs=warninglist_output,
-            ## TODO: add raw_response to CommandResults when PyMISP supports it
+            raw_response=resp_json,
         )
 
     except PyMISPError as e:
