@@ -3,7 +3,7 @@ commonfields:
   version: -1
 args:
 - name: endpoint_id
-  description: 'A comma-separated list of endpoint IDs.'
+  description: 'List of endpoint IDs.'
   required: true
   isArray: true
   type: List
@@ -20,10 +20,9 @@ args:
   required: false
   type: Integer
   defaultValue: 300
-- name: quarantine_brands
+- name: brands
   description: |-
-    Integrations to execute the 'quarantine-file' command. If not specified, the integration will be automatically selected based on the file hash type and the available configured instances.
-    To specify multiple integrations, provide a comma-separated list of integration brand IDs For example: "Cortex XDR - IR, Cortex Core - IR".
+     Brands for which to execute the 'quarantine-file' command. If not specified, all available instances will run.
   isArray: true
 - name: verbose
   description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result.
