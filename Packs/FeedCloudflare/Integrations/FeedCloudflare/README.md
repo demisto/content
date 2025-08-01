@@ -2,7 +2,6 @@ Use the Cloudflare feed integration to fetch indicators from the feed.
 
 ## Configure Cloudflare Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Services |  | True |
@@ -19,22 +18,24 @@ Use the Cloudflare feed integration to fetch indicators from the feed.
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cloudflare-get-indicators
+
 ***
 Gets the feed indicators.
-
 
 #### Base Command
 
 `cloudflare-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional |
 
 #### Context Output
 

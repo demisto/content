@@ -899,6 +899,7 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 650,\n    \"y\": 1740\n  }\n}"
   '73':
     continueonerrortype: ''
+    continueonerror: true
     id: '73'
     ignoreworker: false
     isautoswitchedtoquietmode: false

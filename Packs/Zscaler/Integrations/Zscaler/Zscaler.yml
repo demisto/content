@@ -228,6 +228,8 @@ script:
       required: true
     description: Removes the specified IP addresses from the block list.
     name: zscaler-undo-blacklist-ip
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - default: true
       description: A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4.
@@ -237,6 +239,8 @@ script:
     description: Adds the specified IP addresses to the block list.
     execution: true
     name: zscaler-blacklist-ip
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - description: The ID of the category to add the specified URLs to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command.
       name: category-id
@@ -1938,7 +1942,7 @@ script:
     description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   type: python
 fromversion: 5.0.0
 tests:

@@ -2,9 +2,9 @@ GreyNoise tells security analysts what not to worry about. We do this by curatin
 tools with noise. This unique perspective helps analysts confidently ignore irrelevant or harmless activity, creating
 more time to uncover and investigate true threats. The Action allows IP enrichment via the GreyNoise Community API.
 
-This Integration is design specifically for GreyNoise Community users and only provides the subset of intel available 
+This Integration is design specifically for GreyNoise Community users and only provides the subset of intel available
 via the GreyNoise Community API.  
-The [GreyNoise Integration](https://github.com/demisto/content/tree/master/Packs/GreyNoise/Integrations/GreyNoise) 
+The [GreyNoise Integration](https://github.com/demisto/content/tree/master/Packs/GreyNoise/Integrations/GreyNoise)
 should be used by customers with a paid subscription to GreyNoise.
 
 This integration was integrated and tested with version 0.8.0 of GreyNoise Python SDK.
@@ -12,12 +12,10 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
 
 ## Configure GreyNoise in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | api_key | GreyNoise API Key | True |
 | proxy | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -29,7 +27,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Queries IPs in the GreyNoise Community API.
 
-
 #### Base Command
 
 `ip`
@@ -38,8 +35,7 @@ Queries IPs in the GreyNoise Community API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Required | 
-
+| ip | List of IPs. | Required |
 
 #### Context Output
 
@@ -61,7 +57,6 @@ Queries IPs in the GreyNoise Community API.
 | GreyNoise.IP.name | string | The overt actor the device has been associated with. |
 | GreyNoise.IP.message | string | Additional Information from API. |
 | IP.Address | string | IP address. |
-
 
 #### Command Example
 

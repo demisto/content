@@ -8,7 +8,6 @@ Gather information regarding CIDR -
     7. Private
     8. Version
 
-
 ## Script Data
 
 ---

@@ -2,12 +2,10 @@ This is the ClickSend integration for make a phonecall from XSOAR  made by Trust
 
 ## Configure ClickSend in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Api Key | You'll find your api key here: <https://dashboard.clicksend.com/account/subaccounts> | True |
 | Username | You'll find your username here: <https://dashboard.clicksend.com/account/subaccounts> | True |
-
 
 ## Commands
 
@@ -27,18 +25,18 @@ Make phone call with you own text. Example: !clicksend-text-to-voice Message="Hi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| phoneNumber | Phone Number  Example: +972501234567. | Required | 
-| Message | Message Body. | Required | 
-| require_input | If you want that the person will need to input. Possible values are: False, True. | Required | 
-| voice | You Can choose either Male or Female. Possible values are: male, female. | Required | 
+| phoneNumber | Phone Number  Example: +972501234567. | Required |
+| Message | Message Body. | Required |
+| require_input | If you want that the person will need to input. Possible values are: False, True. | Required |
+| voice | You Can choose either Male or Female. Possible values are: male, female. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Voice.MSG.id | unknown | Message ID | 
-| Voice.MSG.responseCode | unknown | Response Code | 
-| Voice.MSG.responseMsg | unknown | Response MSG | 
+| Voice.MSG.id | unknown | Message ID |
+| Voice.MSG.responseCode | unknown | Response Code |
+| Voice.MSG.responseMsg | unknown | Response MSG |
 
 ### clicksend-voice-history
 
@@ -58,4 +56,4 @@ Your calls history Example: !clicksend-voice-history
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Voice.History | unknown | Your Calls History | 
+| Voice.History | unknown | Your Calls History |

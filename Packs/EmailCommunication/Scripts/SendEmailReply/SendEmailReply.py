@@ -1,7 +1,4 @@
-import json
-import re
 from datetime import datetime as dt
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from markdown import Extension, markdown
@@ -42,6 +39,90 @@ def get_utc_now():
     return dt.utcnow()
 
 
+def apply_direction(line: str) -> str:
+    """
+    Processes a single line of Markdown text and converts
+    custom direction tags into corresponding HTML divs.
+
+    Supported tags:
+    - '<-:->'  : Center aligned text
+    - '<--:>'  : Left-to-right text (LTR)
+    - '<:-->'  : Right-to-left text (RTL)
+
+    Args:
+        line (str): A single line of Markdown text.
+
+    Returns:
+        str: The processed line with HTML div for direction if tag found,
+             or the original line unchanged.
+    """
+    # Remove leading spaces to detect tags even if line is indented
+    stripped_line = line.lstrip()
+
+    # Check for center alignment tag
+    if stripped_line.startswith("<-:->"):
+        # Remove the tag prefix (5 chars) and strip any extra spaces
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with center text alignment
+        return f'<div style="text-align:center;">{content}</div>'
+
+    # Check for left-to-right text direction tag
+    elif stripped_line.startswith("<--:>"):
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with LTR direction attribute
+        return f'<div dir="ltr">{content}</div>'
+
+    # Check for right-to-left text direction tag
+    elif stripped_line.startswith("<:-->"):
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with RTL direction attribute
+        return f'<div dir="rtl">{content}</div>'
+
+    # If no direction tag is found, return the line unchanged
+    else:
+        return line
+
+
+def process_directions(md: str) -> str:
+    return "\n".join(apply_direction(line) for line in md.splitlines())
+
+
+def ensure_markdown_tables_have_spacing(md: str) -> str:
+    lines = md.splitlines()
+    new_lines: list[str] = []
+    in_table = False
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        is_table_line = stripped.startswith("|") and stripped.endswith("|")
+
+        if is_table_line:
+            if not in_table:
+                # Add blank line before table if previous line is non-empty
+                if new_lines and new_lines[-1].strip() != "":
+                    new_lines.append("")
+                in_table = True
+            new_lines.append(line)
+        else:
+            if in_table:
+                # Table just ended. Add blank line *only if there’s more non-empty content ahead*.
+                remaining_lines = lines[i:]
+                if any(rl.strip() for rl in remaining_lines) and line.strip() != "":
+                    new_lines.append("")
+                in_table = False
+            new_lines.append(line)
+
+    return "\n".join(new_lines)
+
+
+def replace_atlassian_tags(md: str) -> str:
+    # Replace color tags
+    md = re.sub(r"\{\{color:(#[0-9a-fA-F]{6})\}\}\((.*?)\)", r'<span style="color:\1;">\2</span>', md)
+    # Replace background tags
+    md = re.sub(r"\{\{background:(#[0-9a-fA-F]{6})\}\}\((.*?)\)", r'<span style="background-color:\1;">\2</span>', md)
+    return md
+
+
 def append_email_signature(html_body):
     """
         Retrieve the user defined email signature to include on new messages, if present.
@@ -49,16 +130,17 @@ def append_email_signature(html_body):
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
     demisto.debug("append_email_signature")
-    email_signature = demisto.executeCommand("getList", {"listName": "XSOAR - Email Communication Signature"})
-
-    if is_error(email_signature):
-        demisto.debug(
-            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
-        )
-    else:
+    is_succeed, email_signature = execute_command(
+        "getList", {"listName": "XSOAR - Email Communication Signature"}, extract_contents=False, fail_on_error=False
+    )
+    if is_succeed:
         # Find the position of the closing </html> tag and insert the signature there
         if re.search("(?i)</body>", html_body):
             html_body = re.sub("(?i)</body>", f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
+    else:
+        demisto.debug(
+            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
+        )
 
     return html_body
 
@@ -99,7 +181,7 @@ def validate_email_sent(
     Returns:
         str: a message which indicates that the mail was sent successfully or an error message.
     """
-    email_reply = execute_reply_mail(
+    execute_reply_mail(
         incident_id,
         email_subject,
         subject_include_incident_id,
@@ -115,9 +197,6 @@ def validate_email_sent(
         email_code,
         mail_sender_instance,
     )
-
-    if is_error(email_reply):
-        return_error(f"Error:\n {get_error(email_reply)}")
 
     msg = f"Mail sent successfully. To: {email_to}"
     if email_cc:
@@ -153,7 +232,9 @@ def execute_reply_mail(
         # setting the email's subject for gmail adjustments
         try:
             demisto.debug(f"Setting incident {incident_id} email subject to {subject_with_id}")
-            demisto.executeCommand("setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}})
+            execute_command(
+                "setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}}, extract_contents=False
+            )
         except Exception:
             return_error(
                 f"SetIncident Failed."
@@ -185,7 +266,10 @@ def execute_reply_mail(
         if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
             mail_content["references"] = email_latest_message
     demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
-    return demisto.executeCommand("reply-mail", mail_content)
+    is_succeed, email_reply = execute_command("reply-mail", mail_content, extract_contents=False, fail_on_error=False)
+    if is_succeed:
+        return email_reply
+    return_error(f"Error:\n {email_reply}")  # noqa: RET503
 
 
 def get_email_threads(incident_id):
@@ -198,8 +282,11 @@ def get_email_threads(incident_id):
     """
     # Get current email threads from context if any are present
     demisto.debug(f"Getting email threads for incident {incident_id}")
-    incident_context = demisto.executeCommand("getContext", {"id": incident_id})
+    is_succeed, incident_context = execute_command("getContext", {"id": incident_id}, extract_contents=False, fail_on_error=False)
+    if not is_succeed:
+        demisto.debug(f"Failed to retrieve email threads for incident {incident_id}")
     incident_email_threads = dict_safe_get(incident_context[0], ["Contents", "context", "EmailThreads"])
+
     return incident_email_threads
 
 
@@ -330,7 +417,7 @@ def send_new_email(
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
 
-    email_result = send_new_mail_request(
+    send_new_mail_request(
         incident_id,
         email_subject,
         subject_include_incident_id,
@@ -347,9 +434,6 @@ def send_new_email(
         mail_sender_instance,
         context_html_body,
     )
-
-    if is_error(email_result):
-        return_error(f"Error:\n {get_error(email_result)}")
 
     msg = f"Mail sent successfully. To: {email_to}"
     if email_cc:
@@ -424,7 +508,9 @@ def send_new_mail_request(
     demisto.debug(
         f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}"
     )
-    email_result = demisto.executeCommand("send-mail", mail_content)
+    is_succeed, email_result = execute_command("send-mail", mail_content, extract_contents=False, fail_on_error=False)
+    if not is_succeed:
+        return_error(f"Error:\n {email_result}")
 
     # Store message details in context entry
     create_thread_context(
@@ -490,7 +576,15 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             attachment_name = attachment.get("name", "")
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
-            demisto.executeCommand("core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
+            is_succeed, _ = execute_command(
+                "core-api-post",
+                {"uri": f"/incident/remove/{incident_id}", "body": file_data},
+                extract_contents=False,
+                fail_on_error=False,
+            )
+            if not is_succeed:
+                demisto.debug("Failed to remove attachment")
+
             if not isinstance(files, list):
                 files = [files]
             for file in files:
@@ -552,7 +646,11 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         for note in notes:
             note_user = note["Metadata"]["user"]
             demisto.debug(f"Getting user data for user {note_user} in incident {incident_id}")
-            note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
+            is_succeed, note_userdata = execute_command(
+                "getUserByUsername", {"username": note_user}, extract_contents=False, fail_on_error=False
+            )
+            if not is_succeed:
+                demisto.debug("Failed to get user data")
             user_fullname = dict_safe_get(note_userdata[0], ["Contents", "name"]) or "DBot"
             reply_body += f"{user_fullname}: \n\n{note['Contents']}\n\n"
 
@@ -565,21 +663,27 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
 
         entry_note = json.dumps([{"Type": 1, "ContentsFormat": "html", "Contents": reply_body, "tags": ["email-thread"]}])
         demisto.debug(f"Adding note to incident {incident_id}")
-        entry_tags_res = demisto.executeCommand(
-            "addEntries", {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async}
-        )
-        demisto.debug(f"Removing note:{note.get('ID')} from incident {incident_id}")
-        entry_note_res = demisto.executeCommand(
+        is_succeed, entry_note_res = execute_command(
             "core-api-post",
             {
                 "uri": "/entry/note",
                 "body": json.dumps({"id": note.get("ID"), "version": -1, "investigationId": incident_id, "data": "false"}),
             },
+            extract_contents=False,
+            fail_on_error=False,
         )
-        if is_error(entry_note_res):
-            return_error(get_error(entry_note_res))
-        if is_error(entry_tags_res):
-            return_error(get_error(entry_tags_res))
+        if not is_succeed:
+            return_error(entry_note_res)
+
+        is_succeed, entry_tags_res = execute_command(
+            "addEntries",
+            {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async},
+            extract_contents=False,
+            fail_on_error=False,
+        )
+        if not is_succeed:
+            return_error(entry_tags_res)
+        demisto.debug(f"Removing note:{note.get('ID')} from incident {incident_id}")
 
     else:
         return_error("Please add a note")
@@ -623,7 +727,7 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     return email_recipients
 
 
-def get_mailbox_from_incident_labels(labels):
+def get_mailbox_from_incident_labels(labels):  # pragma: no cover
     """
     Gets the mailbox from which the incident was fetched from the incident labels.
     Args:
@@ -644,8 +748,10 @@ def get_query_window():
     to query back for related incidents. If yes, use this value, else use the default value of 60 days.
     """
     demisto.debug("Getting the number of days to query back for related incidents")
-    user_defined_time = demisto.executeCommand("getList", {"listName": "XSOAR - Email Communication Days To Query"})
-    if is_error(user_defined_time):
+    is_succeed, user_defined_time = execute_command(
+        "getList", {"listName": "XSOAR - Email Communication Days To Query"}, extract_contents=False, fail_on_error=False
+    )
+    if not is_succeed:
         demisto.debug(
             "Error occurred while trying to load the `XSOAR - Email Communication Days To Query` list. Using"
             " the default query time - 60 days"
@@ -681,14 +787,16 @@ def get_incident_by_query(query):
 
     query += f' modified:>="{query_from_date}"'
     demisto.debug(f"Querying for incidents with the following query: {query}")
-    res = demisto.executeCommand("getIncidents", {"query": query, "populateFields": "id,status"})[0]
-    if is_error(res):
-        return_results(ERROR_TEMPLATE.format("getIncidents", res["Contents"]))
-        raise DemistoException(ERROR_TEMPLATE.format("getIncidents", res["Contents"]))
+    is_succeed, res = execute_command(
+        "getIncidents", {"query": query, "populateFields": "id,status"}, extract_contents=False, fail_on_error=False
+    )
+    extracted_results = res[0]
+    if is_succeed:
+        incidents_details = extracted_results["Contents"]["data"]
+        return incidents_details
 
-    incidents_details = res["Contents"]["data"]
-
-    return incidents_details
+    return_results(ERROR_TEMPLATE.format("getIncidents", extracted_results["Contents"]))
+    raise DemistoException(ERROR_TEMPLATE.format("getIncidents", extracted_results["Contents"]))
 
 
 def get_unique_code(incident_id, max_tries=1000):
@@ -727,10 +835,14 @@ def reset_fields():
     Args: None
     """
     demisto.debug("Resetting fields used to send the email message")
-    demisto.executeCommand(
+    is_succeed, _ = execute_command(
         "setIncident",
         {"emailnewrecipients": "", "emailnewsubject": "", "emailnewbody": "", "addcctoemail": "", "addbcctoemail": ""},
+        extract_contents=False,
+        fail_on_error=False,
     )
+    if not is_succeed:
+        demisto.debug("Failed to reset fields used to send the email message")
 
 
 def resend_first_contact(
@@ -846,7 +958,9 @@ def convert_internal_url_to_base64(match):
         str: The src attribute with the base64-encoded image.
     """
     original_src = match.group(1)
-    result = demisto.executeCommand("core-api-download", {"uri": original_src})
+    is_succeed, result = execute_command("core-api-download", {"uri": original_src}, extract_contents=False, fail_on_error=False)
+    if not is_succeed:
+        demisto.debug(f"Failed to download image from {original_src}")
     with open(demisto.getFilePath(result[0]["FileID"]).get("path"), "rb") as f:
         base64_data_image = base64.b64encode(f.read()).decode("utf-8")
     image_type = handle_image_type(base64_data_image)
@@ -860,8 +974,21 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
+    use_raw_body = argToBoolean(demisto.incident().get("CustomFields").get("sendbodyasrawnomarkdown", False))
+    if use_raw_body:  # it true, will send the body as is and won't use markdown
+        return new_email_body, new_email_body
+
+    # 1. Apply your direction tags first
+    md_with_direction = process_directions(new_email_body)
+
+    # 2. Fix spacing before tables
+    fixed_body = ensure_markdown_tables_have_spacing(md_with_direction)
+
+    # 3. Replace Atlassian color/background tags with inline HTML spans
+    fixed_body = replace_atlassian_tags(fixed_body)
+
     context_html_body = markdown(
-        new_email_body,
+        fixed_body,
         extensions=[
             "tables",
             "fenced_code",
@@ -871,6 +998,13 @@ def format_body(new_email_body):
             DemistoExtension(),
         ],
     )
+    # Apply inline styles to tables only if <table> is present
+    if "<table>" in context_html_body:
+        context_html_body = context_html_body.replace(
+            "<table>",
+            '<table border="1" cellpadding="6" cellspacing="0" ' 'style="border-collapse: collapse; border: 1px solid #999;">',
+        )
+
     saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
     html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     return context_html_body, html_body
@@ -919,7 +1053,14 @@ def single_thread_reply(
         # If a unique code is not set for this incident yet, generate and set it
         email_code = get_unique_code(incident_id)
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcode to {email_code}")
-        demisto.executeCommand("setIncident", {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}})
+        is_succeed, _ = execute_command(
+            "setIncident",
+            {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}},
+            extract_contents=False,
+            fail_on_error=False,
+        )
+        if not is_succeed:
+            demisto.debug(f"Failed to set incident {incident_id} emailgeneratedcode")
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, context_html_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
@@ -1001,12 +1142,24 @@ def multi_thread_new(
     # If there are already other values in 'emailgeneratedcodes', append the new code as a comma-separated list
     if email_codes:
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {email_codes},{thread_code}")
-        demisto.executeCommand(
-            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{email_codes},{thread_code}"}}
+        is_succeed, _ = execute_command(
+            "setIncident",
+            {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{email_codes},{thread_code}"}},
+            extract_contents=False,
+            fail_on_error=False,
         )
+        if not is_succeed:
+            demisto.debug(f"failed to set incident {incident_id} emailgeneratedcode to {email_codes},{thread_code}")
     else:
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {thread_code}")
-        demisto.executeCommand("setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}})
+        is_succeed, _ = execute_command(
+            "setIncident",
+            {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}},
+            extract_contents=False,
+            fail_on_error=False,
+        )
+        if not is_succeed:
+            demisto.debug(f"failed to set incident {incident_id} emailgeneratedcodes to {thread_code}")
     try:
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
@@ -1329,7 +1482,7 @@ def multi_thread_reply(
     return True
 
 
-def main():
+def main():  # pragma: no cover
     try:
         demisto.debug("Starting SendEmailReply script")
         args = demisto.args()
@@ -1363,7 +1516,11 @@ def main():
         body_type = args.get("bodyType") or args.get("body_type") or "html"
         reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
         demisto.debug("Getting notes")
-        notes = demisto.executeCommand("getEntries", {"filter": {"categories": ["notes"]}})
+        is_succeed, notes = execute_command(
+            "getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False, fail_on_error=False
+        )
+        if not is_succeed:
+            demisto.debug("Failed to get notes")
 
         if new_email_attachments:
             new_attachment_names = ", ".join([attachment.get("name", "") for attachment in new_email_attachments])

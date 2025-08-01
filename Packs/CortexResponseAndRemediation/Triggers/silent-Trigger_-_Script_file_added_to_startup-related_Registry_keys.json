@@ -1,0 +1,30 @@
+{
+  "trigger_id": "e1733a9838886a7a14a2100efac7e9f3",
+  "playbook_id": "silent-Script file added to startup-related Registry keys",
+  "suggestion_reason": "Recommended for 'Script file added to startup-related Registry keys' alerts",
+  "description": "This trigger is responsible for handling the 'Script file added to startup-related Registry keys' alerts",
+  "trigger_name": "silent-Script file added to startup-related Registry keys",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Script file added to startup-related Registry keys"
+                }
+                ]
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+        ]
+    }
+  }
+}
+

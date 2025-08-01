@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0 of Whois
 
 ## Configure Whois in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Return Errors | If set, failed command results will be returned as warnings instead of errors. | False |
@@ -16,230 +15,234 @@ This integration was integrated and tested with version 1.0 of Whois
 | Suppress Rate Limit errors | Whether Rate Limit errors should be supressed or not. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### whois
+
 ***
 Provides data enrichment for domains.
 This pack relies on free services for WHOIS information. As with many free services, the availability is not guaranteed. Free WHOIS providers may block or be reject queries.
 
-
 #### Base Command
 
 `whois`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The domain to enrich. | Required | 
-| recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional | 
+| query | The domain to enrich. | Required |
+| recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional |
 | verbose | Whether to add the raw response as a dictionary to the context. | Optional |
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Score | string | The actual score. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| Domain.Name | string | The domain name. | 
-| Domain.DomainStatus | string | The domain status. | 
-| Domain.Dnssec | string | The domain name system security extension \(DNSSEC\). | 
-| Domain.NameServers | string | The name servers. | 
-| Domain.Country | string | The domain country. | 
-| Domain.State | string | The domain state. | 
-| Domain.City | string | The domain city. | 
-| Domain.CreationDate | date | The date that the domain was created \(UTC\). | 
-| Domain.UpdatedDate | date | The date that the domain was last updated \(UTC\). | 
-| Domain.ExpirationDate | date | The date that the domain expires \(UTC\). | 
-| Domain.Registrar.Name | string | The name of the registrar. | 
-| Domain.Registrar.Address | string | The address of the registrar. | 
-| Domain.Registrar.Email | string | The email of the registrar. | 
-| Domain.Registrar.Id | string | The ID of the registrar. | 
-| Domain.Registrar.Phone | string | The phone number of the registrar. | 
-| Domain.Registrar.Url | string | The URL of the registrar. | 
-| Domain.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
-| Domain.Emails | string | The abuse emails. | 
-| Domain.Address | string | The abuse address. | 
-| Domain.Organization | string | The organization domain name. | 
-| Domain.WhoisServer | string | The whois server name. | 
-| Domain.Phone | string | The phone number of the tech administrator. | 
-| Domain.Admin | object | Administrator information. | 
-| Domain.Admin.Address | string | The address of the administrator. | 
-| Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
-| Domain.Admin.C | string | The C field of the administrator. | 
-| Domain.Admin.City | string | The city of the administrator. | 
-| Domain.Admin.Country | string | The country of the administrator. | 
-| Domain.Admin.Email | string | The email address of the administrator. | 
-| Domain.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.Admin.FaxExt | string | The fax extension of the administrator. | 
-| Domain.Admin.Id | string | The ID of the administrator. | 
-| Domain.Admin.Name | string | The name of the administrator. | 
-| Domain.Admin.Org | string | The organization of the administrator. | 
-| Domain.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.Admin.PhoneExt | string | The phone extension of the administrator. | 
-| Domain.Admin.PostalCode | string | The postal code of the administrator. | 
-| Domain.Admin.State | string | The state of the administrator. | 
-| Domain.Admin.StateProvince | string | The state or province of the administrator. | 
-| Domain.Admin.Street | string | The street of the administrator. | 
-| Domain.Registrant.Name | string | The name of the registrant. | 
-| Domain.Registrant.Email | string | The email address of the registrant. | 
-| Domain.Registrant.Country | string | The country of the registrant. | 
-| Domain.Registrant.State | string | The state of the registrant. | 
-| Domain.Registrant.Org | string | The organization of the registrant. | 
-| Domain.Registrant.PostalCode | string | The postal code of the registrant. | 
-| Domain.Registrant.Street | string | The street of the registrant. | 
-| Domain.Registrant.Phone | string | The phone number of the registrant. | 
-| Domain.Registrant.City | string | The city of the registrant. | 
-| Domain.Registrant.Address | string | The address of the registrant. | 
-| Domain.Registrant.ContactName | string | The contact name of the registrant. | 
-| Domain.Registrant.Fax | string | The fax of the registrant. | 
-| Domain.Registrant.Id | string | The ID of the registrant. | 
-| Domain.Registrant.Number | string | The number of the registrant. | 
-| Domain.Registrant.StateProvince | string | The state province of the registrant. | 
-| Domain.Raw | string | The raw output from python-whois lib. | 
-| Domain.Administrator | string | The country of the domain administrator. | 
-| Domain.Tech.Name | string | The name of the tech contact. | 
-| Domain.Tech.Address | string | The address of the tech contact. | 
-| Domain.Tech.City | string | The city of the tech contact. | 
-| Domain.Tech.Country | string | The country of the tech contact. | 
-| Domain.Tech.Email | string | The email address of the tech contact. | 
-| Domain.Tech.Fax | string | The fax number of the tech contact. | 
-| Domain.Tech.ID | string | The ID of the tech contact. | 
-| Domain.Tech.Organization | string | The organization of the tech contact. | 
-| Domain.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.Tech.PostalCode | string | The postal code of the tech contact. | 
-| Domain.Tech.State | string | The state of the tech contact. | 
-| Domain.Tech.StateProvince | string | The state/province of the tech contact. | 
-| Domain.Tech.Street | string | The street of the tech contact. | 
-| Domain.ID | string | The ID of the domain. | 
-| Domain.WHOIS.Name | string | The domain name. | 
-| Domain.WHOIS.DomainStatus | string | The domain status. | 
-| Domain.WHOIS.Dnssec | string | The domain name system security extension \(DNSSEC\). | 
-| Domain.WHOIS.NameServers | string | The name servers. | 
-| Domain.WHOIS.Country | string | The domain country. | 
-| Domain.WHOIS.State | string | The domain state. | 
-| Domain.WHOIS.City | string | The domain city. | 
-| Domain.WHOIS.CreationDate | date | The date that the domain was created \(UTC\). | 
-| Domain.WHOIS.UpdatedDate | date | The date that the domain was last updated \(UTC\). | 
-| Domain.WHOIS.ExpirationDate | date | The date that the domain expires \(UTC\). | 
-| Domain.WHOIS.Registrar.Name | string | The name of the registrar. | 
-| Domain.WHOIS.Registrar.Address | string | The address of the registrar. | 
-| Domain.WHOIS.Registrar.Email | string | The email of the registrar. | 
-| Domain.WHOIS.Registrar.Id | string | The ID of the registrar. | 
-| Domain.WHOIS.Registrar.Phone | string | The phone number of the registrar. | 
-| Domain.WHOIS.Registrar.Url | string | The URL of the registrar. | 
-| Domain.WHOIS.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
-| Domain.WHOIS.Emails | string | The abuse emails. | 
-| Domain.WHOIS.Address | string | The abuse address. | 
-| Domain.WHOIS.Organization | string | The organization domain name. | 
-| Domain.WHOIS.WhoisServer | string | The whois server name. | 
-| Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
-| Domain.WHOIS.Admin | object | Administrator information. | 
-| Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
-| Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
-| Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
-| Domain.WHOIS.Admin.City | string | The city of the administrator. | 
-| Domain.WHOIS.Admin.Country | string | The country of the administrator. | 
-| Domain.WHOIS.Admin.Email | string | The email address of the administrator. | 
-| Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.WHOIS.Admin.FaxExt | string | The fax extension of the administrator. | 
-| Domain.WHOIS.Admin.Id | string | The ID of the administrator. | 
-| Domain.WHOIS.Admin.Name | string | The name of the administrator. | 
-| Domain.WHOIS.Admin.Org | string | The organization of the administrator. | 
-| Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.WHOIS.Admin.PhoneExt | string | The phone extension of the administrator. | 
-| Domain.WHOIS.Admin.PostalCode | string | The postal code of the administrator. | 
-| Domain.WHOIS.Admin.State | string | The state of the administrator. | 
-| Domain.WHOIS.Admin.StateProvince | string | The state or province of the administrator. | 
-| Domain.WHOIS.Admin.Street | string | The street of the administrator. | 
-| Domain.WHOIS.Registrant.Name | string | The name of the registrant. | 
-| Domain.WHOIS.Registrant.Email | string | The email address of the registrant. | 
-| Domain.WHOIS.Registrant.Country | string | The country of the registrant. | 
-| Domain.WHOIS.Registrant.State | string | The state of the registrant. | 
-| Domain.WHOIS.Registrant.Org | string | The organization of the registrant. | 
-| Domain.WHOIS.Registrant.PostalCode | string | The postal code of the registrant. | 
-| Domain.WHOIS.Registrant.Street | string | The street of the registrant. | 
-| Domain.WHOIS.Registrant.Phone | string | The phone number of the registrant. | 
-| Domain.WHOIS.Registrant.City | string | The city of the registrant. | 
-| Domain.WHOIS.Registrant.Address | string | The address of the registrant. | 
-| Domain.WHOIS.Registrant.ContactName | string | The contact name of the registrant. | 
-| Domain.WHOIS.Registrant.Fax | string | The fax of the registrant. | 
-| Domain.WHOIS.Registrant.Id | string | The ID of the registrant. | 
-| Domain.WHOIS.Registrant.Number | string | The number of the registrant. | 
-| Domain.WHOIS.Registrant.StateProvince | string | The state province of the registrant. | 
-| Domain.WHOIS.Raw | string | The raw output from python-whois lib. | 
-| Domain.WHOIS.Administrator | string | The country of the domain administrator. | 
-| Domain.WHOIS.Tech.Name | string | The name of the tech contact. | 
-| Domain.WHOIS.Tech.Address | string | The address of the tech contact. | 
-| Domain.WHOIS.Tech.City | string | The city of the tech contact. | 
-| Domain.WHOIS.Tech.Country | string | The country of the tech contact. | 
-| Domain.WHOIS.Tech.Email | string | The email address of the tech contact. | 
-| Domain.WHOIS.Tech.Fax | string | The fax number of the tech contact. | 
-| Domain.WHOIS.Tech.ID | string | The ID of the tech contact. | 
-| Domain.WHOIS.Tech.Org | string | The organization of the tech contact. | 
-| Domain.WHOIS.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.WHOIS.Tech.PostalCode | string | The postal code of the tech contact. | 
-| Domain.WHOIS.Tech.State | string | The state of the tech contact. | 
-| Domain.WHOIS.Tech.StateProvince | string | The state/province of the tech contact. | 
-| Domain.WHOIS.Tech.Street | string | The street of the tech contact. | 
-| Domain.WHOIS.ID | string | The ID of the domain. | 
-| Domain.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. | 
-| Domain.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. | 
-| Domain.WHOIS.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. | 
-| Domain.WHOIS.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. | 
-| Domain.FeedRelatedIndicators.type | String | \(Legacy output\) Indicators that are associated with the domain. | 
-| Domain.FeedRelatedIndicators.value | String | \(Legacy output\) The type of the indicators that are associated with the domain. | 
-| Domain.Whois.Name | string | \(Legacy output\) The domain name. | 
-| Domain.Whois.DomainStatus | string | \(Legacy output\) The domain status. | 
-| Domain.Whois.DNSSec | string | \(Legacy output\) The domain name system security extension \(DNSSEC\). | 
-| Domain.Whois.NameServers | string | \(Legacy output\) The name servers. | 
-| Domain.Whois.CreationDate | date | \(Legacy output\) The date that the domain was created \(UTC\). | 
-| Domain.Whois.UpdatedDate | date | \(Legacy output\)The date that the domain was last updated \(UTC\). | 
-| Domain.Whois.ExpirationDate | date | \(Legacy output\)The date that the domain expires \(UTC\). | 
-| Domain.Whois.Registrar.Name | string | \(Legacy output\)The name of the registrar. | 
-| Domain.Whois.Emails | string | \(Legacy output\)The abuse emails. | 
-| Domain.Whois.Registrar.AbuseEmail | string | \(Legacy output\) The email address of the contact for reporting abuse. | 
-| Domain.Whois.Registrant.name | string | \(Legacy output\) The name of the registrant. | 
-| Domain.Whois.Registrant.email | string | \(Legacy output\) The email address of the registrant. | 
-| Domain.Whois.Raw | string | \(Legacy output\) The raw output. | 
-| Domain.Whois.Administrator.country | string | \(Legacy output\) The country of the domain administrator. | 
-| Domain.Whois.Administrator.name | string | \(Legacy output\) The name of the domain administrator. | 
-| Domain.Whois.Administrator.state | string | \(Legacy output\) The state of the domain administrator. | 
-| Domain.Whois.Administrator.email | string | \(Legacy output\) The email address of the domain administrator. | 
-| Domain.Whois.Administrator.organization | string | \(Legacy output\) The organization of the domain administrator. | 
-| Domain.Whois.Administrator.postalcode | string | \(Legacy output\) The postal code of the domain administrator. | 
-| Domain.Whois.Administrator.street | string | \(Legacy output\) The street of the the domain admin. | 
-| Domain.Whois.Administrator.phone | string | \(Legacy output\) The phone number of the domain administrator. | 
-| Domain.Whois.Administrator.city | string | \(Legacy output\) The city of the domain administrator. | 
-| Domain.Whois.TechAdmin.country | string | \(Legacy output\) The country of the tech administrator. | 
-| Domain.Whois.TechAdmin.name | string | \(Legacy output\) The name of the tech administrator. | 
-| Domain.Whois.TechAdmin.state | string | \(Legacy output\) The state of the tech administrator. | 
-| Domain.Whois.TechAdmin.email | string | \(Legacy output\) The email address of the tech administrator. | 
-| Domain.Whois.TechAdmin.organization | string | \(Legacy output\) The organization of the tech administrator. | 
-| Domain.Whois.TechAdmin.postalcode | string | \(Legacy output\) The postal code of the tech administrator. | 
-| Domain.Whois.TechAdmin.street | string | \(Legacy output\) The street of the tech administrator. | 
-| Domain.Whois.TechAdmin.phone | string | \(Legacy output\) The phone number of the tech administrator. | 
-| Domain.Whois.TechAdmin.city | string | \(Legacy output\) The city of the tech administrator. | 
-| Domain.Whois.Registrant.country | string | \(Legacy output\) The country of the registrant. | 
-| Domain.Whois.Registrant.state | string | \(Legacy output\) The state of the registrant. | 
-| Domain.Whois.Registrant.organization | string | \(Legacy output\) The organization of the registrant. | 
-| Domain.Whois.Registrant.postalcode | string | \(Legacy output\) The postal code of the registrant. | 
-| Domain.Whois.Registrant.street | string | \(Legacy output\) The street of the registrant. | 
-| Domain.Whois.Registrant.phone | string | \(Legacy output\) The phone number of the registrant. | 
-| Domain.Whois.Registrant.city | string | \(Legacy output\) The city of the registrant. | 
-| Domain.Whois.ID | string | \(Legacy output\) The ID of the domain. | 
-| Domain.Whois.QueryStatus | string | \(Legacy output\) The result of the command \("Success" or "Failed"\). | 
-| Domain.Whois.QueryValue | string | \(Legacy output\) The query requested by the user. | 
+| DBotScore.Score | string | The actual score. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Domain.Name | string | The domain name. |
+| Domain.DomainStatus | string | The domain status. |
+| Domain.Dnssec | string | The domain name system security extension \(DNSSEC\). |
+| Domain.NameServers | string | The name servers. |
+| Domain.Country | string | The domain country. |
+| Domain.State | string | The domain state. |
+| Domain.City | string | The domain city. |
+| Domain.CreationDate | date | The date that the domain was created \(UTC\). |
+| Domain.UpdatedDate | date | The date that the domain was last updated \(UTC\). |
+| Domain.ExpirationDate | date | The date that the domain expires \(UTC\). |
+| Domain.Registrar.Name | string | The name of the registrar. |
+| Domain.Registrar.Address | string | The address of the registrar. |
+| Domain.Registrar.Email | string | The email of the registrar. |
+| Domain.Registrar.Id | string | The ID of the registrar. |
+| Domain.Registrar.Phone | string | The phone number of the registrar. |
+| Domain.Registrar.Url | string | The URL of the registrar. |
+| Domain.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. |
+| Domain.Emails | string | The abuse emails. |
+| Domain.Address | string | The abuse address. |
+| Domain.Organization | string | The organization domain name. |
+| Domain.WhoisServer | string | The whois server name. |
+| Domain.Phone | string | The phone number of the tech administrator. |
+| Domain.Admin | object | Administrator information. |
+| Domain.Admin.Address | string | The address of the administrator. |
+| Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. |
+| Domain.Admin.C | string | The C field of the administrator. |
+| Domain.Admin.City | string | The city of the administrator. |
+| Domain.Admin.Country | string | The country of the administrator. |
+| Domain.Admin.Email | string | The email address of the administrator. |
+| Domain.Admin.Fax | string | The fax number of the administrator. |
+| Domain.Admin.FaxExt | string | The fax extension of the administrator. |
+| Domain.Admin.Id | string | The ID of the administrator. |
+| Domain.Admin.Name | string | The name of the administrator. |
+| Domain.Admin.Org | string | The organization of the administrator. |
+| Domain.Admin.Phone | string | The phone number of the administrator. |
+| Domain.Admin.PhoneExt | string | The phone extension of the administrator. |
+| Domain.Admin.PostalCode | string | The postal code of the administrator. |
+| Domain.Admin.State | string | The state of the administrator. |
+| Domain.Admin.StateProvince | string | The state or province of the administrator. |
+| Domain.Admin.Street | string | The street of the administrator. |
+| Domain.Registrant.Name | string | The name of the registrant. |
+| Domain.Registrant.Email | string | The email address of the registrant. |
+| Domain.Registrant.Country | string | The country of the registrant. |
+| Domain.Registrant.State | string | The state of the registrant. |
+| Domain.Registrant.Org | string | The organization of the registrant. |
+| Domain.Registrant.PostalCode | string | The postal code of the registrant. |
+| Domain.Registrant.Street | string | The street of the registrant. |
+| Domain.Registrant.Phone | string | The phone number of the registrant. |
+| Domain.Registrant.City | string | The city of the registrant. |
+| Domain.Registrant.Address | string | The address of the registrant. |
+| Domain.Registrant.ContactName | string | The contact name of the registrant. |
+| Domain.Registrant.Fax | string | The fax of the registrant. |
+| Domain.Registrant.Id | string | The ID of the registrant. |
+| Domain.Registrant.Number | string | The number of the registrant. |
+| Domain.Registrant.StateProvince | string | The state province of the registrant. |
+| Domain.Raw | string | The raw output from python-whois lib. |
+| Domain.Administrator | string | The country of the domain administrator. |
+| Domain.Tech.Name | string | The name of the tech contact. |
+| Domain.Tech.Address | string | The address of the tech contact. |
+| Domain.Tech.City | string | The city of the tech contact. |
+| Domain.Tech.Country | string | The country of the tech contact. |
+| Domain.Tech.Email | string | The email address of the tech contact. |
+| Domain.Tech.Fax | string | The fax number of the tech contact. |
+| Domain.Tech.ID | string | The ID of the tech contact. |
+| Domain.Tech.Organization | string | The organization of the tech contact. |
+| Domain.Tech.Phone | string | The phone number of the tech contact. |
+| Domain.Tech.PostalCode | string | The postal code of the tech contact. |
+| Domain.Tech.State | string | The state of the tech contact. |
+| Domain.Tech.StateProvince | string | The state/province of the tech contact. |
+| Domain.Tech.Street | string | The street of the tech contact. |
+| Domain.ID | string | The ID of the domain. |
+| Domain.WHOIS.Name | string | The domain name. |
+| Domain.WHOIS.DomainStatus | string | The domain status. |
+| Domain.WHOIS.Dnssec | string | The domain name system security extension \(DNSSEC\). |
+| Domain.WHOIS.NameServers | string | The name servers. |
+| Domain.WHOIS.Country | string | The domain country. |
+| Domain.WHOIS.State | string | The domain state. |
+| Domain.WHOIS.City | string | The domain city. |
+| Domain.WHOIS.CreationDate | date | The date that the domain was created \(UTC\). |
+| Domain.WHOIS.UpdatedDate | date | The date that the domain was last updated \(UTC\). |
+| Domain.WHOIS.ExpirationDate | date | The date that the domain expires \(UTC\). |
+| Domain.WHOIS.Registrar.Name | string | The name of the registrar. |
+| Domain.WHOIS.Registrar.Address | string | The address of the registrar. |
+| Domain.WHOIS.Registrar.Email | string | The email of the registrar. |
+| Domain.WHOIS.Registrar.Id | string | The ID of the registrar. |
+| Domain.WHOIS.Registrar.Phone | string | The phone number of the registrar. |
+| Domain.WHOIS.Registrar.Url | string | The URL of the registrar. |
+| Domain.WHOIS.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. |
+| Domain.WHOIS.Emails | string | The abuse emails. |
+| Domain.WHOIS.Address | string | The abuse address. |
+| Domain.WHOIS.Organization | string | The organization domain name. |
+| Domain.WHOIS.WhoisServer | string | The whois server name. |
+| Domain.WHOIS.Phone | string | The phone number of the tech administrator. |
+| Domain.WHOIS.Admin | object | Administrator information. |
+| Domain.WHOIS.Admin.Address | string | The address of the administrator. |
+| Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. |
+| Domain.WHOIS.Admin.C | string | The C field of the administrator. |
+| Domain.WHOIS.Admin.City | string | The city of the administrator. |
+| Domain.WHOIS.Admin.Country | string | The country of the administrator. |
+| Domain.WHOIS.Admin.Email | string | The email address of the administrator. |
+| Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. |
+| Domain.WHOIS.Admin.FaxExt | string | The fax extension of the administrator. |
+| Domain.WHOIS.Admin.Id | string | The ID of the administrator. |
+| Domain.WHOIS.Admin.Name | string | The name of the administrator. |
+| Domain.WHOIS.Admin.Org | string | The organization of the administrator. |
+| Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. |
+| Domain.WHOIS.Admin.PhoneExt | string | The phone extension of the administrator. |
+| Domain.WHOIS.Admin.PostalCode | string | The postal code of the administrator. |
+| Domain.WHOIS.Admin.State | string | The state of the administrator. |
+| Domain.WHOIS.Admin.StateProvince | string | The state or province of the administrator. |
+| Domain.WHOIS.Admin.Street | string | The street of the administrator. |
+| Domain.WHOIS.Registrant.Name | string | The name of the registrant. |
+| Domain.WHOIS.Registrant.Email | string | The email address of the registrant. |
+| Domain.WHOIS.Registrant.Country | string | The country of the registrant. |
+| Domain.WHOIS.Registrant.State | string | The state of the registrant. |
+| Domain.WHOIS.Registrant.Org | string | The organization of the registrant. |
+| Domain.WHOIS.Registrant.PostalCode | string | The postal code of the registrant. |
+| Domain.WHOIS.Registrant.Street | string | The street of the registrant. |
+| Domain.WHOIS.Registrant.Phone | string | The phone number of the registrant. |
+| Domain.WHOIS.Registrant.City | string | The city of the registrant. |
+| Domain.WHOIS.Registrant.Address | string | The address of the registrant. |
+| Domain.WHOIS.Registrant.ContactName | string | The contact name of the registrant. |
+| Domain.WHOIS.Registrant.Fax | string | The fax of the registrant. |
+| Domain.WHOIS.Registrant.Id | string | The ID of the registrant. |
+| Domain.WHOIS.Registrant.Number | string | The number of the registrant. |
+| Domain.WHOIS.Registrant.StateProvince | string | The state province of the registrant. |
+| Domain.WHOIS.Raw | string | The raw output from python-whois lib. |
+| Domain.WHOIS.Administrator | string | The country of the domain administrator. |
+| Domain.WHOIS.Tech.Name | string | The name of the tech contact. |
+| Domain.WHOIS.Tech.Address | string | The address of the tech contact. |
+| Domain.WHOIS.Tech.City | string | The city of the tech contact. |
+| Domain.WHOIS.Tech.Country | string | The country of the tech contact. |
+| Domain.WHOIS.Tech.Email | string | The email address of the tech contact. |
+| Domain.WHOIS.Tech.Fax | string | The fax number of the tech contact. |
+| Domain.WHOIS.Tech.ID | string | The ID of the tech contact. |
+| Domain.WHOIS.Tech.Org | string | The organization of the tech contact. |
+| Domain.WHOIS.Tech.Phone | string | The phone number of the tech contact. |
+| Domain.WHOIS.Tech.PostalCode | string | The postal code of the tech contact. |
+| Domain.WHOIS.Tech.State | string | The state of the tech contact. |
+| Domain.WHOIS.Tech.StateProvince | string | The state/province of the tech contact. |
+| Domain.WHOIS.Tech.Street | string | The street of the tech contact. |
+| Domain.WHOIS.ID | string | The ID of the domain. |
+| Domain.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. |
+| Domain.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. |
+| Domain.WHOIS.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. |
+| Domain.WHOIS.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. |
+| Domain.FeedRelatedIndicators.type | String | \(Legacy output\) Indicators that are associated with the domain. |
+| Domain.FeedRelatedIndicators.value | String | \(Legacy output\) The type of the indicators that are associated with the domain. |
+| Domain.Whois.Name | string | \(Legacy output\) The domain name. |
+| Domain.Whois.DomainStatus | string | \(Legacy output\) The domain status. |
+| Domain.Whois.DNSSec | string | \(Legacy output\) The domain name system security extension \(DNSSEC\). |
+| Domain.Whois.NameServers | string | \(Legacy output\) The name servers. |
+| Domain.Whois.CreationDate | date | \(Legacy output\) The date that the domain was created \(UTC\). |
+| Domain.Whois.UpdatedDate | date | \(Legacy output\)The date that the domain was last updated \(UTC\). |
+| Domain.Whois.ExpirationDate | date | \(Legacy output\)The date that the domain expires \(UTC\). |
+| Domain.Whois.Registrar.Name | string | \(Legacy output\)The name of the registrar. |
+| Domain.Whois.Emails | string | \(Legacy output\)The abuse emails. |
+| Domain.Whois.Registrar.AbuseEmail | string | \(Legacy output\) The email address of the contact for reporting abuse. |
+| Domain.Whois.Registrant.name | string | \(Legacy output\) The name of the registrant. |
+| Domain.Whois.Registrant.email | string | \(Legacy output\) The email address of the registrant. |
+| Domain.Whois.Raw | string | \(Legacy output\) The raw output. |
+| Domain.Whois.Administrator.country | string | \(Legacy output\) The country of the domain administrator. |
+| Domain.Whois.Administrator.name | string | \(Legacy output\) The name of the domain administrator. |
+| Domain.Whois.Administrator.state | string | \(Legacy output\) The state of the domain administrator. |
+| Domain.Whois.Administrator.email | string | \(Legacy output\) The email address of the domain administrator. |
+| Domain.Whois.Administrator.organization | string | \(Legacy output\) The organization of the domain administrator. |
+| Domain.Whois.Administrator.postalcode | string | \(Legacy output\) The postal code of the domain administrator. |
+| Domain.Whois.Administrator.street | string | \(Legacy output\) The street of the the domain admin. |
+| Domain.Whois.Administrator.phone | string | \(Legacy output\) The phone number of the domain administrator. |
+| Domain.Whois.Administrator.city | string | \(Legacy output\) The city of the domain administrator. |
+| Domain.Whois.TechAdmin.country | string | \(Legacy output\) The country of the tech administrator. |
+| Domain.Whois.TechAdmin.name | string | \(Legacy output\) The name of the tech administrator. |
+| Domain.Whois.TechAdmin.state | string | \(Legacy output\) The state of the tech administrator. |
+| Domain.Whois.TechAdmin.email | string | \(Legacy output\) The email address of the tech administrator. |
+| Domain.Whois.TechAdmin.organization | string | \(Legacy output\) The organization of the tech administrator. |
+| Domain.Whois.TechAdmin.postalcode | string | \(Legacy output\) The postal code of the tech administrator. |
+| Domain.Whois.TechAdmin.street | string | \(Legacy output\) The street of the tech administrator. |
+| Domain.Whois.TechAdmin.phone | string | \(Legacy output\) The phone number of the tech administrator. |
+| Domain.Whois.TechAdmin.city | string | \(Legacy output\) The city of the tech administrator. |
+| Domain.Whois.Registrant.country | string | \(Legacy output\) The country of the registrant. |
+| Domain.Whois.Registrant.state | string | \(Legacy output\) The state of the registrant. |
+| Domain.Whois.Registrant.organization | string | \(Legacy output\) The organization of the registrant. |
+| Domain.Whois.Registrant.postalcode | string | \(Legacy output\) The postal code of the registrant. |
+| Domain.Whois.Registrant.street | string | \(Legacy output\) The street of the registrant. |
+| Domain.Whois.Registrant.phone | string | \(Legacy output\) The phone number of the registrant. |
+| Domain.Whois.Registrant.city | string | \(Legacy output\) The city of the registrant. |
+| Domain.Whois.ID | string | \(Legacy output\) The ID of the domain. |
+| Domain.Whois.QueryStatus | string | \(Legacy output\) The result of the command \("Success" or "Failed"\). |
+| Domain.Whois.QueryValue | string | \(Legacy output\) The query requested by the user. |
 | Domain.Whois.QueryResult | Boolean | \(Legacy output\) Whether the query found a matching result. |  
 
-
 #### Command example
+
 ```!whois query="paloaltonetworks.com"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -345,242 +348,246 @@ This pack relies on free services for WHOIS information. As with many free servi
 #### Human Readable Output
 
 >### Whois results for paloaltonetworks.com
+>
 >|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|WhoisServer|
 >|---|---|---|---|---|---|---|---|---|---|
 >| paloaltonetworks.com | 21-02-2005 | 21-02-2026 | 08-02-2024 | a1-184.akam.net,<br>a11-64.akam.net,<br>a12-67.akam.net,<br>a13-66.akam.net,<br>a2-65.akam.net,<br>a4-64.akam.net | Palo Alto Networks, Inc. | Name: MarkMonitor, Inc. | clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,<br>clientTransferProhibited https://icann.org/epp#clientTransferProhibited,<br>clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,<br>clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited),<br>clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited),<br>clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited) | abusecomplaints@markmonitor.com,<br>whoisrequest@markmonitor.com | whois.markmonitor.com |
 
 ### domain
+
 ***
 Provides data enrichment for domains.
-
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to enrich. | Required | 
-| recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional | 
-
+| domain | The domain to enrich. | Required |
+| recursive | Whether to get the raw response from the whois servers recursively. Default value is True. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Score | string | The actual score. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| Domain.Name | string | The domain name. | 
-| Domain.DomainStatus | String | The domain status. | 
-| Domain.ExpirationDate | Date | The date that the domain expires \(UTC\). | 
-| Domain.NameServers | String | The name servers. | 
-| Domain.Organization | String | The organization name. | 
-| Domain.ID | string | The ID of the domain. | 
-| Domain.UpdatedDate | Date | The date that the domain was last updated \(UTC\). | 
-| Domain.Dnssec | string | The domain name system security extension \(DNSSEC\). | 
-| Domain.Country | string | The domain country. | 
-| Domain.State | string | The domain state. | 
-| Domain.City | string | The domain city. | 
-| Domain.CreationDate | date | The date that the domain was created \(UTC\). | 
-| Domain.Registrar.Name | string | The name of the registrar. | 
-| Domain.Registrar.Address | string | The address of the registrar. | 
-| Domain.Registrar.Email | string | The email of the registrar. | 
-| Domain.Registrar.Id | string | The ID of the registrar. | 
-| Domain.Registrar.Phone | string | The phone number of the registrar. | 
-| Domain.Registrar.Url | string | The URL of the registrar. | 
-| Domain.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
-| Domain.Emails | string | The abuse emails. | 
-| Domain.Address | string | The abuse address. | 
-| Domain.WhoisServer | string | The whois server name. | 
-| Domain.Phone | string | The phone number of the tech administrator. | 
-| Domain.Admin | object | Administrator information. | 
-| Domain.Admin.Address | string | The address of the administrator. | 
-| Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
-| Domain.Admin.C | string | The C field of the administrator. | 
-| Domain.Admin.City | string | The city of the administrator. | 
-| Domain.Admin.Country | string | The country of the administrator. | 
-| Domain.Admin.Email | string | The email address of the administrator. | 
-| Domain.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.Admin.FaxExt | string | The fax extension of the administrator. | 
-| Domain.Admin.Id | string | The ID of the administrator. | 
-| Domain.Admin.Name | string | The name of the administrator. | 
-| Domain.Admin.Org | string | The organization of the administrator. | 
-| Domain.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.Admin.PhoneExt | string | The phone extension of the administrator. | 
-| Domain.Admin.PostalCode | string | The postal code of the administrator. | 
-| Domain.Admin.State | string | The state of the administrator. | 
-| Domain.Admin.StateProvince | string | The state or province of the administrator. | 
-| Domain.Admin.Street | string | The street of the administrator. | 
-| Domain.Registrant.Name | string | The name of the registrant. | 
-| Domain.Registrant.Email | string | The email address of the registrant. | 
-| Domain.Registrant.Country | string | The country of the registrant. | 
-| Domain.Registrant.State | string | The state of the registrant. | 
-| Domain.Registrant.Org | string | The organization of the registrant. | 
-| Domain.Registrant.PostalCode | string | The postal code of the registrant. | 
-| Domain.Registrant.Street | string | The street of the registrant. | 
-| Domain.Registrant.Phone | string | The phone number of the registrant. | 
-| Domain.Registrant.City | string | The city of the registrant. | 
-| Domain.Registrant.Address | string | The address of the registrant. | 
-| Domain.Registrant.ContactName | string | The contact name of the registrant. | 
-| Domain.Registrant.Fax | string | The fax of the registrant. | 
-| Domain.Registrant.Id | string | The ID of the registrant. | 
-| Domain.Registrant.Number | string | The number of the registrant. | 
-| Domain.Registrant.StateProvince | string | The state province of the registrant. | 
-| Domain.Raw | string | The raw output from python-whois lib. | 
-| Domain.Administrator | string | The country of the domain administrator. | 
-| Domain.Tech.Name | string | The name of the tech contact. | 
-| Domain.Tech.Address | string | The address of the tech contact. | 
-| Domain.Tech.City | string | The city of the tech contact. | 
-| Domain.Tech.Country | string | The country of the tech contact. | 
-| Domain.Tech.Email | string | The email address of the tech contact. | 
-| Domain.Tech.Fax | string | The fax number of the tech contact. | 
-| Domain.Tech.ID | string | The ID of the tech contact. | 
-| Domain.Tech.Org | string | The organization of the tech contact. | 
-| Domain.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.Tech.PostalCode | string | The postal code of the tech contact. | 
-| Domain.Tech.State | string | The state of the tech contact. | 
-| Domain.Tech.StateProvince | string | The state/province of the tech contact. | 
-| Domain.Tech.Street | string | The street of the tech contact. | 
-| Domain.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. | 
-| Domain.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. | 
-| Domain.WHOIS.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. | 
-| Domain.WHOIS.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. | 
-| Domain.WHOIS.Name | string | The domain name. | 
-| Domain.WHOIS.ID | string | The ID of the domain. | 
-| Domain.WHOIS.DomainStatus | string | The domain status. | 
-| Domain.WHOIS.Dnssec | string | The domain name system security extension \(DNSSEC\). | 
-| Domain.WHOIS.NameServers | string | The name servers. | 
-| Domain.WHOIS.Country | string | The domain country. | 
-| Domain.WHOIS.State | string | The domain state. | 
-| Domain.WHOIS.City | string | The domain city. | 
-| Domain.WHOIS.CreationDate | date | The date that the domain was created \(UTC\). | 
-| Domain.WHOIS.UpdatedDate | date | The date that the domain was last updated \(UTC\). | 
-| Domain.WHOIS.ExpirationDate | date | The date that the domain expires \(UTC\). | 
-| Domain.WHOIS.Registrar.Name | string | The name of the registrar. | 
-| Domain.WHOIS.Registrar.Address | string | The address of the registrar. | 
-| Domain.WHOIS.Registrar.Email | string | The email of the registrar. | 
-| Domain.WHOIS.Registrar.Id | string | The ID of the registrar. | 
-| Domain.WHOIS.Registrar.Phone | string | The phone number of the registrar. | 
-| Domain.WHOIS.Registrar.Url | string | The URL of the registrar. | 
-| Domain.WHOIS.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
-| Domain.WHOIS.Emails | string | The abuse emails. | 
-| Domain.WHOIS.Address | string | The abuse address. | 
-| Domain.WHOIS.Organization | string | The organization domain name. | 
-| Domain.WHOIS.WhoisServer | string | The whois server name. | 
-| Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
-| Domain.WHOIS.Admin | object | Administrator information. | 
-| Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
-| Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
-| Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
-| Domain.WHOIS.Admin.City | string | The city of the administrator. | 
-| Domain.WHOIS.Admin.Country | string | The country of the administrator. | 
-| Domain.WHOIS.Admin.Email | string | The email address of the administrator. | 
-| Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.WHOIS.Admin.FaxExt | string | The fax extension of the administrator. | 
-| Domain.WHOIS.Admin.Id | string | The ID of the administrator. | 
-| Domain.WHOIS.Admin.Name | string | The name of the administrator. | 
-| Domain.WHOIS.Admin.Org | string | The organization of the administrator. | 
-| Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.WHOIS.Admin.PhoneExt | string | The phone extension of the administrator. | 
-| Domain.WHOIS.Admin.PostalCode | string | The postal code of the administrator. | 
-| Domain.WHOIS.Admin.State | string | The state of the administrator. | 
-| Domain.WHOIS.Admin.StateProvince | string | The state or province of the administrator. | 
-| Domain.WHOIS.Admin.Street | string | The street of the administrator. | 
-| Domain.WHOIS.Registrant.Name | string | The name of the registrant. | 
-| Domain.WHOIS.Registrant.Email | string | The email address of the registrant. | 
-| Domain.WHOIS.Registrant.Country | string | The country of the registrant. | 
-| Domain.WHOIS.Registrant.State | string | The state of the registrant. | 
-| Domain.WHOIS.Registrant.Org | string | The organization of the registrant. | 
-| Domain.WHOIS.Registrant.PostalCode | string | The postal code of the registrant. | 
-| Domain.WHOIS.Registrant.Street | string | The street of the registrant. | 
-| Domain.WHOIS.Registrant.Phone | string | The phone number of the registrant. | 
-| Domain.WHOIS.Registrant.City | string | The city of the registrant. | 
-| Domain.WHOIS.Registrant.Address | string | The address of the registrant. | 
-| Domain.WHOIS.Registrant.ContactName | string | The contact name of the registrant. | 
-| Domain.WHOIS.Registrant.Fax | string | The fax of the registrant. | 
-| Domain.WHOIS.Registrant.Id | string | The ID of the registrant. | 
-| Domain.WHOIS.Registrant.Number | string | The number of the registrant. | 
-| Domain.WHOIS.Registrant.StateProvince | string | The state province of the registrant. | 
-| Domain.WHOIS.Raw | string | The raw output from python-whois lib. | 
-| Domain.WHOIS.Administrator | string | The country of the domain administrator. | 
-| Domain.WHOIS.Tech.Name | string | The name of the tech contact. | 
-| Domain.WHOIS.Tech.Address | string | The address of the tech contact. | 
-| Domain.WHOIS.Tech.City | string | The city of the tech contact. | 
-| Domain.WHOIS.Tech.Country | string | The country of the tech contact. | 
-| Domain.WHOIS.Tech.Email | string | The email address of the tech contact. | 
-| Domain.WHOIS.Tech.Fax | string | The fax number of the tech contact. | 
-| Domain.WHOIS.Tech.ID | string | The ID of the tech contact. | 
-| Domain.WHOIS.Tech.Org | string | The organization of the tech contact. | 
-| Domain.WHOIS.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.WHOIS.Tech.PostalCode | string | The postal code of the tech contact. | 
-| Domain.WHOIS.Tech.State | string | The state of the tech contact. | 
-| Domain.WHOIS.Tech.StateProvince | string | The state/province of the tech contact. | 
-| Domain.WHOIS.Tech.Street | string | The street of the tech contact. | 
-| Domain.Whois.Name | string | \(Legacy output\) The domain name. | 
-| Domain.Whois.DomainStatus | string | \(Legacy output\) The domain status. | 
-| Domain.Whois.DNSSec | string | \(Legacy output\) The domain name system security extension \(DNSSEC\). | 
-| Domain.Whois.NameServers | string | \(Legacy output\) The name servers. | 
-| Domain.Whois.CreationDate | date | \(Legacy output\) The date that the domain was created \(UTC\). | 
-| Domain.Whois.UpdatedDate | date | \(Legacy output\) The date that the domain was last updated \(UTC\). | 
-| Domain.Whois.ExpirationDate | date | \(Legacy output\) The date that the domain expires \(UTC\). | 
-| Domain.Whois.Registrar.Name | string | \(Legacy output\) The name of the registrar. | 
-| Domain.Whois.Emails | string | \(Legacy output\) The abuse emails. | 
-| Domain.Whois.Registrar.AbuseEmail | string | \(Legacy output\) The email address of the contact for reporting abuse. | 
-| Domain.Whois.Registrant.name | string | \(Legacy output\) The name of the registrant. | 
-| Domain.Whois.Registrant.email | string | \(Legacy output\) The email address of the registrant. | 
-| Domain.Whois.Raw | string | \(Legacy output\) The raw output. | 
-| Domain.Whois.Administrator.country | string | \(Legacy output\) The country of the domain administrator. | 
-| Domain.Whois.Administrator.name | string | \(Legacy output\) The name of the domain administrator. | 
-| Domain.Whois.Administrator.state | string | \(Legacy output\) The state of the domain administrator. | 
-| Domain.Whois.Administrator.email | string | \(Legacy output\) The email address of the domain administrator. | 
-| Domain.Whois.Administrator.organization | string | \(Legacy output\) The organization of the domain administrator. | 
-| Domain.Whois.Administrator.postalcode | string | \(Legacy output\) The postal code of the domain administrator. | 
-| Domain.Whois.Administrator.street | string | \(Legacy output\) The street of the domain administrator. | 
-| Domain.Whois.Administrator.phone | string | \(Legacy output\) The phone number of the domain administrator. | 
-| Domain.Whois.Administrator.city | string | \(Legacy output\) The city of the domain administrator. | 
-| Domain.Whois.TechAdmin.country | string | \(Legacy output\) The country of the tech administrator. | 
-| Domain.Whois.TechAdmin.name | string | \(Legacy output\) The name of the tech administrator. | 
-| Domain.Whois.TechAdmin.state | string | \(Legacy output\) The state of the tech administrator. | 
-| Domain.Whois.TechAdmin.email | string | \(Legacy output\) The email address of the tech administrator. | 
-| Domain.Whois.TechAdmin.organization | string | \(Legacy output\) The organization of the tech administrator. | 
-| Domain.Whois.TechAdmin.postalcode | string | \(Legacy output\) The postal code of the tech administrator. | 
-| Domain.Whois.TechAdmin.street | string | \(Legacy output\) The street of the tech administrator. | 
-| Domain.Whois.TechAdmin.phone | string | \(Legacy output\) The phone number of the tech administrator. | 
-| Domain.Whois.TechAdmin.city | string | \(Legacy output\) The city of the tech administrator. | 
-| Domain.Whois.Registrant.country | string | \(Legacy output\) The country of the registrant. | 
-| Domain.Whois.Registrant.state | string | \(Legacy output\) The state of the registrant. | 
-| Domain.Whois.Registrant.organization | string | \(Legacy output\) The organization of the registrant. | 
-| Domain.Whois.Registrant.postalcode | string | \(Legacy output\) The postal code of the registrant. | 
-| Domain.Whois.Registrant.street | string | \(Legacy output\) The street of the registrant. | 
-| Domain.Whois.Registrant.phone | string | \(Legacy output\) The phone number of the registrant. | 
-| Domain.Whois.Registrant.city | string | \(Legacy output\) The city of the registrant. | 
-| Domain.Whois.ID | string | \(Legacy output\) The ID of the domain. | 
-| Domain.Whois.QueryStatus | string | \(Legacy output\) The result of the command \("Success" or "Failed"\). | 
-| Domain.Whois.QueryResult | Boolean | \(Legacy output\) Whether the query found a matching result. | 
-| Domain.Admin.Country | String | \(Legacy output\) The country of the domain administrator. | 
-| Domain.Admin.Name | String | \(Legacy output\) The name of domain administrator. | 
-| Domain.Admin.State | String | \(Legacy output\) The state of domain administrator. | 
-| Domain.Admin.country | String | \(Legacy output\) The country of the domain administrator. | 
-| Domain.Admin.name | String | \(Legacy output\) The name of domain administrator. | 
-| Domain.Admin.state | String | \(Legacy output\) The state of domain administrator. | 
-| Domain.Registrant.country | String | \(Legacy output\) The country of the registrant. | 
-| Domain.Registrant.organization | String | \(Legacy output\) The organization of the registrant. | 
-| Domain.Registrant.state | String | \(Legacy output\) The state of the registrant. | 
-| Domain.FeedRelatedIndicators.type | String | \(Legacy output\) Indicators that are associated with the domain. | 
-| Domain.FeedRelatedIndicators.value | String | \(Legacy output\) The type of the indicators that are associated with the domain. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| DBotScore.Score | string | The actual score. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Domain.Name | string | The domain name. |
+| Domain.DomainStatus | String | The domain status. |
+| Domain.ExpirationDate | Date | The date that the domain expires \(UTC\). |
+| Domain.NameServers | String | The name servers. |
+| Domain.Organization | String | The organization name. |
+| Domain.ID | string | The ID of the domain. |
+| Domain.UpdatedDate | Date | The date that the domain was last updated \(UTC\). |
+| Domain.Dnssec | string | The domain name system security extension \(DNSSEC\). |
+| Domain.Country | string | The domain country. |
+| Domain.State | string | The domain state. |
+| Domain.City | string | The domain city. |
+| Domain.CreationDate | date | The date that the domain was created \(UTC\). |
+| Domain.Registrar.Name | string | The name of the registrar. |
+| Domain.Registrar.Address | string | The address of the registrar. |
+| Domain.Registrar.Email | string | The email of the registrar. |
+| Domain.Registrar.Id | string | The ID of the registrar. |
+| Domain.Registrar.Phone | string | The phone number of the registrar. |
+| Domain.Registrar.Url | string | The URL of the registrar. |
+| Domain.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. |
+| Domain.Emails | string | The abuse emails. |
+| Domain.Address | string | The abuse address. |
+| Domain.WhoisServer | string | The whois server name. |
+| Domain.Phone | string | The phone number of the tech administrator. |
+| Domain.Admin | object | Administrator information. |
+| Domain.Admin.Address | string | The address of the administrator. |
+| Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. |
+| Domain.Admin.C | string | The C field of the administrator. |
+| Domain.Admin.City | string | The city of the administrator. |
+| Domain.Admin.Country | string | The country of the administrator. |
+| Domain.Admin.Email | string | The email address of the administrator. |
+| Domain.Admin.Fax | string | The fax number of the administrator. |
+| Domain.Admin.FaxExt | string | The fax extension of the administrator. |
+| Domain.Admin.Id | string | The ID of the administrator. |
+| Domain.Admin.Name | string | The name of the administrator. |
+| Domain.Admin.Org | string | The organization of the administrator. |
+| Domain.Admin.Phone | string | The phone number of the administrator. |
+| Domain.Admin.PhoneExt | string | The phone extension of the administrator. |
+| Domain.Admin.PostalCode | string | The postal code of the administrator. |
+| Domain.Admin.State | string | The state of the administrator. |
+| Domain.Admin.StateProvince | string | The state or province of the administrator. |
+| Domain.Admin.Street | string | The street of the administrator. |
+| Domain.Registrant.Name | string | The name of the registrant. |
+| Domain.Registrant.Email | string | The email address of the registrant. |
+| Domain.Registrant.Country | string | The country of the registrant. |
+| Domain.Registrant.State | string | The state of the registrant. |
+| Domain.Registrant.Org | string | The organization of the registrant. |
+| Domain.Registrant.PostalCode | string | The postal code of the registrant. |
+| Domain.Registrant.Street | string | The street of the registrant. |
+| Domain.Registrant.Phone | string | The phone number of the registrant. |
+| Domain.Registrant.City | string | The city of the registrant. |
+| Domain.Registrant.Address | string | The address of the registrant. |
+| Domain.Registrant.ContactName | string | The contact name of the registrant. |
+| Domain.Registrant.Fax | string | The fax of the registrant. |
+| Domain.Registrant.Id | string | The ID of the registrant. |
+| Domain.Registrant.Number | string | The number of the registrant. |
+| Domain.Registrant.StateProvince | string | The state province of the registrant. |
+| Domain.Raw | string | The raw output from python-whois lib. |
+| Domain.Administrator | string | The country of the domain administrator. |
+| Domain.Tech.Name | string | The name of the tech contact. |
+| Domain.Tech.Address | string | The address of the tech contact. |
+| Domain.Tech.City | string | The city of the tech contact. |
+| Domain.Tech.Country | string | The country of the tech contact. |
+| Domain.Tech.Email | string | The email address of the tech contact. |
+| Domain.Tech.Fax | string | The fax number of the tech contact. |
+| Domain.Tech.ID | string | The ID of the tech contact. |
+| Domain.Tech.Org | string | The organization of the tech contact. |
+| Domain.Tech.Phone | string | The phone number of the tech contact. |
+| Domain.Tech.PostalCode | string | The postal code of the tech contact. |
+| Domain.Tech.State | string | The state of the tech contact. |
+| Domain.Tech.StateProvince | string | The state/province of the tech contact. |
+| Domain.Tech.Street | string | The street of the tech contact. |
+| Domain.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. |
+| Domain.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. |
+| Domain.WHOIS.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. |
+| Domain.WHOIS.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. |
+| Domain.WHOIS.Name | string | The domain name. |
+| Domain.WHOIS.ID | string | The ID of the domain. |
+| Domain.WHOIS.DomainStatus | string | The domain status. |
+| Domain.WHOIS.Dnssec | string | The domain name system security extension \(DNSSEC\). |
+| Domain.WHOIS.NameServers | string | The name servers. |
+| Domain.WHOIS.Country | string | The domain country. |
+| Domain.WHOIS.State | string | The domain state. |
+| Domain.WHOIS.City | string | The domain city. |
+| Domain.WHOIS.CreationDate | date | The date that the domain was created \(UTC\). |
+| Domain.WHOIS.UpdatedDate | date | The date that the domain was last updated \(UTC\). |
+| Domain.WHOIS.ExpirationDate | date | The date that the domain expires \(UTC\). |
+| Domain.WHOIS.Registrar.Name | string | The name of the registrar. |
+| Domain.WHOIS.Registrar.Address | string | The address of the registrar. |
+| Domain.WHOIS.Registrar.Email | string | The email of the registrar. |
+| Domain.WHOIS.Registrar.Id | string | The ID of the registrar. |
+| Domain.WHOIS.Registrar.Phone | string | The phone number of the registrar. |
+| Domain.WHOIS.Registrar.Url | string | The URL of the registrar. |
+| Domain.WHOIS.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. |
+| Domain.WHOIS.Emails | string | The abuse emails. |
+| Domain.WHOIS.Address | string | The abuse address. |
+| Domain.WHOIS.Organization | string | The organization domain name. |
+| Domain.WHOIS.WhoisServer | string | The whois server name. |
+| Domain.WHOIS.Phone | string | The phone number of the tech administrator. |
+| Domain.WHOIS.Admin | object | Administrator information. |
+| Domain.WHOIS.Admin.Address | string | The address of the administrator. |
+| Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. |
+| Domain.WHOIS.Admin.C | string | The C field of the administrator. |
+| Domain.WHOIS.Admin.City | string | The city of the administrator. |
+| Domain.WHOIS.Admin.Country | string | The country of the administrator. |
+| Domain.WHOIS.Admin.Email | string | The email address of the administrator. |
+| Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. |
+| Domain.WHOIS.Admin.FaxExt | string | The fax extension of the administrator. |
+| Domain.WHOIS.Admin.Id | string | The ID of the administrator. |
+| Domain.WHOIS.Admin.Name | string | The name of the administrator. |
+| Domain.WHOIS.Admin.Org | string | The organization of the administrator. |
+| Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. |
+| Domain.WHOIS.Admin.PhoneExt | string | The phone extension of the administrator. |
+| Domain.WHOIS.Admin.PostalCode | string | The postal code of the administrator. |
+| Domain.WHOIS.Admin.State | string | The state of the administrator. |
+| Domain.WHOIS.Admin.StateProvince | string | The state or province of the administrator. |
+| Domain.WHOIS.Admin.Street | string | The street of the administrator. |
+| Domain.WHOIS.Registrant.Name | string | The name of the registrant. |
+| Domain.WHOIS.Registrant.Email | string | The email address of the registrant. |
+| Domain.WHOIS.Registrant.Country | string | The country of the registrant. |
+| Domain.WHOIS.Registrant.State | string | The state of the registrant. |
+| Domain.WHOIS.Registrant.Org | string | The organization of the registrant. |
+| Domain.WHOIS.Registrant.PostalCode | string | The postal code of the registrant. |
+| Domain.WHOIS.Registrant.Street | string | The street of the registrant. |
+| Domain.WHOIS.Registrant.Phone | string | The phone number of the registrant. |
+| Domain.WHOIS.Registrant.City | string | The city of the registrant. |
+| Domain.WHOIS.Registrant.Address | string | The address of the registrant. |
+| Domain.WHOIS.Registrant.ContactName | string | The contact name of the registrant. |
+| Domain.WHOIS.Registrant.Fax | string | The fax of the registrant. |
+| Domain.WHOIS.Registrant.Id | string | The ID of the registrant. |
+| Domain.WHOIS.Registrant.Number | string | The number of the registrant. |
+| Domain.WHOIS.Registrant.StateProvince | string | The state province of the registrant. |
+| Domain.WHOIS.Raw | string | The raw output from python-whois lib. |
+| Domain.WHOIS.Administrator | string | The country of the domain administrator. |
+| Domain.WHOIS.Tech.Name | string | The name of the tech contact. |
+| Domain.WHOIS.Tech.Address | string | The address of the tech contact. |
+| Domain.WHOIS.Tech.City | string | The city of the tech contact. |
+| Domain.WHOIS.Tech.Country | string | The country of the tech contact. |
+| Domain.WHOIS.Tech.Email | string | The email address of the tech contact. |
+| Domain.WHOIS.Tech.Fax | string | The fax number of the tech contact. |
+| Domain.WHOIS.Tech.ID | string | The ID of the tech contact. |
+| Domain.WHOIS.Tech.Org | string | The organization of the tech contact. |
+| Domain.WHOIS.Tech.Phone | string | The phone number of the tech contact. |
+| Domain.WHOIS.Tech.PostalCode | string | The postal code of the tech contact. |
+| Domain.WHOIS.Tech.State | string | The state of the tech contact. |
+| Domain.WHOIS.Tech.StateProvince | string | The state/province of the tech contact. |
+| Domain.WHOIS.Tech.Street | string | The street of the tech contact. |
+| Domain.Whois.Name | string | \(Legacy output\) The domain name. |
+| Domain.Whois.DomainStatus | string | \(Legacy output\) The domain status. |
+| Domain.Whois.DNSSec | string | \(Legacy output\) The domain name system security extension \(DNSSEC\). |
+| Domain.Whois.NameServers | string | \(Legacy output\) The name servers. |
+| Domain.Whois.CreationDate | date | \(Legacy output\) The date that the domain was created \(UTC\). |
+| Domain.Whois.UpdatedDate | date | \(Legacy output\) The date that the domain was last updated \(UTC\). |
+| Domain.Whois.ExpirationDate | date | \(Legacy output\) The date that the domain expires \(UTC\). |
+| Domain.Whois.Registrar.Name | string | \(Legacy output\) The name of the registrar. |
+| Domain.Whois.Emails | string | \(Legacy output\) The abuse emails. |
+| Domain.Whois.Registrar.AbuseEmail | string | \(Legacy output\) The email address of the contact for reporting abuse. |
+| Domain.Whois.Registrant.name | string | \(Legacy output\) The name of the registrant. |
+| Domain.Whois.Registrant.email | string | \(Legacy output\) The email address of the registrant. |
+| Domain.Whois.Raw | string | \(Legacy output\) The raw output. |
+| Domain.Whois.Administrator.country | string | \(Legacy output\) The country of the domain administrator. |
+| Domain.Whois.Administrator.name | string | \(Legacy output\) The name of the domain administrator. |
+| Domain.Whois.Administrator.state | string | \(Legacy output\) The state of the domain administrator. |
+| Domain.Whois.Administrator.email | string | \(Legacy output\) The email address of the domain administrator. |
+| Domain.Whois.Administrator.organization | string | \(Legacy output\) The organization of the domain administrator. |
+| Domain.Whois.Administrator.postalcode | string | \(Legacy output\) The postal code of the domain administrator. |
+| Domain.Whois.Administrator.street | string | \(Legacy output\) The street of the domain administrator. |
+| Domain.Whois.Administrator.phone | string | \(Legacy output\) The phone number of the domain administrator. |
+| Domain.Whois.Administrator.city | string | \(Legacy output\) The city of the domain administrator. |
+| Domain.Whois.TechAdmin.country | string | \(Legacy output\) The country of the tech administrator. |
+| Domain.Whois.TechAdmin.name | string | \(Legacy output\) The name of the tech administrator. |
+| Domain.Whois.TechAdmin.state | string | \(Legacy output\) The state of the tech administrator. |
+| Domain.Whois.TechAdmin.email | string | \(Legacy output\) The email address of the tech administrator. |
+| Domain.Whois.TechAdmin.organization | string | \(Legacy output\) The organization of the tech administrator. |
+| Domain.Whois.TechAdmin.postalcode | string | \(Legacy output\) The postal code of the tech administrator. |
+| Domain.Whois.TechAdmin.street | string | \(Legacy output\) The street of the tech administrator. |
+| Domain.Whois.TechAdmin.phone | string | \(Legacy output\) The phone number of the tech administrator. |
+| Domain.Whois.TechAdmin.city | string | \(Legacy output\) The city of the tech administrator. |
+| Domain.Whois.Registrant.country | string | \(Legacy output\) The country of the registrant. |
+| Domain.Whois.Registrant.state | string | \(Legacy output\) The state of the registrant. |
+| Domain.Whois.Registrant.organization | string | \(Legacy output\) The organization of the registrant. |
+| Domain.Whois.Registrant.postalcode | string | \(Legacy output\) The postal code of the registrant. |
+| Domain.Whois.Registrant.street | string | \(Legacy output\) The street of the registrant. |
+| Domain.Whois.Registrant.phone | string | \(Legacy output\) The phone number of the registrant. |
+| Domain.Whois.Registrant.city | string | \(Legacy output\) The city of the registrant. |
+| Domain.Whois.ID | string | \(Legacy output\) The ID of the domain. |
+| Domain.Whois.QueryStatus | string | \(Legacy output\) The result of the command \("Success" or "Failed"\). |
+| Domain.Whois.QueryResult | Boolean | \(Legacy output\) Whether the query found a matching result. |
+| Domain.Admin.Country | String | \(Legacy output\) The country of the domain administrator. |
+| Domain.Admin.Name | String | \(Legacy output\) The name of domain administrator. |
+| Domain.Admin.State | String | \(Legacy output\) The state of domain administrator. |
+| Domain.Admin.country | String | \(Legacy output\) The country of the domain administrator. |
+| Domain.Admin.name | String | \(Legacy output\) The name of domain administrator. |
+| Domain.Admin.state | String | \(Legacy output\) The state of domain administrator. |
+| Domain.Registrant.country | String | \(Legacy output\) The country of the registrant. |
+| Domain.Registrant.organization | String | \(Legacy output\) The organization of the registrant. |
+| Domain.Registrant.state | String | \(Legacy output\) The state of the registrant. |
+| Domain.FeedRelatedIndicators.type | String | \(Legacy output\) Indicators that are associated with the domain. |
+| Domain.FeedRelatedIndicators.value | String | \(Legacy output\) The type of the indicators that are associated with the domain. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
+
 ```!domain domain="google.com"```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -691,77 +698,77 @@ Provides data enrichment for domains.
 }
 ```
 
-
 #### Human Readable Output
 
-
 >### Whois results for google.com
+>
 >|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|WhoisServer|
 >|---|---|---|---|---|---|---|---|---|---|
 >| google.com | 15-09-1997 | 14-09-2028 | 09-09-2019 | ns1.google.com,<br>ns2.google.com,<br>ns3.google.com,<br>ns4.google.com | Google LLC | Name: MarkMonitor, Inc. | clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,<br>clientTransferProhibited https://icann.org/epp#clientTransferProhibited,<br>clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,<br>serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited,<br>serverTransferProhibited https://icann.org/epp#serverTransferProhibited,<br>serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited,<br>clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited),<br>clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited),<br>clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited),<br>serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited),<br>serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited),<br>serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited) | abusecomplaints@markmonitor.com,<br>whoisrequest@markmonitor.com | whois.markmonitor.com |
 
-
-
 ### ip
+
 ***
 Provides data enrichment for ips.
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to enrich. | Required | 
-
+| ip | The IP to enrich. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Whois.IP.asn | string | Globally unique identifier used for routing information exchange with Autonomous Systems. | 
-| Whois.IP.asn_cidr | string | Network routing block assigned to an ASN. | 
-| Whois.IP.asn_country_code | string | ASN assigned country code in ISO 3166-1 format. | 
-| Whois.IP.asn_date | Date | ASN allocation date in ISO 8601 format. | 
-| Whois.IP.asn_description | string | The ASN description | 
-| Whois.IP.asn_registry | string | ASN assigned regional internet registry. | 
-| Whois.IP.entities | string | list of object names referenced by an RIR network. Map these to the objects dictionary keys. | 
-| Whois.IP.network.cidr | string | Network routing block an IP address belongs to. | 
-| Whois.IP.network.country | string | Country code registered with the RIR in ISO 3166-1 format. | 
-| Whois.IP.network.end_address | string | The last IP address in a network block. | 
-| Whois.IP.network.events.action | string | The reason for an event. | 
-| Whois.IP.network.events.actor | string | The identifier for an event initiator \(if any\). | 
-| Whois.IP.network.events.timestamp | Date | The date an event occurred in ISO 8601 format. | 
-| Whois.IP.network.handle | string | Unique identifier for a registered object. | 
-| Whois.IP.network.ip_version | string | IP protocol version \(v4 or v6\) of an IP address. | 
-| Whois.IP.network.links | string | HTTP/HTTPS links provided for an RIR object. | 
-| Whois.IP.network.name | string | The identifier assigned to the network registration for an IP address. | 
-| Whois.IP.network.notices.description | string | The description/body of a notice. | 
-| Whois.IP.network.notices.links | string | list of HTTP/HTTPS links provided for a notice. | 
-| Whois.IP.network.notices.title | string | The title/header for a notice. | 
-| Whois.IP.network.parent_handle | string | Unique identifier for the parent network of a registered network. | 
-| Whois.IP.network.remarks | string | List of remark \(notice\) dictionaries. | 
-| Whois.IP.network.start_address | string | The first IP address in a network block. | 
-| Whois.IP.network.status | string | List indicating the state of a registered object. | 
-| Whois.IP.network.type | string | The RIR classification of a registered network. | 
-| Whois.IP.query | string | The IP address | 
-| IP.Address | string | IP address | 
-| IP.ASN | string | The autonomous system name for the IP address, for example: "AS8948". | 
-| IP.Geo.Country | string | The country in which the IP address is located. | 
-| IP.Organization.Name | string | The organization name. | 
-| IP.feed_related_indicators.value | string | Indicators that are associated with the IP. | 
-| IP.feed_related_indicators.type | string | The type of the indicators that are associated with the IP | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| Whois.IP.asn | string | Globally unique identifier used for routing information exchange with Autonomous Systems. |
+| Whois.IP.asn_cidr | string | Network routing block assigned to an ASN. |
+| Whois.IP.asn_country_code | string | ASN assigned country code in ISO 3166-1 format. |
+| Whois.IP.asn_date | Date | ASN allocation date in ISO 8601 format. |
+| Whois.IP.asn_description | string | The ASN description |
+| Whois.IP.asn_registry | string | ASN assigned regional internet registry. |
+| Whois.IP.entities | string | list of object names referenced by an RIR network. Map these to the objects dictionary keys. |
+| Whois.IP.network.cidr | string | Network routing block an IP address belongs to. |
+| Whois.IP.network.country | string | Country code registered with the RIR in ISO 3166-1 format. |
+| Whois.IP.network.end_address | string | The last IP address in a network block. |
+| Whois.IP.network.events.action | string | The reason for an event. |
+| Whois.IP.network.events.actor | string | The identifier for an event initiator \(if any\). |
+| Whois.IP.network.events.timestamp | Date | The date an event occurred in ISO 8601 format. |
+| Whois.IP.network.handle | string | Unique identifier for a registered object. |
+| Whois.IP.network.ip_version | string | IP protocol version \(v4 or v6\) of an IP address. |
+| Whois.IP.network.links | string | HTTP/HTTPS links provided for an RIR object. |
+| Whois.IP.network.name | string | The identifier assigned to the network registration for an IP address. |
+| Whois.IP.network.notices.description | string | The description/body of a notice. |
+| Whois.IP.network.notices.links | string | list of HTTP/HTTPS links provided for a notice. |
+| Whois.IP.network.notices.title | string | The title/header for a notice. |
+| Whois.IP.network.parent_handle | string | Unique identifier for the parent network of a registered network. |
+| Whois.IP.network.remarks | string | List of remark \(notice\) dictionaries. |
+| Whois.IP.network.start_address | string | The first IP address in a network block. |
+| Whois.IP.network.status | string | List indicating the state of a registered object. |
+| Whois.IP.network.type | string | The RIR classification of a registered network. |
+| Whois.IP.query | string | The IP address |
+| IP.Address | string | IP address |
+| IP.ASN | string | The autonomous system name for the IP address, for example: "AS8948". |
+| IP.Geo.Country | string | The country in which the IP address is located. |
+| IP.Organization.Name | string | The organization name. |
+| IP.feed_related_indicators.value | string | Indicators that are associated with the IP. |
+| IP.feed_related_indicators.type | string | The type of the indicators that are associated with the IP |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
+
 ```!ip ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -1077,13 +1084,17 @@ Provides data enrichment for ips.
 
 #### Human Readable Output
 
->### Whois results:
+>### Whois results
+>
 >|asn|asn_cidr|asn_date|country_code|network_name|query|
 >|---|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 1992-12-01 |  | LVLT-GOGL-8-8-8 | 8.8.8.8 |
 
 ## Troubleshooting
+
 - The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
-- 
+-
+
 ## Known limitations
+
 - The IP lookup has a rate limit of 1 lookup per second.

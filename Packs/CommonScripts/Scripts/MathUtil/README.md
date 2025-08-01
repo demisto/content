@@ -2,6 +2,7 @@ Runs the provided mathematical action on 2 provided values and produce a result.
 The result can be stored on the context using the `contextKey` argument.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +10,8 @@ The result can be stored on the context using the `contextKey` argument.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +26,7 @@ The result can be stored on the context using the `contextKey` argument.
 | contextKey | The path to store the result. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

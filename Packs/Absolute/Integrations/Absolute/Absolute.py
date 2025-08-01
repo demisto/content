@@ -108,6 +108,7 @@ CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
 VENDOR = "Absolute"
 PRODUCT = "Secure Endpoint"
 HEADERS_V3: dict = {"content-type": "text/plain"}
+MAX_PAGE_SIZE = 500  # Max allowed page size to solve the issue on absolute end where reaching the page size yield all results.
 
 
 class ClientV3(BaseClient):
@@ -391,8 +392,7 @@ def validate_absolute_api_url(base_url: str) -> str:
 def test_module(client: ClientV3) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute"""
     try:
-        client.api_request_absolute('GET', '/v3/reporting/devices', query_string='',
-                                    page=0, page_size=1, specific_page=True)
+        client.api_request_absolute("GET", "/v3/reporting/devices", query_string="", page=0, page_size=1, specific_page=True)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
@@ -1106,7 +1106,12 @@ def get_device_command(args, client) -> CommandResults:
     else:
         query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
 
-    res = client.api_request_absolute("GET", "/v3/reporting/devices", query_string=query_string)
+    res = client.api_request_absolute(
+        "GET",
+        "/v3/reporting/devices",
+        query_string=query_string,
+        page_size=MAX_PAGE_SIZE,
+    )
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
         human_readable = tableToMarkdown(f"{INTEGRATION} devices list:", outputs, removeNull=True)

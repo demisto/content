@@ -997,6 +997,100 @@ def test_fetch_notables(mocker):
     assert not incidents[0].get("owner")
 
 
+def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "creation time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the earliest_time and latest_time fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "creation time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "earliest_time" in call_args
+    assert "latest_time" in call_args
+    assert "index_earliest" not in call_args
+    assert "index_latest" not in call_args
+
+
+def test_fetch_notables_with_index_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "index time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the index_earliest and index_latest fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "index time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "index_earliest" in call_args
+    assert "index_latest" in call_args
+    assert "earliest_time" not in call_args
+    assert "latest_time" not in call_args
+
+
 """ ========== Enriching Fetch Mechanism Tests ========== """
 
 
@@ -3627,28 +3721,38 @@ class ServiceIndex:
 
 
 @pytest.mark.parametrize(
-    "given_indexes, service_indexes, expected",
+    "indexes_to_validate, existing_indexes, expected_invalid",
     [
-        # Test case: All indexes exist in the service
-        (["index1", "index2"], ["index1", "index2", "index3"], True),
-        # Test case: Some indexes do not exist in the service
-        (["index1", "index4"], ["index1", "index2", "index3"], False),
-        # Test case: Empty input indexes list
-        ([], ["index1", "index2", "index3"], True),
+        (["main", "history"], ["main", "history", "summary"], set()),
+        (["main", "invalid"], ["main", "history"], {"invalid"}),
+        ([], ["main", "history"], set()),
+        (["main"], [], {"main"}),
     ],
 )
-def test_validate_indexes(given_indexes, service_indexes, expected):
-    """
-    Given: A list of indexes' names.
-    When: Calling validate_indexes function.
-    Then: The function returns `True` if all the given index names exist within the Splunk service instance;
-          otherwise, it returns `False`.
-    """
-    from SplunkPy import validate_indexes
+def test_get_invalid_indexes(mocker, indexes_to_validate, existing_indexes, expected_invalid):
+    """Tests the get_invalid_indexes function for various scenarios."""
+    from SplunkPy import get_invalid_indexes, client
 
-    service = ServiceIndex(service_indexes)
-    # Assert that the function returns the expected result
-    assert validate_indexes(given_indexes, service) == expected
+    service_mock = MagicMock(spec=client.Service, create=True)
+    service_mock.indexes = []
+    for index_name in existing_indexes:
+        mock_index = MagicMock(spec=client.Index)
+        mock_index.name = index_name
+        service_mock.indexes.append(mock_index)
+
+    result = get_invalid_indexes(indexes_to_validate, service_mock)
+    assert result == expected_invalid
+
+
+def test_get_invalid_indexes_api_error(mocker):
+    """Tests that get_invalid_indexes returns None when the Splunk API call fails."""
+    from SplunkPy import get_invalid_indexes, client
+
+    service_mock = MagicMock(spec=client.Service, create=True)
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
+    result = get_invalid_indexes(["main"], service_mock)
+    assert result is None
 
 
 @pytest.mark.parametrize(
@@ -3710,11 +3814,11 @@ def test_parse_fields(fields, expected):
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")
 @patch("SplunkPy.extract_indexes")
-@patch("SplunkPy.validate_indexes")
+@patch("SplunkPy.get_invalid_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
-    mock_validate_indexes,
+    mock_get_invalid_indexes,
     mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
@@ -3738,7 +3842,7 @@ def test_splunk_submit_event_hec(
 
     # Mocks
     mock_parse_fields.return_value = parsed_fields
-    mock_validate_indexes.return_value = True
+    mock_get_invalid_indexes.return_value = set()
 
     if event:
         # Single event
@@ -3965,6 +4069,7 @@ def mock_service_job(sid):
     class MockBody:
         def __init__(self, message):
             self.message = message
+
         def read(self):
             return self.message
 
@@ -4018,7 +4123,6 @@ def test_splunk_job_status_not_found(mock_service):
 
 @patch("SplunkPy.client.Service")
 def test_splunk_job_status_418_error(mock_service):
-
     mock_service.job.side_effect = mock_service_job
 
     service = mock_service
@@ -4026,8 +4130,10 @@ def test_splunk_job_status_418_error(mock_service):
     result = splunk.splunk_job_status(service, args)
 
     assert len(result) == 1
-    assert ("Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
-            in result[0].readable_output)
+    assert (
+        "Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
+        in result[0].readable_output
+    )
 
 
 @patch("SplunkPy.client.Service")
@@ -4043,6 +4149,7 @@ def test_splunk_job_status_multiple_sids(mock_service):
     assert result[1].outputs == {"SID": "running_sid", "Status": "RUNNING"}
     assert result[2].readable_output == "Not found job for SID: invalid_sid"
 
+
 def test_splunk_search_parse_bad_chars():
     """
     Given:
@@ -4053,8 +4160,8 @@ def test_splunk_search_parse_bad_chars():
         The parsing removes the bad chars and proceeds successfully.
     """
     import io
-    bad_search_output = (
-b'{"preview": false, "init_offset": 0, "messages": [], "fields": [{"name": "Message"}, {"name": "_bkt"}, \
+
+    bad_search_output = b'{"preview": false, "init_offset": 0, "messages": [], "fields": [{"name": "Message"}, {"name": "_bkt"}, \
 {"name": "_cd"}, {"name": "_indextime"}, {"name": "_pre_msg"}, {"name": "_raw"}, {"name": "_serial"}, {"name": "_si"}, \
 {"name": "_sourcetype"}, {"name": "_time"}, {"name": "host"}, {"name": "index"}, {"name": "linecount"}, \
 {"name": "source"}, {"name": "sourcetype"}, {"name": "splunk_server"}], \
@@ -4067,37 +4174,112 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
 "_si": ["ip-000-00-00-000", "main"], "_sourcetype": "WinEventLog", "_time": "2025-04-23T05:04:41.000-03:00", \
 "host": "127.0.0.1", "index": "main", "linecount": "13", "source": "WinEventLog:Server", "sourcetype": "WinEventLog", \
 "splunk_server": "ip-000-00-00-000"}], "highlighted": {}}'
-    )
 
     expected_res = (
-        [{
-            'Message': 'Service started successfully.',
-            '_bkt': 'main~1111~00000000-0000-0000-0000-000000000000',
-            '_cd': '1111:0000000',
-            '_indextime': '5555555555',
-            '_pre_msg': (
-                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n'
-                'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic'
-            ),
-            '_raw': (
-                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n'
-                'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n'
-                'Message=Service started successfully.\n'
-            ),
-            '_serial': '1',
-            '_si': ['ip-000-00-00-000', 'main'],
-            '_sourcetype': 'WinEventLog',
-            '_time': '2025-04-23T05:04:41.000-03:00',
-            'host': '127.0.0.1',
-            'index': 'main',
-            'linecount': '13',
-            'source': 'WinEventLog:Server',
-            'sourcetype': 'WinEventLog',
-            'splunk_server': 'ip-000-00-00-000'}],
-        [{'Indicator': '127.0.0.1', 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True}]
+        [
+            {
+                "Message": "Service started successfully.",
+                "_bkt": "main~1111~00000000-0000-0000-0000-000000000000",
+                "_cd": "1111:0000000",
+                "_indextime": "5555555555",
+                "_pre_msg": (
+                    "04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n"
+                    "ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic"
+                ),
+                "_raw": (
+                    "04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n"
+                    "ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n"
+                    "Message=Service started successfully.\n"
+                ),
+                "_serial": "1",
+                "_si": ["ip-000-00-00-000", "main"],
+                "_sourcetype": "WinEventLog",
+                "_time": "2025-04-23T05:04:41.000-03:00",
+                "host": "127.0.0.1",
+                "index": "main",
+                "linecount": "13",
+                "source": "WinEventLog:Server",
+                "sourcetype": "WinEventLog",
+                "splunk_server": "ip-000-00-00-000",
+            }
+        ],
+        [{"Indicator": "127.0.0.1", "Type": "hostname", "Vendor": "Splunk", "Score": 0, "isTypedIndicator": True}],
     )
     mock_result_batch = io.BytesIO(bad_search_output)
 
-    res = splunk.parse_batch_of_results(mock_result_batch, 10, '')
+    res = splunk.parse_batch_of_results(mock_result_batch, 10, "")
 
     assert res == expected_res
+
+
+def test_splunk_submit_event_hec_command_index_validation_api_error(mocker):
+    """
+    Given:
+        - An event to submit to Splunk via HEC.
+        - The Splunk API call to retrieve indexes fails.
+    When:
+        - Calling splunk_submit_event_hec_command.
+    Then:
+        - A warning should be returned to the user.
+        - The event submission should still be attempted.
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    from splunklib.client import Service
+
+    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "test_index"}])
+    mocker.patch("SplunkPy.demisto.error")
+    mocker.patch("sys.exit")
+    post_mock = mocker.patch("requests.post")
+    # Mock a successful response to prevent downstream errors
+    response_mock = MagicMock()
+    response_mock.text = '{"text":"Success","code":0,"ackId":123}'
+    post_mock.return_value = response_mock
+    warning_mock = mocker.patch("SplunkPy.return_warning")
+
+    service_mock = MagicMock(spec=Service, create=True)
+    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
+
+    splunk_submit_event_hec_command(
+        params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args={"entry_id": "entry_id"}
+    )
+
+    warning_mock.assert_called_once_with(
+        "Could not verify the existence of Splunk indexes due to an API error. "
+        "Proceeding with event submission. Check the logs for more details. "
+        "If submission fails, contact Splunk support."
+    )
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"entry_id": "entry_id"},
+        {"index": "invalid_index", "event": {"event_data": "event_data"}},
+    ],
+)
+def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, args):
+    """
+    Given:
+        - An event to submit to Splunk via HEC with an invalid index.
+    When:
+        - Calling splunk_submit_event_hec_command.
+    Then:
+        - A DemistoException should be raised with the invalid index name.
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    from splunklib.client import Service
+
+    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "invalid_index"}])
+    mocker.patch(RETURN_ERROR_TARGET)
+    requests_mock.post("https://splunk.test.com/services/collector/event")
+
+    service_mock = MagicMock(spec=Service)
+    index_mock = MagicMock()
+    index_mock.name = "valid_index"
+    service_mock.indexes = [index_mock]
+
+    with pytest.raises(DemistoException) as e:
+        splunk_submit_event_hec_command(
+            params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
+        )
+    assert "The following Splunk indexes do not exist: invalid_index." in str(e.value)

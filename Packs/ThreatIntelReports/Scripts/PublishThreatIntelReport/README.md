@@ -1,6 +1,7 @@
 Sets a Threat Intel Report as published.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Sets a Threat Intel Report as published.
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Sets a Threat Intel Report as published.
 | object | The Threat Intel Report object to publish. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -1,5 +1,7 @@
 This automation translate endpoint (hostname/IP) to sensor id, Than it downloads given file paths by opening session and closing it.  
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
 | Cortex XSOAR Version | 4.1.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +21,7 @@ This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
 | timeout | Session timeout \(ms\). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -39,11 +43,12 @@ This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
 | CbLiveResponse.File.MD5 | File MD5. | String |
 | CbLiveResponse.File.Extension | File extension. | String |
 
-
 #### Command Example
+
 ```!CBLiveGetFile_v2 endpoint=EC2AMAZ-L4C2OKC path="c:\\Users\\All Users\\Desktop\\mooncake.jpg" timeout=2000```
 
 #### Context Example
+
 ```
 {
     "CbLiveResponse": {
@@ -80,8 +85,9 @@ This automation translate endpoint (hostname/IP) to sensor id, Than it downloads
 ```
 
 #### Human Readable Output
+>
 >### Files downloaded from endpoint EC2AMAZ-L4C2OKC
+>
 >|File ID|File Path|
 >|---|---|
 >| 1 | "c:\\Users\\All Users\\Desktop\\mooncake.jpg" |
-

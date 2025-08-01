@@ -3,6 +3,7 @@ Fortanix Data Security Manager (DSM) is a unified platform powered by Confidenti
 This pack provides access to Fortanix DSM secrets, keys, and plugins. Configure multiple integration instances if you need to access to different DSM Applications.
 
 ## What does this pack do?
+
 - Lists secrets
 - Fetches secret metadata
 - Export secret value

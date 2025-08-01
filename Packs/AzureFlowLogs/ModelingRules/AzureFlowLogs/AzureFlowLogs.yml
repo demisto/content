@@ -1,0 +1,6 @@
+fromversion: 8.5.0
+id: Azure_FlowLogs_ModelingRule
+name: Azure FlowLogs Modeling Rule
+rules: ''
+schema: ''
+tags: ''

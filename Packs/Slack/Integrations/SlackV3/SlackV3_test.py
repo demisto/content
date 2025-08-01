@@ -4925,7 +4925,7 @@ def test_slack_get_integration_context(mocker):
         "|Conversations Count|Conversations Size In Bytes|Mirror Size In "
         "Bytes|Mirrors Count|Users Count|Users Size In Bytes|\n"
         "|---|---|---|---|---|---|\n"
-        "| 2 | 1706 | 1397 | 5 | 2 | 1843 |\n"
+        "| 2 | 1698 | 1389 | 5 | 2 | 1835 |\n"
     )
     slack_get_integration_context()
 
@@ -4966,11 +4966,11 @@ def test_slack_get_integration_context_statistics(mocker):
 
     expected_results = {
         "Mirrors Count": 5,
-        "Mirror Size In Bytes": 1397,
+        "Mirror Size In Bytes": 1389,
         "Conversations Count": 2,
-        "Conversations Size In Bytes": 1706,
+        "Conversations Size In Bytes": 1698,
         "Users Count": 2,
-        "Users Size In Bytes": 1843,
+        "Users Size In Bytes": 1835,
     }
 
     integration_statistics, _ = slack_get_integration_context_statistics()
@@ -5232,6 +5232,7 @@ class TestGetWarRoomURL:
         url = "https://example.com/WarRoom/INCIDENT-2930"
         expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
         mocker.patch("SlackV3.is_xsiam", return_value=True)
+        mocker.patch("SlackV3.is_platform", return_value=False)
         mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "INCIDENT-2930"}}})
 
         assert get_war_room_url(url) == expected_war_room_url
@@ -5239,16 +5240,38 @@ class TestGetWarRoomURL:
     def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
         url = "https://example.com/WarRoom/INCIDENT-2930"
         mocker.patch("SlackV3.is_xsiam", return_value=False)
+        mocker.patch("SlackV3.is_platform", return_value=False)
         expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
         assert get_war_room_url(url) == expected_war_room_url
 
     def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
         url = "https://example.com/WarRoom/ALERT-1234"
         mocker.patch("SlackV3.is_xsiam", return_value=True)
+        mocker.patch("SlackV3.is_platform", return_value=False)
         mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "1234"}}})
         expected_war_room_url = (
             "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
         )
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_platform_from_cases_war_room(self, mocker):
+        url = "https://example.com/incidents/war_room?caseId=INCIDENT-2'"
+        expected_war_room_url = "https://example.com/cases/war_room?caseId=2"
+
+        mocker.patch("SlackV3.is_xsiam", return_value=False)
+        mocker.patch("SlackV3.is_platform", return_value=True)
+        mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "INCIDENT-2"}}})
+
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_platform_from_issue_war_room(self, mocker):
+        url = "https://example.com/incidents/war_room?caseId=1"
+        expected_war_room_url = "https://example.com/issue-view/1"
+
+        mocker.patch("SlackV3.is_xsiam", return_value=False)
+        mocker.patch("SlackV3.is_platform", return_value=True)
+        mocker.patch.dict(demisto.callingContext, {"context": {"Inv": {"id": "1"}}})
+
         assert get_war_room_url(url) == expected_war_room_url
 
 

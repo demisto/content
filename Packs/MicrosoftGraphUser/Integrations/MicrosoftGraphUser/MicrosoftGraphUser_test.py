@@ -1,5 +1,7 @@
 import pytest
 from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
+import os
+import time
 
 users_list_mock = [
     {
@@ -86,8 +88,8 @@ def test_get_user_command_404_response(mocker):
     error_404.status_code = 404
     mocker.patch.object(BaseClient, "_http_request", return_value=error_404)
     mocker.patch.object(MicrosoftClient, "get_access_token")
-    hr, _, _ = get_user_command(client, {"user": "NotExistingUser"})  # client.get_user('user', 'properties')
-    assert "User NotExistingUser was not found" in hr
+    output = get_user_command(client, {"user": "NotExistingUser"})  # client.get_user('user', 'properties')
+    assert "User NotExistingUser was not found" in output.readable_output
 
 
 def test_get_user_command_url_saved_chars(mocker):
@@ -119,7 +121,7 @@ def test_get_user_command_url_saved_chars(mocker):
     )
     http_mock = mocker.patch.object(BaseClient, "_http_request")
     mocker.patch.object(MicrosoftClient, "get_access_token")
-    hr, _, _ = get_user_command(client, {"user": user_name})
+    _ = get_user_command(client, {"user": user_name})
     assert http_mock.call_args[1]["url_suffix"] == "users/dbot%5E"
 
 
@@ -136,8 +138,16 @@ def test_get_unsupported_chars_in_user():
 
     invalid_chars = "%&*+/=?`{|}"
     invalid_user = f"demi{invalid_chars}sto"
+    result = get_unsupported_chars_in_user(invalid_user)
+    assert len(result.difference(set(invalid_chars))) == 0, "All invalid characters should be extracted."
 
-    assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
+    # Test case with None as user
+    result = get_unsupported_chars_in_user(None)
+    assert result == set(), "Expected an empty set when user is None."
+
+    # Test case with an empty string as user
+    result = get_unsupported_chars_in_user("")
+    assert result == set(), "Expected an empty set when user is an empty string."
 
 
 def test_suppress_errors(mocker):
@@ -153,6 +163,9 @@ def test_suppress_errors(mocker):
         revoke_user_session_command,
         unblock_user_command,
         update_user_command,
+        list_tap_policy_command,
+        delete_tap_policy_command,
+        create_tap_policy_command,
     )
 
     TEST_SUPPRESS_ERRORS = [
@@ -226,6 +239,27 @@ def test_suppress_errors(mocker):
             "args": {"user": "123456789"},
             "expected_result": "#### User -> 123456789 does not exist",
         },
+        {
+            "fun": list_tap_policy_command,
+            "mock_fun": "list_tap_policy",
+            "mock_value": NotFoundError("The specified user could not be found."),
+            "args": {"user_id": "123456789"},
+            "expected_result": "#### User -> 123456789 does not exist",
+        },
+        {
+            "fun": delete_tap_policy_command,
+            "mock_fun": "delete_tap_policy",
+            "mock_value": NotFoundError("The specified user could not be found."),
+            "args": {"user_id": "123456789", "policy_id": "987654321"},
+            "expected_result": "#### User -> 123456789 does not exist",
+        },
+        {
+            "fun": create_tap_policy_command,
+            "mock_fun": "create_tap_policy",
+            "mock_value": NotFoundError("The specified user could not be found."),
+            "args": {"user_id": "123456789", "zip_password": "12345"},
+            "expected_result": "#### User -> 123456789 does not exist",
+        },
     ]
 
     client = MsGraphClient(
@@ -244,7 +278,7 @@ def test_suppress_errors(mocker):
     )
     for test in TEST_SUPPRESS_ERRORS:
         mocker.patch.object(client, test["mock_fun"], side_effect=test["mock_value"])
-        results, _, _ = test["fun"](client, test["args"])
+        results = test["fun"](client, test["args"])
         assert results == test["expected_result"]
 
 
@@ -399,7 +433,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     main()
 
-    assert "ok" in demisto.results.call_args[0][0]["Contents"]
+    assert "ok" in demisto.results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert qs["resource"] == [Resources.graph]
     assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
@@ -492,4 +526,259 @@ def test_test_function(mocker, grant_type, self_deployed, expected_result, shoul
             assert "Please enable the integration" in str(exc)
     else:
         result = test_function(client, {})
-        assert result[0] == expected_result
+        assert result == expected_result
+
+
+def test_create_zip_with_password():
+    """
+    Tests the creation of a password-protected ZIP file containing a Temporary Access Pass (TAP) password.
+    Validates that the correct TAP password is stored in the ZIP file, and cleans up any files created during the test.
+
+    Given:
+        - A generated TAP password, a password for protected-zip file, file names.
+    When:
+        - Running the generate_password_protected_zip function.
+    Then:
+        1. Generates a password protected zip file, that will include the password of the new TAP.
+        2. Verifies that the returned 'File' field matches the expected ZIP file name - TAPPolicyInfo.zip.
+        3. Confirms that the 'ContentsFormat' field in the result is 'text'.
+        3. Opens the zip file using the given password by the user.
+        4. Validates the password inside 'TAPPolicyPass.txt' matches the generated TAP password.
+        5. Clean all the encrypted files created during the process.
+    """
+    from pyzipper import AESZipFile, ZIP_DEFLATED, WZ_AES
+    from MicrosoftGraphUser import generate_password_protected_zip
+
+    def clean_up_files(created_time):
+        cwd = os.getcwd()
+        for filename in os.listdir(cwd):
+            file_path = os.path.join(cwd, filename)
+            if os.path.isfile(file_path):
+                file_creation_time = os.path.getctime(file_path)
+                if file_creation_time > created_time:
+                    try:
+                        os.remove(file_path)
+                    except Exception as e:
+                        pytest.fail(f"Error removing {file_path}: {e}")
+
+    generated_tap_password = "test_password_123"
+    zip_password = "kldsjflk453lksdf"
+    zip_file_name = os.path.join(os.getcwd(), "TAPPolicyInfo.zip")
+    txt_file_name = "TAPPolicyPass.txt"
+    start_time = time.time()
+
+    zip_res = generate_password_protected_zip("TAPPolicyInfo.zip", zip_password, generated_tap_password)
+    assert zip_res["File"] == "TAPPolicyInfo.zip"
+    assert zip_res["ContentsFormat"] == "text"
+
+    try:
+        with AESZipFile(zip_file_name, mode="r", compression=ZIP_DEFLATED, encryption=WZ_AES) as zf:
+            zf.pwd = bytes(zip_password, "utf-8")
+            zip_content = zf.read(txt_file_name)
+            assert zip_content.decode("utf-8") == generated_tap_password
+
+    except Exception as e:
+        pytest.fail(f"Unexpected error during ZIP file handling: {e}")
+
+    finally:
+        clean_up_files(start_time)
+
+
+def test_create_tap_policy_command_failure_on_empty_response(mocker):
+    """
+    Tests the behavior of the create_tap_policy_command function when an empty response is returned
+    from the Microsoft Graph API for creating a TAP policy.
+    Verifies that the command correctly handles the failure and outputs an appropriate error message.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the create_tap_policy_command.
+    Then:
+        1. Verify that the human readable output is as expected.
+        2. verify that the call count for the mocker was 1
+    """
+    from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_id": "123456789", "zip_password": "12345"}
+
+    mock_create_tap_policy = mocker.patch.object(client, "create_tap_policy", return_value=None)
+    result = create_tap_policy_command(client, args)
+
+    assert result.readable_output == "Failed to create TAP policy for user: 123456789."
+    assert mock_create_tap_policy.call_count == 1
+
+
+def test_delete_tap_policy_command_success(mocker):
+    """
+    Tests the behavior of the delete_tap_policy_command function.
+    Validates that the human readable is as expected and the command returns CommandResults object.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the delete_tap_policy_command.
+    Then:
+        1. Verify that the human readable output is as expected.
+    """
+    from MicrosoftGraphUser import MsGraphClient, delete_tap_policy_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_id": "123456789", "policy_id": "987654321"}
+
+    mocker.patch.object(client, "delete_tap_policy", return_value=None)
+    result = delete_tap_policy_command(client, args)
+
+    expected_output = "Temporary Access Pass Authentication methods policy 987654321 was successfully deleted."
+    assert result.readable_output == expected_output
+
+
+def test_list_tap_policy_command_success(mocker):
+    """
+    Tests the successful execution of the list_tap_policy_command function in the MicrosoftGraphUser module.
+    Validates that the function correctly retrieves and formats the Temporary Access Pass (TAP) policy data.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the list_tap_policy_command function with the mock client and arguments.
+    Then:
+        1. Mocks the list_tap_policy API call to return predefined TAP policy data.
+        2. Mocks the parse_outputs function to simulate parsed readable and output data.
+        3. Asserts that the output prefix is correctly set to 'MSGraphUser.TAPPolicy'.
+        4. Confirms that the output key field is 'ID' and the correct TAP policy ID is returned.
+        5. Ensures that the readable output contains the correct policy information and user ID.
+    """
+
+    from MicrosoftGraphUser import MsGraphClient, list_tap_policy_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {"user_id": "123456789"}
+
+    mock_tap_data = [
+        {
+            "id": "987654321",
+            "startDateTime": "2025-04-28T12:00:00Z",
+            "lifetimeInMinutes": 60,
+            "isUsableOnce": True,
+            "isUsable": True,
+            "methodUsabilityReason": "Enabled",
+            "TemporaryAccessPass": "test123",
+        }
+    ]
+
+    mocker.patch.object(client, "list_tap_policy", return_value=mock_tap_data)
+    result = list_tap_policy_command(client, args)
+
+    assert result.outputs_prefix == "MSGraphUser.TAPPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "987654321"
+    assert "Policy ID" in result.readable_output
+    assert "TAP Policy for User ID 123456789" in result.readable_output
+
+
+def test_create_tap_policy_command_success(mocker):
+    """
+    Tests the successful execution of the create_tap_policy_command function in the MicrosoftGraphUser module.
+    Validates that the function correctly creates a Temporary Access Pass (TAP) policy and returns the expected results.
+
+    Given:
+        - A mock client instance for the Microsoft Graph API.
+    When:
+        - Running the create_tap_policy_command function with the mock client and arguments.
+    Then:
+        1. Mocks the create_tap_policy API call to return predefined API response for the TAP policy creation.
+        2. Mocks the create_zip_with_password function.
+        3. Mocks the parse_outputs function to simulate parsed output data.
+        4. Confirms that the readable output contains the expected success message for the TAP policy creation.
+        5. Ensures that the output prefix is set to 'MSGraphUser.TAPPolicy' and the key field is 'ID'.
+        6. Verifies that the correct TAP policy ID is included in the output.
+    """
+
+    from MicrosoftGraphUser import MsGraphClient, create_tap_policy_command
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    args = {
+        "user_id": "123456789",
+        "zip_password": "securepass123",
+        "lifetime_in_minutes": "60",
+        "is_usable_once": "true",
+        "start_time": "2025-04-29T10:00:00Z",
+    }
+
+    mock_api_response = {
+        "id": "987654321",
+        "startDateTime": "2025-04-29T10:00:00.000Z",
+        "lifetimeInMinutes": 60,
+        "isUsableOnce": True,
+        "isUsable": True,
+        "methodUsabilityReason": "Enabled",
+        "temporaryAccessPass": "Generated-P@ssword1!",
+    }
+
+    mocker.patch.object(client, "create_tap_policy", return_value=mock_api_response)
+    mocker.patch("MicrosoftGraphUser.create_zip_with_password")
+    result = create_tap_policy_command(client, args)
+
+    expected_output = "Temporary Access Pass Authentication methods policy for user: 123456789 was successfully created."
+    assert result.readable_output == expected_output
+    assert result.outputs_prefix == "MSGraphUser.TAPPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "987654321"

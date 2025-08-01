@@ -54,6 +54,7 @@ filter event_type = "maillog"
         xdm.observer.action = rtrim(arrayindex(regextract(sm -> stat, "(^[^:\(]+)"), 0), "\s"),
         xdm.email.recipients = arraymap(arraymap(arraymap(arraymap(sm -> to[], ltrim("@element", "\"")), rtrim("@element", "\"")), ltrim("@element", "<")), rtrim("@element", ">")),
         xdm.network.tls.cipher = if(lowercase(tls -> cipher) = "none", null, tls -> cipher),
+        xdm.source.sent_bytes = to_integer(sm -> sizeBytes),
         xdm.network.tls.protocol_version = if(lowercase(tls -> version) = "none", null, tls -> version);
 
 // Modeling rule for Proofpoint email security "Audit" events

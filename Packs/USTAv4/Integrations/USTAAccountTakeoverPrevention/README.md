@@ -37,31 +37,31 @@ Search for compromised credentials by username
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to search. | Required | 
-| page_size | Number of result that should appear on each page. | Optional | 
-| page | 1-indexed page number to get a particular page of results. | Optional | 
+| username | Username to search. | Required |
+| page_size | Number of result that should appear on each page. | Optional |
+| page | 1-indexed page number to get a particular page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| USTA.AccountTakeoverPrevention.id | Number | The ID of the alert | 
-| USTA.AccountTakeoverPrevention.username | String | The username of the compromised credential | 
-| USTA.AccountTakeoverPrevention.password | String | The password of the compromised credential | 
-| USTA.AccountTakeoverPrevention.url | String | The URL of the compromised credential | 
-| USTA.AccountTakeoverPrevention.is_corporate | Boolean | Whether the compromised credential is corporate | 
-| USTA.AccountTakeoverPrevention.created | String | The creation date of the compromised credential | 
-| USTA.AccountTakeoverPrevention.victim_detail.ip | String | The IP address of the victim | 
-| USTA.AccountTakeoverPrevention.victim_detail.country | String | The country of the victim | 
-| USTA.AccountTakeoverPrevention.victim_detail.phone_number | String | The phone number of the victim | 
-| USTA.AccountTakeoverPrevention.victim_detail.computer_name | String | The computer name of the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.victim_os | String | The OS of the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.language | String | The language of the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.memory | String | The memory of the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.cpu | String | The CPU of the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.gpu | String | The GPU of the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.malware | String | The family of the malware that infected the victim computer | 
-| USTA.AccountTakeoverPrevention.victim_detail.infection_date | String | The infection date of the victim computer | 
+| USTA.AccountTakeoverPrevention.id | Number | The ID of the alert |
+| USTA.AccountTakeoverPrevention.username | String | The username of the compromised credential |
+| USTA.AccountTakeoverPrevention.password | String | The password of the compromised credential |
+| USTA.AccountTakeoverPrevention.url | String | The URL of the compromised credential |
+| USTA.AccountTakeoverPrevention.is_corporate | Boolean | Whether the compromised credential is corporate |
+| USTA.AccountTakeoverPrevention.created | String | The creation date of the compromised credential |
+| USTA.AccountTakeoverPrevention.victim_detail.ip | String | The IP address of the victim |
+| USTA.AccountTakeoverPrevention.victim_detail.country | String | The country of the victim |
+| USTA.AccountTakeoverPrevention.victim_detail.phone_number | String | The phone number of the victim |
+| USTA.AccountTakeoverPrevention.victim_detail.computer_name | String | The computer name of the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.victim_os | String | The OS of the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.language | String | The language of the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.memory | String | The memory of the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.cpu | String | The CPU of the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.gpu | String | The GPU of the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.malware | String | The family of the malware that infected the victim computer |
+| USTA.AccountTakeoverPrevention.victim_detail.infection_date | String | The infection date of the victim computer |
 
 ### Command Example
 

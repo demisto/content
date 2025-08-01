@@ -1,6 +1,7 @@
 [BreachRx](https://breachrx.com)
 
 ### What does this pack do?
+
 Create and monitor the status of a BreachRx Incident directly from your existing Cortex XSOAR Incident, so your teams can manage the regulatory and contractual requirements for your Incident on the BreachRx platform, and your cybersecurity team can continue to manage the cybersecurity aspects of your Incident without having to leave the XSOAR platform.
 
 ### About BreachRx

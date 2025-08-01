@@ -3,7 +3,6 @@ import concurrent
 import logging.handlers
 import ssl
 import threading
-from distutils.util import strtobool
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
 
@@ -60,7 +59,7 @@ APP_TOKEN: str
 PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
-ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
+ASYNC_CLIENT: AsyncWebClient
 CLIENT: slack_sdk.WebClient
 USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
@@ -95,19 +94,35 @@ EXTENSIVE_LOGGING: bool
 
 
 def get_war_room_url(url: str) -> str:
+    """
+    Constructs a war room URL based on the input URL and incident context.
+    Workarounds for known bugs:
+    - CRTX-107526 for XSIAM URLs
+    - CRTX-183586 for platform URLs
+    """
+    incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
+    parsed_url = urlparse(url)
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
     if is_xsiam():
-        incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
-        incident_url = urlparse(url)
-        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
-        # executed from the incident War Room
         if incident_id and incident_id.startswith("INCIDENT-"):
-            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
-        # executed from the alert War Room
-        else:
-            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+            # Executed from the incident War Room
+            case_id = incident_id.split("-")[-1]
+            return f"{base_url}/incidents/war_room?caseId={case_id}"
 
-        return war_room_url
+        # Executed from the alert War Room
+        return f"{base_url}/incidents/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-183586
+    if is_platform():
+        if incident_id and incident_id.startswith("INCIDENT-"):
+            # Executed from the cases War Room
+            case_id = incident_id.split("-")[-1]
+            return f"{base_url}/cases/war_room?caseId={case_id}"
+
+        # Executed from the issue War Room
+        return f"{base_url}/issue-view/{incident_id}"
 
     return url
 
@@ -155,7 +170,7 @@ def test_module():
         )
 
     # validation for permitted_notifications since not all the options are supported by xsiam
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         xsiam_permitted_notification_types = {
             "investigationClosed",
             "investigationDeleted",
@@ -736,7 +751,7 @@ def mirror_investigation():
     mirror_to = demisto.args().get("mirrorTo", "group")
     channel_name = demisto.args().get("channelName", "")
     channel_topic = demisto.args().get("channelTopic", "")
-    kick_admin = bool(strtobool(demisto.args().get("kickAdmin", "false")))
+    kick_admin = argToBoolean(demisto.args().get("kickAdmin", "false"))
     private = argToBoolean(demisto.args().get("private", "false"))
 
     investigation = demisto.investigation()
@@ -800,7 +815,7 @@ def mirror_investigation():
             "mirror_type": mirror_type,
             "mirror_direction": mirror_direction,
             "mirror_to": mirror_to,
-            "auto_close": bool(strtobool(auto_close)),
+            "auto_close": argToBoolean(auto_close),
             "mirrored": False,
         }
 
@@ -810,7 +825,7 @@ def mirror_investigation():
         if mirror_type:
             mirror["mirror_type"] = mirror_type
         if auto_close:
-            mirror["auto_close"] = bool(strtobool(auto_close))
+            mirror["auto_close"] = argToBoolean(auto_close)
         if mirror_direction:
             mirror["mirror_direction"] = mirror_direction
         if mirror_to and mirror["mirror_to"] != mirror_to:
@@ -998,7 +1013,7 @@ def check_for_mirrors():
                     direction = mirror["mirror_direction"]
                     channel_id = mirror["channel_id"]
                     if isinstance(auto_close, str):
-                        auto_close = bool(strtobool(auto_close))
+                        auto_close = argToBoolean(auto_close)
                     users: List[Dict] = demisto.mirrorInvestigation(investigation_id, f"{mirror_type}:{direction}", auto_close)
                     if mirror_type != "none":
                         try:
@@ -1459,7 +1474,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
                 auto_close = mirror["auto_close"]
                 direction = mirror["mirror_direction"]
                 if isinstance(auto_close, str):
-                    auto_close = bool(strtobool(auto_close))
+                    auto_close = argToBoolean(auto_close)
                 demisto.info(f"Mirroring: {investigation_id}")
                 demisto.mirrorInvestigation(investigation_id, f"{mirror_type}:{direction}", auto_close)
                 mirror["mirrored"] = True
@@ -1582,9 +1597,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) > 0:
                 channel = data.get("channel", {}).get("id", "")
                 entitlement_json = actions[0].get("value")
-                entitlement_string = json.loads(entitlement_json)
                 if entitlement_json is None:
                     return
+                entitlement_string = json.loads(entitlement_json)
                 if actions[0].get("action_id") == "xsoar-button-submit":
                     demisto.debug("Handling a SlackBlockBuilder response.")
                     if state:
@@ -1638,8 +1653,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await process_mirror(channel, text, user)
         reset_listener_health()
         return
-    except Exception as e:
-        await handle_listen_error(f"Error occurred while listening to Slack: {e}")
+    except Exception:
+        await handle_listen_error(f"Error occurred while listening to Slack:\n{traceback.format_exc()}")
 
 
 async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
@@ -2130,7 +2145,7 @@ def send_message(
 
     if message and not blocks:
         if ignore_add_url and isinstance(ignore_add_url, str):
-            ignore_add_url = bool(strtobool(ignore_add_url))
+            ignore_add_url = argToBoolean(ignore_add_url)
         if not ignore_add_url:
             investigation = demisto.investigation()
             server_links = demisto.demistoUrls()
@@ -2541,7 +2556,7 @@ def get_user():
     # Check if the input might be an email or a user ID
     if re.match(emailRegex, user_input):
         slack_user = get_user_by_email(user_input)
-    elif re.match("^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
+    elif re.match(r"^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
         slack_user = get_user_by_id(user_input)
     else:
         slack_user = get_user_by_name(user_input)
@@ -2595,7 +2610,7 @@ def slack_edit_message():
 
     if message and not blocks:
         if ignore_add_url and isinstance(ignore_add_url, str):
-            ignore_add_url = bool(strtobool(ignore_add_url))
+            ignore_add_url = argToBoolean(ignore_add_url)
         if not ignore_add_url:
             investigation = demisto.investigation()
             server_links = demisto.demistoUrls()

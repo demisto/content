@@ -1826,7 +1826,7 @@ def execute_command(*args):
                 "APIExecutionMetrics": None,
             }
         ]
-    if args == ["core-api-get", {"uri": "/automation/export/test-name"}]:
+    if args == ["core-api-get", {"uri": "/automation/export/test-name"}]:  # noqa: RET503
         return [
             {
                 "ModuleName": "Core REST API_instance_1",

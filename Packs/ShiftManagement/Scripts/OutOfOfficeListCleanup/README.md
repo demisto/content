@@ -1,6 +1,7 @@
 Removes any users from the out-of-office list whose 'off until day' is in the past.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Removes any users from the out-of-office list whose 'off until day' is in the pa
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Removes any users from the out-of-office list whose 'off until day' is in the pa
 | listname | The name of the out-of-office list. Default is "OOO List". |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

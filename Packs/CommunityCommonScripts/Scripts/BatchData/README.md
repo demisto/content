@@ -1,6 +1,7 @@
-This Automation takes in a string of comma separated items and returns a dictionary of with the defined chunk size. 
+This Automation takes in a string of comma separated items and returns a dictionary of with the defined chunk size.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ This Automation takes in a string of comma separated items and returns a diction
 | Tags |  |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ This Automation takes in a string of comma separated items and returns a diction
 | context_path | This nest the path under BatchedData in context. If you are running this script multiple times/simultaneously in a playbook, your  data will be over written. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

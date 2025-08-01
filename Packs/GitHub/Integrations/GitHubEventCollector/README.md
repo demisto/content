@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Github Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log') |  | True |
@@ -17,22 +16,24 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### github-get-events
+
 ***
 Manual command to fetch events and display them.
-
 
 #### Base Command
 
 `github-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
 
 #### Context Output
 

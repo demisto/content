@@ -161,11 +161,11 @@
 <pre>{
     "SigSciences.Corp.Site.Whitelist": [
         {
-            "ExpiryDate": "", 
-            "Note": "docdoc", 
-            "Source": "9.7.9.7", 
-            "CreatedBy": "user@demisto.com", 
-            "CreatedDate": "2019-03-28T09:52:47Z", 
+            "ExpiryDate": "",
+            "Note": "docdoc",
+            "Source": "9.7.9.7",
+            "CreatedBy": "user@demisto.com",
+            "CreatedDate": "2019-03-28T09:52:47Z",
             "ID": "5c9c996fc7213901971d5679"
         }
     ]
@@ -303,11 +303,11 @@
 <pre>{
     "SigSciences.Corp.Site.Blacklist": [
         {
-            "ExpiryDate": "", 
-            "Note": "docdoc", 
-            "Source": "5.7.5.7", 
-            "CreatedBy": "user@demisto.com", 
-            "CreatedDate": "2019-03-28T09:52:49Z", 
+            "ExpiryDate": "",
+            "Note": "docdoc",
+            "Source": "5.7.5.7",
+            "CreatedBy": "user@demisto.com",
+            "CreatedDate": "2019-03-28T09:52:49Z",
             "ID": "5c9c9971719dcc0198a38a5b"
         }
     ]
@@ -459,11 +459,11 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.Site.Whitelist": {
-        "ExpiryDate": "", 
-        "Note": "docdoc", 
-        "Source": "9.7.9.7", 
-        "CreatedBy": "user@demisto.com", 
-        "CreatedDate": "2019-03-28T13:30:34Z", 
+        "ExpiryDate": "",
+        "Note": "docdoc",
+        "Source": "9.7.9.7",
+        "CreatedBy": "user@demisto.com",
+        "CreatedDate": "2019-03-28T13:30:34Z",
         "ID": "5c9ccc7a342a24019743d265"
     }
 }
@@ -612,11 +612,11 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.Site.Blacklist": {
-        "ExpiryDate": "", 
-        "Note": "docdoc", 
-        "Source": "5.7.5.7", 
-        "CreatedBy": "user@demisto.com", 
-        "CreatedDate": "2019-03-28T13:30:35Z", 
+        "ExpiryDate": "",
+        "Note": "docdoc",
+        "Source": "5.7.5.7",
+        "CreatedBy": "user@demisto.com",
+        "CreatedDate": "2019-03-28T13:30:35Z",
         "ID": "5c9ccc7bf7c34301986b1d82"
     }
 }
@@ -1043,16 +1043,16 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.Site.List": {
-        "Name": "sitelistdoc3", 
-        "CreatedDate": "2019-03-28T09:20:34Z", 
-        "UpdatedDate": "2019-03-28T09:53:01Z", 
-        "CreatedBy": "user@demisto.com", 
+        "Name": "sitelistdoc3",
+        "CreatedDate": "2019-03-28T09:20:34Z",
+        "UpdatedDate": "2019-03-28T09:53:01Z",
+        "CreatedBy": "user@demisto.com",
         "Entries": [
-            "6.1.7.1", 
+            "6.1.7.1",
             "77.8.77.8"
-        ], 
-        "Type": "ip", 
-        "ID": "site.sitelistdoc3", 
+        ],
+        "Type": "ip",
+        "ID": "site.sitelistdoc3",
         "Description": ""
     }
 }
@@ -1275,16 +1275,16 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.Site.List": {
-        "Name": "sitelistdoc3", 
-        "CreatedDate": "2019-03-28T09:20:34Z", 
-        "UpdatedDate": "2019-03-28T09:53:01Z", 
-        "CreatedBy": "user@demisto.com", 
+        "Name": "sitelistdoc3",
+        "CreatedDate": "2019-03-28T09:20:34Z",
+        "UpdatedDate": "2019-03-28T09:53:01Z",
+        "CreatedBy": "user@demisto.com",
         "Entries": [
-            "6.1.7.1", 
+            "6.1.7.1",
             "77.8.77.8"
-        ], 
-        "Type": "ip", 
-        "ID": "site.sitelistdoc3", 
+        ],
+        "Type": "ip",
+        "ID": "site.sitelistdoc3",
         "Description": ""
     }
 }
@@ -1809,16 +1809,16 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.Site.Alert": {
-        "LongName": "ggggg", 
-        "SkipNotifications": "", 
-        "Interval": 10, 
-        "Enabled": true, 
-        "Threshold": 40, 
-        "SiteID": "", 
-        "TagName": "SQLI", 
-        "CreatedDate": "2019-03-28T09:09:09Z", 
-        "Action": "flagged", 
-        "ID": "5c9c8f35c7213901971d2e5a", 
+        "LongName": "ggggg",
+        "SkipNotifications": "",
+        "Interval": 10,
+        "Enabled": true,
+        "Threshold": 40,
+        "SiteID": "",
+        "TagName": "SQLI",
+        "CreatedDate": "2019-03-28T09:09:09Z",
+        "Action": "flagged",
+        "ID": "5c9c8f35c7213901971d2e5a",
         "BlockDurationSeconds": ""
     }
 }
@@ -1985,42 +1985,42 @@
 <pre>{
     "SigSciences.Corp.Site.Alert": [
         {
-            "LongName": "ggggg", 
-            "SkipNotifications": "", 
-            "Interval": 10, 
-            "Enabled": true, 
-            "Threshold": 40, 
-            "SiteID": "", 
-            "TagName": "SQLI", 
-            "CreatedDate": "2019-03-28T09:09:09Z", 
-            "Action": "flagged", 
-            "ID": "5c9c8f35c7213901971d2e5a", 
+            "LongName": "ggggg",
+            "SkipNotifications": "",
+            "Interval": 10,
+            "Enabled": true,
+            "Threshold": 40,
+            "SiteID": "",
+            "TagName": "SQLI",
+            "CreatedDate": "2019-03-28T09:09:09Z",
+            "Action": "flagged",
+            "ID": "5c9c8f35c7213901971d2e5a",
             "BlockDurationSeconds": ""
-        }, 
+        },
         {
-            "LongName": "The site's Online Agent count is zero", 
-            "SkipNotifications": "", 
-            "Interval": 5, 
-            "Enabled": false, 
-            "Threshold": 0, 
-            "SiteID": "", 
-            "TagName": "agent_count", 
-            "CreatedDate": "2018-08-30T21:00:03Z", 
-            "Action": "siteMetricInfo", 
-            "ID": "5b885ad33be3360a3f80237c", 
+            "LongName": "The site's Online Agent count is zero",
+            "SkipNotifications": "",
+            "Interval": 5,
+            "Enabled": false,
+            "Threshold": 0,
+            "SiteID": "",
+            "TagName": "agent_count",
+            "CreatedDate": "2018-08-30T21:00:03Z",
+            "Action": "siteMetricInfo",
+            "ID": "5b885ad33be3360a3f80237c",
             "BlockDurationSeconds": 21600
-        }, 
+        },
         {
-            "LongName": "The average RPS across all agents is less than 10", 
-            "SkipNotifications": "", 
-            "Interval": 5, 
-            "Enabled": false, 
-            "Threshold": 3000, 
-            "SiteID": "", 
-            "TagName": "requests_total", 
-            "CreatedDate": "2018-08-30T21:00:03Z", 
-            "Action": "siteMetricInfo", 
-            "ID": "5b885ad33be3360a3f80237b", 
+            "LongName": "The average RPS across all agents is less than 10",
+            "SkipNotifications": "",
+            "Interval": 5,
+            "Enabled": false,
+            "Threshold": 3000,
+            "SiteID": "",
+            "TagName": "requests_total",
+            "CreatedDate": "2018-08-30T21:00:03Z",
+            "Action": "siteMetricInfo",
+            "ID": "5b885ad33be3360a3f80237b",
             "BlockDurationSeconds": 21600
         }
     ]
@@ -2200,28 +2200,28 @@
 <pre>{
     "SigSciences.Corp.Site.List": [
         {
-            "Name": "sitelistdoc", 
-            "CreatedDate": "2019-03-28T09:52:55Z", 
-            "UpdatedDate": "2019-03-28T09:52:55Z", 
-            "CreatedBy": "user@demisto.com", 
+            "Name": "sitelistdoc",
+            "CreatedDate": "2019-03-28T09:52:55Z",
+            "UpdatedDate": "2019-03-28T09:52:55Z",
+            "CreatedBy": "user@demisto.com",
             "Entries": [
                 "56.1.1.1"
-            ], 
-            "Type": "ip", 
-            "ID": "site.sitelistdoc", 
+            ],
+            "Type": "ip",
+            "ID": "site.sitelistdoc",
             "Description": ""
-        }, 
+        },
         {
-            "Name": "sitelistdoc3", 
-            "CreatedDate": "2019-03-28T09:20:34Z", 
-            "UpdatedDate": "2019-03-28T13:30:41Z", 
-            "CreatedBy": "user@demisto.com", 
+            "Name": "sitelistdoc3",
+            "CreatedDate": "2019-03-28T09:20:34Z",
+            "UpdatedDate": "2019-03-28T13:30:41Z",
+            "CreatedBy": "user@demisto.com",
             "Entries": [
-                "6.1.7.1", 
+                "6.1.7.1",
                 "77.8.77.8"
-            ], 
-            "Type": "ip", 
-            "ID": "site.sitelistdoc3", 
+            ],
+            "Type": "ip",
+            "ID": "site.sitelistdoc3",
             "Description": ""
         }
     ]
@@ -2500,16 +2500,16 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.List": {
-        "Name": "fordoc2", 
-        "CreatedDate": "2019-03-28T09:14:43Z", 
-        "UpdatedDate": "2019-03-28T09:53:14Z", 
-        "CreatedBy": "user@demisto.com", 
+        "Name": "fordoc2",
+        "CreatedDate": "2019-03-28T09:14:43Z",
+        "UpdatedDate": "2019-03-28T09:53:14Z",
+        "CreatedBy": "user@demisto.com",
         "Entries": [
-            "44.2.44.2", 
+            "44.2.44.2",
             "55.7.55.7"
-        ], 
-        "Type": "ip", 
-        "ID": "corp.fordoc2", 
+        ],
+        "Type": "ip",
+        "ID": "corp.fordoc2",
         "Description": ""
     }
 }
@@ -2725,16 +2725,16 @@
 <div class="cl-preview-section">
 <pre>{
     "SigSciences.Corp.List": {
-        "Name": "fordoc2", 
-        "CreatedDate": "2019-03-28T09:14:43Z", 
-        "UpdatedDate": "2019-03-28T09:53:14Z", 
-        "CreatedBy": "user@demisto.com", 
+        "Name": "fordoc2",
+        "CreatedDate": "2019-03-28T09:14:43Z",
+        "UpdatedDate": "2019-03-28T09:53:14Z",
+        "CreatedBy": "user@demisto.com",
         "Entries": [
-            "44.2.44.2", 
+            "44.2.44.2",
             "55.7.55.7"
-        ], 
-        "Type": "ip", 
-        "ID": "corp.fordoc2", 
+        ],
+        "Type": "ip",
+        "ID": "corp.fordoc2",
         "Description": ""
     }
 }
@@ -3499,47 +3499,46 @@
 </div>
 </div>
 
-
 ### sigsci-get-events
+
 ***
 Fetches events from Signal Sciences.
-
 
 #### Base Command
 
 `sigsci-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| siteName | The name of the site to fetch events from. | Required | 
-| from_time | The POSIX Unix time to start. | Optional | 
-| until_time |  The POSIX Unix time to end. . | Optional | 
-| sort | The sort order ("asc" or "desc"). Possible values are: asc, desc. | Optional | 
-| since_id | The ID of the first object in the set. | Optional | 
-| max_id |  The ID of the last object in the set. . | Optional | 
-| limit | The maximum number of entries to return. | Optional | 
-| page | The page of the results. | Optional | 
-| action |  The action to filter by ('flagged' or 'info'). . Possible values are: flagged, info. | Optional | 
-| tag | The tag to filter by. Must be a valid tag name. | Optional | 
-| ip | The ID to filter by. | Optional | 
-| status | The status to filter by ("active" or "expired"). Possible values are: active, expired. | Optional | 
-
+| siteName | The name of the site to fetch events from. | Required |
+| from_time | The POSIX Unix time to start. | Optional |
+| until_time |  The POSIX Unix time to end. . | Optional |
+| sort | The sort order ("asc" or "desc"). Possible values are: asc, desc. | Optional |
+| since_id | The ID of the first object in the set. | Optional |
+| max_id |  The ID of the last object in the set. . | Optional |
+| limit | The maximum number of entries to return. | Optional |
+| page | The page of the results. | Optional |
+| action |  The action to filter by ('flagged' or 'info'). . Possible values are: flagged, info. | Optional |
+| tag | The tag to filter by. Must be a valid tag name. | Optional |
+| ip | The ID to filter by. | Optional |
+| status | The status to filter by ("active" or "expired"). Possible values are: active, expired. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SigSciences.Corp.Site.Event.ID | string | The unique ID of the event. | 
-| SigSciences.Corp.Site.Event.Timestamp | date |  The timestamp of the event \(RFC3339 format\). | 
-| SigSciences.Corp.Site.Event.Source | string | The source information, for example, "IP". | 
-| SigSciences.Corp.Site.Event.RemoteCountryCode | string | The country code. | 
-| SigSciences.Corp.Site.Event.RemoteHostname | string | The remote hostname. | 
-| SigSciences.Corp.Site.Event.UserAgents | unknown | An array of user agents. | 
-| SigSciences.Corp.Site.Event.Action | unknown | If "flagged", the IP address is flagged and subsequent malicious requests will be blocked. If "info", the IP address is flagged and subsequent requests will be logged. | 
-| SigSciences.Corp.Site.Event.Reasons | unknown | The reason the event was triggered. | 
-| SigSciences.Corp.Site.Event.RequestCount | number | The total number of requests. | 
-| SigSciences.Corp.Site.Event.TagCount | number | The total number of tags. | 
-| SigSciences.Corp.Site.Event.Window | number | The time window \(in seconds\) when the items were detected. | 
-| SigSciences.Corp.Site.Event.DateExpires | string | The date the event expires \(RFC3339 format\). | 
-| SigSciences.Corp.Site.Event.ExpiredBy | string | The email address of the user that expired the event \(if the event is expired manually\). | 
+| SigSciences.Corp.Site.Event.ID | string | The unique ID of the event. |
+| SigSciences.Corp.Site.Event.Timestamp | date |  The timestamp of the event \(RFC3339 format\). |
+| SigSciences.Corp.Site.Event.Source | string | The source information, for example, "IP". |
+| SigSciences.Corp.Site.Event.RemoteCountryCode | string | The country code. |
+| SigSciences.Corp.Site.Event.RemoteHostname | string | The remote hostname. |
+| SigSciences.Corp.Site.Event.UserAgents | unknown | An array of user agents. |
+| SigSciences.Corp.Site.Event.Action | unknown | If "flagged", the IP address is flagged and subsequent malicious requests will be blocked. If "info", the IP address is flagged and subsequent requests will be logged. |
+| SigSciences.Corp.Site.Event.Reasons | unknown | The reason the event was triggered. |
+| SigSciences.Corp.Site.Event.RequestCount | number | The total number of requests. |
+| SigSciences.Corp.Site.Event.TagCount | number | The total number of tags. |
+| SigSciences.Corp.Site.Event.Window | number | The time window \(in seconds\) when the items were detected. |
+| SigSciences.Corp.Site.Event.DateExpires | string | The date the event expires \(RFC3339 format\). |
+| SigSciences.Corp.Site.Event.ExpiredBy | string | The email address of the user that expired the event \(if the event is expired manually\). |

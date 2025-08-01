@@ -1,5 +1,7 @@
 # Check Point Threat Emulation (SandBlast) Pack
+
 ## What does this pack do?
+
 - Uses Threat Emulation to perform remote analysis on a sandbox.
 - Uploads files to a virtual sandbox.
 - Opens files and monitors them in multiple OS versions and Microsoft Office versions.

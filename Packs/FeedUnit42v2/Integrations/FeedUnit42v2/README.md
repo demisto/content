@@ -4,7 +4,6 @@ Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK 
 
 ## Configure Unit 42 ATOMs Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | api_key | API Key | False |
@@ -21,31 +20,35 @@ Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK 
 | insecure | Trust any certificate \(not secure\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### unit42-get-indicators
+
 ***
 Retrieves a limited number of the indicators.
-
 
 #### Base Command
 
 `unit42-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default is 10. | Optional | 
-
+| limit | The maximum number of indicators to return. The default is 10. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 !unit42-get-indicators limit=3
 
 #### Human Readable Output
+
 |value|type|
 |---|---|
 | c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839 | File |

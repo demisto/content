@@ -4,6 +4,7 @@ identifying application and service technologies. The module assesses exposure r
 levels, and can create Incidents within Cortex XSOAR.
 
 # Key Features
+
 - Configure your Mandiant ASM and Cortex XSOAR and integration via API key.
 - Select a single project and multiple collections to feed issues into XSOAR
 - Set a minimum severity threshold on the issues presented to the team.

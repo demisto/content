@@ -3,7 +3,6 @@ This integration was integrated and tested with version 16.3.5 of Keeper Secrets
 
 ## Configure Keeper Secrets Manager in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | KSM Configuration | The KSM config to use for connection. | True |
@@ -13,36 +12,41 @@ This integration was integrated and tested with version 16.3.5 of Keeper Secrets
 | A comma-separated list of credential names to fetch. | Partial names are not supported. If left empty, all credentials will be fetched. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ksm-find-files
+
 ***
 Search for records by full or partial file name match.
-
 
 #### Base Command
 
 `ksm-find-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_name | File name text to search for. | Required | 
-| partial_match | Search for partial file name match. | Optional | 
-
+| file_name | File name text to search for. | Required |
+| partial_match | Search for partial file name match. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KeeperSecretsManager.Files.record_uid | String | Record UID. | 
-| KeeperSecretsManager.Files.file_uid | String | File UID. | 
-| KeeperSecretsManager.Files.file_name | String | File Name. | 
-| KeeperSecretsManager.Files.file_size | String | File Size. | 
+| KeeperSecretsManager.Files.record_uid | String | Record UID. |
+| KeeperSecretsManager.Files.file_uid | String | File UID. |
+| KeeperSecretsManager.Files.file_name | String | File Name. |
+| KeeperSecretsManager.Files.file_size | String | File Size. |
 
 #### Command example
+
 ```!ksm-find-files file_name="blank.txt"```
+
 #### Context Example
+
 ```json
 {
     "KeeperSecretsManager": {
@@ -67,40 +71,44 @@ Search for records by full or partial file name match.
 #### Human Readable Output
 
 >### Records with attachments
+>
 >### Record Details
+>
 >|file_name|file_size|file_uid|record_uid|
 >|---|---|---|---|
 >| blank.txt | 5 | Z8F-lSBHmTiMMDQrRiBjUA | PNby7a3Mrh4OfPdkpdfFsA |
 >| blank.txt | 5 | xdsQvfDzD-W38_alIwJnMg | 4FTOiJx-m31hDIlmief1Cg |
 
-
 ### ksm-find-records
+
 ***
 Search for records by full or partial title match.
-
 
 #### Base Command
 
 `ksm-find-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | Title text to search for. | Required | 
-| partial_match | Search for partial title match. | Optional | 
-
+| title | Title text to search for. | Required |
+| partial_match | Search for partial title match. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KeeperSecretsManager.Records.uid | String | Record UID. | 
-| KeeperSecretsManager.Records.type | String | Record Type. | 
-| KeeperSecretsManager.Records.title | String | Record Title. | 
+| KeeperSecretsManager.Records.uid | String | Record UID. |
+| KeeperSecretsManager.Records.type | String | Record Type. |
+| KeeperSecretsManager.Records.title | String | Record Title. |
 
 #### Command example
+
 ```!ksm-find-records title="file"```
+
 #### Context Example
+
 ```json
 {
     "KeeperSecretsManager": {
@@ -123,37 +131,41 @@ Search for records by full or partial title match.
 #### Human Readable Output
 
 >### Records
+>
 >### Record Details
+>
 >|uid|type|tite|
 >|---|---|---|
 >| WcizqXQGsk0Jho48Mn52MQ | file | files1 |
 >| Px5xVljXRZ1dPYMQ9Yv05Q | file | files2 |
 
-
 ### ksm-get-field
+
 ***
 Use this command to get field value from Keeper record.
-
 
 #### Base Command
 
 `ksm-get-field`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| notation | Keeper KSM notation URI. | Required | 
-
+| notation | Keeper KSM notation URI. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KeeperSecretsManager.Field.field | String | Extracted field value. | 
+| KeeperSecretsManager.Field.field | String | Extracted field value. |
 
 #### Command example
+
 ```!ksm-get-field notation="keeper://6LJgiVzzD4ZJuxQYj_wN9A/field/login"```
+
 #### Context Example
+
 ```json
 {
     "KeeperSecretsManager": {
@@ -167,27 +179,31 @@ Use this command to get field value from Keeper record.
 >## admin
 
 ### ksm-get-file
+
 ***
 Use this command to fetch the file attachment as a File.
-
 
 #### Base Command
 
 `ksm-get-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_uid | File UID to search for. | Required | 
-| record_uid | Record UID to search for files. Search all records if empty. | Optional | 
-
+| file_uid | File UID to search for. | Required |
+| record_uid | Record UID to search for files. Search all records if empty. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ksm-get-file file_uid="bZs6l8Hx9zkrRPYVFyuYLA"```
+
 #### Context Example
+
 ```json
 {
     "File": {
@@ -208,30 +224,32 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
-
 ### ksm-get-infofile
+
 ***
 Use this command to fetch the file attachment as an Info File.
-
 
 #### Base Command
 
 `ksm-get-infofile`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_uid | File UID to search for. | Required | 
-| record_uid | Record UID to search for files. Search all records if empty. | Optional | 
-
+| file_uid | File UID to search for. | Required |
+| record_uid | Record UID to search for files. Search all records if empty. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ksm-get-infofile file_uid="bZs6l8Hx9zkrRPYVFyuYLA"```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -247,33 +265,34 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
-
 ### ksm-list-credentials
+
 ***
 Use this command to list all credentials in your Keeper Vault that are shared to the KSM application.
-
 
 #### Base Command
 
 `ksm-list-credentials`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KeeperSecretsManager.Creds.uid | String | Record UID. | 
-| KeeperSecretsManager.Creds.title | String | Record Title. | 
-| KeeperSecretsManager.Creds.name | String | Username. | 
+| KeeperSecretsManager.Creds.uid | String | Record UID. |
+| KeeperSecretsManager.Creds.title | String | Record Title. |
+| KeeperSecretsManager.Creds.name | String | Username. |
 
 #### Command example
+
 ```!ksm-list-credentials```
+
 #### Context Example
+
 ```json
 {
     "KeeperSecretsManager": {
@@ -296,40 +315,44 @@ Use this command to list all credentials in your Keeper Vault that are shared to
 #### Human Readable Output
 
 >### Credentials
+>
 >### Credential Details
+>
 >|name|uid|user|
 >|---|---|---|
 >| IIS Admin | 6LJgiVzzD4ZJuxQYj_wN9A | admin |
 >| nginx Admin | 7W6exgzq_OeVF6Xh1EJ29g | admin |
 
-
 ### ksm-list-files
+
 ***
 Use this command to list all records that have file attachments.
-
 
 #### Base Command
 
 `ksm-list-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| record_uids | A comma-separated list of record UIDs to search. If left empty all records with file attachments will be listed. | Optional | 
-
+| record_uids | A comma-separated list of record UIDs to search. If left empty all records with file attachments will be listed. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KeeperSecretsManager.Files.record_uid | String | Record UID. | 
-| KeeperSecretsManager.Files.file_uid | String | File UID. | 
-| KeeperSecretsManager.Files.file_name | String | File Name. | 
-| KeeperSecretsManager.Files.file_size | String | File Size. | 
+| KeeperSecretsManager.Files.record_uid | String | Record UID. |
+| KeeperSecretsManager.Files.file_uid | String | File UID. |
+| KeeperSecretsManager.Files.file_name | String | File Name. |
+| KeeperSecretsManager.Files.file_size | String | File Size. |
 
 #### Command example
+
 ```!ksm-list-files```
+
 #### Context Example
+
 ```json
 {
     "KeeperSecretsManager": {
@@ -354,38 +377,42 @@ Use this command to list all records that have file attachments.
 #### Human Readable Output
 
 >### Records with attachments
+>
 >### Record Details
+>
 >|file_name|file_size|file_uid|record_uid|
 >|---|---|---|---|
 >| blank.txt | 5 | bZs6l8Hx9zkrRPYVFyuYLA | RXd1m_fKO2XnAWzeUawM5A |
 >| blank.txt | 5 | xdsQvfDzD-W38_alIwJnMg | 4FTOiJx-m31hDIlmief1Cg |
 
-
 ### ksm-list-records
+
 ***
 Use this command to list all records from your Keeper Vault that are shared to the application.
-
 
 #### Base Command
 
 `ksm-list-records`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KeeperSecretsManager.Records.uid | String | Record UID. | 
-| KeeperSecretsManager.Records.type | String | Record Type. | 
-| KeeperSecretsManager.Records.title | String | Record Title. | 
+| KeeperSecretsManager.Records.uid | String | Record UID. |
+| KeeperSecretsManager.Records.type | String | Record Type. |
+| KeeperSecretsManager.Records.title | String | Record Title. |
 
 #### Command example
+
 ```!ksm-list-records```
+
 #### Context Example
+
 ```json
 {
     "KeeperSecretsManager": {
@@ -418,7 +445,9 @@ Use this command to list all records from your Keeper Vault that are shared to t
 #### Human Readable Output
 
 >### Records
+>
 >### Record Details
+>
 >|title|type|uid|
 >|---|---|---|
 >| files2 | file | RXd1m_fKO2XnAWzeUawM5A |

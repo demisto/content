@@ -1,13 +1,13 @@
 Neosec is reinventing application security. Its pioneering SaaS platform gives security professionals visibility into behavior across their entire API estate. Built for organizations that expose APIs to partners, suppliers, and users, Neosec discovers all your APIs, analyzes their behavior, and stops threats lurking inside.
 
 ##### What does this pack do?
-- Ingests alerts from Neosec into XSOAR: 
-  - Neosec Posture Alerts covers OWASP top 10 and other vulnerabilities in API endpoints. Handled by R&D. 
+
+- Ingests alerts from Neosec into XSOAR:
+  - Neosec Posture Alerts covers OWASP top 10 and other vulnerabilities in API endpoints. Handled by R&D.
   - Neosec Runtime Alerts are on suspicious or malicious user behavior. Handled by SOC analysts.
 - Close/Reopens Neosec Alerts
 
 ## Configure Neosec in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,26 +24,26 @@ Neosec is reinventing application security. Its pioneering SaaS platform gives s
 | De-tokenize alerts | Select this if you use tokenization on PII data and wish to ingest Neosec alerts to XSOAR with detokenized data.  | False |
 | Neosec Node URL | If the 'De-tokenize alets' is selected, provide the url of the Neosec Node. for example http://[neosec node ip]:8080   | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### neosec-alert-status-set
+
 ***
 Set alert status(Open, Closed)
-
 
 #### Base Command
 
 `neosec-alert-status-set`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The alert id(UUID) in the Neosec platform. . | Required | 
-| alert_status | The alert status. Possible values are: Open, Closed. | Required | 
-
+| alert_id | The alert id(UUID) in the Neosec platform. . | Required |
+| alert_status | The alert status. Possible values are: Open, Closed. | Required |
 
 #### Context Output
 

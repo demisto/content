@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import json
 import uuid
 from datetime import datetime, timedelta
+
 """Doppel for Cortex XSOAR (aka Demisto)
 
 This integration contains features to mirror the alerts from Doppel to create incidents in XSOAR
@@ -12,25 +13,25 @@ and the commands to perform different updates on the alerts
 """
 
 import urllib3
-from typing import Dict, Any, Optional, Callable
+from typing import Any, Callable  # noqa: UP035
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-XSOAR_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-DOPPEL_API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
-DOPPEL_PAYLOAD_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+""" CONSTANTS """
+XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DOPPEL_API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DOPPEL_PAYLOAD_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 MIRROR_DIRECTION = {
     "None": None,
     "Incoming": "In",
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-DOPPEL_ALERT = 'Doppel Alert'
-DOPPEL_INCIDENT = 'Doppel Incident'
+DOPPEL_ALERT = "Doppel Alert"
+DOPPEL_INCIDENT = "Doppel Incident"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -45,11 +46,9 @@ class Client(BaseClient):
 
     def __init__(self, base_url, api_key):
         super().__init__(base_url)
-        self._headers = dict()
-        self._headers["accept"] = "application/json"
-        self._headers["x-api-key"] = api_key
+        self._headers = {"accept": "application/json", "x-api-key": api_key}
 
-    def get_alert(self, id: str, entity: str) -> Dict[str, str]:
+    def get_alert(self, id: str, entity: str) -> dict[str, str]:
         """Return the alert's details when provided the Alert ID or Entity as input
 
         :type id: ``str``
@@ -63,25 +62,21 @@ class Client(BaseClient):
         """
         params: dict = {}
         if id:
-            params['id'] = id
+            params["id"] = id
         if entity:
-            params['entity'] = entity
+            params["entity"] = entity
 
-        response_content = self._http_request(
-            method="GET",
-            url_suffix='alert',
-            params=params
-        )
+        response_content = self._http_request(method="GET", url_suffix="alert", params=params)
         return response_content
 
     def update_alert(
         self,
         queue_state: str,
         entity_state: str,
-        alert_id: Optional[str] = None,
-        entity: Optional[str] = None,
-        comment: Optional[str] = None,
-    ) -> Dict[str, Any]:
+        alert_id: str | None = None,
+        entity: str | None = None,
+        comment: str | None = None,
+    ) -> dict[str, Any]:
         """
         Updates an existing alert using either the alert ID or the entity.
 
@@ -114,7 +109,7 @@ class Client(BaseClient):
         )
         return response_content
 
-    def get_alerts(self, params: Dict[str, Any]) -> Dict[str, Any]:
+    def get_alerts(self, params: dict[str, Any]) -> dict[str, Any]:
         """
         Fetches multiple alerts based on query parameters.
 
@@ -129,36 +124,23 @@ class Client(BaseClient):
         demisto.debug(f"API Request Params: {filtered_params}")
 
         # Use params as query parameters, not json_data
-        response_content = self._http_request(
-            method="GET",
-            full_url=api_url,
-            params=filtered_params
-        )
+        response_content = self._http_request(method="GET", full_url=api_url, params=filtered_params)
         return response_content
 
-    def create_alert(self, entity: str) -> Dict[str, Any]:
+    def create_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(
-            method="POST",
-            full_url=api_url,
-            json_data={"entity": entity}
-        )
+        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
         return response_content
 
-    def create_abuse_alert(self, entity: str) -> Dict[str, Any]:
-
+    def create_abuse_alert(self, entity: str) -> dict[str, Any]:
         api_name = "alert/abuse"
         api_url = f"{self._base_url}/{api_name}"
-        response_content = self._http_request(
-            method="POST",
-            full_url=api_url,
-            json_data={"entity": entity}
-        )
+        response_content = self._http_request(method="POST", full_url=api_url, json_data={"entity": entity})
         return response_content
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
@@ -174,35 +156,32 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
             A string representing the last update timestamp in ISO 8601 format (e.g., "2025-01-19T08:44:52Z").
 
     Returns:
-        Dict[str, Any]:
+        dict[str, Any]:
             A dictionary containing the updated incident details, including entries related to the alert.
     """
 
     # Truncate to microseconds since Python's datetime only supports up to 6 digits
     last_update_str = last_update_str[:26] + "Z"
     last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-    demisto.debug(f'Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}')
+    demisto.debug(f"Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}")
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
-    demisto.debug(f'Received alert data for {doppel_alert_id}')
-    audit_logs = updated_doppel_alert.get('audit_logs')
+    demisto.debug(f"Received alert data for {doppel_alert_id}")
+    audit_logs = updated_doppel_alert.get("audit_logs")
     demisto.debug(f'The alert contains {len(audit_logs or "")} audit logs')
 
     if isinstance(audit_logs, list) and all(isinstance(log, dict) for log in audit_logs):
-        most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log['timestamp'])
-        demisto.debug(f'Most recent audit log is {most_recent_audit_log}')
+        most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log["timestamp"])
+        demisto.debug(f"Most recent audit log is {most_recent_audit_log}")
         if isinstance(most_recent_audit_log, dict):
-            recent_audit_log_datetime_str = most_recent_audit_log['timestamp']
+            recent_audit_log_datetime_str = most_recent_audit_log["timestamp"]
             recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-            demisto.debug(f'The event was modified recently on {recent_audit_log_datetime}')
+            demisto.debug(f"The event was modified recently on {recent_audit_log_datetime}")
             if recent_audit_log_datetime > last_update:
-                updated_doppel_alert['id'] = doppel_alert_id
-                entries: list = [{
-                    "Type": EntryType.NOTE,
-                    "Contents": most_recent_audit_log,
-                    "ContentsFormat": EntryFormat.JSON,
-                    "Note": True
-                }]
-                demisto.debug(f'Successfully returning the updated alert and entries: {updated_doppel_alert, entries}')
+                updated_doppel_alert["id"] = doppel_alert_id
+                entries: list = [
+                    {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
+                ]
+                demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
                 return updated_doppel_alert, entries
     return None, []
 
@@ -211,7 +190,7 @@ def _get_mirroring_fields():
     """
     Get tickets mirroring.
     """
-    mirror_direction: str = demisto.params().get('mirror_direction', 'None')
+    mirror_direction: str = demisto.params().get("mirror_direction", "None")
     return {
         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
         "mirror_instance": demisto.integrationInstance(),
@@ -227,9 +206,9 @@ def _get_last_fetch_datetime(last_run):
         demisto.debug(f"Alerts were fetched last on: {last_fetch_datetime}")
     else:
         # If no last run is found
-        first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
+        first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
         last_fetch_datetime = dateparser.parse(first_fetch_time) or datetime.now()
-        assert last_fetch_datetime is not None, f'could not parse {first_fetch_time}'
+        assert last_fetch_datetime is not None, f"could not parse {first_fetch_time}"
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
 
     return last_fetch_datetime
@@ -241,17 +220,17 @@ def _paginated_call_to_get_alerts(client, page, last_fetch_datetime):
     """
     last_fetch_str: str = last_fetch_datetime.strftime(DOPPEL_API_DATE_FORMAT)
     query_params = {
-        'created_after': last_fetch_str,  # Fetch alerts after the last_fetch,
-        'sort_type': 'date_sourced',
-        'sort_order': 'asc',
-        'page': page,
+        "created_after": last_fetch_str,  # Fetch alerts after the last_fetch,
+        "sort_type": "date_sourced",
+        "sort_order": "asc",
+        "page": page,
     }
     get_alerts_response = client.get_alerts(params=query_params)
-    alerts = get_alerts_response.get('alerts', None)
+    alerts = get_alerts_response.get("alerts", None)
     return alerts
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -272,24 +251,21 @@ def test_module(client: Client) -> str:
         # Using the same dates so that we do not fetch any data for testing,
         # but still get the response as 200
         current_datetime_str = datetime.now().strftime(DOPPEL_API_DATE_FORMAT)
-        query_params = {
-            'created_before': current_datetime_str,
-            'created_after': current_datetime_str
-        }
+        query_params = {"created_before": current_datetime_str, "created_after": current_datetime_str}
 
         # Call the client's `get_alerts` method to test the connection
         client.get_alerts(params=query_params)
-        message: str = 'ok'
+        message: str = "ok"
 
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
     return message
 
 
-def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_get_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Comand to get a specific alert in the Doppel client using the provided arguments.
 
@@ -299,29 +275,29 @@ def doppel_get_alert_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     """
 
-    id: str = args.get('id', "")
-    entity: str = args.get('entity', "")
+    id: str = args.get("id", "")
+    entity: str = args.get("entity", "")
     if not id and not entity:
-        raise ValueError('Neither id nor the entity is specified. We need exactly single input for this command')
+        raise ValueError("Neither id nor the entity is specified. We need exactly single input for this command")
     if id and entity:
-        raise ValueError('Both id and entity is specified. We need exactly single input for this command')
+        raise ValueError("Both id and entity is specified. We need exactly single input for this command")
 
     try:
         result = client.get_alert(id=id, entity=entity)
     except Exception as exception:
-        raise Exception(f'No alert found with the given parameters :- {str(exception)}')
+        raise Exception(f"No alert found with the given parameters :- {str(exception)}")
 
-    title = 'Alert Summary'
+    title = "Alert Summary"
     human_readable = tableToMarkdown(title, result, removeNull=True)
     return CommandResults(
-        outputs_prefix='Doppel.Alert',
-        outputs_key_field='id',
+        outputs_prefix="Doppel.Alert",
+        outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
     )
 
 
-def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Executes the update alert command.
 
@@ -329,11 +305,11 @@ def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> Command
     :param args: Command arguments.
     :return: CommandResults object.
     """
-    alert_id = args.get('alert_id', '')
-    entity = args.get('entity', '')
-    queue_state = args.get('queue_state', '')
-    entity_state = args.get('entity_state', '')
-    comment = args.get('comment', '')
+    alert_id = args.get("alert_id", "")
+    entity = args.get("entity", "")
+    queue_state = args.get("queue_state", "")
+    entity_state = args.get("entity_state", "")
+    comment = args.get("comment", "")
 
     if alert_id and entity:
         raise ValueError("Only one of 'alert_id' or 'entity' can be specified.")
@@ -343,19 +319,16 @@ def doppel_update_alert_command(client: Client, args: Dict[str, Any]) -> Command
 
     try:
         result = client.update_alert(
-            queue_state=queue_state,
-            entity_state=entity_state,
-            alert_id=alert_id,
-            entity=entity,
-            comment=comment)
+            queue_state=queue_state, entity_state=entity_state, alert_id=alert_id, entity=entity, comment=comment
+        )
     except Exception as exception:
-        raise Exception(f'Failed to update the alert with the given parameters :- {str(exception)}.')
+        raise Exception(f"Failed to update the alert with the given parameters :- {str(exception)}.")
 
-    title = 'Alert Summary'
+    title = "Alert Summary"
     human_readable = tableToMarkdown(title, result, removeNull=True)
     return CommandResults(
-        outputs_prefix='Doppel.UpdatedAlert',
-        outputs_key_field='id',
+        outputs_prefix="Doppel.UpdatedAlert",
+        outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
     )
@@ -373,8 +346,8 @@ def format_datetime(timestamp_str):
 
     try:
         # Replace 'Z' with '+00:00' to make it compatible with fromisoformat()
-        if timestamp_str.endswith('Z'):
-            timestamp_str = timestamp_str.replace('Z', '+00:00')
+        if timestamp_str.endswith("Z"):
+            timestamp_str = timestamp_str.replace("Z", "+00:00")
 
         # Attempt to parse the string in ISO 8601 format
         datetime.fromisoformat(timestamp_str)
@@ -387,7 +360,7 @@ def format_datetime(timestamp_str):
         return iso_format_truncated
 
 
-def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Command to fetch multiple alerts based on query parameters.
 
@@ -396,20 +369,20 @@ def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandRe
     :return: CommandResults object with the retrieved alerts.
     """
 
-    created_before = format_datetime(args.get('created_before'))
-    created_after = format_datetime(args.get('created_after'))
+    created_before = format_datetime(args.get("created_before"))
+    created_after = format_datetime(args.get("created_after"))
 
     # Extract query parameters directly from arguments
     query_params = {
-        'search_key': args.get('search_key'),
-        'queue_state': args.get('queue_state'),
-        'product': args.get('product'),
-        'created_before': created_before,
-        'created_after': created_after,
-        'sort_type': args.get('sort_type'),
-        'sort_order': args.get('sort_order'),
-        'page': args.get('page'),
-        'tags': argToList(args.get('tags'), separator=',', transform=None)
+        "search_key": args.get("search_key"),
+        "queue_state": args.get("queue_state"),
+        "product": args.get("product"),
+        "created_before": created_before,
+        "created_after": created_after,
+        "sort_type": args.get("sort_type"),
+        "sort_order": args.get("sort_order"),
+        "page": args.get("page"),
+        "tags": argToList(args.get("tags"), separator=",", transform=None),
     }
 
     # Call the client's `get_alerts` method to fetch data
@@ -418,21 +391,21 @@ def doppel_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandRe
     try:
         results = client.get_alerts(params=query_params)
     except Exception as exception:
-        raise Exception(f'No alerts were found with the given parameters :- {str(exception)}.')
+        raise Exception(f"No alerts were found with the given parameters :- {str(exception)}.")
     demisto.debug(f"Results received: {results}")
 
-    alerts = results.get('alerts')
-    title = 'Alert Summary'
+    alerts = results.get("alerts")
+    title = "Alert Summary"
     human_readable = tableToMarkdown(title, alerts, removeNull=True)
     return CommandResults(
-        outputs_prefix='Doppel.GetAlerts',
-        outputs_key_field='id',
+        outputs_prefix="Doppel.GetAlerts",
+        outputs_key_field="id",
         outputs=results,
         readable_output=human_readable,
     )
 
 
-def doppel_create_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_create_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Comand to create an alert in the Doppel client using the provided arguments.
 
@@ -441,26 +414,26 @@ def doppel_create_alert_command(client: Client, args: Dict[str, Any]) -> Command
     :return: CommandResults object including details of the created alert.
     """
 
-    entity = args.get('entity')
+    entity = args.get("entity")
     if not entity:
         raise ValueError("Entity must be specified to create an alert.")
 
     try:
         result = client.create_alert(entity=entity)
     except Exception as exception:
-        raise Exception(f'Failed to create the alert with the given parameters:- {str(exception)}.')
+        raise Exception(f"Failed to create the alert with the given parameters:- {str(exception)}.")
 
-    title = 'Alert Summary'
+    title = "Alert Summary"
     human_readable = tableToMarkdown(title, result, removeNull=True)
     return CommandResults(
-        outputs_prefix='Doppel.CreatedAlert',
-        outputs_key_field='id',
+        outputs_prefix="Doppel.CreatedAlert",
+        outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
     )
 
 
-def doppel_create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Comand to create an abuse alert in the Doppel client using the provided arguments.
 
@@ -470,40 +443,40 @@ def doppel_create_abuse_alert_command(client: Client, args: Dict[str, Any]) -> C
 
     """
 
-    entity = args.get('entity')
+    entity = args.get("entity")
     if not entity:
         raise ValueError("Entity must be specified to create an abuse alert.")
 
     try:
         result = client.create_abuse_alert(entity=entity)
     except Exception as exception:
-        raise Exception(f'Failed to create the abuse alert with the given parameters:- {str(exception)}.')
+        raise Exception(f"Failed to create the abuse alert with the given parameters:- {str(exception)}.")
 
-    title = 'Alert Summary'
+    title = "Alert Summary"
     human_readable = tableToMarkdown(title, result, removeNull=True)
     return CommandResults(
-        outputs_prefix='Doppel.AbuseAlert',
-        outputs_key_field='id',
+        outputs_prefix="Doppel.AbuseAlert",
+        outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
     )
 
 
-def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
+def fetch_incidents_command(client: Client, args: dict[str, Any]) -> None:
     """
     Fetch incidents from Doppel alerts, map fields to custom XSOAR fields, and create incidents.
     This function fetches alerts directly from Doppel
     """
     demisto.debug("Fetching alerts from Doppel.")
     start_time = time.time()
-    timeout = float(demisto.params().get('fetch_timeout'))
+    timeout = float(demisto.params().get("fetch_timeout"))
 
     # Fetch the last run (time of the last fetch)
     last_run = demisto.getLastRun()
     demisto.debug(f"Last run details:- {last_run}")
 
     # creates incidents queue
-    incidents_queue = last_run.get('incidents_queue', [])
+    incidents_queue = last_run.get("incidents_queue", [])
 
     last_run = last_run.get("last_run", None)
     last_fetch_datetime = _get_last_fetch_datetime(last_run)
@@ -519,8 +492,7 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
             time_delta = time.time() - start_time
 
             if timeout and time_delta > timeout:
-                raise DemistoException(
-                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
+                raise DemistoException("Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
 
             alerts = _paginated_call_to_get_alerts(client, page, last_fetch_datetime)
 
@@ -534,14 +506,14 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
                 created_at_datetime = datetime.strptime(created_at_str, DOPPEL_PAYLOAD_DATE_FORMAT)
                 alert.update(mirroring_object)
                 incident = {
-                    'name': f"Doppel Incident {uuid.uuid4()}",
-                    'type': DOPPEL_ALERT,
-                    'occurred': created_at_datetime.strftime(XSOAR_DATE_FORMAT),
-                    'rawJSON': json.dumps(alert),
+                    "name": f"Doppel Incident {uuid.uuid4()}",
+                    "type": DOPPEL_ALERT,
+                    "occurred": created_at_datetime.strftime(XSOAR_DATE_FORMAT),
+                    "rawJSON": json.dumps(alert),
                 }
                 incidents.append(incident)
 
-            demisto.info(f'Fetched Doppel alerts from page {page} Successfully.')
+            demisto.info(f"Fetched Doppel alerts from page {page} Successfully.")
             page = page + 1
             incidents_queue += incidents
 
@@ -555,9 +527,8 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         next_fetch = next_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
         next_fetch = last_run
-    demisto.setLastRun({'last_run': next_fetch,
-                        'incidents_queue': incidents_queue[fetch_limit:]})
-    demisto.debug({'last_run': next_fetch, 'incidents_queue': incidents_queue[fetch_limit:]})
+    demisto.setLastRun({"last_run": next_fetch, "incidents_queue": incidents_queue[fetch_limit:]})
+    demisto.debug({"last_run": next_fetch, "incidents_queue": incidents_queue[fetch_limit:]})
 
     # Create incidents in XSOAR
     if oldest_incidents and len(oldest_incidents) > 0:
@@ -571,44 +542,47 @@ def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> None:
         demisto.info("No incidents to create. Exiting fetch_incidents_command.")
 
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, Any]):
-    demisto.debug('Command get-modified-remote-data is not implemented')
-    raise NotImplementedError('The command "get-modified-remote-data" is not implemented, \
-        as Doppel does provide the API to fetch updated alerts.')
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]):
+    demisto.debug("Command get-modified-remote-data is not implemented")
+    raise NotImplementedError(
+        'The command "get-modified-remote-data" is not implemented, \
+        as Doppel does provide the API to fetch updated alerts.'
+    )
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
     try:
-        remote_updated_incident_data: Dict[str, Any] = {}
-        mirrored_object: Dict[str, Any] = {}
+        remote_updated_incident_data: dict[str, Any] = {}
+        mirrored_object: dict[str, Any] = {}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
         remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(
-            client, parsed_args.remote_incident_id, parsed_args.last_update)
+            client, parsed_args.remote_incident_id, parsed_args.last_update
+        )
         if remote_updated_incident_data:
             demisto.debug(f'Found updates in the alert with id: {args["id"]}')
             return GetRemoteDataResponse(remote_updated_incident_data, parsed_entries)
         else:
-            demisto.debug(f'Nothing new in the incident {parsed_args.remote_incident_id}')
+            demisto.debug(f"Nothing new in the incident {parsed_args.remote_incident_id}")
             return GetRemoteDataResponse(mirrored_object, entries=[{}])
 
     except Exception as e:
-        demisto.error(f'Error while running get_remote_data_command: {e}')
+        demisto.error(f"Error while running get_remote_data_command: {e}")
         if "Rate limit exceeded" in str(e):
             demisto.debug("API rate limit")
         if not remote_updated_incident_data:
             remote_updated_incident_data = {"id": parsed_args.remote_incident_id}
-        mirrored_object['in_mirror_error'] = str(e)
+        mirrored_object["in_mirror_error"] = str(e)
         return GetRemoteDataResponse(mirrored_object, entries=[])
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
     :param client: XSOAR client to use
 
-    :type args: ``Dict[str, Any]``
+    :type args: ``dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
         ``args['data']`` the data to send to the remote system
@@ -621,19 +595,19 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
-    demisto.debug(f'Arguments for the update-remote-system is: {args}')
+    demisto.debug(f"Arguments for the update-remote-system is: {args}")
     parsed_args = UpdateRemoteSystemArgs(args)
     new_incident_id = parsed_args.remote_incident_id
 
-    demisto.debug(f'parsed_args data :- {parsed_args}')
-    demisto.debug(f'parsed_args data :- {parsed_args.data}')
+    demisto.debug(f"parsed_args data :- {parsed_args}")
+    demisto.debug(f"parsed_args data :- {parsed_args.data}")
     try:
         # Only update Doppel Alert if the XSOAR Incident is closed
         if parsed_args.inc_status != IncidentStatus.DONE:
-            demisto.debug(f'Incident not closed. Skipping update for remote ID [{new_incident_id}].')
+            demisto.debug(f"Incident not closed. Skipping update for remote ID [{new_incident_id}].")
             return new_incident_id
 
-        demisto.debug(f'Sending incident with remote ID [{new_incident_id}] to remote system')
+        demisto.debug(f"Sending incident with remote ID [{new_incident_id}] to remote system")
 
         if parsed_args.remote_incident_id and parsed_args.incident_changed:
             # Fetch existing incident details to preserve versioning
@@ -645,21 +619,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
             parsed_args.data = old_incident
 
         # Ensure queue_state is updated to 'archived' if necessary
-        if parsed_args.data.get('queue_state') != 'archived':
+        if parsed_args.data.get("queue_state") != "archived":
             client.update_alert(
-                queue_state='archived',
-                entity_state=parsed_args.data.get('entity_state', ''),  # Preserve old entity_state
-                comment=parsed_args.data.get('notes', ''),
-                alert_id=new_incident_id
+                queue_state="archived",
+                entity_state=parsed_args.data.get("entity_state", ""),  # Preserve old entity_state
+                comment=parsed_args.data.get("notes", ""),
+                alert_id=new_incident_id,
             )
     except Exception as e:
-        demisto.error(f"Doppel - Error in outgoing mirror for incident {new_incident_id} \n"
-                      f"Error message: {str(e)}")
+        demisto.error(f"Doppel - Error in outgoing mirror for incident {new_incident_id} \nError message: {str(e)}")
 
     return new_incident_id
 
 
-def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappingFieldsResponse:
+def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappingFieldsResponse:
     """
     Retrieves the mapping fields for Doppel alerts in XSOAR.
 
@@ -668,7 +641,7 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
 
     Args:
         client (Client): The API client used to communicate with Doppel.
-        args (Dict[str, Any]): Command arguments (not used in this function).
+        args (dict[str, Any]): Command arguments (not used in this function).
 
     Returns:
         GetMappingFieldsResponse: The mapping response containing field definitions.
@@ -677,8 +650,7 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
 
     # Define the incident mapping scheme
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
-    xdr_incident_type_scheme.add_field(name='queue_state', description='Queue State of the Doppel Alert')
-
+    xdr_incident_type_scheme.add_field(name="queue_state", description="Queue State of the Doppel Alert")
 
     # Create the response object
     mapping_response = GetMappingFieldsResponse()
@@ -688,37 +660,35 @@ def get_mapping_fields_command(client: Client, args: Dict[str, Any]) -> GetMappi
     return mapping_response
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
-    api_key = demisto.params().get('credentials', {}).get('password')
+    api_key = demisto.params().get("credentials", {}).get("password")
 
     # Get the service API URL
-    base_url = urljoin(demisto.params()['url'], '/v1')
+    base_url = urljoin(demisto.params()["url"], "/v1")
 
     # Explicitly define the type for the command function dictionary
-    supported_commands: Dict[str, Callable[[Client, Dict[str, Any]], Any]] = {
-        'fetch-incidents': fetch_incidents_command,
-        'get-modified-remote-data': get_modified_remote_data_command,
-        'get-remote-data': get_remote_data_command,
-        'update-remote-system': update_remote_system_command,
-        'get-mapping-fields': get_mapping_fields_command,
-        'doppel-get-alert': doppel_get_alert_command,
-        'doppel-update-alert': doppel_update_alert_command,
-        'doppel-get-alerts': doppel_get_alerts_command,
-        'doppel-create-alert': doppel_create_alert_command,
-        'doppel-create-abuse-alert': doppel_create_abuse_alert_command,
+    supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
+        "fetch-incidents": fetch_incidents_command,
+        "get-modified-remote-data": get_modified_remote_data_command,
+        "get-remote-data": get_remote_data_command,
+        "update-remote-system": update_remote_system_command,
+        "get-mapping-fields": get_mapping_fields_command,
+        "doppel-get-alert": doppel_get_alert_command,
+        "doppel-update-alert": doppel_update_alert_command,
+        "doppel-get-alerts": doppel_get_alerts_command,
+        "doppel-create-alert": doppel_create_alert_command,
+        "doppel-create-abuse-alert": doppel_create_abuse_alert_command,
     }
 
     # Special case for 'test-module' which does not take args
-    supported_commands_test_module: Dict[str, Callable[[Client], Any]] = {
-        'test-module': test_module
-    }
+    supported_commands_test_module: dict[str, Callable[[Client], Any]] = {"test-module": test_module}
 
     current_command: str = demisto.command()
-    demisto.info(f'Command being called is {current_command}')
+    demisto.info(f"Command being called is {current_command}")
 
     try:
         client = Client(base_url=base_url, api_key=api_key)
@@ -730,18 +700,18 @@ def main() -> None:
             # Calls command_function(client, demisto.args())
             result = supported_commands[current_command](client, demisto.args())
         else:
-            demisto.error(f'Command is not implemented: {current_command}')
-            raise NotImplementedError(f'The {current_command} command is not supported')
+            demisto.error(f"Command is not implemented: {current_command}")
+            raise NotImplementedError(f"The {current_command} command is not supported")
 
-        demisto.info(f'Command run successful: {current_command}')
+        demisto.info(f"Command run successful: {current_command}")
         return_results(result)
 
     except Exception as e:
-        return_error(f'Failed to execute {current_command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {current_command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
