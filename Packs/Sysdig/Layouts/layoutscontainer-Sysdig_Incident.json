@@ -214,19 +214,46 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "sysdigagentid",
+                                "fieldId": "sysdigeventid",
                                 "height": 26,
-                                "id": "113b0c67-f44b-4fcb-9985-12849ed8cdda",
+                                "id": -1,
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "sysdigcontainerid",
+                                "fieldId": "sysdigcategory",
                                 "height": 26,
-                                "id": "9c2b9d95-a57c-41c9-b578-6836d5df3e59",
+                                "id": -1,
                                 "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigpolicy",
+                                "height": 26,
+                                "id": -1,
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigrulename",
+                                "height": 26,
+                                "id": -1,
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigseverity",
+                                "height": 26,
+                                "id": -1,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -234,8 +261,35 @@
                                 "endCol": 2,
                                 "fieldId": "sysdigcustomerid",
                                 "height": 26,
-                                "id": "e53563c8-91b6-4648-91cd-ac8c776eff99",
-                                "index": 2,
+                                "id": -1,
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigagentid",
+                                "height": 26,
+                                "id": -1,
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigagentversion",
+                                "height": 26,
+                                "id": -1,
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sysdigcontainerid",
+                                "height": 26,
+                                "id": -1,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
