@@ -3721,28 +3721,38 @@ class ServiceIndex:
 
 
 @pytest.mark.parametrize(
-    "given_indexes, service_indexes, expected",
+    "indexes_to_validate, existing_indexes, expected_invalid",
     [
-        # Test case: All indexes exist in the service
-        (["index1", "index2"], ["index1", "index2", "index3"], True),
-        # Test case: Some indexes do not exist in the service
-        (["index1", "index4"], ["index1", "index2", "index3"], False),
-        # Test case: Empty input indexes list
-        ([], ["index1", "index2", "index3"], True),
+        (["main", "history"], ["main", "history", "summary"], set()),
+        (["main", "invalid"], ["main", "history"], {"invalid"}),
+        ([], ["main", "history"], set()),
+        (["main"], [], {"main"}),
     ],
 )
-def test_validate_indexes(given_indexes, service_indexes, expected):
-    """
-    Given: A list of indexes' names.
-    When: Calling validate_indexes function.
-    Then: The function returns `True` if all the given index names exist within the Splunk service instance;
-          otherwise, it returns `False`.
-    """
-    from SplunkPy import validate_indexes
+def test_get_invalid_indexes(mocker, indexes_to_validate, existing_indexes, expected_invalid):
+    """Tests the get_invalid_indexes function for various scenarios."""
+    from SplunkPy import get_invalid_indexes, client
 
-    service = ServiceIndex(service_indexes)
-    # Assert that the function returns the expected result
-    assert validate_indexes(given_indexes, service) == expected
+    service_mock = MagicMock(spec=client.Service, create=True)
+    service_mock.indexes = []
+    for index_name in existing_indexes:
+        mock_index = MagicMock(spec=client.Index)
+        mock_index.name = index_name
+        service_mock.indexes.append(mock_index)
+
+    result = get_invalid_indexes(indexes_to_validate, service_mock)
+    assert result == expected_invalid
+
+
+def test_get_invalid_indexes_api_error(mocker):
+    """Tests that get_invalid_indexes returns None when the Splunk API call fails."""
+    from SplunkPy import get_invalid_indexes, client
+
+    service_mock = MagicMock(spec=client.Service, create=True)
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
+    result = get_invalid_indexes(["main"], service_mock)
+    assert result is None
 
 
 @pytest.mark.parametrize(
@@ -3804,11 +3814,11 @@ def test_parse_fields(fields, expected):
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")
 @patch("SplunkPy.extract_indexes")
-@patch("SplunkPy.validate_indexes")
+@patch("SplunkPy.get_invalid_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
-    mock_validate_indexes,
+    mock_get_invalid_indexes,
     mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
@@ -3832,7 +3842,7 @@ def test_splunk_submit_event_hec(
 
     # Mocks
     mock_parse_fields.return_value = parsed_fields
-    mock_validate_indexes.return_value = True
+    mock_get_invalid_indexes.return_value = set()
 
     if event:
         # Single event
@@ -4200,3 +4210,76 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
     res = splunk.parse_batch_of_results(mock_result_batch, 10, "")
 
     assert res == expected_res
+
+
+def test_splunk_submit_event_hec_command_index_validation_api_error(mocker):
+    """
+    Given:
+        - An event to submit to Splunk via HEC.
+        - The Splunk API call to retrieve indexes fails.
+    When:
+        - Calling splunk_submit_event_hec_command.
+    Then:
+        - A warning should be returned to the user.
+        - The event submission should still be attempted.
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    from splunklib.client import Service
+
+    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "test_index"}])
+    mocker.patch("SplunkPy.demisto.error")
+    mocker.patch("sys.exit")
+    post_mock = mocker.patch("requests.post")
+    # Mock a successful response to prevent downstream errors
+    response_mock = MagicMock()
+    response_mock.text = '{"text":"Success","code":0,"ackId":123}'
+    post_mock.return_value = response_mock
+    warning_mock = mocker.patch("SplunkPy.return_warning")
+
+    service_mock = MagicMock(spec=Service, create=True)
+    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
+
+    splunk_submit_event_hec_command(
+        params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args={"entry_id": "entry_id"}
+    )
+
+    warning_mock.assert_called_once_with(
+        "Could not verify the existence of Splunk indexes due to an API error. "
+        "Proceeding with event submission. Check the logs for more details. "
+        "If submission fails, contact Splunk support."
+    )
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"entry_id": "entry_id"},
+        {"index": "invalid_index", "event": {"event_data": "event_data"}},
+    ],
+)
+def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, args):
+    """
+    Given:
+        - An event to submit to Splunk via HEC with an invalid index.
+    When:
+        - Calling splunk_submit_event_hec_command.
+    Then:
+        - A DemistoException should be raised with the invalid index name.
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    from splunklib.client import Service
+
+    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "invalid_index"}])
+    mocker.patch(RETURN_ERROR_TARGET)
+    requests_mock.post("https://splunk.test.com/services/collector/event")
+
+    service_mock = MagicMock(spec=Service)
+    index_mock = MagicMock()
+    index_mock.name = "valid_index"
+    service_mock.indexes = [index_mock]
+
+    with pytest.raises(DemistoException) as e:
+        splunk_submit_event_hec_command(
+            params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
+        )
+    assert "The following Splunk indexes do not exist: invalid_index." in str(e.value)

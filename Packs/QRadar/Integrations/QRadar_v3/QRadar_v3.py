@@ -34,6 +34,8 @@ MAX_RETRIES_CONTEXT = 5  # max number of retries to update the context
 MAX_SEARCHES_QUEUE = 10  # maximum number of concurrent searches in mirroring
 
 SAMPLE_SIZE = 2  # number of samples to store in integration context
+MAX_SAMPLE_SIZE_MB = 3  # maximum size in MB for incidents to be stored as samples
+MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024  # convert MB to bytes
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
@@ -1205,7 +1207,7 @@ def insert_to_updated_context(
     if should_update_last_fetch:
         # Last fetch is updated with the samples that were fetched
         new_context_data.update(
-            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])}
+            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])[:SAMPLE_SIZE]}
         )
 
     if should_update_last_mirror:
@@ -2041,7 +2043,8 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
         ctx["samples"] = []
 
         partial_changes = {
-            # We do NOT set RESET_KEY, effectively removing it from context
+            # Explicitly remove RESET_KEY by setting it to None (will be handled by merge logic)
+            RESET_KEY: None,
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
             "samples": ctx["samples"],
@@ -2172,16 +2175,71 @@ def test_module_command(client: Client, params: dict) -> str:
     return message
 
 
+def calculate_incident_size(incident: dict) -> int:
+    """
+    Calculate the approximate size of an incident in bytes for context storage.
+
+    This function uses a multi-step process with granular error handling:
+    1. It first attempts to create a string using JSON serialization, which is precise.
+    2. If JSON serialization fails (e.g., due to non-serializable types), it
+       falls back to using the basic `str()` representation.
+    3. It then attempts to encode the resulting string to UTF-8 to get the byte size.
+    4. If encoding fails (a rare case), it performs the encoding again but
+       replaces any problematic characters to guarantee a result.
+
+    Args:
+        incident (dict): The incident dictionary.
+
+    Returns:
+        int: The calculated or estimated size of the incident in bytes.
+    """
+    try:
+        string_to_encode = json.dumps(incident, default=str)
+    except TypeError as e:
+        print_debug_msg(f"Could not serialize incident to JSON: {e}. Using fallback string representation.")
+        string_to_encode = str(incident)
+
+    try:
+        encoded_bytes = string_to_encode.encode("utf-8")
+        return len(encoded_bytes)
+    except UnicodeEncodeError as e:
+        print_debug_msg(f"Could not encode string to UTF-8: {e}. Forcing encoding by replacing errors.")
+        encoded_bytes_safe = string_to_encode.encode("utf-8", errors="replace")
+        return len(encoded_bytes_safe)
+
+
+def is_incident_size_acceptable(incident: dict) -> bool:
+    """
+    Check if an incident is small enough to be stored as a sample in the integration context.
+
+    Args:
+        incident (dict): The incident dictionary
+
+    Returns:
+        bool: True if incident size is acceptable, False otherwise
+    """
+    size_bytes = calculate_incident_size(incident)
+    if size_bytes > MAX_SAMPLE_SIZE_BYTES:
+        print_debug_msg(
+            f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
+            f"exceeds maximum sample size ({MAX_SAMPLE_SIZE_MB} MB). Skipping from samples."
+        )
+        return False
+    return True
+
+
 def fetch_incidents_command() -> List[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
 
     Returns:
-        (List[Dict]): List of incidents samples.
+        (List[Dict]): List of incidents samples, limited to SAMPLE_SIZE.
     """
     ctx = get_integration_context()
-    return ctx.get("samples", [])
+    samples = ctx.get("samples", [])
+    # Enforce the sample size limit to prevent returning too many incidents
+    return samples[:SAMPLE_SIZE]
 
 
 def create_search_with_retry(
@@ -2651,7 +2709,15 @@ def perform_long_running_loop(
     context_data, ctx_version = get_integration_context_with_version()
 
     if incidents and new_highest_id:
-        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get("samples", [])
+        # Filter incidents that are small enough to store as samples
+        filtered_incidents = [incident for incident in incidents if is_incident_size_acceptable(incident)]
+        incident_batch_for_sample = (
+            filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])[:SAMPLE_SIZE]
+        )
+
+        if len(filtered_incidents) < len(incidents):
+            skipped_count = len(incidents) - len(filtered_incidents)
+            print_debug_msg(f"Skipped {skipped_count} incident(s) from samples due to size constraints.")
         # Actually create the incidents in XSOAR
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         partial_changes = {}
@@ -2692,7 +2758,7 @@ def recover_from_last_run(ctx: dict | None = None, version: Any = None):
             f"ID from context: {last_highest_id_context}"
         )
 
-        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])}
+        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])[:SAMPLE_SIZE]}
 
         safely_update_context_data_partial(partial_changes)
 
