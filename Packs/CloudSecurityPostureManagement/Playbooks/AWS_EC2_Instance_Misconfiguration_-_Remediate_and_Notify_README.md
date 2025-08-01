@@ -11,24 +11,24 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Create Ticket and/or Notify
-* Update Ticket and/or Notify
+- Create Ticket and/or Notify
+- Update Ticket and/or Notify
 
 ### Integrations
 
-* AWS
-* Cortex Core - Platform
+- AWS
+- Cortex Core - Platform
 
 ### Scripts
 
-* IsIntegrationAvailable
-* Print
+- IsIntegrationAvailable
+- Print
 
 ### Commands
 
-* aws-ec2-instance-metadata-options-modify
-* core-get-asset-details
-* setIssueStatus
+- aws-ec2-instance-metadata-options-modify
+- core-get-asset-details
+- setIssueStatus
 
 ## Playbook Inputs
 
