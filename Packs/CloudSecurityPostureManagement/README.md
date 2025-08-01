@@ -66,10 +66,11 @@ This pack uses the following integrations:
 - Active integrations for AWS, Jira, ServiceNow, Slack, Microsoft Teams (depending on use)
 - Access to cloud account APIs with sufficient permissions for remediation
 
-### Pack Contributors:
+### Pack Contributors
 
 ---
 
 - Shashi Kiran N
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+

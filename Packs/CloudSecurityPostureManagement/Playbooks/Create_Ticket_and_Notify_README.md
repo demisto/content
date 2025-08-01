@@ -49,14 +49,7 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| Ticket.Id | Jira Ticket ID. | string |
-| ServiceNow.Ticket.ID | Service Now Ticket ID. | string |
-| Please Provide Jira Project Key.Answers.0 | Jira Project Key. | shortText |
-| Please Provide Slack Channel Name.Answers.0 | Slack Channel Name. | shortText |
-| Please Provide Notification Email Recipients.Answers.0 | Notification Email Recipients. | shortText |
+There are no outputs for this playbook.
 
 ## Playbook Image
 

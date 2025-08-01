@@ -1,21 +1,31 @@
 id: Create Ticket and Notify
-version: -1
+version: 17
+vcShouldKeepItemLegacyProdMachine: false
 name: Create Ticket and Notify
-description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
+description: This playbook automates the handling of issues, sending them through
+  ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams,
+  or email. You have the flexibility to create or update a ticket using Jira or ServiceNow,
+  to notify other teams using Slack or Microsoft Teams, or to send an email. You can
+  choose to only create or update a ticket and skip the notification, skip creating
+  or updating a ticket and send only a notification, or both create or update a ticket
+  and notify relevant parties. This playbook requires existing integrations with Jira,
+  ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these
+  integrations are found in your account, the playbook will post message to the Issue
+  War Room notifying the missing integrations.
 starttaskid: "0"
 fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: 4c9ff4d2-6fa7-48b2-8324-0c74710027e7
+    taskid: 2b461cb5-8e96-496f-88d5-a2905095b04a
     type: start
     task:
-      id: 4c9ff4d2-6fa7-48b2-8324-0c74710027e7
+      id: 2b461cb5-8e96-496f-88d5-a2905095b04a
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "61"
@@ -37,16 +47,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c60bb9ed-2f1b-4929-84d0-c7fc63091bc8
+    taskid: 1eafc38f-10af-48cf-8a90-8e945b315215
     type: title
     task:
-      id: c60bb9ed-2f1b-4929-84d0-c7fc63091bc8
+      id: 1eafc38f-10af-48cf-8a90-8e945b315215
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -65,16 +75,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: be775625-5f6b-430c-8e2c-de5435f33e36
+    taskid: c6c33e76-3b8a-4f4b-868d-50307bf4fe63
     type: condition
     task:
-      id: be775625-5f6b-430c-8e2c-de5435f33e36
+      id: c6c33e76-3b8a-4f4b-868d-50307bf4fe63
       version: -1
       name: Check State Input
       description: Checks if State Input is Create / Update
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       Create:
       - "42"
@@ -119,10 +130,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a89e868a-4ca6-4221-8b07-76f3c4600d1a
+    taskid: 6e3a2182-521c-4e48-8dae-d9276534a5f9
     type: regular
     task:
-      id: a89e868a-4ca6-4221-8b07-76f3c4600d1a
+      id: 6e3a2182-521c-4e48-8dae-d9276534a5f9
       version: -1
       name: Create Issue ServiceNow ticket
       description: Creates new ServiceNow ticket.
@@ -130,6 +141,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -173,10 +185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: f8fbb774-977b-4298-8745-786c6175f79c
+    taskid: 5b6925af-5d44-4310-8c3c-154728f40e8a
     type: regular
     task:
-      id: f8fbb774-977b-4298-8745-786c6175f79c
+      id: 5b6925af-5d44-4310-8c3c-154728f40e8a
       version: -1
       name: Create Issue Jira ticket
       description: Creates a new issue in Jira.
@@ -184,6 +196,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -227,16 +240,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 2d4ec522-bb98-431a-8c4a-006d5b73de16
+    taskid: 9a384d91-b621-40ae-871b-eb7bd7178ab7
     type: title
     task:
-      id: 2d4ec522-bb98-431a-8c4a-006d5b73de16
+      id: 9a384d91-b621-40ae-871b-eb7bd7178ab7
       version: -1
       name: Create or Update Issue ticket
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "60"
@@ -258,16 +271,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 6886cbbe-d71c-4654-84fd-5e912414f120
+    taskid: 4d5e8368-f1c4-47ad-8427-b9ff49403ee3
     type: title
     task:
-      id: 6886cbbe-d71c-4654-84fd-5e912414f120
+      id: 4d5e8368-f1c4-47ad-8427-b9ff49403ee3
       version: -1
       name: Notification via Teams / Slack
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "63"
@@ -289,16 +302,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: e7a7ec4f-def3-45f5-8172-47d5b569d403
+    taskid: 6f16754b-99b4-4d89-82e2-7ea9c366dd40
     type: condition
     task:
-      id: e7a7ec4f-def3-45f5-8172-47d5b569d403
+      id: 6f16754b-99b4-4d89-82e2-7ea9c366dd40
       version: -1
       name: Is Jira Project Key Input Provided?
       description: Checks if Jira Project Key exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "51"
@@ -349,16 +363,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 5c820c10-21f3-4606-85f0-cc7a69265ef0
+    taskid: 72f0ef5b-b41b-4042-8764-5f82c7f8aeeb
     type: title
     task:
-      id: 5c820c10-21f3-4606-85f0-cc7a69265ef0
+      id: 72f0ef5b-b41b-4042-8764-5f82c7f8aeeb
       version: -1
       name: Email Notification
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "57"
@@ -380,10 +394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 791d6ffb-ea45-4639-885d-ba9925aa7820
+    taskid: 7c345a1c-f3a5-4b6c-8a14-2455f0112463
     type: regular
     task:
-      id: 791d6ffb-ea45-4639-885d-ba9925aa7820
+      id: 7c345a1c-f3a5-4b6c-8a14-2455f0112463
       version: -1
       name: Send Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -391,6 +405,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -430,10 +445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 9486150a-f06c-40bd-84b0-3e999f8b8199
+    taskid: b59727e8-cb9f-495f-8a58-5aeacbf0aa51
     type: regular
     task:
-      id: 9486150a-f06c-40bd-84b0-3e999f8b8199
+      id: b59727e8-cb9f-495f-8a58-5aeacbf0aa51
       version: -1
       name: Update Microsoft Teams Notification
       description: Send a message to Microsoft Teams via Incoming Webhook.
@@ -441,6 +456,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams via Webhook
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -475,10 +491,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 5f2062cf-7c4a-41ce-89aa-cc99c9a5c533
+    taskid: 28c811c7-6843-4b64-8029-1062a3821dec
     type: regular
     task:
-      id: 5f2062cf-7c4a-41ce-89aa-cc99c9a5c533
+      id: 28c811c7-6843-4b64-8029-1062a3821dec
       version: -1
       name: Update Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -486,6 +502,7 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -522,10 +539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: f490b6c0-7929-49cc-88c2-c03d47b815e8
+    taskid: 03f32461-22e3-4300-833f-a74109c4659e
     type: regular
     task:
-      id: f490b6c0-7929-49cc-88c2-c03d47b815e8
+      id: 03f32461-22e3-4300-833f-a74109c4659e
       version: -1
       name: Send Microsoft Teams Notification
       description: Send a message to Microsoft Teams via Incoming Webhook.
@@ -533,6 +550,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams via Webhook
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -570,10 +588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: fd432e30-d500-41c2-8326-660116b43141
+    taskid: daf1f803-7cc3-4f6d-8458-213be6b8058c
     type: regular
     task:
-      id: fd432e30-d500-41c2-8326-660116b43141
+      id: daf1f803-7cc3-4f6d-8458-213be6b8058c
       version: -1
       name: Update Issue ServiceNow ticket
       description: Updates the specified ticket.
@@ -581,6 +599,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -617,10 +636,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 5ae1be77-ca9c-447f-874e-855c804d7356
+    taskid: 880cd952-f12f-4b37-8718-4a44efecb672
     type: regular
     task:
-      id: 5ae1be77-ca9c-447f-874e-855c804d7356
+      id: 880cd952-f12f-4b37-8718-4a44efecb672
       version: -1
       name: Update Issue Jira ticket
       description: Adds a new comment to an existing Jira issue.
@@ -628,6 +647,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -664,16 +684,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 47669741-76a4-4e47-8d6f-494b20c25b1d
+    taskid: 935d84a6-b25a-44d4-8926-17e85dc80368
     type: condition
     task:
-      id: 47669741-76a4-4e47-8d6f-494b20c25b1d
+      id: 935d84a6-b25a-44d4-8926-17e85dc80368
       version: -1
       name: Is there an existing ServiceNow Ticket?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -733,10 +755,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 19596cca-41f4-4266-8cbb-d6dd6c473230
+    taskid: 743e01d2-0228-46e1-8845-b4ea6a1e807b
     type: regular
     task:
-      id: 19596cca-41f4-4266-8cbb-d6dd6c473230
+      id: 743e01d2-0228-46e1-8845-b4ea6a1e807b
       version: -1
       name: Notify Microsoft Teams and Slack Integration status to War Room
       description: Prints text to war room (Markdown supported)
@@ -744,12 +766,14 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
       value:
-        simple: No MS Teams or Slack integration connected to your Cortex tenant. Please configure either one of these to send a message notification.
+        simple: No MS Teams or Slack integration connected to your Cortex tenant.
+          Please configure either one of these to send a message notification.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -768,16 +792,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 4bec67bd-7e7f-4985-8861-85bf3f536e9d
+    taskid: 6fc1ba7d-d5b5-44a9-83e4-e18f75cf104c
     type: collection
     task:
-      id: 4bec67bd-7e7f-4985-8861-85bf3f536e9d
+      id: 6fc1ba7d-d5b5-44a9-83e4-e18f75cf104c
       version: -1
       name: Get Jira Project Key
       description: Gets Jira Project Key Input from User
       type: collection
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "52"
@@ -794,13 +819,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -834,16 +859,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 7c484f72-ede1-4e98-8d7b-ccc9b895250d
+    taskid: d74ab51b-6c7f-4c51-8450-be96ab263a71
     type: condition
     task:
-      id: 7c484f72-ede1-4e98-8d7b-ccc9b895250d
+      id: d74ab51b-6c7f-4c51-8450-be96ab263a71
       version: -1
       name: Is there an existing Jira Ticket?
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -902,16 +929,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 028b8dba-9c3c-450b-8056-5e4014192f35
+    taskid: 8936dc58-b5b5-4589-82ec-cc049a3fb497
     type: collection
     task:
-      id: 028b8dba-9c3c-450b-8056-5e4014192f35
+      id: 8936dc58-b5b5-4589-82ec-cc049a3fb497
       version: -1
       name: Get Slack Channel Name
       description: Gets Slack Channel Name from User
       type: collection
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "65"
@@ -928,13 +956,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -968,16 +996,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 4f6bec04-7e29-4648-83ca-7949180abdcd
+    taskid: 8dc95a8d-d379-4779-8d0d-ef60a197cc6b
     type: condition
     task:
-      id: 4f6bec04-7e29-4648-83ca-7949180abdcd
+      id: 8dc95a8d-d379-4779-8d0d-ef60a197cc6b
       version: -1
       name: Check Notification Email Recipients Inputs
-      description: Cheks if Notification Email Recipients is set to Yes and email address is provided
+      description: Cheks if Notification Email Recipients is set to Yes and email
+        address is provided
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       Input:
       - "58"
@@ -1057,16 +1087,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 8f3ff7ea-9dd0-46d5-8bc6-5b6af7e6d39b
+    taskid: 03900e70-e63e-476b-88b5-841fae3a8b61
     type: collection
     task:
-      id: 8f3ff7ea-9dd0-46d5-8bc6-5b6af7e6d39b
+      id: 03900e70-e63e-476b-88b5-841fae3a8b61
       version: -1
       name: Get Notification Email Recipients
       description: Gets Notification Email Recipients input from user
       type: collection
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "69"
@@ -1083,13 +1114,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
-      body:
+      to: null
+      subject: null
+      body: null
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1123,16 +1154,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: f9ce7163-a098-4a0b-8fed-6f2eb1947206
+    taskid: 0156530b-96e1-44ee-829a-a303093c7769
     type: condition
     task:
-      id: f9ce7163-a098-4a0b-8fed-6f2eb1947206
+      id: 0156530b-96e1-44ee-829a-a303093c7769
       version: -1
       name: Check ServiceNow and Jira Integration
       description: Check if ticketing input is set to Yes and the configured module
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "71"
@@ -1242,16 +1274,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 3ae2dcf5-6026-4d5b-8b16-2ee9f476f7a0
+    taskid: 2f1e7740-c46b-4f58-8d1f-f07a2d442954
     type: condition
     task:
-      id: 3ae2dcf5-6026-4d5b-8b16-2ee9f476f7a0
+      id: 2f1e7740-c46b-4f58-8d1f-f07a2d442954
       version: -1
       name: Is Asset Details Exists?
       description: Checks if Asset details exists
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "62"
@@ -1292,10 +1325,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: f6f78d83-7ef6-496b-8c0c-3e2086320814
+    taskid: 8f019ce3-97f1-4789-8945-efa40f546efc
     type: regular
     task:
-      id: f6f78d83-7ef6-496b-8c0c-3e2086320814
+      id: 8f019ce3-97f1-4789-8945-efa40f546efc
       version: -1
       name: Get Asset Details
       description: Get asset information.
@@ -1303,6 +1336,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - Platform
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "30"
@@ -1327,16 +1361,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: bf5b0f24-aa9c-4049-846b-b714060614f9
+    taskid: 2bc4257c-8655-4eaf-82d0-58ac087d771d
     type: condition
     task:
-      id: bf5b0f24-aa9c-4049-846b-b714060614f9
+      id: 2bc4257c-8655-4eaf-82d0-58ac087d771d
       version: -1
       name: Check Microsoft Teams and Slack Integration
-      description: Checks if message notification is set to Yes and the integrated module.
+      description: Checks if message notification is set to Yes and the integrated
+        module.
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "49"
@@ -1447,16 +1483,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 44b47b97-8b79-4da6-8316-1e70af365dd3
+    taskid: c62d3bbb-cf0e-4e05-8e17-39c7f0106eff
     type: condition
     task:
-      id: 44b47b97-8b79-4da6-8316-1e70af365dd3
+      id: c62d3bbb-cf0e-4e05-8e17-39c7f0106eff
       version: -1
       name: Is Slack Channel Name Input Provided?
       description: Checks if Slack Channel Name Input is provided
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       "No":
       - "56"
@@ -1507,16 +1544,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: b1d0c85a-f041-48f1-8ced-7f34aee2f55b
+    taskid: 32641dcc-3cb2-4f80-8c9d-786b67946adc
     type: condition
     task:
-      id: b1d0c85a-f041-48f1-8ced-7f34aee2f55b
+      id: 32641dcc-3cb2-4f80-8c9d-786b67946adc
       version: -1
       name: Check State Input
       description: Checks if State Input is Create / Update
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       Create:
       - "36"
@@ -1561,10 +1599,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 11c875c9-3b34-46a1-87ce-15f357fcce58
+    taskid: 7763c0fe-d348-4fd7-8bb9-09d77137243f
     type: regular
     task:
-      id: 11c875c9-3b34-46a1-87ce-15f357fcce58
+      id: 7763c0fe-d348-4fd7-8bb9-09d77137243f
       version: -1
       name: Send Email Notification
       description: commands.server.mail.sendmail
@@ -1572,16 +1610,63 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       htmlBody:
-        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color: #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align: center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom: 25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size: 14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected.\n    </p>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n      </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size: 14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color: #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color: #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\", \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\" \n         target=\"_blank\"\n         style=\"display: inline-block; padding: 10px 24px; background-color: #0067b8; color: white !important; text-decoration: none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n         View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <p style=\"font-size:
+          14px; margin-bottom: 25px;\">\n      A cloud misconfiguration has been detected.\n
+          \   </p>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom:
+          20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Severity</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${issue.severity}</td>\n      </tr>\n
+          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
+          background-color: #f9f9f9; font-weight: bold;\">Details</td>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.details}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Category</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.alert_category}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.created}</td>\n
+          \     </tr>\n    </table>\n\n    <div style=\"font-weight: bold; font-size:
+          14px; margin: 15px 0 8px;\">Asset Tags</div>\n    <div style=\"background-color:
+          #f2f2f2; border-radius: 4px; font-family: monospace; font-size: 13px; color:
+          #444; padding: 10px; white-space: pre-wrap;\">\n      { \"Key\": \"Purpose\",
+          \"Value\": \"CortexXSIAMFlowLogs\" }\n    </div>\n\n    <div style=\"text-align:
+          center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
       subject:
         simple: 'Issue Detected for Asset: ${Core.CoreAsset.xdm__asset__name}'
       to:
-        simple: ${inputs.Notification Email Recipients},${Please Provide Notification Email Recipients.Answers.0}
+        simple: ${inputs.Notification Email Recipients},${Please Provide Notification
+          Email Recipients.Answers.0}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1600,10 +1685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 40170c14-a5bf-4bdf-8c25-f1fda621a93c
+    taskid: 3528e7be-bb4b-4c6d-8cb5-938e5fb60566
     type: regular
     task:
-      id: 40170c14-a5bf-4bdf-8c25-f1fda621a93c
+      id: 3528e7be-bb4b-4c6d-8cb5-938e5fb60566
       version: -1
       name: Update Email Notification
       description: commands.server.mail.sendmail
@@ -1611,16 +1696,49 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
     scriptarguments:
       htmlBody:
-        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color: #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align: center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom: 25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border: 1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width: 40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n      </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">Success</td>\n      </tr>\n    </table>\n    <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\" \n         target=\"_blank\"\n         style=\"display: inline-block; padding: 10px 24px; background-color: #0067b8; color: white !important; text-decoration: none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n         View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Cortex Cloud Issue Details\n    </div>\n\n    <table style=\"width:
+          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
+          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
+          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
+          bold;\">Asset Name</td>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__name}</td>\n      </tr>\n
+          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
+          background-color: #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__type__name}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__cloud__region}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${Core.CoreAsset.xdm__asset__realm}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">Success</td>\n
+          \     </tr>\n    </table>\n    <div style=\"text-align: center; margin:
+          30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
       subject:
         simple: Issue Resolved for Asset - ${Core.CoreAsset.xdm__asset__name}
       to:
-        simple: ${inputs.Notification Email Recipients},${Please Provide Notification Email Recipients.Answers.0}
+        simple: ${inputs.Notification Email Recipients},${Please Provide Notification
+          Email Recipients.Answers.0}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1639,16 +1757,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 4bde6f1d-2665-43d5-8b89-b609cc5eddb3
+    taskid: 1a4cc8c6-333c-4ffc-8c2b-0b82d934a232
     type: condition
     task:
-      id: 4bde6f1d-2665-43d5-8b89-b609cc5eddb3
+      id: 1a4cc8c6-333c-4ffc-8c2b-0b82d934a232
       version: -1
       name: Check State Input
       description: Checks if State Input is Create / Update
       type: condition
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       Create:
       - "67"
@@ -1693,10 +1812,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: b283c9e9-48b2-4d74-88c9-79b0be25a395
+    taskid: c3e41e88-2f87-4c48-8501-b64da9a10e7c
     type: regular
     task:
-      id: b283c9e9-48b2-4d74-88c9-79b0be25a395
+      id: c3e41e88-2f87-4c48-8501-b64da9a10e7c
       version: -1
       name: Notify ServiceNow and Jira status to War Room
       description: Prints text to war room (Markdown supported)
@@ -1704,12 +1823,14 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
     scriptarguments:
       value:
-        simple: No ServiceNow or Jira integration connected to your Cortex tenant. Please configure either one of these to send a ticket
+        simple: No ServiceNow or Jira integration connected to your Cortex tenant.
+          Please configure either one of these to send a ticket
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1765,8 +1886,10 @@ inputs:
 - key: Do you want to create a ticket?
   value: {}
   required: true
-  description: "Possible values:\n- Yes\n- No\n\nNote: If set to 'Yes', a configured ServiceNow and/or Jira integration is required.  \nIf using Jira, the Jira Project Key input must also be provided."
-  playbookInputQuery:
+  description: "Possible values:\n- Yes\n- No\n\nNote: If set to 'Yes', a configured
+    ServiceNow and/or Jira integration is required.  \nIf using Jira, the Jira Project
+    Key input must also be provided."
+  playbookInputQuery: null
 - key: Do you want to send a message notification?
   value: {}
   required: true
@@ -1777,7 +1900,7 @@ inputs:
 
     Note: If set to 'Yes', Microsoft Teams and/or Slack integration must be configured.
     If using Slack, the Slack Channel Name input must also be provided.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Do you want to send an email notification?
   value: {}
   required: true
@@ -1787,22 +1910,22 @@ inputs:
     - No
 
     Note: To send email notifications, specify the Notification Email Recipients input.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Notification Email Recipients
   value: {}
   required: false
   description: Provide the email address to send email notifications.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Issue State
   value: {}
   required: false
@@ -1810,7 +1933,7 @@ inputs:
     Possible values:
     - Create
     - Update
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
   - Do you want to create a ticket?
@@ -1823,29 +1946,9 @@ inputSections:
   name: General (Inputs group)
   description: Generic group for inputs
 outputSections:
-- outputs:
-  - Ticket.Id
-  - ServiceNow.Ticket.ID
-  - Please Provide Jira Project Key.Answers.0
-  - Please Provide Slack Channel Name.Answers.0
-  - Please Provide Notification Email Recipients.Answers.0
+- outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs:
-- contextPath: Ticket.Id
-  description: Jira Ticket ID.
-  type: string
-- contextPath: ServiceNow.Ticket.ID
-  description: Service Now Ticket ID.
-  type: string
-- contextPath: Please Provide Jira Project Key.Answers.0
-  description: Jira Project Key.
-  type: shortText
-- contextPath: Please Provide Slack Channel Name.Answers.0
-  description: Slack Channel Name.
-  type: shortText
-- contextPath: Please Provide Notification Email Recipients.Answers.0
-  description: Notification Email Recipients.
-  type: shortText
-tests:
-- No tests (auto formatted)
+outputs: []
+dirtyInputs: true
+adopted: true
