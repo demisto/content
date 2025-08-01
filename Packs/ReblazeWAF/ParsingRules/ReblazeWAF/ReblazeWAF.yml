@@ -1,0 +1,7 @@
+
+id: Reblaze_WAF_ParsingRule
+name: Reblaze WAF Parsing Rule
+fromversion: 8.5.0   # Will be updated with XSIAM version updates 
+tags: []
+rules: ''
+samples: ''
