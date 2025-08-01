@@ -1672,6 +1672,10 @@ script:
       name: id
     - description: UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands.
       name: uuid
+    - description: Value of the attribute
+      name: value
+    - description: Sighting source
+      name: source
     description: Add sighting to an attribute.
     name: misp-add-sighting
   - arguments:
@@ -2732,6 +2736,118 @@ script:
       type: string
     - contextPath: MISP.Role.role_name
       description: MISP role name.
+      type: string
+  - arguments:
+    - description: ID of the warninglist
+      name: id
+      required: true
+    description: Get a specific warninglist by its ID.
+    name: misp-get-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The warninglist's name
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: MISP warninglist type
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: Description of the warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The warninglist version number
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: True if the warninglist is enabled, False otherwise.
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: True if the warninglist is set as default, False otherwise.
+      type: boolean
+    - contextPath: MISP.Warninglist.Category
+      description: The category of the MISP warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries
+    - contextPath: MISP.Warninglist.ValidAttributes
+      description: The valid attribute types for this warninglist
+  - arguments: []
+    description: Gets all warninglists from MISP
+    name: misp-get-warninglists
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The warninglist's name
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: MISP warninglist type
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: Description of the warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The warninglist version number
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: True if the warninglist is enabled, False otherwise.
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: True if the warninglist is set as default, False otherwise.
+      type: boolean
+    - contextPath: MISP.Warninglist.EntryCount
+      type: number
+  - arguments:
+    - name: id
+      description: ID of the warninglist to update.
+      required: true
+      type: number
+    - name: name
+      description: Updated name of the warninglist.
+    - name: type
+      description: Updated type of the warninglist.
+    - name: description
+      description: Updated description of the warninglist.
+    - name: enabled
+      description: True if the warninglist is enabled, False otherwise.
+      type: boolean
+    - name: version
+      description: Updated version number of the warninglist.
+    - name: default
+      description: True if the warninglist is set as default, False otherwise.
+      type: boolean
+    - name: values
+      description: Updated values of the warninglist.
+    - name: types
+      description: Updated valid attribute types for the warninglist.
+    description: Changes a warninglist in MISP.
+    name: misp-change-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.ID
+      description: The ID of the warninglist to be changed
+      type: number
+    - contextPath: MISP.Warninglist.Name
+      description: The updated warninglist name
+      type: string
+    - contextPath: MISP.Warninglist.Type
+      description: The updated warninglist type
+      type: string
+    - contextPath: MISP.Warninglist.Description
+      description: The updated description of the warninglist
+      type: string
+    - contextPath: MISP.Warninglist.Version
+      description: The updated warninglist version number
+      type: number
+    - contextPath: MISP.Warninglist.Enabled
+      description: True if the warninglist is enabled, False otherwise.
+      type: boolean
+    - contextPath: MISP.Warninglist.Default
+      description: True if the warninglist is set as default, False otherwise.
+      type: boolean
+    - contextPath: MISP.Warninglist.Category
+      description: The updated category of the warninglist
       type: string
   dockerimage: demisto/pymisp2:2.5.10.3545364
   runonce: false
