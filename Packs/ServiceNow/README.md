@@ -25,6 +25,7 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 
 - Audit
 - Syslog Transactions
+- Case
 
 ### Configure ServiceNow Event Collector on XSIAM Tenant
 
