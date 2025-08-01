@@ -125,14 +125,12 @@ def test_module(client):
 def change_incident_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     code = args.get('alarmId')
     status = args.get('status')
-   
-    if status:
-        data = { "status": status , "alarmIds": [code]}
-        
-        changingStatus = client.set_status(data=data)
-        if changingStatus:
-            return CommandResults(readable_output=f"Incident {code} status changed to {changingStatus}")
-    raise ValueError("status argument is required")
+    data = { "status": status , "alarmIds": [code]}
+    changingStatus = client.set_status(data=data)
+    if changingStatus:
+        return CommandResults(readable_output=f"Incident {code} status changed to {changingStatus}")
+    else:
+        return CommandResults(readable_output=f"Failed to change status for incident {code}.")
 
 def main():
     """Main function called by Cortex XSOAR."""
