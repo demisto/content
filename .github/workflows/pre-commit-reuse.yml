@@ -22,6 +22,12 @@ jobs:
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
+    - name: Setup python	
+      uses: actions/setup-python@v5	
+      with:	
+        python-version: '3.10'	
+        cache: 'poetry'
+
     - name: Install dependencies
       run: poetry install
 
@@ -31,6 +37,7 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
+
     - name: run pre-commit
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
