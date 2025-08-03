@@ -1424,17 +1424,17 @@ var outputPaths = {
  * @return {String} The formatted score
  */
 function scoreToReputation(score) {
-    if (score === 3){
-        return 'Bad';
-    }
-    if (score === 2){
-        return 'Suspicious';
-    }
-    if (score === 1){
-        return 'Good';
-    }
-    return 'None';
-};
+    const toStr = {
+        4: 'Critical',
+        3: 'Bad',
+        2: 'Suspicious',
+        1: 'Good',
+        0.5: 'Informational',
+        0: 'Unknown'
+    };
+
+    return toStr[score] ?? 'None';
+}
 
 /**
  * Check if the given IP address is in the given subnet
