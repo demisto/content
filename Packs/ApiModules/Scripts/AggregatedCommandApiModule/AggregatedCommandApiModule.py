@@ -525,6 +525,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         indicators_context = defaultdict(lambda: defaultdict(list))
         dbot_list = flatten_list([value for key, value in entry_context_item.items() if key.startswith("DBotScore")])
         score = score or max([dbot.get("Score") for dbot in dbot_list], default=Common.DBotScore.NONE)
+        print(command)
         entry_context_item = flatten_list([value for key, value in entry_context_item.items() if key.startswith(command.indicator_context_path)])
         for indicator in entry_context_item:
             indicator = self.map_command_context(indicator, command.mapping)

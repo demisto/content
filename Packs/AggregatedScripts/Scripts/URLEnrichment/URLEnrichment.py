@@ -16,13 +16,6 @@ CONTEXT_PATH = {"url": Common.URL.CONTEXT_PATH, "domain": Common.Domain.CONTEXT_
 INDICATOR_PATH = {"url": "URL", "domain": "Domain", "ip": "IP"}
 INDICATOR_VALUE_FIELDS = {"url": "Data", "domain": "Name", "ip": "Address"}
 
-DBOT_SCORE_TO_VERDICT = {
-    0: "Unknown",
-    1: "Benign",
-    2: "Suspicious",
-    3: "Malicious",
-}
-
 MAIN_KEYS = ["Address", "Name", "Brand", "Data", "DetectionEngines", "PositiveDetections", "Score"]
 """ COMMAND CLASS """
 
