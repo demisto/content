@@ -1307,12 +1307,16 @@ def perform_rasterize(
         chrome_options = demisto.params().get("chrome_options", "None")
         chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
-        ps_aux_output = '\n'.join(subprocess.check_output("ps aux | grep chrom | grep port= | grep -- --headless",
-                                                          shell=True, text=True, stderr=subprocess.STDOUT).splitlines())
-        chrome_headless_content = '\n'.join(
-            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines())
-        df_output = '\n'.join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
-        free_output = '\n'.join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        ps_aux_output = "\n".join(
+            subprocess.check_output(
+                "ps aux | grep chrom | grep port= | grep -- --headless", shell=True, text=True, stderr=subprocess.STDOUT
+            ).splitlines()
+        )
+        chrome_headless_content = "\n".join(
+            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
+        )
+        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
         chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
         chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
 
