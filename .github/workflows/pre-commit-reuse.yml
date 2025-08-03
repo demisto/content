@@ -5,15 +5,12 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       checks: write
       pull-requests: write
       contents: write
     steps:
-    - name: Install poetry
-      uses: Gr1N/setup-poetry@v9
-
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -27,7 +24,15 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'poetry'
-    
+
+    - name: Install poetry
+      uses: Gr1N/setup-poetry@v9
+
+    - name: Configure Poetry Environment
+      run: |
+        poetry env use --force $(which python)
+        poetry env info
+
     - name: Install dependencies
       run: poetry install
 
@@ -37,7 +42,6 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
-      
     - name: run pre-commit
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
