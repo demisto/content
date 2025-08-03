@@ -198,10 +198,10 @@ class AggregatedCommandAPIModule(ABC):
             demisto.debug(f"Processing command {command.name}.")
             if command.command_type == CommandType.tim:
                 continue
-            if command.command_type == CommandType.internal and (command.brand in self.brands or not self.brands):
+            elif command.command_type == CommandType.internal and (command.brand in self.brands or not self.brands):
                 demisto.debug(f"Adding internal command {command.name} to commands list.")
                 commands.append(command)
-            if command.command_type == CommandType.external and (self.external_enrichment or self.brands):
+            elif command.command_type == CommandType.external and (self.external_enrichment or self.brands):
                 demisto.debug(f"Adding external command {command.name} to commands list.")
                 commands.append(command)
             else:
@@ -492,6 +492,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         """
         if not mapping:
             return entry_context_item
+        if not entry_context_item:
+            return None
         mapped_context = defaultdict()
         
         for src, dst in mapping.items():
