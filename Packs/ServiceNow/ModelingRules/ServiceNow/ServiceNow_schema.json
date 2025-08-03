@@ -130,7 +130,7 @@
         "is_array": false
       },
         "active": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "impact": {
@@ -154,7 +154,7 @@
         "is_array": false
       },
         "made_sla": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "priority": {
@@ -162,7 +162,7 @@
         "is_array": false
       },
         "knowledge": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "opened_by": {
@@ -182,7 +182,7 @@
         "is_array": false
       },
         "subcategory": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "time_worked": {
@@ -198,7 +198,7 @@
         "is_array": false
       },
         "sys_mod_count": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "upon_approval": {
@@ -206,7 +206,7 @@
         "is_array": false
       },
         "follow_the_sun": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "sys_class_name": {
@@ -222,7 +222,7 @@
         "is_array": false
       },
         "reassignment_count": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
         "account": {
