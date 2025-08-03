@@ -48,7 +48,7 @@ def initialize_commands() -> list:
             arg_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},  # command can use agentId or hostName
         ),
         Command(
-            brand="Microsoft Defender ATP",
+            brand="Microsoft Defender Advanced Threat Protection",
             name="microsoft-atp-isolate-machine",
             arg_mapping={"machine_id": "endpoint_id"},
             hard_coded_args={"isolation_type": "Full", "comment": "Isolated endpoint with IsolateEndpoint script."},
@@ -364,13 +364,22 @@ def main():
         endpoint_ids = argToList(endpoint_args.get("endpoint_id"))
         endpoint_ips = argToList(endpoint_args.get("endpoint_ip"))
         verbose = argToBoolean(endpoint_args.get("verbose", False))
-        # brands_to_run = argToList(endpoint_args.get("brands", []))
+        brands_to_run = argToList(endpoint_args.get("brands", []))
+
+        if not brands_to_run:
+            # In case no brands selected, the default is all brands.
+            # We want to send to get-endpoint-data only the brands this script supports.
+            endpoint_args["brands"] = ["FireEyeHX v2",
+                                       "CrowdstrikeFalcon",
+                                       "Cortex Core - IR",
+                                       "Microsoft Defender Advanced Threat Protection"]
+
         commands = initialize_commands()
         zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
 
         executed_command = execute_command(command="get-endpoint-data", args=endpoint_args)
 
-        endpoint_data_results = structure_endpoints_data(executed_command)  # TODO
+        endpoint_data_results = structure_endpoints_data(executed_command)
         demisto.debug(f"These are the structured data from structure_endpoints_data {endpoint_data_results}")
 
         results: list = []
@@ -382,8 +391,8 @@ def main():
 
             endpoint_args = get_args_from_endpoint_data(endpoint_data)
             demisto.debug(f"Got args {endpoint_args=}")
+            # Skip the failing endpoints from get-data-endpoint
             if "fail" in endpoint_args.get("endpoint_message", "").lower():
-                # Skip the failing endpoints from get-data-endpoint
                 demisto.debug(f"Skipping endpoint {endpoint_args} because of a failing error from get-endpoint-data.")
                 continue
 

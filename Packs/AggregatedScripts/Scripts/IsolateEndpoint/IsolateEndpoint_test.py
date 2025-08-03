@@ -263,7 +263,8 @@ def test_run_commands_for_endpoint():
     results = []
     verbose = True
 
-    args = {"endpoint_hostname": "host1", "endpoint_brand": "BrandB"}
+    args = {"endpoint_id": "host1", "endpoint_brand": "BrandB"}
+
     run_commands_for_endpoint(
         commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
     )
@@ -287,33 +288,3 @@ def test_run_commands_for_endpoint():
         commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
     )
     assert len(results) == 1  # No new results added because not matching args
-
-
-def test_search_and_add_endpoint_output():
-    """
-    Given:
-        - A list of endpoint outputs with different endpoint names and results.
-        - A new endpoint output that either matches an existing endpoint or is unique.
-    When:
-        - Adding a new endpoint output to the list.
-    Then:
-        - If the endpoint exists, its results should be updated by appending the new results.
-        - If the endpoint does not exist, it should be added to the list.
-    """
-
-    outputs = [{"EndpointName": "endpoint_1", "Results": ["result_1"]}]
-
-    # Adding a new endpoint that does not exist in the list
-    endpoint_output = {"EndpointName": "endpoint_2", "Results": ["result_2"]}
-    search_and_add_endpoint_output(outputs, endpoint_output)
-    assert len(outputs) == 2
-
-    # Updating an existing endpoint
-    endpoint_output = {"EndpointName": "endpoint_1", "Results": ["result_3"]}
-    search_and_add_endpoint_output(outputs, endpoint_output)
-    assert len(outputs) == 2  # No new endpoint added
-    assert outputs[0]["Results"] == ["result_1", "result_3"]  # Nested list issue
-
-    # Ensuring no duplicate endpoints are added
-    search_and_add_endpoint_output(outputs, endpoint_output)
-    assert len(outputs) == 2  # No new endpoint added

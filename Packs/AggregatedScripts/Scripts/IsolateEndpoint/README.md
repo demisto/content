@@ -1,9 +1,10 @@
 This script isolates endpoints using multiple integrations and returns a success or failure message.
 The isolation action can be executed using the next integrations:
-  - Cortex Core - IR
-  - CrowdstrikeFalcon
-  - FireEyeHX v2
-  - Microsoft Defender Advanced Threat Protection
+
+- Cortex Core - IR
+- CrowdstrikeFalcon
+- FireEyeHX v2
+- Microsoft Defender Advanced Threat Protection
 
 ## Script Data
 
