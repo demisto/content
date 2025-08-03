@@ -27,7 +27,7 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'poetry'
-
+    
     - name: Install dependencies
       run: poetry install
 
@@ -37,7 +37,7 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
-        
+      
     - name: run pre-commit
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
