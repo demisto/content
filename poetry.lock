@@ -2705,8 +2705,7 @@ astroid = ">=3.3.8,<=3.4.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
     {version = ">=0.2", markers = "python_version < \"3.11\""},
-    {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
-    {version = ">=0.3.6", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
+    {version = ">=0.3.6", markers = "python_version >= \"3.11\""},
 ]
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
 mccabe = ">=0.6,<0.8"
@@ -4550,5 +4549,5 @@ reference = "pypi-public"
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.10,<3.13"
-content-hash = "da3394e06f6dcb2772a7dd0f0a387ceacb1ee1cffeec11642803598a6c7b508f"
+python-versions = "^3.10,<3.12"
+content-hash = "95af4d73e2492f15bf872d3c986f306d3f6c367fa86abf727982df4f69428435"
