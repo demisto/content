@@ -521,9 +521,9 @@ def initialize_commands(
                 "IPAddress": "IPAddress",
                 "Status": "Status",
             },
-            args_mapping={'id': 'endpoint_id', "ip": "endpoint_ip"},
-            hard_coded_args={"using-brand": "Microsoft Defender Advanced Threat Protection"}
-        )
+            args_mapping={"id": "endpoint_id", "ip": "endpoint_ip"},
+            hard_coded_args={"using-brand": "Microsoft Defender Advanced Threat Protection"},
+        ),
     ]
 
     list_args_commands = [
