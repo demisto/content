@@ -50,7 +50,7 @@ filter source_log_type = "syslog transactions"
     xdm.session_context_id = session_con_id;
 
 // Audit Logs
-filter source_log_type != "syslog transactions"
+filter source_log_type not in ("syslog transactions", "case")
 |alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
     xdm.database.tables = arraycreate(tablename), // Table that the audit record is for (for example, "incident")
     xdm.event.type = "AUDIT", 
