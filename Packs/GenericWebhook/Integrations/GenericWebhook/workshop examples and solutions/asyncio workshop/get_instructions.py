@@ -3,7 +3,7 @@ import asyncio
 
 
 async def send_request(params, endpoint):
-    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-6606.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
+    url = "https://edl-crtx-cntnt-ownr-xsiam-shahaf-4ce1.xdr-qa2-uat.us.paloaltonetworks.com/xsoar/instance/execute/Generic_Webhook_hayun_workshop/"
     headers = {
     'Authorization': 'Basic YTph',
     }
