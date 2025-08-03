@@ -6,15 +6,15 @@ from AggregatedCommandApiModule import *
 
 
 class ContextPaths(Enum):
-    DOMAIN_ENRICHMENT = "DomainEnrichment(" "val.Brand && val.Brand == obj.Brand && (" "val.Data && val.Data == obj.Data))"
+    CVE_ENRICHMENT = "CVEEnrichment(" "val.Brand && val.Brand == obj.Brand && (" "val.Data && val.Data == obj.Data))"
 
     DBOT_SCORE = Common.DBotScore.CONTEXT_PATH
-    DOMAIN = Common.Domain.CONTEXT_PATH
+    CVE = Common.CVE.CONTEXT_PATH
 
 
-CONTEXT_PATH = {"domain": Common.Domain.CONTEXT_PATH}
-INDICATOR_PATH = {"domain": "Domain"}
-INDICATOR_VALUE_FIELDS = {"domain": "Name"}
+CONTEXT_PATH = {"cve": Common.CVE.CONTEXT_PATH}
+INDICATOR_PATH = {"cve": "CVE"}
+INDICATOR_VALUE_FIELDS = {"cve": "Name"}
 
 MAIN_KEYS = ["Address", "Name", "Brand", "Data", "DetectionEngines", "PositiveDetections", "Score"]
 """ COMMAND CLASS """
@@ -22,22 +22,22 @@ MAIN_KEYS = ["Address", "Name", "Brand", "Data", "DetectionEngines", "PositiveDe
 """ COMMAND FUNCTION """
 
 
-def domain_enrichment_script(
+def cve_enrichment_script(
     data_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
 ):
     """
-    Enriches Domain data with information from various integrations
+    Enriches CVE data with information from various integrations
     """
-    indicator_type="domain"
+    indicator_type="cve"
     mapping = {"Data":"Data",
                "DetectionEngines":"DetectionEngines",
                "PositiveDetections":"PositiveDetections",
                "Score":"Score",
                "Brand":"Brand"}
-    commands = [ReputationCommand(name="domain",args={"domain": data}, mapping=mapping, indicator_context_path="Domain(") for data in data_list]
-    commands.extend([Command(name="core-get-domain-analytics-prevalence", args={"domain_name": data_list}, type=CommandType.internal),
-                TIMCommand(mapping=mapping, indicator_context_path="Domain(")])
-    domain_reputation = ReputationAggregatedCommand(
+    
+    commands = [ReputationCommand(name="cve",args={"cve": data}, mapping=mapping, indicator_context_path="CVE(") for data in data_list]
+    commands.append(TIMCommand(mapping=mapping, indicator_context_path="CVE("))
+    cve_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
@@ -45,11 +45,11 @@ def domain_enrichment_script(
         validate_input_function=lambda args: True,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="DomainEnrichment",
+        final_context_path="CVEEnrichment",
         args=demisto.args(),
-        data={"domain": data_list}
+        data={"cve": data_list}
     )
-    return domain_reputation.aggregated_command_main_loop()
+    return cve_reputation.aggregated_command_main_loop()
     
 
 """ MAIN FUNCTION """
@@ -57,16 +57,16 @@ def domain_enrichment_script(
 
 def main():
     args = demisto.args()
-    data_list = argToList(args.get("domain"))
+    data_list = argToList(args.get("cve"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
 
     try:
-        return_results(domain_enrichment_script(data_list, external_enrichment, verbose, brands, additional_fields))
+        return_results(cve_enrichment_script(data_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:
-        return_error(f"Failed to execute DomainEnrichment. Error: {str(ex)}")
+        return_error(f"Failed to execute CVEEnrichment. Error: {str(ex)}")
 
 
 """ ENTRY POINT """
