@@ -47,6 +47,19 @@ def parse_filter_field(filter_string: str | None):
     return filters
 
 
+def raise_an_error_message_for_client_error(err: ClientError) -> DemistoException:
+        """
+        Raising a Demisto Exception according to boto error handling guide.
+        """
+        raise DemistoException(
+                        f"Unexpected response when executing: {demisto.command()} with {demisto.args()}."
+                        f"\n Error Code: {err.response('Error', {}).get('Code')}."
+                        f"\n Error Message: {err.response('Error', {}).get('Message')}."
+                        f"\nRequest ID: {err.response('ResponseMetadata', {}).get('RequestId')}."
+                        f"\nHttp code: {err.response('ResponseMetadata', {}).get('HTTPStatusCode')}."
+            )
+
+
 class AWSServices(str, Enum):
     S3 = "s3"
     IAM = "iam"
@@ -491,6 +504,7 @@ class IAM:
 class EC2:
     service = AWSServices.EC2
 
+
     @staticmethod
     def modify_instance_metadata_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -822,7 +836,7 @@ class EC2:
         try:
             resp = client.create_security_group(**kwargs)
             group_id = resp.get("GroupId")
-            if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and group_id:
+            if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and group_id:
                 data = {
                     "GroupName": args.get("groupName"),
                     "Description": args.get("description", ""),
@@ -835,10 +849,12 @@ class EC2:
                     readable_output=tableToMarkdown("AWS EC2 Security Groups", data),
                 )
             else:
-                raise DemistoException(f"Unexpected response when creating security group: {resp}")
-        except ClientError as e:
-            error_details = e.response["Error"]["Code"]
-            raise DemistoException(f"Failed to create security group {group_name}: {e}, {error_details}")
+                raise_an_error_message_for_client_error(resp)
+
+        except ClientError as err:
+            raise_an_error_message_for_client_error(err)
+            
+        return CommandResults(readable_output="")
 
     @staticmethod
     def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -854,41 +870,34 @@ class EC2:
         Returns:
             CommandResults: Results of the operation with deletion confirmation
         """
+        group_id = args.get("group_id")
+        group_name = args.get("group_name")
+
+        if not group_id and not group_name:
+            raise DemistoException("Either group_id or group_name must be provided")
+
+        if group_id and group_name:
+            raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
+
+        kwargs = {}
+
+        if group_id:
+            kwargs["GroupId"] = group_id
+        else:
+            kwargs["GroupName"] = group_name
+
         try:
-            group_id = args.get("group_id")
-            group_name = args.get("group_name")
-
-            if not group_id and not group_name:
-                raise DemistoException("Either group_id or group_name must be provided")
-
-            if group_id and group_name:
-                raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
-
-            kwargs = {}
-
-            if group_id:
-                kwargs["GroupId"] = group_id
-            else:
-                kwargs["GroupName"] = group_name
-
-            try:
-                delete_response = client.delete_security_group(GroupIds=[group_id])
-                if delete_response.get("GroupId"):
-                    return CommandResults(
+            delete_response = client.delete_security_group(GroupIds=[group_id])
+            if delete_response.get("GroupId"):
+                return CommandResults(
                         readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}"
-                    )
-                else:
-                    # If group_id was not found or no GroupId in response, raise an exception
-                    raise DemistoException("Failed to delete security group: Unexpected response")
-            except ClientError as e:
-                error_code = e.response["Error"]["Code"]
-                error_message = e.response["Error"]["Message"]
-                if error_code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
-                    raise DemistoException(f"Security group {group_id} not found.")
-                raise DemistoException(f"Failed to delete security group: {error_message}")
+                )
+            else:
+                # If group_id was not found or no GroupId in response, raise an exception
+                raise DemistoException("Failed to delete security group: Unexpected response")
+        except ClientError as e:
+            raise_an_error_message_for_client_error(e)
 
-        except Exception as e:
-            raise DemistoException(f"Unexpected error deleting security group: {str(e)}")
         return CommandResults(readable_output="")
 
     @staticmethod
@@ -916,33 +925,35 @@ class EC2:
             kwargs.update({"GroupIds": parse_resource_ids(args.get("group_ids"))})
         if args.get("groupNames") is not None:
             kwargs.update({"GroupNames": parse_resource_ids(args.get("group_names"))})
+        try:
+            response = client.describe_security_groups(**kwargs)
 
-        response = client.describe_security_groups(**kwargs)
+            if len(response["SecurityGroups"]) == 0:
+                return CommandResults(readable_output="No security groups were found.")
+            for i, sg in enumerate(response["SecurityGroups"]):
+                data.append(
+                    {
+                        "Description": sg["Description"],
+                        "GroupName": sg["GroupName"],
+                        "OwnerId": sg["OwnerId"],
+                        "GroupId": sg["GroupId"],
+                        "VpcId": sg["VpcId"],
+                    }
+                )
+                if "Tags" in sg:
+                    for tag in sg["Tags"]:
+                        data[i].update({tag["Key"]: tag["Value"]})
 
-        if len(response["SecurityGroups"]) == 0:
-            return CommandResults(readable_output="No security groups were found.")
-        for i, sg in enumerate(response["SecurityGroups"]):
-            data.append(
-                {
-                    "Description": sg["Description"],
-                    "GroupName": sg["GroupName"],
-                    "OwnerId": sg["OwnerId"],
-                    "GroupId": sg["GroupId"],
-                    "VpcId": sg["VpcId"],
-                }
+            output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+            raw = json.loads(output)
+            return CommandResults(
+                outputs=raw,
+                outputs_prefix="AWS.EC2.SecurityGroups",
+                outputs_key_field="GroupId",
+                readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data),
             )
-            if "Tags" in sg:
-                for tag in sg["Tags"]:
-                    data[i].update({tag["Key"]: tag["Value"]})
-
-        output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        return CommandResults(
-            outputs=raw,
-            outputs_prefix="AWS.EC2.SecurityGroups",
-            outputs_key_field="GroupId",
-            readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data),
-        )
+        except ClientError as e:
+            raise_an_error_message_for_client_error(e)
 
     @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -984,16 +995,9 @@ class EC2:
             else:
                 raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
 
-        except Exception as e:
-            if "InvalidGroup.NotFound" in str(e):
-                raise DemistoException(f"Security group {kwargs['GroupId']} not found")
-            elif "InvalidGroupId.NotFound" in str(e):
-                raise DemistoException(f"Invalid security group ID: {kwargs['GroupId']}")
-            elif "InvalidPermission.Duplicate" in str(e):
-                raise DemistoException("The specified rule already exists in the security group")
-            else:
-                raise DemistoException(f"Failed to authorize security group egress rule: {str(e)}")
-
+        except ClientError as e:
+            raise_an_error_message_for_client_error(e)
+    
 
 class EKS:
     service = AWSServices.EKS
