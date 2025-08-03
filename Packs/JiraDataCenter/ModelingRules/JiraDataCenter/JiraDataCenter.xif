@@ -1,4 +1,4 @@
-[MODEL: dataset= "jira_datacenter_raw"]
+[MODEL: dataset= "atlassian_jira_raw"]
 alter
     affectedObject_resource_name = arraystring(arraymap(_raw_log -> affectedObjects[], if(json_extract_scalar("@element", "$.type") != "USER", json_extract_scalar("@element", "$.name"))), ", "),
     affectedObject_user_name = arraystring(arraymap(_raw_log -> affectedObjects[], if(json_extract_scalar("@element", "$.type") = "USER", json_extract_scalar("@element", "$.name"))), ", "),
