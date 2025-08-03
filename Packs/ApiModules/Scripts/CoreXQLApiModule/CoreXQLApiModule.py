@@ -681,6 +681,7 @@ def test_module(client: CoreClient, args: Dict[str, Any]) -> str:
         str: 'ok' if test passed, anything else will fail the test.
     """
     try:
+        print(demisto.params())
         client.get_xql_quota({"request_data": {}})
         return "ok"
     except Exception as err:
