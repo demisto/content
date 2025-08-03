@@ -8,10 +8,17 @@ import demistomock as demisto
 from collections import defaultdict
 from abc import ABC
 
+DBOT_SCORE_TO_VERDICT = {
+    0: "Unknown",
+    1: "Benign",
+    2: "Suspicious",
+    3: "Malicious",
+}
 
 class CommandType(Enum):
     """
     Enum for command types.
+    Used to categorize the commands to execute.
     When external_enrichment is True, both internal and external commands are executed.
     When external_enrichment is False, only internal commands are executed.
     Regular are for future implementation.
@@ -22,13 +29,13 @@ class CommandType(Enum):
     tim = "tim"
     
 class Command:
-    def __init__(self, name: str, args: dict, type: CommandType = CommandType.regular, mapping: dict[str, str] = {}) -> None:
+    def __init__(self, name: str, args: dict, brand: str = None, command_type: CommandType = CommandType.regular, mapping: dict[str, str] = {}) -> None:
         """
         Initializes a Command object.
         Args:
             name (str): The name of the command.
             args (dict): A dictionary containing the command arguments.
-            type (CommandType): The type of the command.
+            command_type (CommandType): The type of the command.
             mapping (dict[str, str]): A dictionary containing the mapping of the command context outputs.
                 Example: {"Name": "Value"} will map the command argument "Name" to "Value".
                 For nested mapping use double dot notation. Example:
@@ -37,15 +44,22 @@ class Command:
         """
         self.name: str = name
         self.args: dict = args
-        self.type: CommandType = type
+        self.brand: str = brand
+        self.command_type: CommandType = command_type
         self.mapping: dict[str, str] = mapping
     
     def __str__(self) -> str:
         """
         Returns a string representation of the Command object.
         """
-        return f"Command(name='{self.name}', args={self.args}, type={self.type.value})"
-
+        return f"Command(name='{self.name}', args={self.args}, type={self.command_type.value})"
+    
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of the Command object.
+        """
+        return f"Command(name='{self.name}', args={self.args}, type={self.command_type.value})"
+    
     def to_batch_item(self, brands_to_run: list[str] = []) -> dict:
         """
         Convert to the dict format expected by executeCommandBatch.
@@ -74,8 +88,8 @@ class ReputationCommand(Command):
             For nested mapping use double dot notation. Example: {"Name..Value": "Value"} will map the context {"Name": {"Value": "example"}} to {"Value": "example"}.
             When empty mapping is given, the context result will be mapped to the same name.
     """
-    def __init__(self, name: str, args: dict,mapping: dict[str, str] = {}, indicator_context_path: str = "") -> None:
-        super().__init__(name, args ,CommandType.external, mapping)
+    def __init__(self, name: str, args: dict, mapping: dict[str, str] = {}, indicator_context_path: str = "") -> None:
+        super().__init__(name, args ,command_type=CommandType.external, mapping=mapping)
         self.indicator_context_path = indicator_context_path
         
 class TIMCommand(Command):
@@ -100,7 +114,7 @@ class BatchExecutor:
         commands (list[Command]): A list of Command objects to execute.
         brands_to_run (list[str]): A list of brands to run on.
     """
-    def __init__(self, commands: list[Command], brands_to_run: list[str] = []):
+    def __init__(self, commands: list[Command], brands_to_run: list[str] = None):
         self.commands = commands
         self.brands_to_run = brands_to_run
     
@@ -181,10 +195,17 @@ class AggregatedCommandAPIModule(ABC):
         """
         commands:list[Command] = []
         for command in self.commands:
-            if command.type == CommandType.tim:
+            demisto.debug(f"Processing command {command.name}.")
+            if command.command_type == CommandType.tim:
                 continue
-            if self.brands_to_run or not command.type == CommandType.external or (self.external_enrichment and command.type == CommandType.external):
+            if command.command_type == CommandType.internal and (command.brand in self.brands or not self.brands):
+                demisto.debug(f"Adding internal command {command.name} to commands list.")
                 commands.append(command)
+            if command.command_type == CommandType.external and (self.external_enrichment or self.brands):
+                demisto.debug(f"Adding external command {command.name} to commands list.")
+                commands.append(command)
+            else:
+                demisto.debug(f"Command {command.name} is not a valid command type. Skipping.")
         return commands
     
     @cached_property
@@ -200,9 +221,12 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                  indicator_value_field: str = "",
                  final_context_path: str = "",
                  validate_input_function: Callable[[dict], bool] = lambda: True,
-                 args: dict = {},
-                 commands: list[Command] = [],
-                 data: dict = {}):
+                 args: dict = None,
+                 commands: list[Command] = None,
+                 data: list[str] = None,
+                 indicator_mapping: dict[str, str] = None,
+                 indicator_context_path: str = "",
+                 indicator_type: str = ""):
         """
         Initializes the reputation aggregated command.
         
@@ -223,6 +247,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         self.additional_fields = additional_fields
         self.data = data
         self.indicator_value_field = indicator_value_field
+        self.indicator_type = indicator_type
+        self.command_tim = TIMCommand(indicator_context_path=indicator_context_path, mapping=indicator_mapping)
     
     def aggregated_command_main_loop(self):
         """
@@ -231,8 +257,10 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug("Starting Reputation aggregated command main loop.")
         commands_to_execute = self.prepare_commands()
         demisto.debug(f"Commands to execute: {[command.to_batch_item() for command in commands_to_execute]}")
-        tim_command = next((command for command in commands_to_execute if command.type == CommandType.tim), None)
-        tim_context_output, dbot_scores_context_tim, entry_tim_results = self.get_indicators_from_tim(tim_command)
+        tim_context_output, dbot_scores_context_tim, entry_tim_results = self.get_indicators_from_tim(self.command_tim)
+        demisto.debug(f"Tim context output: {json.dumps(tim_context_output, indent=4)}")
+        demisto.debug(f"Tim dbot scores context: {json.dumps(dbot_scores_context_tim, indent=4)}")
+        demisto.debug(f"Tim entry results: {json.dumps(entry_tim_results, indent=4)}")
         batch_executor = BatchExecutor(commands_to_execute, self.brands_to_run)
         demisto.debug("Executing BatchExecutor.")
         batch_results = batch_executor.execute()
@@ -278,7 +306,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             
         return search_results, result_entry
     
-    def get_indicators_from_tim(self, tim_command: Command) -> tuple[dict[str, list], dict[str, dict[str, list[dict[str, Any]]]]]:
+    def get_indicators_from_tim(self, tim_command: Command) -> tuple[dict[str, list], list[dict], dict[str, Any]]:
         """
         Parses the results from the Thread Intelligence Module (TIM) and transforms
         the Indicator of Compromise (IOC) into a standard context output by extracting the `indicator` dictionary. It also adds source
@@ -288,22 +316,22 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             tim_command (Command): The TIM command to execute.
         
         Returns:
-            tuple[dict[str, list], dict[str, dict[str, list[dict[str, Any]]]]]: The TIM context output and DBot scores list.
+            tuple[dict[str, list], list[dict], dict[str, Any]]: The TIM context output and DBot scores list.
         """
         result_entries: list[dict[str, Any]] = []
         tim_context_output: dict[str,dict[str, list]] = {}
         dbot_scores_context: list[dict[str, Any]] = []
 
-        for indicator_type, data_list in self.data.items():
-            demisto.debug(f"Starting to search for {indicator_type} indicator with values: {data_list}.")
-            search_results, result_entry = self.search_indicators_in_tim(indicator_type,data_list)
-            result_entries.append(result_entry)
-            if not search_results:
-                continue
-            
-            demisto.debug(f"going to process tim results for indicator type: {indicator_type}.")
-            
-            self.process_tim_results(search_results, dbot_scores_context, tim_context_output, tim_command)
+
+        demisto.debug(f"Starting to search for {self.indicator_type} indicator with values: {self.data}.")
+        search_results, result_entry = self.search_indicators_in_tim(self.indicator_type,self.data)
+        result_entries.append(result_entry)
+        if not search_results:
+            return {}, [], result_entries
+        
+        demisto.debug(f"going to process tim results for indicator type: {self.indicator_type}.")
+        
+        self.process_tim_results(search_results, dbot_scores_context, tim_context_output, tim_command)
                         
         return tim_context_output, dbot_scores_context, result_entries
     
@@ -328,8 +356,6 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             }
         }
         DBot scores are extracted from the search results and added to the DBot scores context.
-        
-        
         Args:
             search_results (list[dict[str, Any]]): The search results from the TIM command.
             dbot_scores_context (list[dict[str, Any]]): The DBot scores context.
@@ -341,12 +367,15 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug(f"Total iocs: {len(iocs)}")
         for ioc in iocs:
             # Extract indicators context
-            indicator_context_list = ioc.get("insightCache").get("scores")
+            indicator_context_list = ioc.get("insightCache", {}).get("scores", {})
             for brand, indicators in indicator_context_list.items():
                 score = indicators.get("score", 0)
                 context = indicators.get("context", {})
                 parsed_indicators_context, parsed_dbot_scores_context = self.parse_indicator(context, brand, score, tim_command)
+                demisto.debug(f"Parsed indicators context: {json.dumps(parsed_indicators_context, indent=4)}")
+                demisto.debug(f"Parsed dbot scores context: {json.dumps(parsed_dbot_scores_context, indent=4)}")
                 merge_nested_dicts_in_place(tim_context_output, parsed_indicators_context)
+                demisto.debug(f"Tim context output after merging: {json.dumps(tim_context_output, indent=4)}")
                 dbot_scores_context.extend(parsed_dbot_scores_context)
         
     
@@ -357,20 +386,43 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                                          list[dict[str, Any]],
                                          list[dict[str,str]],
                                          list[str]]:
+        """
+        Processes the results from the batch executor.
+        runs through the execution results and processes each result.
+        
+        Args:
+            execution_results (list[list[dict[str, Any]]]): The search results from the TIM command.
+            commands_to_execute (list[Command]): The commands to execute.
+        
+        Returns:
+            tuple[defaultdict[str, defaultdict[str, list]],
+                 list[dict[str, Any]],
+                 list[dict[str,str]],
+                 list[str]]: The batch context output, dbot scores context, verbose command results, and entry results.
+        
+        """
         verbose_command_results: list[str] = []
         entry_results: list[dict[str, Any]] = []
         batch_context: defaultdict[str, defaultdict[str, list]] = defaultdict(lambda: defaultdict(list))
         dbot_scores_context: list[dict[str, Any]] = []
         
         for command, execution_result in zip(commands_to_execute, execution_results):
-            demisto.debug(f"Processing result for command: {command}")
-            for result in execution_result:
+            demisto.debug(f"Processing result for command: {command} len: {len(execution_result)}")
+            for i,result in enumerate(execution_result):
+                demisto.debug(f"Processing result {i}, with type: {get_type(result)}")
+                demisto.debug(f"Result for the command: {json.dumps(result, indent=4)}")
                 if is_debug(result):
+                    demisto.debug(f"Skipping debug result {i}")
                     continue
-                brand = result.get("Metadata", {}).get("brand")
-                indicator, dbot_scores, human_readable, result_entry = self.parse_result(result, command, brand)
-                if indicator:
-                    merge_nested_dicts_in_place(batch_context, indicator)
+                command_context, dbot_scores, human_readable, result_entry = self.parse_result(result, command)
+                demisto.debug(f"Parsed command context: {json.dumps(command_context, indent=4)}")
+                demisto.debug(f"Parsed dbot scores: {json.dumps(dbot_scores, indent=4)}")
+                demisto.debug(f"Parsed human readable: {json.dumps(human_readable, indent=4)}")
+                demisto.debug(f"Parsed result entry: {json.dumps(result_entry, indent=4)}")
+                demisto.debug(f"batch_context before merge: {json.dumps(batch_context, indent=4)}")
+                if command_context:
+                    merge_nested_dicts_in_place(batch_context, command_context)
+                demisto.debug(f"batch_context after merge: {json.dumps(batch_context, indent=4)}")
                 if dbot_scores:
                     dbot_scores_context.extend(dbot_scores)
                 if result_entry:
@@ -379,18 +431,29 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                     verbose_command_results.append(human_readable)
         return batch_context, dbot_scores_context, verbose_command_results, entry_results
 
-    def parse_result(self, result: dict[str, Any], command: Command, brand: str)-> dict[str, Any]:
+    def parse_result(self, result: dict[str, Any], command: Command)-> tuple[dict[str, Any], list[dict[str, Any]], str, dict[str, Any]]:
         """
-        Parses the result of a reputation command.
+        Parses the result of a command.
+        Depends on the command type. All reputation commands are parsed as indicators under the following structure:
+        indicators_context = {
+            "data": {
+                "brand": [{}]
+            }
+        }
+        for not reputation commands each result will be parsed by the mapping into the final context
+        DBot scores are extracted to one list of DBotScores.
         Args:
-            result (dict[str, Any]): The result of a reputation command.
+            result (dict[str, Any]): The result of a command.
             command (Command): The command associated with the result.
+            brand (str): The brand associated with the result.
         Returns:
-            dict[str, Any]: The parsed result.
+            tuple[dict[str, Any], list[dict[str, Any]], str, dict[str, Any]]:
+            The context, dbot scores, human readable and result entry.
         """
+        indicator, brand = extract_data(result)
         result_entry = {"command name": command.name,
-                        "args": command.args,
                         "brand": brand,
+                        "args": json.dumps(command.args),
                         "status": "Success",
                         "message": ""}
         human_readable = ""
@@ -399,7 +462,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
 
         if is_error(result):
             result_entry.update({"status": "Failure", "message": get_error(result).split("\n")[:2]})
-        if self.verbose and (human_readable := result.get("HumanReadable")) or (human_readable := result.get("DebugData")):
+        if self.verbose and (human_readable := result.get("HumanReadable")):
             human_readable = f"#### Result for name={command.name} args={command.args} current brand={brand}\n{human_readable}"
             
         if entry_context_item := result.get("EntryContext"):
@@ -413,11 +476,26 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 
         return indicators_context, dbot_scores_context, human_readable, result_entry
     
-    def map_command_context(self, entry_context_item: dict[str, Any], mapping: dict[str, str]):
+    def map_command_context(self, entry_context_item: dict[str, Any], mapping: dict[str, str])-> dict[str, Any]:
+        """
+        Maps the entry context item to the final context using the mapping.
+        Args:
+            entry_context_item (dict[str, Any]): The entry context item.
+            mapping (dict[str, str]): The mapping to use.
+            Example:
+                mapping = {"reslut..value": "final_context..value"} will map the value of {"results":{"value":value}} to {"final_context":{"value":value}}
+                can use [] to transform the final path value to list Example:
+                mapping = {"reslut..value": "final_context..value[]"} will map the value of {"results":{"value":value}} to {"final_context":{"value":[value]}}
+                
+        Returns:
+            dict[str, Any]: The mapped context.
+        """
         if not mapping:
             return entry_context_item
-        mapped_context = defaultdict(lambda: defaultdict(list))
+        mapped_context = defaultdict()
+        
         for src, dst in mapping.items():
+            demisto.debug(f"Mapping {src} to {dst}")
             set_dict_value(mapped_context, dst, get_dict_value(entry_context_item, src))
         if self.additional_fields:
             set_dict_value(mapped_context, "AdditionalFields", entry_context_item)
@@ -452,7 +530,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             indicator["Score"] = score
             indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(indicator["Score"], "Unknown")
             indicators_context[indicator.get(self.indicator_value_field)][brand].append(indicator)
-            demisto.debug(f"Parsed indicator: {indicator.get(self.indicator_value_field)} from brand: {brand} with score: {score} and verdict: {indicator["Verdict"]}")
+            demisto.debug(f"Parsed indicator: {indicator.get(self.indicator_value_field)} from brand: {brand} with score: {score} and verdict: {indicator['Verdict']}")
         
         return indicators_context, dbot_list
     
@@ -477,7 +555,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             dict[str, Any]: The final context.
         """
         results_context = []
-        for data in flatten_list(self.data.values()):
+        for data in self.data:
             if data not in tim_context_output:
                 continue
             results_list = flatten_list(list(batch_executor_context[data].values()))
@@ -491,11 +569,13 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                             "max_verdict": max_verdict,
                             "results": results_list}
             results_context.append(data_context)
-        dbot_scores_context = dbot_scores_context_tim.extend(dbot_scores_context_batch)
-        
+        demisto.debug(f"DBot scores context TIM: {json.dumps(dbot_scores_context_tim, indent=4)}")
+        demisto.debug(f"DBot scores context Batch: {json.dumps(dbot_scores_context_batch, indent=4)}")
+        dbot_scores_context = dbot_scores_context_tim + dbot_scores_context_batch
+        demisto.debug(f"final DBot scores context: {json.dumps(dbot_scores_context, indent=4)}")
         final_context = defaultdict(lambda: defaultdict(list))
         for key in batch_executor_context:
-            if key not in self.data.values():
+            if key not in self.data:
                 final_context[key] = batch_executor_context[key]
         final_context.update({self.final_context_path:results_context,
                              "DBotScore":dbot_scores_context})
@@ -517,9 +597,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             CommandResults: The command results.
         """
         human_readable = tableToMarkdown("Final Results", t=entry_tim_results + entry_batch_results,
-                                         headers=["command name", "args", "brand", "status", "message"])
+                                         headers=["command name", "brand", "args", "status", "message"])
         if self.verbose:
-            human_readable += "\n".join(verbose_batch_results)
+            human_readable += "\n\n".join(verbose_batch_results)
         if all(entry.get("status") == "Failure" for entry in entry_tim_results + entry_batch_results):
             return CommandResults(readable_output= "Error: All commands failed." + human_readable, outputs=final_context, type=CommandResultsType.ERROR)
         return CommandResults(readable_output=human_readable, outputs=final_context)
@@ -538,10 +618,13 @@ def merge_nested_dicts_in_place(dict1: dict, dict2: dict) -> None:
         if data not in dict1:
             dict1[data] = brand_dict
         else:
-            for brand, results in brand_dict.items():
-                if brand not in dict1[data]:
-                    dict1[data][brand] = []
-                dict1[data][brand].extend(results)
+            if isinstance(brand_dict, dict):
+                for brand, results in brand_dict.items():
+                    if brand not in dict1[data]:
+                        dict1[data][brand] = []
+                    dict1[data][brand].extend(results)
+            else:
+                dict1[data].extend(brand_dict)
 
 def flatten_list(nested_list: list[Any]) -> list[Any]:
     """
@@ -572,21 +655,38 @@ def set_dict_value(d: dict[str, Any], path: str, value: Any):
         path (str): A dot-separated key path (e.g "Signature.Copyright")
         value (Any): Value to set in the dictionary.
     """
+    list_mode = False
+    if path.endswith("[]"):
+        list_mode = True
+        path = path[:-2]
+    demisto.debug(f"list_mode: {list_mode}, path: {path}, value: {value}")
     # Field in root
     if ".." not in path:
-        d[path] = value
+        if list_mode:
+            d.setdefault(path, []).append(value)
+        else:
+            d[path] = value
         return
     
     # Field nested
     parts = path.split("..")
     current = d
-    for i, part in enumerate(parts):
-        if i == len(parts) - 1:  # Last part of the path
-            current[part] = value
-        else:
-            if part not in current:
-                current[part] = {}
-            current = current[part]
+    
+    for part in parts[:-1]:
+        if part not in current or not isinstance(current[part], dict):
+            current[part] = {}
+        current = current[part]
+    
+    last = parts[-1]
+    demisto.debug(f"last: {last}, list_mode: {list_mode}")
+    if list_mode:
+        demisto.debug(f"current: {current}")
+        # create or append to list
+        current.setdefault(last, []).append(value)
+        demisto.debug(f"current after: {current}")
+    else:
+        current[last] = value
+
 
 def get_dict_value(d: dict[str, Any], path: str) -> Any:
     """
@@ -602,12 +702,12 @@ def get_dict_value(d: dict[str, Any], path: str) -> Any:
     if not path:
         return None
 
-    if "." not in path:
+    if ".." not in path:
         value = d.get(path)
         d.pop(path, None)
         return value
 
-    keys = path.split(".")
+    keys = path.split("..")
     current = d
     for key in keys[:-1]:
         if isinstance(current, dict) and key in current:
@@ -642,3 +742,26 @@ def is_debug(execute_command_result):
                 return True
 
     return type(execute_command_result) == dict and execute_command_result['Type'] == entryTypes['debug']
+
+def get_type(execute_command_result):
+    if execute_command_result is None:
+        return None
+    if isinstance(execute_command_result, list) and len(execute_command_result) > 0:
+        return execute_command_result[0]['Type']
+    return execute_command_result['Type']
+    
+def extract_data(result: dict[str, Any]):
+    brand = result.get("Metadata", {}).get("brand")
+    demisto.debug(f"result-------------: {result}")
+    demisto.debug(f"brand-------------: {brand}")
+    entry_context = result.get("EntryContext", {})
+    demisto.debug(f"entry_context-------------: {entry_context}")
+    if not entry_context:
+        return None, brand
+    dbot_score = flatten_list([value for key, value in entry_context.items() if key.startswith("DBotScore")])
+    demisto.debug(f"dbot_score-------------: {dbot_score}")
+    if dbot_score:
+        return dbot_score[0].get("Indicator"), brand
+    return None, brand
+        
+    

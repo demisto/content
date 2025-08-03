@@ -35,27 +35,29 @@ def url_enrichment_script(
     """
     Enriches URL data with information from various integrations
     """
-    mapping = {"Data":"Data",
+    indicator_mapping = {"Data":"Data",
                "DetectionEngines":"DetectionEngines",
                "PositiveDetections":"PositiveDetections",
                "Score":"Score",
                "Brand":"Brand"}
     
-    commands = [ReputationCommand(name="url", args={"url": data_list}, mapping=mapping),
-                Command(name="wildfire-get-verdict", args={"url": data_list}, type=CommandType.internal),
-                TIMCommand(mapping=mapping, indicator_context_path="URL("),
-                ]
+    commands = [ReputationCommand(name="url",args={"url": data}, mapping=indicator_mapping, indicator_context_path="URL(") for data in data_list]
+    commands.extend([
+        Command(name="wildfire-get-verdict", args={"url": data_list}, command_type=CommandType.internal, brand="WildFire-v2", mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})])
     urlreputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
+        indicator_type="url",
         indicator_value_field="Data",
         validate_input_function=lambda args: True,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="URLEnrichment",
         args=demisto.args(),
-        data={"url": data_list}
+        data=data_list,
+        indicator_mapping=indicator_mapping,
+        indicator_context_path="URL(",
     )
     return urlreputation.aggregated_command_main_loop()
     
