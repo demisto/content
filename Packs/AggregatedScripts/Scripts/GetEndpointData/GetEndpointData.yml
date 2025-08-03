@@ -17,6 +17,7 @@ args:
     - 'Cortex XDR - IR'
     - 'Cortex Core - IR'
     - 'FireEyeHX v2'
+    - 'Microsoft Defender Advanced Threat Protection'
     - 'Generic Command'.
   name: brands
   isArray: true
