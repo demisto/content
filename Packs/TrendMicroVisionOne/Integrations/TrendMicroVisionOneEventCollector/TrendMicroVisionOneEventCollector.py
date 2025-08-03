@@ -160,7 +160,7 @@ class Client(BaseClient):
         headers: dict | None = None,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
-    ) -> tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None, bool]:
         """
         Implements a generic method with pagination to retrieve logs from trend micro vision one.
 
@@ -173,12 +173,21 @@ class Client(BaseClient):
             next_link (str): the next link to continue pagination
 
         Returns:
-            List[Dict]: a list of the requested logs.
+            tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
         logs: List[dict] = []
 
+        is_new_query: bool = False
         if next_link:
-            response = self.http_request(method=method, headers=headers, next_link=next_link)
+            try:
+                response = self.http_request(method=method, headers=headers, next_link=next_link)
+            except DemistoException as e:
+                if "request token expired" in str(e).casefold():
+                    response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
+                    is_new_query = True
+                else:
+                    raise
+    
         else:
             response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
 
@@ -209,7 +218,7 @@ class Client(BaseClient):
             if log_time := log.get(created_time_field):
                 log["_time"] = log_time
 
-        return logs, new_next_link
+        return logs, new_next_link, is_new_query
 
     def get_workbench_logs(
         self,
@@ -242,7 +251,7 @@ class Client(BaseClient):
         if end_datetime:
             params["endDateTime"] = end_datetime
 
-        workbench_logs, _ = self.get_logs(url_suffix=UrlSuffixes.WORKBENCH.value, params=params, limit=limit)
+        workbench_logs, *_ = self.get_logs(url_suffix=UrlSuffixes.WORKBENCH.value, params=params, limit=limit)
 
         return workbench_logs
 
@@ -253,7 +262,7 @@ class Client(BaseClient):
         top: int = 1000,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
-    ) -> tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None, bool]:
         """
         Get the observed attack techniques logs.
 
@@ -274,7 +283,7 @@ class Client(BaseClient):
             next_link (str): the next link for the api request (used mainly for pagination).
 
         Returns:
-            List[Dict]: The observe attack techniques that were found.
+            tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # returns in descending order by default and cannot be changed
@@ -294,7 +303,7 @@ class Client(BaseClient):
         top: int = DEFAULT_MAX_LIMIT,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
-    ) -> tuple[List[dict], str | None]:
+    ) -> tuple[List[dict], str | None, bool]:
         """
         Get the search detection logs.
 
@@ -310,7 +319,7 @@ class Client(BaseClient):
             next_link (str): the next link for the api request (used mainly for pagination).
 
         Returns:
-            List[Dict]: The search detection logs that were found.
+            tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # will retrieve all the events that are less or equal to end_datetime
@@ -364,7 +373,7 @@ class Client(BaseClient):
         if end_datetime:
             params["endDateTime"] = end_datetime
 
-        audit_logs, _ = self.get_logs(
+        audit_logs, *_ = self.get_logs(
             url_suffix=UrlSuffixes.AUDIT.value,
             params=params,
             limit=limit,
@@ -689,12 +698,22 @@ def get_observed_attack_techniques_logs(
     dedup_log_ids = last_run.get(observed_attack_technique_dedup) or []
     pagination_log_ids = last_run.get(observed_attack_technique_pagination) or []
 
-    if last_run_next_link:
-        observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
-            next_link=last_run_next_link, limit=limit
-        )
+    start_time, end_time = get_datetime_range(
+        last_run_time=last_run_start_time,
+        first_fetch=first_fetch,
+        log_type_time_field_name=observed_attack_technique_start_run_time,
+        date_format=date_format,
+    )
 
-        observed_attack_techniques_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
+    observed_attack_techniques_logs, new_next_link, is_new_query = client.get_observed_attack_techniques_logs(
+        detected_start_datetime=start_time,
+        detected_end_datetime=end_time,
+        next_link=last_run_next_link,
+        limit=limit,
+    )
+
+    if last_run_next_link and not is_new_query:
+        observed_attack_techniques_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=observed_attack_technique_pagination,
@@ -708,17 +727,6 @@ def get_observed_attack_techniques_logs(
             pagination_log_ids.extend(subsequent_pagination_log_ids)
 
     else:
-        start_time, end_time = get_datetime_range(
-            last_run_time=last_run_start_time,
-            first_fetch=first_fetch,
-            log_type_time_field_name=observed_attack_technique_start_run_time,
-            date_format=date_format,
-        )
-
-        observed_attack_techniques_logs, new_next_link = client.get_observed_attack_techniques_logs(
-            detected_start_datetime=start_time, detected_end_datetime=end_time, limit=limit
-        )
-
         observed_attack_techniques_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
@@ -727,9 +735,9 @@ def get_observed_attack_techniques_logs(
             date_format=date_format,
         )
 
-        last_run_start_time = latest_log_time or (
-            dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
-        ).strftime(DATE_FORMAT)  # type: ignore
+    last_run_start_time = latest_log_time or (
+        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+    ).strftime(DATE_FORMAT)  # type: ignore
 
     fetched_observed_attack_technique_logs_ids = [
         (_log.get("uuid"), _log.get("_time")) for _log in observed_attack_techniques_logs if _log.get("uuid")
@@ -836,10 +844,22 @@ def get_search_detection_logs(
     dedup_log_ids = last_run.get(search_detection_dedup) or []
     pagination_log_ids = last_run.get(search_detection_pagination) or []
 
-    if last_run_next_link:
-        search_detection_logs, new_next_link = client.get_search_detection_logs(next_link=last_run_next_link, limit=limit)
+    start_time, _ = get_datetime_range(
+        last_run_time=last_run_start_time,
+        first_fetch=first_fetch,
+        log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
+        date_format=date_format,
+    )
 
-        search_detection_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
+    search_detection_logs, new_next_link, is_new_query = client.get_search_detection_logs(
+        start_datetime=start_time,
+        top=limit,
+        next_link=last_run_next_link,
+        limit=limit,
+    )
+
+    if last_run_next_link and not is_new_query:
+        search_detection_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=search_detection_pagination,
@@ -850,15 +870,8 @@ def get_search_detection_logs(
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
         if subsequent_pagination_log_ids:
             pagination_log_ids.extend(subsequent_pagination_log_ids)
-    else:
-        start_time, _ = get_datetime_range(
-            last_run_time=last_run_start_time,
-            first_fetch=first_fetch,
-            log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
-            date_format=date_format,
-        )
-        search_detection_logs, new_next_link = client.get_search_detection_logs(start_datetime=start_time, top=limit, limit=limit)
 
+    else:
         search_detection_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
@@ -867,9 +880,9 @@ def get_search_detection_logs(
             date_format=date_format,
         )
 
-        last_run_start_time = latest_log_time or (
-            dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
-        ).strftime(DATE_FORMAT)  # type: ignore
+    last_run_start_time = latest_log_time or (
+        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
+    ).strftime(DATE_FORMAT)  # type: ignore
 
     fetched_search_detection_logs_ids = [
         (_log.get("uuid"), _log.get("_time")) for _log in search_detection_logs if _log.get("uuid")
@@ -1107,7 +1120,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
         ]
 
     def parse_observed_attack_techniques_logs() -> List[dict]:
-        observed_attack_techniques_logs, _ = client.get_observed_attack_techniques_logs(
+        observed_attack_techniques_logs, *_ = client.get_observed_attack_techniques_logs(
             detected_start_datetime=from_time,  # type: ignore[arg-type]
             detected_end_datetime=to_time,  # type: ignore[arg-type]
             top=limit,
@@ -1123,7 +1136,7 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
         ]
 
     def parse_search_detection_logs() -> List[dict]:
-        search_detection_logs, _ = client.get_search_detection_logs(
+        search_detection_logs, *_ = client.get_search_detection_logs(
             start_datetime=from_time,  # type: ignore[arg-type]
             end_datetime=to_time,
             top=limit,
