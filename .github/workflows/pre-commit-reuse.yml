@@ -28,20 +28,20 @@ jobs:
         python-version: '3.10'
         cache: 'poetry'
     
-    - name: Check python version
-      run: python --version
+    # - name: Check python version
+    #   run: python --version
     
-    - name: Remove old Poetry virtualenv (if any)
-      run: poetry env remove python || true
+    # - name: Remove old Poetry virtualenv (if any)
+    #   run: poetry env remove python || true
 
-    - name: Set Poetry to use correct Python
-      run: poetry env use /opt/hostedtoolcache/Python/3.10.18/x64/bin/python
+    # - name: Set Poetry to use correct Python
+    #   run: poetry env use /opt/hostedtoolcache/Python/3.10.18/x64/bin/python
 
-    - name: Check Poetry virtualenv path
-      run: poetry env info --path
+    # - name: Check Poetry virtualenv path
+    #   run: poetry env info --path
 
-    - name: Check python version inside Poetry env
-      run: poetry run python --version
+    # - name: Check python version inside Poetry env
+    #   run: poetry run python --version
     
     - name: Install dependencies
       run: poetry install
