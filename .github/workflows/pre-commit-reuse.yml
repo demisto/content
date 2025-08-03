@@ -11,9 +11,6 @@ jobs:
       pull-requests: write
       contents: write
     steps:
-    - name: Install poetry
-      uses: Gr1N/setup-poetry@v9
-
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -27,22 +24,23 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'poetry'
-    
-    # - name: Check python version
-    #   run: python --version
-    
-    # - name: Remove old Poetry virtualenv (if any)
-    #   run: poetry env remove python || true
 
-    # - name: Set Poetry to use correct Python
-    #   run: poetry env use /opt/hostedtoolcache/Python/3.10.18/x64/bin/python
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        poetry --version
 
-    # - name: Check Poetry virtualenv path
-    #   run: poetry env info --path
+    - name: Configure Poetry Environment
+      run: |
+        poetry env use $(which python)
 
-    # - name: Check python version inside Poetry env
-    #   run: poetry run python --version
-    
+    - name: Check Python Versions
+      run: |
+        python --version
+        poetry run python --version
+        poetry env info
+
     - name: Install dependencies
       run: poetry install
 
