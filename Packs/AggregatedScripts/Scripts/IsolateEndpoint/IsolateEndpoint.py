@@ -1,5 +1,4 @@
 from CommonServerPython import *
-from collections.abc import Callable
 from itertools import zip_longest
 
 """ COMMAND CLASS """
@@ -34,26 +33,25 @@ def initialize_commands() -> list:
     commands = [
         Command(
             # Can be used only in XSIAM
-            brand='Cortex Core - IR',
-            name='core-isolate-endpoint',
-            arg_mapping={'endpoint_id': 'endpoint_id'},
+            brand="Cortex Core - IR",
+            name="core-isolate-endpoint",
+            arg_mapping={"endpoint_id": "endpoint_id"},
         ),
         Command(
-            brand='CrowdstrikeFalcon',
-            name='cs-falcon-contain-host',
-            arg_mapping={'ids': 'endpoint_id'},
+            brand="CrowdstrikeFalcon",
+            name="cs-falcon-contain-host",
+            arg_mapping={"ids": "endpoint_id"},
         ),
         Command(
-            brand='FireEyeHX v2',
-            name='fireeye-hx-host-containment',
-            arg_mapping={'agentId': 'endpoint_id', 'hostName': 'endpoint_hostname'},  # command can use agentId or hostName
+            brand="FireEyeHX v2",
+            name="fireeye-hx-host-containment",
+            arg_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},  # command can use agentId or hostName
         ),
         Command(
-            brand='Microsoft Defender ATP',
-            name='microsoft-atp-isolate-machine',
-            arg_mapping={'machine_id': 'endpoint_id'},
-            hard_coded_args={'isolation_type': 'Full',
-                             'comment': 'Isolated endpoint with IsolateEndpoint script.'},
+            brand="Microsoft Defender ATP",
+            name="microsoft-atp-isolate-machine",
+            arg_mapping={"machine_id": "endpoint_id"},
+            hard_coded_args={"isolation_type": "Full", "comment": "Isolated endpoint with IsolateEndpoint script."},
         ),
     ]
     return commands
@@ -76,12 +74,14 @@ def check_inputs_for_command(command: Command, endpoint_output: dict, args: dict
     """
     missing_args = are_there_missing_args(command, args)  # checks if there are missing args
     if missing_args:
-        demisto.debug(f'Missing the next args {missing_args} for command.name')
-        create_message_to_context_and_hr(is_isolated=False,
-                                         endpoint_args=args,
-                                         result='Fail',
-                                         message=f'Missing the next args: {missing_args} for {command.name}.',
-                                         endpoint_output=endpoint_output)
+        demisto.debug(f"Missing the next args {missing_args} for command.name")
+        create_message_to_context_and_hr(
+            is_isolated=False,
+            endpoint_args=args,
+            result="Fail",
+            message=f"Missing the next args: {missing_args} for {command.name}.",
+            endpoint_output=endpoint_output,
+        )
         return False
     return True
 
@@ -99,20 +99,19 @@ def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpo
         bool: True if the endpoint is isolated, False otherwise.
     """
     demisto.debug(f"Got endpoint {endpoint_data} with field isIsolated{endpoint_data.get('IsIsolated')}")
-    is_isolated = endpoint_data.get('IsIsolated', 'No')
-    if is_isolated == 'Yes':
-        message = 'The endpoint is already isolated.'
-        create_message_to_context_and_hr(is_isolated=True,
-                                         endpoint_args=endpoint_args,
-                                         result='Fail',
-                                         message=message,
-                                         endpoint_output=endpoint_output)
+    is_isolated = endpoint_data.get("IsIsolated", "No")
+    if is_isolated == "Yes":
+        message = "The endpoint is already isolated."
+        create_message_to_context_and_hr(
+            is_isolated=True, endpoint_args=endpoint_args, result="Fail", message=message, endpoint_output=endpoint_output
+        )
         return True
     return False
 
 
-def create_message_to_context_and_hr(is_isolated: bool, endpoint_args: dict, result: str, message: str, endpoint_output: dict) \
-    -> None:
+def create_message_to_context_and_hr(
+    is_isolated: bool, endpoint_args: dict, result: str, message: str, endpoint_output: dict
+) -> None:
     """
     Generates a structured message for context and human-readable outputs.
 
@@ -123,18 +122,19 @@ def create_message_to_context_and_hr(is_isolated: bool, endpoint_args: dict, res
         message (str): A message explaining the result.
         endpoint_output (dict): A list to store the structured output for context.
     """
-    endpoint_hostname = endpoint_args.get('endpoint_id') or endpoint_args.get('endpoint_ip') or endpoint_args.get(
-        'endpoint_hostname')
-    brand = endpoint_args.get('endpoint_brand', '')
+    endpoint_hostname = (
+        endpoint_args.get("endpoint_id") or endpoint_args.get("endpoint_ip") or endpoint_args.get("endpoint_hostname")
+    )
+    brand = endpoint_args.get("endpoint_brand", "")
 
-    endpoint_output['Endpoint'] = endpoint_hostname
-    endpoint_output['Result'] = result
-    endpoint_output['Source'] = brand
-    endpoint_output['Message'] = message
+    endpoint_output["Endpoint"] = endpoint_hostname
+    endpoint_output["Result"] = result
+    endpoint_output["Source"] = brand
+    endpoint_output["Message"] = message
     if is_isolated:
-        endpoint_output["Isolated"] = 'Yes'
+        endpoint_output["Isolated"] = "Yes"
     else:
-        endpoint_output["Isolated"] = 'No'
+        endpoint_output["Isolated"] = "No"
 
 
 def are_there_missing_args(command: Command, args: dict) -> bool:
@@ -164,7 +164,7 @@ def map_args(command: Command, args: dict) -> dict:
     Returns:
         dict: A dictionary with mapped arguments, using expected keys with corresponding values from args.
     """
-    mapped_args = {k: args.get(v, '') for k, v in command.arg_mapping.items()}
+    mapped_args = {k: args.get(v, "") for k, v in command.arg_mapping.items()}
     if command.hard_coded_args:
         mapped_args.update(command.hard_coded_args)
     return mapped_args
@@ -182,8 +182,8 @@ def map_zipped_args(endpoint_ids: list, endpoint_ips: list) -> list:
         list: A list of dictionaries, each containing 'endpoint_id', 'endpoint_ip', and 'endpoint_hostnames'.
     """
     return [
-        {'endpoint_id': endpoint_id, 'endpoint_ip': endpoint_ip}
-        for endpoint_id, endpoint_ip in zip_longest(endpoint_ids, endpoint_ips, fillvalue='')
+        {"endpoint_id": endpoint_id, "endpoint_ip": endpoint_ip}
+        for endpoint_id, endpoint_ip in zip_longest(endpoint_ids, endpoint_ips, fillvalue="")
     ]
 
 
@@ -198,23 +198,26 @@ def check_missing_executed_args_in_output(zipped_args: list, valid_args: list, o
         outputs (list): A list to store structured output results.
     """
     for args in zipped_args:
-        endpoint_id = args.get('endpoint_id', '')
-        endpoint_ip = args.get('endpoint_ip', '')
+        endpoint_id = args.get("endpoint_id", "")
+        endpoint_ip = args.get("endpoint_ip", "")
         are_args_found = False
         for entry in valid_args:
             demisto.debug(f"Got {entry=}, and comparing it to {endpoint_id=} and {endpoint_ip=}")
             # Checks if any of the args exists in valid_args
-            if (endpoint_id and entry.get('endpoint_id') == endpoint_id) or (endpoint_ip and entry.get('endpoint_ip')
-                                                                             == endpoint_ip):
+            if (endpoint_id and entry.get("endpoint_id") == endpoint_id) or (
+                endpoint_ip and entry.get("endpoint_ip") == endpoint_ip
+            ):
                 are_args_found = True
         if not are_args_found:
             endpoint_context_output: dict = {}
 
-            create_message_to_context_and_hr(is_isolated=False,
-                                             endpoint_args=args,
-                                             result='Fail',
-                                             message='Did not find information on endpoint in any available brand.',
-                                             endpoint_output=endpoint_context_output)
+            create_message_to_context_and_hr(
+                is_isolated=False,
+                endpoint_args=args,
+                result="Fail",
+                message="Did not find information on endpoint in any available brand.",
+                endpoint_output=endpoint_context_output,
+            )
             outputs.append(endpoint_context_output)
 
 
@@ -229,12 +232,13 @@ def get_args_from_endpoint_data(endpoint_data: dict) -> dict:
         dict: A dictionary with extracted values, including 'endpoint_id', 'endpoint_hostname',
          'endpoint_ip', and 'endpoint_brand'.
     """
-    return {'endpoint_id': endpoint_data.get("ID", ""),
-            'endpoint_ip': endpoint_data.get("IPAddress", ""),
-            'endpoint_brand': endpoint_data.get("Brand", ""),
-            'endpoint_hostname': endpoint_data.get("Hostname", ""),
-            'endpoint_message': endpoint_data.get("Message", "")
-            }
+    return {
+        "endpoint_id": endpoint_data.get("ID", ""),
+        "endpoint_ip": endpoint_data.get("IPAddress", ""),
+        "endpoint_brand": endpoint_data.get("Brand", ""),
+        "endpoint_hostname": endpoint_data.get("Hostname", ""),
+        "endpoint_message": endpoint_data.get("Message", ""),
+    }
 
 
 def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> list:
@@ -262,8 +266,9 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     return structured_list
 
 
-def handle_raw_response_results(command: Command, raw_response: dict, endpoint_args: dict, endpoint_output: dict,
-                                verbose: bool) -> CommandResults | None:
+def handle_raw_response_results(
+    command: Command, raw_response: dict, endpoint_args: dict, endpoint_output: dict, verbose: bool
+) -> CommandResults | None:
     """
     Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
 
@@ -277,22 +282,25 @@ def handle_raw_response_results(command: Command, raw_response: dict, endpoint_a
         CommandResults | None: If verbose=true, returns the CommandResults for this executed command.
     """
     entry_human_readable = []
-    endpoint_id = endpoint_args.get('endpoint_id', '')
+    endpoint_id = endpoint_args.get("endpoint_id", "")
     if is_error(raw_response):
         demisto.debug(f"Got an error from raw_response with {endpoint_args}")
-        create_message_to_context_and_hr(is_isolated=False,
-                                         endpoint_args=endpoint_args,
-                                         result='Fail',
-                                         message=f'Failed to isolate {endpoint_id} with command {command.name}.'
-                                                 f'Error:{get_error(raw_response)}',
-                                         endpoint_output=endpoint_output)
+        create_message_to_context_and_hr(
+            is_isolated=False,
+            endpoint_args=endpoint_args,
+            result="Fail",
+            message=f"Failed to isolate {endpoint_id} with command {command.name}." f"Error:{get_error(raw_response)}",
+            endpoint_output=endpoint_output,
+        )
 
     else:
-        create_message_to_context_and_hr(is_isolated=True,
-                                         endpoint_args=endpoint_args,
-                                         result='Success',
-                                         message=f'{endpoint_id} was isolated successfully with command {command.name}.',
-                                         endpoint_output=endpoint_output)
+        create_message_to_context_and_hr(
+            is_isolated=True,
+            endpoint_args=endpoint_args,
+            result="Success",
+            message=f"{endpoint_id} was isolated successfully with command {command.name}.",
+            endpoint_output=endpoint_output,
+        )
     # if verbose:
     #     for entry in raw_response:
     #         entry_human_readable.append(entry.get("HumanReadable") or "")
@@ -315,8 +323,7 @@ def find_command_by_brand(commands: list, brand: str):
     return None
 
 
-def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, results: list,
-                              verbose) -> None:
+def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, results: list, verbose) -> None:
     """
     Processes an endpoint by executing isolation commands and updating outputs accordingly.
 
@@ -328,22 +335,24 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
         verbose (bool): Flag to control verbosity of debugging information.
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
-    command = find_command_by_brand(commands, endpoint_args.get('endpoint_brand', ""))
+    command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
 
     missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
     if missing_args:
-        demisto.debug(f'Missing the next args {endpoint_args} for command.name')
-        create_message_to_context_and_hr(is_isolated=False,
-                                         endpoint_args=endpoint_args,
-                                         result='Fail',
-                                         message=f'Missing args: {missing_args} for {command.name}.',
-                                         endpoint_output=endpoint_output)
+        demisto.debug(f"Missing the next args {endpoint_args} for command.name")
+        create_message_to_context_and_hr(
+            is_isolated=False,
+            endpoint_args=endpoint_args,
+            result="Fail",
+            message=f"Missing args: {missing_args} for {command.name}.",
+            endpoint_output=endpoint_output,
+        )
         return
 
     mapped_args = map_args(command, endpoint_args)
-    demisto.debug(f'Executing command {command.name} with {endpoint_args=}')
+    demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
     raw_response = demisto.executeCommand(command.name, mapped_args)
-    demisto.debug(f'Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}')
+    demisto.debug(f"Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}")
     command_results = handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output, verbose)
     if command_results:
         results.append(command_results)
@@ -362,7 +371,7 @@ def main():
         executed_command = execute_command(command="get-endpoint-data", args=endpoint_args)
 
         endpoint_data_results = structure_endpoints_data(executed_command)  # TODO
-        demisto.debug(f'These are the structured data from structure_endpoints_data {endpoint_data_results}')
+        demisto.debug(f"These are the structured data from structure_endpoints_data {endpoint_data_results}")
 
         results: list = []
         context_outputs: list = []
@@ -373,7 +382,7 @@ def main():
 
             endpoint_args = get_args_from_endpoint_data(endpoint_data)
             demisto.debug(f"Got args {endpoint_args=}")
-            if 'fail' in endpoint_args.get('endpoint_message', '').lower():
+            if "fail" in endpoint_args.get("endpoint_message", "").lower():
                 # Skip the failing endpoints from get-data-endpoint
                 demisto.debug(f"Skipping endpoint {endpoint_args} because of a failing error from get-endpoint-data.")
                 continue
@@ -393,24 +402,28 @@ def main():
         # comparing the executed args for isolated-endpoint with the input args
         check_missing_executed_args_in_output(zipped_args, args_from_endpoint_data, context_outputs)
 
-        readable_output = tableToMarkdown(name='IsolateEndpoint Results', t=context_outputs, removeNull=True)
-        results.append(CommandResults(
-            outputs_prefix='IsolateEndpoint',
-            outputs_key_field='EndpointName',
-            outputs=context_outputs,
-            readable_output=readable_output,
-        ))
+        readable_output = tableToMarkdown(name="IsolateEndpoint Results", t=context_outputs, removeNull=True)
+        results.append(
+            CommandResults(
+                outputs_prefix="IsolateEndpoint",
+                outputs_key_field="EndpointName",
+                outputs=context_outputs,
+                readable_output=readable_output,
+            )
+        )
         return_results(results)
 
     except Exception as e:
         demisto.debug(f"Failed to execute isolate-endpoint. Error: {str(e)}")
-        return_results(CommandResults(
-            outputs_prefix='IsolateEndpoint',
-            outputs=[],
-            readable_output='The Isolate Action did not succeed.'
-                            ' Please validate your input or check if the machine is already in an Isolate state.'
-                            ' The Device ID/s that were not Isolated',
-        ))
+        return_results(
+            CommandResults(
+                outputs_prefix="IsolateEndpoint",
+                outputs=[],
+                readable_output="The Isolate Action did not succeed."
+                " Please validate your input or check if the machine is already in an Isolate state."
+                " The Device ID/s that were not Isolated",
+            )
+        )
 
 
 """ ENTRY POINT """

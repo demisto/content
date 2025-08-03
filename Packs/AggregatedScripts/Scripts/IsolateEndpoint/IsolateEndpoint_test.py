@@ -2,26 +2,21 @@ from IsolateEndpoint import *
 import pytest
 from unittest.mock import patch
 
+
 @pytest.mark.parametrize(
     "endpoint_data, expected_output",
     [
         (
-            {
-                "Hostname": "host123",
-                "ID": "endpoint",
-                "IPAddress": "8.8.1.1",
-                "Brand": "brand",
-                "Message": "Fail"
-            },
+            {"Hostname": "host123", "ID": "endpoint", "IPAddress": "8.8.1.1", "Brand": "brand", "Message": "Fail"},
             {
                 "endpoint_id": "endpoint",
                 "endpoint_hostname": "host123",
                 "endpoint_ip": "8.8.1.1",
                 "endpoint_brand": "brand",
                 "endpoint_message": "Fail",
-            }
+            },
         ),
-    ]
+    ],
 )
 def test_get_args_from_endpoint_data(endpoint_data, expected_output):
     """
@@ -59,7 +54,7 @@ def test_structure_endpoints_data():
     assert structure_endpoints_data(input_data) == expected_output
 
 
-@patch('IsolateEndpoint.create_message_to_context_and_hr')
+@patch("IsolateEndpoint.create_message_to_context_and_hr")
 def test_check_which_args_missing_in_output(mock_create_message):
     """
     Given:
@@ -70,23 +65,18 @@ def test_check_which_args_missing_in_output(mock_create_message):
         - It should call `create_message_to_context_and_hr` when an endpoint is missing.
         - It should not call `create_message_to_context_and_hr` when an endpoint is found.
     """
-    executed_args = [
-        {'endpoint_id': '123', 'endpoint_ip': '192'},
-        {'endpoint_id': '789', 'endpoint_ip': '193'}
-    ]
+    executed_args = [{"endpoint_id": "123", "endpoint_ip": "192"}, {"endpoint_id": "789", "endpoint_ip": "193"}]
     outputs = []
     zipped_args = [
-        {'endpoint_id': '', 'endpoint_ip': '194'},
-        {'endpoint_id': '555', 'endpoint_ip': '195'},
-        {'endpoint_id': '123', 'endpoint_ip': ''},
-        {'endpoint_id': '', 'endpoint_ip': '192'},
-        {'endpoint_id': '', 'endpoint_ip': ''},
-        {'endpoint_id': '', 'endpoint_ip': '192'},
-        {'endpoint_id': '456', 'endpoint_ip': ''}
+        {"endpoint_id": "", "endpoint_ip": "194"},
+        {"endpoint_id": "555", "endpoint_ip": "195"},
+        {"endpoint_id": "123", "endpoint_ip": ""},
+        {"endpoint_id": "", "endpoint_ip": "192"},
+        {"endpoint_id": "", "endpoint_ip": ""},
+        {"endpoint_id": "", "endpoint_ip": "192"},
+        {"endpoint_id": "456", "endpoint_ip": ""},
     ]
-    check_missing_executed_args_in_output(
-        zipped_args, executed_args, outputs
-    )
+    check_missing_executed_args_in_output(zipped_args, executed_args, outputs)
     assert mock_create_message.call_count == 4
 
 
@@ -128,11 +118,7 @@ def test_map_args():
         - It includes hard-coded arguments in the output.
         - It returns an empty string for missing keys instead of raising an error.
     """
-    base_command = Command(
-        brand="test_brand",
-        name="test_command",
-        arg_mapping={}
-    )
+    base_command = Command(brand="test_brand", name="test_command", arg_mapping={})
 
     base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
     args = {"old_key1": "value1", "old_key2": "value2"}
@@ -166,11 +152,7 @@ def test_are_there_missing_args():
     Then:
         - It correctly identifies when arguments are missing or present.
     """
-    base_command = Command(
-        brand="test_brand",
-        name="test_command",
-        arg_mapping={}
-    )
+    base_command = Command(brand="test_brand", name="test_command", arg_mapping={})
 
     base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
     args = {"old_key1": "value1", "old_key2": "value2"}
@@ -203,9 +185,9 @@ def test_is_endpoint_isolatable():
     assert is_endpoint_already_isolated(endpoint_data, endpoint_args={}, endpoint_output={}) is True
 
 
-@patch('IsolateEndpoint.is_error')
-@patch('IsolateEndpoint.get_error')
-@patch('IsolateEndpoint.create_message_to_context_and_hr')
+@patch("IsolateEndpoint.is_error")
+@patch("IsolateEndpoint.get_error")
+@patch("IsolateEndpoint.create_message_to_context_and_hr")
 def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_is_error):
     """
     Given:
@@ -216,21 +198,21 @@ def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_i
         - Ensure the expected functions are called and errors are logged correctly for both error and success scenarios.
     """
     command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
-    raw_response = {'status': 'error'}
-    args = {'arg1': 'value1'}
+    raw_response = {"status": "error"}
+    args = {"arg1": "value1"}
     outputs = {}
     verbose = False
 
     mock_is_error.return_value = True
-    mock_get_error.return_value = 'Some error occurred'
+    mock_get_error.return_value = "Some error occurred"
 
     handle_raw_response_results(command, raw_response, args, outputs, verbose)
 
     mock_create_message.assert_called_once_with(
         args=args,
-        result='Fail',
-        message='Failed to execute command TestCommand. Error:Some error occurred',
-        endpoint_output=outputs
+        result="Fail",
+        message="Failed to execute command TestCommand. Error:Some error occurred",
+        endpoint_output=outputs,
     )
 
 
@@ -245,10 +227,10 @@ def test_initialize_commands():
     """
     commands = initialize_commands()
     expected_command_names = {
-        'core-isolate-endpoint',
-        'cs-falcon-contain-host',
-        'fireeye-hx-host-containment',
-        'microsoft-atp-isolate-machine',
+        "core-isolate-endpoint",
+        "cs-falcon-contain-host",
+        "fireeye-hx-host-containment",
+        "microsoft-atp-isolate-machine",
     }
 
     actual_command_names = {cmd.name for cmd in commands}
@@ -282,24 +264,28 @@ def test_run_commands_for_endpoint():
     verbose = True
 
     args = {"endpoint_hostname": "host1", "endpoint_brand": "BrandB"}
-    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
-                              results=results, verbose=verbose)
+    run_commands_for_endpoint(
+        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
+    )
     assert results == []
 
     args = {"endpoint_hostname": "host1", "endpoint_brand": "BrandA"}
-    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
-                              results=results, verbose=verbose)
+    run_commands_for_endpoint(
+        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
+    )
     assert len(results) == 1
     assert "Result" in results[0].readable_output
 
     commands = [Command(brand="BrandB", name="command1", arg_mapping={})]
-    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
-                              results=results, verbose=verbose)
+    run_commands_for_endpoint(
+        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
+    )
     assert len(results) == 1  # No new results added because module is inactive
 
     commands = [Command(brand="BrandA", name="command1", arg_mapping={"endpoint_id": "ida"})]
-    run_commands_for_endpoint(commands=commands, endpoint_args=args, endpoint_output=endpoint_output,
-                              results=results, verbose=verbose)
+    run_commands_for_endpoint(
+        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
+    )
     assert len(results) == 1  # No new results added because not matching args
 
 

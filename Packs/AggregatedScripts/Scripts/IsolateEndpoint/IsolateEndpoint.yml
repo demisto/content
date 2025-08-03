@@ -26,19 +26,16 @@ commonfields:
   version: -1
 name: new-isolate-endpoint
 outputs:
-- contextPath: IsolateEndpointResults.EndpointName
+- contextPath: IsolateEndpointResults.Endpoint
   description: The endpoint's hostname.
   type: String
-- contextPath: IsolateEndpointResults.Results
-  description: The full results of the isolation.
-  type: Array
-- contextPath: IsolateEndpointResults.Results.Result
+- contextPath: IsolateEndpointResults.Result
   description: The result of the isolation.
   type: String
-- contextPath: IsolateEndpointResults.Results.Brand
+- contextPath: IsolateEndpointResults.Brand
   description: The used brand for the isolation.
   type: String
-- contextPath: IsolateEndpointResults.Results.Message
+- contextPath: IsolateEndpointResults.Message
   description: An informative message for the isolation results.
   type: String
 script: '-'
