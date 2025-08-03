@@ -842,7 +842,7 @@ class MicrosoftClient(BaseClient):
             kwargs["error_handler"] = self.handle_error_with_metrics
 
         response = super()._http_request(  # type: ignore[misc]
-            *args, resp_type="response", headers=default_headers, status_list_to_retry=(503), retries=1, **kwargs
+            *args, resp_type="response", headers=default_headers, status_list_to_retry=(503), retries=3, **kwargs
         )
 
         if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
