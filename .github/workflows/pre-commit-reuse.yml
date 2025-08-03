@@ -28,6 +28,9 @@ jobs:
         python-version: '3.10'
         cache: 'poetry'
     
+    - name: Check python version
+      run: python --version
+    
     - name: Install dependencies
       run: poetry install
 
