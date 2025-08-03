@@ -13,7 +13,7 @@ configuration:
   section: Connect
 - display: ''
   name: apikey_id_creds
-  type: 9
+  type: 9 
   displaypassword: API Key ID
   hiddenusername: true
   required: false
