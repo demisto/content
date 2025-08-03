@@ -29,10 +29,9 @@ The isolation action can be executed using the next integrations:
 
 ---
 
-| **Path** | **Description**                                   | **Type** |
-| --- |---------------------------------------------------| --- |
-| IsolateEndpointResults.EndpointName | The endpoint's id, ip or hostname.                | String |
-| IsolateEndpointResults.Results | The results of the isolation.                     | Array |
-| IsolateEndpointResults.Results.Result | The result of the isolation.                      | String |
-| IsolateEndpointResults.Results.Brand | The used brand for the isolation.                 | String |
-| IsolateEndpointResults.Results.Message | An informative message for the isolation results. | String |
+| **Path**                             | **Description**                                   | **Type** |
+|--------------------------------------|---------------------------------------------------| --- |
+| IsolateEndpointResults.Endpoint      | The endpoint's id, ip or hostname.                | String |
+| IsolateEndpointResults.Result        | The result of the isolation.                      | String |
+| IsolateEndpointResults.Brand   | The used brand for the isolation.                 | String |
+| IsolateEndpointResults.Message | An informative message for the isolation results. | String |
