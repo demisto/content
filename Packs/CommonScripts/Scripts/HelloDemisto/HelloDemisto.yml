@@ -1,0 +1,18 @@
+commonfields:
+  id: HelloDemisto
+  version: -1
+name: HelloDemisto
+script: "-"
+comment: Returns a hello string to the War Room.
+type: python
+subtype: python3
+category: "Utilities"
+tags:
+  - hello
+dockerimage: demisto/python3:3.10.13.86272
+enabled: true
+args:
+  - name: name
+    description: Name to greet.
+    required: false
+outputs: []

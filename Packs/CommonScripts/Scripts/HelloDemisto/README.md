@@ -1,0 +1,1 @@
+This script allows greeting the user by returning a simple "Hello" message to him.
