@@ -1467,14 +1467,13 @@ view: |-
       }
     }
   }
-fromversion: 6.9.0
-toversion: 7.99.99
+fromversion: 8.0.0
 marketplaces:
-- xsoar
-
+- xsoar_saas
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields:
     propagationLabels:
+
 
