@@ -1307,8 +1307,8 @@ def perform_rasterize(
         chrome_options = demisto.params().get("chrome_options", "None")
         chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
-        ps_aux_output = '\n'.join(subprocess.check_output("ps aux | grep chrom | grep port=", shell=True, text=True,
-                                                          stderr=subprocess.STDOUT).splitlines())
+        ps_aux_output = '\n'.join(subprocess.check_output("ps aux | grep chrom | grep port= | grep -- --headless",
+                                                          shell=True, text=True, stderr=subprocess.STDOUT).splitlines())
         chrome_headless_content = '\n'.join(
             subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines())
         df_output = '\n'.join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
