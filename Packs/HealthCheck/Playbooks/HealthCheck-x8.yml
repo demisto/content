@@ -1469,7 +1469,7 @@ view: |-
   }
 fromversion: 8.0.0
 marketplaces:
-- xsoar_saas
+- xsoar
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
