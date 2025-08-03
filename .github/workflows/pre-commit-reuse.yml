@@ -11,6 +11,9 @@ jobs:
       pull-requests: write
       contents: write
     steps:
+    - name: Install poetry
+      uses: Gr1N/setup-poetry@v9
+
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -28,19 +31,22 @@ jobs:
     - name: Install Poetry
       run: |
         curl -sSL https://install.python-poetry.org | python3 -
-        echo "$HOME/.local/bin" >> $GITHUB_PATH
-        poetry --version
+
+    - name: Add Poetry to PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Verify Poetry
+      run: poetry --version
 
     - name: Configure Poetry Environment
-      run: |
-        poetry env use $(which python)
+      run: poetry env use $(which python)
 
     - name: Check Python Versions
       run: |
         python --version
         poetry run python --version
         poetry env info
-
+    
     - name: Install dependencies
       run: poetry install
 
