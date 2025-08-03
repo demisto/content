@@ -1,0 +1,66 @@
+!wiz-defend-get-detection detection_id="12345678-1234-1234-1234-d25e16359c19"
+
+!wiz-defend-get-detections severity=CRITICAL
+
+!wiz-defend-get-detections type="GENERATED THREAT"
+
+!wiz-defend-get-detections platform="AWS"
+!wiz-defend-get-detections platform="AWS,Azure,GCP"
+
+!wiz-defend-get-detections origin="WIZ_SENSOR"
+!wiz-defend-get-detections origin="WIZ_SENSOR,AWS_GUARD_DUTY"
+
+!wiz-defend-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+!wiz-defend-get-detections resource_id="i-0g03j4h5gd123d456"
+
+!wiz-defend-get-detections rule_match_id="12345678-1234-1234-1234-3792e8a03318"
+!wiz-defend-get-detections rule_match_name="My-rule-name"
+
+!wiz-defend-get-detections project="production-project"
+
+!wiz-defend-get-detections cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
+
+!wiz-defend-get-detections severity=CRITICAL platform="AWS" creation_minutes_back="60"
+!wiz-defend-get-detections type="GENERATED THREAT" platform="Azure" severity=HIGH
+!wiz-defend-get-detections origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_minutes_back="120"
+!wiz-defend-get-detections type="GENERATED THREAT" platform="AWS,Azure,GCP" severity=CRITICAL
+!wiz-defend-get-detections severity=CRITICAL platform="AWS" creation_minutes_back="60"
+!wiz-defend-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" creation_minutes_back="600"
+!wiz-defend-get-detections origin="AWS_GUARD_DUTY" severity=HIGH
+
+!wiz-defend-get-threat issue_id="12345678-1234-1234-1234-d25e16359c19"
+
+!wiz-defend-get-threats severity=CRITICAL
+
+!wiz-defend-get-threats status="OPEN"
+!wiz-defend-get-threats status="OPEN,IN_PROGRESS"
+
+!wiz-defend-get-threats platform="AWS"
+!wiz-defend-get-threats platform="AWS,Azure,GCP"
+
+!wiz-defend-get-threats origin="WIZ_SENSOR"
+!wiz-defend-get-threats origin="WIZ_SENSOR,AWS_GUARD_DUTY"
+
+!wiz-defend-get-threats resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+
+!wiz-defend-get-threats creation_days_back="30"
+
+!wiz-defend-get-threats project="production-project"
+
+!wiz-defend-get-threats cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
+
+!wiz-defend-get-threats severity=CRITICAL platform="AWS" creation_days_back="30"
+!wiz-defend-get-threats severity=HIGH status="OPEN,IN_PROGRESS" platform="Azure"
+!wiz-defend-get-threats origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_days_back="15"
+!wiz-defend-get-threats platform="AWS,Azure,GCP" cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
+
+!wiz-defend-resolve-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_reason="MALICIOUS_THREAT" resolution_note="Issue has been resolved"
+
+!wiz-defend-reopen-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+!wiz-defend-reopen-threat issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen_note="still an issue"
+
+!wiz-defend-set-threat-in-progress issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+
+!wiz-defend-set-threat-comment issue_id="12345678-1234-1234-1234-cc0a24716e0b" note="Checking with owner"
+
+!wiz-defend-clear-threat-comments issue_id="12345678-1234-1234-1234-cc0a24716e0b"

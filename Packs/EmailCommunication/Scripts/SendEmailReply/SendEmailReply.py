@@ -39,6 +39,90 @@ def get_utc_now():
     return dt.utcnow()
 
 
+def apply_direction(line: str) -> str:
+    """
+    Processes a single line of Markdown text and converts
+    custom direction tags into corresponding HTML divs.
+
+    Supported tags:
+    - '<-:->'  : Center aligned text
+    - '<--:>'  : Left-to-right text (LTR)
+    - '<:-->'  : Right-to-left text (RTL)
+
+    Args:
+        line (str): A single line of Markdown text.
+
+    Returns:
+        str: The processed line with HTML div for direction if tag found,
+             or the original line unchanged.
+    """
+    # Remove leading spaces to detect tags even if line is indented
+    stripped_line = line.lstrip()
+
+    # Check for center alignment tag
+    if stripped_line.startswith("<-:->"):
+        # Remove the tag prefix (5 chars) and strip any extra spaces
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with center text alignment
+        return f'<div style="text-align:center;">{content}</div>'
+
+    # Check for left-to-right text direction tag
+    elif stripped_line.startswith("<--:>"):
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with LTR direction attribute
+        return f'<div dir="ltr">{content}</div>'
+
+    # Check for right-to-left text direction tag
+    elif stripped_line.startswith("<:-->"):
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with RTL direction attribute
+        return f'<div dir="rtl">{content}</div>'
+
+    # If no direction tag is found, return the line unchanged
+    else:
+        return line
+
+
+def process_directions(md: str) -> str:
+    return "\n".join(apply_direction(line) for line in md.splitlines())
+
+
+def ensure_markdown_tables_have_spacing(md: str) -> str:
+    lines = md.splitlines()
+    new_lines: list[str] = []
+    in_table = False
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        is_table_line = stripped.startswith("|") and stripped.endswith("|")
+
+        if is_table_line:
+            if not in_table:
+                # Add blank line before table if previous line is non-empty
+                if new_lines and new_lines[-1].strip() != "":
+                    new_lines.append("")
+                in_table = True
+            new_lines.append(line)
+        else:
+            if in_table:
+                # Table just ended. Add blank line *only if there’s more non-empty content ahead*.
+                remaining_lines = lines[i:]
+                if any(rl.strip() for rl in remaining_lines) and line.strip() != "":
+                    new_lines.append("")
+                in_table = False
+            new_lines.append(line)
+
+    return "\n".join(new_lines)
+
+
+def replace_atlassian_tags(md: str) -> str:
+    # Replace color tags
+    md = re.sub(r"\{\{color:(#[0-9a-fA-F]{6})\}\}\((.*?)\)", r'<span style="color:\1;">\2</span>', md)
+    # Replace background tags
+    md = re.sub(r"\{\{background:(#[0-9a-fA-F]{6})\}\}\((.*?)\)", r'<span style="background-color:\1;">\2</span>', md)
+    return md
+
+
 def append_email_signature(html_body):
     """
         Retrieve the user defined email signature to include on new messages, if present.
@@ -890,8 +974,17 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
+    # 1. Apply your direction tags first
+    md_with_direction = process_directions(new_email_body)
+
+    # 2. Fix spacing before tables
+    fixed_body = ensure_markdown_tables_have_spacing(md_with_direction)
+
+    # 3. Replace Atlassian color/background tags with inline HTML spans
+    fixed_body = replace_atlassian_tags(fixed_body)
+
     context_html_body = markdown(
-        new_email_body,
+        fixed_body,
         extensions=[
             "tables",
             "fenced_code",
@@ -901,6 +994,13 @@ def format_body(new_email_body):
             DemistoExtension(),
         ],
     )
+    # Apply inline styles to tables only if <table> is present
+    if "<table>" in context_html_body:
+        context_html_body = context_html_body.replace(
+            "<table>",
+            '<table border="1" cellpadding="6" cellspacing="0" ' 'style="border-collapse: collapse; border: 1px solid #999;">',
+        )
+
     saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
     html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     return context_html_body, html_body
