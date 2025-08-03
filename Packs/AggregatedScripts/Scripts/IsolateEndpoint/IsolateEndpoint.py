@@ -49,11 +49,11 @@ def initialize_commands() -> list:
             arg_mapping={'agentId': 'endpoint_id', 'hostName': 'endpoint_hostname'},  # command can use agentId or hostName
         ),
         Command(
-            brand='Microsoft Defender ATP',  # TODO Maybe Microsoft Defender ATP as in get endpoint data?
+            brand='Microsoft Defender ATP',
             name='microsoft-atp-isolate-machine',
             arg_mapping={'machine_id': 'endpoint_id'},
             hard_coded_args={'isolation_type': 'Full',
-                             'comment': 'Isolated endpoint with IsolateEndpoint command.'},
+                             'comment': 'Isolated endpoint with IsolateEndpoint script.'},
         ),
     ]
     return commands
@@ -64,7 +64,7 @@ def initialize_commands() -> list:
 
 def check_inputs_for_command(command: Command, endpoint_output: dict, args: dict) -> bool:
     """
-    Validates whether a command can be executed by checking the brand's availability and required arguments.
+    Validates whether a command can be executed by checking the required arguments.
 
     Args:
         command (Command): An instance containing the command's metadata and argument mapping.
@@ -88,7 +88,7 @@ def check_inputs_for_command(command: Command, endpoint_output: dict, args: dict
 
 def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpoint_output: dict) -> bool:
     """
-    Determines whether an endpoint can be isolated based on its current isolation status.
+    Checks whether an endpoint is isolated already.
 
     Args:
         endpoint_data (dict): A dictionary containing endpoint details.
@@ -96,11 +96,10 @@ def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpo
         endpoint_output (dict): A list to store structured output results.
 
     Returns:
-        bool: True if the endpoint is eligible for isolation, False otherwise.
+        bool: True if the endpoint is isolated, False otherwise.
     """
     demisto.debug(f"Got endpoint {endpoint_data} with field isIsolated{endpoint_data.get('IsIsolated')}")
     is_isolated = endpoint_data.get('IsIsolated', 'No')
-    demisto.debug(f"this is the field for isIsolated {is_isolated}")
     if is_isolated == 'Yes':
         message = 'The endpoint is already isolated.'
         create_message_to_context_and_hr(is_isolated=True,
@@ -140,7 +139,7 @@ def create_message_to_context_and_hr(is_isolated: bool, endpoint_args: dict, res
 
 def are_there_missing_args(command: Command, args: dict) -> bool:
     """
-    Checks if all required arguments are missing from the provided arguments.
+    Checks if all required arguments are existing in the provided arguments.
 
     Args:
         command (Command): The command to use for checking the required arguments.
@@ -374,12 +373,13 @@ def main():
 
             endpoint_args = get_args_from_endpoint_data(endpoint_data)
             demisto.debug(f"Got args {endpoint_args=}")
-            if 'fail' in endpoint_args.get('endpoint_message', '').lower():  # Skip the failing endpoints from get-data-endpoint
-                demisto.debug(f"skipping this endpoint {endpoint_args} because of failing")
+            if 'fail' in endpoint_args.get('endpoint_message', '').lower():
+                # Skip the failing endpoints from get-data-endpoint
+                demisto.debug(f"Skipping endpoint {endpoint_args} because of a failing error from get-endpoint-data.")
                 continue
 
             if is_endpoint_already_isolated(endpoint_data, endpoint_args, endpoint_context_output):
-                demisto.debug(f"skipping this endpoint {endpoint_args} because its already isolated")
+                demisto.debug(f"Skipping endpoint {endpoint_args} because it is already isolated.")
                 args_from_endpoint_data.append(endpoint_args)
                 context_outputs.append(endpoint_context_output)
                 continue
