@@ -328,7 +328,8 @@
             "supportedModules":[
                 "C1", 
                 "C3",
-                "X5"
+                "X5",
+                "cloud_posture"
             ]
         },
                 {
