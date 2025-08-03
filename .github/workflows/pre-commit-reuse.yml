@@ -5,7 +5,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       pull-requests: write
@@ -27,25 +27,6 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'poetry'
-
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-
-    - name: Add Poetry to PATH
-      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-    - name: Verify Poetry
-      run: poetry --version
-
-    - name: Configure Poetry Environment
-      run: poetry env use $(which python)
-
-    - name: Check Python Versions
-      run: |
-        python --version
-        poetry run python --version
-        poetry env info
     
     - name: Install dependencies
       run: poetry install
