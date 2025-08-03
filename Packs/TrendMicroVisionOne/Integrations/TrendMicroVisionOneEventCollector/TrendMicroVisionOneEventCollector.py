@@ -50,6 +50,40 @@ class LogTypes(Enum):
     SEARCH_DETECTIONS = "search_detection"
     AUDIT = "audit"
 
+    @classmethod
+    def values(cls) -> list[str]:
+        """
+        Gets the values of all enum members.
+
+        Returns:
+            list[str]: The values of the enum class members.
+        """
+        return [member.value for member in cls]
+
+    @classmethod
+    def get_value_from_display_name(cls, display_name: str) -> str:
+        """
+        Gets the value of the enum member based on the display name.
+
+        Args:
+            display_name (str): The readable name of the log type as appears in the configuration params.
+
+        Returns:
+            str: The lower snake case value of the relevant enum member.
+
+        Raises:
+            DemistoException: If no enum member is found for the given display name.
+
+        Example:
+            >>> LogTypes.from_display_name("Search Detections")
+            "search_detection"
+        """
+        member_name = display_name.upper().replace(" ", "_")
+        try:
+            return cls[member_name].value
+        except KeyError:
+            raise DemistoException(f"Invalid log type: {display_name!r}. Valid values: {', '.join(cls.values())}.")
+
 
 class UrlSuffixes(Enum):
     OBSERVED_ATTACK_TECHNIQUES = "/oat/detections"
@@ -939,45 +973,76 @@ def get_audit_logs(
 """ COMMAND FUNCTIONS """
 
 
-def fetch_events(client: Client, first_fetch: str, limit: int = DEFAULT_MAX_LIMIT) -> tuple[List[dict], dict]:
+def fetch_events(
+    client: Client,
+    first_fetch: str,
+    limit: int = DEFAULT_MAX_LIMIT,
+    log_types: list[str] = LogTypes.values(),
+) -> tuple[List[dict], dict]:
     """
     Get all the logs.
 
     Args:
-        client (Client): the client object
-        first_fetch (str): the first fetch time
-        limit (int): the maximum number of logs to fetch from each type
+        client (Client): The client object.
+        first_fetch (str): The first fetch time.
+        limit (int): The maximum number of logs to fetch from each type.
+        log_types (list[str]): The list of supported log types to fetch.
 
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
     """
+    demisto.debug(f"Starting to fetch up to {limit} events per type: {', '.join(log_types)}")
+
     last_run = demisto.getLastRun()
-    demisto.info(f"last run in the start of the fetch: {last_run}")
+    demisto.info(f"Last run in the start of the fetch: {last_run}")
 
-    demisto.info(f"starting to fetch {LogTypes.WORKBENCH} logs")
-    workbench_logs, updated_workbench_last_run = get_workbench_logs(
-        client=client, first_fetch=first_fetch, last_run=last_run, limit=limit
-    )
-    demisto.info(f"Fetched amount of workbench logs: {len(workbench_logs)}")
+    workbench_logs: list[dict] = []
+    updated_workbench_last_run: dict = {}
+    if LogTypes.WORKBENCH.value in log_types:
+        demisto.info(f"Starting to fetch {LogTypes.WORKBENCH} logs")
+        workbench_logs, updated_workbench_last_run = get_workbench_logs(
+            client=client,
+            first_fetch=first_fetch,
+            last_run=last_run,
+            limit=limit,
+        )
+        demisto.info(f"Fetched amount of {LogTypes.WORKBENCH} logs: {len(workbench_logs)}")
 
-    demisto.info(f"starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
-    observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
-        client=client, first_fetch=first_fetch, last_run=last_run, limit=limit
-    )
-    demisto.info(f"Fetched amount of observed attack techniques logs: {len(observed_attack_techniques_logs)}")
+    observed_attack_techniques_logs: list[dict] = []
+    updated_observed_attack_technique_last_run: dict = {}
+    if LogTypes.OBSERVED_ATTACK_TECHNIQUES.value in log_types:
+        demisto.info(f"Starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
+        observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
+            client=client,
+            first_fetch=first_fetch,
+            last_run=last_run,
+            limit=limit,
+        )
+        demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
 
-    demisto.info(f"starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
-    search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
-        client=client,
-        first_fetch=first_fetch,
-        last_run=last_run,
-        limit=limit,
-    )
-    demisto.info(f"Fetched amount of search detection logs: {len(search_detection_logs)}")
+    search_detection_logs: list[dict] = []
+    updated_search_detection_last_run: dict = {}
+    if LogTypes.SEARCH_DETECTIONS.value in log_types:
+        demisto.info(f"Starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
+        search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
+            client=client,
+            first_fetch=first_fetch,
+            last_run=last_run,
+            limit=limit,
+        )
+        demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
 
-    demisto.info(f"starting to fetch {LogTypes.AUDIT} logs")
-    audit_logs, updated_audit_last_run = get_audit_logs(client=client, first_fetch=first_fetch, last_run=last_run, limit=limit)
-    demisto.info(f"Fetched amount of audit logs: {len(audit_logs)}")
+    audit_logs: list[dict] = []
+    updated_audit_last_run: dict = {}
+    if LogTypes.AUDIT.value in log_types:
+        demisto.info(f"Starting to fetch {LogTypes.AUDIT} logs")
+        audit_logs, updated_audit_last_run = get_audit_logs(
+            client=client,
+            first_fetch=first_fetch,
+            last_run=last_run,
+            limit=limit,
+        )
+        demisto.info(f"Fetched amount of {LogTypes.AUDIT} logs: {len(audit_logs)}")
 
     events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
 
@@ -989,22 +1054,23 @@ def fetch_events(client: Client, first_fetch: str, limit: int = DEFAULT_MAX_LIMI
     ]:
         last_run.update(logs_last_run)
 
-    demisto.info(f"last run after fetching all logs: {last_run}")
+    demisto.info(f"Last run after fetching all logs: {last_run}")
     return events, last_run
 
 
-def test_module(client: Client, first_fetch: str) -> str:
+def test_module(client: Client, first_fetch: str, log_types: list[str]) -> str:
     """
     Tests that the collector is able to retrieve all logs without any error.
 
     Args:
-        client (Client): the client object
-        first_fetch (str): the first fetch time
+        client (Client): The client object
+        first_fetch (str): The first fetch time.
+        log_types (list[str]): The list of supported log types to fetch.
 
     Returns:
         str: 'ok' in case of success, exception in case of an error.
     """
-    fetch_events(client=client, first_fetch=first_fetch, limit=1)
+    fetch_events(client=client, first_fetch=first_fetch, limit=1, log_types=log_types)
     return "ok"
 
 
@@ -1111,6 +1177,7 @@ def main() -> None:
     proxy = params.get("proxy", False)
     first_fetch = params.get("first_fetch") or "3 days"
     limit = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_LIMIT
+    log_types = argToList(params.get("log_types"), transform=LogTypes.get_value_from_display_name) or LogTypes.values()
 
     command = demisto.command()
 
@@ -1123,10 +1190,10 @@ def main() -> None:
             verify=verify_certificate,
         )
 
-        if demisto.command() == "test-module":
-            return_results(test_module(client=client, first_fetch=first_fetch))
+        if command == "test-module":
+            return_results(test_module(client=client, first_fetch=first_fetch, log_types=log_types))
         elif command == "fetch-events":
-            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit)
+            events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit, log_types=log_types)
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
         elif command == "trend-micro-vision-one-get-events":
