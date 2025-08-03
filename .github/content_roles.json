@@ -13,10 +13,11 @@
     "CONTRIBUTION_TL": "JasBeilin",
     "CONTRIBUTION_SECURITY_REVIEWER": [""],
     "ON_CALL_DEVS": [
-        "tcarmeli",
-        "skroizer"
+        "jbabazadeh",
+        "YairGlick",
+        "aedri"
     ],
     "DOC_REVIEWER": "richardbluestone",
-    "TIM_REVIEWER": "MLainer1",
+    "TIM_REVIEWER": "MosheEichler",
     "AUTO_UPDATE_DOCKER_REVIEWER": "shmuel44"
 }
