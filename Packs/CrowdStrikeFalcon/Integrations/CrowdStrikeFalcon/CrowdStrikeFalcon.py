@@ -6242,7 +6242,7 @@ def get_cve_command(args: dict) -> list[dict[str, Any]]:
     http_response = cve_request(cve)
     raw_cve = [res_element.get("cve") for res_element in http_response.get("resources", [])]
     if not raw_cve:
-        command_results_list = [CommandResults(readable_output="No matching results found.")]
+        command_results_list = [(CommandResults(readable_output="No matching results found.")).to_context()]
     else:
         for cve in raw_cve:
             relationships_list = create_relationships(cve)
