@@ -403,14 +403,9 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
         raise ValueError("No file or job_id provided.")
     if args.get("file") and args.get("job_id"):
         raise ValueError("Must supply either file or job_id, not both.")
-    if args.get("file"):
-        hashes = args["file"].split(",")
-        for hash in hashes:
-            scan_response.append(client.scan(hash))
-    else:
-        job_ids = args["job_id"].split(",")
-        for job_id in job_ids:
-            scan_response.append(client.scan(job_id))
+    scan_objects =  args.get("file") or args.get("job_id")
+    for scan_object in scan_objects.split(","):
+        scan_response.append(client.scan(scan_object))
 
     def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(
@@ -444,7 +439,7 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
             ),
         )
 
-    continue_to_poll = any(state in IN_PROGRESS_STATES for res in scan_response for state in [res["state"]])
+    continue_to_poll = any(res["state"] in IN_PROGRESS_STATES for res in scan_response)
 
     command_result = [
         CommandResults(

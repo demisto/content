@@ -210,7 +210,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-    description: Gets summary information for a job_id or sha256
+    description: Gets report summary information for a job_id or a sha256 hash.
   - name: cs-falcon-sandbox-scan
     deprecated: true
     polling: true
