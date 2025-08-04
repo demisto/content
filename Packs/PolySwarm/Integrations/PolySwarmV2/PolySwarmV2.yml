@@ -65,10 +65,10 @@ script:
   commands:
   - arguments:
     - default: true
-      description: UUID string.
+      description: UUID string (SHA256).
       name: scan_uuid
       required: true
-    description: Returns a report using the UUID.
+    description: Returns a report using the UUID (SHA256).
     name: polyswarm-get-report
     outputs:
     - contextPath: PolySwarm.Total
@@ -81,7 +81,7 @@ script:
       description: The total number of positives found.
       type: Number
     - contextPath: PolySwarm.Scan_UUID
-      description: The PolySwarm scan UUID.
+      description: The PolySwarm scan UUID (SHA256).
       type: String
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
