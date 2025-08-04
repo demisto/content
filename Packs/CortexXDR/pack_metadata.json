@@ -76,11 +76,6 @@
             "display_name": "Cloud Incident Response"
         }
     },
-    "marketplaces": [
-        "xsoar",
-        "xpanse",
-        "platform"
-    ],
     "displayedImages": [
         "ServiceNow",
         "CommonPlaybooks",
@@ -94,7 +89,15 @@
         "AutoFocus",
         "Jira"
     ],
+    "marketplaces": [
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
     "supportedModules": [
+        "C1",
+        "C3",
+        "X0",
         "X1",
         "X3",
         "X5",
