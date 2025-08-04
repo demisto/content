@@ -1,0 +1,17 @@
+{
+    "allRead": true,
+    "allReadWrite": true,
+    "data": "-",
+    "id": "AWS was it you communication",
+    "itemVersion": "",
+    "locked": false,
+    "name": "AWS was it you communication",
+    "nameLocked": false,
+    "packID": "",
+    "previousAllRead": true,
+    "system": false,
+    "truncated": false,
+    "type": "plain_text",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
