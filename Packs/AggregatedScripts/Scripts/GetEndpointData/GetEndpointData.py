@@ -237,12 +237,17 @@ class EndpointCommandRunner:
             return [], []
 
         raw_outputs = self.run_execute_command(command, args)
+        demisto.debug(
+            f"NIV 0 {raw_outputs=}")  # TODO: remove
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
 
+        demisto.debug(
+            f"NIV 1 {entry_context=}, {human_readable=}, {readable_errors=}")  # TODO: remove
         if not entry_context:
             endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
             return readable_errors, endpoints
         endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
+        demisto.debug(f"NIV 2 {endpoints=}, {human_readable=}, {command=}")  # TODO: remove
         endpoints.extend(get_endpoint_not_found(command, human_readable[0].readable_output or "", endpoints, endpoint_args))
 
         if command.post_processing:
