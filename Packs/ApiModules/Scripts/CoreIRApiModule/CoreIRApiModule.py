@@ -149,7 +149,7 @@ ALERT_EVENT_AZURE_FIELDS = {
 RBAC_VALIDATIONS_VERSION = "8.6.0"
 RBAC_VALIDATIONS_BUILD_NUMBER = "992980"
 FORWARD_USER_RUN_RBAC = (
-    is_xsiam()
+    (is_xsiam() or is_platform())
     and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION, build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
     and not is_using_engine()
 )
@@ -1882,10 +1882,6 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     standard_endpoints = []
     for single_endpoint in endpoints:
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
-        # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
-        # in the `endpoint` command we use the standard
-        if ip_as_string and ip and isinstance(ip, list):
-            ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get("os_type", ""))
         endpoint = Common.Endpoint(
             id=single_endpoint.get("endpoint_id"),

@@ -223,15 +223,31 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.expiry_month | unknown | The compromised card's expiration month. |
 | CyberBlindspot.RemoteIncident.expiry_year | unknown | The compromised card's expiration year. |
 | CyberBlindspot.RemoteIncident.breach_source | unknown | The source of the breached data. |
-| CyberBlindspot.RemoteIncident.domain | unknown | The domain related to the breached data. |
+| CyberBlindspot.RemoteIncident.domain | unknown | The domain related to the breached data or compromised device. |
 | CyberBlindspot.RemoteIncident.email | unknown | Email found in the breached data. |
 | CyberBlindspot.RemoteIncident.username | unknown | Username found in the breached data. |
-| CyberBlindspot.RemoteIncident.password | unknown | Password found in the breached data. |
+| CyberBlindspot.RemoteIncident.password | unknown | Password found in the breached data or compromised account. |
 | CyberBlindspot.RemoteIncident.executive_name | unknown | Executive member's name related to the breached data. |
 | CyberBlindspot.RemoteIncident.confirmation_time | unknown | The time of infringement confirmation. |
 | CyberBlindspot.RemoteIncident.risks | unknown | The potential difficulties carried by the infringement. |
-| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. | 
-| CyberBlindspot.RemoteIncident.screenshots | unknown | The screenshot evidence if available. | 
+| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. |
+| CyberBlindspot.RemoteIncident.screenshots | unknown | The screenshot evidence if available. |
+| CyberBlindspot.RemoteIncident.date_compromised | unknown | The date of the compromise. |
+| CyberBlindspot.RemoteIncident.computer_name | unknown | The name of the computer that was compromised. |
+| CyberBlindspot.RemoteIncident.operating_system | unknown | The operating system of the compromised device. |
+| CyberBlindspot.RemoteIncident.malware_path | unknown | The path of the in which the malware was installed on the compromised device. |
+| CyberBlindspot.RemoteIncident.url_path | unknown | The path of the URL. |
+| CyberBlindspot.RemoteIncident.masked_password | unknown | The masked password of the compromised account. |
+| CyberBlindspot.RemoteIncident.software | unknown | The software that was compromised. |
+| CyberBlindspot.RemoteIncident.user | unknown | The user of the compromised account. |
+| CyberBlindspot.RemoteIncident.user_domain | unknown | The domain of the compromised user. |
+| CyberBlindspot.RemoteIncident.website | unknown | The website compromised. |
+| CyberBlindspot.RemoteIncident.sources | unknown | The sources reporting the compromise. |
+| CyberBlindspot.RemoteIncident.source_uri | unknown | The source URI of the compromise report. |
+| CyberBlindspot.RemoteIncident.hostname | unknown | The hostname of the compromised device. |
+| CyberBlindspot.RemoteIncident.stealer_family | unknown | The family of the malware. |
+| CyberBlindspot.RemoteIncident.external_link | unknown | The external link to the remote platform. |
+| CyberBlindspot.RemoteIncident.compromise_details | unknown | The details of the compromise. |
 
 ### ctm360-cbs-incident-retrieve-screenshots
 
@@ -246,17 +262,17 @@ Retrieves screenshot evidence if available.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| files | The files to retrieve. | Required | 
+| files | The files to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName. | 
-| InfoFile.EntryID | string | The EntryID of the report. | 
-| InfoFile.Size | number | File Size. | 
-| InfoFile.Type | string | File type e.g. "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Name | string | FileName. |
+| InfoFile.EntryID | string | The EntryID of the report. |
+| InfoFile.Size | number | File Size. |
+| InfoFile.Type | string | File type e.g. "PE". |
+| InfoFile.Info | string | Basic information of the file. |
 
 ### get-remote-data
 

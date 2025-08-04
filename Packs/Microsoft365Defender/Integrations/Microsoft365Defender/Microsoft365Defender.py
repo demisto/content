@@ -1129,7 +1129,7 @@ def main() -> None:
 
     tenant_id = params.get("creds_tenant_id", {}).get("password", "") or params.get("tenant_id") or params.get("_tenant_id")
     client_credentials = params.get("client_credentials", False)
-    enc_key = params.get("enc_key") or (params.get("credentials") or {}).get("password")
+    enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     certificate_thumbprint = params.get("creds_certificate", {}).get("identifier", "") or params.get("certificate_thumbprint", "")
 
     private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password", "")) or params.get(
@@ -1152,7 +1152,7 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"{params=}, \n {args=}, \n{mirroring_fields}")
+    demisto.debug(f"{args=}, \n{mirroring_fields}")
 
     try:
         if not managed_identities_client_id and not app_id:

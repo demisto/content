@@ -31,23 +31,26 @@ Sends a mobile alert to a SIGNL4 team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | The title of the SIGNL4 alert. | Required | 
-| message | The message of the SIGNL4 alert. | Required | 
-| s4_external_id | The external ID is used to reference the alert in order to close it later. | 
-| s4_service | The SIGNL4 category to use for this alert. | Optional | 
-| s4_location | Transmit location information ('latitude, longitude') with your event and display a map in the mobile app. | Optional | 
-|  s4_alerting_scenario | If this event triggers an, allows to control how SIGNL4 notifies the team. single_ack: Only one person needs to acknowledge this alert. multi_ack: The alert must be confirmed by the number of people who are on duty at the time this alert is created. emergency: All people in the team are notified regardless of their duty status and must acknowledge the alert, which is also assigned to the built-in emergency category. | Optional | 
-| s4_filtering | Specify a boolean value of true or false to apply event filtering for this event, or not. If set to true, the event will only trigger a notification to the team, if it contains at least one keyword from one of your services and system categories (i.e. it is whitelisted). | Optional | 
+| title | The title of the SIGNL4 alert. | Required |
+| message | The message of the SIGNL4 alert. | Required |
+| s4_external_id | The external ID is used to reference the alert in order to close it later. |
+| s4_service | The SIGNL4 category to use for this alert. | Optional |
+| s4_location | Transmit location information ('latitude, longitude') with your event and display a map in the mobile app. | Optional |
+|  s4_alerting_scenario | If this event triggers an, allows to control how SIGNL4 notifies the team. single_ack: Only one person needs to acknowledge this alert. multi_ack: The alert must be confirmed by the number of people who are on duty at the time this alert is created. emergency: All people in the team are notified regardless of their duty status and must acknowledge the alert, which is also assigned to the built-in emergency category. | Optional |
+| s4_filtering | Specify a boolean value of true or false to apply event filtering for this event, or not. If set to true, the event will only trigger a notification to the team, if it contains at least one keyword from one of your services and system categories (i.e. it is whitelisted). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SIGNL4.AlertCreated.eventId | String | SIGNL4 event ID. | 
+| SIGNL4.AlertCreated.eventId | String | SIGNL4 event ID. |
 
 #### Command example
+
 ```!signl4-alert name="Test Alert"```
+
 #### Context Example
+
 ```json
 {
     "title": "Alert from Cortex XSOAR",
@@ -59,6 +62,7 @@ Sends a mobile alert to a SIGNL4 team.
 #### Human Readable Output
 
 SIGNL4 alert created
+
 ```json
 
 {
@@ -73,23 +77,26 @@ Close a SIGNL4 alert.
 
 #### Base Command
 
-`signl4_close_alert `
+`signl4_close_alert`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| s4_external_id | The external ID is used to reference the open alert which shall be closed. | 
+| s4_external_id | The external ID is used to reference the open alert which shall be closed. |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SIGNL4.AlertClosed.eventId | String | SIGNL4 event ID. | 
+| SIGNL4.AlertClosed.eventId | String | SIGNL4 event ID. |
 
 #### Command example
+
 ```!signl4_close_alert name="Close Alert"```
+
 #### Context Example
+
 ```json
 {
         "s4_external_id": "id1234"
@@ -99,6 +106,7 @@ Close a SIGNL4 alert.
 #### Human Readable Output
 
 SIGNL4 alert closed
+
 ```json
 
 {

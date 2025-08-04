@@ -882,7 +882,7 @@ class Client(BaseClient):
         return activity_data
 
     def list_violation_data_request(
-        self, from_: str, to_: str, query: str = None, query_id: str = None, max_violations: int | None = 50
+        self, from_: str, to_: str, query: str = None, query_id: str = None, max_violations: int | None = 1000
     ) -> dict:
         """List violation data.
 
@@ -1724,7 +1724,7 @@ def list_violation_data(client: Client, args) -> list[CommandResults]:
     to_ = args.get("to", "").strip()
     query = escape_spotter_query(args.get("query", "").strip())
     query_id = args.get("query_id", "").strip()
-    max_violations = arg_to_number(args.get("max", "50"))
+    max_violations = arg_to_number(args.get("max", "1000"))
 
     if max_violations is not None and max_violations <= 0:
         raise ValueError(MESSAGE["INVALID_MAX_VALUE"])

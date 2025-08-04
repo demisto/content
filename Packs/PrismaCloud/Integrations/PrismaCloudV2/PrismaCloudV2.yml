@@ -3848,7 +3848,14 @@ script:
   runonce: false
 tests:
 - Prisma Cloud V2 Test
+- Prisma Cloud V2 Basic Test
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 6.5.0
 hybrid: true
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
