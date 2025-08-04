@@ -327,7 +327,7 @@ def test_create_user_with_additional_fields():
         "Source": "FullTestSource",
         "Brand": "FullTestSource",
         "Username": "fulluser",
-        "Instance": None
+        "Instance": None,
     }
 
     assert result == expected
@@ -364,7 +364,7 @@ def test_create_user_without_additional_fields():
         "Source": "FullTestSource",
         "Brand": "FullTestSource",
         "Username": "fulluser",
-        "Instance": None
+        "Instance": None,
     }
 
     assert result == expected
@@ -392,7 +392,7 @@ def test_create_user_with_single_item_list():
         "Source": "SingleListSource",
         "Brand": "SingleListSource",
         "Username": "listuser",
-        "Instance": None
+        "Instance": None,
     }
 
 
@@ -854,7 +854,7 @@ class TestGetUserData:
                 "Source": "Active Directory Query v2",
                 "Brand": "Active Directory Query v2",
                 "Username": "ad_user",
-                "Instance": None
+                "Instance": None,
             }
         ]
 
@@ -905,7 +905,7 @@ class TestGetUserData:
                 "Email": "ad_user@example.com",
                 "Source": "Active Directory Query v2",
                 "Brand": "Active Directory Query v2",
-                "Instance": None
+                "Instance": None,
             }
         ]
 
@@ -950,7 +950,7 @@ class TestGetUserData:
                 "Source": "Okta v2",
                 "Brand": "Okta v2",
                 "Username": "okta_user",
-                "Instance": None
+                "Instance": None,
             }
         ]
 
@@ -980,7 +980,9 @@ class TestGetUserData:
         """
         command = Command("AWS - IAM", "aws-iam-get-user", {"userName": "aws_user"})
         mock_outputs = {"UserId": "AIDAXXXXXXXXXXXXXXXX", "UserName": "aws_user"}
-        expected_account = [{"ID": "AIDAXXXXXXXXXXXXXXXX", "Source": "AWS - IAM", "Brand": "AWS - IAM", "Username": "aws_user", "Instance": None}]
+        expected_account = [
+            {"ID": "AIDAXXXXXXXXXXXXXXXX", "Source": "AWS - IAM", "Brand": "AWS - IAM", "Username": "aws_user", "Instance": None}
+        ]
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1031,7 +1033,7 @@ class TestGetUserData:
                 "Source": "Microsoft Graph User",
                 "Brand": "Microsoft Graph User",
                 "Username": "graph_user",
-                "Instance": None
+                "Instance": None,
             }
         ]
 
@@ -1095,7 +1097,7 @@ class TestGetUserData:
                 "Source": "Cortex XDR - IR",
                 "Brand": "Cortex XDR - IR",
                 "Username": "xdr_user",
-                "Instance": None
+                "Instance": None,
             }
         ]
 
@@ -1133,7 +1135,7 @@ class TestGetUserData:
                 "Source": "Azure Risky Users",
                 "Brand": "Azure Risky Users",
                 "Username": "azure_user",
-                "Instance": None
+                "Instance": None,
             }
         ]
 
@@ -1164,7 +1166,13 @@ class TestGetUserData:
         command = Command("PrismaCloud v2", "prisma-cloud-users-list", {"usernames": "prisma_user"})
         mock_outputs = {"email": "user_email.com", "username": "prisma_user"}
         expected_account = [
-            {"Email": "user_email.com", "Source": "PrismaCloud v2", "Brand": "PrismaCloud v2", "Username": "prisma_user", "Instance": None}
+            {
+                "Email": "user_email.com",
+                "Source": "PrismaCloud v2",
+                "Brand": "PrismaCloud v2",
+                "Username": "prisma_user",
+                "Instance": None,
+            }
         ]
 
         mocker.patch(
@@ -1192,9 +1200,17 @@ class TestGetUserData:
             It returns the expected tuple of readable outputs and user output.
         """
         command = Command("Okta IAM", "iam-get-user", {"user-profile": "user"})
-        mock_outputs = {"email": "user_email.com", "username": "name_user", "id": "user_id"}
+        mock_outputs = {"email": "user_email.com", "username": "name_user", "id": "user_id", "success": True}
         expected_account = [
-            {"Email": "user_email.com", "Source": "Okta IAM", "Brand": "Okta IAM", "Username": "name_user", "ID": "user_id", "Instance": None}
+            {
+                "Email": "user_email.com",
+                "Source": "Okta IAM",
+                "Brand": "Okta IAM",
+                "Username": "name_user",
+                "ID": "user_id",
+                "Instance": None,
+                "AdditionalFields": {"success": True}
+            }
         ]
 
         mocker.patch(
@@ -1224,7 +1240,14 @@ class TestGetUserData:
         command = Command("GSuiteAdmin", "gsuite-user-get", {"user": "user"})
         mock_outputs = {"primaryEmail": "user_email.com", "fullName": "name_user", "id": "user_id"}
         expected_account = [
-            {"Email": "user_email.com", "Source": "GSuiteAdmin", "Brand": "GSuiteAdmin", "Username": "name_user", "ID": "user_id", "Instance": None}
+            {
+                "Email": "user_email.com",
+                "Source": "GSuiteAdmin",
+                "Brand": "GSuiteAdmin",
+                "Username": "name_user",
+                "ID": "user_id",
+                "Instance": None,
+            }
         ]
 
         mocker.patch(
@@ -1360,7 +1383,8 @@ def test_get_data_with_found_user(mocker: MockerFixture):
 
     # Mock other necessary functions
     mock_get_user = mocker.patch(
-        "GetUserData.ad_get_user", return_value=(["test"], [{"Source": "test", "Brand": "test", "Username": "test user", "Instance": None}])
+        "GetUserData.ad_get_user",
+        return_value=(["test"], [{"Source": "test", "Brand": "test", "Username": "test user", "Instance": None}]),
     )
 
     result = get_data(
@@ -1384,7 +1408,9 @@ def test_get_data_without_found_user(mocker: MockerFixture):
     mocker.patch.object(Modules, "is_brand_available", return_value=True)
 
     # Mock other necessary functions
-    mock_get_user = mocker.patch("GetUserData.ad_get_user", return_value=([], [{"Source": "test", "Brand": "test", "Instance": "inst"}]))
+    mock_get_user = mocker.patch(
+        "GetUserData.ad_get_user", return_value=([], [{"Source": "test", "Brand": "test", "Instance": "inst"}])
+    )
 
     result = get_data(
         modules=modules,

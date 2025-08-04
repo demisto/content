@@ -47,14 +47,12 @@ def get_module_command_func(
 
 
 def run_active_directory_query_v2(user: User, using: str) -> list[DisabledUserResult]:
-    res_cmd = execute_command(
-        "ad-disable-account", {"username": user["Username"], "using": using}
-    )
+    res_cmd = execute_command("ad-disable-account", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
         func_res.append(
-            DisabledUserResult(Disabled=True, Result="Success", Message=res_msg)
+            DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
             if res_msg == f"User {user['Username']} was disabled"
             else DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         )
@@ -62,35 +60,30 @@ def run_active_directory_query_v2(user: User, using: str) -> list[DisabledUserRe
 
 
 def run_microsoft_graph_user(user: User, using: str) -> list[DisabledUserResult]:
-    res_cmd = execute_command(
-        "msgraph-user-account-disable", {"user": user["Username"], "using": using}
-    )
+    res_cmd = execute_command("msgraph-user-account-disable", {"user": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_hr = res["HumanReadable"]
         func_res.append(
-            DisabledUserResult(Disabled=True, Result="Success", Message=res_hr)
-            if res_hr
-            == f'user: "{user["Username"]}" account has been disabled successfully.'
+            DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
+            if res_hr == f'user: "{user["Username"]}" account has been disabled successfully.'
             else DisabledUserResult(Disabled=False, Result="Failed", Message=res["Content"])
         )
     return func_res
 
 
 def run_okta_v2(user: User, using: str) -> list[DisabledUserResult]:
-    res_cmd = execute_command(
-        "okta-suspend-user", {"username": user["Username"], "using": using}
-    )
+    res_cmd = execute_command("okta-suspend-user", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
         if res_msg == f"### {user['Username']} status is Suspended":
-            cfr = DisabledUserResult(Disabled=True, Result="Success", Message=res_msg)
+            dur = DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
         elif "Cannot suspend a user that is not active" in res_msg:
-            cfr = DisabledUserResult(Disabled=True, Result="Failed", Message=res_msg)
+            dur = DisabledUserResult(Disabled=True, Result="Failed", Message="User already disabled")
         else:
-            cfr = DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
-        func_res.append(cfr)
+            dur = DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
+        func_res.append(dur)
     return func_res
 
 
@@ -102,15 +95,8 @@ def run_iam_disable_user(user: User, using: str) -> list[DisabledUserResult]:
     return [
         DisabledUserResult(
             Disabled=(not dict_safe_get(res, ("Contents", "active"))),
-            Result=(
-                "Failed"
-                if is_error(res) or not dict_safe_get(res, ("Contents", "success"))
-                else "Success"
-            ),
-            Message=str(
-                dict_safe_get(res, ("Contents", "errorMessage"))
-                or res.get("HumanReadable")
-            ),
+            Result=("Failed" if is_error(res) or not dict_safe_get(res, ("Contents", "success")) else "Success"),
+            Message=str(dict_safe_get(res, ("Contents", "errorMessage")) or "User successfully disabled"),
         )
         for res in res_cmd
     ]
@@ -121,29 +107,37 @@ def run_gsuiteadmin(user: User, using: str) -> list[DisabledUserResult]:
         "gsuite-user-update",
         {"user_key": user["Email"], "suspended": "true", "using": using},
     )
-    return [
-        DisabledUserResult(
-            Disabled=bool(dict_safe_get(res, ("Contents", "suspended"))),
-            Result="Failed" if is_error(res) else "Success",
-            Message=str(res.get("HumanReadable") or res.get("Contents")),
-        )
-        for res in res_cmd
-    ]
+    func_res = []
+    for res in res_cmd:
+        if dict_safe_get(res, ("Contents", "suspended")):
+            dur = DisabledUserResult(
+                Disabled=True,
+                Result="Success",
+                Message="User successfully disabled",
+            )
+        else:
+            dur = DisabledUserResult(
+                Disabled=False,
+                Result="Failed",
+                Message=str(res.get("Contents") or "Unable to disable user"),
+            )
+        func_res.append(dur)
+    return func_res
 
 
 def validate_input(args: dict):
     if not (args.get("user_id") or args.get("user_name") or args.get("user_email")):
-        raise DemistoException(
-            "At least one of the following arguments must be specified: user_id, user_name or user_email."
-        )
+        raise DemistoException("At least one of the following arguments must be specified: user_id, user_name or user_email.")
 
 
 def get_users(args: dict) -> list[User]:
     res = execute_command("get-user-data", args)
     if is_error(res):
         return_error(get_error(res))
+    if not res[0]["Contents"]:
+        raise DemistoException("No integrations available")
     HUMAN_READABLES.append(res[0]["HumanReadable"])
-    return cast(list[User], res[0]["Contents"])
+    return cast(list[User], res[0]["Contents"]["UserData"])
 
 
 def disable_users(users: list[User]) -> list[dict]:
@@ -196,7 +190,7 @@ def main():
                 CommandResults(
                     entry_type=EntryType.ERROR,
                     content_format=EntryFormat.MARKDOWN,
-                    readable_output=tableToMarkdown("Disable User Failed", outputs),
+                    readable_output=tableToMarkdown("Disable User: All integrations failed.", outputs),
                 )
             )
 
