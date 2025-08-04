@@ -9,6 +9,9 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
+from json import JSONDecodeError
+from typing import Match
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -3629,12 +3632,23 @@ ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
-    
-    pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
-    
-    def fix_array_value(match):
+    """
+    Get alerts by filter.
+
+    Args:
+        client (CoreClient): The Core client to use for the request.
+        args (Dict): The arguments for the command.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    def fix_array_value(match: Match[str]):
+        """
+        Fix malformed array values in the agent_id custom_filter argument.
+        """
         array_content = match.group(1)
-        elements = [elem.strip().strip('"') for elem in array_content.split(',')]
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
         fixed_array = json.dumps(elements)
         # Return the full match with only SEARCH_VALUE fixed
         full_match = match.group(0)
@@ -3664,10 +3678,13 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                 raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
-            
+
         except JSONDecodeError:
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
             fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
             custom_filter = json.loads(fixed_json_str)
+
         except Exception as e:
             raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
