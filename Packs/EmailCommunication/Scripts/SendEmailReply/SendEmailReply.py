@@ -134,23 +134,29 @@ def append_email_signature(html_body: str) -> str:
     # 1. Load the signature list
     list_name = "XSOAR - Email Communication Signature"
     demisto.debug(f"Trying to load the `{list_name}` list.")
-    is_succeed, email_signature = execute_command("getList", {"listName": list_name}, extract_contents=False, fail_on_error=False)
+    is_succeed, email_signature_result = execute_command(
+        "getList", {"listName": list_name}, extract_contents=False, fail_on_error=False
+    )
     if not is_succeed:
-        demisto.debug(f"Error occurred while trying to load the `{list_name}` list. No signature added to email.")
+        error_message = get_error(email_signature_result)
+        demisto.debug(
+            f"Error occurred while trying to load the `{list_name}` list. No signature added to email. Error: {error_message}."
+        )
         return html_body
 
     # 2. Append signature
-    email_signature_contents = f"\r\n{email_signature[0]['Contents']}\r\n"
-    demisto.debug(f"Successfully loaded the `{list_name}` list. Found signature of length {len(email_signature_contents)} chars.")
+    demisto.debug(f"Successfully loaded the `{list_name}` list.")
+    email_signature_contents = f"\r\n{email_signature_result[0]['Contents']}\r\n"
+    demisto.debug(f"Found signature of length {len(email_signature_contents)} chars.")
 
     # Find the position of the closing </body> tag and insert the signature before closing tag
     if re.search("(?i)</body>", html_body):
+        demisto.debug("Appending signature before HTML body closing tag.")
         html_body = re.sub("(?i)</body>", f"{email_signature_contents}</body>", html_body)
-        demisto.debug("Appended signature before HTML body closing tag.")
     # Otherwise, if no closing </body> tag, concatenate the signature to the end of the string
     else:
+        demisto.debug("Appending signature to the end of the text string.")
         html_body += email_signature_contents
-        demisto.debug("Appended signature to the end of the text string.")
 
     return html_body
 
