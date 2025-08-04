@@ -9,11 +9,13 @@ args:
   required: true
 - name: force
   description: Overwrite the existing search if true, or use the existing search without modifying any search parameters if false.
+  auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
 - name: preview
   description: Preview results using the search action.
+  auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
@@ -24,6 +26,7 @@ args:
   description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
 - name: include_mailboxes
   description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
+  auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
