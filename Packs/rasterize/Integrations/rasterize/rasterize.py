@@ -1308,8 +1308,11 @@ def perform_rasterize(
         chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
 
         ps_aux_output = "\n".join(
-            subprocess.check_output(
-                "ps aux | grep chrom | grep port= | grep -- --headless", shell=True, text=True, stderr=subprocess.STDOUT
+            subprocess.check_output(  # noqa: S602
+                "ps aux | grep chrom | grep port= | grep -- --headless",
+                shell=True,
+                text=True,
+                stderr=subprocess.STDOUT,
             ).splitlines()
         )
         chrome_headless_content = "\n".join(
