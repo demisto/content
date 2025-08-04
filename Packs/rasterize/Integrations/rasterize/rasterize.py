@@ -1298,7 +1298,6 @@ def perform_rasterize(
             return rasterization_results
 
     else:
-
         chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
         chrome_options_dict = {
             options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
@@ -1330,7 +1329,6 @@ def perform_rasterize(
         demisto.debug(f"free command result:\n{free_output}")
         demisto.debug(f"chrome driver: {chromedriver}")
         demisto.debug(f"chrome version: {chrome_version}")
-
 
         message = "Could not use local Chrome for rasterize command"
         demisto.error(message)
