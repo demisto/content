@@ -346,7 +346,16 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
     command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
-
+    if not command:
+        # Probably won't happen because get-endpoint-data is mapping the right brands
+        demisto.debug(f"Did not find a matching brand to run on {endpoint_args}.")
+        create_message_to_context_and_hr(
+            is_isolated=False,
+            endpoint_args=endpoint_args,
+            result="Fail",
+            message=f"Did not find a matching brand to run on {endpoint_args}.",
+            endpoint_output=endpoint_output,
+        )
     missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
     if missing_args:
         demisto.debug(f"Missing the next args {endpoint_args} for command.name")
@@ -370,7 +379,6 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
 
 def main():
     try:
-        demisto.getAllModulesSupportedCmds
         endpoint_args = demisto.args()
         endpoint_ids = argToList(endpoint_args.get("endpoint_id"))
         endpoint_ips = argToList(endpoint_args.get("endpoint_ip"))
