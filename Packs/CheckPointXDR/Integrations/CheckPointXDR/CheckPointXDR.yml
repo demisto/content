@@ -45,7 +45,7 @@ configuration:
   type: 8
   required: false
 - section: Collect
-  display: Incidents Fetch Interval in minutes
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "10"
   type: 19
@@ -70,7 +70,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from XDR to Cortex XSOAR), Outgoing (from Cortex XSOAR to XDR), or Incoming and Outgoing (from/to Cortex XSOAR and XDR).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from XDR to Cortex XSOAR) - currently not supported, Outgoing (from Cortex XSOAR to XDR), or Incoming and Outgoing (Incoming currently not supported).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
