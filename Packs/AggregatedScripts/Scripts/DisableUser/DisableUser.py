@@ -11,6 +11,7 @@ HUMAN_READABLES = []
 
 class DisabledUserResult(TypedDict):
     """Represents the result of a user disable operation."""
+
     Disabled: bool
     Result: Literal["Success", "Failed"]
     Message: str
@@ -18,6 +19,7 @@ class DisabledUserResult(TypedDict):
 
 class UserData(TypedDict):
     """Represents the data of a user retrieved from get-user-data."""
+
     ID: str
     Username: str
     Email: str
