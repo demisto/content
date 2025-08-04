@@ -10,7 +10,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 
 from json import JSONDecodeError
-from typing import Match
+from re import Match
 
 # Disable insecure warnings
 urllib3.disable_warnings()
