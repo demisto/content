@@ -1,11 +1,16 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from enum import Enum
 from AggregatedCommandApiModule import *
 
 
-
+def validate_input_function(args):
+    if not args.get("ip_list"):
+        raise DemistoException("ip_list is required")
+    for ip in args.get("ip_list"):
+        if not is_ipv6_valid(ip) and not is_ipv4_valid(ip):
+            raise DemistoException("Invalid IP address")
+            
 
 def ip_enrichment_script(
     ip_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False, indicator_type="url"
@@ -19,24 +24,26 @@ def ip_enrichment_script(
                          "DetectionEngines":"DetectionEngines",
                          "PositiveDetections":"PositiveDetections",
     }
-    commands = [ReputationCommand(name=indicator_type,args={indicator_type: data}, mapping=indicator_mapping, indicator_context_path="IP(") for data in ip_list]
+    ip_indicator = Indicator(indicator_type="ip",
+                             indicator_value_field="Address",
+                             indicator_context_path="IP(",
+                             indicator_mapping=indicator_mapping)
+    
+    commands = [ReputationCommand(indicator=ip_indicator, data=data) for data in ip_list]
     commands.extend([
-        Command(name="get-endpoint-data", args={"endpoint_ip": ip_list}, command_type=CommandType.internal, brand="Scripts", mapping={"EndpointData":"EndpointData[]"}),
+        Command(name="get-endpoint-data", args={"endpoint_ip": ip_list}, command_type=CommandType.internal, brand="Scripts", mapping={"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)":"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"}),
         Command(name="core-get-IP-analytics-prevalence", args={"ip_address": ip_list}, command_type=CommandType.internal, brand="Cortex Core - IR", mapping={"IPAnalyticsPrevalence":"IPAnalyticsPrevalence[]"})])
     ipreputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
-        indicator_type=indicator_type,
-        indicator_value_field="Address",
         validate_input_function=lambda args: True,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="IPEnrichment",
         args=demisto.args(),
         data=ip_list,
-        indicator_mapping=indicator_mapping,
-        indicator_context_path="IP(",
+        indicator=ip_indicator,
     )
     return ipreputation.aggregated_command_main_loop()
     

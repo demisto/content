@@ -1,6 +1,6 @@
 args:
 - description: A comma-separated list of CVEs to enrich.
-  name: cve
+  name: cve_list
   required: true
 - name: external_enrichment
   description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module (TIM) will be retrieved.
@@ -33,14 +33,17 @@ args:
   required: false
 comment: This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
 commonfields:
-  id: CVEEnrichment
+  id: cve-enrichment
   version: -1
 enabled: false
-name: CVEEnrichment
+name: cve-enrichment
 outputs:
-- contextPath: CVEEnrichment.Output
-  description: '[Enter a description of the data returned in this output.]'
-  type: String
+- contextPath: CVEEnrichment
+  description: list of cve enrichments
+  type: array
+- contextPath: DBotScore
+  description: list of dbot scores
+  type: array
 script: '-'
 system: false
 tags:

@@ -1,5 +1,5 @@
 args:
-- description: IP address to enrich.
+- description: A comma-separated list of IPs to enrich.
   name: ip_list
   required: true
 - name: external_enrichment
@@ -38,9 +38,18 @@ commonfields:
 enabled: false
 name: ip-enrichment
 outputs:
-- contextPath: IPEnrichment.Output
-  description: '[Enter a description of the data returned in this output.]'
-  type: String
+- contextPath: IPEnrichment
+  description: list of ip enrichments
+  type: array
+- contextPath: Core.AnalyticsPrevalence.IP
+  description: list of core analytics prevalence
+  type: array
+- contextPath: EndpointData
+  description: list of endpoint data
+  type: array
+- contextPath: DBotScore
+  description: list of dbot scores
+  type: array
 script: '-'
 system: false
 tags:
