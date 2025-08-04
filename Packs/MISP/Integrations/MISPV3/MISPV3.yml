@@ -2770,8 +2770,8 @@ script:
       type: string
     - contextPath: MISP.Warninglist.Entries
       description: The warninglist entries
-    - contextPath: MISP.Warninglist.ValidAttributes
-      description: The valid attribute types for this warninglist
+    - contextPath: MISP.Warninglist.Attributes
+      description: The attribute types for this warninglist.
   - arguments: []
     description: Gets all warninglists from MISP
     name: misp-get-warninglists
