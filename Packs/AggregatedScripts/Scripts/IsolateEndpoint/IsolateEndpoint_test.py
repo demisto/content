@@ -1,6 +1,6 @@
 from IsolateEndpoint import *
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 
 @pytest.mark.parametrize(
@@ -195,23 +195,46 @@ def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_i
     When:
         - Running the handle_raw_response_results function.
     Then:
-        - Ensure the expected functions are called and errors are logged correctly for both error and success scenarios.
+        - Ensure the expected functions are called and messages are correct for both error and success scenarios.
     """
     command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
-    raw_response = {"status": "error"}
-    args = {"arg1": "value1"}
+    args = {"endpoint_id": "1234"}
     outputs = {}
     verbose = False
 
     mock_is_error.return_value = True
     mock_get_error.return_value = "Some error occurred"
 
-    handle_raw_response_results(command, raw_response, args, outputs, verbose)
+    handle_raw_response_results(command, {"status": "error"}, args, outputs, verbose)
+
+    expected_error_message = (
+        "Failed to isolate 1234 with command TestCommand.Error:Some error occurred"
+    )
 
     mock_create_message.assert_called_once_with(
-        args=args,
+        is_isolated=False,
+        endpoint_args=args,
         result="Fail",
-        message="Failed to execute command TestCommand. Error:Some error occurred",
+        message=expected_error_message,
+        endpoint_output=outputs,
+    )
+
+    mock_create_message.reset_mock()
+
+    mock_is_error.return_value = False
+    outputs.clear()
+
+    handle_raw_response_results(command, {"status": "ok"}, args, outputs, verbose)
+
+    expected_success_message = (
+        "1234 was isolated successfully with command TestCommand."
+    )
+
+    mock_create_message.assert_called_once_with(
+        is_isolated=True,
+        endpoint_args=args,
+        result="Success",
+        message=expected_success_message,
         endpoint_output=outputs,
     )
 
@@ -238,53 +261,16 @@ def test_initialize_commands():
     assert actual_command_names == expected_command_names, f"Missing or unexpected commands: {actual_command_names}"
 
 
-def test_run_commands_for_endpoint():
+def test_find_command_by_brand():
     """
     Given:
-        - A list of command objects with specified brands and arguments.
-        - A module manager with modules in different states (active and inactive).
-        - A set of brands to run commands for, including valid and invalid brands.
-        - Endpoint data and arguments related to a specific endpoint.
+        - A list of Command objects with different brand names.
     When:
-        - Running the test_run_commands_for_endpoint function with different arguments, including those that match the brand
-         and others that don't.
+        - Calling the find_command_by_brand function with the brand 'BrandB'.
     Then:
-        - Ensure commands are only executed for matching brands (active modules).
-        - Verify that results are properly added when conditions match, and that no results are added for inactive modules
-         or mismatched arguments.
+        - Ensure the function returns the Command object with brand 'BrandB'.
     """
-    commands = [Command(brand="BrandA", name="command_name", arg_mapping={})]
-    modules = {
-        "module1": {"brand": "BrandA", "state": "active"},
-        "module2": {"brand": "BrandB", "state": "inactive"},
-    }
-    brands_to_run = ["BrandA", "BrandC"]
-    endpoint_output = {}
-    results = []
-    verbose = True
-
-    args = {"endpoint_id": "host1", "endpoint_brand": "BrandB"}
-
-    run_commands_for_endpoint(
-        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
-    )
-    assert results == []
-
-    args = {"endpoint_hostname": "host1", "endpoint_brand": "BrandA"}
-    run_commands_for_endpoint(
-        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
-    )
-    assert len(results) == 1
-    assert "Result" in results[0].readable_output
-
-    commands = [Command(brand="BrandB", name="command1", arg_mapping={})]
-    run_commands_for_endpoint(
-        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
-    )
-    assert len(results) == 1  # No new results added because module is inactive
-
-    commands = [Command(brand="BrandA", name="command1", arg_mapping={"endpoint_id": "ida"})]
-    run_commands_for_endpoint(
-        commands=commands, endpoint_args=args, endpoint_output=endpoint_output, results=results, verbose=verbose
-    )
-    assert len(results) == 1  # No new results added because not matching args
+    command_a = Command(brand='BrandA', name='command-a', arg_mapping={})
+    command_b = Command(brand='BrandB', name='command-b', arg_mapping={})
+    result = find_command_by_brand(commands=[command_a, command_b], brand='BrandB')
+    assert result == command_b

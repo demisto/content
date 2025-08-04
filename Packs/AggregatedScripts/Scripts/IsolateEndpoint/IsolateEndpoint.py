@@ -316,7 +316,17 @@ def handle_raw_response_results(
     return None
 
 
-def find_command_by_brand(commands: list, brand: str):
+def find_command_by_brand(commands: list[Command], brand: str) -> Command | None:
+    """
+    Finds and returns the command from the list that matches the specified brand.
+
+    Args:
+        commands (list): A list of Command objects to search through.
+        brand (str): The brand name to match against the command's brand.
+
+    Returns:
+        Command | None: The matching Command object if found, otherwise None.
+    """
     for command in commands:
         if command.brand == brand:
             return command
