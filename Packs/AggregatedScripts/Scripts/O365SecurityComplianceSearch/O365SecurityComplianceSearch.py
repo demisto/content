@@ -1,6 +1,5 @@
 from CommonServerPython import *
 
-
 # required integrations
 SEC_COMP_MODULES = ["SecurityAndCompliance", "SecurityAndComplianceV2"]
 
@@ -20,39 +19,11 @@ CONTEXT_NAME_KEY = "Name"
 CONTEXT_STATUS_KEY = "Status"
 CONTEXT_RESULTS_KEY = "Results"
 
-# TODO
+# other consts
+SCRIPT_NAME = "o365-security-compliance-search"
 SEARCH_RESULT_PATTERN = r"(\w[\w\s]+?):\s*([^,]+)"
-
-
-def str_to_bool(s: str) -> bool:
-    """
-    Parse strings 'true' and 'false' to boolean values
-
-    Args:
-        s (str): input string
-
-    Returns:
-        bool: Bool value
-    """
-    
-    return s.lower() == "true"
-
-
-def str_to_array(s: str) -> list[str] | str:
-    """
-    Parse string that can be either single item or comma separated list
-
-    Args:
-        s (str): input string
-
-    Returns:
-        list[str] | str: The single value or list of values
-    """
-    
-    if "," in s:
-        return [i.strip() for i in s.split(",")]
-    
-    return s
+DEFAULT_POLLING_INTERVAL = 10
+DEFAULT_POLLING_TIMEOUT = 180
 
 
 def parse_args(args: dict) -> dict:
@@ -67,34 +38,34 @@ def parse_args(args: dict) -> dict:
     """
     
     if "force" in args:
-        args["force"] = str_to_bool(args["force"])
+        args["force"] = argToBoolean(args["force"])
         
     if "preview" in args:
-        args["preview"] = str_to_bool(args["preview"])
+        args["preview"] = argToBoolean(args["preview"])
     
     if "include_mailboxes" in args:
-        args["include_mailboxes"] = str_to_bool(args["include_mailboxes"])
+        args["include_mailboxes"] = argToBoolean(args["include_mailboxes"])
         
     if "exchange_location" in args:
-        args["exchange_location"] = str_to_array(args["exchange_location"])
+        args["exchange_location"] = argToList(args["exchange_location"])
         
     if "exchange_location_exclusion" in args:
-        args["exchange_location_exclusion"] = str_to_array(args["exchange_location_exclusion"])
+        args["exchange_location_exclusion"] = argToList(args["exchange_location_exclusion"])
         
     if "public_folder_location" in args:
-        args["public_folder_location"] = str_to_array(args["public_folder_location"])
+        args["public_folder_location"] = argToList(args["public_folder_location"])
     
     if "share_point_location" in args:
-        args["share_point_location"] = str_to_array(args["share_point_location"])
+        args["share_point_location"] = argToList(args["share_point_location"])
         
     if "share_point_location_exclusion" in args:
-        args["share_point_location_exclusion"] = str_to_array(args["share_point_location_exclusion"])
+        args["share_point_location_exclusion"] = argToList(args["share_point_location_exclusion"])
         
     if "polling_interval" in args:
-        args["polling_interval"] = int(args["polling_interval"])
+        args["polling_interval"] = arg_to_number(args["polling_interval"])
         
     if "polling_timeout" in args:
-        args["polling_timeout"] = int(args["polling_timeout"])
+        args["polling_timeout"] = arg_to_number(args["polling_timeout"])
         
     return args
     
@@ -110,7 +81,10 @@ def get_search_context(context: list, key: str) -> str:
     Returns:
         str: The value of the key
     """
-    return context[0].get("Contents", {}).get(key)
+    try:
+        return context[0].get("Contents", {}).get(key)
+    except AttributeError:
+        return ""
 
 
 def add_to_context(context: dict, sub_key: str, new_key: str, new_value: str|list):
@@ -157,6 +131,39 @@ def parse_search_results(search_results: str) -> list[dict]:
     return parsed_results
 
 
+def wait_for_search(args: dict) -> Union[dict, list]:
+    """
+    Wait for results from o365-sc-get-search
+
+    Args:
+        args (dict): The script args
+
+    Returns:
+        Union[dict, list]: Command execution results
+    """
+    
+    interval = args.get("polling_interval", DEFAULT_POLLING_INTERVAL)
+    timeout = args.get("polling_timeout", DEFAULT_POLLING_TIMEOUT)
+    
+    start_time = time.time()
+    while True:
+        # timeout reached
+        passed_time = time.time() - start_time
+        if passed_time > timeout:
+            return_error(f"Polling timed out after {int(passed_time)} seconds")
+            
+        # get search status and results
+        get_search_res = demisto.executeCommand(CMD_GET_SEARCH, args)
+        search_status = get_search_context(get_search_res, "Status")
+        search_results = parse_search_results(get_search_context(get_search_res, "SuccessResults"))
+    
+        # if status and results show command finished, return
+        if (search_status == "Completed") and (len(search_results) > 2):
+            return get_search_res
+        
+        time.sleep(interval)
+
+
 def main():
     try:
         # init variables
@@ -201,16 +208,9 @@ def main():
             # start the new search
             if search_name == args.get("search_name"):
                 demisto.executeCommand(CMD_START_SEARCH, args)
+                get_search_res = wait_for_search(args)
                 
-                # wait for search to complete
-                time.sleep(120)  # TODO - replace with polling
-                get_search_res = demisto.executeCommand(CMD_GET_SEARCH, args)
-                search_status = get_search_context(get_search_res, "Status")
-                
-                if search_status != "Completed":
-                    return_error(f"Failed to create new search. Search status: {search_status}")
-                
-        # get search values
+        # get updated search valuesT_SEARCH, args)
         search_name = get_search_context(get_search_res, "Name")
         search_status = get_search_context(get_search_res, "Status")
         search_results = parse_search_results(get_search_context(get_search_res, "SuccessResults"))
@@ -231,7 +231,7 @@ def main():
         demisto.setContext(CONTEXT_MAIN_KEY, context)
 
     except Exception as e:
-        return_error(f"Failed to execute o365-security-compliance-search. Error: {e!s}")
+        return_error(f"Failed to execute {SCRIPT_NAME}. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
