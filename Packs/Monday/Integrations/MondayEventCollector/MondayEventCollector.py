@@ -35,6 +35,8 @@ HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json"
 }
+AUDIT_LOGS_LIMIT = int(PARAMS.get("max_audit_logs_per_fetch", 50000))
+AUDIT_LOGS_PER_PAGE = min(MAX_PER_PAGE, AUDIT_LOGS_LIMIT) # must stay the same during all the fetch audit logs runs.
 
 """ CLIENT CLASS """
 # TODO: add function comments
@@ -132,30 +134,137 @@ def test_connection(client_id: str, secret: str, auth_code: str) -> CommandResul
     return CommandResults(readable_output=f"✅ Success!\nAccess token: {access_token}")
 
 
-def get_audit_logs(last_run: dict, now_ms: int) -> tuple[dict, list]:
+# it is possible to use this function only id audit logs limit is bigger the 1,000 (AUDIT_LOGS_PER_PAGE must be 1,000)
+def get_remaining_audit_logs(last_run: dict) -> tuple[list, dict]:
+    excess_logs_info = last_run.get("excess_logs_info")
+    offset = excess_logs_info.get("offset")
+    page = excess_logs_info.get("page")
+    start_time = excess_logs_info.get("start_time")
+    end_time = excess_logs_info.get("end_time")
     
     demisto_params = demisto.params()
-    # TODO: Validate audit_token is not empty before starting the fetch
     audit_logs_url = demisto_params.get("audit_logs_url", "")
     audit_token = demisto_params.get("audit_token", "")
-    limit = int(demisto_params.get("max_audit_logs_per_fetch", 50000))
+    
+    time_filter = f'{{"start_time":"{start_time}","end_time":"{end_time}"}}'
+    params = {
+        "filters": time_filter,
+        "page": page,
+        "per_page": AUDIT_LOGS_PER_PAGE
+    }
+    headers = {
+        "Authorization": f"Bearer {audit_token}",
+        "Content-Type": "application/json"
+    }
+    
+    url = urljoin(audit_logs_url, "audit-api/get-logs")
 
-    # NOTE: if last_run.get("continuing_fetch_info") - this fetch is part of a previous fetch, fetch from the next page at the same time window.
+    try:
+        response = requests.get(url, headers=headers, params=params, verify=USE_SSL)
+        
+        if response.status_code != 200:
+            raise DemistoException(f"Failed to get audit logs. Status code: {response.status_code}\n{response.text}")
+    
+        fetched_logs = response.json().get("data", [])
+        last_run["excess_logs_info"] = None
+        return fetched_logs[offset:], last_run
+    except Exception as e:
+        return_error(f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}") # TODO: change it to raise exception
+    
+
+def get_newest_log_id_with_same_timestamp(logs: list):
+    if not logs:
+        return []
+    
+    newest_log_timestamp = logs[0].get("timestamp")
+    same_timestamp_ids = []
+    
+    for log in logs:
+        if log.get("timestamp") == newest_log_timestamp:
+            # TODO: change id to hash function
+            composite_id = f"{log.get('timestamp')}_{log.get('user_id')}_{log.get('event')}_{log.get('account_id')}"
+            same_timestamp_ids.append(composite_id)
+        else:
+            return same_timestamp_ids
+    
+    return same_timestamp_ids
+
+
+def remove_duplicate_logs(logs: list, lower_bound_log_id: list) -> list:
+    """
+    Remove duplicate logs based on previous fetch.
+    
+    Args:
+        logs: List of fetched logs
+        current_last_run: Current last_run state
+    
+    Returns:
+        List of logs without duplicates
+    """
+    if not logs:
+        return logs
+    
+    # It is happening in the first fetch-events run or when it is the next non-empty fetch after empty fetch run.
+    # In this case, there is no lower bound log id.
+    if not lower_bound_log_id:
+        return logs
+    
+    # Remove duplicates logs that already fetched in the previous run.
+    # (start from the end of the list to compare the oldest log to the lower bounds ids from the previous run)
+    logs_without_duplicates = logs.copy()
+    for log in logs[-1::-1]:
+        if log.get("id") in lower_bound_log_id:    # TODO: change to hash function
+            logs_without_duplicates.remove(log)
+            break
+    
+    return logs_without_duplicates
+
+
+# When calling this function, last_run does not contain the "excess_logs_info" key.
+# We are handling the case where we have remaining logs to fetch from the previous fetch before calling this function.
+def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]:
+    """
+    Fetch audit logs from Monday based on configuration.
+
+    Args:
+        last_run: Previous fetch state containing last_timestamp and fetched_ids
+        now_ms: Current time in milliseconds
+
+    Returns:
+        tuple: (last_run, logs) where last_run is the updated state and logs are the fetched logs.
+    """
+    
+    # TODO: Validate audit_token is not empty before starting the fetch
+    demisto_params = demisto.params()
+    audit_logs_url = demisto_params.get("audit_logs_url", "")
+    audit_token = demisto_params.get("audit_token", "")
+    remaining_logs = 0
+    
+    newest_log_timestamp = ""
+    total_logs = []
+
+    # Not all logs were fetched in the previous fetch between start_time and end_time.
     if last_run.get("continuing_fetch_info"):
         is_continuing_fetch = True
         continuing_fetch_info = last_run.get("continuing_fetch_info")
-        
-        page = continuing_fetch_info.get("next_page")
+        page = continuing_fetch_info.get("page")
         start_time = continuing_fetch_info.get("start_time")
         end_time = continuing_fetch_info.get("end_time")
         demisto.debug(f"Continuing fetch for Audit Logs from: {start_time} to {end_time}\nPage: {page}")
+    
+    # First fetch in the current time range.
     else:
         is_continuing_fetch = False
         end_time = timestamp_to_datestring(now_ms, date_format=DATE_FORMAT)
-        start_time = last_run.get("last_timestamp") or timestamp_to_datestring(now_ms - FETCH_TIME, date_format=DATE_FORMAT)
+
+        if last_run.get("last_timestamp"):
+            dt = datetime.strptime(last_run.get("last_timestamp"), "%Y-%m-%dT%H:%M:%S.%fZ")
+            start_time = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+        else:
+            start_time = timestamp_to_datestring(now_ms - FETCH_TIME, date_format=DATE_FORMAT)
+
         page = 1
-        demisto.debug(f"Statring new fetch for Audit Logs from: {start_time} to {end_time}\nPage: {page}")
-        
+        demisto.debug(f"Starting new fetch for Audit Logs from: {start_time} to {end_time}\nPage: {page}")
 
     time_filter = f'{{"start_time":"{start_time}","end_time":"{end_time}"}}'
     headers = {
@@ -163,98 +272,131 @@ def get_audit_logs(last_run: dict, now_ms: int) -> tuple[dict, list]:
         "Content-Type": "application/json"
     }
 
-    fetched_logs = []
-    per_page = min(MAX_PER_PAGE, limit)
-    newest_log_timestamp = ""
-    
-    # NOTE:I fetch the minimum of limit and MAX_PER_PAGE
-    # the only case that this condition can be false is when the fetch exactly the limit logs.
-    # I need to check if I need to continue fetching from this current time window or start a new fetch
-    # (exception case, when the limit is exactly the amount of logs that fetched from monday.com api from start_time to end_time)
-    while len(fetched_logs) < limit:
+    '''
+        The first condition that reached will exit the loop:
+        1. len(total_logs) >= limit
+        2. next_page = None
+    '''
+    while len(total_logs) < limit:
+        
         params = {
             "filters": time_filter,
             "page": page,
-            "per_page": per_page
+            "per_page": AUDIT_LOGS_PER_PAGE
         }
+        
         url = urljoin(audit_logs_url, "audit-api/get-logs")
-
+        remaining_logs = limit - len(total_logs)
+        
         try:
+            # Monday API possible response codes: 200, 400, 401, 429, 500
             response = requests.get(url, headers=headers, params=params, verify=USE_SSL)
         except Exception as e:
-            return_error(f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}")
+            return_error(f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}") # TODO: change it to raise exception
         
-        # TODO: add comments, possible codes: 200, 400, 401, 429, 500
+        '''
+            Rate limit reached - up to 50 requests per minute.
+            Can be reached only if the user configured limit equal to 50,000.
+            The maximum logs can be fetched per request is 1,000 so the maximum logs can be fetched per minute is 50*1,000=50,000
+            TODO: I dont think this part will be reached because the limit the user can set is 50,000.
+        '''
         if response.status_code == 429:
             demisto.debug(f"Rate limit reached for audit logs. Status code: {response.status_code}\n{response.text}")
             
-            continuing_fetch_info = {"next_page": page, "start_time": start_time, "end_time": end_time}
-            if is_continuing_fetch:
-                previous_last_timestamp = last_run.get("last_timestamp")
-                return fetched_logs, {"last_timestamp": previous_last_timestamp, "continuing_fetch_info": continuing_fetch_info}
-            else:
-                # TODO:add comment: newest_log_timestamp is the timestamp of the newest log in the current fetch - it saved for the next fetch when finishing this current fetch.
-                return fetched_logs, {"last_timestamp": newest_log_timestamp, "continuing_fetch_info": continuing_fetch_info}
+            # Next run, starts fetching from this current page with the same time filter, resend the same request.
+            last_run["continuing_fetch_info"] = {"page": page, "start_time": start_time, "end_time": end_time}
+            
+            if not is_continuing_fetch:
+                last_run["last_timestamp"] = newest_log_timestamp
+            
+            return total_logs, last_run
 
         if response.status_code != 200:
-            # TODO: should I also return the fetched logs so far + last_run which support continuing fetch? or should I raise only exception?
+            # TODO: check, should I also return the fetched logs so far + last_run which support continuing fetch? or should I raise only exception?
             raise DemistoException(f"Failed to get audit logs. Status code: {response.status_code}\n{response.text}")
         
-        # status code 200
-        logs = response.json().get("data", [])
-        fetched_logs.extend(logs)
+
+        # Status code 200
+        fetched_logs = response.json().get("data", [])
+        total_logs.extend(fetched_logs)
         
         if page == 1:
-            if logs:
-                newest_log_timestamp = logs[0].get("timestamp")
+            if fetched_logs:
+                # Handle duplicate.
+                # There is no need to save all logs ids, only the newest log id with the same timestamp (upper bound) which will check in the next fetch with the oldest log timestamp (lower bound)
+                last_run["upper_bound_log_id"] = get_newest_log_id_with_same_timestamp(fetched_logs)
+                newest_log_timestamp = fetched_logs[0].get("timestamp")
             else:
                 newest_log_timestamp = ""
+                last_run["upper_bound_log_id"] = None
+                last_run["lower_bound_log_id"] = None
 
+        # last page reached, next_page = None, meaning there are no more logs to fetch.
+        # We can remove duplicate logs based on the lower bound logs set on the previous fetch.
         if not response.json().get("next_page"):
-            demisto.debug("No more Audit Logs.")
-            if is_continuing_fetch:
-                previous_last_timestamp = last_run.get("last_timestamp")
-                return fetched_logs, {"last_timestamp": previous_last_timestamp}
-            else:
-                return fetched_logs, {"last_timestamp": newest_log_timestamp}
+            
+            lower_bound_log_id = last_run.get("lower_bound_log_id")
+            fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id)
+            last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
+            
+            # If it's a continuing fetch, the last_timestamp is already saved from the first fetch run.
+            if not is_continuing_fetch:
+                last_run["last_timestamp"] = newest_log_timestamp
+            
+            if len(fetched_logs) > remaining_logs:
+                last_run["excess_logs_info"] = {"page": page, "start_time": start_time, "end_time": end_time, "offset": remaining_logs}
+                total_logs = total_logs[:limit]
+            
+            last_run["continuing_fetch_info"] = None
+                
+            return total_logs, last_run
         
         page += 1
-        per_page = min(MAX_PER_PAGE, limit - len(fetched_logs))
+
+    # At this point, limit is reached so we need to continue fetching (next_page = None is not reached)
+    last_run["continuing_fetch_info"] = {"page": page, "start_time": start_time, "end_time": end_time}
     
-    demisto.debug(f"Fetch Audit Logs finished, Fetch max limit: {limit}")
-    continuing_fetch_info = {"next_page": page, "start_time": start_time, "end_time": end_time}
-    if is_continuing_fetch:
-        previous_last_timestamp = last_run.get("last_timestamp")
-        last_timestamp = previous_last_timestamp
-    else:
-        last_timestamp = newest_log_timestamp
-    return fetched_logs, {"last_timestamp": last_timestamp, "continuing_fetch_info": continuing_fetch_info}
+    # Only partial logs were fetched from the last page when limit is reached.
+    if remaining_logs:
+        last_run["excess_logs_info"] = {"page": page - 1, "start_time": start_time, "end_time": end_time, "offset": remaining_logs}
+    
+    # The first fetch in the current run, set the last_timestamp to the time of the newest log.
+    # If it's a continuing fetch, the last_timestamp is already saved from the first fetch run.
+    if not is_continuing_fetch:
+        last_run["last_timestamp"] = newest_log_timestamp
+        
+    return total_logs[:limit], last_run
 
 # TODO: Add comments
 def fetch_audit_logs(last_run: dict) -> tuple[dict, list]:
+    # TODO: IMPORTANT!!!! notice that last_timestamp saved in the original time foramt, and also start_time and end_time.
+    # The only value that will convert before stored is the _time column key we add.
+    # this is important because when removing duplicates we need to compare times, check that all at the same format.
+    # !!!!! ONLT BEFIRE creting the filter for the API call we need to convert the times to the matching format.
     
     now_ms = int(time.time() * 1000)
     audit_logs = []
-    
+    limit = int(demisto.params().get("max_audit_logs_per_fetch", 50000))
     try:
-        audit_logs, last_run = get_audit_logs(last_run=last_run, now_ms=now_ms)
+        # Handle fetching remaining logs from previous fetch
+        if last_run.get("excess_logs_info"):
+            excess_logs, last_run = get_remaining_audit_logs(last_run)
+            audit_logs.extend(excess_logs)
+            limit -= len(excess_logs)
+
+        audit_logs, last_run = get_audit_logs(last_run=last_run, now_ms=now_ms, limit=limit)
+    
     except Exception as e:
-        return_error(f"Error in connection to the server. Please make sure you entered the URL correctly. Exception is {e!s}.")
-    
+        return_error(f"Failed to fetch audit logs. Exception: {e}") # TODO: check when to use return_error and when to raise exception
+
     audit_logs = add_time_field_to_logs(audit_logs)
-    demisto.debug(f"Fetched {len(audit_logs)} audit logs before deduplication.")
-    
-    # Remove duplicates based on previous fetch
-    audit_logs = remove_duplicate_logs(audit_logs, last_run)    # TODO: check the logic of this function when last_timestamp!=None
-    demisto.debug(f"Fetched {len(audit_logs)} audit logs after deduplication.")
     
     # Update last_run for next fetch
-    next_last_run = update_last_run_state(audit_logs, last_run, now_ms)
+    next_last_run = update_last_run_state(audit_logs, last_run, now_ms, is_first_fetch_on_current_time_range)
     
     return next_last_run, audit_logs
 
 def add_time_field_to_logs(logs: list) -> list:
-    """Add _time field to logs for XSOAR ingestion."""
     for log in logs:
         timestamp_str = log.get("timestamp")
         if timestamp_str:
@@ -265,101 +407,6 @@ def add_time_field_to_logs(logs: list) -> list:
             log["_time"] = None
     return logs
 
-
-def remove_duplicate_logs(logs: list, last_run: dict) -> list:
-    """
-    Remove duplicate logs based on previous fetch state.
-    
-    Args:
-        logs: List of audit logs from current fetch
-        last_run: Previous fetch state containing last_timestamp and processed_ids
-    
-    Returns:
-        List of deduplicated logs
-    """
-    if not logs:
-        return logs
-    
-    last_timestamp = last_run.get("last_timestamp")
-    processed_ids = set(last_run.get("processed_ids", []))
-    
-    if not last_timestamp:
-        return logs  # First run, no deduplication needed
-    
-    deduplicated_logs = []
-    
-    for log in logs:
-        # Create composite unique identifier since Monday logs don't have a single "id" field
-        composite_id = f"{log.get('timestamp')}_{log.get('user_id')}_{log.get('event')}_{log.get('account_id')}"
-        log_timestamp = log.get("timestamp")
-        
-        # Skip if we've already processed this event
-        if composite_id in processed_ids:
-            demisto.debug(f"Skipping duplicate log ID: {composite_id}")
-            continue
-            
-        # Skip events older than our last processed timestamp
-        if log_timestamp and log_timestamp < last_timestamp:
-            demisto.debug(f"Skipping older log: {log_timestamp} < {last_timestamp}")
-            continue
-            
-        deduplicated_logs.append(log)
-    
-    return deduplicated_logs
-
-
-def update_last_run_state(logs: list, current_last_run: dict, current_time_ms: int) -> dict:
-    """
-    Update last_run state for next fetch cycle.
-    
-    Args:
-        logs: List of processed logs from current fetch
-        current_last_run: Current last_run state
-        current_time_ms: Current time in milliseconds
-    
-    Returns:
-        Updated last_run dictionary
-    """
-    if not logs:
-        # No new logs, reset processed_ids since future events will have different timestamps
-        return {
-            "last_timestamp": timestamp_to_datestring(current_time_ms, date_format=DATE_FORMAT),
-            "processed_ids": []
-        }
-    
-    # TODO: check, I dont think is necessary, the logs are already sorted by timestamp when fetched from the API
-    # index 0: the newest log, index -1: the oldest log (we need to store the newest log timestamp to avoid fetching the same logs again)
-    # sorted_logs = sorted(logs, key=lambda x: x.get("timestamp", ""))
-    # latest_log = sorted_logs[-1]
-    latest_log = logs[0]
-    latest_timestamp = latest_log.get("timestamp")
-    
-    # Find all logs with the same timestamp as the latest (optimized for sorted logs)
-    same_timestamp_logs = []
-    for log in logs:
-        if log.get("timestamp") == latest_timestamp:
-            same_timestamp_logs.append(log)
-        else:
-            # Since logs are sorted by timestamp (newest first), we can stop when timestamp changes
-            break
-    
-    same_timestamp_ids = []
-    for log in same_timestamp_logs:
-        # TODO: change it to Hash function
-        # Create composite unique identifier since Monday logs don't have a single "id" field
-        # Combine timestamp + user_id + event + account_id for uniqueness
-        composite_id = f"{log.get('timestamp')}_{log.get('user_id')}_{log.get('event')}_{log.get('account_id')}"
-        same_timestamp_ids.append(composite_id)
-    
-    # Convert time to the correct format to use it as start_time params of Monday Audit Logs API
-    dt = datetime.strptime(latest_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
-    latest_timestamp = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-    
-    current_last_run["processed_ids"] = same_timestamp_ids
-    return {
-        "last_timestamp": latest_timestamp,
-        "processed_ids": same_timestamp_ids
-        }
 
 def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     activity_logs = []
