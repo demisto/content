@@ -1,5 +1,7 @@
 id: Create Ticket and Notify
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Create Ticket and Notify
 description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will post message to the Issue War Room notifying the missing integrations.
 starttaskid: "0"
@@ -24,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": -1330
+          "x": 377.5,
+          "y": -2220
         }
       }
     note: false
@@ -52,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 1860
+          "x": 377.5,
+          "y": 990
         }
       }
     note: false
@@ -106,8 +108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -300,
-          "y": 440
+          "x": -390,
+          "y": -470
         }
       }
     note: false
@@ -154,14 +156,14 @@ tasks:
       short_description:
         simple: Detected Issue - ${issue.name}
       ticket_type:
-        simple: incident
+        simple: alert
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -930,
-          "y": -320
+          "x": -760,
+          "y": -1270
         }
       }
     note: false
@@ -214,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 30
+          "x": 760,
+          "y": -960
         }
       }
     note: false
@@ -227,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 9a384d91-b621-40ae-871b-eb7bd7178ab7
+    taskid: cf8d4bd1-8d19-4bb7-ac70-897a9a1222ad
     type: title
     task:
-      id: 9a384d91-b621-40ae-871b-eb7bd7178ab7
+      id: cf8d4bd1-8d19-4bb7-ac70-897a9a1222ad
       version: -1
       name: Create or Update Issue ticket
       type: title
@@ -246,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": -820
+          "y": -1740
         }
       }
     note: false
@@ -276,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 180
+          "x": 380,
+          "y": -810
         }
       }
     note: false
@@ -336,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": -470
+          "x": 1137.5,
+          "y": -1420
         }
       }
     note: false
@@ -368,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 1070
+          "y": 130
         }
       }
     note: false
@@ -417,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 920
+          "x": 757.5,
+          "y": -20
         }
       }
     note: false
@@ -462,8 +464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 590
+          "x": -2.5,
+          "y": -310
         }
       }
     note: false
@@ -509,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 920
+          "x": 1530,
+          "y": -20
         }
       }
     note: false
@@ -557,8 +559,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -530,
-          "y": 590
+          "x": -762.5,
+          "y": -310
         }
       }
     note: false
@@ -604,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": -320
+          "x": 0,
+          "y": -1270
         }
       }
     note: false
@@ -651,8 +653,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 20
+          "x": 1517.5,
+          "y": -960
         }
       }
     note: false
@@ -720,8 +722,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -630,
-          "y": -470
+          "x": -380,
+          "y": -1420
         }
       }
     note: false
@@ -755,8 +757,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 480
+          "x": 750,
+          "y": -350
         }
       }
     note: false
@@ -786,8 +788,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
-          "y": -320
+          "x": 1517.5,
+          "y": -1270
         }
       }
     note: false
@@ -889,8 +891,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": -170
+          "x": 1140,
+          "y": -1110
         }
       }
     note: false
@@ -920,8 +922,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 590
+          "x": 1530,
+          "y": -320
         }
       }
     note: false
@@ -1044,8 +1046,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": 1230
+          "x": 377.5,
+          "y": 330
         }
       }
     note: false
@@ -1075,8 +1077,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -67.5,
-          "y": 1390
+          "x": 1137.5,
+          "y": 480
         }
       }
     note: false
@@ -1123,10 +1125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 0156530b-96e1-44ee-829a-a303093c7769
+    taskid: 119f7658-95cd-4aa9-b401-1bbf09e67c53
     type: condition
     task:
-      id: 0156530b-96e1-44ee-829a-a303093c7769
+      id: 119f7658-95cd-4aa9-b401-1bbf09e67c53
       version: -1
       name: Check ServiceNow and Jira Integration
       description: Check if ticketing input is set to Yes and the configured module
@@ -1134,12 +1136,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "71"
       Jira:
       - "32"
       "No":
       - "31"
+      Notify:
+      - "71"
       ServiceNow:
       - "46"
     separatecontext: false
@@ -1225,12 +1227,38 @@ tasks:
             value:
               simple: "No"
           ignorecase: true
+    - label: Notify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to create a ticket?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Jira V3
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow V2
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": -670
+          "x": 377.5,
+          "y": -1570
         }
       }
     note: false
@@ -1279,8 +1307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 380,
-          "y": -1130
+          "x": 377.5,
+          "y": -2050
         }
       }
     note: false
@@ -1314,8 +1342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": -970
+          "x": -2.5,
+          "y": -1900
         }
       }
     note: false
@@ -1327,10 +1355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 2bc4257c-8655-4eaf-82d0-58ac087d771d
+    taskid: 375ef0e6-5b90-4de8-865a-5a76ce57296a
     type: condition
     task:
-      id: 2bc4257c-8655-4eaf-82d0-58ac087d771d
+      id: 375ef0e6-5b90-4de8-865a-5a76ce57296a
       version: -1
       name: Check Microsoft Teams and Slack Integration
       description: Checks if message notification is set to Yes and the integrated module.
@@ -1338,12 +1366,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "49"
       Microsoft Teams:
       - "16"
       "No":
       - "34"
+      Notify:
+      - "49"
       Slack:
       - "64"
     separatecontext: false
@@ -1430,12 +1458,41 @@ tasks:
             value:
               simple: "No"
           ignorecase: true
+    - label: Notify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.Do you want to send a message notification?
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: SlackV3
+          ignorecase: true
+      - - operator: notInList
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Teams via Webhook
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 270
+          "x": 380,
+          "y": -620
         }
       }
     note: false
@@ -1494,8 +1551,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 440
+          "x": 1150,
+          "y": -470
         }
       }
     note: false
@@ -1548,8 +1605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 740
+          "x": 1150,
+          "y": -170
         }
       }
     note: false
@@ -1587,8 +1644,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 1700
+          "x": 757.5,
+          "y": 830
         }
       }
     note: false
@@ -1626,8 +1683,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": 1700
+          "x": 1517.5,
+          "y": 830
         }
       }
     note: false
@@ -1680,8 +1737,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -67.5,
-          "y": 1550
+          "x": 1137.5,
+          "y": 680
         }
       }
     note: false
@@ -1693,10 +1750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: c3e41e88-2f87-4c48-8501-b64da9a10e7c
+    taskid: 89fd36a8-3c94-4352-9e64-a6d832fae875
     type: regular
     task:
-      id: c3e41e88-2f87-4c48-8501-b64da9a10e7c
+      id: 89fd36a8-3c94-4352-9e64-a6d832fae875
       version: -1
       name: Notify ServiceNow and Jira status to War Room
       description: Prints text to war room (Markdown supported)
@@ -1715,8 +1772,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 130,
-          "y": -430
+          "x": 730,
+          "y": -1280
         }
       }
     note: false
@@ -1726,38 +1783,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "16_38_Update": 0.65,
-      "16_42_Create": 0.66,
-      "32_51_No": 0.55,
-      "32_52_Yes": 0.48,
+      "16_38_Update": 0.46,
+      "16_42_Create": 0.46,
+      "32_51_No": 0.36,
+      "32_52_Yes": 0.59,
       "46_21_Create": 0.42,
       "46_31_#default#": 0.1,
       "46_44_Update": 0.45,
-      "52_24_Create": 0.61,
-      "52_31_#default#": 0.53,
-      "52_45_Update": 0.51,
+      "52_24_Create": 0.53,
+      "52_31_#default#": 0.11,
+      "52_45_Update": 0.4,
       "57_15_No": 0.34,
-      "60_31_No": 0.27,
-      "60_32_Jira": 0.45,
+      "57_58_Input": 0.46,
+      "57_69_Yes": 0.5,
+      "60_31_No": 0.28,
+      "60_32_Jira": 0.38,
+      "60_46_ServiceNow": 0.39,
+      "60_71_Notify": 0.28,
       "61_30_yes": 0.49,
+      "61_62_No": 0.34,
+      "63_16_Microsoft Teams": 0.39,
       "63_34_No": 0.23,
-      "63_49_#default#": 0.48,
+      "63_49_Notify": 0.45,
+      "63_64_Slack": 0.32,
       "64_56_No": 0.5,
       "64_65_Yes": 0.56,
-      "65_36_Create": 0.59,
+      "65_36_Create": 0.48,
       "65_41_Update": 0.52,
-      "69_67_Create": 0.58,
-      "69_68_Update": 0.54
+      "69_67_Create": 0.42,
+      "69_68_Update": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 3250,
-        "width": 2500,
-        "x": -930,
-        "y": -1330
+        "height": 3270,
+        "width": 2672.5,
+        "x": -762.5,
+        "y": -2220
       }
     }
   }
