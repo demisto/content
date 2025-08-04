@@ -281,7 +281,6 @@ def handle_raw_response_results(
     Returns:
         CommandResults | None: If verbose=true, returns the CommandResults for this executed command.
     """
-    entry_human_readable = []
     endpoint_id = endpoint_args.get("endpoint_id", "")
     if is_error(raw_response):
         demisto.debug(f"Got an error from raw_response with {endpoint_args}")
@@ -301,6 +300,7 @@ def handle_raw_response_results(
             message=f"{endpoint_id} was isolated successfully with command {command.name}.",
             endpoint_output=endpoint_output,
         )
+    # entry_human_readable = []
     # if verbose:
     #     for entry in raw_response:
     #         entry_human_readable.append(entry.get("HumanReadable") or "")
@@ -345,7 +345,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
         verbose (bool): Flag to control verbosity of debugging information.
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
-    command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
+    command: Command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
     if not command:
         # Probably won't happen because get-endpoint-data is mapping the right brands
         demisto.debug(f"Did not find a matching brand to run on {endpoint_args}.")
