@@ -316,7 +316,7 @@ def handle_raw_response_results(
     return None
 
 
-def find_command_by_brand(commands: list[Command], brand: str) -> Command | None:
+def find_command_by_brand(commands: list[Command], brand: str) -> Command:
     """
     Finds and returns the command from the list that matches the specified brand.
 
@@ -325,12 +325,11 @@ def find_command_by_brand(commands: list[Command], brand: str) -> Command | None
         brand (str): The brand name to match against the command's brand.
 
     Returns:
-        Command | None: The matching Command object if found, otherwise None.
+        Command: The matching Command object.
     """
     for command in commands:
         if command.brand == brand:
             return command
-    return None
 
 
 def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, results: list, verbose) -> None:
