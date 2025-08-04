@@ -9,7 +9,6 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
-from json import JSONDecodeError
 from re import Match
 
 # Disable insecure warnings
@@ -3679,7 +3678,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         try:
             custom_filter = json.loads(custom_filter_str)
 
-        except JSONDecodeError:
+        except json.JSONDecodeError:
             # Trying to fix malformed array values in the agent_id custom_filter argument
             pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
             fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
