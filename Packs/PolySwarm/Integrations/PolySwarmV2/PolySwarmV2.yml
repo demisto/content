@@ -1,4 +1,6 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
 commonfields:
   id: PolySwarmV2
   version: -1
@@ -7,16 +9,19 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: https://api.polyswarm.network/v3/
-  display: The base URL to connect to
+  section: Connect
+- display: The base URL to connect to
   name: base_url
+  defaultvalue: https://api.polyswarm.network/v3/
   required: true
   type: 0
-- defaultvalue: default
-  display: PolySwarm v2 Community
+  section: Connect
+- display: PolySwarm v2 Community
   name: PolySwarm_v2
+  defaultvalue: default
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -31,6 +36,8 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -41,12 +48,16 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Connect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   additionalinfo: the segment of PolySwarm's marketplace to query on.
   required: false
+  section: Connect
+  advanced: true
 description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
 display: PolySwarm
 name: PolySwarmV2
