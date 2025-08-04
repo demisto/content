@@ -42,7 +42,7 @@ class Command:
         output_mapping: dict,
         get_endpoint_output: bool = False,
         not_found_checker: str = "No entries.",
-        hard_coded_args: dict = None,
+        additional_args: dict = None,
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
         post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
     ):
@@ -57,7 +57,7 @@ class Command:
             output_mapping (dict): A mapping of command output keys to endpoint keys.
             get_endpoint_output (bool, optional): Flag to indicate if the command retrieves endpoint output. Defaults to False.
             not_found_checker (str, optional): A string to check if no entries are found. Defaults to "No entries.".
-            hard_coded_args (dict, optional): Additional arguments to add for the command, arguments with hard-coded values.
+            additional_args (dict, optional): Additional arguments to add for the command, arguments with hard-coded values.
             prepare_args_mapping (Callable[[dict[str, str]], dict[str, str]], optional):
                 A function to prepare arguments mapping. Defaults to None.
             post_processing (Callable, optional): A function for post-processing command results. Defaults to None.
@@ -69,12 +69,15 @@ class Command:
         self.output_mapping = output_mapping
         self.get_endpoint_output = get_endpoint_output
         self.not_found_checker = not_found_checker
-        self.hard_coded_args = hard_coded_args
+        self.additional_args = additional_args
         self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
 
     def __repr__(self):
         return f"{{ name: {self.name}, brand: {self.brand} }}"
+
+    def create_additional_args(self, args):
+        self.additional_args = args
 
 
 class ModuleManager:
@@ -522,7 +525,7 @@ def initialize_commands(
                 "Status": "Status",
             },
             args_mapping={"id": "endpoint_id", "ip": "endpoint_ip"},
-            hard_coded_args={"using-brand": "Microsoft Defender Advanced Threat Protection"},
+            additional_args={"using-brand": "Microsoft Defender Advanced Threat Protection"},
         ),
     ]
 
@@ -727,8 +730,8 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
         if command_arg_value := endpoint_args.get(endpoint_arg_key):
             command_args[command_arg_key] = command_arg_value
 
-    if command.hard_coded_args:  # adding hard-coded arguments
-        command_args.update(command.hard_coded_args)
+    if command.additional_args:  # adding additional arguments
+        command_args.update(command.additional_args)
 
     return command_args
 
@@ -1007,6 +1010,15 @@ def generic_endpint_post(
     return endpoints_to_return
 
 
+def create_using_brand_argument_to_generic_command(brands_to_run, generic_command):
+    endpoint_command_avaliable_brands = isCommandAvailable(cmd="endpoint")
+    brands_to_run_for_generic_command =
+    if not brands_to_run:
+
+    else:
+
+    args = {"using-brands":}
+    generic_command.create_additional_args(args)
 """ MAIN FUNCTION """
 
 
@@ -1030,6 +1042,9 @@ def main():  # pragma: no cover
         command_results_list: list[CommandResults] = []
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
+        if ("Generic Command" in brands_to_run) or (not brands_to_run):
+            generic_command = get_generic_command(single_args_commands)
+            create_using_brand_argument_to_generic_command(brands_to_run, generic_command)
         zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
