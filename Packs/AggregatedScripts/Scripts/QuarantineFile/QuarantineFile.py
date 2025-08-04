@@ -3,8 +3,8 @@ from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 from dataclasses import dataclass, asdict
 from enum import StrEnum
 from abc import ABC, abstractmethod
+from collections import defaultdict
 
-import demistomock as demisto
 from CommonServerPython import *
 
 """ CONSTANTS """
@@ -141,7 +141,6 @@ class Command:
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
         raw_response = demisto.executeCommand(self.name, self.args)
         demisto.debug(f"[Command] Received response for '{self.name}'.")
-        demisto.debug(f"[Command] Raw response: {raw_response}")
 
         verbose_results = []
         for result in raw_response:
@@ -155,7 +154,7 @@ class Command:
         return raw_response, verbose_results
 
     @staticmethod
-    def parse_entry_context(raw_response: list) -> list[dict]:
+    def get_entry_contexts(raw_response: list) -> list[dict]:
         """
         Safely extracts all EntryContext objects from a raw command response.
 
@@ -168,52 +167,45 @@ class Command:
         Returns:
             list[dict]: A list containing all non-empty entry context objects from the response.
         """
-        demisto.debug("[Command] Parsing entry context from raw response.")
-        entry_context: list[dict] = []
+        entry_contexts: list[dict] = []
         for result in raw_response:
             if is_error(result):
-                demisto.debug(f"[Command] Skipping error entry: {get_error(result)}")
                 continue
 
             # The EntryContext can be None or an empty dict/list. We only want populated ones.
             if entry_context_item := result.get("EntryContext"):
-                if isinstance(entry_context_item, list):
-                    entry_context.extend(entry_context_item)
-                else:
-                    entry_context.append(entry_context_item)
-        demisto.debug(f"[Command] Parsed entry context successfully. Found {len(entry_context)} items.")
-        demisto.debug(f"[Command] Entry context: {entry_context}")
-        return entry_context
+                if not entry_context_item:
+                    continue
+
+                entry_contexts.append(entry_context_item)
+
+        return entry_contexts
 
     @staticmethod
-    def get_first_filled_entry_context_list(raw_response: list) -> list:
+    def get_entry_context_object_containing_key(raw_response: list, key: str) -> Any:
         """
-        Parses the entry context and returns the first non-empty list found.
+        Get the first EntryContext object containing a specific key.
 
-        This is a helper for dealing with commands where the primary result is a list
-        nested within the context, and the exact key is unknown or dynamic.
+        It iterates through all entries in a command's raw response and collects
+        any populated EntryContext objects into a single list.
 
         Args:
             raw_response (list): The raw list of results from a command execution.
+            key (str): The key to look for in the EntryContext.
 
         Returns:
-            list: The first list found within the entry context, or an empty list if none is found.
+            dict/list/None: The object containing the key, or None if not found.
         """
-        entry_context = Command.parse_entry_context(raw_response)
 
-        outputs = []
-        for context_item in entry_context:
-            if not isinstance(context_item, dict):
-                continue
-            for value in context_item.values():
-                if isinstance(value, list):
-                    outputs = value
-                    break
-            if outputs:
-                break
 
-        return outputs
+        entry_contexts = Command.get_entry_contexts(raw_response)
 
+        for entry_context in entry_contexts:
+            for entry_context_key, entry_context_value in entry_context:
+                if key in entry_context_key:
+                    return entry_context_value
+
+        return None
 
 class EndpointBrandMapper:
     """
@@ -256,14 +248,16 @@ class EndpointBrandMapper:
             DemistoException: If no endpoint IDs are provided, no data can be retrieved,
                               or no online endpoints are found.
         """
+
         demisto.debug("[EndpointBrandMapper] Starting endpoint grouping process.")
+
         if not self.endpoint_ids_to_map:
-            demisto.debug("[EndpointBrandMapper] No endpoint IDs provided. Skipping.")
+            demisto.debug("[EndpointBrandMapper] No endpoint IDs provided, will not quarantine.")
             raise DemistoException("No endpoint IDs provided. Please provide at least one endpoint ID.")
 
         endpoint_data = self._fetch_endpoint_data()
         if not endpoint_data:
-            demisto.debug("[EndpointBrandMapper] No endpoint data found. Skipping.")
+            demisto.debug("[EndpointBrandMapper] No endpoint data found, will not quarantine.")
             raise DemistoException("Could not retrieve endpoint data.")
 
         online_endpoints = self._filter_endpoint_data(endpoint_data)
@@ -271,16 +265,12 @@ class EndpointBrandMapper:
             demisto.debug("[EndpointBrandMapper] No online endpoints found. Not running quarantine.")
             return {}
 
-        grouped_endpoints: dict[str, list] = {}
+        grouped_endpoints: dict[str, list] = defaultdict(list)
         for endpoint_id, brand in online_endpoints.items():
-            if brand not in grouped_endpoints:
-                grouped_endpoints[brand] = []
             grouped_endpoints[brand].append(endpoint_id)
 
-        demisto.debug(f"[EndpointBrandMapper] Discovered endpoint groups: {grouped_endpoints}")
-
         if not grouped_endpoints:
-            demisto.error("[Orchestrator] No endpoints to process. Finishing.")
+            demisto.error("[Orchestrator] No endpoints found to quarantine.")
             raise DemistoException("Error parsing endpoints. Please check the logs for more information.")
 
         return grouped_endpoints
@@ -312,7 +302,7 @@ class EndpointBrandMapper:
         demisto.debug(f"[EndpointBrandMapper] Received RAW response from get-endpoint-data command: {raw_response}")
 
         # Always parse from EntryContext, which is more reliable.
-        entry_contexts = Command.parse_entry_context(raw_response)
+        entry_contexts = Command.get_entry_contexts(raw_response)
 
         # Explicitly find the data list by looking for the correct key prefix.
         endpoint_data = []
@@ -357,8 +347,7 @@ class EndpointBrandMapper:
 
         # First pass: find all successful, online endpoints. These take precedence.
         for result in endpoint_data:
-            endpoint_id = result.get("ID")
-            if not endpoint_id or endpoint_id in online_endpoints:
+            if not (endpoint_id := result.get("ID")) or endpoint_id in online_endpoints:
                 continue
 
             if result.get("Message") == "Command successful" and result.get("Status") == "Online":
@@ -367,8 +356,7 @@ class EndpointBrandMapper:
 
         # Second pass: Create failure results for any endpoint that was not found or offline.
         for result in endpoint_data:
-            endpoint_id = result.get("ID")
-            if not endpoint_id or endpoint_id in all_found_ids:
+            if not (endpoint_id := result.get("ID")) or endpoint_id in all_found_ids:
                 continue
 
             all_found_ids.add(endpoint_id)
@@ -462,6 +450,8 @@ class XDRHandler(BrandHandler):
 
     CORE_COMMAND_PREFIX = "core"
     XDR_COMMAND_PREFIX = "xdr"
+    QUARANTINE_STATUS_COMMAND = "get-quarantine-status"
+    QUARANTINE_STATUS_SUCCESS = "COMPLETED_SUCCESSFULLY"
 
     def __init__(self, brand: str, orchestrator):
         """
@@ -505,7 +495,7 @@ class XDRHandler(BrandHandler):
         """
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
         status_cmd = Command(
-            name=f"{self.command_prefix}-get-quarantine-status",
+            name=f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}",
             args={"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path},
             brand=self.brand,
         )
@@ -513,7 +503,7 @@ class XDRHandler(BrandHandler):
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
-        status_context = Command.parse_entry_context(raw_response)
+        status_context = Command.get_entry_contexts(raw_response)
         quarantine_status = self._extract_quarantine_status_from_context(status_context).get("status")
 
         return quarantine_status is True
@@ -552,9 +542,9 @@ class XDRHandler(BrandHandler):
         endpoint_id = endpoint_result.get("endpoint_id")
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
-        if endpoint_result.get("status") == "COMPLETED_SUCCESSFULLY":
+        if endpoint_result.get("status") == XDRHandler.QUARANTINE_STATUS_SUCCESS:
             status_cmd = Command(
-                name=f"{self.command_prefix}-get-quarantine-status",
+                name=f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}",
                 args={
                     "endpoint_id": endpoint_id,
                     "file_hash": job_data.get("finalize_args", {}).get("file_hash"),
@@ -566,7 +556,7 @@ class XDRHandler(BrandHandler):
             if self.orchestrator.verbose:
                 self.orchestrator.verbose_results.extend(verbose_res)
 
-            status_context = Command.parse_entry_context(raw_response)
+            status_context = Command.get_entry_contexts(raw_response)
             quarantine_status_data = self._extract_quarantine_status_from_context(status_context)
             quarantine_status = quarantine_status_data.get("status")
             message = (
@@ -709,18 +699,19 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Finalizing job.")
         final_results = []
 
-        outputs = Command.get_first_filled_entry_context_list(last_poll_response)
-        demisto.debug(f"[{self.brand} Handler] Finalizing {len(outputs)} endpoint results from job.")
-        for res in outputs:
+        quarantine_endpoints_final_results : list = Command.get_entry_context_object_containing_key(last_poll_response,"GetActionStatus")
+
+        demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
+        for quarantine_endpoint_result in quarantine_endpoints_final_results:
             try:
-                final_results.append(self._process_final_endpoint_status(res, job))
+                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result, job))
             except Exception as e:
                 demisto.error(
-                    f"[{self.brand} Handler] Failed to get status of quarantine for endpoint {res.get('endpoint_id')}: {e}"
+                    f"[{self.brand} Handler] Failed to get status of quarantine for endpoint {quarantine_endpoint_result.get('endpoint_id')}: {e}"
                 )
                 final_results.append(
                     QuarantineResult(
-                        endpoint_id=res.get("endpoint_id", "Unknown"),
+                        endpoint_id=quarantine_endpoint_result.get("endpoint_id", "Unknown"),
                         status=QuarantineResult.Statuses.FAILED,
                         message=QuarantineResult.Messages.GENERAL_FAILURE,
                         brand=self.brand,
