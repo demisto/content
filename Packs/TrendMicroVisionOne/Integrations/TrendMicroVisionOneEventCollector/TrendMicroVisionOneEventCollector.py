@@ -180,9 +180,11 @@ class Client(BaseClient):
         is_new_query: bool = False
         if next_link:
             try:
+                demisto.debug(f"Sending pagination request using {next_link=}")
                 response = self.http_request(method=method, headers=headers, next_link=next_link)
             except DemistoException as e:
                 if "request token expired" in str(e).casefold():
+                    demisto.debug(f"Generating a new query after getting error: {str(e)}")
                     response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
                     is_new_query = True
                 else:
@@ -403,6 +405,7 @@ def get_datetime_range(
     Returns:
         Tuple[str, str]: start time and end time
     """
+    demisto.info(f"Getting start and end time using {last_run_time=} and {first_fetch=} for {log_type_time_field_name=}")
     now = get_current_time()
 
     if last_run_time:
@@ -437,7 +440,7 @@ def get_datetime_range(
         last_run_time_datetime.strftime(date_format),  # type: ignore[union-attr]
         end_time_datetime.strftime(date_format),  # type: ignore[union-attr]
     )
-    demisto.info(f"{start_time=} and {end_time=} for {log_type_time_field_name=}")
+    demisto.info(f"Got {start_time=} and {end_time=} for {log_type_time_field_name=}")
     return start_time, end_time
 
 
@@ -711,8 +714,12 @@ def get_observed_attack_techniques_logs(
         next_link=last_run_next_link,
         limit=limit,
     )
-
+    demisto.debug(
+        f"Got {len(observed_attack_techniques_logs)} {observed_attack_technique_log_type} logs before deduplication. "
+        f"{is_new_query=}, {new_next_link=}"
+    )
     if last_run_next_link and not is_new_query:
+        demisto.debug(f"Running deduplication in pagination mode on {observed_attack_technique_log_type} logs")
         observed_attack_techniques_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
@@ -727,6 +734,7 @@ def get_observed_attack_techniques_logs(
             pagination_log_ids.extend(subsequent_pagination_log_ids)
 
     else:
+        demisto.debug(f"Running deduplication in new query mode on {observed_attack_technique_log_type} logs")
         observed_attack_techniques_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
@@ -735,6 +743,7 @@ def get_observed_attack_techniques_logs(
             date_format=date_format,
         )
 
+    # Last run start time needs to be updated all the time to allow for new queries if pagination token is expired
     last_run_start_time = latest_log_time or (
         dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
     ).strftime(DATE_FORMAT)  # type: ignore
@@ -857,8 +866,12 @@ def get_search_detection_logs(
         next_link=last_run_next_link,
         limit=limit,
     )
-
+    demisto.debug(
+        f"Got {len(search_detection_logs)} {search_detections_log_type} logs before deduplication. "
+        f"{is_new_query=}, {new_next_link=}"
+    )
     if last_run_next_link and not is_new_query:
+        demisto.debug(f"Running deduplication in pagination mode on {search_detections_log_type} logs")
         search_detection_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
@@ -872,6 +885,7 @@ def get_search_detection_logs(
             pagination_log_ids.extend(subsequent_pagination_log_ids)
 
     else:
+        demisto.debug(f"Running deduplication in new query mode on {search_detections_log_type} logs")
         search_detection_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
@@ -880,6 +894,7 @@ def get_search_detection_logs(
             date_format=date_format,
         )
 
+    # Last run start time needs to be updated all the time to allow for new queries if pagination token is expired
     last_run_start_time = latest_log_time or (
         dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
     ).strftime(DATE_FORMAT)  # type: ignore
