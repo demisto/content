@@ -654,11 +654,11 @@ VALID_TIMESTAMP_TEST_CASES = [
 
 
 @pytest.mark.parametrize("valid_timestamp", VALID_TIMESTAMP_TEST_CASES)
-def test_is_valid_timestamp_success(mocker, valid_timestamp):
+def test_response_validation_success(mocker, valid_timestamp):
     """
-    Tests `is_valid_timestamp` with various valid timestamp formats to ensure correct handling.
+    Tests `response_validation` with various valid timestamp formats to ensure correct handling.
 
-    This parametrized test verifies that the `is_valid_timestamp` function correctly
+    This parametrized test verifies that the `response_validation` function correctly
     processes a variety of well-formed timestamp strings returned by the API and
     returns them unchanged without raising any exceptions.
 
@@ -671,7 +671,7 @@ def test_is_valid_timestamp_success(mocker, valid_timestamp):
         - The function returns the original timestamp string exactly as received.
         - No exceptions are raised during parsing or validation.
     """
-    from SAPCloudForCustomerC4C import is_valid_timestamp
+    from SAPCloudForCustomerC4C import response_validation
 
     mock_response = {"d": {"results": [{"CTIMESTAMP": valid_timestamp}]}}
 
@@ -679,7 +679,7 @@ def test_is_valid_timestamp_success(mocker, valid_timestamp):
     mock_client_instance = mock_client()
     report_id = "general_reportID"
 
-    result = is_valid_timestamp(mock_client_instance, report_id, {"$top": 1})
+    result = response_validation(mock_client_instance, report_id)
     assert result == valid_timestamp
 
 
@@ -698,13 +698,19 @@ def test_is_valid_timestamp_success(mocker, valid_timestamp):
             "SAP timezone configuration is not supported",
             "Parsing Error: Could not parse CTIMESTAMP 'INVALID_TIMESTAMP'.",
         ),
+        # No events in both primary and fallback time ranges
+        (
+            {"d": {"results": []}},
+            "No events were found in the specified time range from yesterday",
+            None,
+        ),
     ],
 )
-def test_is_valid_timestamp_failure(mocker, mock_response, expected_error, expected_debug_msg):
+def test_response_validation_failure(mocker, mock_response, expected_error, expected_debug_msg):
     """
-    Tests `is_valid_timestamp` for various failure scenarios where the timestamp is invalid or response is malformed.
+    Tests `response_validation` for various failure scenarios where the timestamp is invalid or response is malformed.
 
-    This parametrized test verifies that `is_valid_timestamp` raises a `DemistoException` with the correct error message
+    This parametrized test verifies that `response_validation` raises a `DemistoException` with the correct error message
     when:
         - The API response is empty.
         - The API response structure is missing expected keys ("d" or "results").
@@ -712,14 +718,14 @@ def test_is_valid_timestamp_failure(mocker, mock_response, expected_error, expec
 
     When:
         - `get_events_api_call` is mocked to return a response representing each failure scenario.
-        - `is_valid_timestamp` is called with the mocked response.
+        - `response_validation` is called with the mocked response.
 
     Then:
         Verify that:
         - A `DemistoException` is raised with the expected error message.
         - If applicable, a debug message is logged indicating the parsing failure.
     """
-    from SAPCloudForCustomerC4C import is_valid_timestamp
+    from SAPCloudForCustomerC4C import response_validation
 
     mock_client_instance = mock_client()
     report_id = "general_reportID"
@@ -731,9 +737,83 @@ def test_is_valid_timestamp_failure(mocker, mock_response, expected_error, expec
         mock_debug = None
 
     with pytest.raises(DemistoException) as exc_info:
-        is_valid_timestamp(mock_client_instance, report_id, params={"$top": 1})
+        response_validation(mock_client_instance, report_id)
 
     assert expected_error in str(exc_info.value)
 
     if mock_debug:
         mock_debug.assert_called_with(expected_debug_msg)
+
+
+def test_fetch_timestamp_success(mocker):
+    """
+    Tests `fetch_timestamp` for successful retrieval of a timestamp from the SAP API.
+
+    This test verifies that `fetch_timestamp` correctly returns the 'CTIMESTAMP' string
+    from the first event in the API response when a valid response with event data is returned.
+
+    When:
+        - `get_events_api_call` is mocked to return a valid response containing a timestamp.
+        - `fetch_timestamp` is called with mock client, report ID, and start/end datetime strings.
+
+    Then:
+        Verify that:
+        - The function returns the exact 'CTIMESTAMP' string from the first event.
+    """
+    from SAPCloudForCustomerC4C import fetch_timestamp
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+    timestamp_value = "03.08.2025 10:08:00 UTC-2"
+
+    mock_response = {"d": {"results": [{"CTIMESTAMP": timestamp_value}]}}
+
+    mocker.patch("SAPCloudForCustomerC4C.get_events_api_call", return_value=mock_response)
+
+    start = "03.08.2025 10:08:14 UTC-2"
+    end = "03.08.2025 10:07:14 UTC-2"
+
+    result = fetch_timestamp(mock_client_instance, report_id, start, end)
+    assert result == timestamp_value
+
+
+@pytest.mark.parametrize(
+    "bad_response, expected_error",
+    [
+        (None, f"Empty response received from {SAP_CLOUD} API."),  # completely empty response
+        ({"wrong_key": {}}, f"Unexpected response structure from {SAP_CLOUD} API."),  # missing 'd'
+        ({"d": {"wrong_key": []}}, f"Unexpected response structure from {SAP_CLOUD} API."),  # missing 'results'
+    ],
+)
+def test_fetch_timestamp_unexpected_structure_raises(mocker, bad_response, expected_error):
+    """
+    Tests `fetch_timestamp` for scenarios where the API response structure is invalid or missing keys.
+
+    This parametrized test verifies that `fetch_timestamp` raises a `DemistoException` with the
+    appropriate error message when the API response:
+        - Is None or empty.
+        - Does not contain the expected 'd' key.
+        - Does not contain the expected 'results' key inside 'd'.
+
+    When:
+        - `get_events_api_call` is mocked to return each malformed or empty response.
+        - `fetch_timestamp` is called with the mocked response.
+
+    Then:
+        Verify that:
+        - A `DemistoException` is raised indicating the unexpected response structure
+          or empty response, depending on the case.
+    """
+    from SAPCloudForCustomerC4C import fetch_timestamp
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+    mocker.patch("SAPCloudForCustomerC4C.get_events_api_call", return_value=bad_response)
+
+    start = "03.08.2025 10:08:14 UTC-2"
+    end = "03.08.2025 10:07:14 UTC-2"
+
+    with pytest.raises(DemistoException) as exc_info:
+        fetch_timestamp(mock_client_instance, report_id, start, end)
+
+    assert expected_error in str(exc_info.value)

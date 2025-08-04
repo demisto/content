@@ -1,6 +1,7 @@
 ## SAP Cloud for Customer C4C Integration Help
 
-SAP Cloud for Customer (C4C) is a comprehensive CRM solution from SAP. This integration allows you to automatically fetch audit events from your C4C instance via its OData Analytics API, enhancing your security monitoring and compliance capabilities.
+SAP Cloud for Customer (C4C) is a comprehensive CRM solution from SAP.
+This integration collects audit events via SAP's OData Analytics API.
 
 ### Timezone Configuration
 
@@ -15,6 +16,8 @@ To configure the timezone for your technical user in SAP C4C, follow these steps
 5. Under the **General** tab, locate the **Time Zone** field.
 6. Set the time zone to a UTC format (e.g., "UTC", "UTC+01:00", "UTC-05:00").
 7. Save your changes.
+
+For a detailed explanation and visual guide, please refer to the following SAP Community blog post: [Technical User Date Time Format Settings Change in C4C](https://community.sap.com/t5/crm-and-cx-blog-posts-by-members/technical-user-date-time-format-settings-change-in-c4c/ba-p/13581365).
 
 ### Configuration Parameters
 

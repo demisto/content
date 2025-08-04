@@ -1,6 +1,6 @@
 ## What does this pack do?
 
-The SAP Cloud for Customer (C4C) integration facilitates the collection of audit events directly from your SAP C4C instance. It enables security teams to monitor user activities and system changes by fetching relevant event data for analysis and incident response.
+ SAP Cloud for Customer (C4C) is a cloud-based Customer Relationship Management (CRM) solution from SAP that helps businesses manage customer interactions, sales, and marketing processes. This pack fetches, filters, and paginates audit events from your SAP C4C instance for security monitoring and analysis.
 
 #### This includes
 

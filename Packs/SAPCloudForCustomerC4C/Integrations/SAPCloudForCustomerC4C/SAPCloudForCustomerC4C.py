@@ -140,43 +140,89 @@ def get_events_api_call(client: Client, report_id: str, params: dict):
     return res
 
 
-def is_valid_timestamp(client: Client, report_id: str, params: dict):  # todo
+def fetch_timestamp(client: Client, report_id: str, start: str, end: str) -> Optional[str]:
     """
-    Fetches a timestamp from an SAP Cloud report and validates that it can be parsed.
+    Queries the SAP API to retrieve the first available 'CTIMESTAMP' within a specified time range.
 
-    This function retrieves the 'CTIMESTAMP' field from the first event result of the API call
-    and checks if it can be successfully parsed using `dateparser`. If parsing fails, it raises
-    a `DemistoException` indicating a likely issue with the timestamp format or timezone configuration.
+    This helper function constructs a filter query using the provided start and end datetime
+    boundaries to fetch events from the SAP Cloud report via the API. It returns the timestamp
+    of the earliest event found within that interval or None if no events are available.
+
+    Args:
+        client (Client): The client object used to make API requests.
+        report_id (str): The identifier of the SAP report to query.
+        start (str): The start datetime for filtering events.
+        end (str): The end datetime for filtering events.
+
+    Returns:
+        Optional[str]: The 'CTIMESTAMP' string from the first event within the time range,
+                       or None if no events are found.
+
+    Raises:
+        DemistoException: If the API response is empty or has an unexpected structure.
+    """
+    filter_query = f"CTIMESTAMP ge '{start}' and CTIMESTAMP le '{end}'"
+    params = {"$inlinecount": "allpages", "$filter": filter_query, "$top": 1, "$format": "json"}
+
+    res = get_events_api_call(client, report_id, params)
+    if not res:
+        raise DemistoException(f"Empty response received from {SAP_CLOUD} API.")
+    if not res or "d" not in res or "results" not in res["d"]:
+        raise DemistoException(f"Unexpected response structure from {SAP_CLOUD} API. Response: {res}")
+
+    results = res["d"]["results"]
+    return results[0]["CTIMESTAMP"] if results else None
+
+
+def response_validation(client: Client, report_id: str) -> str:
+    """
+    Validates the structure and timestamp of a response from an SAP Cloud report.
+
+    This function queries the SAP API for events within a specified time range
+    (yesterday minus 1 minute), and verifies that the response contains the expected
+    structure and a valid 'CTIMESTAMP' field. If no events are found, it retries with
+    a broader 30-minute window. The retrieved timestamp is then validated using
+    `dateparser` to ensure it can be correctly parsed.
 
     Args:
         client (Client): The client object used to make API requests.
         report_id (str): The ID of the report to query.
-        params (dict): Query parameters used in the API request.
 
     Returns:
-        str: The original timestamp string if parsing succeeds.
+        str: The original 'CTIMESTAMP' string if the response structure is valid and parsing succeeds.
 
     Raises:
-        DemistoException: If the timestamp cannot be parsed, likely due to an unsupported SAP
-                          timezone format or invalid configuration.
+        DemistoException: If the response structure is invalid, no events are returned,
+                          or the timestamp cannot be parsed.
     """
-    res = get_events_api_call(client, report_id, params)
-    if not res:
-        raise DemistoException(f"Empty response received from {SAP_CLOUD} API.")
+    now = get_current_utc_time()
+    end_date = (now - timedelta(days=1)).strftime(STRFTIME_FORMAT)
+    start_date = (now - timedelta(days=1, minutes=1)).strftime(STRFTIME_FORMAT)
 
-    if "d" not in res or "results" not in res["d"]:
-        raise DemistoException(f"Unexpected response structure from {SAP_CLOUD} API.")
+    timestamp_str = fetch_timestamp(client, report_id, start_date, end_date)
 
-    timestamp_str = res["d"]["results"][0]["CTIMESTAMP"]
+    # Try larger time range if nothing returned
+    if not timestamp_str:
+        start_date_fallback = (now - timedelta(days=1, minutes=30)).strftime(STRFTIME_FORMAT)
+        timestamp_str = fetch_timestamp(client, report_id, start_date_fallback, end_date)
 
+        if not timestamp_str:
+            raise DemistoException(
+                "No events were found in the specified time range from yesterday. "
+                "Unable to retrieve a sample timestamp for validation. "
+                "Please ensure that relevant events exist for the report and that the system time configuration is correct."
+            )
+
+    # Validate timestamp
     if not dateparser.parse(timestamp_str):
         demisto.debug(f"Parsing Error: Could not parse CTIMESTAMP '{timestamp_str}'.")
-        raise DemistoException(f"""SAP timezone configuration is not supported. The current timestamp is: {timestamp_str},
-                               while the integration supports UTC time formats (for example: 'UTC -2', 'UTC +3').
-                               For more information, see the Timezone configuration section in the integration documentation file.
-                               """)
-    else:
-        return timestamp_str
+        raise DemistoException(
+            f"""SAP timezone configuration is not supported. The current timestamp is: {timestamp_str},
+            while the integration supports UTC time formats (for example: 'UTC -2', 'UTC +3').
+            For more information, see the Timezone configuration section in the integration documentation file."""
+        )
+
+    return timestamp_str
 
 
 def test_module(client: Client, report_id: str) -> str:
@@ -191,14 +237,7 @@ def test_module(client: Client, report_id: str) -> str:
     if not report_id:
         raise DemistoException("Report ID is a mandatory parameter, please provide it.")
 
-    # Query parameters for the API request:
-    # $inlinecount: Request to include a count of all matching records.
-    # $filter: Filter condition to retrieve records where CUSER equals 'ASAHAYA'.
-    # $top: Limit the number of results returned to 2.
-    # $format: Request JSON format for the response.
-    # $select: Only retrieve the 'CTIMESTAMP' field from the results.
-    params = {"$inlinecount": "allpages", "$filter": "CUSER eq 'ASAHAYA'", "$top": 2, "$format": "json", "$select": "CTIMESTAMP"}
-    is_valid_timestamp(client, report_id, params)
+    response_validation(client, report_id)
     return "ok"
 
 
@@ -314,7 +353,7 @@ def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List
             - CommandResults: Contains a markdown table of events for display and the raw events data.
 
     Raises:
-        DemistoException: If the 'start_date' argument is missing or if timestamp validation fails (via `is_valid_timestamp`).
+        DemistoException: If the 'start_date' argument is missing or if timestamp validation fails (via `response_validation`).
     """
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_LIMIT_OF_EVENTS
     start_date: Optional[str] = args.get("start_date")
@@ -323,8 +362,7 @@ def get_events_command(client: Client, report_id: str, args: dict) -> tuple[List
         raise DemistoException("start_date argument is missing. Cannot retrieve events.")
 
     # Validate the first timestamp format before processing the full list
-    params = {"$inlinecount": "allpages", "$filter": "CUSER eq 'OSAWYERR'", "$top": 1, "$format": "json"}
-    _ = is_valid_timestamp(client, report_id, params)
+    _ = response_validation(client, report_id)
 
     days_from_start: int = arg_to_number(args.get("days_from_start")) or DEFAULT_DAYS_FROM_START
     end_date: str = get_end_date(start_date, days=days_from_start)
@@ -380,8 +418,8 @@ def get_events(
     filter = f"CTIMESTAMP ge '{start_date}' and CTIMESTAMP le '{end_date}'"
     params = {"$filter": filter, "$skip": skip, "$top": top, "$format": "json", "$inlinecount": "allpages"}
 
-    res = get_events_api_call(client, report_id, params)
     demisto.debug(f"Performing the get events call with - {params=}.")
+    res = get_events_api_call(client, report_id, params)
 
     return res.get("d", {}).get("results", [])
 
@@ -391,7 +429,7 @@ def get_timestamp_offset_hour(client: Client, report_id: str) -> float:
     Retrieves the timezone offset in hours by fetching and validating a sample event's timestamp.
 
     This function requests a single event for a specific user from the SAP Cloud API,
-    validates the timestamp format using `is_valid_timestamp`, and then parses it to
+    validates the timestamp format using `response_validation`, and then parses it to
     determine the UTC offset in hours. The offset reflects the timezone configured on
     the SAP Cloud server and is used for consistent time calculations.
 
@@ -403,10 +441,9 @@ def get_timestamp_offset_hour(client: Client, report_id: str) -> float:
         float: The timezone offset from UTC in hours (e.g., 2.0 for UTC+2, -5.0 for UTC-5).
 
     Raises:
-        DemistoException: If the timestamp cannot be validated or parsed properly via `is_valid_timestamp`.
+        DemistoException: If the timestamp cannot be validated or parsed properly via `response_validation`.
     """
-    params = {"$inlinecount": "allpages", "$filter": "CUSER eq 'OSAWYERR'", "$top": 1, "$format": "json"}
-    timestamp_str = is_valid_timestamp(client, report_id, params)
+    timestamp_str = response_validation(client, report_id)
     dt_object = dateparser.parse(timestamp_str)
     offset_timedelta = dt_object.tzinfo.utcoffset(dt_object)  # type: ignore
     offset_hour = offset_timedelta.total_seconds() / 3600  # type: ignore

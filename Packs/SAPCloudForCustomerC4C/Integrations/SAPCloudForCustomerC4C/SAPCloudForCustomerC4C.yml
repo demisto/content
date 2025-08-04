@@ -41,7 +41,7 @@ configuration:
   type: 0
   required: false
   defaultvalue: '10000'
-description: 'Integrates with SAP Cloud for Customer (C4C) - a CRM solution that  automatically fetches audit events via its OData Analytics API to boost security monitoring and compliance.'
+description: 'Integrates with SAP Cloud for Customer (C4C) and collects audit events via its OData Analytics API to boost security monitoring and compliance.'
 display: SAP Cloud For Customer (C4C)
 name: SAPCloudForCustomerC4C
 script:
