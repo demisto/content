@@ -187,7 +187,7 @@ class Client(BaseClient):
                     is_new_query = True
                 else:
                     raise
-    
+
         else:
             response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
 
