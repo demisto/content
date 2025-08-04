@@ -1,0 +1,1037 @@
+id: 09636027-fd7f-4b7f-8e82-7acc81de4eae
+version: 81
+vcShouldKeepItemLegacyProdMachine: false
+name: Criminal IP Check Malicious Domain
+description: |-
+  Performs Quick, Lite, and Full scans in sequence in Criminal IP to determine whether the input domain is malicious or not. If a determination cannot be made from the Quick scan, a Lite scan is performed. Similarly, if a determination cannot be made from the Lite scan, a Full scan is performed to make a determination. Additionally, if a Full scan is conducted, an overview report of notable findings is compiled through domain-full-scan-make-email-body and sent via email.
+  For this purpose, the user needs to fill in the arguments for the #43 send-mail command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ac53453e-fac3-4053-8a24-b2f1a195a800
+    type: start
+    task:
+      id: ac53453e-fac3-4053-8a24-b2f1a195a800
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1402.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 43e01b99-88ef-4ebc-875b-f0e7777d0e50
+    type: title
+    task:
+      id: 43e01b99-88ef-4ebc-875b-f0e7777d0e50
+      version: -1
+      name: |-
+        Criminal IP
+        Quick Scan
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1402.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2c847672-f9a0-4624-886f-39c496f194bc
+    type: title
+    task:
+      id: 2c847672-f9a0-4624-886f-39c496f194bc
+      version: -1
+      name: "Criminal IP \nLite Scan"
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 821.5,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: d18c0700-8f0c-48af-8cd2-0d30d0afd096
+    type: title
+    task:
+      id: d18c0700-8f0c-48af-8cd2-0d30d0afd096
+      version: -1
+      name: |-
+        Criminal IP
+        Full Scan
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 02d000ab-d21f-4e01-9f05-6887dfcdb627
+    type: regular
+    task:
+      id: 02d000ab-d21f-4e01-9f05-6887dfcdb627
+      version: -1
+      name: domain-quick-scan
+      description: domain quick scan
+      script: CriminalIP|||domain-quick-scan
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1402.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9e279efe-5a75-4bdc-8e73-81d38199f7bc
+    type: condition
+    task:
+      id: 9e279efe-5a75-4bdc-8e73-81d38199f7bc
+      version: -1
+      name: CheckMalDomainQuick
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Safe:
+      - "45"
+      malicious:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: Safe
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CriminalIP.Domain_Quick.data.result
+            iscontext: true
+          right:
+            value:
+              simple: safe
+    - label: malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CriminalIP.Domain_Quick.data.result
+            iscontext: true
+          right:
+            value:
+              simple: malicious
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1402.5,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ffd6db5f-efdd-4353-83a5-5ffa089d9cd5
+    type: title
+    task:
+      id: ffd6db5f-efdd-4353-83a5-5ffa089d9cd5
+      version: -1
+      name: Safe Domain
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1112,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 3052a0d8-892f-4426-bf15-4d9b94a34d4b
+    type: regular
+    task:
+      id: 3052a0d8-892f-4426-bf15-4d9b94a34d4b
+      version: -1
+      name: domain-lite-scan
+      description: domain lite scan
+      script: CriminalIP|||domain-lite-scan
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 821.5,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 17698142-2c71-4487-80b9-ee903dedde1f
+    type: condition
+    task:
+      id: 17698142-2c71-4487-80b9-ee903dedde1f
+      version: -1
+      name: CheckMalDomainLite
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      Safe:
+      - "45"
+      malicious:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: malicious
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: CriminalIP.Domain_Lite.data.domain_score
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+        - operator: isEqualString
+          left:
+            value:
+              simple: CriminalIP.Domain_Lite.data.domain_score
+            iscontext: true
+          right:
+            value:
+              simple: Dangerous
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CriminalIP.Domain_Lite.data.summary.url_phishing_prob
+            iscontext: true
+          right:
+            value:
+              simple: "80"
+    - label: Safe
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: CriminalIP.Domain_Lite.data.domain_score
+            iscontext: true
+          right:
+            value:
+              simple: Safe
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 821.5,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 2a5bbab7-fcca-4bd6-87f1-c41ed9f18e3c
+    type: title
+    task:
+      id: 2a5bbab7-fcca-4bd6-87f1-c41ed9f18e3c
+      version: -1
+      name: malicious Domain
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 676.25,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0856a4bc-308a-4903-80a0-d5e978a3987a
+    type: regular
+    task:
+      id: 0856a4bc-308a-4903-80a0-d5e978a3987a
+      version: -1
+      name: check-last-scan-date
+      description: check last scan date
+      script: CriminalIP|||check-last-scan-date
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cdf54664-bdaf-440b-870d-5d7ae82a907d
+    type: condition
+    task:
+      id: cdf54664-bdaf-440b-870d-5d7ae82a907d
+      version: -1
+      name: Check_last_scan_data_to_full_scan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      not scaned:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: not scaned
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CriminalIP.Scan_Date.scaned
+            iscontext: true
+          right:
+            value:
+              simple: Flase
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a942af55-a9e8-4303-9bef-507d09c11149
+    type: regular
+    task:
+      id: a942af55-a9e8-4303-9bef-507d09c11149
+      version: -1
+      name: domain-full-scan
+      description: domain full scan
+      script: CriminalIP|||domain-full-scan
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6068f544-85db-406d-b92e-bc3c20d4097e
+    type: playbook
+    task:
+      id: 6068f544-85db-406d-b92e-bc3c20d4097e
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      Ids:
+        simple: ${CriminalIP.Full_Scan.data.scan_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: domain-full-scan-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CriminalIP.Full_Scan_Status.data(val.scan_percentage != 100)
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 09915f0e-5b86-4d1f-a767-4928875f3a20
+    type: regular
+    task:
+      id: 09915f0e-5b86-4d1f-a767-4928875f3a20
+      version: -1
+      name: domain-full-scan-result
+      description: domain full scan result
+      script: CriminalIP|||domain-full-scan-result
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      scan_id:
+        simple: ${CriminalIP.Full_Scan.data.scan_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 95c07126-dd07-489d-9918-f10568771028
+    type: regular
+    task:
+      id: 95c07126-dd07-489d-9918-f10568771028
+      version: -1
+      name: domain-full-scan-result
+      description: domain full scan result
+      script: CriminalIP|||domain-full-scan-result
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      scan_id:
+        simple: ${CriminalIP.Scan_Date.scan_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: d827c61a-1391-4fa1-8391-d5d52e880c36
+    type: condition
+    task:
+      id: d827c61a-1391-4fa1-8391-d5d52e880c36
+      version: -1
+      name: CheckMalDomainFull
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      Malicious:
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CriminalIP.Full_Scan_Result.data.main_domain_info.domain_score.score
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+        - operator: isEqualString
+          left:
+            value:
+              simple: CriminalIP.Full_Scan_Result.data.main_domain_info.domain_score.score
+            iscontext: true
+          right:
+            value:
+              simple: Dangerous
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CriminalIP.Full_Scan_Result.data.summary.url_phishing_prob
+            iscontext: true
+          right:
+            value:
+              simple: "80"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290.5,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: db57d216-487c-4666-a31c-34a391d6af96
+    type: playbook
+    task:
+      id: db57d216-487c-4666-a31c-34a391d6af96
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      Ids:
+        simple: ${CriminalIP.Domain_Lite.data.scan_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: domain-lite-scan-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CriminalIP.Domain_Lite_Status.data(val.scan_percentage != 100)
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 821.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: b1522061-af0b-462b-87ba-f9637cc37797
+    type: regular
+    task:
+      id: b1522061-af0b-462b-87ba-f9637cc37797
+      version: -1
+      name: domain-lite-scan-result
+      description: domain lite scan result
+      script: CriminalIP|||domain-lite-scan-result
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      scan_id:
+        simple: ${CriminalIP.Domain_Lite.data.scan_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 821.5,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: fd8523b9-aba3-4ec3-8222-9acc302c6076
+    type: regular
+    task:
+      id: fd8523b9-aba3-4ec3-8222-9acc302c6076
+      version: -1
+      name: domain-full-scan-make-email-body
+      description: domain full scan result to email content
+      script: CriminalIP|||domain-full-scan-make-email-body
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      scan_id:
+        simple: ${CriminalIP.Full_Scan.data.scan_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: c2d631c7-19d6-4451-a302-b325609cd9e7
+    type: regular
+    task:
+      id: c2d631c7-19d6-4451-a302-b325609cd9e7
+      version: -1
+      name: domain-full-scan-make-email-body
+      description: domain full scan result to email content
+      script: CriminalIP|||domain-full-scan-make-email-body
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      scan_id:
+        simple: ${CriminalIP.Scan_Date.scan_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 36904b2a-8f11-477a-819f-5809f5cf1c22
+    type: regular
+    task:
+      id: 36904b2a-8f11-477a-819f-5809f5cf1c22
+      version: -1
+      name: send-mail
+      description: Send an email
+      script: mail-sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: mail-sender
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      body:
+        simple: ${CriminalIP.Email_Body.body_element}
+      subject:
+        simple: Criminal IP Full Scan Result of ${inputs.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 481,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ab75ea60-7998-431f-bd7c-6eb134f9f538
+    type: condition
+    task:
+      id: ab75ea60-7998-431f-bd7c-6eb134f9f538
+      version: -1
+      name: Check exist email body
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: ${CriminalIP.Email_Body.body_element}
+            iscontext: true
+          right:
+            value:
+              simple: Criminal IP Domain Search Result
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240.5,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: dbb51022-5e8b-42c2-846f-6a944c45370d
+    type: regular
+    task:
+      id: dbb51022-5e8b-42c2-846f-6a944c45370d
+      version: -1
+      name: Print Safe Domain
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      value:
+        simple: Safe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1112,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: c1d6a1fd-f8bd-4190-9192-634d02a79a35
+    type: regular
+    task:
+      id: c1d6a1fd-f8bd-4190-9192-634d02a79a35
+      version: -1
+      name: Print Malicious
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      value:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 676.25,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_13_#default#": 0.66,
+      "26_14_#default#": 0.44,
+      "26_46_malicious": 0.33,
+      "30_31_not scaned": 0.46,
+      "44_46_#default#": 0.88
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3420,
+        "width": 1733.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: true
+  description: Domain to determine whether it is malicious or not
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - Domain
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true

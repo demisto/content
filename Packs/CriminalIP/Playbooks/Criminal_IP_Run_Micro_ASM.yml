@@ -1,0 +1,234 @@
+id: bb840324-e5fa-4b98-8016-6613824507cc
+version: 25
+vcShouldKeepItemLegacyProdMachine: false
+name: Criminal IP Run Micro ASM
+description: |-
+  For a single domain, we perform a 'domain-full-scan' and once the scan is complete, we execute 'micro-asm'.
+  You can find the 'micro-asm' results in the context.
+  Also, this playbook is for the 'Criminal IP Micro ASM' playbook. For more details, please refer to the 'Criminal IP Micro ASM' playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4239260e-705a-4374-85b6-b1d2c6e1d06b
+    type: start
+    task:
+      id: 4239260e-705a-4374-85b6-b1d2c6e1d06b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 46
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 90b6d334-3476-45fc-ad74-05989a36887e
+    type: regular
+    task:
+      id: 90b6d334-3476-45fc-ad74-05989a36887e
+      version: -1
+      name: domain-full-scan
+      description: domain full scan
+      script: CriminalIP|||domain-full-scan
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 03eab539-0b2c-4fb4-b48b-436f34c4e816
+    type: playbook
+    task:
+      id: 03eab539-0b2c-4fb4-b48b-436f34c4e816
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Ids:
+        complex:
+          root: ${CriminalIP.Full_Scan.data
+          accessor: scan_id}
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: domain-full-scan-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CriminalIP.Full_Scan_Status(val.data.scan_percentage < 100).data
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 408
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a65124e3-8e74-49b0-b116-575412936205
+    type: regular
+    task:
+      id: a65124e3-8e74-49b0-b116-575412936205
+      version: -1
+      name: micro-asm
+      description: The microASM is performed using the Scan_id and Domain.
+      script: CriminalIP|||micro-asm
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      scan_id:
+        complex:
+          root: ${CriminalIP.Full_Scan.data
+          accessor: scan_id}
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 592
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d5fec2b5-08d9-42c4-8e30-66b5ce0afcd0
+    type: title
+    task:
+      id: d5fec2b5-08d9-42c4-8e30-66b5ce0afcd0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 837
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 851,
+        "width": 381,
+        "x": 450,
+        "y": 46
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: true
+  description: A single domain for performing 'micro-asm'
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - Domain
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true
