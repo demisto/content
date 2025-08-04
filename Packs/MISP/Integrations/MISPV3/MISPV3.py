@@ -256,6 +256,7 @@ WARNINGLIST_HEADERS = ["ID", "Name", "Type", "Description", "Version", "Enabled"
 WARNINGLIST_ENTRY_HEADERS = ["ID", "Value", "Comment"]
 WARNINGLIST_TYPE_HEADERS = ["ID", "Type"]
 
+
 def extract_error(error: list) -> list[dict]:
     """
     Extracting errors raised by PYMISP into readable response, for more information and examples
@@ -1337,6 +1338,7 @@ def event_to_human_readable(response: dict):
         )
     return event_highlights
 
+
 def search_events(demisto_args: dict) -> CommandResults:
     """
     Execute a MISP search using the 'event' controller.
@@ -1986,7 +1988,6 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
         )
     except PyMISPError as e:
         raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
-    
 
 
 def change_warninglist_command(demisto_args: dict) -> CommandResults:
@@ -2097,6 +2098,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
 
     except PyMISPError as e:
         raise DemistoException(f"Unable to convert data to JSON: {e}")
+
 
 def main():
     params = demisto.params()
