@@ -2797,8 +2797,8 @@ script:
     - contextPath: MISP.Warninglist.Default
       description: True if the warninglist is set as default, False otherwise.
       type: boolean
-    - contextPath: MISP.Warninglist.EntryCount
-      type: number
+    - contextPath: MISP.Warninglist.Attributes
+      description: The attribute types for this warninglist.
   - arguments:
     - name: id
       description: ID of the warninglist to update.
