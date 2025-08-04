@@ -478,7 +478,7 @@ class XDRHandler(BrandHandler):
         if not args.get(QuarantineOrchestrator.FILE_PATH_ARG):
             raise DemistoException(f"The '{QuarantineOrchestrator.FILE_PATH_ARG}' argument is required for brand {self.brand}.")
 
-    def _endpoint_already_quarantined(self, endpoint_id: str, file_hash: str, file_path: str) -> bool:
+    def _execute_quarantine_status_command(self, endpoint_id: str, file_hash: str, file_path: str) -> dict:
         """
         Checks if a file is already quarantined on a specific endpoint.
 
@@ -504,25 +504,9 @@ class XDRHandler(BrandHandler):
             self.orchestrator.verbose_results.extend(verbose_res)
 
         status_context = Command.get_entry_contexts(raw_response)
-        quarantine_status = self._extract_quarantine_status_from_context(status_context).get("status")
-
-        return quarantine_status is True
-
-    def _extract_quarantine_status_from_context(self, status_context: list) -> dict:
-        """
-        Extracts the core data dictionary from a command's nested entry context.
-
-        Args:
-            status_context (list): The entry context list from a command response.
-
-        Returns:
-            dict: The inner dictionary containing the status data, or an empty dict if not found.
-        """
-        demisto.debug(f"[{self.brand} Handler] Extracting status data from context: {status_context}")
         if not status_context or not isinstance(status_context[0], dict):
             return {}
-        # The context is often a list with one dict, where the key is the command name
-        # and the value is the actual data dictionary.
+
         return list(status_context[0].values())[0]
 
     def _process_final_endpoint_status(self, endpoint_result: dict, job_data: dict) -> QuarantineResult:
@@ -543,22 +527,9 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
         if endpoint_result.get("status") == XDRHandler.QUARANTINE_STATUS_SUCCESS:
-            status_cmd = Command(
-                name=f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}",
-                args={
-                    "endpoint_id": endpoint_id,
-                    "file_hash": job_data.get("finalize_args", {}).get("file_hash"),
-                    "file_path": job_data.get("finalize_args", {}).get("file_path"),
-                },
-                brand=self.brand,
-            )
-            raw_response, verbose_res = status_cmd.execute()
-            if self.orchestrator.verbose:
-                self.orchestrator.verbose_results.extend(verbose_res)
-
-            status_context = Command.get_entry_contexts(raw_response)
-            quarantine_status_data = self._extract_quarantine_status_from_context(status_context)
+            quarantine_status_data = self._execute_quarantine_status_command(endpoint_id, job_data["file_hash"], job_data["file_path"])
             quarantine_status = quarantine_status_data.get("status")
+
             message = (
                 QuarantineResult.Messages.SUCCESS
                 if quarantine_status
@@ -603,9 +574,11 @@ class XDRHandler(BrandHandler):
 
         for e_id in online_endpoint_ids:
             try:
-                if self._endpoint_already_quarantined(
+                is_quarantined = self._execute_quarantine_status_command(
                     e_id, args[QuarantineOrchestrator.FILE_HASH_ARG], args[QuarantineOrchestrator.FILE_PATH_ARG]
-                ):
+                ).get("status")
+
+                if is_quarantined:
                     demisto.debug(f"[{self.brand} Handler] File already quarantined on endpoint {e_id}.")
                     completed_results.append(
                         QuarantineResult.create(
