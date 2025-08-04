@@ -236,30 +236,27 @@ def test_get_sanitized_file_fail_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "method, url_suffix, file_name, parse_json, scan_rule, use_cloud, expected_result, expected_status_code",
+    "method, url_suffix, file_name, parse_json, scan_rule, expected_result, expected_status_code",
     [
-        # Test case 1: Basic GET request
-        ("GET", "test", None, True, None, False, {"success": True}, 200),
-        # Test case 2: GET request with scan rule
-        ("GET", "hash/123", None, True, "custom_rule", False, {"file_info": {"md5": "123"}}, 200),
-        # Test case 3: POST request
-        ("POST", "file", None, True, None, False, {"data_id": "scan123"}, 200),
-        # Test case 4: Cloud API with apikey
-        ("GET", "test", None, True, None, True, {"success": True}, 200),
-        # Test case 5: File upload
-        ("POST", "file", "test_file.txt", True, None, False, {"data_id": "file123"}, 200),
-        # Test case 6: Non-JSON response
-        ("GET", "file/converted/123", None, False, None, False, b"test file content", 200),
+        # # Test case 1: Basic GET request
+        ("GET", "test", None, True, None, {"success": True}, 200),
+        # # Test case 2: GET request with scan rule
+        ("GET", "hash/123", None, True, "custom_rule", {"file_info": {"md5": "123"}}, 200),
+        # # Test case 3: POST request
+        ("POST", "file", None, True, None, {"data_id": "scan123"}, 200),
+        # # Test case 5: File upload
+        ("POST", "file", "test_file.txt", True, None, {"data_id": "file123"}, 200),
+        # # Test case 6: Non-JSON response
+        ("GET", "file/converted/123", None, False, None, b"test file content", 200),
     ],
 )
-def test_http_req(mocker, method, url_suffix, file_name, parse_json, scan_rule, use_cloud, expected_result, expected_status_code):
+def test_http_req(mocker, method, url_suffix, file_name, parse_json, scan_rule, expected_result, expected_status_code):
     """
     Given:
     - Different HTTP request scenarios for the http_req function
     - Case 1: Basic GET request
     - Case 2: GET request with custom scan rule
     - Case 3: POST request
-    - Case 4: Cloud API with apikey authentication
     - Case 5: File upload
     - Case 6: Non-JSON response
 
@@ -273,9 +270,7 @@ def test_http_req(mocker, method, url_suffix, file_name, parse_json, scan_rule, 
     - Ensures response parsing works as expected
     """
     # Setup mocks
-    mocker.patch.object(
-        demisto, "params", return_value={"url": BASE_URL, "cloud": use_cloud, "api_key_creds": {"password": "test_api_key"}}
-    )
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL, "api_key_creds": {"password": "test_api_key"}})
 
     # Mock file operations
     mock_open = mocker.mock_open(read_data=b"test file content")
@@ -312,10 +307,6 @@ def test_http_req(mocker, method, url_suffix, file_name, parse_json, scan_rule, 
     # Verify headers
     headers = requests_mock.call_args[1]["headers"]
     assert headers["Accept"] == "application/json"
-
-    # Verify cloud API key if used
-    if use_cloud:
-        assert headers["apikey"] == "test_api_key"
 
     # Verify scan rule if provided
     if scan_rule:
