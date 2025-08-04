@@ -7,7 +7,7 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: https://api.polyswarm.network/v2
+- defaultvalue: https://api.polyswarm.network/v3/
   display: The base URL to connect to
   name: base_url
   required: true
