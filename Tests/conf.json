@@ -94,7 +94,7 @@
         },
         {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
-            "integrations": "LOLBAS Feed",
+            "integrations": ["LOLBAS Feed", "Cortex Core - IR"],
             "timeout": 600
         },
         {
