@@ -48,16 +48,16 @@ def parse_filter_field(filter_string: str | None):
 
 
 def raise_an_error_message_for_client_error(err: ClientError) -> DemistoException:
-        """
-        Raising a Demisto Exception according to boto error handling guide.
-        """
-        raise DemistoException(
-                        f"Unexpected response when executing: {demisto.command()} with {demisto.args()}."
-                        f"\n Error Code: {err.response('Error', {}).get('Code')}."
-                        f"\n Error Message: {err.response('Error', {}).get('Message')}."
-                        f"\nRequest ID: {err.response('ResponseMetadata', {}).get('RequestId')}."
-                        f"\nHttp code: {err.response('ResponseMetadata', {}).get('HTTPStatusCode')}."
-            )
+    """
+    Raising a Demisto Exception according to boto error handling guide.
+    """
+    raise DemistoException(
+        f"Unexpected response when executing: {demisto.command()} with {demisto.args()}."
+        f"\n Error Code: {err.response('Error', {}).get('Code')}."
+        f"\n Error Message: {err.response('Error', {}).get('Message')}."
+        f"\nRequest ID: {err.response('ResponseMetadata', {}).get('RequestId')}."
+        f"\nHttp code: {err.response('ResponseMetadata', {}).get('HTTPStatusCode')}."
+    )
 
 
 class AWSServices(str, Enum):
@@ -504,7 +504,6 @@ class IAM:
 class EC2:
     service = AWSServices.EC2
 
-
     @staticmethod
     def modify_instance_metadata_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -853,7 +852,7 @@ class EC2:
 
         except ClientError as err:
             raise_an_error_message_for_client_error(err)
-            
+
         return CommandResults(readable_output="")
 
     @staticmethod
@@ -889,9 +888,7 @@ class EC2:
         try:
             delete_response = client.delete_security_group(GroupIds=[group_id])
             if delete_response.get("GroupId"):
-                return CommandResults(
-                        readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}"
-                )
+                return CommandResults(readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}")
             else:
                 # If group_id was not found or no GroupId in response, raise an exception
                 raise DemistoException("Failed to delete security group: Unexpected response")
@@ -988,7 +985,7 @@ class EC2:
 
         remove_nulls_from_dictionary(kwargs)
         try:
-            response = client.authorize_security_group_ingress(**kwargs)
+            response = client.authorize_security_group_egress(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
                 return CommandResults(readable_output="The Security Group egress rule was authorized")
@@ -997,7 +994,7 @@ class EC2:
 
         except ClientError as e:
             raise_an_error_message_for_client_error(e)
-    
+
 
 class EKS:
     service = AWSServices.EKS
