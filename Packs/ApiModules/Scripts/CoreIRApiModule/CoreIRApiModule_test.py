@@ -4265,7 +4265,7 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
                 mock_return_warning.assert_not_called()
 
 
-def test_get_alert_by_filter_custom_filter_valid_json(self, requests_mock, mocker):
+def test_get_alert_by_filter_custom_filter_valid_json(requests_mock):
     """
     Given:
         - Core client
@@ -4289,7 +4289,7 @@ def test_get_alert_by_filter_custom_filter_valid_json(self, requests_mock, mocke
     assert response.outputs[0].get("internal_id", {}) == 33333
 
 
-def test_get_alert_by_filter_custom_filter_malformed_json_fixed(self, requests_mock, mocker):
+def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
     """
     Given:
         - Core client
