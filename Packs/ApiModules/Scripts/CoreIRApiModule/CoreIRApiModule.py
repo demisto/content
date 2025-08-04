@@ -3629,6 +3629,17 @@ ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    
+    pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+    
+    def fix_array_value(match):
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(',')]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
     # get arguments
     request_data: dict = {"filter_data": {}}
     filter_data = request_data["filter_data"]
@@ -3653,8 +3664,12 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                 raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
+            
+        except JSONDecodeError:
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
         except Exception as e:
-            raise DemistoException("custom_filter format is not valid.") from e
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
     filter_res = create_filter_from_args(args)
     if custom_filter:  # if exists, add custom filter to the built filter
