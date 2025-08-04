@@ -3679,7 +3679,9 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
             custom_filter = json.loads(custom_filter_str)
 
         except json.JSONDecodeError:
-            demisto.debug("Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument")  # noqa: E501
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
             # Trying to fix malformed array values in the agent_id custom_filter argument
             pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
             fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
