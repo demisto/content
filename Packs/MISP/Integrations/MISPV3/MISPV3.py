@@ -252,7 +252,7 @@ ATTRIBUTE_FIELDS = [
 ]
 
 
-WARNINGLIST_HEADERS = ["ID", "Name", "Type", "Description", "Version", "Enabled", "Default", "Category"]
+WARNINGLIST_HEADERS = ["ID", "Name", "Type", "Description", "Version", "Enabled", "Default", "Category", "Attributes"]
 WARNINGLIST_ENTRY_HEADERS = ["ID", "Value", "Comment"]
 WARNINGLIST_TYPE_HEADERS = ["ID", "Type"]
 
