@@ -1,20 +1,179 @@
 import asyncio
+import hashlib
 from asyncio import Queue
 from urllib.parse import urlparse
+
+import httpx
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import httpx
-import time
-from typing import Any
-
-
 # --- CONSTANTS ---
 API_ENDPOINT = "/scalemgmt/v2/cliauditlog"
-DEFAULT_PAGE_SIZE = 1000  # Default page size for IBM Storage Scale API
 PRODUCT = "StorageScale"
 VENDOR = "IBM"
+DEDUPLICATION_WINDOW_HOURS = 24
+MAX_STORED_HASHES = 10000
+DEFAULT_PAGE_SIZE = 1000  # Default page size for IBM Storage Scale API
+DEFAULT_FIRST_FETCH_DAYS = 1  # Default days to look back on first fetch
+
+
+# --- UTILITY FUNCTIONS ---
+def generate_event_hash(event: dict[str, Any]) -> str:
+    """
+    Generate a unique hash for an event based on key identifying fields.
+    Uses fields that uniquely identify an event to prevent duplicates.
+    """
+    # Key fields that should uniquely identify an event
+    hash_fields = [
+        event.get("oid", ""),  # Object ID
+        event.get("entryTime", ""),  # Timestamp
+        event.get("user", ""),  # User who executed command
+        event.get("command", ""),  # Command executed
+        event.get("node", ""),  # Node where command was executed
+        event.get("originator", ""),  # Originator of the command
+        event.get("returnCode", ""),  # Return code
+    ]
+
+    # Create a deterministic string from the key fields
+    hash_string = "|".join(str(field) for field in hash_fields)
+
+    # Generate SHA256 hash
+    return hashlib.sha256(hash_string.encode("utf-8")).hexdigest()
+
+
+def get_stored_event_hashes() -> dict[str, str]:
+    """
+    Retrieve stored event hashes from last run object.
+    Returns dict with hash as key and timestamp as value.
+    """
+    last_run = demisto.getLastRun()
+    return last_run.get("event_hashes", {})
+
+
+def store_event_hashes(event_hashes: dict[str, str]) -> None:
+    """
+    Store event hashes in last run object with timestamp cleanup.
+    """
+    # Clean up old hashes outside the deduplication window
+    current_time = datetime.utcnow()
+    cutoff_time = (current_time - timedelta(hours=DEDUPLICATION_WINDOW_HOURS)).isoformat() + "Z"
+
+    cleaned_hashes = {}
+    for hash_val, timestamp in event_hashes.items():
+        if timestamp >= cutoff_time:
+            cleaned_hashes[hash_val] = timestamp
+
+    # Limit the number of stored hashes to prevent memory issues
+    if len(cleaned_hashes) > MAX_STORED_HASHES:
+        # Keep only the most recent hashes
+        sorted_hashes = sorted(cleaned_hashes.items(), key=lambda x: x[1], reverse=True)
+        cleaned_hashes = dict(sorted_hashes[:MAX_STORED_HASHES])
+
+    # Update last run with cleaned hashes
+    last_run = demisto.getLastRun()
+    last_run["event_hashes"] = cleaned_hashes
+    demisto.setLastRun(last_run)
+
+    demisto.debug(f"Stored {len(cleaned_hashes)} event hashes for deduplication")
+
+
+def deduplicate_events(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    """
+    Remove duplicate events using stored hashes and return deduplication stats.
+
+    Returns:
+        tuple: (deduplicated_events, stats_dict)
+    """
+    if not events:
+        return events, {"total_events": 0, "duplicates_found": 0, "unique_events": 0}
+
+    stored_hashes = get_stored_event_hashes()
+    new_hashes = {}
+    deduplicated_events = []
+    duplicates_found = 0
+
+    for event in events:
+        event_hash = generate_event_hash(event)
+        event_time = event.get("entryTime", datetime.utcnow().isoformat() + "Z")
+
+        # Check if this event hash already exists
+        if event_hash in stored_hashes:
+            duplicates_found += 1
+            demisto.debug(f"Duplicate event found with hash {event_hash[:12]}...")
+            continue
+
+        # Add to deduplicated events and track new hash
+        deduplicated_events.append(event)
+        new_hashes[event_hash] = event_time
+
+    # Merge new hashes with stored hashes and store
+    all_hashes = {**stored_hashes, **new_hashes}
+    store_event_hashes(all_hashes)
+
+    stats = {
+        "total_events": len(events),
+        "duplicates_found": duplicates_found,
+        "unique_events": len(deduplicated_events),
+        "stored_hashes_count": len(all_hashes),
+    }
+
+    demisto.debug(f"Deduplication complete: {stats}")
+    return deduplicated_events, stats
+
+
+def get_time_filter_from_last_run() -> str:
+    """
+    Get time filter parameter from last run object.
+    Returns ISO timestamp string for API filtering.
+    """
+    last_run = demisto.getLastRun()
+    last_fetch_time = last_run.get("last_fetch_time")
+
+    if last_fetch_time:
+        demisto.debug(f"Using last fetch time from last run: {last_fetch_time}")
+        return last_fetch_time
+    else:
+        # First run - use default lookback period
+        first_fetch_time = (datetime.utcnow() - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)).isoformat() + "Z"
+        demisto.debug(f"First run - using default lookback time: {first_fetch_time}")
+        return first_fetch_time
+
+
+def update_last_run_time(events: list[dict[str, Any]]) -> None:
+    """
+    Update the last run object with the latest event timestamp.
+    """
+    if not events:
+        demisto.debug("No events to process for last run update")
+        return
+
+    # Find the latest timestamp from the events
+    latest_time = None
+    for event in events:
+        event_time = event.get("entryTime")
+        if event_time and (not latest_time or event_time > latest_time):
+            latest_time = event_time
+
+    if latest_time:
+        last_run = demisto.getLastRun()
+        last_run["last_fetch_time"] = latest_time
+        demisto.setLastRun(last_run)
+        demisto.debug(f"Updated last run with latest event time: {latest_time}")
+    else:
+        demisto.debug("No valid timestamps found in events")
+
+
+def build_api_query_with_time_filter(since_time: str, limit: int = DEFAULT_PAGE_SIZE) -> str:
+    """
+    Build API query string with time filtering.
+    """
+    # Note: This assumes the IBM Storage Scale API supports time filtering.
+    # The actual parameter name may vary - API documentation does not suggest it exists
+    query = f"fields=:all:&limit={limit}"
+    if since_time:
+        query += f"&since={since_time}"
+    return query
 
 
 class Client:
@@ -41,7 +200,7 @@ class Client:
         """
         async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
             try:
-                response = await client.get(f"{API_ENDPOINT}?limit=1&fields=oid")
+                response = await client.get(f"{API_ENDPOINT}?fields=:all:")
                 response.raise_for_status()
             except httpx.HTTPStatusError as e:
                 if e.response.status_code in (401, 403):
@@ -67,25 +226,38 @@ class Client:
         demisto.info("Starting fetch-events cycle.")
         start_time = time.monotonic()
 
-        fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE)
+        since_time = get_time_filter_from_last_run()
+        query = build_api_query_with_time_filter(since_time, max_events or DEFAULT_PAGE_SIZE)
+
+        fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE, query)
         events, has_more = await fetcher.run()
+
+        # Apply deduplication
+        deduplicated_events, dedup_stats = deduplicate_events(events)
+        demisto.info(
+            f"Deduplication: {dedup_stats['duplicates_found']} duplicates removed, "
+            f"{dedup_stats['unique_events']} unique events processed"
+        )
+
+        update_last_run_time(deduplicated_events)
 
         end_time = time.monotonic()
         duration = end_time - start_time
-        total_events = len(events)
+        total_events = len(deduplicated_events)
         eps = total_events / duration if duration > 0 else 0
 
         performance_summary = (
-            f"Fetch cycle finished. Fetched {total_events} events in " f"{duration:.2f} seconds ({eps:.2f} events/sec)."
+            f"Fetch cycle finished. Fetched {total_events} unique events (filtered {dedup_stats['duplicates_found']} duplicates) "
+            f"in {duration:.2f} seconds ({eps:.2f} events/sec)."
         )
         demisto.info(performance_summary)
 
-        for event in events:
+        for event in deduplicated_events:
             event["_time"] = event.get("entryTime")
 
         push_events_start_time = time.monotonic()
         demisto.debug("Pushing events to XSIAM.")
-        send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+        send_events_to_xsiam(events=deduplicated_events, vendor=VENDOR, product=PRODUCT)
         push_events_end_time = time.monotonic()
         push_events_duration = push_events_end_time - push_events_start_time
         demisto.info(f"Pushed events to XSIAM. Completed push process in {push_events_duration} seconds.")
@@ -93,6 +265,89 @@ class Client:
 
         if has_more:
             demisto.info("Fetch cycle reached the event limit. More events may be available on the server.")
+
+    async def debug_connection_info(self) -> dict[str, Any]:
+        """
+        Comprehensive debugging command to provide troubleshooting information.
+        """
+        debug_info: dict[str, Any] = {
+            "connection_status": "unknown",
+            "server_url": self.base_url,
+            "api_endpoint": API_ENDPOINT,
+            "last_run_info": {},
+            "current_time": datetime.utcnow().isoformat() + "Z",
+            "configuration": {},
+            "sample_api_response": {},
+            "time_filter_info": {},
+            "deduplication_info": {},
+            "error_details": None,
+        }
+
+        try:
+            # Test basic connection
+            async with httpx.AsyncClient(base_url=self.base_url, auth=self.auth, verify=self.verify, proxy=self.proxy) as client:
+                response = await client.get(f"{API_ENDPOINT}?limit=1&fields=oid,entryTime")
+                response.raise_for_status()
+                debug_info["connection_status"] = "success"
+
+                # Get sample response
+                data = response.json()
+                debug_info["sample_api_response"] = {
+                    "status_code": response.status_code,
+                    "headers": dict(response.headers),
+                    "sample_data": data,
+                }
+
+        except Exception as e:
+            debug_info["connection_status"] = "failed"
+            debug_info["error_details"] = str(e)
+
+        # Get last run information
+        try:
+            last_run = demisto.getLastRun()
+            debug_info["last_run_info"] = {
+                "last_fetch_time": last_run.get("last_fetch_time", "None (first run)"),
+                "stored_event_hashes": len(last_run.get("event_hashes", {})),
+                "last_run_raw": last_run,
+            }
+        except Exception as e:
+            debug_info["last_run_info"]["error"] = str(e)
+
+        # Time filter information
+        try:
+            since_time = get_time_filter_from_last_run()
+            query = build_api_query_with_time_filter(since_time, 10)
+            debug_info["time_filter_info"] = {
+                "since_time": since_time,
+                "constructed_query": query,
+                "full_url": f"{self.base_url}{API_ENDPOINT}?{query}",
+            }
+        except Exception as e:
+            debug_info["time_filter_info"]["error"] = str(e)
+
+        # Deduplication information
+        try:
+            stored_hashes = get_stored_event_hashes()
+            cutoff_time = (datetime.utcnow() - timedelta(hours=DEDUPLICATION_WINDOW_HOURS)).isoformat() + "Z"
+            debug_info["deduplication_info"] = {
+                "stored_hashes_count": len(stored_hashes),
+                "deduplication_window_hours": DEDUPLICATION_WINDOW_HOURS,
+                "max_stored_hashes": MAX_STORED_HASHES,
+                "cutoff_time": cutoff_time,
+                "sample_hash_timestamps": list(stored_hashes.values())[:5] if stored_hashes else [],
+            }
+        except Exception as e:
+            debug_info["deduplication_info"]["error"] = str(e)
+
+        # Configuration info (without sensitive data)
+        debug_info["configuration"] = {
+            "verify_ssl": self.verify,
+            "proxy_configured": bool(self.proxy),
+            "auth_configured": bool(self.auth and self.auth[0]),
+            "concurrency_level": self.concurrency,
+        }
+
+        return debug_info
 
 
 class _ConcurrentEventFetcher:
@@ -102,9 +357,10 @@ class _ConcurrentEventFetcher:
     can queue the next page of work.
     """
 
-    def __init__(self, client: Client, max_events: int):
+    def __init__(self, client: Client, max_events: int, query: str = ""):
         self.client = client
         self.max_events = max_events
+        self.query = query
         self.queue: Queue = asyncio.Queue()
         self.collected_events: list[dict[str, Any]] = []
         self.has_more_available = False
@@ -119,15 +375,19 @@ class _ConcurrentEventFetcher:
                 demisto.debug(f"[{name}] got task: {url_suffix}")
 
                 # Check if we should stop before making the API call
+                should_stop = False
                 async with self._lock:
                     if len(self.collected_events) >= self.max_events:
-                        demisto.debug(f"[{name}] stopping, max events limit reached before processing task.")
+                        should_stop = True
                         self.has_more_available = True
-                        continue  # Don't call task_done here — skip fetch
+
+                if should_stop:
+                    demisto.debug(f"[{name}] stopping, max events limit reached before processing task.")
+                    continue  # Go to finally block to mark task as done
 
                 response = await async_client.get(url_suffix)
                 response.raise_for_status()
-                data = await response.json()
+                data = response.json()
                 events = data.get("auditLogRecords", [])
                 demisto.debug(f"[{name}] fetched {len(events)} events from {url_suffix}")
 
@@ -141,7 +401,7 @@ class _ConcurrentEventFetcher:
                 # Queue next page if present
                 paging_info = data.get("paging", {})
                 next_full_url = paging_info.get("next")
-                if next_full_url:
+                if next_full_url and len(self.collected_events) < self.max_events:
                     next_url_suffix = f"{urlparse(next_full_url).path}?{urlparse(next_full_url).query}"
                     demisto.debug(f"[{name}] queuing next URL: {next_url_suffix}")
                     await self.queue.put(next_url_suffix)
@@ -157,7 +417,7 @@ class _ConcurrentEventFetcher:
     async def run(self) -> tuple[list[dict[str, Any]], bool]:
         """Orchestrates the workers to fetch all events."""
         # Seed the queue with the first page
-        initial_url = f"{API_ENDPOINT}?fields=:all:&limit={DEFAULT_PAGE_SIZE}"
+        initial_url = f"{API_ENDPOINT}?fields=:all:&limit={DEFAULT_PAGE_SIZE}&{self.query}"
         self.queue.put_nowait(initial_url)
 
         async with httpx.AsyncClient(
@@ -228,6 +488,20 @@ async def main() -> None:
                     f"IBM Storage Scale Events (first {len(events)} events)",
                     events,
                     headers=["entryTime", "user", "command", "node", "returnCode", "originator"],
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+            return_results(command_results)
+        elif command == "ibm-storage-scale-debug-connection":
+            debug_info = await client.debug_connection_info()
+            command_results = CommandResults(
+                outputs_prefix="IBMStorageScale.Debug",
+                outputs=debug_info,
+                readable_output=tableToMarkdown(
+                    "IBM Storage Scale Debug Information",
+                    [debug_info],
+                    headers=["connection_status", "server_url", "current_time", "api_endpoint"],
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 ),

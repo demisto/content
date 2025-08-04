@@ -88,5 +88,38 @@ script:
     - contextPath: IBMStorageScale.AuditLog.originator
       description: The origin of the command (e.g., GUI, CLI).
       type: String
+  - name: ibm-storage-scale-debug-connection
+    description: Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration.
+    outputs:
+    - contextPath: IBMStorageScale.Debug.connection_status
+      description: Status of the connection to IBM Storage Scale API (success/failed).
+      type: String
+    - contextPath: IBMStorageScale.Debug.server_url
+      description: The configured server URL.
+      type: String
+    - contextPath: IBMStorageScale.Debug.api_endpoint
+      description: The API endpoint being used.
+      type: String
+    - contextPath: IBMStorageScale.Debug.current_time
+      description: Current timestamp when debug info was collected.
+      type: String
+    - contextPath: IBMStorageScale.Debug.last_run_info
+      description: Information from the last run object including fetch times and stored hashes.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.time_filter_info
+      description: Time filtering information including constructed query parameters.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.deduplication_info
+      description: Event deduplication statistics and configuration.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.configuration
+      description: Integration configuration details (without sensitive data).
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.sample_api_response
+      description: Sample API response data for validation.
+      type: Unknown
+    - contextPath: IBMStorageScale.Debug.error_details
+      description: Error details if connection failed.
+      type: String
 tests:
 - No tests (auto formatted)
