@@ -970,18 +970,18 @@ def convert_internal_url_to_base64(match):
 def get_previous_message_content(incident_email_threads, email_selected_thread):
     """
     Retrieves the content of previous messages in the selected email thread for inclusion in replies.
-    
+
     Args:
         incident_email_threads: Dict containing all threads present on the incident
         email_selected_thread: Thread Number currently selected
-    
+
     Returns:
         tuple: (previous_text_content, previous_html_content) - The content of previous messages in plain text and HTML formats
     """
     previous_text_content = ""
     previous_html_content = ""
     thread_messages = []
-    
+
     # First, collect all messages from the selected thread
     if isinstance(incident_email_threads, dict):
         if str(incident_email_threads.get("EmailCommsThreadNumber", "")) == str(email_selected_thread):
@@ -990,31 +990,33 @@ def get_previous_message_content(incident_email_threads, email_selected_thread):
         for thread_entry in incident_email_threads:
             if str(thread_entry.get("EmailCommsThreadNumber", "")) == str(email_selected_thread):
                 thread_messages.append(thread_entry)
-    
+
     # Sort messages by time to ensure proper order
     thread_messages.sort(key=lambda x: x.get("MessageTime", ""))
-    
+
     # Build the previous message content
     for message in thread_messages:
         sender = message.get("EmailFrom", "")
         time = message.get("MessageTime", "")
         text_body = message.get("EmailBody", "")
         html_body = message.get("EmailHTML", "")
-        
+
         # Format the header for the previous message
         header = f"\nOn {time}, {sender} wrote:\n"
-        html_header = (f"<br><div style='border-left: 1px solid #ccc; margin: 10px 0; padding-left: 10px;'>"
-                      f"<p><b>On {time}, {sender} wrote:</b></p>")
-        
+        html_header = (
+            f"<br><div style='border-left: 1px solid #ccc; margin: 10px 0; padding-left: 10px;'>"
+            f"<p><b>On {time}, {sender} wrote:</b></p>"
+        )
+
         # Add the message content to the accumulated content
         if text_body:
             # For plain text, indent each line with "> "
             indented_text = "\n".join([f"> {line}" for line in text_body.split("\n")])
             previous_text_content += f"{header}{indented_text}\n"
-        
+
         if html_body:
             previous_html_content += f"{html_header}{html_body}</div>"
-    
+
     return previous_text_content, previous_html_content
 
 
@@ -1035,7 +1037,7 @@ def format_body(new_email_body, previous_text_content="", previous_html_content=
 
     # 3. Replace Atlassian color/background tags with inline HTML spans
     fixed_body = replace_atlassian_tags(fixed_body)
-    
+
     # 4. Append previous message content in plain text format if available
     if previous_text_content:
         fixed_body += previous_text_content
@@ -1055,13 +1057,12 @@ def format_body(new_email_body, previous_text_content="", previous_html_content=
     if "<table>" in context_html_body:
         context_html_body = context_html_body.replace(
             "<table>",
-            '<table border="1" cellpadding="6" cellspacing="0" '
-            'style="border-collapse: collapse; border: 1px solid #999;">',
+            '<table border="1" cellpadding="6" cellspacing="0" ' 'style="border-collapse: collapse; border: 1px solid #999;">',
         )
 
     saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
     html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
-    
+
     # 5. Append previous message content in HTML format if available
     if previous_html_content:
         html_body += previous_html_content
@@ -1383,6 +1384,7 @@ def multi_thread_reply(
         thread_bcc = ""
         reply_code = ""
         incident_email_threads = get_email_threads(incident_id)
+        demisto.debug(f"Incident email threads: {incident_email_threads}")
         if not incident_email_threads:
             return_error("Failed to retrieve email thread entries - reply not sent!")
 
@@ -1484,7 +1486,7 @@ def multi_thread_reply(
             previous_text_content, previous_html_content = get_previous_message_content(
                 incident_email_threads, email_selected_thread
             )
-            
+
             # Format any markdown in the email body as HTML and include previous message content
             context_html_body, reply_html_body = format_body(new_email_body, previous_text_content, previous_html_content)
 
@@ -1552,6 +1554,7 @@ def main():  # pragma: no cover
         incident = demisto.incident()
         incident_id = incident.get("id")
         custom_fields = incident.get("CustomFields")
+        demisto.debug(f"Custom fields: {custom_fields}")
         labels = incident.get("labels", [])
         # The mailbox configured in the relevant integration
         mailbox = custom_fields.get("emailreceived") or get_mailbox_from_incident_labels(labels)
