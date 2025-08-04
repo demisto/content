@@ -82,7 +82,8 @@ def get_search_context(context: list, key: str) -> str:
         str: The value of the key
     """
     try:
-        return context[0].get("Contents", {}).get(key)
+        return context[0].get("Contents", {}).get(key, "")
+    
     except AttributeError:
         return ""
 
@@ -220,15 +221,21 @@ def main():
         add_to_context(context=context, sub_key=CONTEXT_SEARCH_KEY, new_key=CONTEXT_STATUS_KEY, new_value=search_status)
         add_to_context(context=context, sub_key=CONTEXT_SEARCH_KEY, new_key=CONTEXT_RESULTS_KEY, new_value=search_results)
         
-        # if preview is False, don't proceed with search action
+        # if preview is False, return only search results
         if not args.get("preview", False):
-            print("Done")
+            return_results(
+                CommandResults(
+                    outputs_prefix=CONTEXT_MAIN_KEY,
+                    outputs=context,
+                    readable_output=f"Search [{search_name}] returned with status [{search_status}]")
+                )
+            return
         
-        # new_search_action_res = demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
+        new_search_action_res = demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
+        print(new_search_action_res)
+        # print(new_search_action_res)
         # get_search_action_res = demisto.executeCommand(CMD_GET_SEARCH_ACTION, args)
-        
-        # add context to main key
-        demisto.setContext(CONTEXT_MAIN_KEY, context)
+    
 
     except Exception as e:
         return_error(f"Failed to execute {SCRIPT_NAME}. Error: {e!s}")
