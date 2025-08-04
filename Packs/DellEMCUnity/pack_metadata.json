@@ -2,7 +2,7 @@
     "name": "Dell EMC Unity",
     "description": "Dell EMC Unity is a mid-range storage array product line that offers both hybrid and all-flash models, designed for affordable all-flash performance solutions or cost-effective hybrid solutions, supporting various protocols and use cases.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

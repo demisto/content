@@ -1,4 +1,11 @@
 [INGEST:vendor="dell_emc", product="unity", target_dataset="dell_emc_unity_raw", no_hit=keep]
+/* Supports RFC 5424 compatible timestamps format, which include fractional seconds precision up to 6 digits, for example: 2023-10-29T11:18:59.123456+03:00 */
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[-+]\d{2}\:\d{2}"
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[-+]\d{2}\:\d{2}"), 0)
+| alter tmp_time = parse_timestamp("%FT%H:%M:%E*S%Ez",tmp_raw_timestamp)
+| alter _time = tmp_time 
+| fields - tmp*;
+
 /*  Supports RFC 5424 compatible timestamps format, which don't include a seconds fraction precision,
     For example: "2023-10-29T11:18:59Z", or "2023-10-29T11:18:59+02:00". */ 
 filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)"
@@ -25,6 +32,13 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2}|Z
 | fields - tmp*;
 
 [INGEST:vendor="dell", product="emc_unity", target_dataset="dell_emc_unity_raw", no_hit=keep]
+/* Supports RFC 5424 compatible timestamps format, which include fractional seconds precision up to 6 digits, for example: 2023-10-29T11:18:59.123456+03:00 */
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[-+]\d{2}\:\d{2}"
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[-+]\d{2}\:\d{2}"), 0)
+| alter tmp_time = parse_timestamp("%FT%H:%M:%E*S%Ez",tmp_raw_timestamp)
+| alter _time = tmp_time 
+| fields - tmp*;
+
 /*  Supports RFC 5424 compatible timestamps format, which don't include a seconds fraction precision,
     For example: "2023-10-29T11:18:59Z", or "2023-10-29T11:18:59+02:00". */ 
 filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}([+-]\d{2}:\d{2}|Z)"
