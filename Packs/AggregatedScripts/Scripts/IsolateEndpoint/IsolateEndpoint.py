@@ -370,6 +370,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
 
 def main():
     try:
+        demisto.getAllModulesSupportedCmds
         endpoint_args = demisto.args()
         endpoint_ids = argToList(endpoint_args.get("endpoint_id"))
         endpoint_ips = argToList(endpoint_args.get("endpoint_ip"))

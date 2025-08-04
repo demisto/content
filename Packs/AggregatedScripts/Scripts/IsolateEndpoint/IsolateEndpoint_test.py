@@ -270,3 +270,56 @@ def test_find_command_by_brand():
     command_b = Command(brand="BrandB", name="command-b", arg_mapping={})
     result = find_command_by_brand(commands=[command_a, command_b], brand="BrandB")
     assert result == command_b
+
+
+@patch("IsolateEndpoint.create_message_to_context_and_hr")
+def test_check_inputs_for_command_missing_args(mock_create_message):
+    command = Command(brand="BrandA", name="command", arg_mapping={"arg1": "mapped_arg1"})
+    args = {"mapped_arg1": ""}
+    result = check_inputs_for_command(command, endpoint_output={}, args=args)
+    assert result is False
+    assert mock_create_message.called
+
+    args = {"mapped_arg1": "val"}
+    result = check_inputs_for_command(command, endpoint_output={}, args=args)
+    assert result is True
+
+
+def test_create_message_to_context_and_hr_success_case():
+    endpoint_args = {"endpoint_id": "1234", "endpoint_brand": "SomeBrand"}
+    endpoint_output = {}
+    create_message_to_context_and_hr(
+        is_isolated=True,
+        endpoint_args=endpoint_args,
+        result="Success",
+        message="Test Message",
+        endpoint_output=endpoint_output,
+    )
+
+    expected = {
+        "Endpoint": "1234",
+        "Result": "Success",
+        "Source": "SomeBrand",
+        "Message": "Test Message",
+        "Isolated": "Yes",
+    }
+    assert endpoint_output == expected
+
+
+@patch("IsolateEndpoint.demisto.executeCommand")
+@patch("IsolateEndpoint.handle_raw_response_results")
+def test_run_commands_for_endpoint_executes_command(mock_handle_response, mock_execute):
+    command = Command(brand="TestBrand", name="test-command", arg_mapping={"arg1": "arg1"})
+    mock_commands = [command]
+
+    mock_execute.return_value = [{"Type": 1, "Contents": "Done"}]
+    mock_handle_response.return_value = "CommandResult"
+
+    endpoint_args = {"arg1": "value", "endpoint_brand": "TestBrand"}
+    results = []
+
+    run_commands_for_endpoint(mock_commands, endpoint_args, {}, results, verbose=False)
+
+    mock_execute.assert_called_once()
+    mock_handle_response.assert_called_once()
+    assert "CommandResult" in results
