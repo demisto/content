@@ -1,6 +1,6 @@
 from IsolateEndpoint import *
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 
 @pytest.mark.parametrize(
@@ -207,9 +207,7 @@ def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_i
 
     handle_raw_response_results(command, {"status": "error"}, args, outputs, verbose)
 
-    expected_error_message = (
-        "Failed to isolate 1234 with command TestCommand.Error:Some error occurred"
-    )
+    expected_error_message = "Failed to isolate 1234 with command TestCommand.Error:Some error occurred"
 
     mock_create_message.assert_called_once_with(
         is_isolated=False,
@@ -226,9 +224,7 @@ def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_i
 
     handle_raw_response_results(command, {"status": "ok"}, args, outputs, verbose)
 
-    expected_success_message = (
-        "1234 was isolated successfully with command TestCommand."
-    )
+    expected_success_message = "1234 was isolated successfully with command TestCommand."
 
     mock_create_message.assert_called_once_with(
         is_isolated=True,
@@ -270,7 +266,7 @@ def test_find_command_by_brand():
     Then:
         - Ensure the function returns the Command object with brand 'BrandB'.
     """
-    command_a = Command(brand='BrandA', name='command-a', arg_mapping={})
-    command_b = Command(brand='BrandB', name='command-b', arg_mapping={})
-    result = find_command_by_brand(commands=[command_a, command_b], brand='BrandB')
+    command_a = Command(brand="BrandA", name="command-a", arg_mapping={})
+    command_b = Command(brand="BrandB", name="command-b", arg_mapping={})
+    result = find_command_by_brand(commands=[command_a, command_b], brand="BrandB")
     assert result == command_b

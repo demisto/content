@@ -379,10 +379,12 @@ def main():
         if not brands_to_run:
             # In case no brands selected, the default is all brands.
             # We want to send to get-endpoint-data only the brands this script supports.
-            endpoint_args["brands"] = ["FireEyeHX v2",
-                                       "CrowdstrikeFalcon",
-                                       "Cortex Core - IR",
-                                       "Microsoft Defender Advanced Threat Protection"]
+            endpoint_args["brands"] = [
+                "FireEyeHX v2",
+                "CrowdstrikeFalcon",
+                "Cortex Core - IR",
+                "Microsoft Defender Advanced Threat Protection",
+            ]
 
         commands = initialize_commands()
         zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
