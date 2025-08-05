@@ -81,10 +81,11 @@ class Client(BaseClient):
             headers = [header.replace(" ", "").replace("(|)", "") for header in headers]
             for line in csv_repr:
                 item: dict = {headers[i]: line[i] for i in range(len(headers))}
-                try:
-                    category = item["category"]
-                    item["category_name"] = self._CATEGORY_NAME[int(category) - 1]
-                except (KeyError, IndexError):
+                demisto.debug(f"Parsed item: {item}")
+                # Check if category exists and is a numeric value
+                if item.get("category") and item.get("category", "").strip().isdigit():
+                    item["category_name"] = self._CATEGORY_NAME[int(item.get("category")) - 1]
+                else:
                     item["category_name"] = "Unknown"
 
                 # add type/value to item.
@@ -101,6 +102,7 @@ class Client(BaseClient):
 
                 # domain key was present but value was None
                 if not indicator_value:
+                    demisto.debug(f"Indicator value is None: {item} will be skipped")
                     continue
                 item["value"] = indicator_value
                 yield item

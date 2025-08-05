@@ -32,6 +32,33 @@ def test_fetch_domains(requests_mock):
     assert all("*" in ind.get("value") for ind in domain_globs)
 
 
+def test_fetch_domains_with_invalid_category(requests_mock):
+    """
+    Given:
+    - A domain feed with invalid (non-numeric) category values
+    When:
+    - Executing fetch_indicators_command
+    Then:
+    - Validate that the function handles invalid category values gracefully
+    - Verify that indicators with invalid categories have "Unknown" as category_name
+    """
+    test_path = "./TestData/domain-with-invalid-category.txt"
+    with open(test_path) as f:
+        data = f.read()
+    requests_mock.get("https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data)
+    indicators = fetch_indicators_command(client, client.DOMAIN_TYPE)
+
+    # Verify we got all indicators including the one with invalid category
+    assert len(indicators) == 3
+
+    # Find the indicator with invalid category (malicious.com)
+    invalid_category_indicator = next((ind for ind in indicators if ind.get("value") == "malicious.com"), None)
+    assert invalid_category_indicator is not None
+
+    # Verify the category_name is set to "Unknown" for the invalid category
+    assert invalid_category_indicator["rawJSON"]["category_name"] == "Unknown"
+
+
 @pytest.mark.parametrize("tags", (["tag1, tag2"], []))
 def test_feed_param(tags, requests_mock):
     """
