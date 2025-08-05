@@ -1051,7 +1051,7 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
                 # we want to remove from the generic command run only the predefined brands
                 brands_to_remove.append(brand)
     brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(brands_to_remove)
-    generic_command.create_additional_args({"using-brand": brands_to_run_for_generic_command})
+    generic_command.create_additional_args({"using-brand": ",".join(brands_to_run_for_generic_command)})
 
 
 """ MAIN FUNCTION """
