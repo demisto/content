@@ -10,5 +10,10 @@
   "tags": ["Threat Intelligence", "API", "Incident Update"],
   "useCases": ["Threat enrichment", "Incident response"],
   "certification": "certified",
-  "premium": false
+  "keywords": [],
+  "premium": false,
+   "marketplaces": [
+       "xsoar",
+       "marketplacev2"
+   ]
 }

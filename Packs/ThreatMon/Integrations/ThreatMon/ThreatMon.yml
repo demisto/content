@@ -52,7 +52,7 @@ script:
     description: Update Incident Status endpoint allows you to change/update status
       of specified Threatmon incidents.
   isfetch: true
-dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 5.0.0
 tests:
   - No tests
