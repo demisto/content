@@ -160,8 +160,9 @@ def get_api_id(args: dict[str, Any]) -> str:
     else:
         raise ValueError("Must supply JobID or environmentID and file")
 
+
 def get_scan_keys(args: dict[str, Any]) -> List[str]:
-    files = args.get("file","").split(",")
+    files = args.get("file", "").split(",")
     env_ids = (args.get("environmentId", "") or args.get("environmentID", "")).split(",")
     job_ids = args.get("JobID", "").split(",")
 
@@ -169,7 +170,6 @@ def get_scan_keys(args: dict[str, Any]) -> List[str]:
     for f, e, j in zip(files, env_ids, job_ids):
         keys.append(get_api_id({"file": f, "environmentId": e, "JobID": j}))
     return keys
-
 
 
 def test_module(client: Client, _) -> str:
@@ -598,8 +598,10 @@ def main() -> None:
 
     verify_certificate = not params.get("insecure", False)
     server_url = params.get("serverUrl", "") + "/api/v2"
-
     proxy = params.get("proxy", False)
+
+    if server_url.startswith("https://www.hybrid-analysis.com"):
+        server_url = server_url.replace("https://www.hybrid-analysis.com", "https://hybrid-analysis.com")
 
     demisto_command = demisto.command()
     demisto.debug(f"Command being called is {demisto_command}")

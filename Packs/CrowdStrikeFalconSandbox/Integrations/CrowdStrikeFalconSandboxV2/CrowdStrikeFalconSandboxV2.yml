@@ -11,9 +11,9 @@ description: Fully automated malware analysis using Hybrid Analysis API.
 configuration:
 - name: serverUrl
   required: true
-  defaultvalue: https://www.hybrid-analysis.com
+  defaultvalue: https://hybrid-analysis.com
   type: 0
-  display: Server URL (e.g. https://www.hybrid-analysis.com)
+  display: Server URL (e.g. https://hybrid-analysis.com)
   section: Connect
 - name: credentials
   required: true
