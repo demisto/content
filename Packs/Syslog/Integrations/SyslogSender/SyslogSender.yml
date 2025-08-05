@@ -33,6 +33,7 @@ configuration:
   required: false
 - name: certificate
   type: 9
+  section: Connect
   displaypassword: Certificate
   hiddenusername: true
   additionalinfo: Required for TLS.
@@ -40,6 +41,7 @@ configuration:
 - display: Self Signed Certificate
   name: self_signed_certificate
   type: 8
+  section: Connect
   additionalinfo: Required for TLS. Check if the certificate is self signed.
   required: false
 - defaultvalue: LOG_USER
@@ -93,6 +95,7 @@ configuration:
   - High
   - Critical
   type: 15
+  section: Collect
   required: false
   hidden:
   - marketplacev2
