@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+from collections import defaultdict
 
 from typing import Any
 
@@ -207,20 +208,14 @@ def extract_usernames_with_ids(context: dict, output_key: str) -> dict:
                   "user2@example.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]
               }
     """
-    user_id_mapping: dict[str, list] = {}
+    user_id_mapping = defaultdict(list)
     users = context.get(output_key, [])
-
     for user in users:
-        usernames = user.get("Username", [])
-        for username in usernames:
-            username = username.get("Value", "")
-            id_info = user.get("ID", {})
-
-            if username and id_info:
-                if username not in user_id_mapping:
-                    user_id_mapping[username] = []
-                user_id_mapping[username].extend(id_info)
-
+        if user.get("Status") == "found":
+            username = user.get("Username", "")
+            id_info = user.get("ID", "")
+            source = user.get("Source", "")
+            user_id_mapping[username].append({"Source": source, "Value": id_info})
     return user_id_mapping
 
 
