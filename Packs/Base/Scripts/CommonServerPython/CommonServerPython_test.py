@@ -3782,7 +3782,7 @@ class TestReturnOutputs:
         pytest.param('0', False, id='string_zero'),
     ]
 )
-def test_argToBoolean(input_value: str | bool, expected_result: bool):
+def test_argToBoolean(input_value, expected_result):
     assert argToBoolean(input_value) is expected_result
 
 
