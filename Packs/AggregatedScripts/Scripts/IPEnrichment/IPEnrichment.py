@@ -37,7 +37,7 @@ def ip_enrichment_script(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
-        validate_input_function=lambda args: True,
+        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="IPEnrichment",

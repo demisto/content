@@ -2,16 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
-from urllib.parse import urlparse
 
 
 def validate_input_function(args):
     if not args.get("url_list"):
         raise DemistoException("url_list is required")
     for url in args.get("url_list"):
-        parsed = urlparse(url)
-        if parsed.scheme.lower() not in ("http", "https", "ftp") or not parsed.netloc:
+        if auto_detect_indicator_type(url) != FeedIndicatorType.URL:
             raise DemistoException("URL is invalid")
+            
 
 
 def url_enrichment_script(
