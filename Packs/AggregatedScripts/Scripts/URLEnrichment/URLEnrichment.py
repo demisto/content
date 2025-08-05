@@ -8,8 +8,9 @@ def validate_input_function(args):
     if not args.get("url_list"):
         raise DemistoException("url_list is required")
     for url in args.get("url_list"):
-        if auto_detect_indicator_type(url) != FeedIndicatorType.URL:
-            raise DemistoException("URL is invalid")
+        type = auto_detect_indicator_type(url)
+        if type != FeedIndicatorType.URL:
+            raise DemistoException("URL is invalid, type: " + type)
             
 
 
@@ -25,20 +26,20 @@ def url_enrichment_script(
                         "Score":"Score",
                         "Brand":"Brand"}
     
-    url_indicator = Indicator(indicator_type="url",
-                              indicator_value_field="Data",
-                              indicator_context_path="URL(",
-                              indicator_mapping=indicator_mapping)
+    url_indicator = Indicator(type="url",
+                              value_field="Data",
+                              context_path="URL(",
+                              mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=url_indicator, data=data) for data in url_list]
     commands.append(
-        Command(name="wildfire-get-verdict", args={"url": url_list}, command_type=CommandType.internal, brand="WildFire-v2", mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})
+        Command(name="wildfire-get-verdict", args={"url": url_list}, command_type=CommandType.INTERNAL, brand="WildFire-v2", mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})
     )
     urlreputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
-        validate_input_function=validate_input_function,
+        validate_input_function=lambda args: True,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="URLEnrichment",

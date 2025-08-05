@@ -24,15 +24,15 @@ def ip_enrichment_script(
                          "DetectionEngines":"DetectionEngines",
                          "PositiveDetections":"PositiveDetections",
     }
-    ip_indicator = Indicator(indicator_type="ip",
-                             indicator_value_field="Address",
-                             indicator_context_path="IP(",
-                             indicator_mapping=indicator_mapping)
+    ip_indicator = Indicator(type="ip",
+                             value_field="Address",
+                             context_path="IP(",
+                             mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=ip_indicator, data=data) for data in ip_list]
     commands.extend([
-        Command(name="get-endpoint-data", args={"endpoint_ip": ip_list}, command_type=CommandType.internal, brand="Scripts", mapping={"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)":"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"}),
-        Command(name="core-get-IP-analytics-prevalence", args={"ip_address": ip_list}, command_type=CommandType.internal, brand="Cortex Core - IR", mapping={"IPAnalyticsPrevalence":"IPAnalyticsPrevalence[]"})])
+        Command(name="get-endpoint-data", args={"endpoint_ip": ip_list}, command_type=CommandType.INTERNAL, brand="Scripts", mapping={"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)":"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"}),
+        Command(name="core-get-IP-analytics-prevalence", args={"ip_address": ip_list}, command_type=CommandType.INTERNAL, brand="Cortex Core - IR", mapping={"IPAnalyticsPrevalence":"IPAnalyticsPrevalence[]"})])
     ipreputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,

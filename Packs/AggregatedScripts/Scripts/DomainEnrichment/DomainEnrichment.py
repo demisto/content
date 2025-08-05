@@ -15,14 +15,13 @@ def domain_enrichment_script(
                "Score":"Score",
                "Brand":"Brand"}
     
-    domain_indicator = Indicator(indicator_type="domain",
-                                 indicator_value_field="Name",
-                                 indicator_context_path="Domain(",
-                                 indicator_mapping=indicator_mapping)
+    domain_indicator = Indicator(type="domain",
+                                 value_field="Name",
+                                 context_path="Domain(",
+                                 mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=domain_indicator, data=data) for data in domain_list]
-    commands.extend([Command(name="core-get-domain-analytics-prevalence", args={"domain_name": domain_list}, command_type=CommandType.internal, brand="Cortex Core - IR", mapping={"Core.AnalyticsPrevalence.Domain":"Core.AnalyticsPrevalence.Domain[]"}),
-                ])
+    commands.extend([Command(name="core-get-domain-analytics-prevalence", args={"domain_name": domain_list}, command_type=CommandType.INTERNAL, brand="Cortex Core - IR", mapping={"Core.AnalyticsPrevalence.Domain":"Core.AnalyticsPrevalence.Domain[]"})])
     demisto.debug(f"Data list: {domain_list}")
     domain_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,

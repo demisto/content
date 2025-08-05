@@ -15,10 +15,10 @@ def cve_enrichment_script(
                          "Description":"Description",
                          "Published":"Published"}
     
-    cve_indicator = Indicator(indicator_type="cve",
-                              indicator_value_field="ID",
-                              indicator_context_path="CVE(",
-                              indicator_mapping=indicator_mapping)
+    cve_indicator = Indicator(type="cve",
+                              value_field="ID",
+                              context_path="CVE(",
+                              mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=cve_indicator, data=data) for data in cve_list]
     cve_reputation = ReputationAggregatedCommand(
