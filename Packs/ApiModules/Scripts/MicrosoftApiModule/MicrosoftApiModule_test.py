@@ -962,6 +962,7 @@ def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_co
             client._oproxy_authorize()
         assert res.call_args[0][0] == excepted
 
+
 def test_http_request_status_list_to_retry_parameter(requests_mock):
     """
     Test that MicrosoftClient passes status_list_to_retry parameter correctly as a list.
