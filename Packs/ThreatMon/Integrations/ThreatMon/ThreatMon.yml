@@ -1,0 +1,57 @@
+commonfields:
+  id: Threatmon
+  version: 1
+name: Threatmon
+display: Threatmon
+category: Analytics and SIEM
+description: Integration with Threatmon for vulnerability threat intelligence
+configuration:
+  - display: API URL
+    name: url
+    type: 0
+    required: true
+    defaultvalue: https://external.threatmonit.io/api/threatmon/external/v1
+  - displaypassword: API Key
+    additionalinfo: The API Key to use for connection
+    name: credentials
+    required: true
+    hiddenusername: true
+    type: 9
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Last Incident ID (for initial fetch)
+    name: lastIncidentId
+    type: 0
+    required: false
+script:
+  script: ''    
+  type: python
+  commands:
+  - name: threatmon_update_incident_status
+    arguments:
+    - name: alarmId
+      required: true
+      description: Threatmon Incident Code (ID)
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Open
+      - In Progress
+      - False Positive
+      - Ignore
+      - Resolved
+      description: 'Incident Status - '
+    description: Update Incident Status endpoint allows you to change/update status
+      of specified Threatmon incidents.
+  isfetch: true
+dockerimage: demisto/python3:3.10.13.87159
+fromversion: 5.0.0
+tests:
+  - No tests
