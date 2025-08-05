@@ -204,11 +204,11 @@ def test_get_output_key_exact_match():
     Then:
         The function should return the exact matching key.
     """
-    raw_context = {"Account": {"Username": "john.doe"}}
+    raw_context = {"UserData": {"Username": "john.doe"}}
 
-    result = get_output_key("Account", raw_context)
+    result = get_output_key("UserData", raw_context)
 
-    assert result == "Account"
+    assert result == "UserData"
 
 
 def test_get_output_key_partial_match():
@@ -222,11 +222,11 @@ def test_get_output_key_partial_match():
     Then:
         The function should return the full key that starts with the output_key.
     """
-    raw_context = {"Account(val.ID == obj.ID)": [{"Username": "john.doe"}]}
+    raw_context = {"UserData(val.ID == obj.ID)": [{"Username": "john.doe"}]}
 
-    result = get_output_key("Account", raw_context)
+    result = get_output_key("UserData", raw_context)
 
-    assert result == "Account(val.ID == obj.ID)"
+    assert result == "UserData(val.ID == obj.ID)"
 
 
 def test_get_output_key_no_match(mocker: MockerFixture):
@@ -243,11 +243,11 @@ def test_get_output_key_no_match(mocker: MockerFixture):
     raw_context = {"User": {"Name": "John Doe"}}
     mock_debug = mocker.patch.object(demisto, "debug")
 
-    result = get_output_key("Account", raw_context)
+    result = get_output_key("UserData", raw_context)
 
     assert result == ""
     mock_debug.assert_called_once_with(
-        "Output key Account not found in entry context keys: ['User']"
+        "Output key UserData not found in entry context keys: ['User']"
     )
 
 
@@ -525,7 +525,7 @@ def test_remove_system_user_no_system_users():
 
 def test_extract_usernames_with_ids():
     context = {
-        "Account(val.Username && val.Username == obj.Username)": [
+        "UserData(val.Username && val.Username == obj.Username)": [
             {
                 "ID": [{"Source": "Okta v2", "Value": "1234"}],
                 "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}],
@@ -544,7 +544,7 @@ def test_extract_usernames_with_ids():
             }
         ]
     }
-    output_key = "Account(val.Username && val.Username == obj.Username)"
+    output_key = "UserData(val.Username && val.Username == obj.Username)"
 
     expected_result = {
         "user1@test.com": [{"Source": "Okta v2", "Value": "1234"}],
@@ -560,7 +560,7 @@ def test_extract_usernames_with_ids():
 def test_get_user_data(mocker: MockerFixture):
     command = Command(name="get-user-data", args={"user_name": ["user1", "user2"], "brands": "brand_name"})
 
-    expected_entry_context = [{"Account(val.Username && val.Username == obj.Username)": [
+    expected_entry_context = [{"UserData(val.Username && val.Username == obj.Username)": [
         {"ID": [{"Source": "Okta v2", "Value": "1234"}], "Username": [{"Source": "Okta v2", "Value": "user1@test.com"}]},
         {"ID": [{"Source": "Microsoft Graph User", "Value": "5678"}], "Username": [
             {"Source": "Microsoft Graph User", "Value": "user2@demistodev.onmicrosoft.com"}]}
