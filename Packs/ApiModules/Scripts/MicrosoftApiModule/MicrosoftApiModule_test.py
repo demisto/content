@@ -565,9 +565,7 @@ def test_general_error_metrics(requests_mock, mocker):
     assert metric_results.get("APIExecutionMetrics") == [{"Type": "GeneralError", "APICallsCount": 1}]
 
 
-@pytest.mark.parametrize(
-    "client_id", ["test_client_id", None]
-)
+@pytest.mark.parametrize("client_id", ["test_client_id", None])
 def test_get_token_managed_identities(requests_mock, mocker, client_id):
     """
     Given:
@@ -888,13 +886,14 @@ def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_co
             client._oproxy_authorize()
         assert res.call_args[0][0] == excepted
 
+
 def test_http_request_status_list_to_retry_parameter(requests_mock):
     """
     Test that MicrosoftClient passes status_list_to_retry parameter correctly as a list.
-    
+
     This test verifies that the retry mechanism receives the correct parameter format
     to prevent TypeError: argument of type 'int' is not iterable.
-    
+
     Given:
         - MicrosoftClient configured for self-deployed authentication
     When:
@@ -904,44 +903,39 @@ def test_http_request_status_list_to_retry_parameter(requests_mock):
         - Verify that retries=3 is passed correctly
     """
     from unittest.mock import patch
-    
+
     client = self_deployed_client()
-    
+
     # Mock the token request
-    requests_mock.post(
-        APP_URL,
-        json={"access_token": TOKEN, "expires_in": "3600"}
-    )
-    
+    requests_mock.post(APP_URL, json={"access_token": TOKEN, "expires_in": "3600"})
+
     # Mock the API request to return 200 (so we don't trigger retry logic issues)
     api_url = f"{BASE_URL}test-endpoint"
     requests_mock.get(api_url, status_code=200, json={"success": True})
-    
+
     # Capture the parameters passed to BaseClient._http_request
     captured_params = {}
-    
+
     def capture_http_request_params(self, *args, **kwargs):
         captured_params.update(kwargs)
         # Return a mock response to avoid actual HTTP call issues
         from unittest.mock import Mock
+
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"success": True}
         return mock_response
-    
+
     # Patch BaseClient._http_request to capture parameters
-    with patch('CommonServerPython.BaseClient._http_request', capture_http_request_params):
+    with patch("CommonServerPython.BaseClient._http_request", capture_http_request_params):
         client.http_request("GET", "test-endpoint")
-    
-    # Verify the captured parameters
-    assert 'status_list_to_retry' in captured_params, "status_list_to_retry parameter not found"
-    assert 'retries' in captured_params, "retries parameter not found"
-    
-    # Verify status_list_to_retry is a list, not an integer
-    status_list = captured_params['status_list_to_retry']
+
+    assert "status_list_to_retry" in captured_params, "status_list_to_retry parameter not found"
+    assert "retries" in captured_params, "retries parameter not found"
+
+    status_list = captured_params["status_list_to_retry"]
     assert isinstance(status_list, list), f"status_list_to_retry should be a list, got {type(status_list)}: {status_list}"
     assert status_list == [503], f"Expected status_list_to_retry=[503], got {status_list}"
-    
-    # Verify retries parameter
-    retries = captured_params['retries']
+
+    retries = captured_params["retries"]
     assert retries == 3, f"Expected retries=3, got {retries}"
