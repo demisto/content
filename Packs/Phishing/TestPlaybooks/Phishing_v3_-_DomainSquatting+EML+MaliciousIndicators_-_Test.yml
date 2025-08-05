@@ -902,7 +902,7 @@ tasks:
       interval_between_tries:
         simple: "15"
       max_timeout:
-        simple: "1100"
+        simple: "1500"
       task_name:
         simple: Manually search & delete emails
       task_states:
