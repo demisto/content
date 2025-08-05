@@ -1118,3 +1118,39 @@ def test_get_indicator_results(
     assert "my_custom_list" in result.readable_output
     assert isinstance(result.indicator, Common.IP)
     assert result.indicator.dbot_score.score == Common.DBotScore.GOOD
+
+
+@pytest.mark.parametrize(
+    "demisto_args, cmd_return_value, cmd_expected_md, cmd_expected_outputs",
+    [
+        (
+            {"id": "1"},
+            util_load_json("test_data/get_warninglist_response.json"),
+            "| ID | Name | Type | Description | Version | Enabled | Default | Category | Types |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | Hello XSOAR! | string | The Quick Brown Fox Jumped Over The Lazy Dog | 1 | false | false | false_positive | attrib1, attrib2 |",  # noqa: E501
+            util_load_json("test_data/get_warninglist_outputs.json"),
+        ),
+    ],
+)
+def test_get_warninglist(demisto_args: dict, cmd_return_value: dict, cmd_expected_md, cmd_expected_outputs, mocker):
+    """
+    Given:
+    - A MISP Warninglist (json).
+
+    When:
+    - Running misp-get-warninglist command.
+
+    Then:
+    - Ensure that the output is valid and was parsed correctly.
+    """
+    from MISPV3 import get_warninglist_command
+
+    mock_misp(mocker)
+    # mock_warninglists =
+    mocker.patch.object(
+        mocker,
+        "get_warninglist",
+        return_value=cmd_return_value,
+    )
+    result = get_warninglist_command(demisto_args)
+    assert result.readable_output == cmd_expected_md
+    assert result.outputs == cmd_expected_outputs
