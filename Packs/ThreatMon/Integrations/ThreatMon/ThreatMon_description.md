@@ -13,8 +13,6 @@ The Threatmon integration allows Cortex XSOAR to connect with the Threatmon plat
 - Supports automated playbooks for streamlined response.
 
 ### Commands
-- **test-module**  
-  - Verify connectivity and authentication with the Threatmon API.
 - **threatmon-update-incident-status**  
   - Update the status of a specific Threatmon incident using its unique ID.
 
