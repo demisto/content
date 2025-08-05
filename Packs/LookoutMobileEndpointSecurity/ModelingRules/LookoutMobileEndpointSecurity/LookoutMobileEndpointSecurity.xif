@@ -1,0 +1,28 @@
+[RULE: common_lookout_fields]
+alter //General mapping for all event types.
+    xdm.event.id = id,
+    xdm.event.type = type,
+    xdm.event.operation = if(change_type = "CREATED", XDM_CONST.OPERATION_TYPE_CREATE, change_type = "UPDATED", XDM_CONST.OPERATION_TYPE_UPDATE, change_type = "DELETED", XDM_CONST.OPERATION_TYPE_DELETE, change_type),
+    xdm.target.user.ou = enterprise_guid;
+
+
+[MODEL: dataset="lookout_mobile_endpoint_security_raw"]
+//Device event type mapping
+filter type = "DEVICE"
+| alter
+    get_device_platform = device -> platform,
+    get_device_info_group_guids = device -> info.device_group_guids[]
+
+| alter //xdm mapping
+    xdm.alert.severity = device -> status.security_status{},
+    xdm.target.host.device_id = device -> guid,
+    xdm.target.host.os_family = if(get_device_platform CONTAINS "IOS", XDM_CONST.OS_FAMILY_IOS, get_device_platform CONTAINS "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, get_device_platform),
+    xdm.target.user.upn = device -> info.email{},
+    xdm.target.user.groups = get_device_info_group_guids,
+    xdm.target.host.manufacturer = device -> hardware.manufacturer{},
+    xdm.target.host.device_model = device -> hardware.model{},
+    xdm.target.host.os = device -> sofware.os_version{},
+    xdm.target.file.filename = device -> client.package_name{},
+    xdm.observer.unique_identifier = device -> info.mdm_connector_id{},
+    xdm.observer.type = device -> info.mdm_type{}
+| call common_lookout_fields;

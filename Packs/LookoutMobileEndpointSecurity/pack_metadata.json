@@ -7,11 +7,16 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Security",
+        "Cloud Services",
+        "Data Enrichment & Threat Intelligence",
+        "Endpoint",
+        "Network Security"
     ],
-    "tags": [],
+    "tags": ["Alerts", "Attack", "Breach", "Malware", "Network", "Security", "Threat Intelligence", "Data Source"],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["lookout", "lookout mes", "mes", "mobile endpoint security"],
     "marketplaces": [
         "marketplacev2",
         "platform"
