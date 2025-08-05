@@ -70,9 +70,9 @@ def parse_args(args: dict) -> dict:
     return args
     
     
-def get_search_context(context: list, key: str) -> str:
+def get_from_context(context: list, key: str) -> str:
     """
-    Get results from search context
+    Get results from context
 
     Args:
         context (list): The commands context
@@ -107,9 +107,9 @@ def add_to_context(context: dict, sub_key: str, new_key: str, new_value: str|lis
             add_to_context(val, sub_key, new_key, new_value)
         
             
-def parse_search_results(search_results: str) -> list[dict]:
+def parse_results(search_results: str) -> list[dict]:
     """
-    Parse search results into a structured list of dictionaries for the context
+    Parse results into a structured list of dictionaries for the context
 
     Args:
         search_results (str): The search results string
@@ -132,12 +132,14 @@ def parse_search_results(search_results: str) -> list[dict]:
     return parsed_results
 
 
-def wait_for_search(args: dict) -> Union[dict, list]:
+def wait_for_results(args: dict, cmd: str, result_key: str) -> Union[dict, list]:
     """
-    Wait for results from o365-sc-get-search
+    Wait for results from o365-sc-get-search or o365-sc-get-search-action
 
     Args:
         args (dict): The script args
+        cmd (str): The command to execute
+        result_key (str): The key name where the results are stored
 
     Returns:
         Union[dict, list]: Command execution results
@@ -154,13 +156,13 @@ def wait_for_search(args: dict) -> Union[dict, list]:
             return_error(f"Polling timed out after {int(passed_time)} seconds")
             
         # get search status and results
-        get_search_res = demisto.executeCommand(CMD_GET_SEARCH, args)
-        search_status = get_search_context(get_search_res, "Status")
-        search_results = parse_search_results(get_search_context(get_search_res, "SuccessResults"))
+        results = demisto.executeCommand(cmd, args)
+        search_status = get_from_context(results, "Status")
+        search_results = parse_results(get_from_context(results, result_key))
     
         # if status and results show command finished, return
         if (search_status == "Completed") and (len(search_results) > 2):
-            return get_search_res
+            return results
         
         time.sleep(interval)
 
@@ -186,8 +188,8 @@ def main():
             return_error("Security and Compliance module is not enabled")
             
         # check if search exists
-        get_search_res = demisto.executeCommand(CMD_GET_SEARCH, args)
-        search_name = get_search_context(get_search_res, "Name")
+        search_cmd_results = demisto.executeCommand(CMD_GET_SEARCH, args)
+        search_name = get_from_context(search_cmd_results, "Name")
         
         run_new_search = False
         
@@ -200,21 +202,17 @@ def main():
             demisto.executeCommand(CMD_DEL_SEARCH, args)
             run_new_search = True
         
-        # create the new search
+        # create and start a new search
         if run_new_search:
             # TODO - verify input params
-            new_search_res = demisto.executeCommand(CMD_NEW_SEARCH, args)
-            search_name = get_search_context(new_search_res, "Name")
-            
-            # start the new search
-            if search_name == args.get("search_name"):
-                demisto.executeCommand(CMD_START_SEARCH, args)
-                get_search_res = wait_for_search(args)
+            demisto.executeCommand(CMD_NEW_SEARCH, args)
+            demisto.executeCommand(CMD_START_SEARCH, args)
+            search_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH, result_key="SuccessResults")
                 
-        # get updated search valuesT_SEARCH, args)
-        search_name = get_search_context(get_search_res, "Name")
-        search_status = get_search_context(get_search_res, "Status")
-        search_results = parse_search_results(get_search_context(get_search_res, "SuccessResults"))
+        # get updated search values
+        search_name = get_from_context(search_cmd_results, "Name")
+        search_status = get_from_context(search_cmd_results, "Status")
+        search_results = parse_results(get_from_context(search_cmd_results, "SuccessResults"))
         
         # add search values to context
         add_to_context(context=context, sub_key=CONTEXT_SEARCH_KEY, new_key=CONTEXT_NAME_KEY, new_value=search_name)
@@ -231,10 +229,29 @@ def main():
                 )
             return
         
-        new_search_action_res = demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
-        print(new_search_action_res)
-        # print(new_search_action_res)
-        # get_search_action_res = demisto.executeCommand(CMD_GET_SEARCH_ACTION, args)
+        # start search action and get preview
+        demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
+        preview_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH_ACTION, result_key="Results")
+        
+        # get preview result values
+        preview_name = get_from_context(preview_cmd_results, "Name")
+        preview_status = get_from_context(preview_cmd_results, "Status")
+        preview_results = parse_results(get_from_context(preview_cmd_results, "Results"))
+        
+        # add search values to context
+        add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_NAME_KEY, new_value=preview_name)
+        add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_STATUS_KEY, new_value=preview_status)
+        add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_RESULTS_KEY, new_value=preview_results)
+        
+        # return search and preview results
+        return_results(
+            CommandResults(
+                outputs_prefix=CONTEXT_MAIN_KEY,
+                outputs=context,
+                readable_output=
+                f"Search [{search_name}] returned with status [{search_status}]\n" +
+                f"Preview [{preview_name}] returned with status [{preview_status}]")
+            )
     
 
     except Exception as e:
