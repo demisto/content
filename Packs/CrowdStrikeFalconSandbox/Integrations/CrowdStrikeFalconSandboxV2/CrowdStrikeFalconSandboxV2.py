@@ -5,7 +5,7 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from requests import Response
-
+from urllib.parse import urlparse, urlunparse
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 SEARCH_TERM_QUERY_ARGS = (
@@ -600,9 +600,11 @@ def main() -> None:
     server_url = params.get("serverUrl", "") + "/api/v2"
     proxy = params.get("proxy", False)
 
-    if server_url.startswith("https://www.hybrid-analysis.com"):
-        server_url = server_url.replace("https://www.hybrid-analysis.com", "https://hybrid-analysis.com")
-
+    parsed_url = urlparse(server_url)
+    if parsed_url.hostname == "www.hybrid-analysis.com":
+        # Replace hostname and reconstruct the URL
+        parsed_url = parsed_url._replace(netloc="hybrid-analysis.com")
+        server_url = urlunparse(parsed_url)
     demisto_command = demisto.command()
     demisto.debug(f"Command being called is {demisto_command}")
     try:
