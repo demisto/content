@@ -38,7 +38,8 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 7. Mark **Fetch Events** and select the desire event types to fetch (Audit and Syslog Transactions)
 
 #### Important
-To use the **Case** API endpoint, users must have one of the following roles:  
+To use ServiceNow on Cortex XSIAM, ensure your user account has the **rest_api_explorer** and **web_service_admin** roles.
+These roles are required to make API calls. To use the **Case** API endpoint, users must have one of the following roles:  
 * csm_ws_integration 
 * sn_customerservice.customer
 * sn_customerservice.consumer
