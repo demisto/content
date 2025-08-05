@@ -8,6 +8,8 @@ from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from boto3 import Session
+import re
+
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -15,6 +17,9 @@ DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/ce
 DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
+MAX_FILTERS = 50
+MAX_FILTER_VALUES = 200
+MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
@@ -27,7 +32,9 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
 
 def parse_filter_field(filter_string: str | None):
     """
-    Parses a list representation of name and values with the form of 'name=<name>,values=[<value>].
+    Parses a list representation of name and values with the form of 'name=<name>,values=<values>.
+    You can specify up to 50 filters and up to 200 values per filter in a single request.
+    Filter strings can be up to 255 characters in length.
     Args:
         filter_list: The name and values list
 
@@ -36,11 +43,23 @@ def parse_filter_field(filter_string: str | None):
     """
     filters = []
     list_filters = argToList(filter_string, separator=";")
-    regex = re.compile(r"name=([\w\d_:.-]),values=([ /\w\d@_,.]+)", flags=re.I)
+    if len(list_filters) > MAX_FILTERS:
+        list_filters = list_filters[0:50]
+        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    # Continue parsing the first 50 filters as per AWS specification
+    # Regex limitation is a result of MAX_FILTER_VALUES*MAX_CHAR_LENGTH_FOR_FILTER_VALUE
+    regex = re.compile(r"name=([\w\d_:.-]{1,50}),values=([ /\w\d@_,.*-:]{1,51200})", flags=re.I)
     for filter in list_filters:
         match_filter = regex.match(filter)
         if match_filter is None:
             demisto.debug(f"could not parse filter: {filter}")
+            continue
+        if len(match_filter.group(2).split(",")) > MAX_FILTER_VALUES:
+            demisto.debug(
+                f"Number of filter values for filter {match_filter.group(1)} is larger than {MAX_FILTER_VALUES},"
+                f" parsing only first {MAX_FILTER_VALUES} values."
+            )
+            filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0 : MAX_FILTER_VALUES - 1]})
             continue
         filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")})
 
@@ -668,7 +687,7 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        def parse_port_range(port: str) -> tuple[int | None, int | None]:
             """Parse port argument which can be a single port or range (min-max)."""
             if not port:
                 return None, None
@@ -718,7 +737,7 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        def parse_port_range(port: str) -> tuple[int | None, int | None]:
             """Parse port argument which can be a single port or range (min-max)."""
             if not port:
                 return None, None
@@ -768,7 +787,7 @@ class EC2:
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        def parse_port_range(port: str) -> tuple[int | None, int | None]:
             """Parse port argument which can be a single port or range (min-max)."""
             if not port:
                 return None, None
@@ -965,7 +984,7 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+        def parse_port_range(port: str) -> tuple[int | None, int | None]:
             """Parse port argument which can be a single port or range (min-max)."""
             if not port:
                 return None, None
@@ -1532,10 +1551,10 @@ def get_service_client(
     params: dict = {},
     args: dict = {},
     command: str = "",
-    session: Optional[Session] = None,
+    session: Session | None = None,
     service_name: str = "",
-    config: Optional[Config] = None,
-) -> tuple[BotoClient, Optional[Session]]:
+    config: Config | None = None,
+) -> tuple[BotoClient, Session | None]:
     """
     Create and configure a boto3 client for the specified AWS service.
 
