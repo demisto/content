@@ -277,7 +277,9 @@ def handle_prev_fetch_failures(client: Client, last_run: dict, event_type: str, 
     failure_data = demisto.get(last_run, f"{event_type}.failures", defaultParam=[])
     if failure_data:
         # each failure entry are with the structure {'start_time': ..., 'end_time': ..., 'offset': ..., 'limit':...}
-        demisto.debug(f"[{coord_id}] there is {len(failure_data)} failure records for {event_type=}, {failure_data=}, handle them")
+        demisto.debug(
+            f"[{coord_id}] there is {len(failure_data)} failure records for {event_type=}, {failure_data=}, handle them"
+        )
         for failure_entry in failure_data:
             tasks.append(
                 handle_event_type_async(
@@ -339,15 +341,13 @@ async def handle_event_type_async(
     # If this is a retry of a previous failure, log it.
     if is_re_fetch_failed_fetch:
         demisto.debug(f"[{coord_id}] Retrying failed fetch for type={event_type}, params={params}")
-    
+
     demisto.debug(f"[{coord_id}] Starting fetch_and_send_events_async")
     success_res, failures = await fetch_and_send_events_async(
         client, event_type, params, limit, send_to_xsiam, is_re_fetch_failed_fetch
     )
-    demisto.debug(
-        f"[{coord_id}] Completed fetch_and_send_events_async - success: {len(success_res)}, failures: {len(failures)}"
-    )
-    
+    demisto.debug(f"[{coord_id}] Completed fetch_and_send_events_async - success: {len(success_res)}, failures: {len(failures)}")
+
     if is_re_fetch_failed_fetch and success_res:
         demisto.debug(f"[{coord_id}] Retry succeeded for type={event_type}, params={params}")
 
@@ -363,7 +363,7 @@ async def handle_event_type_async(
         status_code = None
         if hasattr(e, "exception") and hasattr(e.exception, "status"):
             status_code = getattr(e.exception, "status", None)
-        
+
         # Handle based on status code if available, otherwise use message strings
         error_message = str(e)
         if status_code == 401 or "Unauthorized" in e.message:
@@ -406,7 +406,7 @@ async def handle_event_type_async(
             res_dict |= next_fetch_data
         else:
             res_dict |= {"next_fetch_start_time": end_time}
-    
+
     demisto.debug(f"[{coord_id}] Completed event_type processing, returning {len(events)} events")
     return event_type, res_dict
 
@@ -529,6 +529,7 @@ async def handle_fetch_and_send_all_events(
 
     # Create main coordination ID for async logging traceability
     import time
+
     coord_id = f"coord_{int(time.time() * 1000) % 10000}"
     demisto.debug(f"[{coord_id}] Starting events fetch with {page_size=}, {limit=}")
 
@@ -547,9 +548,13 @@ async def handle_fetch_and_send_all_events(
         end_time = last_run_current_type.get("next_fetch_end_time", epoch_current_time)
         offset = int(last_run_current_type.get("next_fetch_offset", 0))
         demisto.debug(f"[{coord_id}] Scheduling async task for {event_type}: start={start_time}, end={end_time}, offset={offset}")
-        new_tasks.append(handle_event_type_async(client, event_type, start_time, end_time, offset, limit, send_to_xsiam, coord_id))
+        new_tasks.append(
+            handle_event_type_async(client, event_type, start_time, end_time, offset, limit, send_to_xsiam, coord_id)
+        )
 
-    demisto.debug(f"[{coord_id}] Starting asyncio.gather for {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks")
+    demisto.debug(
+        f"[{coord_id}] Starting asyncio.gather for {len(prev_fetch_failure_tasks)} retry tasks + {len(new_tasks)} new tasks"
+    )
     results = await asyncio.gather(*prev_fetch_failure_tasks, *new_tasks, return_exceptions=True)
     success_tasks = list(filter(lambda res: not isinstance(res, BaseException), results))
     failures_tasks = list(filter(lambda res: isinstance(res, BaseException), results))

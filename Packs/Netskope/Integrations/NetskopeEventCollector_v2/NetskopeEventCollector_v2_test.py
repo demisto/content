@@ -133,7 +133,7 @@ async def test_get_events_command(mocker):
     client = Client(BASE_URL, "dummy_token", False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     # Instead of patching get_all_events (not present in v2), directly test the async event fetch logic
     mocker.patch.object(client, "get_events_data_async", return_value={"result": MOCK_ENTRY})
-    result = await handle_event_type_async(client, "alert", "start", "end", 0, 10, False)
+    result = await handle_event_type_async(client, "alert", "start", "end", 0, 10, False, "test_coord")
     assert result is not None, "Expected result to not be None"
 
 
@@ -267,7 +267,7 @@ async def test_incident_endpoint(mocker):
     request_mock = mocker.patch.object(
         Client, "get_events_data_async", return_value={"result": EVENTS_RAW["result"], "wait_time": 0}
     )
-    await handle_event_type_async(client, "incident", "next", "end", 0, 50, False)
+    await handle_event_type_async(client, "incident", "next", "end", 0, 50, False, "test_coord")
     # Check that the mock was called - the exact arguments depend on the implementation
     assert request_mock.called, "Expected get_events_data_async to be called"
     args, kwargs = request_mock.call_args
