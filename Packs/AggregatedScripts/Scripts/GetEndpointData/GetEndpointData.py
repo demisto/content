@@ -325,7 +325,7 @@ class EndpointCommandRunner:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
             else:
-                demisto.debug(f"Skipping result with entry type {entry_type}, is not supported.")
+                demisto.debug(f"Skipping result with entry type {entry_type}, type is not supported.")
 
         human_readable = "\n".join(human_readable_outputs)
         human_readable_entry: list[CommandResults] = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
