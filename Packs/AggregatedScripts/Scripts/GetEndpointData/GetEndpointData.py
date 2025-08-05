@@ -237,17 +237,12 @@ class EndpointCommandRunner:
             return [], []
 
         raw_outputs = self.run_execute_command(command, args)
-        demisto.debug(
-            f"NIV 0 {raw_outputs=}")  # TODO: remove
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
 
-        demisto.debug(
-            f"NIV 1 {entry_context=}, {human_readable=}, {readable_errors=}")  # TODO: remove
-        if readable_errors:
+        if not entry_context:
             endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
             return readable_errors, endpoints
         endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
-        demisto.debug(f"NIV 2 {endpoints=}, {human_readable=}, {command=}")  # TODO: remove
         endpoints.extend(get_endpoint_not_found(command, human_readable[0].readable_output or "", endpoints, endpoint_args))
 
         if command.post_processing:
@@ -326,9 +321,11 @@ class EndpointCommandRunner:
             entry_type = entry.get("Type")
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
                 command_error_outputs.append(hr_to_command_results(command, args, entry.get("Contents"), entry_type=entry_type))  # type: ignore[arg-type]
-            else:
-                command_context_outputs.append(entry.get("EntryContext") or {})
+            elif entry_type == EntryType.NOTE:
+                command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
+            else:
+                demisto.debug(f"Skipping result with entry type {entry_type}, is not supported.")
 
         human_readable = "\n".join(human_readable_outputs)
         human_readable_entry: list[CommandResults] = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
