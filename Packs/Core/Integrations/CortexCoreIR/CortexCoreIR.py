@@ -1151,6 +1151,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-incidents":
             return_outputs(*get_incidents_command(client, args))
+        
+        elif command == "core-get-alerts":
+            return_results(get_alerts_by_filter_command(client, args))
 
         elif command == "core-terminate-process":
             if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION, build_number=TERMINATE_BUILD_NUM):
