@@ -160,6 +160,17 @@ def get_api_id(args: dict[str, Any]) -> str:
     else:
         raise ValueError("Must supply JobID or environmentID and file")
 
+def get_scan_keys(args: dict[str, Any]) -> List[str]:
+    files = args.get("file","").split(",")
+    env_ids = (args.get("environmentId", "") or args.get("environmentID", "")).split(",")
+    job_ids = args.get("JobID", "").split(",")
+
+    keys = []
+    for f, e, j in zip(files, env_ids, job_ids):
+        keys.append(get_api_id({"file": f, "environmentId": e, "JobID": j}))
+    return keys
+
+
 
 def test_module(client: Client, _) -> str:
     """Tests API connectivity and authentication'
@@ -281,7 +292,7 @@ def submission_response(client, response, polling) -> List[CommandResults]:
         return [submission_res]
     else:
         return_results(submission_res)  # return early
-    return crowdstrike_scan_command({"job_id": response.get("job_id"), "polling": True}, client)
+    return crowdstrike_scan_command({"JobID": response.get("job_id"), "polling": True}, client)
 
 
 def crowdstrike_submit_url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
@@ -399,13 +410,9 @@ def crowdstrike_search_command(client: Client, args: dict[str, Any]) -> List[Com
 @polling_function("cs-falcon-sandbox-scan")
 def crowdstrike_scan_command(args: dict[str, Any], client: Client):
     scan_response = []
-    if not args.get("file") and not args.get("job_id"):
-        raise ValueError("No file or job_id provided.")
-    if args.get("file") and args.get("job_id"):
-        raise ValueError("Must supply either file or job_id, not both.")
-    scan_objects =  args.get("file") or args.get("job_id")
-    for scan_object in scan_objects.split(","):
-        scan_response.append(client.scan(scan_object))
+    scan_keys = get_scan_keys(args)
+    for key in scan_keys:
+        scan_response.append(client.scan(key))
 
     def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(
@@ -605,7 +612,7 @@ def main() -> None:
             command_func = test_module
         elif demisto_command in ["cs-falcon-sandbox-search", "crowdstrike-search"]:
             command_func = crowdstrike_search_command
-        elif demisto_command in ["cs-falcon-sandbox-report-summary", "cs-falcon-sandbox-scan", "crowdstrike-scan", "file"]:
+        elif demisto_command in ["cs-falcon-sandbox-scan", "crowdstrike-scan", "file"]:
             return_results(crowdstrike_scan_command(args, client))
             return
         elif demisto_command in ["crowdstrike-get-environments", "cs-falcon-sandbox-get-environments"]:
