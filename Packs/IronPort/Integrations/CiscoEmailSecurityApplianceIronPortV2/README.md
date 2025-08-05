@@ -1712,7 +1712,6 @@ There is no context output for this command.
 
 **test_dictionary deleted successfully.**
 
-
 ### cisco-esa-dictionary-words-update
 
 ***
@@ -1735,8 +1734,11 @@ Modify words in a specified content dictionary. Unlike `cisco-esa-dictionary-edi
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-dictionary-words-update dictionary_name=test words=['a1',1]```
+
 #### Human Readable Output
 
 >Added successfully to test.
@@ -1762,8 +1764,11 @@ Delete one or more URL lists. You cannot delete lists that are in use.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-url-list-delete url_list_names=testurllist```
+
 #### Human Readable Output
 
 >URL List(s) `testurllist` were successfully deleted.
@@ -1790,8 +1795,11 @@ Create a new URL list.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-url-list-create url_list_name=testurllist urls=test.com```
+
 #### Human Readable Output
 
 >`testurllist` was successfully created.
@@ -1815,8 +1823,11 @@ Release messages associated with a specific PVO quarantine rule. This command re
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-pvo-quarantine-message-release rule_ids=12```
+
 #### Human Readable Output
 
 >Messages were successfully released from rule(s): 12
@@ -1855,8 +1866,11 @@ List all PVO quarantine rules or retrieve a specific rule by ID. PVO rules deter
 | CiscoESA.QuarantineRule.rid | Number | The rule identifier associated with the quarantine entry. |
 
 #### Command example
+
 ```!cisco-esa-pvo-quarantine-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -1876,10 +1890,10 @@ List all PVO quarantine rules or retrieve a specific rule by ID. PVO rules deter
 #### Human Readable Output
 
 >### PVO Quarantine Rule List
+>
 >|Rule Id|Rule Description|Number Of Messages|Capacity|Average Message Size|
 >|---|---|---|---|---|
 >| Malware: Malware | N/A | 6 | 0.0% | 320KB |
-
 
 ### cisco-esa-incoming-policy-user-list
 
@@ -1940,8 +1954,11 @@ Retrieve all URL lists or a specific list by name. URL lists define allowed or b
 | CiscoESA.URLList.urls | String | The URLs in the list. |
 
 #### Command example
+
 ```!cisco-esa-url-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -1960,10 +1977,10 @@ Retrieve all URL lists or a specific list by name. URL lists define allowed or b
 #### Human Readable Output
 
 >### URL List
+>
 >|Name|Urls|Urls Count|Used By|
 >|---|---|---|---|
 >| test | blabla.com | 1 | Incoming Content Filters |
-
 
 ### cisco-esa-message-remediation-details-get
 
@@ -2004,8 +2021,11 @@ Retrieve historical remediation actions taken on messages, such as message delet
 | CiscoESA.MessageRemediation.message_details.msg_read | String | Indicates whether the message was read \(0 = unread, 1 = read, or N/A\). |
 
 #### Command example
+
 ```!cisco-esa-message-remediation-details-get message_ids=123 injection_connection_id=123 serial_number=123 limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -2043,12 +2063,12 @@ Retrieve historical remediation actions taken on messages, such as message delet
 
 #### Human Readable Output
 
->### Message Remediation Report Details Summary:
+>### Message Remediation Report Details Summary
+>
 >|Delivered _ At|Mid|From _ Email|Recipient _ Email|Mor _ Status|Msg _ Read|
 >|---|---|---|---|---|---|
 >| 1584574165 | 3 | test@test.com | test@test.com | Success | 0 |
 >| 1584574165 | 3 | test@test.com | test@test.com | Success | 0 |
-
 
 ### cisco-esa-url-list-update
 
@@ -2072,8 +2092,11 @@ Update URLs in an existing URL list. This command overrides all the URL entries 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-url-list-update url_list_name=testurllist urls=test2.com```
+
 #### Human Readable Output
 
 >`testurllist` was successfully updated.
@@ -2109,8 +2132,11 @@ Retrieve all file hash lists or the contents of a specific list. File hash lists
 | CiscoESA.FileHashList.filehashes_count | String | The number of hashes in the list. |
 
 #### Command example
+
 ```!cisco-esa-file-hash-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -2132,10 +2158,10 @@ Retrieve all file hash lists or the contents of a specific list. File hash lists
 #### Human Readable Output
 
 >### File Hash List
+>
 >|Name|Filehashes|Filehashes Count|List Type|
 >|---|---|---|---|
 >| test2 | 44444444444444444444444444444443,<br/>44444444444444444444444444444444,<br/>44444444444444444444444444444445 | 3 | any |
-
 
 ### cisco-esa-incoming-policy-user-add
 
@@ -2163,6 +2189,7 @@ Add sender and recipient entries to an incoming mail policy.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-esa-file-hash-update
 
 ***
@@ -2185,8 +2212,11 @@ Updates the provided file hash list. This command overrides all existing hash en
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-file-hash-update file_hash_list_name=testfilehash filehashes=2286f6ffea7d0e58dcb3ecfd874041b2```
+
 #### Human Readable Output
 
 >`testfilehash` was successfully updated.
@@ -2210,8 +2240,11 @@ Delete messages associated with a specific PVO quarantine rule. This command del
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-esa-pvo-quarantine-message-delete rule_ids=12```
+
 #### Human Readable Output
 
 >Messages were successfully deleted from rule(s): 12
@@ -2240,6 +2273,7 @@ Create a new file hash list with specified hash entries.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-esa-incoming-policy-user-update
 
 ***
@@ -2266,6 +2300,7 @@ Update sender and recipient entries in an existing incoming mail policy. This co
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-esa-message-connection-details-get
 
 ***
@@ -2298,8 +2333,11 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 | CiscoESA.MessageConnection.sbrs | String | Sender Base Reputation Score \(SBRS\) of the sender IP. |
 
 #### Command example
+
 ```!cisco-esa-message-connection-details-get message_ids=123 injection_connection_id=123 serial_number=123 limit=1```
+
 #### Context Example
+
 ```json
 {
     "CiscoESA": {
@@ -2326,6 +2364,7 @@ Retrieve metadata about the SMTP connection and transmission behavior of specifi
 #### Human Readable Output
 
 >### Message Connection Report Details Summary: Sender group: RELAYLIST
+>
 >|Timestamp|Description|
 >|---|---|
 >| 16 Nov 2018 11:01:08 (GMT) | ICID 19213 sender_group: RELAYLIST sender_ip: 1.11.11.1, <br/>                 sbrs: not enabled |

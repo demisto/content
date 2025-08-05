@@ -1275,9 +1275,7 @@ def test_file_hash_update_command(mock_client, requests_mock):
         ("pvo_quarantine_list.json", {"type": "pvo"}, "Malware: Malware"),
     ],
 )
-def test_pvo_quarantine_list_command(
-    response_file_name, args, expected_rule_id, mock_client, requests_mock
-):
+def test_pvo_quarantine_list_command(response_file_name, args, expected_rule_id, mock_client, requests_mock):
     from CiscoEmailSecurityApplianceIronPortV2 import pvo_quarantine_list_command
 
     url = f"{BASE_URL}/quarantine/rules"
@@ -1321,9 +1319,7 @@ def test_pvo_quarantine_delete_command(mock_client, requests_mock):
         )
     ],
 )
-def test_user_entry_list_command(
-    response_file_name, args, expected_sender, mock_client, requests_mock
-):
+def test_user_entry_list_command(response_file_name, args, expected_sender, mock_client, requests_mock):
     """
     Scenario: Retrieve user entry list for a given mail policy.
     """
@@ -1338,8 +1334,7 @@ def test_user_entry_list_command(
 
     # Look through sender domain entries explicitly
     found = any(
-        expected_sender in entry.get("sender_config", {}).get("sender", {}).get("domain_entries", [])
-        for entry in result.outputs
+        expected_sender in entry.get("sender_config", {}).get("sender", {}).get("domain_entries", []) for entry in result.outputs
     )
 
     assert found, f"Expected sender {expected_sender} not found in outputs"
