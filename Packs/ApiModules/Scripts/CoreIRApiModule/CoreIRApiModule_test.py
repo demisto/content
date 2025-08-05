@@ -4264,6 +4264,7 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
             else:
                 mock_return_warning.assert_not_called()
 
+
 def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
     """
     Given:
@@ -4286,7 +4287,7 @@ def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
             {"reply": {"action_id": "fake_action_id"}},  # mock for isolate_endpoint
         ],
     )
-    mock_isolate = mocker.patch.object(test_client, "isolate_endpoint", return_value={"action_id": "fake_action_id"})
+    mocker.patch.object(test_client, "isolate_endpoint", return_value={"action_id": "fake_action_id"})
 
     args = {"endpoint_id": "1111", "suppress_disconnected_endpoint_error": True}
     result = isolate_endpoint_command(test_client, args)

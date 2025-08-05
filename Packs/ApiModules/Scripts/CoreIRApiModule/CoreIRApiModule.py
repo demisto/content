@@ -1482,7 +1482,6 @@ def run_polling_command(
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get("interval_in_seconds", 60))
     timeout_in_seconds = int(args.get("timeout_in_seconds", 600))
-    demisto.debug(f"Running command {command_function} with args: {args}")
     if command_decision_field not in args:
         # create new command run
         command_results = command_function(client, args)
@@ -1779,23 +1778,14 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
         raise ValueError(f"Error: Endpoint {endpoint_id} was not found")
-    demisto.debug(f"CoreIR: isolate_endpoint_command {endpoint=}")
+
     endpoint = endpoint[0]
     endpoint_status = endpoint.get("endpoint_status")
     is_isolated = endpoint.get("is_isolated")
     if is_isolated == "AGENT_ISOLATED":
-        return CommandResults(readable_output=f"Endpoint {endpoint_id} already isolated.",
-                              outputs={
-                                  f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                                  f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
-                              }
-                              )
+        return CommandResults(readable_output=f"Endpoint {endpoint_id} already isolated.")
     if is_isolated == "AGENT_PENDING_ISOLATION":
-        return CommandResults(readable_output=f"Endpoint {endpoint_id} pending isolation.",
-                              outputs={
-                                  f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                                  f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
-                              })
+        return CommandResults(readable_output=f"Endpoint {endpoint_id} pending isolation.")
     if endpoint_status == "UNINSTALLED":
         raise ValueError(f"Error: Endpoint {endpoint_id}'s Agent is uninstalled and therefore can not be isolated.")
     if endpoint_status == "DISCONNECTED" and disconnected_should_return_error:
@@ -1805,8 +1795,11 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         raise ValueError(f"Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.")
     try:
         result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
-        readable_output = f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}." \
-            if endpoint_status == "DISCONNECTED" else f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n"
+        readable_output = (
+            f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}."
+            if endpoint_status == "DISCONNECTED"
+            else f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n"
+        )
 
         return CommandResults(
             readable_output=readable_output,
