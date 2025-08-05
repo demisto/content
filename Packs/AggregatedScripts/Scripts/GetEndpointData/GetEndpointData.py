@@ -1038,16 +1038,21 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
     Returns:
         None: The function updates the generic_command object by adding the 'using-brand' argument with filtered brands.
     """
-    predefined_brands = Brands.get_all_values()
-    brands_to_remove = []
-    if not brands_to_run:  # default is all brands
-        brands_to_remove = predefined_brands
-    else:
-        for brand in brands_to_run:
-            if brand in predefined_brands:
-                # we want to remove from the generic command run only the predefined brands
-                brands_to_remove.append(brand)
-    brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(brands_to_remove)
+    predefined_brands = set(Brands.get_all_values())
+
+    if brands_to_run:  # brands provided
+        brands_to_run_set = set(brands_to_run)
+        # get all the predefined brands from the brands_to_run
+        brands_to_remove = predefined_brands.intersection(brands_to_run_set)
+        # find all the brands from brands_to_run that are not predefined
+        brands_to_run_for_generic_command = list(brands_to_run_set.difference(brands_to_remove))
+
+        # If all brands_to_run were predefined, run all available brand on generic command beside the predefined brands.
+        if not brands_to_run_for_generic_command:
+            brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(brands_to_remove))
+    else:  # No brands provided, run on all active non-predefined brands
+        brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(predefined_brands))
+
     joined_integrations = ",".join(brands_to_run_for_generic_command)
     generic_command.create_additional_args({"using-brand": joined_integrations})
 
