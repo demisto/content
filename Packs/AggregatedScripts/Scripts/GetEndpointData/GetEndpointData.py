@@ -243,7 +243,7 @@ class EndpointCommandRunner:
 
         demisto.debug(
             f"NIV 1 {entry_context=}, {human_readable=}, {readable_errors=}")  # TODO: remove
-        if not entry_context:
+        if readable_errors:
             endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
             return readable_errors, endpoints
         endpoints = entry_context_to_endpoints(command, entry_context, self.add_additional_fields)
@@ -327,7 +327,7 @@ class EndpointCommandRunner:
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
                 command_error_outputs.append(hr_to_command_results(command, args, entry.get("Contents"), entry_type=entry_type))  # type: ignore[arg-type]
             else:
-                command_context_outputs.append(entry.get("EntryContext", {}))
+                command_context_outputs.append(entry.get("EntryContext") or {})
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
 
         human_readable = "\n".join(human_readable_outputs)
