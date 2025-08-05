@@ -1731,7 +1731,7 @@ def list_mails_command(client: MsGraphMailBaseClient, args) -> CommandResults | 
 
     next_page = raw_response[-1].get("@odata.nextLink")
 
-    if not (mail_context := GraphMailUtils.build_mail_object(raw_response, user_id=args.get("user_id"))):
+    if not (mail_context := GraphMailUtils.build_mail_object(raw_response, get_body=True, user_id=args.get("user_id"))):
         return CommandResults(readable_output="### No mails were found")
 
     partial_result_title = ""
