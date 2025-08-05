@@ -1121,17 +1121,14 @@ def test_get_indicator_results(
 
 
 @pytest.mark.parametrize(
-    "demisto_args, cmd_return_value, cmd_expected_md, cmd_expected_outputs",
+    "demisto_args",
     [
         (
-            {"id": "1"},
-            util_load_json("test_data/get_warninglist_response.json"),
-            "| ID | Name | Type | Description | Version | Enabled | Default | Category | Types |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | Hello XSOAR! | string | The Quick Brown Fox Jumped Over The Lazy Dog | 1 | false | false | false_positive | attrib1, attrib2 |",  # noqa: E501
-            util_load_json("test_data/get_warninglist_outputs.json"),
+            {"id": "1"}
         ),
     ],
 )
-def test_get_warninglist(demisto_args: dict, cmd_return_value: dict, cmd_expected_md, cmd_expected_outputs, mocker):
+def test_get_warninglist(demisto_args: dict, mocker):
     """
     Given:
     - A MISP Warninglist (json).
@@ -1142,15 +1139,16 @@ def test_get_warninglist(demisto_args: dict, cmd_return_value: dict, cmd_expecte
     Then:
     - Ensure that the output is valid and was parsed correctly.
     """
+    mock_misp(mocker)
     from MISPV3 import get_warninglist_command
 
-    mock_misp(mocker)
-    # mock_warninglists =
-    mocker.patch.object(
-        mocker,
-        "get_warninglist",
-        return_value=cmd_return_value,
-    )
+    warninglist_response = util_load_json("test_data/get_warninglist_response.json")
+    with open("test_data/get_warninglist_outputs.md", encoding="utf-8") as f:
+        warninglist_readable_output = f.read()
+    warninglist_outputs = util_load_json("test_data/get_warninglist_outputs.json")
+    mocker.patch("pymisp.ExpandedPyMISP.get_warninglist", return_value=warninglist_response)
     result = get_warninglist_command(demisto_args)
-    assert result.readable_output == cmd_expected_md
-    assert result.outputs == cmd_expected_outputs
+
+    assert result.readable_output == warninglist_readable_output
+    assert result.outputs_prefix == "MISP.Warninglist"
+    assert result.outputs == warninglist_outputs

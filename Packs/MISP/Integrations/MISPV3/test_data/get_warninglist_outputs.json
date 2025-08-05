@@ -7,22 +7,22 @@
     "Enabled": false,
     "Default": false,
     "Category": "false_positive",
-    "Types": [
+    "Attributes": [
         "attrib1",
         "attrib2"
     ],
     "Entries": [
         {
-            "id": 12345,
-            "value": "test",
-            "warninglist_id": 1,
-            "comment": null
+            "ID": 12345,
+            "Value": "test",
+            "WarninglistID": 1,
+            "Comment": null
         },
         {
-            "id": 56789,
-            "value": "another-test",
-            "warninglist_id": 1,
-            "comment": null
+            "ID": 56789,
+            "Value": "another-test",
+            "WarninglistID": 1,
+            "Comment": null
         }
     ]
 }
