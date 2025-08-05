@@ -2,7 +2,7 @@
     "name": "Lookout Mobile Endpoint Security (MES)",
     "description": "Lookout Mobile Endpoint Security (MES) provides visibility and protection against mobile threats with AI-driven mobile security dataset.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,9 +14,23 @@
         "Endpoint",
         "Network Security"
     ],
-    "tags": ["Alerts", "Attack", "Breach", "Malware", "Network", "Security", "Threat Intelligence", "Data Source"],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Breach",
+        "Malware",
+        "Network",
+        "Security",
+        "Threat Intelligence",
+        "Data Source"
+    ],
     "useCases": [],
-    "keywords": ["lookout", "lookout mes", "mes", "mobile endpoint security"],
+    "keywords": [
+        "lookout",
+        "lookout mes",
+        "mes",
+        "mobile endpoint security"
+    ],
     "marketplaces": [
         "marketplacev2",
         "platform"
