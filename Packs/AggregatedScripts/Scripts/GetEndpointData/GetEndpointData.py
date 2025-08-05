@@ -21,7 +21,6 @@ class Brands(StrEnum):
     CORTEX_XDR_IR = "Cortex XDR - IR"
     CORTEX_CORE_IR = "Cortex Core - IR"
     FIREEYE_HX_V2 = "FireEyeHX v2"
-    MICROSOFT_DEFENDER_ATP = "Microsoft Defender Advanced Threat Protection"
     GENERIC_COMMAND = "Generic Command"
 
     @classmethod
@@ -513,19 +512,6 @@ def initialize_commands(
                 "containment_state": "Status",
             },
             not_found_checker="is not correct",
-        ),
-        Command(
-            brand=Brands.MICROSOFT_DEFENDER_ATP,
-            name="endpoint",
-            output_keys=["Endpoint"],
-            output_mapping={
-                "ID": "ID",
-                "Hostname": "Hostname",
-                "IPAddress": "IPAddress",
-                "Status": "Status",
-            },
-            args_mapping={"id": "endpoint_id", "ip": "endpoint_ip"},
-            additional_args={"using-brand": "Microsoft Defender Advanced Threat Protection"},
         ),
     ]
 
@@ -1056,7 +1042,6 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
         None: The function updates the generic_command object by adding the 'using-brand' argument with filtered brands.
     """
     predefined_brands = Brands.get_all_values()
-    print(predefined_brands)
     brands_to_remove = []
     if not brands_to_run:  # default is all brands
         brands_to_remove = predefined_brands
