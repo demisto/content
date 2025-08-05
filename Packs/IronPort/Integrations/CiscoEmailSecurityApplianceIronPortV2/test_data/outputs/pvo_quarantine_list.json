@@ -1,0 +1,19 @@
+{
+    "meta": {
+        "totalAverageMessageSize": "320KB",
+        "totalNumberOfMessages": 6
+    },
+    "data": [
+        {
+            "attributes": {
+                "numberOfMessages": 6,
+                "capacity": "0.0%",
+                "ruleId": "Malware: Malware",
+                "totalSize": "1.9MB",
+                "ruleDescription": "N/A",
+                "averageMessageSize": "320KB"
+            },
+            "rid": 1
+        }
+    ]
+}
