@@ -1024,6 +1024,7 @@ def get_generic_command(single_args_commands: list[Command]) -> Command:
     for command in single_args_commands:
         if command.brand == Brands.GENERIC_COMMAND:
             return command
+    raise ValueError("Generic Command not found in the Commands list.")
 
 
 def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_command: Command):
