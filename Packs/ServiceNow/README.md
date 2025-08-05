@@ -37,6 +37,12 @@ The Create ServiceNow Ticket playbook provides an example for how to use the Mir
 6. Scroll down to the **Collect** section.
 7. Mark **Fetch Events** and select the desire event types to fetch (Audit and Syslog Transactions)
 
+#### Important
+To use the **Case** API endpoint, users must have one of the following roles:  
+* csm_ws_integration 
+* sn_customerservice.customer
+* sn_customerservice.consumer
+
 ### For more information on ServiceNow platform
 
 - [Visit ServiceNow website](https://www.servicenow.com/docs/)
