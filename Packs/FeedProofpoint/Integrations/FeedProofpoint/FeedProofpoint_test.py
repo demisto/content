@@ -48,15 +48,23 @@ def test_fetch_domains_with_invalid_category(requests_mock):
     requests_mock.get("https://example.com/cool/reputation/detailed-domainrepdata.txt", text=data)
     indicators = fetch_indicators_command(client, client.DOMAIN_TYPE)
 
-    # Verify we got all indicators including the one with invalid category
-    assert len(indicators) == 3
+    # Verify we got all indicators including those with invalid categories
+    assert len(indicators) == 5
 
-    # Find the indicator with invalid category (malicious.com)
+    # Test case 1: Non-numeric category (domain name)
     invalid_category_indicator = next((ind for ind in indicators if ind.get("value") == "malicious.com"), None)
     assert invalid_category_indicator is not None
-
-    # Verify the category_name is set to "Unknown" for the invalid category
     assert invalid_category_indicator["rawJSON"]["category_name"] == "Unknown"
+
+    # Test case 2: Out of bounds category index
+    out_of_bounds_indicator = next((ind for ind in indicators if ind.get("value") == "outofbounds.com"), None)
+    assert out_of_bounds_indicator is not None
+    assert out_of_bounds_indicator["rawJSON"]["category_name"] == "Unknown"
+
+    # Test case 3: Empty category
+    empty_category_indicator = next((ind for ind in indicators if ind.get("value") == "empty-category.com"), None)
+    assert empty_category_indicator is not None
+    assert empty_category_indicator["rawJSON"]["category_name"] == "Unknown"
 
 
 @pytest.mark.parametrize("tags", (["tag1, tag2"], []))

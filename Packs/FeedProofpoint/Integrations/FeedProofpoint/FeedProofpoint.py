@@ -84,9 +84,20 @@ class Client(BaseClient):
                 demisto.debug(f"Parsed item: {item}")
                 category = item.get("category", "")
                 # Check if category exists and is a numeric value
-                if category and category.strip().isdigit():
-                    item["category_name"] = self._CATEGORY_NAME[int(category.strip()) - 1]
-                else:
+                try:
+                    if category and category.strip().isdigit():
+                        category_index = int(category.strip()) - 1
+                        # Check if the index is within the bounds of the category name array
+                        if 0 <= category_index < len(self._CATEGORY_NAME):
+                            item["category_name"] = self._CATEGORY_NAME[category_index]
+                        else:
+                            demisto.debug(f"Category index {category_index} out of bounds for _CATEGORY_NAME array")
+                            item["category_name"] = "Unknown"
+                    else:
+                        demisto.debug(f"Non-numeric category value: {category}")
+                        item["category_name"] = "Unknown"
+                except (ValueError, TypeError) as e:
+                    demisto.debug(f"Error processing category '{category}': {str(e)}")
                     item["category_name"] = "Unknown"
 
                 # add type/value to item.
