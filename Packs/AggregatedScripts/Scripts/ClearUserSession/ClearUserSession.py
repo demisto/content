@@ -89,7 +89,7 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
 
     Example:
         raw_context = {
-            "Account(val.ID == obj.ID)": [
+            "UserData(val.ID == obj.ID)": [
                 {
                     "Username": "john.doe",
                     "Email": "john.doe@example.com",
@@ -97,9 +97,9 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
                 }
             ]
         }
-        output_key = "Account"
+        output_key = "UserData"
         result = get_outputs(output_key, raw_context)
-        # result will be: "Account(val.Username == obj.Username)"
+        # result will be: "UserData(val.Username == obj.Username)"
     """
     full_output_key = ""
     if raw_context:
@@ -249,7 +249,7 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
 
     for entry in entry_context:
         if entry:
-            output_key = get_output_key("Account", entry)
+            output_key = get_output_key("UserData", entry)
             id_info.update(extract_usernames_with_ids(entry, output_key))
 
     return readable_outputs_list, id_info
