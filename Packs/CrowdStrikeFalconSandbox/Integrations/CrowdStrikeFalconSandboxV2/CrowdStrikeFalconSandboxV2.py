@@ -6,6 +6,7 @@ import urllib3
 from CommonServerPython import *  # noqa: F401
 from requests import Response
 from urllib.parse import urlparse, urlunparse
+
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 SEARCH_TERM_QUERY_ARGS = (
