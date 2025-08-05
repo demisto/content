@@ -505,24 +505,13 @@ def test_extract_usernames_with_ids():
     """
     context = {
         "UserData(val.Username && val.Username == obj.Username)": [
-            {
-                "Email": "user1@test.com",
-                "ID": "1234",
-                "Source": "Okta v2",
-                "Status": "found",
-                "Username": "user1@test.com"
-            },
-            {
-                "ID": "5678",
-                "Source": "Microsoft Graph User",
-                "Status": "found",
-                "Username": "user2@demistodev.onmicrosoft.com"
-            },
+            {"Email": "user1@test.com", "ID": "1234", "Source": "Okta v2", "Status": "found", "Username": "user1@test.com"},
+            {"ID": "5678", "Source": "Microsoft Graph User", "Status": "found", "Username": "user2@demistodev.onmicrosoft.com"},
             {
                 "ID": "789",
                 "Source": "Okta v2",
                 "Status": "User not found - userId: user3@example.com.",
-                "Username": "user3@example.com"
+                "Username": "user3@example.com",
             },
             {"ID": [], "Username": "user4@example.com"},
         ]
@@ -554,7 +543,12 @@ def test_get_user_data(mocker: MockerFixture):
         {
             "UserData(val.Username && val.Username == obj.Username)": [
                 {"ID": "1234", "Username": "user1@test.com", "Status": "found", "Source": "Okta v2"},
-                {"ID": "5678", "Username": "user2@demistodev.onmicrosoft.com", "Status": "found", "Source": "Microsoft Graph User"},
+                {
+                    "ID": "5678",
+                    "Username": "user2@demistodev.onmicrosoft.com",
+                    "Status": "found",
+                    "Source": "Microsoft Graph User",
+                },
             ]
         }
     ]
