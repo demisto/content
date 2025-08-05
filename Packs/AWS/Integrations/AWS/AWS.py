@@ -53,11 +53,13 @@ def raise_an_error_message_for_client_error(err: ClientError) -> DemistoExceptio
     """
     raise DemistoException(
         f"Unexpected response when executing: {demisto.command()} with {demisto.args()}."
-        f"\n Error Code: {err.response('Error', {}).get('Code')}."
-        f"\n Error Message: {err.response('Error', {}).get('Message')}."
-        f"\nRequest ID: {err.response('ResponseMetadata', {}).get('RequestId')}."
-        f"\nHttp code: {err.response('ResponseMetadata', {}).get('HTTPStatusCode')}."
+        f"\n Error Code: {err.response.get('Error', {}).get('Code',{})}."
+        f"\n Error: {err.response.get('Error', {})}."
+        f"\n Error Message: {err.response.get('Error', {}).get('Message',{})}."
     )
+    # f"\nRequest ID: {err.response.get('ResponseMetadata', {}).get('RequestId')}."
+    # f"\nHttp code: {err.response.get('ResponseMetadata', {}).get('HTTPStatusCode')}."
+    # )
 
 
 class AWSServices(str, Enum):
@@ -886,7 +888,8 @@ class EC2:
             kwargs["GroupName"] = group_name
 
         try:
-            delete_response = client.delete_security_group(GroupIds=[group_id])
+            remove_nulls_from_dictionary(kwargs)
+            delete_response = client.delete_security_group(**kwargs)
             if delete_response.get("GroupId"):
                 return CommandResults(readable_output=f"Successfully deleted security group: {delete_response.get('GroupId')}")
             else:
@@ -994,6 +997,7 @@ class EC2:
 
         except ClientError as e:
             raise_an_error_message_for_client_error(e)
+            raise DemistoException(f"Unexpected response from AWS - EC2:\n{e}")
 
 
 class EKS:
