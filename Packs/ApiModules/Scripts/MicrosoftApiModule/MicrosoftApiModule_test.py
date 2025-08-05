@@ -165,7 +165,8 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
             b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}',
             400,
             "invalid_grant. \nThe refresh token has expired due to inactivity.\xa0The token was issued on "
-            "2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.\nYou can run the ***command_prefix-auth-reset*** "
+            "2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.\nGot the following error codes from Microsoft: [700082]."  # noqa: E501
+            "\nYou can run the ***command_prefix-auth-reset*** "
             "command to reset the authentication process.",
         ),
         (

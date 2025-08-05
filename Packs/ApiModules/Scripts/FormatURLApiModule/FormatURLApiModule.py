@@ -90,8 +90,8 @@ class URLCheck:
         else:
             raise URLError("Empty string given")
 
-        if any(map(self.modified_url[:8].__contains__, ["//", "%3A", "%3a"])):
-            # The URL seems to have a scheme indicated by presence of "//" or "%3A"
+        if any(map(self.modified_url[:14].__contains__, ["//", "%3A", "%3a", "%2F", "%2f"])):
+            # The URL seems to have a scheme indicated by presence of "//", "%3A" or "%2F"
             self.scheme_check()
 
         host_end_position = -1
@@ -149,33 +149,41 @@ class URLCheck:
         index = self.base
         scheme = ""
 
-        while self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", "."):
+        while index < len(self.modified_url) and (
+            self.modified_url[index].isascii() or self.modified_url[index] in ("+", "-", ".")
+        ):
             char = self.modified_url[index]
             if char in self.sub_delims:
                 raise URLError(f"Invalid character {char} at position {index}")
 
-            elif char == "%" or char == ":":
-                # The colon might appear as is or if the URL is quoted as "%3A"
+            elif char == "%" or char == ":" or char == "/":
+                # The colon or the slash might appear in their hex code
 
                 if char == "%":
-                    # If % is present in the scheme it must be followed by "3A" to represent a colon (":")
+                    # If % is present in the scheme it must be followed by "3A" or by "2F"
 
-                    if self.modified_url[index + 1 : index + 3].upper() != "3A":
-                        raise URLError(f"Invalid character {char} at position {index}")
+                    hex_encode = self.modified_url[index + 1 : index + 3].upper()
 
-                    else:
+                    if hex_encode == "3A":
                         self.output += ":"
                         index += 3
                         self.quoted = True
+
+                    elif hex_encode == "2F":
+                        self.output += "/"
+                        index += 3
+                        self.quoted = True
+
+                    else:
+                        raise URLError(f"Invalid character {char} at position {index}")
 
                 if char == ":":
                     self.output += char
                     index += 1
 
-                if self.modified_url[index : index + 2] != "//":
-                    # If URL has ascii chars and ':' with no '//' it is invalid
-
-                    raise URLError(f"Invalid character {char} at position {index}")
+                if char == "/":
+                    self.output += char
+                    index += 1
 
                 else:
                     self.url.scheme = scheme
@@ -798,6 +806,7 @@ class URLFormatter:
         schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
+        url = url.replace("%2F", "/").replace("%2f", "/")
         lower_url = url.lower()
         if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
