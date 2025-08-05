@@ -2538,17 +2538,164 @@ def test_get_supported_pattern_comparisons():
     assert res == {"ipv4-addr": [(["value"], "=", "'1.1.1.1/32'")], "domain-name": [(["value"], "=", "'example.com'")]}
 
 
-def test_extract_ioc_value():
+def test_extract_ioc_value_sha256():
     """
     Given
-    - A STIX pattern.
+    - A STIX pattern with SHA-256 hash.
     When
-    - Extracted an IOC value from a pattern.
+    - Extracting an IOC value from the pattern.
     Then
-    - Retrieve the IOC value.
+    - Retrieve the SHA-256 hash value.
     """
     pattern = "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])"
 
     res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
 
     assert res == "1111"
+
+
+def test_extract_ioc_value_ipv4():
+    """
+    Given
+    - A STIX pattern with IPv4 address.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the IPv4 address value.
+    """
+    pattern = "[ipv4-addr:value = '192.168.1.1']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "192.168.1.1"
+
+
+def test_extract_ioc_value_domain():
+    """
+    Given
+    - A STIX pattern with domain name.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the domain name value.
+    """
+    pattern = "[domain-name:value = 'example.com']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "example.com"
+
+
+def test_extract_ioc_value_url():
+    """
+    Given
+    - A STIX pattern with URL.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the URL value.
+    """
+    pattern = "[url:value = 'https://example.com/malicious']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "https://example.com/malicious"
+
+
+def test_extract_ioc_value_md5():
+    """
+    Given
+    - A STIX pattern with MD5 hash.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the MD5 hash value.
+    """
+    pattern = "[file:hashes.'MD5' = '44d88612fea8a8f36de82e1278abb02f']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "44d88612fea8a8f36de82e1278abb02f"
+
+
+def test_extract_ioc_value_email():
+    """
+    Given
+    - A STIX pattern with email address.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the email address value.
+    """
+    pattern = "[email-addr:value = 'malicious@example.com']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "malicious@example.com"
+
+
+def test_extract_ioc_value_multiple_types():
+    """
+    Given
+    - A STIX pattern with multiple indicator types (SHA-256, domain, IP).
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the SHA-256 hash value (highest priority).
+    """
+    pattern = (
+        "[file:hashes.'SHA-256' = 'a889f5ecf920be1d1599a5c3f82af8d8e9208a9b3dd3cad4261c908f2ec9c35b' "
+        "AND domain-name:value = 'evil.com' AND ipv4-addr:value = '10.0.0.1']"
+    )
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "a889f5ecf920be1d1599a5c3f82af8d8e9208a9b3dd3cad4261c908f2ec9c35b"
+
+
+def test_extract_ioc_value_multiple_types_no_sha256():
+    """
+    Given
+    - A STIX pattern with multiple indicator types (IP, domain) but no SHA-256.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the IP address (next highest priority after SHA-256).
+    """
+    pattern = "[ipv4-addr:value = '10.0.0.1' AND domain-name:value = 'evil.com']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "10.0.0.1"
+
+
+def test_extract_ioc_value_registry_key():
+    """
+    Given
+    - A STIX pattern with Windows registry key.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Retrieve the registry key value.
+    """
+    pattern = "[windows-registry-key:key = 'HKEY_LOCAL_MACHINE\\Software\\Malware']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res == "HKEY_LOCAL_MACHINE\\Software\\Malware"
+
+
+def test_extract_ioc_value_no_supported_pattern():
+    """
+    Given
+    - A STIX pattern with no supported indicator types.
+    When
+    - Extracting an IOC value from the pattern.
+    Then
+    - Return None.
+    """
+    pattern = "[unsupported-type:value = 'some-value']"
+
+    res = STIX2XSOARParser.extract_ioc_value({"pattern": pattern}, "pattern")
+
+    assert res is None

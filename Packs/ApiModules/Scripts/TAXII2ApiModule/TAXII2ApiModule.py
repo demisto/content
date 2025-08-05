@@ -2344,12 +2344,60 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def extract_ioc_value(ioc_obj, key: str = "name"):
         """
-        Extract SHA-256 from specific key, default key is name.
-        "([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
+        Extract indicator values from specific key, default key is name.
+        Extracts values for all supported indicator types from STIX patterns.
+
+        Examples:
+        - "[file:hashes.'SHA-256' = '1111']" -> "1111" (SHA-256 hash)
+        - "[ipv4-addr:value = '1.2.3.4']" -> "1.2.3.4" (IP address)
+        - "[domain-name:value = 'example.com']" -> "example.com" (domain)
+
+        Returns the first found indicator value based on a priority order:
+        1. file:hashes.'SHA-256'
+        2. ipv4-addr:value
+        3. domain-name:value
+        4. url:value
+        5. Other supported indicator types
+
+        If multiple indicators of the same type are found, returns the first one.
+
+        Args:
+            ioc_obj: The indicator object containing the pattern
+            key: The key in the object containing the pattern (default: "name")
+
+        Returns:
+            str: The extracted indicator value, or None if no supported indicators found
         """
         ioc_value = ioc_obj.get(key, "")
         comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
-        return next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
+
+        # Define priority order for indicator types
+        priority_order = ["file", "ipv4-addr", "domain-name", "url", "email-addr", "mutex", "windows-registry-key"]
+
+        # First check for SHA-256 hash specifically (highest priority)
+        sha256 = next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
+        if sha256:
+            return sha256
+
+        # Then check other indicator types in priority order
+        for indicator_type in priority_order:
+            if indicator_type in comps and comps[indicator_type]:
+                # For file type, look for other hash types if SHA-256 wasn't found
+                if indicator_type == "file":
+                    # Check for other hash types (MD5, SHA-1, etc.)
+                    for comp in comps["file"]:
+                        if len(comp) >= 3 and comp[0] and len(comp[0]) >= 2 and comp[0][0] == "hashes":
+                            return comp[-1].strip("'")
+                # For other types, typically the value is in the last element of the comparison tuple
+                elif comps[indicator_type][0][-1]:
+                    return comps[indicator_type][0][-1].strip("'")
+
+        # If no indicators found in priority list, check any other supported types
+        for indicator_type, comparisons in comps.items():
+            if indicator_type not in priority_order and comparisons:
+                return comparisons[0][-1].strip("'")
+
+        return None
 
     def update_last_modified_indicator_date(self, indicator_modified_str: str):
         if not indicator_modified_str:
