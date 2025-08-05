@@ -1907,7 +1907,7 @@ Retrieve user-defined sender/recipient entries from an incoming mail policy.
 | --- | --- | --- |
 | CiscoESA.IncomingMailPolicyUser.sender_config.sender.domain_entries | String | List of sender domain entries. Messages from these senders will match the policy. |
 | CiscoESA.IncomingMailPolicyUser.receiver_config.operation | String | Logical operator used to evaluate receiver and receiver_not entries. Valid values are 'and' or 'or'. |
-| CiscoESA.IncomingMailPolicyUser.receiver_config.Receiver.domain_entries | String | List of recipient domain entries. Messages sent to these recipients will match the policy. |
+| CiscoESA.IncomingMailPolicyUser.receiver_config.receiver.domain_entries | String | List of recipient domain entries. Messages sent to these recipients will match the policy. |
 | CiscoESA.IncomingMailPolicyUser.receiver_config.receiver_not.domain_entries | String | List of recipient domain entries to exclude. Messages NOT sent to these recipients will match the policy. Only valid with the 'and' operator. |
 
 ### cisco-esa-url-list

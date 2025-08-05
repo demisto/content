@@ -77,6 +77,7 @@ configuration:
       - ends_with
       - does_not_contain
     required: false
+    section: Collect
   - name: recipient_filter_value
     display: Recipient filter value
     type: 0
@@ -107,6 +108,7 @@ configuration:
     name: incidentType
     type: 13
     required: false
+    section: Collect
   - display: Fetch incidents
     name: isFetch
     type: 8
