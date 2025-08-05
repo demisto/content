@@ -1,0 +1,25 @@
+{
+    "data": [
+        {
+            "name": "test",
+            "used_by": [
+                "Incoming Content Filters"
+            ],
+            "filehashes_count": 1,
+            "filehashes": [
+                "11111111111111111111111111111111"
+            ],
+            "list_type": "md5",
+            "description": ""
+        },
+        {
+            "filehashes_count": 1,
+            "filehashes": [
+                "11111111111111111111111111111111"
+            ],
+            "description": "Changed name",
+            "list_type": "any",
+            "name": "fhl_api3"
+        }
+    ]
+}
