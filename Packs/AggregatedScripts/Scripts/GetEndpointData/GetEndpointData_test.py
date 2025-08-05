@@ -1202,4 +1202,6 @@ def test_create_using_brand_argument_to_generic_command_all_default(mocker):
 
     command = Command(brand="Generic Command", name="gc", output_keys=[], args_mapping={}, output_mapping={})
     create_using_brand_argument_to_generic_command([], command)
-    assert (command.additional_args["using-brand"] == "BrandE,BrandD") or (command.additional_args["using-brand"] == "BrandD,BrandE")
+    assert (command.additional_args["using-brand"] == "BrandE,BrandD") or (
+        command.additional_args["using-brand"] == "BrandD,BrandE"
+    )
