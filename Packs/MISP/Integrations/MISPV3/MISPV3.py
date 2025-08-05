@@ -2033,10 +2033,6 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
 
     try:
         response = PYMISP._prepare_request("POST", f"warninglists/edit/{warninglist_id}", data=data)
-        if "errors" in response:
-            raise DemistoException(
-                f"Warninglist change: An error has occurred performing a change on warninglist {warninglist_id}: \nError message: {response}"  # noqa: E501
-            )
 
         resp_json = response.json()
         warninglist_output = {}
