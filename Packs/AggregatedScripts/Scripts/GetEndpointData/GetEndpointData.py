@@ -1007,11 +1007,7 @@ def filter_duplicated_brands_for_generic_command(brands_to_remove: list):
         list: A list of active brand names with the specified brands removed.
     """
     integrations = demisto.getModules()
-    supported_brands = {
-        data['brand']
-        for data in integrations.values()
-        if data.get('state') == 'active'
-    }
+    supported_brands = {data["brand"] for data in integrations.values() if data.get("state") == "active"}
     return list(supported_brands - set(brands_to_remove))
 
 
@@ -1051,7 +1047,8 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
                 # we want to remove from the generic command run only the predefined brands
                 brands_to_remove.append(brand)
     brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(brands_to_remove)
-    generic_command.create_additional_args({"using-brand": ",".join(brands_to_run_for_generic_command)})
+    joined_integrations = ",".join(brands_to_run_for_generic_command)
+    generic_command.create_additional_args({"using-brand": joined_integrations})
 
 
 """ MAIN FUNCTION """

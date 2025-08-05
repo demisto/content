@@ -1148,11 +1148,14 @@ def test_filter_duplicated_brands_for_generic_command_removes_specified_brands(m
     Then:
         It should return only the active brands that are not in the removal list (i.e., BrandC).
     """
-    mocker.patch("GetEndpointData.demisto.getModules", return_value={
-        "module1": {"brand": "BrandA", "state": "active"},
-        "module2": {"brand": "BrandB", "state": "inactive"},
-        "module3": {"brand": "BrandC", "state": "active"},
-    })
+    mocker.patch(
+        "GetEndpointData.demisto.getModules",
+        return_value={
+            "module1": {"brand": "BrandA", "state": "active"},
+            "module2": {"brand": "BrandB", "state": "inactive"},
+            "module3": {"brand": "BrandC", "state": "active"},
+        },
+    )
 
     result = filter_duplicated_brands_for_generic_command(["BrandA"])
     assert sorted(result) == ["BrandC"]
@@ -1187,13 +1190,16 @@ def test_create_using_brand_argument_to_generic_command_all_default(mocker):
         It should set 'using-brand' to only active brands not in the known brands list, i.e., BrandD and BrandE.
     """
     mocker.patch("GetEndpointData.Brands.get_all_values", return_value=["BrandA", "BrandB", "BrandC"])
-    mocker.patch("GetEndpointData.demisto.getModules", return_value={
-        "m1": {"brand": "BrandA", "state": "active"},
-        "m2": {"brand": "BrandD", "state": "active"},
-        "m3": {"brand": "BrandB", "state": "inactive"},
-        "m4": {"brand": "BrandE", "state": "active"},
-    })
+    mocker.patch(
+        "GetEndpointData.demisto.getModules",
+        return_value={
+            "m1": {"brand": "BrandA", "state": "active"},
+            "m2": {"brand": "BrandD", "state": "active"},
+            "m3": {"brand": "BrandB", "state": "inactive"},
+            "m4": {"brand": "BrandE", "state": "active"},
+        },
+    )
 
     command = Command(brand="Generic Command", name="gc", output_keys=[], args_mapping={}, output_mapping={})
     create_using_brand_argument_to_generic_command([], command)
-    assert sorted(command.additional_args["using-brand"]) == ["BrandD", "BrandE"]
+    assert command.additional_args["using-brand"] == 'BrandD,BrandE'
