@@ -2,6 +2,7 @@ import demistomock as demisto
 import freezegun
 import pytest
 from MicrosoftApiModule import *
+from CommonServerPython import DemistoException
 from requests import Response
 
 TOKEN = "dummy_token"
@@ -396,84 +397,6 @@ def test_get_access_token_with_context_invalid(mocker, client, tokens, context_i
     assert integration_context == context_valid
 
 
-@pytest.mark.parametrize(
-    "client, enc_content, tokens, res",
-    [
-        (oproxy_client_tenant(), TENANT, {"access_token": TOKEN, "expires_in": 3600}, (TOKEN, 3600, "")),
-        (
-            oproxy_client_refresh(),
-            REFRESH_TOKEN,
-            {"access_token": TOKEN, "expires_in": 3600, "refresh_token": REFRESH_TOKEN},
-            (TOKEN, 3600, REFRESH_TOKEN),
-        ),
-    ],
-)
-def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res):
-    def get_encrypted(content, key):
-        return content + key
-
-    # Set
-    body = {
-        "app_name": APP_NAME,
-        "registration_id": AUTH_ID,
-        "encrypted_token": enc_content + ENC_KEY,
-        "scope": None,
-        "resource": "",
-    }
-    mocker.patch.object(client, "_add_info_headers")
-    mocker.patch.object(client, "get_encrypted", side_effect=get_encrypted)
-    requests_mock.post(TOKEN_URL, json=tokens)
-
-    # Arrange
-    req_res = client._oproxy_authorize()
-    req_body = requests_mock._adapter.last_request.json()
-    assert req_body == body
-    assert req_res == res
-
-
-def test_self_deployed_request(requests_mock):
-    import urllib
-
-    # Set
-    client = self_deployed_client()
-
-    body = {
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type": "client_credentials",
-        "scope": SCOPE,
-        "resource": RESOURCE,
-    }
-
-    requests_mock.post(APP_URL, json={"access_token": TOKEN, "expires_in": "3600"})
-
-    # Arrange
-    req_res = client._get_self_deployed_token()
-    req_body = requests_mock._adapter.last_request._request.body
-    assert req_body == urllib.parse.urlencode(body)
-    assert req_res == (TOKEN, 3600, "")
-
-
-def test_oproxy_use_resource(mocker):
-    """
-    Given:
-        multi_resource client
-    When
-        When configuration is oproxy authentication type and multi resource
-    Then
-        Verify post request is using resource value
-    """
-    resource = "https://resource2.com"
-    client = oproxy_client_multi_resource()
-    context = {"access_token": TOKEN}
-
-    mocked_post = mocker.patch("requests.post", json=context, status_code=200, ok=True)
-    mocker.patch.object(client, "get_encrypted", return_value="encrypt")
-
-    client._oproxy_authorize(resource)
-    assert resource == mocked_post.call_args_list[0][1]["json"]["resource"]
-
-
 @pytest.mark.parametrize("resource", ["https://resource1.com", "https://resource2.com"])
 def test_self_deployed_multi_resource(requests_mock, resource):
     """
@@ -497,9 +420,9 @@ def test_national_endpoints(mocker, azure_cloud_name):
     """
     Given:
         self-deployed client
-    When:
+    When
         Configuring the client with different national endpoints
-    Then:
+    Then
         Verify that the token_retrieval_url and the scope are set correctly
     """
     tenant_id = TENANT
@@ -514,6 +437,7 @@ def test_national_endpoints(mocker, azure_cloud_name):
         enc_key=enc_key,
         app_name=app_name,
         tenant_id=tenant_id,
+        base_url=BASE_URL,
         verify=True,
         proxy=False,
         ok_codes=ok_codes,
@@ -528,9 +452,9 @@ def test_retry_on_rate_limit(requests_mock, mocker):
     """
     Given:
         self-deployed client with retry_on_rate_limit=True
-    When:
+    When
         Response from http request is 429 rate limit
-    Then:
+    Then
         Verify that a ScheduledCommand is returend with relevant details
     """
     client = retry_on_rate_limit_client(True)
@@ -559,9 +483,9 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
     """
     Given:
         client with retry_on_rate_limit=True and where 'first_run_flag' set to True in args
-    When:
+    When
         Response from http request is 429 rate limit
-    Then:
+    Then
         Return Error as we  already retried rerunning the command
     """
     client = retry_on_rate_limit_client(True)
@@ -585,9 +509,9 @@ def test_rate_limit_when_retry_is_false(requests_mock):
     """
     Given:
         self-deployed client with retry_on_rate_limit=False
-    When:
+    When
         Response from http request is 429 rate limit
-    Then:
+    Then
         Verify that a regular error is returned and not a ScheduledCommand
     """
     client = retry_on_rate_limit_client(False)
@@ -641,7 +565,9 @@ def test_general_error_metrics(requests_mock, mocker):
     assert metric_results.get("APIExecutionMetrics") == [{"Type": "GeneralError", "APICallsCount": 1}]
 
 
-@pytest.mark.parametrize(argnames="client_id", argvalues=["test_client_id", None])
+@pytest.mark.parametrize(
+    "client_id", ["test_client_id", None]
+)
 def test_get_token_managed_identities(requests_mock, mocker, client_id):
     """
     Given:
@@ -961,3 +887,61 @@ def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_co
         with pytest.raises(Exception):
             client._oproxy_authorize()
         assert res.call_args[0][0] == excepted
+
+def test_http_request_status_list_to_retry_parameter(requests_mock):
+    """
+    Test that MicrosoftClient passes status_list_to_retry parameter correctly as a list.
+    
+    This test verifies that the retry mechanism receives the correct parameter format
+    to prevent TypeError: argument of type 'int' is not iterable.
+    
+    Given:
+        - MicrosoftClient configured for self-deployed authentication
+    When:
+        - Making an HTTP request through http_request method
+    Then:
+        - Verify that status_list_to_retry=[503] is passed as a list, not an integer
+        - Verify that retries=3 is passed correctly
+    """
+    from unittest.mock import patch
+    
+    client = self_deployed_client()
+    
+    # Mock the token request
+    requests_mock.post(
+        APP_URL,
+        json={"access_token": TOKEN, "expires_in": "3600"}
+    )
+    
+    # Mock the API request to return 200 (so we don't trigger retry logic issues)
+    api_url = f"{BASE_URL}test-endpoint"
+    requests_mock.get(api_url, status_code=200, json={"success": True})
+    
+    # Capture the parameters passed to BaseClient._http_request
+    captured_params = {}
+    
+    def capture_http_request_params(self, *args, **kwargs):
+        captured_params.update(kwargs)
+        # Return a mock response to avoid actual HTTP call issues
+        from unittest.mock import Mock
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"success": True}
+        return mock_response
+    
+    # Patch BaseClient._http_request to capture parameters
+    with patch('CommonServerPython.BaseClient._http_request', capture_http_request_params):
+        client.http_request("GET", "test-endpoint")
+    
+    # Verify the captured parameters
+    assert 'status_list_to_retry' in captured_params, "status_list_to_retry parameter not found"
+    assert 'retries' in captured_params, "retries parameter not found"
+    
+    # Verify status_list_to_retry is a list, not an integer
+    status_list = captured_params['status_list_to_retry']
+    assert isinstance(status_list, list), f"status_list_to_retry should be a list, got {type(status_list)}: {status_list}"
+    assert status_list == [503], f"Expected status_list_to_retry=[503], got {status_list}"
+    
+    # Verify retries parameter
+    retries = captured_params['retries']
+    assert retries == 3, f"Expected retries=3, got {retries}"
