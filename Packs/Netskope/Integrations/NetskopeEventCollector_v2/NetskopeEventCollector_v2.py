@@ -109,7 +109,7 @@ class Client:
         config = get_event_type_config(event_type)
         endpoint = config["endpoint"].replace("{type}", event_type)
         url = urljoin(self._base_url, endpoint)
-
+        # Type check for mypy
         if self._async_session is None:
             raise RuntimeError("ClientSession not initialized. Use 'async with' context manager.")
         async with (
@@ -119,6 +119,7 @@ class Client:
             demisto.debug(f"Fetching {event_type} events with params: {params}")
             resp.raise_for_status()
             return await resp.json()
+
 
     async def get_events_count(self, event_type: str, params: dict) -> int:
         """Get the count of events for a given type and time range.
@@ -528,8 +529,6 @@ async def handle_fetch_and_send_all_events(
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
 
     # Create main coordination ID for async logging traceability
-    import time
-
     coord_id = f"coord_{int(time.time() * 1000) % 10000}"
     demisto.debug(f"[{coord_id}] Starting events fetch with {page_size=}, {limit=}")
 
@@ -566,24 +565,26 @@ async def handle_fetch_and_send_all_events(
         raise DemistoException(failures_tasks[0])
     new_last_run: dict = {}
     for task_result in success_tasks:
-        event_type, event_type_res = task_result
-        # event_type_res is in structure of:
-        # {'events':[...], ''failures':[...], additional data like next_run_start_time, next_run_offset}
-        all_events.extend(event_type_res.pop("events", []))
-        existing_failures = demisto.get(new_last_run, f"{event_type}.failures", defaultParam=[])
-        existing_failures.extend(event_type_res.pop("failures", []))
+        # Type check for mypy
+        if isinstance(task_result, tuple):
+            event_type, event_type_res = task_result
+            # event_type_res is in structure of:
+            # {'events':[...], ''failures':[...], additional data like next_run_start_time, next_run_offset}
+            all_events.extend(event_type_res.pop("events", []))
+            existing_failures = demisto.get(new_last_run, f"{event_type}.failures", defaultParam=[])
+            existing_failures.extend(event_type_res.pop("failures", []))
 
-        # in the init, set to the old last_run data
-        new_last_run.setdefault(event_type, last_run.get(event_type, {}))
-        if event_type_res:
-            # in case of new data - override the old data
-            new_last_run[event_type] = event_type_res
-        if len(existing_failures) > MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE:
-            demisto.debug(
-                f"Truncating failures for {event_type}: {len(existing_failures)} > {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}, "
-                f"storing only the first {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}."
-            )
-        new_last_run[event_type]["failures"] = existing_failures[:MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE]
+            # in the init, set to the old last_run data
+            new_last_run.setdefault(event_type, last_run.get(event_type, {}))
+            if event_type_res:
+                # in case of new data - override the old data
+                new_last_run[event_type] = event_type_res
+            if len(existing_failures) > MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE:
+                demisto.debug(
+                    f"Truncating failures for {event_type}: {len(existing_failures)} > {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}, "
+                    f"storing only the first {MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE}."
+                )
+            new_last_run[event_type]["failures"] = existing_failures[:MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE]
 
     demisto.debug(f"Handled {len(all_events)} total events in {time.time() - start:.2f} seconds")
 
