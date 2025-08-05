@@ -82,9 +82,10 @@ class Client(BaseClient):
             for line in csv_repr:
                 item: dict = {headers[i]: line[i] for i in range(len(headers))}
                 demisto.debug(f"Parsed item: {item}")
+                category = item.get("category", "")
                 # Check if category exists and is a numeric value
-                if item.get("category") and item.get("category", "").strip().isdigit():
-                    item["category_name"] = self._CATEGORY_NAME[int(item.get("category")) - 1]
+                if category and category.strip().isdigit():
+                    item["category_name"] = self._CATEGORY_NAME[int(category.strip()) - 1]
                 else:
                     item["category_name"] = "Unknown"
 
