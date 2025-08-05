@@ -1152,3 +1152,33 @@ def test_get_warninglist(demisto_args: dict, mocker):
     assert result.readable_output == warninglist_readable_output
     assert result.outputs_prefix == "MISP.Warninglist"
     assert result.outputs == warninglist_outputs
+    
+    
+def test_get_warninglists(mocker):
+    """
+    Given:
+    - A collection of MISP Warninglists (json).
+
+    When:
+    - Running misp-get-warninglists command.
+
+    Then:
+    - Ensure that the output is valid and was parsed correctly.
+    """
+    mock_misp(mocker)
+    from MISPV3 import get_warninglists_command
+
+    # Load the expected outputs and use them as the mock response
+    warninglists_response_data = util_load_json("test_data/get_warninglists_response.json")
+    with open("test_data/get_warninglists_outputs.md", encoding="utf-8") as f:
+        warninglists_readable_output = f.read()
+    warninglists_outputs = util_load_json("test_data/get_warninglists_outputs.json")
+
+    # Mock the PYMISP.warninglists method to return the expected warninglists response data
+    MISPV3 = __import__("MISPV3")
+    MISPV3.PYMISP.warninglists = mocker.Mock(return_value=warninglists_response_data)
+    demisto_args = {}
+    result = get_warninglists_command(demisto_args)
+    assert result.readable_output == warninglists_readable_output
+    assert result.outputs_prefix == "MISP.Warninglist"
+    assert result.outputs == warninglists_outputs
