@@ -120,7 +120,6 @@ class Client:
             resp.raise_for_status()
             return await resp.json()
 
-
     async def get_events_count(self, event_type: str, params: dict) -> int:
         """Get the count of events for a given type and time range.
 
