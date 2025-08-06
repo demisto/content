@@ -23,6 +23,11 @@
         "platform"
     ],
     "defaultDataSource": "Jira Event Collector",
+    "dependencies": {
+        "JiraDataCenter": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
     "supportedModules": [
         "C1",
         "C3",

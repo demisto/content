@@ -9,6 +9,8 @@ Atlassian Jira Data Center is a self-managed issue and project tracking platform
 - Modeling Rules for 'Audit events'
 - Parsing Rules for epoch timestamp to '_time' field
 
+Note: For project level logs use the pack - Jira 
+
 ***
  
 ## Data Collection
