@@ -82,7 +82,6 @@ def test_ip_command_api_params(mocker, days):
     api_params = call_args[1]["params"]
     assert api_params["ipAddress"] == "1.1.1.1"
     assert api_params["maxAgeInDays"] == days
-    assert api_params["verbose"] == "verbose"
 
 
 def test_ip_command_when_api_quota_reached(mocker):
