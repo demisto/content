@@ -21,7 +21,7 @@ Data normalization capabilities:
 
 ### Supported timestamp format
 
-* Timestamp parsing support is under the assumption that a UTC +0000 format is being used.
+Timestamp parsing supports a UTC +0000 format.
 
 ***
 
