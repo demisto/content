@@ -1430,3 +1430,41 @@ Returns incidents from Exabeam.
 
 If you are experiencing error 400 with the message "Internal Error: attempt to access uninitialized field" when trying to fetch incidents or search for a specific incident, we recommend using the user email in the username configuration with the prefix [saml].
 For example, for the email user@example.com, use [saml]user@example.com.
+### exabeam-add-comment
+
+***
+Add a comment to an incident.
+
+#### Base Command
+
+`exabeam-add-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to add a comment to. | Required | 
+| comment | Comment to add. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### exabeam-change-incident-status
+
+***
+Change incident status.
+
+#### Base Command
+
+`exabeam-change-incident-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident ID to change status of. | Required | 
+| status | New status to change to. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
