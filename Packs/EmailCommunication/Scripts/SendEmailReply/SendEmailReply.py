@@ -1,5 +1,4 @@
 from datetime import datetime as dt
-import time
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from markdown import Extension, markdown
@@ -606,7 +605,7 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
                 if is_succeed:
                     break
 
-                if attempt < max_retries - 1:  # Don't sleep on the last attempt
+                if attempt < max_retries - 1:
                     demisto.debug(f"Attempt {attempt + 1} failed to remove attachment, retrying...")
                 else:
                     demisto.debug(f"Failed to remove attachment after {max_retries} attempts. API response: {is_succeed}")
