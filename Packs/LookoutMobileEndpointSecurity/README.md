@@ -47,7 +47,7 @@ Enter a label name and click **Next**.
 ### Cortex XSIAM Side
 
 1. Navigate to **Settings** > **Configuration** > **Data Collection** > **Automation & Feed Integrations**.
-2. Search for "Lookout Mobile Endpoint Security" and click **Add Instance**
+2. Search for **Lookout Mobile Endpoint Security** and click **Add Instance**.
 3. When configuring the API Integration, set the following values:
 
 | **Parameter** | **Required** |
