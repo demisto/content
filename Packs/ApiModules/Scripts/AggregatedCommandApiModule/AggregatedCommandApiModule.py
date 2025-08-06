@@ -172,6 +172,17 @@ class AggregatedCommandAPIModule(ABC):
         self.verbose = verbose
         self.commands = commands
         validate_input_function(args)
+    
+    @cached_property
+    def enabled_brands(self) -> list[str]:
+        """
+        Returns a list of enabled brands.
+        Caches the result to avoid redundant calculations.
+        """
+        all_modules = demisto.getModules()
+        enabled_brands = {module.get("brand") for module in all_modules.values() if module.get("state") == "active"}
+        demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
+        return enabled_brands
 
     @cached_property
     def brands_to_run(self) -> list[str]:
@@ -185,10 +196,7 @@ class AggregatedCommandAPIModule(ABC):
             return []
         
         demisto.debug(f"Filtering for user-provided brands: {self.brands}")
-        all_modules = demisto.getModules()
-        enabled_brands = {module.get("brand") for module in all_modules.values() if module.get("state") == "active"}
-        demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
-        brands_to_execute = list(set(self.brands) & enabled_brands)
+        brands_to_execute = list(set(self.brands) & self.enabled_brands)
         if not brands_to_execute:
             raise DemistoException(
                 "None of the provided brands correspond to an enabled integration instance. "
@@ -196,6 +204,37 @@ class AggregatedCommandAPIModule(ABC):
             )
         demisto.debug(f"Final brands to run on: {brands_to_execute}")
         return brands_to_execute
+    
+    @cached_property
+    def missing_brands(self) -> list[str]:
+        """
+        Returns a list of missing brands from the given brands.
+        If no brands are given, returns empty list.
+        Caches the result to avoid redundant calculations.
+        """
+        if not self.brands:
+            return []
+        
+        demisto.debug(f"Filtering for user-provided brands: {self.brands}")
+        missing_brands = list(set(self.brands) - self.enabled_brands)
+        demisto.debug(f"Missing brands: {missing_brands}")
+        return missing_brands
+    
+    @cached_property
+    def external_missing_brands(self) -> list[str]:
+        """
+        Returns a list of external brands to run on from the given brands.
+        If no brands are given, returns empty list.
+        Caches the result to avoid redundant calculations.
+        """
+        if not self.brands:
+            demisto.debug("No specific brands provided; will run on all available brands.")
+            return []
+        
+        demisto.debug(f"Filtering for user-provided brands: {self.brands}")
+        external_missing_brands = set(set(self.brands) - set([command.brand for command in self.commands if command.command_type == CommandType.INTERNAL]))
+        demisto.debug(f"External missing brands to run on: {external_missing_brands}")
+        return list(external_missing_brands - self.enabled_brands)
     
     @abstractmethod
     def process_batch_results(self, execution_results: list[dict[str, Any]]):
@@ -420,6 +459,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                     demisto.debug("Skipping debug result")
                     continue
                 brand = result.get("Metadata", {}).get("brand", command.brand or "Unknown")
+                if is_error(result):
+                    demisto.debug(f"Error for command: {command} brand: {brand}\n{result}")
                 cmd_context, cmd_dbot, hr_output, entry = self.parse_result(result, command, brand)
                 if cmd_context:
                     # Reputation commands are grouped under a single key for easier merging.
@@ -463,16 +504,22 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                         "args": json.dumps(command.args),
                         "status": "Success",
                         "message": ""}
-        human_readable = ""
+        hr_output = ""
         command_context: ContextResult = {}
         dbot_scores: DBotScoreList = []
-
+        
         if is_error(result):
             demisto.debug(f"Result for command: {command} is error")
-            result_entry.update({"status": "Failure", "message": get_error(result)})
-            
-        if self.verbose and (human_readable := result.get("HumanReadable")):
-            human_readable = f"#### Result for name={command.name} args={command.args} current brand={brand}\n{human_readable}"
+            error = get_error(result)
+            result_entry.update({"status": "Failure", "message": error})
+            if self.verbose:
+                hr_output = f"#### Error for name={command.name} args={command.args} current brand={brand}\n{error}"
+                if human_readable := result.get("HumanReadable"):
+                    hr_output += f"\n\n{human_readable}"
+        
+        elif self.verbose:
+            if (human_readable := result.get("HumanReadable")):
+                hr_output = f"#### Result for name={command.name} args={command.args} current brand={brand}\n{human_readable}"
             
         if entry_context := result.get("EntryContext"):
             # parse_command_result
@@ -483,7 +530,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 demisto.debug(f"Mapping indicator for command: {command}")
                 command_context = self.map_command_context(entry_context, command.mapping)
                 
-        return command_context, dbot_scores, human_readable, result_entry
+        return command_context, dbot_scores, hr_output, result_entry
     
     def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
         """
@@ -690,6 +737,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             CommandResults: The command results.
         """
         demisto.debug(f"Summarizing final results from {len(entries)} command entries.")
+        if self.external_missing_brands:
+            demisto.debug(f"Missing brands: {self.external_missing_brands}")
+            entries.append({"command name": "url", "brand": ",".join(self.external_missing_brands), "args": "", "status": "Failure", "message": "Verify you have proper integration enabled to support it"})
         human_readable = tableToMarkdown("Final Results", t=entries,
                                          headers=["command name", "brand", "args", "status", "message"])
         if self.verbose:
@@ -704,6 +754,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             
         demisto.debug("All commands succeeded. Returning a success entry.")
         return CommandResults(readable_output=human_readable, outputs=final_context)
+
+                
     
     
 
