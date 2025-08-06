@@ -458,10 +458,14 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 if is_debug(result):
                     demisto.debug("Skipping debug result")
                     continue
+                
                 brand = result.get("Metadata", {}).get("brand", command.brand or "Unknown")
+                demisto.debug(f"---------Processing result for command: {command}, brand: {brand}")
+                demisto.debug(f"Processing result: {json.dumps(result, indent=4)}")
                 if is_error(result):
                     demisto.debug(f"Error for command: {command} brand: {brand}\n{result}")
                 cmd_context, cmd_dbot, hr_output, entry = self.parse_result(result, command, brand)
+                demisto.debug(f"Entry result: {entry}")
                 if cmd_context:
                     # Reputation commands are grouped under a single key for easier merging.
                     if isinstance(command, ReputationCommand):
