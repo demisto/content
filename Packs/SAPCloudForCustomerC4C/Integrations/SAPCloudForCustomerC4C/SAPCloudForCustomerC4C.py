@@ -167,7 +167,7 @@ def fetch_timestamp(client: Client, report_id: str, start: str, end: str) -> Opt
     res = get_events_api_call(client, report_id, params)
     if not res:
         raise DemistoException(f"Empty response received from {SAP_CLOUD} API.")
-    if not res or "d" not in res or "results" not in res["d"]:
+    if "d" not in res or "results" not in res["d"]:
         raise DemistoException(f"Unexpected response structure from {SAP_CLOUD} API. Response: {res}")
 
     results = res["d"]["results"]
@@ -179,9 +179,9 @@ def response_validation(client: Client, report_id: str) -> str:
     Validates the structure and timestamp of a response from an SAP Cloud report.
 
     This function queries the SAP API for events within a specified time range
-    (yesterday minus 1 minute), and verifies that the response contains the expected
+    (yesterday minus 5 minutes), and verifies that the response contains the expected
     structure and a valid 'CTIMESTAMP' field. If no events are found, it retries with
-    a broader 30-minute window. The retrieved timestamp is then validated using
+    a broader 6-hours window. The retrieved timestamp is then validated using
     `dateparser` to ensure it can be correctly parsed.
 
     Args:
@@ -197,20 +197,23 @@ def response_validation(client: Client, report_id: str) -> str:
     """
     now = get_current_utc_time()
     end_date = (now - timedelta(days=1)).strftime(STRFTIME_FORMAT)
-    start_date = (now - timedelta(days=1, minutes=1)).strftime(STRFTIME_FORMAT)
+    start_date = (now - timedelta(days=1, minutes=5)).strftime(STRFTIME_FORMAT)
 
     timestamp_str = fetch_timestamp(client, report_id, start_date, end_date)
 
     # Try larger time range if nothing returned
     if not timestamp_str:
-        start_date_fallback = (now - timedelta(days=1, minutes=30)).strftime(STRFTIME_FORMAT)
+        start_date_fallback = (now - timedelta(days=1, hours=6)).strftime(STRFTIME_FORMAT)
         timestamp_str = fetch_timestamp(client, report_id, start_date_fallback, end_date)
 
         if not timestamp_str:
+            demisto.debug(
+                f"No events were found in the specified time range from yesterday {start_date_fallback} - {end_date}."
+                f"Unable to retrieve a sample timestamp for validation."
+            )
             raise DemistoException(
-                "No events were found in the specified time range from yesterday. "
-                "Unable to retrieve a sample timestamp for validation. "
-                "Please ensure that relevant events exist for the report and that the system time configuration is correct."
+                f"Unable to retrieve a sample timestamp for validation (sample range: {start_date_fallback} - {end_date})"
+                "Please ensure that the system time configuration is correct."
             )
 
     # Validate timestamp

@@ -701,7 +701,7 @@ def test_response_validation_success(mocker, valid_timestamp):
         # No events in both primary and fallback time ranges
         (
             {"d": {"results": []}},
-            "No events were found in the specified time range from yesterday",
+            "Unable to retrieve a sample timestamp for validation",
             None,
         ),
     ],
@@ -817,3 +817,33 @@ def test_fetch_timestamp_unexpected_structure_raises(mocker, bad_response, expec
         fetch_timestamp(mock_client_instance, report_id, start, end)
 
     assert expected_error in str(exc_info.value)
+
+
+def test_fetch_timestamp_returns_none_when_no_results(mocker):
+    """
+    Tests that `fetch_timestamp` returns None when the API response contains an empty 'results' list.
+
+    This simulates a valid response with no events found in the given time range.
+
+    When:
+        - `get_events_api_call` is mocked to return a valid response structure with empty results.
+        - `fetch_timestamp` is called with this mocked response.
+
+    Then:
+        Verify that:
+        - It should return None, indicating no timestamp was found.
+    """
+    from SAPCloudForCustomerC4C import fetch_timestamp
+
+    mock_client_instance = mock_client()
+    report_id = "general_reportID"
+    start = "03.08.2025 10:08:14 UTC-2"
+    end = "03.08.2025 10:07:14 UTC-2"
+
+    # Simulated empty but valid API response
+    empty_response = {"d": {"__count": "0", "results": []}}
+
+    mocker.patch("SAPCloudForCustomerC4C.get_events_api_call", return_value=empty_response)
+
+    result = fetch_timestamp(mock_client_instance, report_id, start, end)
+    assert result is None
