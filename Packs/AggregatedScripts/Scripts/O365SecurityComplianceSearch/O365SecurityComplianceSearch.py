@@ -121,6 +121,9 @@ def parse_results(search_results: str) -> list[dict]:
         list[dict]: The parsed search results
     """
     
+    if not search_results:
+        return [{}]
+    
     parsed_results = []
     
     # remove brackets and carriage returns to normalize string
@@ -161,7 +164,7 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
         # get search status and results
         results = demisto.executeCommand(cmd, args)
         search_status = get_result_value(results, "Status")
-        search_results = parse_results(get_result_value(results, result_key))
+        search_results = get_result_value(results, result_key)
     
         # if status and results show command finished, return
         if (search_status == "Completed") and (len(search_results) > 2):
@@ -231,6 +234,8 @@ def main():
                     readable_output=f"Search [{search_name}] returned with status [{search_status}]")
                 )
             return
+        
+        # TODO - verify sc-get-search is complete
         
         # start search action and get preview
         demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
