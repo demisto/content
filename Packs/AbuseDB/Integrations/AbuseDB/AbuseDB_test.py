@@ -68,7 +68,6 @@ def test_ip_command_api_params(mocker, days):
     mocker.patch.object(demisto, "results")
     from AbuseDB import check_ip_command
 
-    # Test with specific days
     check_ip_command(DBotScoreReliability.C, ["1.1.1.1"], days=days, threshold=75)
 
     # Verify the API call was made with correct parameters
