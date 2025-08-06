@@ -961,3 +961,50 @@ def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_co
         with pytest.raises(Exception):
             client._oproxy_authorize()
         assert res.call_args[0][0] == excepted
+
+def test_http_request_status_list_to_retry_parameter(requests_mock):
+    """
+    Test that MicrosoftClient passes status_list_to_retry parameter correctly as a list.
+
+    This test verifies that the retry mechanism receives the correct parameter format
+    to prevent TypeError: argument of type 'int' is not iterable.
+
+    Given:
+        - MicrosoftClient configured for self-deployed authentication
+    When:
+        - Making an HTTP request through http_request method
+    Then:
+        - Verify that status_list_to_retry=[503] is passed as a list, not an integer
+        - Verify that retries=3 is passed correctly
+    """
+    from unittest.mock import patch
+
+    client = self_deployed_client()
+    requests_mock.post(APP_URL, json={"access_token": TOKEN, "expires_in": "3600"})
+
+    api_url = f"{BASE_URL}test-endpoint"
+    requests_mock.get(api_url, status_code=200, json={"success": True})
+
+    captured_params = {}
+
+    def capture_http_request_params(self, *args, **kwargs):
+        captured_params.update(kwargs)
+        from unittest.mock import Mock
+
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"success": True}
+        return mock_response
+
+    with patch("CommonServerPython.BaseClient._http_request", capture_http_request_params):
+        client.http_request("GET", "test-endpoint")
+
+    assert "status_list_to_retry" in captured_params, "status_list_to_retry parameter not found"
+    assert "retries" in captured_params, "retries parameter not found"
+
+    status_list = captured_params["status_list_to_retry"]
+    assert isinstance(status_list, list), f"status_list_to_retry should be a list, got {type(status_list)}: {status_list}"
+    assert status_list == [503], f"Expected status_list_to_retry=[503], got {status_list}"
+
+    retries = captured_params["retries"]
+    assert retries == 3, f"Expected retries=3, got {retries}"
