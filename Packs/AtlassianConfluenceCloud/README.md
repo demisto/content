@@ -11,7 +11,9 @@ Atlassian Confluence Cloud is a collaborative workspace developed by Atlassian, 
 - Modeling rules for audit events
 
 ## Configuration on Server Side
-### Create an API token with scopes.
+
+### Create an API token with scopes
+
 1. Log in to your Atlassian account and navigate to [API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens).
 2. Select **Create API token** with scopes.
 3. Give your API token a name that describes its purpose.
@@ -25,7 +27,8 @@ Atlassian Confluence Cloud is a collaborative workspace developed by Atlassian, 
 For more inofrmation use the following guide [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/).
 
 ## Configuration in Cortex XSIAM
-### Configure the Atlassian Confluence Cloud integration instance settings in Cortex XSIAM.  
+
+### Configure the Atlassian Confluence Cloud integration instance settings in Cortex XSIAM  
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
