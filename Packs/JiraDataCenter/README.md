@@ -21,7 +21,7 @@ You can decide to retain the data in the database for a maximum of 99 years, how
 
 To set the retention period:
 
-In the administration area, go to … > **Settings**.
+In the administration area, go to **Settings**.
 Adjust the **Database retention period**.
 **Save your changes**.
 
@@ -58,7 +58,6 @@ For more inofrmation use the following guide [here](https://confluence.atlassian
    3. Configure an [XDR Collector Filebeat profile](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/XDR-Collector-profiles):
       - For a *Windows* server see [Add an XDR Collector profile for Windows](https://docs-cortex.pawloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Windows).
       - For a *Linux* server see [Add an XDR Collector profile for Linux](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Add-an-XDR-Collector-profile-for-Linux). 
-      - <When configuring the Filebeat YAML Configuration File, use the jira datacenter template> (if a template doesn't exist, choose the most relevant one from the existing templates).
       - Customize the *[paths](https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-input-filestream.html#filestream-input-paths)* parameter in accordance to the path contain your jira datacenter logs.
            ```
                 - type: filestream
