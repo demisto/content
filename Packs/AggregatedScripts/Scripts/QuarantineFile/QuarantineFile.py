@@ -438,6 +438,8 @@ class XDRHandler(BrandHandler):
         """
         super().__init__(brand, orchestrator)
         self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
+        self.quarantine_command =  "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
+
 
     def validate_args(self, args: dict) -> None:
         """
@@ -465,10 +467,14 @@ class XDRHandler(BrandHandler):
             file_path (str): The path of the file on the endpoint.
 
         Returns:
-            bool: True if the file is already quarantined, False otherwise.
-
-        Raises:
-            QuarantineException: If the underlying 'get-quarantine-status' command fails.
+            dict: The response from the 'get-quarantine-status' command.
+                  Example:
+                      {
+                          'endpointId': 'EP_ID',
+                          'fileHash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256',
+                          'filePath': '/PATH/TO/FILE/ON/ENDPOINT/TO/QUARANTINE',
+                          'status': False if not quarantined, True if quarantined
+                      }
         """
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
         status_cmd = Command(
@@ -494,8 +500,29 @@ class XDRHandler(BrandHandler):
         separate call to 'get-quarantine-status' to get the true final result.
 
         Args:
-            endpoint_result (dict): The result object for a single endpoint from the polling command's 'Contents'.
+            endpoint_result (dict): The result object for a single endpoint from the polling command.
+                                    Example: {'action_id': 123, 'endpoint_id': 'EP_ID', 'status': 'COMPLETED_SUCCESSFULLY'}
             job_data (dict): The original job object containing metadata and finalize_args.
+                             Example:
+                                 {
+                                 'brand': 'Cortex Core - IR',
+                                 'poll_command': 'core-quarantine-files',
+                                 'poll_args': {
+                                            'action_id': [6],
+                                            'endpoint_id': 'EP_ID',
+                                            'endpoint_id_list': ['EP_ID'],
+                                            'file_hash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256',
+                                            'file_path': 'path/to/file.txt',
+                                            'integration_context_brand': 'Core',
+                                            'integration_name': 'Cortex Core - IR',
+                                            'interval_in_seconds': 60,
+                                            'timeout_in_seconds': '300'
+                                            },
+                                'finalize_args': {
+                                            'file_hash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256',
+                                            'file_path': 'path/to/file.txt'
+                                            }
+                                }
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
@@ -514,12 +541,12 @@ class XDRHandler(BrandHandler):
             message = (
                 QuarantineResult.Messages.SUCCESS
                 if quarantine_status
-                else QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=quarantine_status_data.get("error_description"))
+                else QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=quarantine_status_data.get("error_description",""))
             )
             status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Final status for {endpoint_id}: {status}")
         else:
-            message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=endpoint_result.get("error_description"))
+            message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=endpoint_result.get("error_description",""))
             status = QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Quarantine action failed for {endpoint_id}. Reason: {message}")
 
@@ -601,12 +628,32 @@ class XDRHandler(BrandHandler):
 
         Returns:
             dict: A job object containing metadata required for polling.
+                  The poll_command and poll_args fields are populated based on the Metadata returned from the PollResult response.
+                  Examples:
+                      {
+                          "brand": "Cortex XDR - IR",
+                          "poll_command": "core-get-quarantine-status",
+                          "poll_args": {
+                              "action_id": [6],
+                              "endpoint_id": "endpoint_id",
+                              "endpoint_id_list": ["endpoint_id"],
+                              "file_hash": "file_hash",
+                              "file_path": "file_path",
+                              "integration_context_brand": "Core",
+                              "integration_name": "Cortex Core - IR",
+                              "interval_in_seconds": 60,
+                              "timeout_in_seconds": "300"
+                          },
+                          "finalize_args": {
+                              "file_hash": "file_hash",
+                              "file_path": "file_path"
+                          }
+                      }
 
         Raises:
             QuarantineException: If the initial quarantine command fails.
         """
         demisto.debug(f"[{self.brand} Handler] Initiating quarantine action.")
-        command_name = "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
 
         quarantine_args = {
             "endpoint_id_list": args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
@@ -615,7 +662,7 @@ class XDRHandler(BrandHandler):
             "timeout_in_seconds": args.get("timeout", DEFAULT_TIMEOUT),
         }
 
-        cmd = Command(name=command_name, args=quarantine_args, brand=self.brand)
+        cmd = Command(name=self.quarantine_command, args=quarantine_args, brand=self.brand)
         raw_response, verbose_res = cmd.execute()
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
@@ -625,7 +672,7 @@ class XDRHandler(BrandHandler):
 
         job = {
             "brand": self.brand,
-            "poll_command": metadata.get("pollingCommand", command_name),
+            "poll_command": metadata.get("pollingCommand", self.quarantine_command),
             "poll_args": metadata.get("pollingArgs", {}),
             "finalize_args": {
                 "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
@@ -986,6 +1033,7 @@ class QuarantineOrchestrator:
         for job in self.pending_jobs:
             demisto.debug(f"[Orchestrator] Polling job for brand '{job['brand']}'.")
             demisto.debug(f"[Orchestrator] The Job: {job}")
+            # Get the command for this job to poll for status. i.e.: GetActionStatus
             poll_cmd = Command(name=job["poll_command"], args=job["poll_args"], brand=job["brand"])
             raw_response, verbose_res = poll_cmd.execute()
             if self.verbose:
