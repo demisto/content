@@ -803,13 +803,18 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
         verbose_command_results=verbose_command_results,
     )
 
-    if external_enrichment or enrichment_brands:
-        demisto.debug("Getting integration brands on tenant.")
-        enabled_brands = list(
-            {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
-        )
-        demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
+    demisto.debug("Getting integration brands on tenant.")
+    enabled_brands = list(
+        {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
+    )
+    demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
+    demisto.debug(f"Running Step 2: Internal enrichment commands on {file_hashes}.")
+    run_internal_enrichment(hashes_by_type=hashes_by_type,
+                            enabled_brands=enabled_brands,
+                            per_command_context=per_command_context,
+                            verbose_command_results=verbose_command_results)
 
+    if external_enrichment or enrichment_brands:
         demisto.debug(f"Validating overlap between enrichment brands: {enrichment_brands} and enabled integration brands.")
         if enrichment_brands and not set(enrichment_brands).intersection(enabled_brands):
             raise DemistoException(
@@ -817,7 +822,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
                 f"Ensure valid integration IDs are specified. For example: '{Brands.CORE_IR},{Brands.WILDFIRE_V2.value}'"
             )
 
-        demisto.debug(f"Running Step 2: External enrichment commands on {file_hashes} using brands: {enrichment_brands}.")
+        demisto.debug(f"Running External enrichment commands on {file_hashes} using brands: {enrichment_brands}.")
         run_external_enrichment(
             hashes_by_type=hashes_by_type,
             enabled_brands=enabled_brands,
@@ -826,14 +831,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
             verbose_command_results=verbose_command_results,
         )
 
-    demisto.debug(f"Running Step 3: Internal enrichment commands on {file_hashes} using brands: {enrichment_brands}.")
-    run_internal_enrichment(hashes_by_type=hashes_by_type,
-                            enabled_brands=enabled_brands,
-                            enrichment_brands=enrichment_brands,
-                            per_command_context=per_command_context,
-                            verbose_command_results=verbose_command_results)
-
-    demisto.debug(f"Running Step 4: Summarizing command results on {file_hashes} and consolidating context output.")
+    demisto.debug(f"Running Step 3: Summarizing command results on {file_hashes} and consolidating context output.")
     summary_command_results = summarize_command_results(
         hashes_by_type=hashes_by_type,
         per_command_context=per_command_context,
@@ -850,7 +848,8 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
         executed_brands = [
             file_context.get("Brand")
-            for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])  # type: ignore [attr-defined]
+            for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])
+            # type: ignore [attr-defined]
         ]
         # Warn about partially invalid `file_hash` and `enrichment_brands` argument values
         warning_command_results = warn_about_invalid_args(
@@ -865,21 +864,21 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
 
 def run_internal_enrichment(hashes_by_type: dict[str, list],
-    enabled_brands: list[str],
-    enrichment_brands: list[str],
-    per_command_context: dict[str, dict],
-    verbose_command_results: list,
-) -> None:
+                            enabled_brands: list[str],
+                            per_command_context: dict[str, dict],
+                            verbose_command_results: list,
+                            ) -> None:
     """
-    Runs the internal file enrichment flow by executing the relevant commands from multiple source brands.
+    Runs the internal file enrichment flow by executing the relevant commands from internal source brands.
 
     Args:
         hashes_by_type (dict[str, list]): Dictionary of file hashes (value) classified by the hash type (key).
         enabled_brands (list[str]) : List of enabled integration brands.
-        enrichment_brands (list[str]): List of brand names to run, as given in the `enrichment_brands` argument.
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
-        verbose_command_results (list[CommandResults]): List of CommandResults with human-readable output.
+        verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
+    # setting enrichment_brands to empty list to still use in inner function "enrich_with_command", because its not relevant to internal enrichment.
+    enrichment_brands = []
 
     # A. Run Wildfire Verdict command -  only works with SHA256 and MD5 hashes
     if wildfire_hashes := (hashes_by_type.get("SHA256", []) + hashes_by_type.get("MD5", [])):
