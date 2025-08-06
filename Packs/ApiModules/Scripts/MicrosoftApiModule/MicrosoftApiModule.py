@@ -1339,6 +1339,7 @@ class MicrosoftClient(BaseClient):
         if err_str:
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
                 err_str += (
+                    f"\nGot the following error codes from Microsoft: {error_codes}."
                     f"\nYou can run the ***{self.command_prefix}-auth-reset*** command to reset the authentication process."
                 )
             return err_str
