@@ -28,8 +28,6 @@ class Brands(StrEnum):
 class QuarantineException(Exception):
     """Custom exception for QuarantineFile errors."""
 
-    pass
-
 
 @dataclass
 class QuarantineResult:
@@ -202,12 +200,16 @@ class Command:
         """
 
         entry_contexts = Command.get_entry_contexts(raw_response)
+        demisto.debug(
+            f"[Command] Getting entry context object containing key '{key}'. Found {len(entry_contexts)} entry contexts."
+        )
 
         for entry_context in entry_contexts:
-            for entry_context_key, entry_context_value in entry_context:
+            for entry_context_key, entry_context_value in entry_context.items():
                 if key in entry_context_key:
                     return entry_context_value
 
+        demisto.debug(f"[Command] Key '{key}' not found in any entry context.")
         return None
 
 
@@ -228,13 +230,10 @@ class EndpointBrandMapper:
             script_args (dict): The original arguments passed to the script.
             orchestrator (QuarantineOrchestrator): The orchestrator instance for accessing shared properties.
         """
-        demisto.debug("[EndpointBrandMapper] Initializing.")
         self.script_args = script_args
         self.orchestrator = orchestrator
         self.endpoint_ids_to_map = argToList(script_args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG))
-        demisto.debug(f"[EndpointBrandMapper] Endpoint IDs to map: {self.endpoint_ids_to_map}")
         self.initial_results: list[QuarantineResult] = []
-        demisto.debug(f"[EndpointBrandMapper] Ready to map {len(self.endpoint_ids_to_map)} endpoints.")
 
     def group_by_brand(self) -> dict[str, list]:
         """
@@ -248,12 +247,11 @@ class EndpointBrandMapper:
             dict[str, list]: A dictionary mapping each brand name to a list of its
                              online endpoint IDs. Example: {'Cortex XDR - IR': ['id1', 'id2']}.
 
-        Raises:
-            QuarantineException: If no endpoint IDs are provided, no data can be retrieved,
-                              or no online endpoints are found.
-        """
+                             An empty dictionary is returned if no online endpoints are found.
 
-        demisto.debug("[EndpointBrandMapper] Starting endpoint grouping process.")
+        Raises:
+            QuarantineException: If get-endpoint-data fails to retrieve endpoint data.
+        """
 
         endpoint_data = self._fetch_endpoint_data()
         if not endpoint_data:
@@ -269,10 +267,6 @@ class EndpointBrandMapper:
         for endpoint_id, brand in online_endpoints.items():
             grouped_endpoints[brand].append(endpoint_id)
 
-        if not grouped_endpoints:
-            demisto.error("[Orchestrator] No endpoints found to quarantine.")
-            raise QuarantineException("Error parsing endpoints. Please check the logs for more information.")
-
         return grouped_endpoints
 
     def _fetch_endpoint_data(self) -> list:
@@ -283,7 +277,6 @@ class EndpointBrandMapper:
             list: The list of endpoint data objects from the command's entry context.
                   Returns an empty list if no data is found.
         """
-        demisto.debug("[EndpointBrandMapper] Fetching endpoint data.")
 
         demisto.debug(
             f"[EndpointBrandMapper] Querying get-endpoint-data limited to brands: "
@@ -299,27 +292,9 @@ class EndpointBrandMapper:
 
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
-        demisto.debug(f"[EndpointBrandMapper] Received RAW response from get-endpoint-data command: {raw_response}")
 
-        # Always parse from EntryContext, which is more reliable.
-        entry_contexts = Command.get_entry_contexts(raw_response)
+        endpoint_data : list = Command.get_entry_context_object_containing_key(raw_response, "EndpointData")
 
-        # Explicitly find the data list by looking for the correct key prefix.
-        endpoint_data = []
-        for context_item in entry_contexts:
-            if not isinstance(context_item, dict):
-                continue
-            # Find the key that starts with 'EndpointData' to handle the auto-generated names.
-            for key, value in context_item.items():
-                if key.startswith("EndpointData") and isinstance(value, list):
-                    endpoint_data = value
-                    demisto.debug(f"[EndpointBrandMapper] Found endpoint data under the key '{key}'.")
-                    break
-            if endpoint_data:
-                break
-
-        demisto.debug(f"[EndpointBrandMapper] Fetched data for {len(endpoint_data)} endpoints.")
-        demisto.debug(f"[EndpointBrandMapper] Endpoint data: {endpoint_data}")
         return endpoint_data
 
     def _filter_endpoint_data(self, endpoint_data: list) -> dict:
@@ -525,12 +500,14 @@ class XDRHandler(BrandHandler):
         Returns:
             QuarantineResult: A structured result object for the endpoint.
         """
-        endpoint_id = endpoint_result.get("endpoint_id")
+        endpoint_id = str(endpoint_result.get("endpoint_id"))
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
         if endpoint_result.get("status") == XDRHandler.QUARANTINE_STATUS_SUCCESS:
             quarantine_status_data = self._execute_quarantine_status_command(
-                endpoint_id, job_data["file_hash"], job_data["file_path"]
+                endpoint_id,
+                self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
+                self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             )
             quarantine_status = quarantine_status_data.get("status")
 
@@ -686,7 +663,8 @@ class XDRHandler(BrandHandler):
                 final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result, job))
             except Exception as e:
                 demisto.error(
-                    f"[{self.brand} Handler] Failed to get status of quarantine for endpoint {quarantine_endpoint_result.get('endpoint_id')}: {e}"
+                    f"[{self.brand} Handler] Failed to get status of quarantine for endpoint:"
+                    f" {quarantine_endpoint_result.get('endpoint_id')}: {e}"
                 )
                 final_results.append(
                     QuarantineResult(
@@ -778,7 +756,7 @@ class QuarantineOrchestrator:
             QuarantineException: If the 'endpoint_id' argument is missing.
         """
         if not self.args.get(self.ENDPOINT_IDS_ARG):
-            raise QuarantineException(f"Missing required argument. Please provide '{self.ENDPOINT_IDS_ARG}'.")
+            raise QuarantineException(f"Missing required argument: '{self.ENDPOINT_IDS_ARG}'.")
 
         given_ids = argToList(self.args.get(self.ENDPOINT_IDS_ARG))
         unique_ids = set(given_ids)
@@ -1044,7 +1022,7 @@ class QuarantineOrchestrator:
             "DeleteContext",
             {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
         )
-        demisto.debug("[Orchestrator] Suxxessfully deleted context keys.")
+        demisto.debug("[Orchestrator] Successfully deleted context keys.")
 
         results_list = QuarantineResult.to_context_entry(self.completed_results)
 
@@ -1111,6 +1089,12 @@ def main():
     except Exception as e:
         demisto.error(f"--- Unhandled Exception in quarantine-file script: {traceback.format_exc()} ---")
         return_error(f"Failed to execute quarantine-file script. Error: {str(e)}")
+        demisto.debug("[Orchestrator] Deleting context keys.")
+        demisto.executeCommand(
+            "DeleteContext",
+            {"key": f"{QuarantineOrchestrator.CONTEXT_PENDING_JOBS},{QuarantineOrchestrator.CONTEXT_COMPLETED_RESULTS}"},
+        )
+        demisto.debug("[Orchestrator] Successfully deleted context keys.")
     demisto.debug("--- quarantine-file script execution complete. ---")
 
 
