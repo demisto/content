@@ -16,7 +16,8 @@
     "keywords": [],
     "marketplaces": [
         "platform",
-        "marketplacev2"
+        "marketplacev2",
+        "xsoar"
     ],
     "defaultDataSource": "AdminByRequest",
     "supportedModules": [

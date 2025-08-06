@@ -50,6 +50,8 @@ configuration:
   - Auditlog
   - Events
   - Requests
+  hidden:
+  - xsoar
 - additionalinfo: 'Maximum number of audit log entries to retrieve per fetch cycle. Applies only if the "Auditlog" event type is enabled for fetching.'
   defaultvalue: "50000"
   display: Maximum number of Auditlog per fetch
@@ -58,6 +60,8 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  hidden:
+  - xsoar
 - additionalinfo: 'Maximum number of event entries to retrieve per fetch cycle. Applies only if the "Events" event type is enabled for fetching.'
   defaultvalue: "50000"
   display: Maximum number of Events per fetch
@@ -66,6 +70,8 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  hidden:
+  - xsoar
 - additionalinfo: 'Maximum number of request entries to retrieve per fetch cycle. Applies only if the "Requests" event type is enabled for fetching.'
   defaultvalue: "5000"
   display: Maximum number of Requests per fetch
@@ -74,6 +80,8 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  hidden:
+  - xsoar
 description: 'AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.'
 display: Admin By Request
 name: AdminByRequest
@@ -138,6 +146,61 @@ script:
       predefined:
       - "true"
       - "false"
+    outputs:
+    - contextPath: AdminByRequest.Request.id
+      description: The ID of the request.
+      type: Number
+    - contextPath: AdminByRequest.Request.type
+      description: The type of the request.
+      type: String
+    - contextPath: AdminByRequest.Request.settingsName
+      description: The name of the settings.
+      type: String
+    - contextPath: AdminByRequest.Request.application.name
+      description: The name of the application.
+      type: String
+    - contextPath: AdminByRequest.Request.application.scanResult
+      description: The scan result of the application.
+      type: String
+    - contextPath: AdminByRequest.Request.user
+      description: The user associated with the request.
+      type: Unknown
+    - contextPath: AdminByRequest.Request.computer.name
+      description: The name of the computer.
+      type: String
+    - contextPath: AdminByRequest.Request.status
+      description: The status of the request.
+      type: String
+    - contextPath: AdminByRequest.Request.reason
+      description: The reason for the request.
+      type: String
+    - contextPath: AdminByRequest.Request.approvedBy
+      description: The user who approved the request.
+      type: String
+    - contextPath: AdminByRequest.Request.approvedByEmail
+      description: The email of the user who approved the request.
+      type: String
+    - contextPath: AdminByRequest.Request.deniedReason
+      description: The reason for denying the request.
+      type: String
+    - contextPath: AdminByRequest.Request.deniedBy
+      description: The user who denied the request.
+      type: String
+    - contextPath: AdminByRequest.Request.deniedByEmail
+      description: The email of the user who denied the request.
+      type: String
+    - contextPath: AdminByRequest.Request.requestTime
+      description: The time the request was made.
+      type: Date
+    - contextPath: AdminByRequest.Request.startTime
+      description: The start time of the request.
+      type: Date
+    - contextPath: AdminByRequest.Request.eventText
+      description: The text of the request.
+      type: String
+    - contextPath: AdminByRequest.Request.eventTime
+      description: The time the request occurred.
+      type: Date
   - name: adminbyrequest-request-approve
     description: Approves a request in AdminByRequest.
     arguments:
@@ -165,10 +228,12 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
+  isfetchevents:xsoar: false
   dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
 - platform
+- xsoar
 tests:
 - No tests (auto formatted)
