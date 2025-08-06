@@ -1081,9 +1081,11 @@ def main():  # pragma: no cover
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
 
-        if ("Generic Command" in brands_to_run) or (not brands_to_run):
-            generic_command = get_generic_command(single_args_commands)
-            create_using_brand_argument_to_generic_command(brands_to_run, generic_command)
+        if "Generic Command" not in brands_to_run:  # we want !endpoint to run anyway
+            brands_to_run.append("Generic Command")
+
+        generic_command = get_generic_command(single_args_commands)
+        create_using_brand_argument_to_generic_command(brands_to_run, generic_command)
 
         zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
