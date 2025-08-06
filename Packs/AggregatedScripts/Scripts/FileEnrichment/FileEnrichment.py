@@ -878,8 +878,9 @@ def run_internal_enrichment(
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
-    # setting enrichment_brands to empty list to still use in inner function "enrich_with_command", because its not relevant to internal enrichment.
-    enrichment_brands = []
+    # setting `enrichment_brands` to empty list as it's not relevant to internal enrichment,
+    # and is used in function "enrich_with_command".
+    enrichment_brands: list[str] = []
 
     # A. Run Wildfire Verdict command -  only works with SHA256 and MD5 hashes
     if wildfire_hashes := (hashes_by_type.get("SHA256", []) + hashes_by_type.get("MD5", [])):
