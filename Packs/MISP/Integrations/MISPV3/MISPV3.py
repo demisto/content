@@ -1894,28 +1894,26 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
         CommandResults.
     """
     try:
-        response = PYMISP.warninglists()
-
-        if response:
+        if response := PYMISP.warninglists():
             warninglists_output = []
             for item in response:
-                warninglist: dict = item.get("Warninglist")  # type: ignore
-                res = {
-                    "ID": warninglist["id"],
-                    "Name": warninglist["name"],
-                    "Type": warninglist["type"],
-                    "Description": warninglist["description"],
-                    "Version": warninglist["version"],
-                    "Enabled": warninglist["enabled"],
-                    "Default": warninglist["default"],
-                    "Category": warninglist["category"],
-                    "EntryCount": warninglist["warninglist_entry_count"],
-                }
-                valid_attributes = warninglist["valid_attributes"]
-                if valid_attributes and isinstance(valid_attributes, str):
-                    res["Attributes"] = valid_attributes.split(",")
+                # Ensure item is a dict and has the 'Warninglist' key
+                if warninglist := item.get("Warninglist") if isinstance(item, dict) else None:
+                    res = {
+                        "ID": warninglist.get("id"),
+                        "Name": warninglist.get("name"),
+                        "Type": warninglist.get("type"),
+                        "Description": warninglist.get("description"),
+                        "Version": warninglist.get("version"),
+                        "Enabled": warninglist.get("enabled"),
+                        "Default": warninglist.get("default"),
+                        "Category": warninglist.get("category"),
+                    }
+                    valid_attributes = warninglist.get("valid_attributes")
+                    if valid_attributes and isinstance(valid_attributes, str):
+                        res["Attributes"] = valid_attributes.split(",")
 
-                warninglists_output.append(res)
+                    warninglists_output.append(res)
 
             human_readable = tableToMarkdown(
                 "MISP Warninglists", warninglists_output, headers=WARNINGLIST_HEADERS, removeNull=True
@@ -1930,8 +1928,11 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
             )
         else:
             return CommandResults(
+                outputs_prefix="MISP.Warninglist",
+                outputs_key_field=["ID"],
+                outputs=[],
                 readable_output="No warninglists found in MISP",
-                raw_response=response,
+                raw_response=[],
             )
     except PyMISPError as e:
         raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
