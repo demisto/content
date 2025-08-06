@@ -163,9 +163,21 @@ def get_api_id(args: dict[str, Any]) -> str:
 
 
 def get_scan_keys(args: dict[str, Any]) -> List[str]:
-    files = args.get("file", "").split(",")
-    env_ids = (args.get("environmentId", "") or args.get("environmentID", "")).split(",")
-    job_ids = args.get("JobID", "").split(",")
+    """
+    Extracts scan keys from the provided arguments.
+
+    Args:
+        args (dict[str, Any]): Dictionary containing scan parameters
+            - file: Comma-separated list of file hashes
+            - environmentId/environmentID: Comma-separated list of environment IDs
+            - JobID: Comma-separated list of job IDs
+
+    Returns:
+        List[str]: List of API IDs constructed from the parameters
+    """
+    files = argToList(args.get("file", []))
+    env_ids = argToList(args.get("environmentId", []) or args.get("environmentID", []))
+    job_ids = argToList(args.get("JobID", []))
 
     keys = []
     for f, e, j in zip(files, env_ids, job_ids):

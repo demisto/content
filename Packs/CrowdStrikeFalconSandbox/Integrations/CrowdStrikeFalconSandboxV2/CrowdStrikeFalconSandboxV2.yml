@@ -59,7 +59,7 @@ script:
     polling: true
     arguments:
     - name: file
-      description: "A comma-separated list of file hashes (SHA256), followed by an environment ID, separated by colon (:). For example, SHA256_1:ENV_ID_1,SHA256_2:ENV_ID_2. Use this argument or the job_id argument."
+      description: "A comma-separated list of file hashes (SHA256)."
       required: false
       isArray: true
     - name: environmentID
