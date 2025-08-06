@@ -33,7 +33,7 @@ class AWSServices(str, Enum):
     EKS = "eks"
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
-    CE = "ce"
+    CostExplorer = "ce"
     BUDGETS = "budgets"
 
 
@@ -1060,8 +1060,8 @@ class RDS:
             raise DemistoException(f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}")
 
 
-class Ce:
-    service = AWSServices.CE
+class CostExplorer:
+    service = AWSServices.CostExplorer
     @staticmethod
     def billing_cost_usage_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         metrics = argToList(args.get("metrics", "UsageQuantity"))
@@ -1130,9 +1130,7 @@ class Ce:
         start_date = args.get("start_date")
         end_date = args.get("end_date")
         granularity = args.get("granularity", "Daily").upper()
-        aws_services = args.get("aws_services")
-        if isinstance(aws_services, str):
-            aws_services = [aws_services]
+        aws_services = argToList(args.get("aws_services"))
         token = args.get("next_page_token")
 
         today = datetime.now().date()
@@ -1320,8 +1318,8 @@ class CloudTrail:
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
-    "aws-billing-cost-usage-list": Ce.billing_cost_usage_list_command,
-    "aws-billing-forecast-list": Ce.billing_forecast_list_command,
+    "aws-billing-cost-usage-list": CostExplorer.billing_cost_usage_list_command,
+    "aws-billing-forecast-list": CostExplorer.billing_forecast_list_command,
     "aws-billing-budgets-list": Budgets.billing_budgets_list_command,
     "aws-billing-budget-notification-list": Budgets.billing_budget_notification_list_command,
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
