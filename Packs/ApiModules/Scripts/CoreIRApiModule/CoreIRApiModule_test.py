@@ -4271,7 +4271,7 @@ def test_create_filter_from_args():
     """
     from CoreIRApiModule import create_filter_from_args
     # Default test case with valid inputs
-    args = {'alert_id': 'test_1, test_2, test_3', 'not.status.progress': 'In Progress, New'}
+    args = {'alert_id': 'test_1, test_2, test_3', 'not_status': 'In Progress, New'}
     query = create_filter_from_args(args)
     expected_result = {
         "AND": [
