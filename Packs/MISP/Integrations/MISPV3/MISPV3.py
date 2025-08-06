@@ -1995,15 +1995,15 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     Appends new values to supplied warninglist
     """
     warninglist_id = demisto_args["id"]
-    warninglist_name = demisto_args["name"]
-    warninglist_type = demisto_args["type"]
-    warninglist_description = demisto_args["description"]
-    warninglist_enabled = demisto_args["enabled"]
-    warninglist_default = demisto_args["default"]
-    warninglist_category = demisto_args["category"]
-    warninglist_version = demisto_args["version"]
-    warninglist_values = argToList(demisto_args["values"])
-    warninglist_types = argToList(demisto_args["types"])
+    warninglist_name = demisto_args.get("name")
+    warninglist_type = demisto_args.get("type")
+    warninglist_description = demisto_args.get("description")
+    warninglist_enabled = demisto_args.get("enabled")
+    warninglist_default = demisto_args.get("default")
+    warninglist_category = demisto_args.get("category")
+    warninglist_values = argToList(demisto_args.get("values"))
+    warninglist_types =argToList(demisto_args.get("types"))
+
 
     data = {}
     if warninglist_name:
@@ -2018,25 +2018,19 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
         data["default"] = warninglist_default
     if warninglist_category:
         data["category"] = warninglist_category
-    if warninglist_version:
-        data["version"] = warninglist_version
     if warninglist_values:
         for value in warninglist_values:
             value_dict = {"value": value}
             warninglist_values[warninglist_values.index(value)] = value_dict
         data["WarninglistEntry"] = warninglist_values
     if warninglist_types:
-        for typev in warninglist_types:
-            type_dict = {"type": typev}
-            warninglist_types[warninglist_types.index(typev)] = type_dict
-        data["WarninglistType"] = warninglist_types
-
+        data["matching_attributes"] = warninglist_types
     try:
         response = PYMISP._prepare_request("POST", f"warninglists/edit/{warninglist_id}", data=data)
 
-        resp_json = response.json()
+        response = response.json()
         warninglist_output = {}
-        if entity := resp_json.get("Warninglist", {}):
+        if entity := response.get("Warninglist", {}):
             warninglist_output = {
                 "ID": entity["id"],
                 "Name": entity["name"],
@@ -2047,8 +2041,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                 "Default": entity["default"],
                 "Category": entity["category"],
             }
-
-        if entity := resp_json.get("WarninglistEntry", []):
+            warninglist_output["Attributes"]= [f"{t['type']}" for t in (response.get("WarninglistType") or [])]
             warninglist_output["Entries"] = [
                 {
                     "ID": entry.get("id"),
@@ -2056,32 +2049,14 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                     "WarninglistID": entry.get("warninglist_id"),
                     "Comment": entry.get("comment"),
                 }
-                for entry in entity or []
+                for entry in (response["WarninglistEntry"] or [])
             ]
-        if entity := resp_json.get("WarninglistType", []):
-            warninglist_output["ValidAttributes"] = [
-                {
-                    "ID": entry.get("id"),
-                    "Type": entry.get("type"),
-                    "WarninglistID": entry.get("warninglist_id"),
-                }
-                for entry in entity or []
-            ]
-
-        warninglist_entries_output = warninglist_output.get("Entries", [])
-        warninglist_attributes_output = warninglist_output.get("ValidAttributes", [])
 
         human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
         human_readable += tableToMarkdown(
             "Entries in MISP Warninglist",
-            warninglist_entries_output,
+            warninglist_output["Entries"],
             headers=WARNINGLIST_ENTRY_HEADERS,
-            removeNull=True,
-        )
-        human_readable += tableToMarkdown(
-            "Valid Attributes in MISP Warninglist",
-            warninglist_attributes_output,
-            headers=WARNINGLIST_TYPE_HEADERS,
             removeNull=True,
         )
         return CommandResults(
@@ -2089,7 +2064,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
             outputs_prefix="MISP.Warninglist",
             outputs_key_field="ID",
             outputs=warninglist_output,
-            raw_response=resp_json,
+            raw_response=response,
         )
 
     except PyMISPError as e:
