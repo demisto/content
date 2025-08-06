@@ -605,7 +605,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         effective_score = score or max([dbot.get("Score") for dbot in dbot_list], default=Common.DBotScore.NONE)
         
         indicator_entries = flatten_list([v for k, v in entry_context.items() if k.startswith(self.indicator.context_path)])
-        demisto.debug(f"Extracted {len(indicator_entries)} indicators and {len(dbot_list)} DBot scores from entry context.")
+        demisto.debug(f"Extracted {len(indicator_entries)} indicators and {len(dbot_list)} DBot scores from {brand} entry context.")
         
         for indicator_data in indicator_entries:
             indicator_value = indicator_data.get(self.indicator.value_field)
