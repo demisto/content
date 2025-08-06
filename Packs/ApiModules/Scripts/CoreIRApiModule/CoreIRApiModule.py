@@ -3642,9 +3642,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         CommandResults: The results of the command.
     """
 
-    def fix_array_value(match: Match[str]):
+    def fix_array_value(match: Match[str]) -> str:
         """
-        Fix malformed array values in the agent_id custom_filter argument.
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
         """
         array_content = match.group(1)
         elements = [elem.strip().strip('"') for elem in array_content.split(",")]
