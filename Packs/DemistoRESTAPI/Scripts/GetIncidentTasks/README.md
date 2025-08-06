@@ -6,7 +6,7 @@ Get all tasks for a specific incident by the given state, name and/or tag.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | javascript |
+| Script Type | python3 |
 | Tags | Utility |
 | Cortex XSOAR Version | 6.10.0 |
 
