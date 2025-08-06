@@ -34,7 +34,7 @@ For more inofrmation use the following guide [here](https://support.atlassian.co
 | --- | --- | --- |
 | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
 | Email | The Atlassian account email. | True |
-| API Token | YYour API token generated in the **Create an API token with scopes** section. | True |
+| API Token | Your API token generated in the **Create an API token with scopes** section. | True |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Events Fetch Interval |  | False |
