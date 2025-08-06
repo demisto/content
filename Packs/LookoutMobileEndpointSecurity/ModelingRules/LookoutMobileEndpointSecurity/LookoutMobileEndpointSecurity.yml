@@ -1,4 +1,4 @@
-fromversion: 8.10
+fromversion: 8.9
 id: Lookout_Mobile_Endpoint_Security_ModelingRule
 name: Lookout Mobile Endpoint Security Modeling Rule
 rules: ''
