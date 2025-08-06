@@ -1207,6 +1207,111 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
 >| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
 
+### ews-message-trace-get-v2
+
+***
+You can use this cmdlet to search message data for the last 90 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned. 
+You can only return 10 days worth of data per query.
+This command returns a maximum of 5,000 results. If your data exceeds the result size, consider splitting it up using shorter `start_date` and `end_date` intervals.
+
+#### Base Command
+
+`ews-message-trace-get-v2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| ---| ---| ---| 
+| sender_address | The sender_address parameter filters the results by the sender's email address. You can specify multiple values separated by commas.<br/>. | Optional |
+| recipient_address | The recipient_address parameter filters the results by the recipient's email address. You can specify multiple values separated by commas.<br/>. | Optional |
+| from_ip | The from_ip parameter filters the results by the source IP address.<br/>For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message.<br/>For outgoing messages from Exchange Online, the value is blank.<br/>. | Optional |
+| to_ip | The to_ip parameter filters the results by the destination IP address.<br/>For outgoing messages, the value of to_ip is the public IP address in the resolved MX record for the destination domain.<br/>For incoming messages to Exchange Online, the value is blank.<br/>. | Optional |
+| message_id | The message_id parameter filters the results by the Message-ID header field of the message.<br/>This value is also known as the Client ID. The format of the Message-ID depends on the messaging server that sent the message.<br/>The value should be unique for each message. However, not all messaging servers create values for the Message-ID in the same way.<br/>Be sure to include the full Message ID string (which may include angle brackets) and enclose the value in quotation marks (for example,"d9683b4c-127b-413a-ae2e-fa7dfb32c69d@DM3NAM06BG401.Eop-nam06.prod.protection.outlook.com").<br/>. | Optional |
+| message_trace_id | The message_trace_id parameter can be used with the recipient address to uniquely identify a message trace and obtain more details.<br/>A message trace ID is generated for every message that's processed by the system.<br/>. | Optional |
+| start_date | The start date of the date range.<br/>Use the short date format that's defined in the Regional Options settings on the computer where you're running the command. For example, if the computer is configured to use the short date format mm/dd/yyyy,<br/>enter 09/01/2018 to specify September 1, 2018. You can enter the date only, or you can enter the date and time of day.<br/>If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".<br/>Valid input for this parameter is from 10 days - now ago. The default value is 48 hours ago.<br/>. | Optional |
+| end_date | The end date of the date range.<br/>Use the short date format that's defined in the Regional Options settings on the computer where you're running the command.<br/>For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.<br/>You can enter the date only, or you can enter the date and time of day.<br/>If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".<br/>Valid input for this parameter is from start_date - now. The default value is now.<br/>. | Optional |
+| status | The status of the message. Can be one of the following:<br/> *GettingStatus: The message is waiting for status update.<br/>* Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.<br/> *Pending: Message delivery is underway or was deferred and is being retried.<br/>* Delivered: The message was delivered to its destination.<br/> *Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.<br/>* Quarantined: The message was quarantined.<br/> * FilteredAsSpam: The message was marked as spam.<br/>. Possible values are: GettingStatus, Failed, Pending, Delivered, Expanded, Quarantined, FilteredAsSpam. | Optional |
+| subject | The subject parameter filters the results by the subject of the message. If the value contains spaces, enclose the value in quotation marks ("). | Optional |
+| subject_filter_type | The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are: <\br> * Contains <\br> EndsWith <\br> StartsWith<br/>It is recommend to use StartsWith or EndsWith instead of Contains whenever possible. | Optional|
+| starting_recipient_address | The starting_recipient_address parameter is used with the end_date parameter to query subsequent data for partial results while avoiding duplication. Query subsequent data by taking the Recipient address and Received Time values of the last record of the partial results and using them as the values for the starting_recipient_address and end_date parameters respectively in the next query. | Optional|
+| result_size | The result_size parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000. | Optional|
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.MessageTrace.FromIP | String | The public IP address of the SMTP email server that sent the message. |
+| EWS.MessageTrace.ToIP | String | The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank. |
+| EWS.MessageTrace.Index | Number | Message index in pagination. \(Index starts from 0\) |
+| EWS.MessageTrace.MessageId | String | Message-ID header field of the message. |
+| EWS.MessageTrace.MessageTraceId | String | Message trace ID of the message. |
+| EWS.MessageTrace.Organization | String | Message trace organization source. |
+| EWS.MessageTrace.Received | Date | Message receive time. |
+| EWS.MessageTrace.RecipientAddress | String | Message recipients address. |
+| EWS.MessageTrace.SenderAddress | String | Message sender address. |
+| EWS.MessageTrace.Size | Number | Message size in bytes. |
+| EWS.MessageTrace.StartDate | Date | Message trace start date. |
+| EWS.MessageTrace.EndDate | Date | Message trace end date. |
+| EWS.MessageTrace.Status | String | Message status. |
+| EWS.MessageTrace.Subject | String | Message subject. |
+
+#### Command Example
+
+```!ews-message-trace-get```
+
+#### Context Example
+
+```json
+{
+"EWS": {
+ "MessageTrace": [
+            {
+                "EndDate": "2021-01-03T06:14:14.9596257Z",
+                "FromIP": "8.8.8.8",
+                "Index": 1,
+                "MessageId": "xxx",
+                "MessageTraceId": "xxxx",
+                "Organization": "dev.onmicrosoft.com",
+                "Received": "2021-01-03T04:45:36.4662406",
+                "RecipientAddress": "xsoar@dev.onmicrosoft.com",
+                "SenderAddress": "xsoar@dev.onmicrosoft.com",
+                "Size": 1882,
+                "StartDate": "2021-01-01T06:14:14.9596257Z",
+                "Status": "GettingStatus",
+                "Subject": "Test mail",
+                "ToIP": null
+            },
+            {
+                "EndDate": "2021-01-03T06:15:14.9596257Z",
+                "FromIP": "8.8.8.8",
+                "Index": 2,
+                "MessageId": "xxx",
+                "MessageTraceId": "xxxx",
+                "Organization": "dev.onmicrosoft.com",
+                "Received": "2021-01-03T04:46:36.4662406",
+                "RecipientAddress": "xsoar@dev.onmicrosoft.com",
+                "SenderAddress": "xsoar@dev.onmicrosoft.com",
+                "Size": 1882,
+                "StartDate": "2021-01-01T06:15:14.9596257Z",
+                "Status": "GettingStatus",
+                "Subject": "Test mail",
+                "ToIP": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### EWS extension - Messages trace
+>
+>| EndDate | FromIP | Index | MessageId | MessageTraceId | Organization | Received | RecipientAddress | SenderAddress | Size | StartDate | Status | Subject | ToIP
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
+>| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
+
+
 ### ews-federation-trust-get
 
 ***
