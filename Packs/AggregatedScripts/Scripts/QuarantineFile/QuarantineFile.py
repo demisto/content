@@ -293,7 +293,7 @@ class EndpointBrandMapper:
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
-        endpoint_data : list = Command.get_entry_context_object_containing_key(raw_response, "EndpointData")
+        endpoint_data: list = Command.get_entry_context_object_containing_key(raw_response, "EndpointData")
 
         return endpoint_data
 
