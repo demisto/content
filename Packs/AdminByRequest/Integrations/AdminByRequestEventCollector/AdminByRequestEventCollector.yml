@@ -83,37 +83,89 @@ script:
   - name: adminbyrequest-get-events
     description: Retrieves a list of entry log events from the AdminByRequest instance.
     arguments:
-      - auto: PREDEFINED
-        defaultValue: 'false'
-        description: Set this argument to true to create events, otherwise it only displays them.
-        name: should_push_events
-        predefined:
-          - 'true'
-          - 'false'
-        required: true
-      - auto: PREDEFINED
-        defaultValue: 'Auditlog'
-        description: The type of event to fetch.
-        name: event_type
-        predefined:
-          - 'Auditlog'
-          - 'Events'
-          - 'Requests'
-        required: false
-      - description: Returns no more than the specified number of events (for entries of type 'Requests' the default value is 5000).
-        name: limit
-        required: false
-      - description: "The UTC date or relative timestamp from when to start fetching events. Notice that for event type 'Requests' there is the option to set a start date.
-                        Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd."
-        name: first_fetch
-        required: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to true to create events, otherwise it only displays them.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'Auditlog'
+      description: The type of event to fetch.
+      name: event_type
+      predefined:
+      - 'Auditlog'
+      - 'Events'
+      - 'Requests'
+      required: false
+    - description: Returns no more than the specified number of events (for entries of type 'Requests' the default value is 5000).
+      name: limit
+      required: false
+    - description: "The UTC date or relative timestamp from when to start fetching events. Notice that for event type 'Requests' there is the option to set a start date. Supported formats: N days, N weeks, N months, N years, yyyy-mm-dd."
+      name: first_fetch
+      required: false
+  - name: adminbyrequest-list-requests
+    description: Lists requests from AdminByRequest.
+    arguments:
+    - name: request_id
+      description: The ID of a specific request to retrieve.
+      required: false
+    - name: status
+      description: Filters requests by status.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "Pending"
+      - "Approved"
+      - "Denied"
+      - "Expired"
+    - name: want_scan_details
+      description: Set to true to include scan details in the response.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+    - name: limit
+      description: The maximum number of requests to return. Default is 50.
+      required: false
+    - name: all_results
+      description: Set to true to fetch all available results, overriding the limit.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+  - name: adminbyrequest-request-approve
+    description: Approves a request in AdminByRequest.
+    arguments:
+    - name: request_id
+      description: The ID of the request to approve.
+      required: true
+    - name: approved_by
+      description: The user who approved the request.
+      required: false
+  - name: adminbyrequest-request-deny
+    description: Denies a request in AdminByRequest.
+    arguments:
+    - name: request_id
+      description: The ID of the request to deny.
+      required: true
+    - name: denied_by
+      description: The user who denied the request.
+      required: false
+    - name: reason
+      description: The reason for denying the request.
+      required: false
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2

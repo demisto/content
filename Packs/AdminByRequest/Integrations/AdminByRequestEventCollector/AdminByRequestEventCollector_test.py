@@ -8,6 +8,9 @@ MOCK_BASEURL = "https://example.com"
 MOCK_API = "api_key"
 
 from AdminByRequestEventCollector import (
+    deny_request_command,
+    approve_request_command,
+    list_requests_command,
     Client,
     EventType,
     remove_first_run_params,
@@ -401,6 +404,48 @@ class TestFetchEvents:
         for i in range(len(output)):
             assert output[i].get(self.event_requests.time_field) == raw_detections[i]["requestTime"]
             assert output[i].get("source_log_type") == self.event_requests.source_log_type
+
+    @freeze_time("2025-01-01 01:00:00")
+    def test_list_requests_command(self, client, mocker):
+        """
+        Given: A mock raw response containing requests.
+        When: fetching requests using the list_requests_command function.
+        Then: Make sure that output is as expected.
+        """
+        raw_detections = self.raw_detections_requests
+        args = {"limit": 2}
+        mocker.patch("AdminByRequestEventCollector.Client.get_events_request", return_value=raw_detections)
+        output = list_requests_command(client, args=args)
+        assert len(output.outputs) == len(raw_detections)
+        assert output.outputs_prefix == "AdminByRequest.Request"
+
+    def test_approve_request_command(self, client, mocker):
+        """
+        Given: A request ID and an approver email.
+        When: Calling the approve_request_command function.
+        Then: Ensure the client's approve_request method is called with the correct arguments and a success message is returned.
+        """
+        args = {"request_id": "12345", "approved_by": "test@example.com"}
+        mocker.patch("AdminByRequestEventCollector.Client.approve_request")
+
+        result = approve_request_command(client, args)
+
+        client.approve_request.assert_called_once_with("requests/12345", {"approvedby": "test@example.com"})
+        assert result.readable_output == "Request with 12345 id was successfully approved."
+
+    def test_deny_request_command(self, client, mocker):
+        """
+        Given: A request ID, a reason, and a denier email.
+        When: Calling the deny_request_command function.
+        Then: Ensure the client's deny_request method is called with the correct arguments and a success message is returned.
+        """
+        args = {"request_id": "12345", "reason": "Security risk", "denied_by": "test@example.com"}
+        mocker.patch("AdminByRequestEventCollector.Client.deny_request")
+
+        result = deny_request_command(client, args)
+
+        client.deny_request.assert_called_once_with("requests/12345", {"reason": "Security risk", "deniedby": "test@example.com"})
+        assert result.readable_output == "Request with 12345 id was successfully denied."
 
     @freeze_time("2025-01-01 01:00:00")
     def test_get_events(self, client, mocker):
