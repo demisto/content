@@ -323,3 +323,45 @@ def test_main_fail(mocker):
         err_msg == "The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, "
         "pollingCommandArgName, pollingCommand is malformed."
     )
+
+
+def test_main_pass_no_playbook_id(mocker):
+    """
+    Given
+            Sample input values without playbookId
+    When
+            Calling main
+    Then
+            Test the command result structure
+    """
+    good_input = {
+        "ids": "123",
+        "pollingCommand": "jira-get-issue",
+        "pollingCommandArgName": "issueId",
+        "dt": "Ticket(val.Status != 'Done').Id",
+        "interval": "3",
+        "timeout": "5",
+        "tag": "polling",
+        "additionalPollingCommandArgNames": "my_arg_name",
+        "additionalPollingCommandArgValues": "my_arg_value",
+    }
+
+    mocker.patch.object(demisto, "args", return_value=good_input)
+    # mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
+
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value="abc")
+    main()
+
+    assert execute_command_mocker.call_count == 1
+
+    command = execute_command_mocker.call_args_list[0][0][1]["command"]
+
+    expected_command = (
+        '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName='
+        '"issueId"               pendingIds="Ticket(val.Status != \'Done\').Id" interval="3"'
+        ' timeout="5" tag="polling" additionalPollingCommandArgNames="my_arg_name"'
+        '               additionalPollingCommandArgValues="my_arg_value"'
+    )
+
+    assert command == expected_command
