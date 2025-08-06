@@ -381,9 +381,9 @@ def main():
             proxy=params.get("proxy", False),
             api_key=params.get("apikey", {}).get("password"),
             scopes=argToList(params.get("scopes")),
-            all_incident=params.get("collect_all_incidents"),
+            all_incident=params.get("collect_all_events"),
         )
-        demisto.debug(f'Client created. all_incident = {params.get("collect_all_incidents")}')
+        demisto.debug(f'Client created. all_incident = {params.get("collect_all_events")}')
         if command == "test-module":
             return_results(test_module_command(client, first_fetch))
 

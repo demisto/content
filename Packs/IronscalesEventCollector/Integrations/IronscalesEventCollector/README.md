@@ -21,10 +21,10 @@ company.all
 partner.company.view
 company.view
 
-## Collect All Incidents
+## Collect All Events
 
-Checking this box will fetch all incidents, not just the open ones.
-Note: Currently, events of type ATO and MTS are not supported.
+Checking this box will fetch all events, not just open ones.
+Note: Currently, ATO and MTS event types are not supported.
 
 ## Commands
 

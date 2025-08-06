@@ -40,12 +40,12 @@ configuration:
   type: 0
   section: Collect
   required: false
-- display: Collect all incidents
-  name: collect_all_incidents
+- display: Collect all events
+  name: collect_all_events
   type: 8
   section: Collect
   required: false
-  additionalinfo: Fetch all the event instead of only the open events.
+  additionalinfo: Fetch all events instead of only open events.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
