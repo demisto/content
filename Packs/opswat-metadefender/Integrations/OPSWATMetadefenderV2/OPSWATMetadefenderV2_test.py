@@ -1,6 +1,7 @@
 from CommonServerPython import *
 import pytest
 import tempfile
+import requests
 
 BASE_URL = "http://localhost:8008/metascan_rest/"
 SCAN_RESULTS_RES_1: dict = {}
@@ -27,12 +28,16 @@ HASH_INFO_RES_2: dict = {
 
 
 class MockResponse:
-    def __init__(self, json_data, status_code):
+    def __init__(self, json_data, status_code, content=None):
         self.json_data = json_data
         self.status_code = status_code
+        self.content = content
 
     def json(self):
         return self.json_data
+
+    def content(self):
+        return self.content
 
 
 # This method will be used by the mock to replace requests.post
@@ -228,3 +233,164 @@ def test_get_sanitized_file_fail_command(mocker):
     get_sanitized_file_command()
     entry = demisto.results.call_args[0][0]
     assert entry == {"Type": 11, "ContentsFormat": "text", "Contents": "No sanitized file."}
+
+
+@pytest.mark.parametrize(
+    "method, url_suffix, file_name, parse_json, scan_rule, expected_result, expected_status_code",
+    [
+        # # Test case 1: Basic GET request
+        ("GET", "test", None, True, None, {"success": True}, 200),
+        # # Test case 2: GET request with scan rule
+        ("GET", "hash/123", None, True, "custom_rule", {"file_info": {"md5": "123"}}, 200),
+        # # Test case 3: POST request
+        ("POST", "file", None, True, None, {"data_id": "scan123"}, 200),
+        # # Test case 5: File upload
+        ("POST", "file", "test_file.txt", True, None, {"data_id": "file123"}, 200),
+        # # Test case 6: Non-JSON response
+        ("GET", "file/converted/123", None, False, None, b"test file content", 200),
+    ],
+)
+def test_http_req(mocker, method, url_suffix, file_name, parse_json, scan_rule, expected_result, expected_status_code):
+    """
+    Given:
+    - Different HTTP request scenarios for the http_req function
+    - Case 1: Basic GET request
+    - Case 2: GET request with custom scan rule
+    - Case 3: POST request
+    - Case 5: File upload
+    - Case 6: Non-JSON response
+
+    When:
+    - Calling http_req with various parameters
+
+    Then:
+    - Ensures the function handles different HTTP methods correctly
+    - Ensures proper headers are set based on parameters
+    - Ensures file uploads are handled correctly
+    - Ensures response parsing works as expected
+    """
+    # Setup mocks
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL, "api_key_creds": {"password": "test_api_key"}})
+
+    # Mock file operations
+    mock_open = mocker.mock_open(read_data=b"test file content")
+    mocker.patch("builtins.open", mock_open)
+
+    # Create mock response
+    mock_response = MockResponse(expected_result, expected_status_code, b"test file content")
+
+    # Mock requests methods
+    if method.upper() == "GET":
+        mocker.patch.object(requests, "get", return_value=mock_response)
+    elif method.upper() == "POST":
+        mocker.patch.object(requests, "post", return_value=mock_response)
+
+    # Import the function after mocking
+    from OPSWATMetadefenderV2 import http_req
+
+    # Call the function
+    result = http_req(method=method, url_suffix=url_suffix, file_name=file_name, parse_json=parse_json, scan_rule=scan_rule)
+
+    # Verify the result
+    assert result == expected_result
+
+    # Verify the correct request method was called with proper parameters
+    if method.upper() == "GET":
+        requests_mock = requests.get
+    elif method.upper() == "POST":
+        requests_mock = requests.post
+
+    # Verify URL
+    expected_url = BASE_URL + url_suffix
+    assert requests_mock.call_args[0][0] == expected_url
+
+    # Verify headers
+    headers = requests_mock.call_args[1]["headers"]
+    assert headers["Accept"] == "application/json"
+
+    # Verify scan rule if provided
+    if scan_rule:
+        assert headers["rule"] == scan_rule.encode("utf-8")
+
+    # Verify file upload headers if file_name is provided
+    if file_name:
+        assert headers["content-type"] == "application/octet-stream"
+        assert headers["filename"] == file_name.encode("utf-8")
+        assert mock_open.call_args[0][0] == file_name
+        assert requests_mock.call_args.kwargs["data"].read() == b"test file content"
+
+
+@pytest.mark.parametrize(
+    "status_code, expected_error",
+    [
+        (400, "Request failed, got status 400: bad request. Check command parameters"),
+        (401, "Request failed, got status 401: unauthorized. Check your API Key"),
+        (404, "Request failed, got status 404: not found. Check integration URL Address"),
+        (500, "Request failed got status 500"),
+    ],
+)
+def test_http_req_error_handling(mocker, status_code, expected_error):
+    """
+    Given:
+    - Different HTTP error status codes
+    - Case 1: 400 Bad Request
+    - Case 2: 401 Unauthorized
+    - Case 3: 404 Not Found
+    - Case 4: 500 Server Error (not in predefined error codes)
+
+    When:
+    - Calling http_req and receiving an error status code
+
+    Then:
+    - Ensures the function handles error codes correctly
+    - Ensures appropriate error messages are returned
+    """
+    # Setup mocks
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
+
+    # Create mock response with error status
+    mock_response = MockResponse({}, status_code)
+    mocker.patch.object(requests, "get", return_value=mock_response)
+
+    # Mock return_error function
+    mock_return_error = mocker.patch("OPSWATMetadefenderV2.return_error")
+
+    # Import the function after mocking
+    from OPSWATMetadefenderV2 import http_req
+
+    # Call the function
+    http_req(method="GET", url_suffix="test")
+
+    # Verify return_error was called with the expected error message
+    mock_return_error.assert_called_once_with(expected_error)
+
+
+def test_http_req_unsupported_method(mocker):
+    """
+    Given:
+    - An unsupported HTTP method
+
+    When:
+    - Calling http_req with an unsupported method
+
+    Then:
+    - Ensures the function handles unsupported methods correctly
+    - Ensures appropriate error message is returned
+    """
+    # Setup mocks
+    mocker.patch.object(demisto, "params", return_value={"url": BASE_URL})
+
+    # Mock return_error function
+    mock_return_error = mocker.patch("OPSWATMetadefenderV2.return_error")
+
+    # Import the function after mocking
+    from OPSWATMetadefenderV2 import http_req
+
+    # Call the function with unsupported method
+    result = http_req(method="PUT", url_suffix="test")
+
+    # Verify return_error was called with the expected error message
+    mock_return_error.assert_called_once_with("Got unsupporthed http method: PUT")
+
+    # Verify the function returns an empty string
+    assert result == ""
