@@ -804,15 +804,15 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     )
 
     demisto.debug("Getting integration brands on tenant.")
-    enabled_brands = list(
-        {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
-    )
+    enabled_brands = list({module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"})
     demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
     demisto.debug(f"Running Step 2: Internal enrichment commands on {file_hashes}.")
-    run_internal_enrichment(hashes_by_type=hashes_by_type,
-                            enabled_brands=enabled_brands,
-                            per_command_context=per_command_context,
-                            verbose_command_results=verbose_command_results)
+    run_internal_enrichment(
+        hashes_by_type=hashes_by_type,
+        enabled_brands=enabled_brands,
+        per_command_context=per_command_context,
+        verbose_command_results=verbose_command_results,
+    )
 
     if external_enrichment or enrichment_brands:
         demisto.debug(f"Validating overlap between enrichment brands: {enrichment_brands} and enabled integration brands.")
@@ -863,11 +863,12 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     return command_results
 
 
-def run_internal_enrichment(hashes_by_type: dict[str, list],
-                            enabled_brands: list[str],
-                            per_command_context: dict[str, dict],
-                            verbose_command_results: list,
-                            ) -> None:
+def run_internal_enrichment(
+    hashes_by_type: dict[str, list],
+    enabled_brands: list[str],
+    per_command_context: dict[str, dict],
+    verbose_command_results: list,
+) -> None:
     """
     Runs the internal file enrichment flow by executing the relevant commands from internal source brands.
 
