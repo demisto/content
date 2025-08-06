@@ -6,19 +6,15 @@ args:
   description: List of endpoint IDs.
   required: true
   isArray: true
-  type: List
 - name: file_hash
   description: 'The hash of the file to quarantine. Supported types are: SHA256.'
   required: true
-  type: String
 - name: file_path
   description: The path of the file to quarantine.
   required: false
-  type: String
 - name: timeout
   description: The polling timeout in seconds for the quarantine commands. The default is 300.
   required: false
-  type: Integer
   defaultValue: 300
 - name: brands
   description: |-
