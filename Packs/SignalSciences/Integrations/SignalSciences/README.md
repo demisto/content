@@ -136,7 +136,7 @@
 <tr>
 <td style="width: 377px;">SigSciences.Corp.Site.Whitelist.CreatedDate</td>
 <td style="width: 59px;">date</td>
-<td style="width: 304px;">The created date timestamp</td>
+<td style="width: 304px;">The created date timestamp.</td>
 </tr>
 <tr>
 <td style="width: 377px;">SigSciences.Corp.Site.Whitelist.CreatedBy</td>
@@ -233,7 +233,7 @@
 <tbody>
 <tr>
 <td style="width: 172px;">siteName</td>
-<td style="width: 468px;">The site that holds the block list you wish to get</td>
+<td style="width: 468px;">The site that holds the block list you wish to get.</td>
 <td style="width: 100px;">Required</td>
 </tr>
 </tbody>
@@ -435,7 +435,7 @@
 <tr>
 <td style="width: 387px;">SigSciences.Corp.Site.Whitelist.CreatedDate</td>
 <td style="width: 57px;">date</td>
-<td style="width: 296px;">The created date timestamp</td>
+<td style="width: 296px;">The created date timestamp.</td>
 </tr>
 <tr>
 <td style="width: 387px;">SigSciences.Corp.Site.Whitelist.ExpiryDate</td>
@@ -528,7 +528,7 @@
 <tbody>
 <tr>
 <td style="width: 141px;">siteName</td>
-<td style="width: 528px;">The site that holds the block list you wish to add to</td>
+<td style="width: 528px;">The site that holds the block list you wish to add to.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -847,7 +847,7 @@
 </tr>
 <tr>
 <td style="width: 139px;">list_type</td>
-<td style="width: 530px;">The type for the list you wish to create on Signal Sciences. Legal types are IP, String, Country or Wildcard</td>
+<td style="width: 530px;">The type for the list you wish to create on Signal Sciences. Legal types are IP, String, Country or Wildcard.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -2631,17 +2631,17 @@
 <tbody>
 <tr>
 <td style="width: 147px;">list_id</td>
-<td style="width: 522px;">The ID of the list you wish to update</td>
+<td style="width: 522px;">The ID of the list you wish to update.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 147px;">method</td>
-<td style="width: 522px;">The method to use - must be “Add” or “Remove”. The method will determine whether the entries you provide are added to the list or removed from it</td>
+<td style="width: 522px;">The method to use - must be “Add” or “Remove”. The method will determine whether the entries you provide are added to the list or removed from it.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 147px;">entries_list</td>
-<td style="width: 522px;">A list of values, consistent with the list’s type, separated by commas</td>
+<td style="width: 522px;">A list of values, consistent with the list’s type, separated by commas.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -3058,7 +3058,7 @@
 <tbody>
 <tr>
 <td style="width: 196px;">siteName</td>
-<td style="width: 431px;">Name of the site to get the event from</td>
+<td style="width: 431px;">Name of the site to get the event from.</td>
 <td style="width: 113px;">Required</td>
 </tr>
 <tr>
