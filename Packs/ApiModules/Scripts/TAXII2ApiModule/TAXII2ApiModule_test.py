@@ -2903,5 +2903,4 @@ def test_get_ioc_value_multiple_fields():
 
     res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
 
-    # Should extract from pattern field first
     assert res == "10.0.0.1"
