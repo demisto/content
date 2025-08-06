@@ -1,1 +1,67 @@
+<~XSIAM>
+
+## Overview
+
 Lookout Mobile Endpoint Security is a comprehensive security solution that protects mobile devices from threats such as phishing, malware, network attacks, and device vulnerabilities. It leverages AI-driven threat intelligence to detect and prevent risks, ensuring secure access to corporate data while maintaining user privacy. The platform provides real-time risk assessments and integrates with enterprise security ecosystems to enhance overall mobile security posture.
+
+## This pack includes
+
+Data normalization capabilities:
+
+* Rule for modeling Lookout Mobile Endpoint Security Threat, Audit, and Device logs that are ingested into Cortex XSIAM via integration.
+* The ingested Lookout Mobile Endpoint Security logs can be queried in XQL Search using the *`lookout_mobile_endpoint_security_raw`* dataset.
+
+## Supported log categories
+
+| Category | Category Display Name |
+|:---------|:----------------------|
+| Audit    | AUDIT                 |
+| Threat   | THREAT                |
+| Device   | DEVICE                |
+
+### Supported timestamp format
+
+* Timestamp parsing support is under the assumption that a UTC +0000 format is being used.
+
+***
+
+## Data Collection
+
+### Lookout Mobile Endpoint Security side
+
+Use this integration to collect events automatically from Lookout Mobile Endpoint Security (MES).
+This integration was integrated and tested with version v2 of Mobile Risk API.
+
+#### Creating an Application Key
+
+You must create an application key specific to your Lookout tenant to properly authenticate your application. You can do this from the [Lookout Mobile Endpoint Protection Console]($$):
+
+1. Log into the Lookout Mobile Endpoint Protection Console as an administrator.
+2. In the left navigation bar, navigate to **System** > **Application Keys:**
+*NOTE:* If you don’t see the Application Keys tab, contact Lookout Enterprise Support to enable this feature on your tenant.
+3. Click **GENERATE KEY**.
+Enter a label name and click **Next**.
+4. Copy the key from your clipboard into the configuration for your application.
+*IMPORTANT:* Copy the generated key to your application immediately as you cannot access the key again after this procedure.
+
+### Cortex XSIAM side
+
+1. Navigate to **Settings** > **Configuration** > **Data Collection** > **Automation & Feed Integrations**.
+2. Search for "Lookout Mobile Endpoint Security" and click **Add Instance**
+3. When configuring the API Integration, set the following values:
+
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | False |
+| Application Key | False |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch interval in seconds | True |
+| Event types to fetch | True |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+</~XSIAM>
