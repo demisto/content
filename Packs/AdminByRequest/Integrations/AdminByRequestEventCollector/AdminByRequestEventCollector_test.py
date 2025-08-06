@@ -426,7 +426,9 @@ class TestFetchEvents:
         Then: Ensure the client's approve_request method is called with the correct arguments and a success message is returned.
         """
         args = {"request_id": "12345", "approved_by": "test@example.com"}
-        mocker.patch("AdminByRequestEventCollector.Client.approve_request")
+        mock_response = mocker.Mock()
+        mock_response.status_code = 204
+        mocker.patch("AdminByRequestEventCollector.Client.approve_request", return_value=mock_response)
 
         result = approve_request_command(client, args)
 
@@ -440,7 +442,9 @@ class TestFetchEvents:
         Then: Ensure the client's deny_request method is called with the correct arguments and a success message is returned.
         """
         args = {"request_id": "12345", "reason": "Security risk", "denied_by": "test@example.com"}
-        mocker.patch("AdminByRequestEventCollector.Client.deny_request")
+        mock_response = mocker.Mock()
+        mock_response.status_code = 204
+        mocker.patch("AdminByRequestEventCollector.Client.deny_request", return_value=mock_response)
 
         result = deny_request_command(client, args)
 
