@@ -1415,6 +1415,8 @@ def catch_and_exit_gracefully(e):
 ALERTS_STATUS_PROGRESS = {'New': "STATUS_010_NEW",
                             "In Progress": "STATUS_020_UNDER_INVESTIGATION",
                             "Resolved": "STATUS_025_RESOLVED"}
+SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH",
+                                         "critical": "SEV_050_CRITICAL"}
 
 def init_filter_args_options() -> dict[str, AlertFilterArg]:
     array = "array"
@@ -1424,8 +1426,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
     return {
         "alert_id": AlertFilterArg("internal_id", EQ, array),
         "severity": AlertFilterArg(
-            "severity", EQ, dropdown, {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH",
-                                         "critical": "SEV_050_CRITICAL"}
+            "severity", EQ, dropdown, SEVERITY_STATUSES
         ),
         
         "starred": AlertFilterArg(
@@ -1471,6 +1472,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "action_file_macro_sha256": AlertFilterArg("action_file_macro_sha256", CONTAINS, array),
         "status": AlertFilterArg("status.progress", EQ, array, ALERTS_STATUS_PROGRESS),
         "not_status": AlertFilterArg("status.progress", NEQ, array, ALERTS_STATUS_PROGRESS)
+        # TODO: Make sure regarding related issues and cases.
     }
 
 
@@ -3730,12 +3732,15 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
 
         context.append(alert)
 
+    SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
+    ALERTS_STATUS_PROGRESS_REVERSE = {value: key for key, value in ALERTS_STATUS_PROGRESS.items()}
     human_readable = [
         {
             "Alert ID": alert.get("internal_id"),
             "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
             "Name": alert.get("alert_name"),
-            "Severity": alert.get("severity"),
+            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
+            "Status": ALERTS_STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
             "Category": alert.get("alert_category"),
             "Action": alert.get("alert_action_status_readable"),
             "Description": alert.get("alert_description"),
