@@ -19,7 +19,7 @@ Data normalization capabilities:
 | Threat   | THREAT                |
 | Device   | DEVICE                |
 
-### Supported timestamp format
+### Supported Timestamp Format
 
 Timestamp parsing supports a UTC +0000 format.
 
