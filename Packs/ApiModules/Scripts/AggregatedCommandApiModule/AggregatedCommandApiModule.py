@@ -485,7 +485,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 
         return command_context, dbot_scores, human_readable, result_entry
     
-    def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str])-> dict[str, Any]:
+    def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
         """
         Maps the entry context item to the final context using the mapping.
         Can add [] to transform the final path value to list.
@@ -509,13 +509,13 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             return None
         
         mapped_context = defaultdict()
-        demisto.debug(f"Starting context mapping with {len(mapping)} rules.")
+        demisto.debug(f"Starting context mapping with {len(mapping)} rules. for indicator: {is_indicator}")
         for src_path, dst_path in mapping.items():
             value = get_and_remove_dict_value(entry_context, src_path)
             if value:
                 set_dict_value(mapped_context, dst_path, value)
             
-        if self.additional_fields:
+        if self.additional_fields and is_indicator:
             demisto.debug(f"Adding {len(entry_context)} remaining fields to AdditionalFields.")
             set_dict_value(mapped_context, "AdditionalFields", entry_context)
         
@@ -567,7 +567,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 continue
             
             demisto.debug(f"Parsing indicator: {indicator_value}")
-            mapped_indicator = self.map_command_context(indicator_data, self.indicator.mapping)
+            mapped_indicator = self.map_command_context(indicator_data, self.indicator.mapping, is_indicator=True)
             
             # Enrich with standard fields if they were mapped
             if "Score" in self.indicator.mapping:

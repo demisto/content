@@ -5,12 +5,12 @@ from AggregatedCommandApiModule import *
 
 
 def validate_input_function(args):
-    if not args.get("url_list"):
+    url_list = argToList(args.get("url_list"))
+    if not url_list:
         raise DemistoException("url_list is required")
-    for url in args.get("url_list"):
-        type = auto_detect_indicator_type(url)
-        if type != FeedIndicatorType.URL:
-            raise DemistoException("URL is invalid, type: " + type)
+    for url in url_list:
+        if auto_detect_indicator_type(url) != FeedIndicatorType.URL:
+            raise DemistoException(f"URL '{url}' is invalid")
             
 
 
@@ -39,10 +39,10 @@ def url_enrichment_script(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
-        validate_input_function=lambda args: True,
+        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="URLEnrichment",
+        final_context_path=f"URLEnrichment(val.{url_indicator.value_field} && val.{url_indicator.value_field} == obj.{url_indicator.value_field})",
         args=demisto.args(),
         data=url_list,
         indicator=url_indicator,
