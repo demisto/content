@@ -463,22 +463,48 @@ def test_run_external_enrichment(mocker: MockerFixture):
         verbose_command_results=[],
     )
 
-    assert mock_enrich_with_command.call_count == 3
+    assert mock_enrich_with_command.call_count == 1
 
-    # A. Run file reputation command
+    # Run file reputation command
     file_reputation_command = mock_enrich_with_command.call_args_list[0].kwargs["command"]
 
     assert file_reputation_command.name == "file"
     assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(enrichment_brands)}
 
+
+def test_run_internal_enrichment(mocker: MockerFixture):
+    """
+    Given:
+        - A SHA256 file hash and enabled instances of all source brands.
+
+    When:
+        - Calling `run_internal_enrichment`.
+
+    Assert:
+        - Ensure all the commands from all the source brands run with the correct arguments.
+    """
+    from FileEnrichment import run_internal_enrichment
+
+    enabled_brands = [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value]
+    mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
+
+    run_internal_enrichment(
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
+        enabled_brands=enabled_brands,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_enrich_with_command.call_count == 2
+
     # B. Run Wildfire Verdict command
-    wildfire_verdict_command = mock_enrich_with_command.call_args_list[1].kwargs["command"]
+    wildfire_verdict_command = mock_enrich_with_command.call_args_list[0].kwargs["command"]
 
     assert wildfire_verdict_command.name == "wildfire-get-verdict"
     assert wildfire_verdict_command.args == {"hash": SHA_256_HASH}
 
     # C. Run Core IR Hash Analytics command
-    hash_analytics_command = mock_enrich_with_command.call_args_list[2].kwargs["command"]
+    hash_analytics_command = mock_enrich_with_command.call_args_list[1].kwargs["command"]
 
     assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
     assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
@@ -622,6 +648,7 @@ def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
 
     mock_search_file_indicator = mocker.patch("FileEnrichment.search_file_indicator")
     mock_demisto_get_modules = mocker.patch("FileEnrichment.demisto.getModules")
+    mock_run_internal_enrichment = mocker.patch("FileEnrichment.run_internal_enrichment")
     mock_run_external_enrichment = mocker.patch("FileEnrichment.run_external_enrichment")
     mock_summarize_command_results = mocker.patch("FileEnrichment.summarize_command_results")
 
@@ -631,7 +658,8 @@ def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
     assert mock_search_file_indicator.call_count == 1
 
     # Should not run if external_enrichment is False
-    assert mock_demisto_get_modules.call_count == int(external_enrichment)
+    assert mock_demisto_get_modules.call_count == 1
+    assert mock_run_internal_enrichment.call_count == 1
     assert mock_run_external_enrichment.call_count == int(external_enrichment)
 
     assert mock_summarize_command_results.call_count == 1

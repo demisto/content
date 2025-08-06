@@ -657,6 +657,60 @@ def run_external_enrichment(
     demisto.debug(f"Finished running external enrichment flow on file hashes: {file_hashes}.")
 
 
+def run_internal_enrichment(
+    hashes_by_type: dict[str, list],
+    enabled_brands: list[str],
+    per_command_context: dict[str, dict],
+    verbose_command_results: list,
+) -> None:
+    """
+    Runs the internal file enrichment flow by executing the relevant commands from internal source brands.
+
+    Args:
+        hashes_by_type (dict[str, list]): Dictionary of file hashes (value) classified by the hash type (key).
+        enabled_brands (list[str]) : List of enabled integration brands.
+        per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
+        verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
+    """
+    # setting `enrichment_brands` to empty list as it's not relevant to internal enrichment,
+    # and is used in function "enrich_with_command".
+    enrichment_brands: list[str] = []
+
+    # A. Run Wildfire Verdict command -  only works with SHA256 and MD5 hashes
+    if wildfire_hashes := (hashes_by_type.get("SHA256", []) + hashes_by_type.get("MD5", [])):
+        wildfire_verdict_command = Command(
+            name="wildfire-get-verdict",
+            args={"hash": ",".join(wildfire_hashes)},
+            brand=Brands.WILDFIRE_V2,
+        )
+        enrich_with_command(
+            command=wildfire_verdict_command,
+            enabled_brands=enabled_brands,
+            enrichment_brands=enrichment_brands,
+            per_command_context=per_command_context,
+            verbose_command_results=verbose_command_results,
+        )
+    else:
+        demisto.debug("Skipping running command 'wildfire-get-verdict'. Found no SHA256 and MD5 hashes.")
+
+    # B. Run Core IR Hash Analytics command - only works with SHA56 hashes
+    if analytics_hashes := hashes_by_type.get("SHA256", []):
+        hash_analytics_command = Command(
+            name="core-get-hash-analytics-prevalence",
+            args={"sha256": ",".join(analytics_hashes)},
+            brand=Brands.CORE_IR,
+        )
+        enrich_with_command(
+            command=hash_analytics_command,
+            enabled_brands=enabled_brands,
+            enrichment_brands=enrichment_brands,
+            per_command_context=per_command_context,
+            verbose_command_results=verbose_command_results,
+        )
+    else:
+        demisto.debug("Skipping running command 'core-get-hash-analytics-prevalence'. Found no SHA256 hashes.")
+
+
 def summarize_command_results(
     hashes_by_type: dict[str, list],
     per_command_context: dict[str, dict],
@@ -860,60 +914,6 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
             command_results.append(warning_command_results)
 
     return command_results
-
-
-def run_internal_enrichment(
-    hashes_by_type: dict[str, list],
-    enabled_brands: list[str],
-    per_command_context: dict[str, dict],
-    verbose_command_results: list,
-) -> None:
-    """
-    Runs the internal file enrichment flow by executing the relevant commands from internal source brands.
-
-    Args:
-        hashes_by_type (dict[str, list]): Dictionary of file hashes (value) classified by the hash type (key).
-        enabled_brands (list[str]) : List of enabled integration brands.
-        per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
-        verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
-    """
-    # setting `enrichment_brands` to empty list as it's not relevant to internal enrichment,
-    # and is used in function "enrich_with_command".
-    enrichment_brands: list[str] = []
-
-    # A. Run Wildfire Verdict command -  only works with SHA256 and MD5 hashes
-    if wildfire_hashes := (hashes_by_type.get("SHA256", []) + hashes_by_type.get("MD5", [])):
-        wildfire_verdict_command = Command(
-            name="wildfire-get-verdict",
-            args={"hash": ",".join(wildfire_hashes)},
-            brand=Brands.WILDFIRE_V2,
-        )
-        enrich_with_command(
-            command=wildfire_verdict_command,
-            enabled_brands=enabled_brands,
-            enrichment_brands=enrichment_brands,
-            per_command_context=per_command_context,
-            verbose_command_results=verbose_command_results,
-        )
-    else:
-        demisto.debug("Skipping running command 'wildfire-get-verdict'. Found no SHA256 and MD5 hashes.")
-
-    # B. Run Core IR Hash Analytics command - only works with SHA56 hashes
-    if analytics_hashes := hashes_by_type.get("SHA256", []):
-        hash_analytics_command = Command(
-            name="core-get-hash-analytics-prevalence",
-            args={"sha256": ",".join(analytics_hashes)},
-            brand=Brands.CORE_IR,
-        )
-        enrich_with_command(
-            command=hash_analytics_command,
-            enabled_brands=enabled_brands,
-            enrichment_brands=enrichment_brands,
-            per_command_context=per_command_context,
-            verbose_command_results=verbose_command_results,
-        )
-    else:
-        demisto.debug("Skipping running command 'core-get-hash-analytics-prevalence'. Found no SHA256 hashes.")
 
 
 """ MAIN FUNCTION """
