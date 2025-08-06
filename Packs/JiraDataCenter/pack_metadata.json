@@ -1,5 +1,5 @@
 {
-    "name": "Atlassian Jira",
+    "name": "Atlassian Jira Data Center",
     "description": "Atlassian Jira Data Center Audit events",
     "support": "xsoar",
     "currentVersion": "1.0.0",
