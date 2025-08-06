@@ -321,9 +321,11 @@ class EndpointCommandRunner:
             entry_type = entry.get("Type")
             if entry_type == EntryType.ERROR or entry_type == EntryType.WARNING:
                 command_error_outputs.append(hr_to_command_results(command, args, entry.get("Contents"), entry_type=entry_type))  # type: ignore[arg-type]
-            else:
+            elif entry_type == EntryType.NOTE:
                 command_context_outputs.append(entry.get("EntryContext", {}))
                 human_readable_outputs.append(entry.get("HumanReadable") or "")
+            else:
+                demisto.debug(f"Skipping result with entry type {entry_type}, type is not supported.")
 
         human_readable = "\n".join(human_readable_outputs)
         human_readable_entry: list[CommandResults] = [hr] if (hr := hr_to_command_results(command, args, human_readable)) else []
