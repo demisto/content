@@ -1940,7 +1940,7 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
 
 def get_warninglist_command(demisto_args: dict) -> CommandResults:
     """
-    Returns the values of a specific MISP warninglist  based on ID
+    Returns the values of a specific MISP warninglist based on ID
     """
     warninglist_id = demisto_args["id"]
 
