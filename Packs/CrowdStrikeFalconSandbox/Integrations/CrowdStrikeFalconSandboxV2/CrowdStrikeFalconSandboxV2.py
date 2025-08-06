@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from itertools import zip_longest
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -182,7 +183,7 @@ def get_scan_keys(args: dict[str, Any]) -> List[str]:
     if (files and env_ids) and (len(files) != len(env_ids)):
         raise ValueError("When using files and environment IDs, they must be of the same length.")
     keys = []
-    for f, e, j in zip(files, env_ids, job_ids):
+    for f, e, j in zip_longest(files, env_ids, job_ids):
         keys.append(get_api_id({"file": f, "environmentId": e, "JobID": j}))
     return keys
 
