@@ -37,7 +37,7 @@ Use the integration to automatically collect events from Lookout Mobile Endpoint
 You must create an application key specific to your Lookout Mobile Endpoint Security tenant to properly authenticate your application. You can do this from the [Lookout Mobile Endpoint Protection Console](https://api.lookout.com):
 
 1. Log in to the Lookout Mobile Endpoint Security Protection console as an administrator.
-2. In the left navigation bar, navigate to **System** > **Application Keys:**
+2. In the left navigation bar, navigate to **System** > **Application Keys**.
 *NOTE:* If you don’t see the Application Keys tab, contact Lookout Enterprise Support to enable this feature on your tenant.
 3. Click **GENERATE KEY**.
 Enter a label name and click **Next**.
