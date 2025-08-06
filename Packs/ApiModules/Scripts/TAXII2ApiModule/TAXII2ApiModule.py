@@ -2351,13 +2351,15 @@ class STIX2XSOARParser(BaseClient):
         - "[file:hashes.'SHA-256' = '1111']" -> "1111" (SHA-256 hash)
         - "[ipv4-addr:value = '1.2.3.4']" -> "1.2.3.4" (IP address)
         - "[domain-name:value = 'example.com']" -> "example.com" (domain)
+        - "[windows-registry-key:key = 'HKEY_LOCAL_MACHINE\\Software\\Malware']" -> "HKEY_LOCAL_MACHINE\\Software\\Malware"
+        - "[windows-registry-key:value = 'MalwareValue']" -> "MalwareValue"
 
         Returns the first found indicator value based on a priority order:
         1. file:hashes.'SHA-256'
         2. ipv4-addr:value
         3. domain-name:value
         4. url:value
-        5. Other supported indicator types
+        5. Other supported indicator types defined in STIX_SUPPORTED_TYPES
 
         If multiple indicators of the same type are found, returns the first one.
 
@@ -2374,7 +2376,7 @@ class STIX2XSOARParser(BaseClient):
         # Define priority order for indicator types
         priority_order = ["file", "ipv4-addr", "domain-name", "url", "email-addr", "mutex", "windows-registry-key"]
 
-        # First check for SHA-256 hash specifically (highest priority)
+        # Due to backward compatibility, First check for SHA-256 hash specifically
         sha256 = next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
         if sha256:
             return sha256
@@ -2388,14 +2390,24 @@ class STIX2XSOARParser(BaseClient):
                     for comp in comps["file"]:
                         if len(comp) >= 3 and comp[0] and len(comp[0]) >= 2 and comp[0][0] == "hashes":
                             return comp[-1].strip("'")
-                # For other types, typically the value is in the last element of the comparison tuple
-                elif comps[indicator_type][0][-1]:
-                    return comps[indicator_type][0][-1].strip("'")
+                # For all other types, check if the field is in STIX_SUPPORTED_TYPES
+                else:
+                    # Get supported fields for this indicator type
+                    supported_fields = STIX_SUPPORTED_TYPES.get(indicator_type, ())
+
+                    for comp in comps[indicator_type]:
+                        # Check if the comparison field is in the supported fields
+                        if comp[0] and len(comp[0]) > 0 and comp[0][0] in supported_fields and comp[-1]:
+                            return comp[-1].strip("'")
 
         # If no indicators found in priority list, check any other supported types
         for indicator_type, comparisons in comps.items():
-            if indicator_type not in priority_order and comparisons:
-                return comparisons[0][-1].strip("'")
+            if indicator_type not in priority_order and comparisons and indicator_type in STIX_SUPPORTED_TYPES:
+                supported_fields = STIX_SUPPORTED_TYPES.get(indicator_type, ())
+
+                for comp in comparisons:
+                    if comp[0] and len(comp[0]) > 0 and comp[0][0] in supported_fields and comp[-1]:
+                        return comp[-1].strip("'")
 
         return None
 
