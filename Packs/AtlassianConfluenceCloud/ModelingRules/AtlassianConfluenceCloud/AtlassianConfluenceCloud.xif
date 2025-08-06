@@ -25,7 +25,7 @@ alter
     xdm.target.resource.value = check_for_empty_string_resource_value,
     xdm.target.resource_before.value = check_for_empty_string_resource_before_value,
     xdm.source.ipv4 = remoteaddress,
-    xdm.target.resource.name = ext_associated_objects_name ,
-    xdm.target.resource.type = ext_associated_objects_type,
+    xdm.target.resource.name = coalesce(ext_associated_objects_name,ext_affected_object_name) ,
+    xdm.target.resource.type = coalesce(ext_associated_objects_type,ext_affected_object_type),
     xdm.target.user.username = check_type_user_name,
     xdm.target.user.groups = arraycreate(check_type_group);
