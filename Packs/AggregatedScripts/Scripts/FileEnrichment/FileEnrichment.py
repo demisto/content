@@ -848,8 +848,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
         executed_brands = [
             file_context.get("Brand")
-            for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])
-            # type: ignore [attr-defined]
+            for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])  # type: ignore [attr-defined]
         ]
         # Warn about partially invalid `file_hash` and `enrichment_brands` argument values
         warning_command_results = warn_about_invalid_args(
