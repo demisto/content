@@ -48,7 +48,9 @@ def parse_filter_field(filter_string: str | None):
         demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
     # Continue parsing the first 50 filters as per AWS specification
     # Regex limitation is a result of MAX_FILTER_VALUES*MAX_CHAR_LENGTH_FOR_FILTER_VALUE
-    regex = re.compile(r"name=([\w\d_:.-]{1,50}),values=([ /\w\d@_,.*-:]{1,51200})", flags=re.I)
+    regex = re.compile(
+        r"^name=((?:description|egress[^,]+|ip-permission[^,]+|group[^,]+|tag:[^,]+|owner-id|vpc-id)),values=([^\;]+)", flags=re.I
+    )
     for filter in list_filters:
         match_filter = regex.match(filter)
         if match_filter is None:
