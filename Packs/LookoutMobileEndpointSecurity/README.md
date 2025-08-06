@@ -34,7 +34,7 @@ This integration was integrated and tested with version v2 of Mobile Risk API.
 
 #### Creating an Application Key
 
-You must create an application key specific to your Lookout tenant to properly authenticate your application. You can do this from the [Lookout Mobile Endpoint Protection Console]($$):
+You must create an application key specific to your Lookout tenant to properly authenticate your application. You can do this from the [Lookout Mobile Endpoint Protection Console](https://api.lookout.com):
 
 1. Log into the Lookout Mobile Endpoint Protection Console as an administrator.
 2. In the left navigation bar, navigate to **System** > **Application Keys:**
