@@ -1298,6 +1298,38 @@ def perform_rasterize(
             return rasterization_results
 
     else:
+        chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+        chrome_options_dict = {
+            options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
+        }
+        chrome_options = demisto.params().get("chrome_options", "None")
+        chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
+
+        ps_aux_output = "\n".join(
+            subprocess.check_output(  # noqa: S602
+                "ps aux | grep chrom | grep port= | grep -- --headless",
+                shell=True,
+                text=True,
+                stderr=subprocess.STDOUT,
+            ).splitlines()
+        )
+        chrome_headless_content = "\n".join(
+            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
+        )
+        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+
+        count_running_chromes(chrome_port)
+        demisto.debug(f"{chrome_instances_contents=}")
+        demisto.debug(f"ps aux command result:\n{ps_aux_output}")
+        demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
+        demisto.debug(f"df command result:\n{df_output}")
+        demisto.debug(f"free command result:\n{free_output}")
+        demisto.debug(f"chrome driver: {chromedriver}")
+        demisto.debug(f"chrome version: {chrome_version}")
+
         message = "Could not use local Chrome for rasterize command"
         demisto.error(message)
         return_error(message)
@@ -1486,6 +1518,13 @@ def get_list_item(list_of_items: list, index: int, default_value: str):
     return list_of_items[index]
 
 
+def process_urls(urls):
+    if isinstance(urls, str) and urls.startswith("["):
+        urls = argToList(urls)
+    urls = [urls] if isinstance(urls, str) else urls
+    return urls
+
+
 def add_filename_suffix(file_names: list, file_extension: str):
     ret_value = []
     for current_filename in file_names:
@@ -1495,8 +1534,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    #  Rasterize does not support array in `url`. Please consult the owner before changing this.
-    urls = [urls] if isinstance(urls, str) else urls
+    urls = process_urls(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
