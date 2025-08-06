@@ -90,7 +90,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-- additionalinfo: The indicator type in the feed to fetch. Domain is referring to "https://rules.emergingthreats.net/auth_code/reputation/detailed-iprepdata.txt", IP is referring to "https://rules.emergingthreats.net/auth_code/reputation/detailed-domainrepdata.txt".
+- additionalinfo: The indicator type in the feed to fetch. Domain refers to "https://rules.emergingthreats.net/auth_code/reputation/detailed-iprepdata.txt" and IP refers to "https://rules.emergingthreats.net/auth_code/reputation/detailed-domainrepdata.txt".
   defaultvalue: all
   display: Indicator Type
   name: indicator_type
@@ -117,7 +117,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: Detailed feed of domains and ips classified in different categories. You need a valid authorization code from Proofpoint ET to access this feed.
+description: Detailed feed of domains and IP addresses classified in different categories. You need a valid authorization code from Proofpoint ET to access this feed.
 display: Proofpoint Feed
 name: ProofpointFeed
 script:
