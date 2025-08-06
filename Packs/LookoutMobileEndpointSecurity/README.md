@@ -11,7 +11,7 @@ Data normalization capabilities:
 * Modeling rule for mapping ingested Lookout Mobile Endpoint Security Threat, Audit, and Device logs.
 * XQL search queries for the ingested Lookout Mobile Endpoint Security logs using the *`lookout_mobile_endpoint_security_raw`* dataset.
 
-## Supported log categories
+## Supported Log Categories
 
 | Category | Category Display Name |
 |:---------|:----------------------|
