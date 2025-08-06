@@ -1,4 +1,4 @@
-[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit = keep]
+[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit = drop]
 filter
     _raw_log != null
 | alter
