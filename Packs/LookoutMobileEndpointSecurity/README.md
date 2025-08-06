@@ -44,7 +44,7 @@ Enter a label name and click **Next**.
 4. Copy the key from your clipboard into the configuration for your application.
 *IMPORTANT:* Copy the generated key to your application immediately as you cannot access the key again after this procedure.
 
-### Cortex XSIAM side
+### Cortex XSIAM Side
 
 1. Navigate to **Settings** > **Configuration** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for "Lookout Mobile Endpoint Security" and click **Add Instance**
