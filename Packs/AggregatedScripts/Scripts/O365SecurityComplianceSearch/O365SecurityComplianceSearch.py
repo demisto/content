@@ -1,5 +1,8 @@
 from CommonServerPython import *
 
+
+SCRIPT_NAME = "o365-security-compliance-search"
+
 # required integrations
 SEC_COMP_MODULES = ["SecurityAndCompliance", "SecurityAndComplianceV2"]
 
@@ -19,11 +22,10 @@ CONTEXT_NAME_KEY = "Name"
 CONTEXT_STATUS_KEY = "Status"
 CONTEXT_RESULTS_KEY = "Results"
 
-# other consts
-SCRIPT_NAME = "o365-security-compliance-search"
-SEARCH_RESULT_PATTERN = r"(\w[\w\s]+?):\s*([^,]+)"
+# default values
 DEFAULT_POLLING_INTERVAL = 10
 DEFAULT_POLLING_TIMEOUT = 180
+DEFAULT_SEARCH_PATTERN = r"(\w[\w\s]+?):\s*([^,]+)"
 
 
 def parse_args(args: dict) -> dict:
@@ -70,21 +72,22 @@ def parse_args(args: dict) -> dict:
     return args
     
     
-def get_from_context(context: list, key: str) -> str:
+def get_result_value(cmd_results: CommandResults, key: str) -> str:
     """
-    Get results from context
+    Get key value from command results
 
     Args:
-        context (list): The commands context
-        key (str): The key to look for in the context
+        context (CommandResults): The commands results
+        key (str): The key to look for in the response "Contents"
 
     Returns:
         str: The value of the key
     """
     try:
-        return context[0].get("Contents", {}).get(key, "")
+        context = cmd_results[0]
+        return demisto.get(context, f"Contents.{key}")
     
-    except AttributeError:
+    except (KeyError, IndexError):
         return ""
 
 
@@ -126,13 +129,13 @@ def parse_results(search_results: str) -> list[dict]:
     # split results into lines and parse into dict
     results_list = search_results.split("\n")
     for entry in results_list:
-        result_matches  = re.findall(SEARCH_RESULT_PATTERN, entry)
+        result_matches  = re.findall(DEFAULT_SEARCH_PATTERN, entry)
         parsed_results.append({key.strip(): val.strip() for key, val in result_matches})
         
     return parsed_results
 
 
-def wait_for_results(args: dict, cmd: str, result_key: str) -> Union[dict, list]:
+def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
     """
     Wait for results from o365-sc-get-search or o365-sc-get-search-action
 
@@ -157,8 +160,8 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> Union[dict, list]
             
         # get search status and results
         results = demisto.executeCommand(cmd, args)
-        search_status = get_from_context(results, "Status")
-        search_results = parse_results(get_from_context(results, result_key))
+        search_status = get_result_value(results, "Status")
+        search_results = parse_results(get_result_value(results, result_key))
     
         # if status and results show command finished, return
         if (search_status == "Completed") and (len(search_results) > 2):
@@ -189,7 +192,7 @@ def main():
             
         # check if search exists
         search_cmd_results = demisto.executeCommand(CMD_GET_SEARCH, args)
-        search_name = get_from_context(search_cmd_results, "Name")
+        search_name = get_result_value(search_cmd_results, "Name")
         
         run_new_search = False
         
@@ -210,9 +213,9 @@ def main():
             search_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH, result_key="SuccessResults")
                 
         # get updated search values
-        search_name = get_from_context(search_cmd_results, "Name")
-        search_status = get_from_context(search_cmd_results, "Status")
-        search_results = parse_results(get_from_context(search_cmd_results, "SuccessResults"))
+        search_name = get_result_value(search_cmd_results, "Name")
+        search_status = get_result_value(search_cmd_results, "Status")
+        search_results = parse_results(get_result_value(search_cmd_results, "SuccessResults"))
         
         # add search values to context
         add_to_context(context=context, sub_key=CONTEXT_SEARCH_KEY, new_key=CONTEXT_NAME_KEY, new_value=search_name)
@@ -234,9 +237,9 @@ def main():
         preview_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH_ACTION, result_key="Results")
         
         # get preview result values
-        preview_name = get_from_context(preview_cmd_results, "Name")
-        preview_status = get_from_context(preview_cmd_results, "Status")
-        preview_results = parse_results(get_from_context(preview_cmd_results, "Results"))
+        preview_name = get_result_value(preview_cmd_results, "Name")
+        preview_status = get_result_value(preview_cmd_results, "Status")
+        preview_results = parse_results(get_result_value(preview_cmd_results, "Results"))
         
         # add search values to context
         add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_NAME_KEY, new_value=preview_name)
