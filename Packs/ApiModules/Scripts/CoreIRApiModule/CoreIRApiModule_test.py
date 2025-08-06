@@ -4263,3 +4263,52 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
                 mock_return_warning.assert_called_once_with(expected_result, exit=True)
             else:
                 mock_return_warning.assert_not_called()
+                
+                
+def test_create_filter_from_args():
+    """
+    Test case to verify the filter creation logic based on input arguments
+    """
+    from CoreIRApiModule import create_filter_from_args
+    # Default test case with valid inputs
+    args = {'alert_id': 'test_1, test_2, test_3', 'not.status.progress': 'In Progress, New'}
+    query = create_filter_from_args(args)
+    expected_result = {
+        "AND": [
+            {
+                "OR": [
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "test_1"
+                    },
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "test_2"
+                    },
+                    {
+                        "SEARCH_FIELD": "internal_id",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "test_3"
+                    }
+                ]
+            },
+            {
+                "AND": [
+                    {
+                        "SEARCH_FIELD": "status.progress",
+                        "SEARCH_TYPE": "NEQ",
+                        "SEARCH_VALUE": "STATUS_020_UNDER_INVESTIGATION"
+                    },
+                    {
+                        "SEARCH_FIELD": "status.progress",
+                        "SEARCH_TYPE": "NEQ",
+                        "SEARCH_VALUE": "STATUS_010_NEW"
+                    }
+                ]
+            }
+        ]
+    }
+    assert expected_result == query
+    
