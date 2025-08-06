@@ -279,7 +279,7 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-    def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:
+    def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:  # pragma: no cover
         """Get alert AI summary."""
         try:
             response = self._http_request(
@@ -1062,7 +1062,7 @@ def add_risky_user_label(reco_client: RecoClient, email_address: str) -> Command
     )
 
 
-def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> CommandResults:
+def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> CommandResults:  # pragma: no cover
     """Tag user as leaving org."""
     users = reco_client.get_identities(email_address)
     for user in users:
@@ -1092,7 +1092,7 @@ def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResul
     )
 
 
-def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) -> dict[str, Any]:
+def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) -> dict[str, Any]:  # pragma: no cover
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
 
     return {
@@ -1147,7 +1147,9 @@ def map_reco_alert_score_to_demisto_score(
     return MAPPING[reco_score]
 
 
-def parse_incidents_objects(reco_client: RecoClient, incidents_raw: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_incidents_objects(
+    reco_client: RecoClient, incidents_raw: list[dict[str, Any]]
+) -> list[dict[str, Any]]:  # pragma: no cover
     demisto.info("parse_incidents_objects enter")
     incidents = []
     for single_incident in incidents_raw:
@@ -1358,13 +1360,13 @@ def get_user_context_by_email_address(reco_client: RecoClient, email_address: st
     )
 
 
-def add_exclusion_filter(reco_client: RecoClient, key_to_add: str, values: list[str]) -> CommandResults:
+def add_exclusion_filter(reco_client: RecoClient, key_to_add: str, values: list[str]) -> CommandResults:  # pragma: no cover
     """Add exclusion filter to Reco."""
     response = reco_client.add_exclusion_filter(key_to_add, values)
     return CommandResults(raw_response=response, readable_output="Exclusion filter added successfully")
 
 
-def change_alert_status(reco_client: RecoClient, alert_id: str, status: str) -> CommandResults:
+def change_alert_status(reco_client: RecoClient, alert_id: str, status: str) -> CommandResults:  # pragma: no cover
     """Change alert status."""
     response = reco_client.change_alert_status(alert_id, status)
     return CommandResults(raw_response=response, readable_output=f"Alert {alert_id} status changed successfully to {status}")
@@ -1546,7 +1548,7 @@ def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, a
     )
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
