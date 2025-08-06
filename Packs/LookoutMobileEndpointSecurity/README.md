@@ -30,7 +30,6 @@ Timestamp parsing supports a UTC +0000 format.
 ### Lookout Mobile Endpoint Security Side
 
 Use the integration to automatically collect events from Lookout Mobile Endpoint Security (MES).
-This integration was integrated and tested with version v2 of Mobile Risk API.
 
 #### Creating an Application Key
 
