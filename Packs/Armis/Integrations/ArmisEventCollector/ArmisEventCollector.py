@@ -94,9 +94,9 @@ class Client(BaseClient):
             )
         except Exception as e:
             if "Invalid access token" in str(e):
-                demisto.debug("debug-log: Invalid access token, attempting to update access token.")
+                demisto.debug("debug-log: Expired or invalid access token, attempting to update access token.")
                 self.update_access_token()
-                demisto.debug("debug-log: access token successfully updated.")
+                demisto.debug("debug-log: Access token successfully updated.")
                 raw_response = self._http_request(
                     url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                 )
