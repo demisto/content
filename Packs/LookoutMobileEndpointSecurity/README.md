@@ -8,7 +8,7 @@ Lookout Mobile Endpoint Security is a comprehensive security solution that prote
 
 Data normalization capabilities:
 
-* Rule for modeling Lookout Mobile Endpoint Security Threat, Audit, and Device logs that are ingested into Cortex XSIAM via integration.
+* Modeling rule for mapping ingested Lookout Mobile Endpoint Security Threat, Audit, and Device logs.
 * The ingested Lookout Mobile Endpoint Security logs can be queried in XQL Search using the *`lookout_mobile_endpoint_security_raw`* dataset.
 
 ## Supported log categories
