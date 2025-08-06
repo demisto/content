@@ -2322,6 +2322,7 @@ class STIX2XSOARParser(BaseClient):
     def get_ioc_value(ioc, id_to_obj):
         """
         Get IOC value from the indicator name/value/pattern field.
+        Uses extract_ioc_value to extract values for all supported indicator types from STIX patterns.
 
         Args:
             ioc: the indicator to get information on.
@@ -2334,8 +2335,13 @@ class STIX2XSOARParser(BaseClient):
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
             for key in ("name", "value", "pattern"):
-                if ("file:hashes.'SHA-256' = '" in ioc_obj.get(key, "")) and (
-                    ioc_value := Taxii2FeedClient.extract_ioc_value(ioc_obj, key)
+                field_value = ioc_obj.get(key, "")
+                if (
+                    key in ioc_obj
+                    and field_value
+                    and field_value.startswith("[")
+                    and field_value.endswith("]")
+                    and (ioc_value := STIX2XSOARParser.extract_ioc_value(ioc_obj, key))
                 ):
                     return ioc_value
             return ioc_obj.get("name") or ioc_obj.get("value")
@@ -2373,13 +2379,13 @@ class STIX2XSOARParser(BaseClient):
         ioc_value = ioc_obj.get(key, "")
         comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
 
-        # Define priority order for indicator types
-        priority_order = ["file", "ipv4-addr", "domain-name", "url", "email-addr", "mutex", "windows-registry-key"]
-
         # Due to backward compatibility, First check for SHA-256 hash specifically
         sha256 = next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
         if sha256:
             return sha256
+
+        # Define priority order for indicator types
+        priority_order = ["file", "ipv4-addr", "domain-name", "url", "email-addr", "mutex", "windows-registry-key"]
 
         # Then check other indicator types in priority order
         for indicator_type in priority_order:

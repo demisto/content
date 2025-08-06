@@ -2830,3 +2830,78 @@ def test_extract_ioc_value_complex_pattern():
 
     # MD5 hash should be extracted as it's the highest priority in this pattern
     assert res == "44d88612fea8a8f36de82e1278abb02f"
+
+
+def test_get_ioc_value_pattern():
+    """
+    Given
+    - An indicator object with a STIX pattern containing multiple indicator types.
+    When
+    - Calling get_ioc_value to extract the indicator value.
+    Then
+    - Retrieve the highest priority indicator value according to priority order.
+    """
+    ioc_id = "indicator--01234567-89ab-cdef-0123-456789abcdef"
+    id_to_obj = {
+        ioc_id: {
+            "pattern": "[file:hashes.'SHA-256' = 'a889f5ecf920be1d1599a5c3f82af8d8e9208a9b3dd3cad4261c908f2ec9c35b' AND "
+            "domain-name:value = 'evil.com']"
+        }
+    }
+
+    res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
+
+    # SHA-256 hash should be extracted as it's the highest priority
+    assert res == "a889f5ecf920be1d1599a5c3f82af8d8e9208a9b3dd3cad4261c908f2ec9c35b"
+
+
+def test_get_ioc_value_name_pattern():
+    """
+    Given
+    - An indicator object with a name field containing a STIX pattern.
+    When
+    - Calling get_ioc_value to extract the indicator value.
+    Then
+    - Retrieve the indicator value from the pattern in the name field.
+    """
+    ioc_id = "indicator--01234567-89ab-cdef-0123-456789abcdef"
+    id_to_obj = {ioc_id: {"name": "[ipv4-addr:value = '10.0.0.1']"}}
+
+    res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
+
+    assert res == "10.0.0.1"
+
+
+def test_get_ioc_value_direct_value():
+    """
+    Given
+    - An indicator object with a direct value field (not a pattern).
+    When
+    - Calling get_ioc_value to extract the indicator value.
+    Then
+    - Return the direct value.
+    """
+    ioc_id = "indicator--01234567-89ab-cdef-0123-456789abcdef"
+    id_to_obj = {ioc_id: {"value": "example.com"}}
+
+    res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
+
+    assert res == "example.com"
+
+
+def test_get_ioc_value_multiple_fields():
+    """
+    Given
+    - An indicator object with multiple fields (pattern, name, value).
+    When
+    - Calling get_ioc_value to extract the indicator value.
+    Then
+    - Prioritize extracting from pattern field over name or value.
+    """
+    ioc_id = "indicator--01234567-89ab-cdef-0123-456789abcdef"
+    id_to_obj = {ioc_id: {"pattern": "[ipv4-addr:value = '10.0.0.1']", "name": "Malicious IP", "value": "192.168.1.1"}}
+
+    res = STIX2XSOARParser.get_ioc_value(ioc_id, id_to_obj)
+
+    # Should extract from pattern field first
+    assert res == "10.0.0.1"
