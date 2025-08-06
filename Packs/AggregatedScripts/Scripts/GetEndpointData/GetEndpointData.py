@@ -1047,14 +1047,14 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
         # find all the brands from brands_to_run that are not predefined
         brands_to_run_for_generic_command = list(brands_to_run_set.difference(brands_to_remove))
 
-        # If all brands_to_run were predefined, run all available brand on generic command beside the predefined brands.
+        # If all brands_to_run were predefined, run all available brands on generic command beside the predefined brands.
         if not brands_to_run_for_generic_command:
             brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(brands_to_remove))
     else:  # No brands provided, run on all active non-predefined brands
         brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(predefined_brands))
 
-    joined_integrations = ",".join(brands_to_run_for_generic_command)
-    generic_command.create_additional_args({"using-brand": joined_integrations})
+    joined_brands = ",".join(brands_to_run_for_generic_command)
+    generic_command.create_additional_args({"using-brand": joined_brands})
 
 
 """ MAIN FUNCTION """
