@@ -13,8 +13,13 @@
     "tags": [
         "IT"
     ],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Atlassian",
+        "Confluence"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

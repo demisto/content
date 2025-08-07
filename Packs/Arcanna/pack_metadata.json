@@ -10,8 +10,13 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "IT",
+        "Security"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
     "keywords": [
         "Siscale",
         "Arcanna",

@@ -10,10 +10,17 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
     "keywords": [
-        "Asset Management"
+        "Asset Management",
+        "Ansible",
+        "Automation",
+        "Platform"
     ],
     "marketplaces": [
         "xsoar",
