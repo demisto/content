@@ -25,6 +25,8 @@ args:
 - defaultValue: "10"
   description: The maximum number of agents to return.
   name: limit
+- name: agent_ip
+  description: The agent IP address.
 comment: This script is used to wrap the list-agents command in SentinelOne v2. Returns all agents that match the specified criteria.
 commonfields:
   id: SentinelOneListAgents
