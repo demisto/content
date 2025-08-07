@@ -5,7 +5,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def filter_by_agent_ip(ip: str, entry_outputs: list) -> CommandResults:
+def filter_by_agent_ip(ip: str, entry_outputs) -> CommandResults:
     """
     Filter agents by IP address and return CommandResults.
     Args:
@@ -78,30 +78,24 @@ def list_agents(args: dict[str, Any]) -> CommandResults | None:
     demisto.debug(f"Calling sentinelone-list-agents, {command_args=}")
     command_res = execute_command("sentinelone-list-agents", command_args)
     demisto.debug(f"After calling sentinelone-list-agents, {command_res=}")
-    if command_res and isinstance(command_res, list) and len(command_res) > 0:
-        entry_outputs = command_res[0].get("Contents", [])
-    else:
-        demisto.debug("Invalid response format from sentinelone-list-agents.")
-        raise DemistoException(
-            f"Error occurred while running SentinelOneListAgents, expected a list as response but got:"
-            f" {type(command_res)}. The response is: {command_res}"
-        )
+    if not command_res:
+        return CommandResults(readable_output="No agents found.")
 
     if ip:
-        return filter_by_agent_ip(ip, entry_outputs)
+        return filter_by_agent_ip(ip, command_res)
 
     return CommandResults(
         readable_output=tableToMarkdown(
             "Sentinel One - List of Agents",
-            entry_outputs,
+            command_res,
             headerTransform=pascalToSpace,
             removeNull=True,
             metadata="Provides summary information and details for all the agents that matched your search criteria",
         ),
         outputs_prefix="SentinelOne.Agents",
         outputs_key_field="ID",
-        outputs=entry_outputs,
-        raw_response=entry_outputs,
+        outputs=command_res,
+        raw_response=command_res,
     )
 
 
