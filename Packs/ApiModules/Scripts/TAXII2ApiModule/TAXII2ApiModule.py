@@ -2350,7 +2350,7 @@ class STIX2XSOARParser(BaseClient):
     @staticmethod
     def extract_ioc_value(ioc_obj, key: str = "name"):
         """
-        Extract indicator values from specific key, default key is name.
+        Extract indicator values from a specific key; the default key is name.
         Extracts values for all supported indicator types from STIX patterns.
 
         Examples:
