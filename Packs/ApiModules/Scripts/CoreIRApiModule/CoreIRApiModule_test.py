@@ -4264,6 +4264,7 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
             else:
                 mock_return_warning.assert_not_called()
 
+
 def test_run_polling_command_do_not_poll(mocker):
     """
     Given -
@@ -4276,50 +4277,43 @@ def test_run_polling_command_do_not_poll(mocker):
     Then
         - Make sure that the command do not poll
     """
-    from CoreIRApiModule import (run_polling_command,
-                                 run_script_delete_file_command,
-                                 action_status_get_command,
-                                 run_script_kill_process_command)
+    from CoreIRApiModule import (
+        run_polling_command,
+        run_script_delete_file_command,
+        action_status_get_command,
+        run_script_kill_process_command,
+    )
     from CommonServerPython import ScheduledCommand, CommandResults
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
-    polling_args = {
-        'endpoint_ids': '1', 'command_decision_field': 'action_id', 'action_id': '1', 'do_not_poll': True
-    }
-    mocker.patch.object(CoreClient, '_http_request', return_value="PENDING")
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+    polling_args = {"endpoint_ids": "1", "command_decision_field": "action_id", "action_id": "1", "do_not_poll": True}
+    mocker.patch.object(CoreClient, "_http_request", return_value="PENDING")
     # check xdr-file-delete-script-execute
-    result = run_polling_command(client=test_client,
-                                 args=polling_args,
-                                 cmd="xdr-file-delete-script-execute",
-                                 command_function=run_script_delete_file_command,
-                                 command_decision_field="action_id",
-                                 results_function=action_status_get_command,
-                                 polling_field="status",
-                                 polling_value=["PENDING",
-                                                "IN_PROGRESS",
-                                                "PENDING_ABORT"],
-                                 values_raise_error=["FAILED",
-                                                     "TIMEOUT",
-                                                     "ABORTED",
-                                                     "CANCELED"]
-                                 )
+    result = run_polling_command(
+        client=test_client,
+        args=polling_args,
+        cmd="xdr-file-delete-script-execute",
+        command_function=run_script_delete_file_command,
+        command_decision_field="action_id",
+        results_function=action_status_get_command,
+        polling_field="status",
+        polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+        values_raise_error=["FAILED", "TIMEOUT", "ABORTED", "CANCELED"],
+    )
     assert isinstance(result, CommandResults)
     assert not result.scheduled_command
 
     # check xdr-kill-process-script-execute
-    result = run_polling_command(client=test_client,
-                                 args=polling_args,
-                                 cmd="xdr-kill-process-script-execute",
-                                 command_function=run_script_kill_process_command,
-                                 command_decision_field="action_id",
-                                 results_function=action_status_get_command,
-                                 polling_field="status",
-                                 polling_value=["PENDING",
-                                                "IN_PROGRESS",
-                                                "PENDING_ABORT"],
-                                 values_raise_error=["FAILED",
-                                                     "TIMEOUT",
-                                                     "ABORTED",
-                                                     "CANCELED"]
-                                 )
+    result = run_polling_command(
+        client=test_client,
+        args=polling_args,
+        cmd="xdr-kill-process-script-execute",
+        command_function=run_script_kill_process_command,
+        command_decision_field="action_id",
+        results_function=action_status_get_command,
+        polling_field="status",
+        polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
+        values_raise_error=["FAILED", "TIMEOUT", "ABORTED", "CANCELED"],
+    )
     assert isinstance(result, CommandResults)
     assert not result.scheduled_command
