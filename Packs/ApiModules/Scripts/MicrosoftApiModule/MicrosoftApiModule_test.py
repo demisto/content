@@ -741,8 +741,7 @@ def test_get_from_args_or_params__when_the_key_dose_not_exists():
     with pytest.raises(Exception) as e:
         get_from_args_or_params(args, params, "mock")
     assert (
-        e.value.args[0]
-        == "No mock was provided. Please provide a mock either in the instance "
+        e.value.args[0] == "No mock was provided. Please provide a mock either in the instance "
         "configuration or as a command argument."
     )
 
@@ -966,44 +965,6 @@ def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_co
         assert res.call_args[0][0] == excepted
 
 
-def test_line_845_status_list_to_retry_validation(mocker):
-    """
-    Given:
-        - MicrosoftClient configured for self-deployed authentication
-    When:
-        - Making an HTTP request that calls line 845 with status_list_to_retry parameter
-    Then:
-        - The status_list_to_retry parameter should be iterable (list, tuple, set)
-        - Should not be an integer which would cause TypeError in urllib3 retry mechanism
-    """
-    from collections.abc import Iterable
-    
-    client = self_deployed_client()
-    
-    # Track parameters passed to BaseClient._http_request (line 845)
-    captured_params = {}
-    
-    def mock_http_request(self, *args, **kwargs):
-        captured_params.update(kwargs)
-        return Response()
-    
-    mocker.patch.object(BaseClient, "_http_request", side_effect=mock_http_request)
-    mocker.patch.object(client, "get_access_token")
-    
-    # Trigger line 845 call
-    client.http_request("GET", "test-endpoint")
-    
-    # Verify status_list_to_retry parameter was captured
-    assert "status_list_to_retry" in captured_params
-    
-    status_param = captured_params["status_list_to_retry"]
-    
-    # Validate parameter is iterable and not an integer
-    assert isinstance(status_param, Iterable), f"status_list_to_retry must be iterable, got {type(status_param)}"
-    assert not isinstance(status_param, int), f"status_list_to_retry cannot be int, got {status_param}"
-    assert isinstance(status_param, (list, tuple, set, frozenset)), f"Expected list/tuple/set, got {type(status_param)}"
-
-
 def test_http_request_status_list_to_retry_parameter(requests_mock, mocker):
     """
     Test that MicrosoftClient passes status_list_to_retry parameter correctly as a list.
@@ -1041,4 +1002,6 @@ def test_http_request_status_list_to_retry_parameter(requests_mock, mocker):
     assert "status_list_to_retry" in captured_params, "status_list_to_retry parameter not found"
 
     status_list = captured_params["status_list_to_retry"]
-    assert isinstance(status_list, Iterable), f"status_list_to_retry should be an Iterable, got {type(status_list)}: {status_list}"
+    assert isinstance(
+        status_list, Iterable
+    ), f"status_list_to_retry should be an Iterable, got {type(status_list)}: {status_list}"
