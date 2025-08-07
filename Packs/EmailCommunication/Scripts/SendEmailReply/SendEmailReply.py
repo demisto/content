@@ -607,7 +607,7 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
 
                 status = "retrying..." if attempt < max_retries - 1 else "giving up."
                 demisto.debug(
-                    f"Attempt {attempt + 1}/{max_retries} failed to remove attachment, {status} " f"API response body: {res_body}"
+                    f"Attempt {attempt + 1}/{max_retries} failed to remove attachment, {status} API response body: {res_body}"
                 )
 
             if not isinstance(files, list):
