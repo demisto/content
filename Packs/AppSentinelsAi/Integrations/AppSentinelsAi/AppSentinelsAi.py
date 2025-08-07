@@ -16,25 +16,31 @@ urllib3.disable_warnings()
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+# BASE_EVENT_BODY: dict = {
+#     "aggregation": False,
+#     "api_id": 0,
+#     "category": [
+#         "CRS",
+#         "SchemaValidation",
+#         "SmartAlerts",
+#         "Reputation",
+#         "UsageAnomaly",
+#         "BehaviourAnomal",
+#         "GeolocationAler",
+#         "PassiveScan",
+#         "ActiveScan",
+#         "AutomatedThreat",
+#         "Governance",
+#     ],
+#     "include_runtime_scan": False,
+#     "severity": ["critical", "major", "minor", "info"],
+#     "type": ["security_events", "vulnerabilities"],
+# }
 BASE_EVENT_BODY: dict = {
-    "aggregation": False,
-    "api_id": 0,
-    "category": [
-        "CRS",
-        "SchemaValidation",
-        "SmartAlerts",
-        "Reputation",
-        "UsageAnomaly",
-        "BehaviourAnomal",
-        "GeolocationAler",
-        "PassiveScan",
-        "ActiveScan",
-        "AutomatedThreat",
-        "Governance",
+    "action": [
+        "create"
     ],
-    "include_runtime_scan": False,
-    "severity": ["critical", "major", "minor", "info"],
-    "type": ["security_events", "vulnerabilities"],
+    "last_log_id": 0
 }
 
 """ CLIENT CLASS """
@@ -85,7 +91,7 @@ class Client(BaseClient):
 
     def get_events_request(self, params: dict) -> dict:
         """Retrieve the detections from AppSentinels.ai  API."""
-        url_suffix = f"/api/v1/{self.organization}/{self.application}/events"
+        url_suffix = f"/api/v1/{self.organization}/audit-logs"
         body = self.base_event_body.copy()
         body.update(params)
         return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, resp_type="json")
@@ -310,7 +316,15 @@ def main():
         events: List[dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
-            result = test_module(client)
+            # result = test_module(client)
+            params_test = {
+                "page": "0",
+                "limit": "1",
+                "sort": "timestamp",
+                "sort_by": "desc",
+                "include_system": "false"
+            }
+            result = client.get_events_request(params=params_test)
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
