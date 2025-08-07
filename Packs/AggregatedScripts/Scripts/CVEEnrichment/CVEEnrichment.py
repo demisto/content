@@ -3,6 +3,14 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
+def validate_input_function(args):
+    cve_list = argToList(args.get("cve_list"))
+    if not cve_list:
+        raise DemistoException("cve_list is required")
+    for cve in cve_list:
+        if auto_detect_indicator_type(cve) != FeedIndicatorType.CVE:
+            raise DemistoException("Invalid CVE ID")
+
 def cve_enrichment_script(
     cve_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
 ):
@@ -25,10 +33,10 @@ def cve_enrichment_script(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
-        validate_input_function=lambda args: True,
+        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="CVEEnrichment",
+        final_context_path="CVEEnrichment(val.ID && val.ID == obj.ID)",
         args=demisto.args(),
         data=cve_list,
         indicator=cve_indicator,

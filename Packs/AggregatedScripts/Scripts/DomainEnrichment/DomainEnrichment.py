@@ -3,6 +3,15 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
+
+def validate_input_function(args):
+    domain_list = argToList(args.get("domain_list"))
+    if not domain_list:
+        raise DemistoException("domain_list is required")
+    for domain in domain_list:
+        if auto_detect_indicator_type(domain) != FeedIndicatorType.DOMAIN:
+            raise DemistoException("Invalid domain name")
+
 def domain_enrichment_script(
     domain_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
 ):
@@ -27,10 +36,10 @@ def domain_enrichment_script(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
-        validate_input_function=lambda args: True,
+        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="DomainEnrichment",
+        final_context_path="DomainEnrichment(val.Name && val.Name == obj.Name)",
         args=demisto.args(),
         data=domain_list,
         indicator=domain_indicator,

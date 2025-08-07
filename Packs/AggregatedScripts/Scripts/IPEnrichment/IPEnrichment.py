@@ -5,10 +5,11 @@ from AggregatedCommandApiModule import *
 
 
 def validate_input_function(args):
-    if not args.get("ip_list"):
+    ip_list = argToList(args.get("ip_list"))
+    if not ip_list:
         raise DemistoException("ip_list is required")
-    for ip in args.get("ip_list"):
-        if not is_ipv6_valid(ip) and not is_ipv4_valid(ip):
+    for ip in ip_list:
+        if not is_ip_valid(ip,accept_v6_ips=True):
             raise DemistoException("Invalid IP address")
             
 
@@ -40,7 +41,7 @@ def ip_enrichment_script(
         validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="IPEnrichment",
+        final_context_path="IPEnrichment(val.Address && val.Address == obj.Address)",
         args=demisto.args(),
         data=ip_list,
         indicator=ip_indicator,
