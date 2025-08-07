@@ -18,9 +18,9 @@ If you include additional brands not on the list, the ***!endpoint*** command wi
 
 **brands="Active Directory Query v2,FireEyeHX v2"** → the script will run the Active Directory Query v2 and the FireEyeHX v2 commands.
 
-**brands="Microsoft Defender Advanced Threat Protection"** → the script will run only !endpoint with this brand.
+**brands="Microsoft Defender Advanced Threat Protection"** → the script will run !endpoint only with this brand.
 
-**brands="Active Directory Query v2,FireEyeHX v2,Microsoft Defender Advanced Threat Protection"** → the script will run the Active Directory Query v2 and the FireEyeHX v2 commands and the !endpoint command with the Microsoft Defender Advanced Threat Protection brand.
+**brands="Active Directory Query v2,FireEyeHX v2,Microsoft Defender Advanced Threat Protection"** → the script will run the Active Directory Query v2 command, the FireEyeHX v2 command and the !endpoint command with the Microsoft Defender Advanced Threat Protection brand.
 
 ## Script Data
 
