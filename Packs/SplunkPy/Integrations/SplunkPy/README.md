@@ -100,6 +100,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 
 ## Configure SplunkPy in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -128,13 +129,13 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | The app context of the namespace |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
 | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
-| Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Notable Events](#enriching-notable-events). | False |
+| Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info. | False |
 | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
 | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
 | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
 | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
-| Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> |  |
+| Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> | False |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
 | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
 | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
@@ -144,6 +145,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Incidents Fetch Interval |  | False |
 | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
 | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
+
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
@@ -563,38 +565,23 @@ There is no context output for this command.
 ***
 Creates a new search job in Splunk.
 
-##### Base Command
+#### Base Command
 
 `splunk-job-create`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The Splunk search language string to execute. For example,  "index=* \| head 3". | Required |
-| app | The string that contains the application namespace in which to restrict searches. | Optional|
+| query | The Splunk search language string to execute. For example :"index=* \| head 3". | Required | 
+| app | A string that contains the application namespace in which to restrict searches. | Optional | 
+| share | Yes/No to indicate if the job should be shared with read only permissions. Sharing will also expand the expiry time of the results to 7 days. Possible values are: Yes, No. Default is No. | Optional | 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.Job | Unknown | The SID of the created job. |
-
-##### Command Example
-
-```!splunk-job-create query="index=* | head 3"```
-
-##### Context Example
-
-```
-{
-    "Splunk.Job": "1566221733.1628"
-}
-```
-
-##### Human Readable Output
-
-![image](../../doc_files/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
+| Splunk.Job | Unknown | The SID of the created job. | 
 
 ### splunk-parse-raw
 
@@ -636,50 +623,33 @@ Sends events Splunk. if `batch_event_data` or `entry_id` arguments are provided 
 | --- | --- | --- |
 | event | The event payload key-value pair. An example string: "event": "Access log test message.". | Optional |
 | fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional |
-| index | The index name. | Optional |
-| host | The hostname. | Optional |
-| source_type | The user-defined event source type. | Optional |
-| source | The user-defined event source. | Optional |
-| time | The epoch-formatted time. | Optional |
-| batch_event_data | A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
-| batch_event_data | A  batch of events to send to splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/exeample/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. **If provided, the arguments related to a single event and the `entry_id` argument are ignored.** | Optional |
-| entry_id | The entry id in Cortex XSOAR of the file containing a batch of events. Content of the file should be valid batch event's data, as it would be provided to the `batch_event_data`. **If provided, the arguments related to a single event are ignored.** | Optional |
-
-##### Batched events description
-
-This command allows sending events to Splunk, either as a single event or a batch of multiple events.
-To send a single event: Use the `event`, `fields`, `host`, `index`, `source`, `source_type`, and `time` arguments.
-To send a batch of events, there are two options, either use the batch_event_data argument or use the entry_id argument (for a file uploaded to Cortex XSOAR).
-Batch format requirements: The batch must be a single string containing valid dictionaries, each representing an event. Events should not be separated by commas. Each dictionary should include all necessary fields for an event. For example: `{"event": "event occurred at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test1"}, "index": "index0", "sourcetype": "sourcetype0", "source": "/path/event1"} {"event": "event occurred at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1", "source": "/path/event2", "fields": {"severity": "INFO", "category": "test2"}}`.
-This formatted string can be passed directly via `batch_event_data`, or, if saved in a file, the file can be uploaded to Cortex XSOAR, and the `entry_id` (e.g., ${File.[4].EntryID}) should be provided.
-
-##### Context Output
-
-There is no context output for this command.
-
-##### Command Example
-
-```!splunk-submit-event-hec event="something happened" fields="severity: INFO, category: test, test1" source_type=access source="/var/log/access.log"```
-
-##### Human Readable Output
-
-The event was sent successfully to Splunk.
-
-### splunk-job-status
+### splunk-submit-event-hec
 
 ***
-Returns the status of a job.
+Sends events to an HTTP Event Collector using the Splunk platform JSON event protocol.
 
-##### Base Command
+#### Base Command
 
-`splunk-job-status`
+`splunk-submit-event-hec`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sid | Comma-separated list of job IDs for which to retrieve the statuses. | Required |
+| event | Event payload key-value pair.<br/>String example: "event": "Access log test message". | Optional | 
+| fields | Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields. | Optional | 
+| index | The index name. | Optional | 
+| host | The hostname. | Optional | 
+| source_type | User-defined event source type. | Optional | 
+| source | User-defined event source. | Optional | 
+| time | Epoch-formatted time. | Optional | 
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). If the indexer acknowledgment is turned on, a channel is required. | Optional | 
+| batch_event_data | A  batch of events to send to Splunk. For example, `{"event": "something happened at 14/10/2024 12:29", "fields": {"severity": "INFO", "category": "test2, test2"}, "index": "index0","sourcetype": "sourcetype0","source": "/example/something" } {"event": "something happened at 14/10/2024 13:29", "index": "index1", "sourcetype": "sourcetype1","source": "/example/something", "fields":{ "fields" : "severity: INFO, category: test2, test2"}}`. If provided all arguments except of `request_channel` are ignored. | Optional | 
+| entry_id | The entry ID in Cortex XSOAR of the file containing a batch of events. If provided, the arguments related to a single event are ignored. | Optional | 
 
+#### Context Output
+
+There is no context output for this command.
 ##### Context Output
 
 | **Path**                | **Type** | **Description** |
@@ -1275,6 +1245,15 @@ Click on Global settings (in the HTTP Event Collector page)
 The default port is 8088.
 
 ## Troubleshooting
+
+### Index Validation Issues
+
+In some cases, the Splunk API may not return a complete list of all available indexes. If you try to submit an event to an index that you know exists but the integration reports that it cannot be found, it may be due to this Splunk issue. The integration will log an error message specifying which indexes could not be verified.
+
+**Recommended Action:**
+
+1. Verify that the index name is spelled correctly in your request.
+2. If the index exists and is accessible in Splunk but is not found by the integration, please contact Splunk support for assistance, as this is a known limitation with the Splunk API.
 
 ### HTTP Errors
 
