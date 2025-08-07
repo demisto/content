@@ -112,6 +112,11 @@ class ModuleManager:
         Returns:
             bool: True if the brand is in the list of brands to run, or if the list is empty; False otherwise.
         """
+        if command.brand == Brands.GENERIC_COMMAND and command.additional_args.get('using-brand'):
+            # we want !endpoint to run anyway if there are brands
+            return True
+        if command.brand == Brands.GENERIC_COMMAND and not command.additional_args.get('using-brand'):
+            return False
         return command.brand in self._brands_to_run if self._brands_to_run else True
 
     def is_brand_available(self, command: Command) -> bool:
@@ -1040,23 +1045,13 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
     """
     predefined_brands = set(Brands.get_all_values())
 
-    if brands_to_run:  # brands provided
+    if brands_to_run:
         brands_to_run_for_generic_command = list(set(brands_to_run) - predefined_brands)
-        # brands_to_run_set = set(brands_to_run)
-        # # get all the predefined brands from the brands_to_run
-        # brands_to_remove = predefined_brands.intersection(brands_to_run_set)
-        # # find all the brands from brands_to_run that are not predefined
-        # brands_to_run_for_generic_command = list(brands_to_run_set.difference(brands_to_remove))
-
         # If all brands_to_run were predefined, run all available brands on generic command beside the predefined brands.
         if not brands_to_run_for_generic_command:
             brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(predefined_brands))
     else:  # No brands provided, run on all active non-predefined brands
         brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(predefined_brands))
-
-    if not brands_to_run_for_generic_command and 'Generic Command' in brands_to_run:
-        # if there are no brands to run, the command won't be excecuted
-        brands_to_run.remove('Generic Command')
 
     joined_brands = ",".join(brands_to_run_for_generic_command)
     generic_command.create_additional_args({"using-brand": joined_brands})
@@ -1085,9 +1080,6 @@ def main():  # pragma: no cover
         command_results_list: list[CommandResults] = []
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
-
-        if "Generic Command" not in brands_to_run:  # we want !endpoint to run anyway
-            brands_to_run.append("Generic Command")
 
         generic_command = get_generic_command(single_args_commands)
         create_using_brand_argument_to_generic_command(brands_to_run, generic_command)
