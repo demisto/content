@@ -47,7 +47,7 @@ class Client(BaseClient):
 
     def create_new_token(self, json_data: dict) -> str:
         full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
-        demisto.log(f"create_new_token using {full_url} endpoint")
+        demisto.debug(f"create_new_token using {full_url} endpoint")
         access_token_obj = self._http_request(
             method="POST",
             full_url=full_url,
