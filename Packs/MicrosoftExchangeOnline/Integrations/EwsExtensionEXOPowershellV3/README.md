@@ -1210,7 +1210,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 ### ews-message-trace-get-v2
 
 ***
-You can use this cmdlet to search message data for the last 90 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned. 
+You can use this cmdlet to search message data for the last 90 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned.
 You can only return 10 days worth of data per query.
 This command returns a maximum of 5,000 results. If your data exceeds the result size, consider splitting it up using shorter `start_date` and `end_date` intervals.
 
@@ -1232,9 +1232,9 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 | end_date | The end date of the date range.<br/>Use the short date format that's defined in the Regional Options settings on the computer where you're running the command.<br/>For example, if the computer is configured to use the short date format mm/dd/yyyy, enter 09/01/2018 to specify September 1, 2018.<br/>You can enter the date only, or you can enter the date and time of day.<br/>If you enter the date and time of day, enclose the value in quotation marks ("), for example, "09/01/2018 5:00 PM".<br/>Valid input for this parameter is from start_date - now. The default value is now.<br/>. | Optional |
 | status | The status of the message. Can be one of the following:<br/> *GettingStatus: The message is waiting for status update.<br/>* Failed: Message delivery was attempted and it failed or the message was filtered as spam or malware, or by transport rules.<br/> *Pending: Message delivery is underway or was deferred and is being retried.<br/>* Delivered: The message was delivered to its destination.<br/> *Expanded: There was no message delivery because the message was addressed to a distribution group and the membership of the distribution was expanded.<br/>* Quarantined: The message was quarantined.<br/> * FilteredAsSpam: The message was marked as spam.<br/>. Possible values are: GettingStatus, Failed, Pending, Delivered, Expanded, Quarantined, FilteredAsSpam. | Optional |
 | subject | The subject parameter filters the results by the subject of the message. If the value contains spaces, enclose the value in quotation marks ("). | Optional |
-| subject_filter_type | The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are: <\br> * Contains <\br> EndsWith <\br> StartsWith<br/>It is recommend to use StartsWith or EndsWith instead of Contains whenever possible. | Optional|
-| starting_recipient_address | The starting_recipient_address parameter is used with the end_date parameter to query subsequent data for partial results while avoiding duplication. Query subsequent data by taking the Recipient address and Received Time values of the last record of the partial results and using them as the values for the starting_recipient_address and end_date parameters respectively in the next query. | Optional|
-| result_size | The result_size parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000. | Optional|
+| subject_filter_type | The subject_filter_type parameter specifies how the value of the subject parameter is evaluated. Valid values are: <\br> * Contains <\br> EndsWith <\br> StartsWith<br/>It is recommend to use StartsWith or EndsWith instead of Contains whenever possible. | Optional |
+| starting_recipient_address | The starting_recipient_address parameter is used with the end_date parameter to query subsequent data for partial results while avoiding duplication. Query subsequent data by taking the Recipient address and Received Time values of the last record of the partial results and using them as the values for the starting_recipient_address and end_date parameters respectively in the next query. | Optional |
+| result_size | The result_size parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000. | Optional |
 
 #### Context Output
 
@@ -1257,7 +1257,7 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 
 #### Command Example
 
-```!ews-message-trace-get```
+```!ews-message-trace-get-v2```
 
 #### Context Example
 
@@ -1306,8 +1306,8 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 
 >### EWS extension - Messages trace
 >
->| EndDate | FromIP | Index | MessageId | MessageTraceId | Organization | Received | RecipientAddress | SenderAddress | Size | StartDate | Status | Subject | ToIP
->| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| EndDate | FromIP | Index | MessageId | MessageTraceId | Organization | Received | RecipientAddress | SenderAddress | Size | StartDate | Status | Subject | ToIP |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
 >| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
 
