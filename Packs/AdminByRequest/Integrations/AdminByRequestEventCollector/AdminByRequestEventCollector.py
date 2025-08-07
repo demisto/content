@@ -279,7 +279,7 @@ def prepare_list_output(records: List[dict[str, Any]]) -> str:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no cover
     """
     Tests the connection to the service by calling each one of the api endpoints.
     Args:
@@ -488,7 +488,7 @@ def deny_request_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=readable_output)
 
 
-def main():
+def main():  # pragma: no cover
     """main function, parses params and runs command functions"""
     params = demisto.params()
     args = demisto.args()

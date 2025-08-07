@@ -20,6 +20,7 @@ from AdminByRequestEventCollector import (
     fetch_events,
     get_events,
     EVENT_TYPES,
+    prepare_list_output,
 )
 
 
@@ -73,6 +74,25 @@ class TestHelperFunction:
         params_copy = input_params.copy()
         remove_first_run_params(params_copy)
         assert params_copy == expected_params
+
+    def test_prepare_list_output(self):
+        """
+        Given: A list of records.
+        When: Calling the prepare_list_output function.
+        Then: Ensure the output is a markdown table as expected.
+        """
+        records = [
+            {"id": "1", "status": "open", "user": "test"},
+            {"id": "2", "status": "closed", "user": "test"},
+        ]
+        output = prepare_list_output(records)
+        assert "|ID|Status|User|" in output
+        assert "|---|---|---|" in output
+        assert "| 1 | open | test |" in output
+        assert "| 2 | closed | test |" in output
+
+        output = prepare_list_output([])
+        assert "No entries." in output
 
     result_param = {"startid": 1, "take": 1}
 
@@ -472,3 +492,55 @@ class TestFetchEvents:
 
         assert len(output.outputs) == len(raw_detections)
         assert output.outputs_prefix == "AdminByRequest." + "Events"
+
+
+class TestCommandFunctions:
+    def test_approve_request_command_fail(self, client, mocker):
+        """
+        Given: A request ID and an approver email.
+        When: Calling the approve_request_command function and the API fails.
+        Then: Ensure a DemistoException is raised.
+        """
+        args = {"request_id": "12345", "approved_by": "test@example.com"}
+        mock_response = mocker.Mock()
+        mock_response.status_code = 400
+        mocker.patch("AdminByRequestEventCollector.Client.approve_request", return_value=mock_response)
+
+        with pytest.raises(DemistoException) as e:
+            approve_request_command(client, args)
+        assert "Failed to approve request 12345. Status code: 400" in str(e.value)
+
+    def test_approve_request_command_no_id(self, client):
+        """
+        Given: No request ID.
+        When: Calling the approve_request_command function.
+        Then: Ensure a ValueError is raised.
+        """
+        with pytest.raises(ValueError) as e:
+            approve_request_command(client, {})
+        assert "request_id is required" in str(e.value)
+
+    def test_deny_request_command_fail(self, client, mocker):
+        """
+        Given: A request ID, a reason, and a denier email.
+        When: Calling the deny_request_command function and the API fails.
+        Then: Ensure a DemistoException is raised.
+        """
+        args = {"request_id": "12345", "reason": "Security risk", "denied_by": "test@example.com"}
+        mock_response = mocker.Mock()
+        mock_response.status_code = 400
+        mocker.patch("AdminByRequestEventCollector.Client.deny_request", return_value=mock_response)
+
+        with pytest.raises(DemistoException) as e:
+            deny_request_command(client, args)
+        assert "Failed to deny request 12345. Status code: 400" in str(e.value)
+
+    def test_deny_request_command_no_id(self, client):
+        """
+        Given: No request ID.
+        When: Calling the deny_request_command function.
+        Then: Ensure a ValueError is raised.
+        """
+        with pytest.raises(ValueError) as e:
+            deny_request_command(client, {})
+        assert "request_id is required" in str(e.value)
