@@ -14,7 +14,7 @@ Also, the ***!endpoint*** command will run across all available integrations.
 If you provide specific brands, only those brands will be executed.
 If you include additional brands not on the list, the ***!endpoint*** command will run only for those brands.
 
-**Examples**:
+### Examples:
 
 **brands="Active Directory Query v2,FireEyeHX v2"** → the script will run the Active Directory Query v2 and the FireEyeHX v2 commands.
 
