@@ -1,0 +1,22 @@
+{
+    "allRead": true,
+    "allReadWrite": true,
+    "data": "-",
+    "id": "Test list 1",
+    "itemVersion": "",
+    "locked": false,
+    "name": "Test list 1",
+    "nameLocked": false,
+    "packID": "",
+    "previousAllRead": true,
+    "system": true,
+    "truncated": false,
+    "type": "plain_text",
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}
