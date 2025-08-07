@@ -2792,6 +2792,7 @@ script:
     - description: Whether to poll until action is finished.
       name: do_not_poll
       hidden: true
+      defaultValue: false
     description: Initiates a new endpoint script execution to delete the specified file.
     name: xdr-file-delete-script-execute
     polling: true
@@ -2961,6 +2962,7 @@ script:
     - description: Whether to poll until action is finished.
       name: do_not_poll
       hidden: true
+      defaultValue: false
     description: Initiates a new endpoint script execution kill process.
     name: xdr-kill-process-script-execute
     polling: true
