@@ -1350,7 +1350,7 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
       required: false
     - name: port
       description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
@@ -1601,7 +1601,7 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly.'
       required: false
     - name: port
       description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'

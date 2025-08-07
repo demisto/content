@@ -208,7 +208,7 @@ class AWSErrorHandler:
         }
 
         demisto.debug(f"Permission error detected: {error_entry}")
-        return_error(error_entry)
+        return_error([error_entry])
 
     @classmethod
     def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
@@ -1157,6 +1157,8 @@ class EC2:
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err)
 
+        return CommandResults(readable_output="")
+
     @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -1179,16 +1181,25 @@ class EC2:
                 _port: int = int(port.strip())
                 return _port, _port
 
-        kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
+        from_port, to_port = parse_port_range(args.get("port", ""))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
-                kwargs["IpPermissions"] = json.loads(ip_permissions)
+                kwargs["IpPermissions"] = [json.loads(ip_permissions)]
             except json.JSONDecodeError as e:
                 raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+        else:
+            kwargs["IpPermissions"] = [
+                {
+                    "IpProtocol": args.get("protocol"),
+                    "FromPort": from_port,
+                    "ToPort": to_port,
+                    "IpRanges": [{"CidrIp": args.get("cidr")}],
+                }
+            ]
 
-        remove_nulls_from_dictionary(kwargs)
+        remove_nulls_from_dictionary(kwargs["IpPermissions"][0])
         try:
             response = client.authorize_security_group_egress(**kwargs)
 

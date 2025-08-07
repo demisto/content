@@ -726,9 +726,6 @@ Creates a security group.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.SecurityGroups.GroupName | string | The name of the security group. |
-| AWS.EC2.SecurityGroups.Description | string | A description for the security group. |
-| AWS.EC2.SecurityGroups.VpcId | string | The ID of the VPC. |
 | AWS.EC2.SecurityGroups.GroupId | string | The ID of the security group. |
 | AWS.EC2.SecurityGroups.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
@@ -748,7 +745,7 @@ Deletes a security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group to delete (e.g., sg-12345678). Required if group_name is not provided. | Optional |
-| group_name | The name of the security group to delete. Required if group_id is not provided. | Optional |
+| group_name | The name of the security group to delete. Required if group_id is not provided. Note that you can’t reference a security group for EC2-VPC by name. | Optional |
 
 #### Context Output
 
@@ -757,7 +754,7 @@ There is no context output for this command.
 ### aws-ec2-security-group-describe
 
 ***
-Describes one or more security groups in your account. Returns detailed information about security groups including their rules, tags, and associated VPC information.
+Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information.
 
 #### Base Command
 
@@ -770,13 +767,16 @@ Describes one or more security groups in your account. Returns detailed informat
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_ids | Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321). | Optional |
-| group_names | Comma-separated list of security group names. | Optional |
-| filters | One or more custom filters to apply separated by ';' (e.g., name=&lt;name&gt;,values=[&lt;value&gt;]). | Optional |
+| group_names | Comma-separated list of security group names. group_names is only supported for EC2-Classic and default VPC. | Optional |
+| filters | One or more custom filters to apply separated by ';' (e.g., name=&lt;name&gt;,values=&lt;values&gt;).You can specify up to 50 filters and up to 200 values per filter in a single request. | Optional |
+| limit | The maximum number of records to return. max value is 1000. Default is 50. | Optional |
+| next_token | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| AWS.EC2.SecurityGroupsNextToken | List | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. |
 | AWS.EC2.SecurityGroups.Description | string | A description of the security group. |
 | AWS.EC2.SecurityGroups.GroupName | string | The name of the security group. |
 | AWS.EC2.SecurityGroups.IpPermissions | unknown | The inbound rules associated with the security group. |
@@ -804,7 +804,7 @@ Adds the specified inbound (egress) rules to a security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group. | Required |
-| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. | Optional |
+| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly. | Optional |
 | port | For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization. | Optional |
 | cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. | Optional |
 | ip_permissions | The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments. | Optional |
