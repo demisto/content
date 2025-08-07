@@ -1113,6 +1113,7 @@ class ExchangeOnlinePowershellV3Client
         try {
             # Establish session to remote
             $this.CreateSession()
+            $cmd_params = @{}
             # Import and Execute command
             if ($sender_address) {
                 $cmd_params.SenderAddress = $sender_address
