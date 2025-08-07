@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
-| API Key | The API Key allows you to interacts with the AdminByRequest API service. | True |
+| API Key | The API Key allows you to interact with the AdminByRequest API service. | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch events |  | False |
