@@ -1,5 +1,27 @@
 This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
 
+The following brands are running  by default:
+- 'Active Directory Query v2'
+- 'McAfee ePO v2'
+- 'CrowdstrikeFalcon'
+- 'Cortex XDR - IR'
+- 'Cortex Core - IR'
+- 'FireEyeHX v2' 
+
+**Note**: If the brands argument is not provided all mentioned brands will be executed.
+Also, the ***!endpoint*** command will run across all available integrations.
+
+If you provide specific brands, only those brands will be executed.
+If you include additional brands not on the list, the ***!endpoint*** command will run only for those brands.
+
+**Examples**:
+
+**brands="Active Directory Query v2,FireEyeHX v2"** → the script will run the Active Directory Query v2 and the FireEyeHX v2 commands.
+
+**brands="Microsoft Defender Advanced Threat Protection"** → the script will run only !endpoint with this brand.
+
+**brands="Active Directory Query v2,FireEyeHX v2,Microsoft Defender Advanced Threat Protection"** → the script will run the Active Directory Query v2 and the FireEyeHX v2 commands and the !endpoint command with the Microsoft Defender Advanced Threat Protection brand.
+
 ## Script Data
 
 ---
