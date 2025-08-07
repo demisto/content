@@ -1107,7 +1107,7 @@ class ExchangeOnlinePowershellV3Client
     }
 
     [PSObject]GetMessageTraceV2([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
-        [string]$message_trace_id, [string]$start_date, [string]$end_date, [string[]]$status, [string]$subject, [string]subject_filter_type,
+        [string]$message_trace_id, [string]$start_date, [string]$end_date, [string[]]$status, [string]$subject, [string]$subject_filter_type,
         [string]$starting_recipient_address, [int32]$result_size) {
         $response = ""
         try {
@@ -2726,7 +2726,7 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-message-trace-get-v2" {
-                ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommandV2 $exo_client $command_arguments
+                ($human_readable, $entry_context, $raw_response) = GetMessageTraceV2Command $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-federation-trust-get" {
                 ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments
