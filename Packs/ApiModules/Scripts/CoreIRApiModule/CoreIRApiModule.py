@@ -3731,12 +3731,14 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
             alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
         context.append(alert)
-
+   
     SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
     ALERTS_STATUS_PROGRESS_REVERSE = {value: key for key, value in ALERTS_STATUS_PROGRESS.items()}
+    
+    ALERT_OR_ISSUE = "Alert" if not is_platform() else "Issue"
     human_readable = [
         {
-            "Alert ID": alert.get("internal_id"),
+            f"{ALERT_OR_ISSUE} ID": alert.get("internal_id"),
             "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
             "Name": alert.get("alert_name"),
             "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
@@ -3751,10 +3753,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     ]
 
     return CommandResults(
-        outputs_prefix=f"{prefix}.Alert",
+        outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
         outputs_key_field="internal_id",
         outputs=context,
-        readable_output=tableToMarkdown("Alerts", human_readable),
+        readable_output=tableToMarkdown(f"{ALERT_OR_ISSUE}", human_readable),
         raw_response=raw_response,
     )
 
