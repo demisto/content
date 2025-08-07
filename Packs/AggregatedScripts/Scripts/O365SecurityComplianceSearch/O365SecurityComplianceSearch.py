@@ -25,8 +25,8 @@ CONTEXT_RESULTS_KEY = "Results"
 # default values
 DEFAULT_POLLING_INTERVAL = 10
 DEFAULT_POLLING_TIMEOUT = 180
-DEFAULT_SEARCH_PATTERN = r"(\w[\w\s]+?):\s*([^,]+)"
-DEFAULT_SEARCH_ACTION_SUFFIX = "_Preview"
+SEARCH_RESULT_PATTERN = r"(\w[\w\s]+?):\s*([^,;]+)"
+SEARCH_ACTION_SUFFIX = "_Preview"
 
 
 def parse_args(args: dict) -> dict:
@@ -133,7 +133,7 @@ def parse_results(search_results: str) -> list[dict]:
     # split results into lines and parse into dict
     results_list = search_results.split("\n")
     for entry in results_list:
-        result_matches  = re.findall(DEFAULT_SEARCH_PATTERN, entry)
+        result_matches  = re.findall(SEARCH_RESULT_PATTERN, entry)
         parsed_results.append({key.strip(): val.strip() for key, val in result_matches})
         
     return parsed_results
@@ -242,7 +242,7 @@ def main():
         demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
         
         # add search_action_name and get preview
-        args["search_action_name"] = args["search_name"] + DEFAULT_SEARCH_ACTION_SUFFIX
+        args["search_action_name"] = args["search_name"] + SEARCH_ACTION_SUFFIX
         preview_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH_ACTION, result_key="Results")
         
         # get preview result values
@@ -250,7 +250,7 @@ def main():
         preview_status = get_result_value(preview_cmd_results, "Status")
         preview_results = parse_results(get_result_value(preview_cmd_results, "Results"))
         
-        # add search values to context
+        # add preview values to context
         add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_NAME_KEY, new_value=preview_name)
         add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_STATUS_KEY, new_value=preview_status)
         add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_RESULTS_KEY, new_value=preview_results)
