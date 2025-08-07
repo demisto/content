@@ -1,0 +1,295 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+commonfields:
+  id: CriminalIP
+  version: -1
+configuration:
+- display: API Key
+  name: api_key
+  type: 4
+  section: Connect
+  required: true
+description: |
+  Criminal IP is a comprehensive cyber threat intelligence solution that provides actionable insights into IP addresses, domains, and connected assets across the internet. 
+  It enables organizations to detect malicious indicators, assess asset reputation, and enhance threat detection by integrating enriched threat data directly into security operations via the XSOAR interface.
+name: CriminalIP
+display: Criminal IP 
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The IP address to search
+      name: ip
+      required: True
+      type: String
+    description: Provides detailed information about IP addresses through Criminal IP's API.
+    name: ip-report
+    outputs:
+    - contextPath: CriminalIP.IP
+      description: Returns search results. For detailed information, please refer to [Criminal IP API /v1/asset/ip/report](https://www.criminalip.io/developer/api/get-asset-ip-report).
+      type: String
+  - arguments:
+    - default: true
+      description: IP Adress to be checked malicious ip
+      name: ip
+      required: True
+      type: String
+    - default: true
+      description: |-
+        This parameter controls whether vpn usage is included in the evaluation criteria when assessing an IP.
+        The default is True (vpn included); set to False to exclude vpn from evaluation.
+      name: enable_vpn
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether cloud usage is included in the evaluation criteria when assessing an IP.
+        The default is True (cloud included); set to False to exclude cloud from evaluation.
+      name: enable_cloud
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether tor usage is included in the evaluation criteria when assessing an IP.
+        The default is True (tor included); set to False to exclude tor from evaluation.
+      name: enable_tor
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether proxy usage is included in the evaluation criteria when assessing an IP.
+        The default is True (proxy included); set to False to exclude proxy from evaluation.
+      name: enable_proxy
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether hosting usage is included in the evaluation criteria when assessing an IP.
+        The default is True (hosting included); set to False to exclude hosting from evaluation.
+      name: enable_hosting
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether mobile usage is included in the evaluation criteria when assessing an IP.
+        The default is True (mobile included); set to False to exclude mobile from evaluation.
+      name: enable_mobile
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether darkweb usage is included in the evaluation criteria when assessing an IP.
+        The default is True (darkweb included); set to False to exclude darkweb from evaluation.
+      name: enable_darkweb
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether scanner usage is included in the evaluation criteria when assessing an IP.
+        The default is True (scanner included); set to False to exclude scanner from evaluation.
+      name: enable_scanner
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether snort usage is included in the evaluation criteria when assessing an IP.
+        The default is True (snort included); set to False to exclude snort from evaluation.
+      name: enable_snort
+      required: False
+      type: bool
+    - default: true
+      description: |-
+        This parameter controls whether anonymous vpn usage is included in the evaluation criteria when assessing an IP.
+        The default is True (anonymous vpn included); set to False to exclude anonymous vpn from evaluation.
+      name: enable_anonymous_vpn
+      required: False
+      type: bool
+    description: |-
+      Determines whether an IP is malicious or safe through Criminal IP Asset Search. 
+      The IP is evaluated by referencing the IP Score, presence of Real IP, and Issues.
+    name: check-malicious-ip
+    outputs:
+    - contextPath: CriminalIP.Mal_IP
+      description: Returns the judgment criteria. If a Real IP exists, the Real IP is also returned.
+      type: String
+  - arguments:
+    - default: true
+      description: The Domain to preform Quick Scan
+      name: domain
+      required: True
+      type: String
+    description: Performs a Domain Quick Scan using Criminal IP's API
+    name: domain-quick-scan
+    outputs:
+    - contextPath: CriminalIP.Domain_Quick
+      description: Provides Domain Quick Scan results. For more details, please refer to  [Criminal IP API /v1/domain/quick/hash/view](https://www.criminalip.io/developer/api/get-domain-quick-hash-view).
+      type: String
+  - arguments:
+    - default: true
+      description: The Domain to perform Lite Scan
+      name: domain
+      required: True
+      type: String
+    description: |-
+      Initiates a Domain Lite Scan using Criminal IP's API and returns a scan_id. 
+      With this scan_id, you can check the scan progress through `domain-lite-scan-status` and receive scan results through `domain-lite-scan-result`.
+    name: domain-lite-scan
+    outputs:
+    - contextPath: CriminalIP.Domain_Lite
+      description: Returns the results of /v1/domain/lite/scan. For more details, please refer to [Criminal IP API /v1/domain/lite/scan](https://www.criminalip.io/developer/api/get-domain-lite-scan)
+      type: String
+  - arguments:
+    - default: true
+      description: The scan_id to check the Lite Scan progress
+      name: scan_id
+      required: True
+      type: String
+    description: |-
+      You can check the progress of the Lite Scan. 
+      Before executing this Command, you must first run domain-lite-scan and take the resulting scan_id as an argument.
+      The Lite Scan may take 2 to 5 seconds. 
+      Therefore, it is recommended to use [GenericPolling](https://xsoar.pan.dev/docs/playbooks/generic-polling). 
+      For an example of this, please refer to the Criminal IP Run Micro ASM playbook.
+    name: domain-lite-scan-status
+    outputs:
+    - contextPath: CriminalIP.Domain_Lite_Status
+      description: Returns the results of /v1/domain/lite/progress. For more details, please refer to [Criminal IP API /v1/domain/lite/progress](https://www.criminalip.io/developer/api/get-domain-lite-progress)
+      type: String
+  - arguments:
+    - default: true
+      description: The scan_id to check the Lite Scan result
+      name: scan_id
+      required: True
+      type: String
+    description: |-
+      Returns the Lite Scan results for the scan_id. 
+      Before executing this Command, you must verify that the scan has been completed through domain-lite-scan-status.
+    name: domain-lite-scan-result
+    outputs:
+    - contextPath: CriminalIP.Domain_Lite_Result
+      description: Returns the results of /v1/domain/lite/report/{id}. For more details, please refer to [Criminal IP API /v1/domain/lite/report/{id}](https://www.criminalip.io/developer/api/get-domain-lite-report-id)
+      type: String
+  - arguments:
+    - default: true
+      description: The Domain to check it's scan history
+      name: domain
+      required: True
+      type: String
+    description: |-
+      Full Scan usually takes time, so this checks whether a scan for the domain has been performed within the last 7 days. 
+      If there is a scan history within the last 7 days, the user can receive the scan_id of the most recent scan results.
+    name: check-last-scan-date
+    outputs:
+    - contextPath: CriminalIP.Scan_Date
+      description: |-
+        Checks the recent scan history and returns the results.
+        If the value is True, it means that a Full Scan has been conducted within the last 7 days.
+        It also returns the scan_id of the scan that was performed.
+        In this case, the user can obtain the scan results by executing domain-full-scan-result directly through the returned scan_id without having to proceed with domain-full-scan.
+      type: String
+  - arguments:
+    - default: true
+      description: The Domain to preform a Full Scan
+      name: domain
+      required: True
+      type: String
+    description: |-
+      Initiates a Domain Full Scan through Criminal IP's API and returns a scan_id. 
+      With this scan_id, you can check the scan progress through domain-full-scan-status and receive scan results through domain-full-scan-result. 
+      Full Scan may take longer than Lite Scan as it scans the Domain more comprehensively.
+    name: domain-full-scan
+    outputs:
+    - contextPath: CriminalIP.Full_Scan
+      description: Returns the results of /v1/domain/scan. For more details, please refer to [Criminal IP API /v1/domain/scan](https://www.criminalip.io/developer/api/post-domain-scan)
+      type: String
+  - arguments:
+    - default: true
+      description: The scan_id to check the Full Scan status
+      name: scan_id
+      required: True
+      type: String
+    description: |-
+      Check the progress of the Full Scan. 
+      Before executing this Command, you must first run domain-full-scan and take the resulting scan_id as an argument.
+      The Full Scan takes longer than the Lite Scan. 
+      Therefore, it is recommended to use [GenericPolling](https://xsoar.pan.dev/docs/playbooks/generic-polling). 
+      For an example of this, please refer to the Criminal IP Run Micro ASM playbook.
+    name: domain-full-scan-status
+    outputs:
+    - contextPath: CriminalIP.Full_Scan_Status
+      description: Returns the results of /v1/domain/status/{id}. For more details, please refer to [Criminal IP API /v1/domain/status/{id}](https://www.criminalip.io/developer/api/get-domain-status-id)
+      type: String
+  - arguments:
+    - default: true
+      description: The scan_id to be check the Full Scan result
+      name: scan_id
+      required: True
+      type: String
+    description: |-
+      The Full Scan returns the scan results for the completed scan_id. 
+      Before executing this Command, you must verify that the scan has been completed through domain-full-scan-status.
+    name: domain-full-scan-result
+    outputs:
+    - contextPath: CriminalIP.Full_Scan_Result
+      description: Returns the results of /v2/domain/report/{id}. For more details, please refer to [Criminal IP API /v2/domain/report/{id}](https://www.criminalip.io/developer/api/get-v2-domain-report-id)
+      type: String
+  - arguments:
+    - default: true
+      description: The scan_id of the Domains with completed scan to create an overview report
+      name: scan_id
+      required: True
+      type: String
+    - default: true
+      description: The Domain to create an overview report
+      name: domain
+      required: True
+      type: String
+    description: |-
+      In case of conducting a Domain Full Scan, this creates an Email Body to send an overview report of notable findings from the Full Scan results via email. 
+      You can see an example of this command in the Criminal IP Check Malicious Domain playbook
+    name: domain-full-scan-make-email-body
+    outputs:
+    - contextPath: CriminalIP.Email_Body
+      description: |-
+        Returns the Email Body to be sent via email. 
+        If there are no contents to send, it returns an empty string.
+      type: String
+  - arguments:
+    - default: true
+      description: The Scan_id of the Domains with completed scan to perform the Micro ASM function
+      name: scan_id
+      required: True
+      type: String
+    - default: true
+      description: The Domain with the completed scan to perform the Micro ASM function
+      name: domain
+      required: True
+      type: String
+    description: |-
+      Performs functions similar to ASM(Attack Surface Management) for a Domain where a Full scan has been completed. 
+      If there are any unusual findings in the results, it generates and returns a summary report. 
+
+      The following items are checked for the domain
+      - CVEs on the Domain and its mapped IPs
+      - Open ports other than 80/443 on the Domain and its mapped IPs
+      - Any certificates for the Domain are expiring within 1 month
+      - Abuse Records on the Domain
+      - Critical or Dangerous IPs in the Network Logs for the Domain
+      - Executable files in the Network Logs for the domain
+      - File Exposure on the domain
+    name: micro-asm
+    outputs:
+    - contextPath: CriminalIP.Micro_ASM
+      description: Returns the Email Body to be sent via email. If there are no contents to send by email, it returns an empty string.
+      type: String
+  dockerimage: demisto/python3:3.11.10.113941
+  runonce : false
+  script : '-'
+  subtype: python3
+  type : python
+  isfetchevents: true
+  isfetchevents:xsoar: true
+tests:
+- Test-CriminalIP
+fromversion : 8.0.0
