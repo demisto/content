@@ -1182,6 +1182,8 @@ script:
       prettyname: Region
       description: The AWS region.
       required: true
+      prettypredefined:
+      Issue region: ${issue.region}
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1216,27 +1218,30 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
     - name: group_id
       prettyname: Security Group ID
       description: 'The ID of the security group.'
       required: true
+      prettypredefined:
+      Issue securityGroupId: ${issue.securityGroupId}
     - name: protocol
       prettyname: Protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue protocol: ${issue.protocol}
     - name: port
       prettyname: Port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue port: ${issue.port}
     - name: cidr
       prettyname: CIDR
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
-      required: false
-    - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
-      required: false
-
+      required: true
+      prettypredefined:
+      Issue cidr: ${issue.cidr}
   - name: aws-ec2-security-group-ingress-revoke-stop-quick-action
     description: 'Revokes one or more ingress rules in a security group.'
     prettyname: Stop Inbound Traffic on Port
@@ -1249,6 +1254,8 @@ script:
     - name: region
       prettyname: Region
       description: The AWS region.
+      prettypredefined:
+      Issue region: ${issue.region}
       required: true
       auto: PREDEFINED
       predefined:
@@ -1284,10 +1291,11 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
     - name: group_id
       description: 'The ID of the security group.'
       prettyname: Security Group
+      prettypredefined:
+      Issue resourceId: ${issue.resourceId}
       required: true
     - name: protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
@@ -1301,7 +1309,8 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
-
+      prettypredefined:
+      Issue ipPermissions: '[{"IpProtocol": "${issue.protocol}", "FromPort": ${issue.fromPort}, "ToPort": ${issue.toPort}, "Ip${ipV4/6}Ranges":[{"CidrIp${issue.ipV4/6}":"${issue.cidr}"}]}]'
   - name: aws-ec2-security-group-ingress-authorize
     description: 'Adds the specified inbound (ingress) rules to a security group.'
     arguments:
@@ -1372,8 +1381,11 @@ script:
       description: The AWS account ID.
       required: true
     - name: region
+      prettyname: Region
       description: The AWS region.
       required: true
+      prettypredefined:
+      Issue region: ${issue.region}
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1410,17 +1422,29 @@ script:
       - sa-east-1
 
     - name: group_id
+      prettyname: Security Group ID
       description: 'The ID of the security group.'
       required: true
+      prettypredefined:
+      Issue securityGroupId: ${issue.securityGroupId}
     - name: protocol
+      prettyname: Protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue protocol: ${issue.protocol}
     - name: port
+      prettyname: Port
       description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue port: ${issue.port}
     - name: cidr
+      prettyname: CIDR
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue cidr: ${issue.cidr}
     - name: ip_permissions
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
@@ -1497,6 +1521,8 @@ script:
       prettyname: Region
       description: The AWS region.
       required: true
+      prettypredefined:
+      Issue region: ${issue.region}
       auto: PREDEFINED
       predefined:
       - us-east-1
@@ -1535,19 +1561,27 @@ script:
     - name: group_id
       description: 'The ID of the security group.'
       prettyname: Security Group ID
+      prettypredefined:
+      Issue securityGroupId: ${issue.securityGroupId}
       required: true
     - name: protocol
       prettyname: Protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue protocol: ${issue.protocol}
     - name: port
       prettyname: Port
       description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue port: ${issue.port}
     - name: cidr
       prettyname: CIDR
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
-      required: false
+      required: true
+      prettypredefined:
+      Issue cidr: ${issue.cidr}
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
