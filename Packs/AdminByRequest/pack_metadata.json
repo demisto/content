@@ -2,7 +2,7 @@
     "name": "Admin By Request",
     "description": "AdminByRequest is a Privileged Access Management (PAM) solution that enables secure, temporary elevation to local admin rights.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,7 +16,8 @@
     "keywords": [],
     "marketplaces": [
         "platform",
-        "marketplacev2"
+        "marketplacev2",
+        "xsoar"
     ],
     "defaultDataSource": "AdminByRequest",
     "supportedModules": [
