@@ -1242,6 +1242,9 @@ script:
       required: true
       prettypredefined:
       Issue cidr: ${issue.cidr}
+    - name: ip_permissions
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      required: false
   - name: aws-ec2-security-group-ingress-revoke-stop-quick-action
     description: 'Revokes one or more ingress rules in a security group.'
     prettyname: Stop Inbound Traffic on Port
