@@ -1221,7 +1221,7 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| ---| ---| ---| 
+| --- | --- | --- |
 | sender_address | The sender_address parameter filters the results by the sender's email address. You can specify multiple values separated by commas.<br/>. | Optional |
 | recipient_address | The recipient_address parameter filters the results by the recipient's email address. You can specify multiple values separated by commas.<br/>. | Optional |
 | from_ip | The from_ip parameter filters the results by the source IP address.<br/>For incoming messages, the value of from_ip is the public IP address of the SMTP email server that sent the message.<br/>For outgoing messages from Exchange Online, the value is blank.<br/>. | Optional |
@@ -1310,7 +1310,6 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
 >| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
-
 
 ### ews-federation-trust-get
 
