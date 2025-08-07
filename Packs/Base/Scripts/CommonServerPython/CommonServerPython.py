@@ -12802,6 +12802,9 @@ def execute_polling_command(
 class SignalTimeoutError(Exception):
     """
     Custom exception raised when the execution timeout is reached.
+
+    :return: None
+    :rtype: ``None``
     """
     pass
 
@@ -12810,10 +12813,8 @@ class ExecutionTimeout(object):
     """
     Context manager to limit the execution time of a code block.
 
-    Example:
-        >>> with ExecutionTimeout(5):
-        ...     time.sleep(10)
-        ...     demisto.info("This line will never be reached")
+    :return: None
+    :rtype: ``None``
     """
 
     def __init__(self, seconds):
@@ -12822,6 +12823,8 @@ class ExecutionTimeout(object):
 
         :param seconds: The maximum execution time in seconds.
         :type seconds: int or float
+        :return: None
+        :rtype: ``None``
         """
         self.seconds = int(seconds)
 
@@ -12833,6 +12836,8 @@ class ExecutionTimeout(object):
         :type signum: int
         :param frame: The current stack frame.
         :type frame: frame object
+        :return: None
+        :rtype: ``None``
         """
         raise SignalTimeoutError
 
@@ -12840,8 +12845,11 @@ class ExecutionTimeout(object):
         """
         Enters the context manager by setting up the signal handler for
         SIGALRM and starting the timer.
+
+        :return: None
+        :rtype: ``None``
         """
-        demisto.debug("Running with execution timeout: %s" % self.seconds)
+        demisto.debug("Running with execution timeout: {seconds}.".format(seconds=self.seconds))
         signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
         signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
 
