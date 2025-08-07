@@ -2377,10 +2377,23 @@ class STIX2XSOARParser(BaseClient):
             str: The extracted indicator value, or None if no supported indicators found
         """
         ioc_value = ioc_obj.get(key, "")
-        comps = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
+        comparisons = STIX2XSOARParser.get_pattern_comparisons(ioc_value) or {}
+
+        # Define the structure of comparison tuples for better readability
+        # Each comparison is a tuple of (field_path, operator, value)
+        # where field_path is a list of field names, operator is a string, and value is the indicator value
+        FIELD_PATH = 0
+        VALUE = 2
 
         # Due to backward compatibility, First check for SHA-256 hash specifically
-        sha256 = next((comp[-1].strip("'") for comp in comps.get("file", []) if ["hashes", "SHA-256"] in comp), None)
+        sha256 = next(
+            (
+                str(comparison[VALUE]).strip("'")
+                for comparison in comparisons.get("file", [])
+                if ["hashes", "SHA-256"] in comparison
+            ),
+            None,
+        )
         if sha256:
             return sha256
 
@@ -2389,31 +2402,33 @@ class STIX2XSOARParser(BaseClient):
 
         # Then check other indicator types in priority order
         for indicator_type in priority_order:
-            if indicator_type in comps and comps[indicator_type]:
+            if comparisons.get(indicator_type):
                 # For file type, look for other hash types if SHA-256 wasn't found
                 if indicator_type == "file":
                     # Check for other hash types (MD5, SHA-1, etc.)
-                    for comp in comps["file"]:
-                        if len(comp) >= 3 and comp[0] and len(comp[0]) >= 2 and comp[0][0] == "hashes":
-                            return comp[-1].strip("'")
+                    for comparison in comparisons.get("file", []):
+                        field_path = comparison[FIELD_PATH]
+                        if len(comparison) >= 3 and field_path and len(field_path) >= 2 and field_path[0] == "hashes":
+                            return str(comparison[VALUE]).strip("'")
                 # For all other types, check if the field is in STIX_SUPPORTED_TYPES
                 else:
                     # Get supported fields for this indicator type
                     supported_fields = STIX_SUPPORTED_TYPES.get(indicator_type, ())
-
-                    for comp in comps[indicator_type]:
+                    for comparison in comparisons.get(indicator_type, []):
+                        field_path = comparison[FIELD_PATH]
                         # Check if the comparison field is in the supported fields
-                        if comp[0] and len(comp[0]) > 0 and comp[0][0] in supported_fields and comp[-1]:
-                            return comp[-1].strip("'")
+                        if field_path and len(field_path) > 0 and field_path[0] in supported_fields and comparison[VALUE]:
+                            return str(comparison[VALUE]).strip("'")
 
         # If no indicators found in priority list, check any other supported types
-        for indicator_type, comparisons in comps.items():
-            if indicator_type not in priority_order and comparisons and indicator_type in STIX_SUPPORTED_TYPES:
+        for indicator_type, comparison_list in comparisons.items():
+            if indicator_type not in priority_order and comparison_list and indicator_type in STIX_SUPPORTED_TYPES:
                 supported_fields = STIX_SUPPORTED_TYPES.get(indicator_type, ())
 
-                for comp in comparisons:
-                    if comp[0] and len(comp[0]) > 0 and comp[0][0] in supported_fields and comp[-1]:
-                        return comp[-1].strip("'")
+                for comparison in comparison_list:
+                    field_path = comparison[FIELD_PATH]
+                    if field_path and len(field_path) > 0 and field_path[0] in supported_fields and comparison[VALUE]:
+                        return str(comparison[VALUE]).strip("'")
 
         return None
 
