@@ -40,7 +40,7 @@ You must create an application key specific to your Lookout Mobile Endpoint Secu
 2. In the left navigation bar, navigate to **System** > **Application Keys**.
 *NOTE:* If you don’t see the **Application Keys** tab, contact Lookout Enterprise support to enable this feature on your tenant.
 3. Click **GENERATE KEY**.
-Enter a label name and click **Next**.
+4. Enter a label name and click **Next**.
 4. Copy the key from your clipboard into the configuration for your application.
 *IMPORTANT:* Copy the generated key to your application immediately as you cannot access the key again after this procedure.
 
