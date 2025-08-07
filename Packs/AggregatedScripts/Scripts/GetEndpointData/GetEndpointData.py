@@ -112,10 +112,10 @@ class ModuleManager:
         Returns:
             bool: True if the brand is in the list of brands to run, or if the list is empty; False otherwise.
         """
-        if command.brand == Brands.GENERIC_COMMAND and command.additional_args.get('using-brand'):
+        if command.brand == Brands.GENERIC_COMMAND and command.additional_args and command.additional_args.get("using-brand"):
             # we want !endpoint to run anyway if there are brands
             return True
-        if command.brand == Brands.GENERIC_COMMAND and not command.additional_args.get('using-brand'):
+        if command.brand == Brands.GENERIC_COMMAND and not command.additional_args and command.additional_args.get("using-brand"):
             return False
         return command.brand in self._brands_to_run if self._brands_to_run else True
 
