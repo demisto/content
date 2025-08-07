@@ -41,6 +41,7 @@ class Command:
         output_mapping: dict,
         get_endpoint_output: bool = False,
         not_found_checker: str = "No entries.",
+        additional_args: dict = None,
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
         post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
     ):
@@ -55,6 +56,7 @@ class Command:
             output_mapping (dict): A mapping of command output keys to endpoint keys.
             get_endpoint_output (bool, optional): Flag to indicate if the command retrieves endpoint output. Defaults to False.
             not_found_checker (str, optional): A string to check if no entries are found. Defaults to "No entries.".
+            additional_args (dict, optional): Additional arguments to add for the command, arguments with hard-coded values.
             prepare_args_mapping (Callable[[dict[str, str]], dict[str, str]], optional):
                 A function to prepare arguments mapping. Defaults to None.
             post_processing (Callable, optional): A function for post-processing command results. Defaults to None.
@@ -66,11 +68,15 @@ class Command:
         self.output_mapping = output_mapping
         self.get_endpoint_output = get_endpoint_output
         self.not_found_checker = not_found_checker
+        self.additional_args = additional_args
         self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
 
     def __repr__(self):
         return f"{{ name: {self.name}, brand: {self.brand} }}"
+
+    def create_additional_args(self, args):
+        self.additional_args = args
 
 
 class ModuleManager:
@@ -106,6 +112,11 @@ class ModuleManager:
         Returns:
             bool: True if the brand is in the list of brands to run, or if the list is empty; False otherwise.
         """
+        if command.brand == Brands.GENERIC_COMMAND and command.additional_args and command.additional_args.get("using-brand"):
+            # we want !endpoint to run anyway if there are brands
+            return True
+        if command.brand == Brands.GENERIC_COMMAND and command.additional_args and not command.additional_args.get("using-brand"):
+            return False
         return command.brand in self._brands_to_run if self._brands_to_run else True
 
     def is_brand_available(self, command: Command) -> bool:
@@ -468,7 +479,7 @@ def initialize_commands(
                 "IsIsolated": "IsIsolated",
                 "Vendor": "Brand",
             },
-            post_processing=generic_endpint_post,
+            post_processing=generic_endpoint_post,
         ),
         Command(
             brand=Brands.ACTIVE_DIRECTORY_QUERY_V2,
@@ -711,6 +722,9 @@ def prepare_args(command: Command, endpoint_args: dict[str, Any]) -> dict[str, A
     for command_arg_key, endpoint_arg_key in command.args_mapping.items():
         if command_arg_value := endpoint_args.get(endpoint_arg_key):
             command_args[command_arg_key] = command_arg_value
+
+    if command.additional_args:  # adding additional arguments
+        command_args.update(command.additional_args)
 
     return command_args
 
@@ -975,18 +989,74 @@ def active_directory_post(
     return fixed_endpoints
 
 
-def generic_endpint_post(
+def generic_endpoint_post(
     self: EndpointCommandRunner, endpoints: list[dict[str, Any]], args: dict[str, Any]
 ) -> list[dict[str, Any]]:
     endpoints_to_return = []
     for endpoint in endpoints:
         brand = endpoint["Brand"]
         if brand in Brands.get_all_values() and self.module_manager.is_brand_available(Command(brand, "", [], {}, {})):
-            # If the brand is in the brands, we dno't need if from the generic command
+            # If the brand is in the brands, we don't need if from the generic command
             demisto.debug(f"Skipping generic endpoint with brand: '{brand}'")
         else:
             endpoints_to_return.append(endpoint)
     return endpoints_to_return
+
+
+def filter_duplicated_brands_for_generic_command(predefined_brands: list):
+    """
+    Filters out the specified brands from the list of active integrations.
+
+    Args:
+        predefined_brands (list): A list of the predefined brands to exclude from the active integrations.
+
+    Returns:
+        list: A list of active brand names with the specified brands removed.
+    """
+    integrations = demisto.getModules()
+    supported_brands = {data["brand"] for data in integrations.values() if data.get("state") == "active"}
+    return list(supported_brands - set(predefined_brands))
+
+
+def get_generic_command(single_args_commands: list[Command]) -> Command:
+    """
+    Retrieves the generic command object from a list of command objects.
+
+    Args:
+        single_args_commands (list of Command): A list of Command objects to search through.
+
+    Returns:
+        Command : The Command object with brand 'Generic Command', or None if not found.
+    """
+    for command in single_args_commands:
+        if command.brand == Brands.GENERIC_COMMAND:
+            return command
+    raise ValueError("Generic Command not found in the Commands list.")
+
+
+def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_command: Command):
+    """
+    Creates the 'using-brand' argument for a generic command by filtering out specific predefined brands.
+
+    Args:
+        brands_to_run (list of str): List of brand names provided as input. If empty, defaults to removing all predefined brands.
+        generic_command (Command): The generic command object where additional arguments will be added.
+
+    Returns:
+        None: The function updates the generic_command object by adding the 'using-brand' argument with filtered brands.
+    """
+    predefined_brands = set(Brands.get_all_values())
+
+    if brands_to_run:
+        brands_to_run_for_generic_command = list(set(brands_to_run) - predefined_brands)
+        # If all brands_to_run were predefined, run all available brands on generic command beside the predefined brands.
+        if not brands_to_run_for_generic_command:
+            brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(predefined_brands))
+    else:  # No brands provided, run on all active non-predefined brands
+        brands_to_run_for_generic_command = filter_duplicated_brands_for_generic_command(list(predefined_brands))
+
+    joined_brands = ",".join(brands_to_run_for_generic_command)
+    generic_command.create_additional_args({"using-brand": joined_brands})
 
 
 """ MAIN FUNCTION """
@@ -1012,6 +1082,10 @@ def main():  # pragma: no cover
         command_results_list: list[CommandResults] = []
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
+
+        generic_command = get_generic_command(single_args_commands)
+        create_using_brand_argument_to_generic_command(brands_to_run, generic_command)
+
         zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
