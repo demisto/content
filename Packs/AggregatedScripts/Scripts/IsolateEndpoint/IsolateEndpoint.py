@@ -268,7 +268,7 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
 
 def handle_raw_response_results(
     command: Command, raw_response: dict, endpoint_args: dict, endpoint_output: dict, verbose: bool
-) -> CommandResults | None:
+) -> None:
     """
     Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
 
@@ -278,8 +278,6 @@ def handle_raw_response_results(
         endpoint_args (dict): The arguments used in the command execution.
         endpoint_output (dict): A list to store structured output results.
         verbose (bool): Flag to control verbosity.
-    Returns:
-        CommandResults | None: If verbose=true, returns the CommandResults for this executed command.
     """
     endpoint_id = endpoint_args.get("endpoint_id", "")
     if is_error(raw_response):
@@ -300,20 +298,6 @@ def handle_raw_response_results(
             message=f"{endpoint_id} was isolated successfully with command {command.name}.",
             endpoint_output=endpoint_output,
         )
-    # entry_human_readable = []
-    # if verbose:
-    #     for entry in raw_response:
-    #         entry_human_readable.append(entry.get("HumanReadable") or "")
-    #     command_human_readable = "\n".join(entry_human_readable)
-    #     result_type = EntryType.ERROR if is_error(raw_response) else EntryType.NOTE
-    #     command_title = f'!{command.name} {" ".join([f"{arg}={value}" for arg, value in endpoint_args.items() if value])}'
-    #     result_message = f"#### {'Error' if is_error(raw_response) else 'Result'} for {command_title}\n{command_human_readable}"
-    #     return CommandResults(
-    #         readable_output=result_message,
-    #         entry_type=result_type,
-    #         mark_as_note=True
-    #     )
-    return None
 
 
 def find_command_by_brand(commands: list[Command], brand: str) -> Command | None:
@@ -333,7 +317,7 @@ def find_command_by_brand(commands: list[Command], brand: str) -> Command | None
     return None
 
 
-def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, results: list, verbose) -> None:
+def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, verbose) -> None:
     """
     Processes an endpoint by executing isolation commands and updating outputs accordingly.
 
@@ -372,9 +356,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
     raw_response = demisto.executeCommand(command.name, mapped_args)
     demisto.debug(f"Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}")
-    command_results = handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output, verbose)
-    if command_results:
-        results.append(command_results)
+    handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output, verbose)
 
 
 def main():
@@ -425,7 +407,7 @@ def main():
 
             demisto.debug(f"Continue isolating endpoint {endpoint_args}")
             args_from_endpoint_data.append(endpoint_args)
-            run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output, results, verbose)
+            run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output, verbose)
 
             context_outputs.append(endpoint_context_output)
 
