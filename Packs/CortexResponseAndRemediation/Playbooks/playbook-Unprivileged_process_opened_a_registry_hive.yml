@@ -616,7 +616,7 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs.
 outputs: []
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 tests:
 - No tests (auto formatted)
 fromversion: 8.0.0

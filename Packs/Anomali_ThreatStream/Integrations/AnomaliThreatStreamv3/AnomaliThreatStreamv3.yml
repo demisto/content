@@ -6431,11 +6431,12 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  - name: threatstream-clone-imported-indicator
-    arguments:
+  - arguments:
     - name: indicator_id
       required: true
       description: ID of the indicator to clone.
+    name: threatstream-clone-imported-indicator
+    description: Clones already imported indicators (observables), used with the edit classification to move to a trusted circle.
     outputs:
     - contextPath: ThreatStream.Clone.ID
       description: Indicator ID.
@@ -6446,15 +6447,14 @@ script:
     - contextPath: ThreatStream.Clone.Job_ID
       description: Job ID for the clone request.
       type: string
-    description: Clones already imported indicators (observables), used with the edit classification to move to a trusted circle.
-  - name: threatstream-edit-classification
-    arguments:
+  - arguments:
     - name: import_id
       required: true
       description: Import Session ID of the import session from the clone-imported-indicator command.
     - name: data
       required: true
       description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
+    name: threatstream-edit-classification
     description: Edit the values for observable that have been cloned.
   dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false

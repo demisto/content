@@ -1,0 +1,7 @@
+!cybelangel-get-report-by-id report_id="abcdef12-3456-7890-abcd-ef1234567890"
+!cybelangel-get-report-attachment report_id="abcdef12-3456-7890-abcd-ef1234567890" attachment_id="attach123-4567-89ab-cdef-123456789012" file_name="exposed_credentials.pdf"
+!cybelangel-get-report-pdf report_id="abcdef12-3456-7890-abcd-ef1234567890"
+!cybelangel-remediate report_id="abcdef12-3456-7890-abcd-ef1234567890" email="security.analyst@company.com" requester_fullname="Security Analyst"
+!cybelangel-get-comments report_id="abcdef12-3456-7890-abcd-ef1234567890"
+!cybelangel-post-comment report_id="abcdef12-3456-7890-abcd-ef1234567890" comment="We have verified this exposure and are taking steps to remediate it."
+!cybelangel-update-status report_id="abcdef12-3456-7890-abcd-ef1234567890" status=in_progress

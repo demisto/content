@@ -1416,7 +1416,7 @@ def test_module_test(mocker, credentials):
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
     service = client.Service(**credentials)
-    # run
+    # run test module
 
     splunk.test_module(service)
 

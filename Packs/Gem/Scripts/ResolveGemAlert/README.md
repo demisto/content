@@ -1,4 +1,4 @@
-Post Processing Script that will close linked Incidents when the Incident is closed.  Will set the same close code as the parent, and add closing notes from the parent. 
+Post Processing Script that will close linked Incidents when the Incident is closed.  Will set the same close code as the parent, and add closing notes from the parent.
 
 ## Script Data
 

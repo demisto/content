@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta, UTC
 import json
-import pytest
+from datetime import UTC, datetime, timedelta
+
 import FireEyeETPEventCollector
+import pytest
 from freezegun import freeze_time
 
 
@@ -54,18 +55,14 @@ LAST_RUN_DICT_CASES = [
 ]
 
 
-@pytest.mark.parametrize(
-    "last_run_dict, event_types_to_run, expected", LAST_RUN_DICT_CASES
-)
+@pytest.mark.parametrize("last_run_dict, event_types_to_run, expected", LAST_RUN_DICT_CASES)
 def test_last_run(last_run_dict, event_types_to_run, expected):
     """
     Given: mocked last run dictionary and events to fetch
     When: trying to fetch events
     Then: validate last run creation and save.
     """
-    last_run = FireEyeETPEventCollector.get_last_run_from_dict(
-        last_run_dict, event_types_to_run
-    )
+    last_run = FireEyeETPEventCollector.get_last_run_from_dict(last_run_dict, event_types_to_run)
     assert len(last_run.event_types) == len(expected.get("Last Run", {}))
     assert {e.name for e in event_types_to_run} - set(last_run.__dict__.keys()) == set()
     new_dict = last_run.to_demisto_last_run()
@@ -103,9 +100,7 @@ def mock_client():
         ),
     ),
 )
-def test_fetch_alerts(
-    mocker, hide_sensitive, alert_expected, trace_expected, activity_expected
-):
+def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, activity_expected):
     """
     Given: mocked client, mocked responses and expected event structure,
     When: fetching incidents
@@ -222,9 +217,7 @@ def test_get_command(mocker):
         FireEyeETPEventCollector.EventType("email_trace", 1000, outbound=False),
         FireEyeETPEventCollector.EventType("activity_log", 25, outbound=False),
     ]
-    collector = FireEyeETPEventCollector.EventCollector(
-        mock_client(), event_types_to_run
-    )
+    collector = FireEyeETPEventCollector.EventCollector(mock_client(), event_types_to_run)
     mocker.patch.object(
         FireEyeETPEventCollector.Client,
         "get_alerts",
@@ -240,9 +233,7 @@ def test_get_command(mocker):
         "get_activity_log",
         side_effect=[mocked_activity_data["ok_response"], {"data": []}],
     )
-    next_run, events = collector.get_events_command(
-        start_time=datetime.now() - timedelta(days=20)
-    )
+    next_run, events = collector.get_events_command(start_time=datetime.now() - timedelta(days=20))
     assert events.readable_output
 
 
@@ -269,9 +260,7 @@ PAGINATION_CASES = [
 
 
 @freeze_time("2023-08-02 11:34:30")
-@pytest.mark.parametrize(
-    "event_name, res_mock_path, func_to_mock, expected_res", PAGINATION_CASES
-)
+@pytest.mark.parametrize("event_name, res_mock_path, func_to_mock, expected_res", PAGINATION_CASES)
 def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_res):
     """
     Given: a Mocked response of calls to API
@@ -293,9 +282,7 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
     )
 
     # using timedelta with milliseconds due to a freeze_time issue.
-    events, md = collector.get_events_command(
-        start_time=datetime.now() - timedelta(days=2, milliseconds=1)
-    )
+    events, md = collector.get_events_command(start_time=datetime.now() - timedelta(days=2, milliseconds=1))
     assert len(events)
 
 
@@ -327,10 +314,7 @@ def test_get_max_events_to_fetch(max_fetch, limit_args, expected):
         with pytest.raises(ValueError):
             FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args)
     else:
-        assert (
-            FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args)
-            == expected
-        )
+        assert FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args) == expected
 
 
 @pytest.mark.parametrize(
@@ -346,9 +330,7 @@ def test_parse_date_for_api_3_digits(input_dt, expected):
     assert output == expected
 
 
-@pytest.mark.parametrize(
-    "event_names,new_max", [(["alerts"], 50), (["email_trace"], 100)]
-)
+@pytest.mark.parametrize("event_names,new_max", [(["alerts"], 50), (["email_trace"], 100)])
 def test_set_events_max_multiple(mocker, event_names, new_max):
     """Test setting client max fetch for multiple events.
 
@@ -383,16 +365,37 @@ def test_limit_zero_skip_fetch_flow(mocker):
     ]
     last_run = FireEyeETPEventCollector.LastRun(event_types=event_types)
     collector = FireEyeETPEventCollector.EventCollector(mock_client(), event_types)
-    get_events_mock = mocker.patch.object(
-        collector, "get_events", return_value=(last_run, [])
-    )
-    mocker.patch.object(
-        FireEyeETPEventCollector.LastRun, "to_demisto_last_run", return_value={}
-    )
+    get_events_mock = mocker.patch.object(collector, "get_events", return_value=(last_run, []))
+    mocker.patch.object(FireEyeETPEventCollector.LastRun, "to_demisto_last_run", return_value={})
 
     collector.fetch_command(demisto_last_run=LAST_RUN_MULTIPLE_EVENT)
-    get_events_mock.assert_called_once()
+    assert get_events_mock.call_count == 1
 
     get_events_mock.reset_mock()
     collector.get_events_command(start_time=datetime(2023, 1, 15, 14, 30, 45, 123000))
-    get_events_mock.assert_called_once()
+    assert get_events_mock.call_count == 1
+
+
+@freeze_time("2025-07-07T17:00:00Z")
+def test_client_get_activity_log(mocker):
+    """
+    Given:
+        - "from" time and a "size".
+    When:
+        - Calling `Client.get_activity_log`.
+    Then:
+        - Assert "to" time is set as expected due to API requirement (current UTC time).
+    """
+    client = mock_client()
+    mock_http_request = mocker.patch.object(client, "_http_request")
+
+    from_time = "2025-07-07T08:22:22+0000Z"
+    size = 100
+    client.get_activity_log(from_LastModifiedOn=from_time, to_LastModifiedOn="", size=size)
+
+    expected_to_time = "2025-07-07T17:00:00+0000Z"  # Current UTC time (frozen timestamp)
+    assert mock_http_request.call_args.kwargs == {
+        "method": "POST",
+        "url_suffix": "/api/v1/users/activitylogs/search",
+        "json_data": {"size": size, "attributes": {"time": {"from": from_time, "to": expected_to_time}}},
+    }

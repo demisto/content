@@ -1,6 +1,7 @@
 This pack provides access to Keeper Vault records that are shared to Secrets Manager Applications in your vault. Configure multiple integration instances if you need to access records shared to different Secrets Manager Applications.
 
 ## What does this pack do?
+
 - Fetches credentials
 - Lists secrets
 - Lists file attachments

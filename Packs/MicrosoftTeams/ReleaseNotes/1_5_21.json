@@ -1,0 +1,4 @@
+{
+  "breakingChanges":true,
+  "breakingChangesNotes":"The following commands will now raise an error when trying to list a non-existent one-on-one chat instead of creating one:\n\n *microsoft-teams-chat-list*, *microsoft-teams-chat-member-list*, *microsoft-teams-chat-message-list*"
+}

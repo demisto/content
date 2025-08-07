@@ -1,5 +1,4 @@
 from CheckPivotableDomains import main
-
 from CommonServerPython import *
 
 
@@ -182,7 +181,9 @@ def test_check_pivotable_output(mocker):
     }
 
     mocker.patch.object(
-        demisto, "args", return_value={
+        demisto,
+        "args",
+        return_value={
             "domaintools_data": domaintools_data,
             "max_name_server_host_count": "250",
             "max_name_server_ip_count": "250",
@@ -201,90 +202,33 @@ def test_check_pivotable_output(mocker):
             "max_mx_domain_count": "200",
             "max_google_adsense_count": "200",
             "max_google_analytics_count": "200",
-        }
+        },
     )
     mocker.patch.object(demisto, "results")
     main()
 
     expected_context = {
         "Name": "demisto.com",
-        "PivotableRegistrantContactName": {
-            "pivotable": True,
-            "items": {"count": 200, "value": "just a test"}
-        },
-        "PivotableRegistrantOrg": {
-            "pivotable": True,
-            "items": {"count": 200, "value": "Palo Alto Networks, Inc."}
-        },
-        "PivotableRegistrar": {
-            "pivotalbe": False
-        },
-        "PivotableSslInfoOrganization": {
-            "pivotable": True,
-            "items": [{"count": 20,
-                       "value": "just a test org"}]
-        },
+        "PivotableRegistrantContactName": {"pivotable": True, "items": {"count": 200, "value": "just a test"}},
+        "PivotableRegistrantOrg": {"pivotable": True, "items": {"count": 200, "value": "Palo Alto Networks, Inc."}},
+        "PivotableRegistrar": {"pivotalbe": False},
+        "PivotableSslInfoOrganization": {"pivotable": True, "items": [{"count": 20, "value": "just a test org"}]},
         "PivotableSslInfoHash": {
             "pivotable": True,
-            "items": [{"count": 10,
-                       "value": "9eb6468deaea5a1c9d022ebaa3694e9ce2f9dce8"}]
+            "items": [{"count": 10, "value": "9eb6468deaea5a1c9d022ebaa3694e9ce2f9dce8"}],
         },
-        "PivotableSslSubject": {
-            "pivotable": True,
-            "items": [{"count": 2,
-                       "value": "CN=demisto.com"}]
-        },
-        "PivotableSslEmail": {
-            "pivotable": False
-        },
-        "PivotableNameServerHost": {
-            "pivotable": True,
-            "items": [{"count": 200,
-                       "value": "pdns112.ultradns.net"}]
-        },
-        "PivotableNameServerIp": {
-            "pivotable": True,
-            "items": [{"count": 200,
-                       "value": '156.154.65.112'}]
-        },
-        "PivotableNameServerDomain": {
-            "pivotable": True,
-            "items": [{"count": 200,
-                       "value": "ultradns.net"}]
-        },
-        "PivotableSoaEmail": {
-            "pivotable": True,
-            "items": [
-                {
-                    "count": 34,
-                    "value": "it-staff-sysadmin@paloaltonetworks.com"
-                }
-            ]
-        },
-        "PivotableIpAddress": {
-            "pivotable": True,
-            "items": [
-                {
-                    "count": 16,
-                    "value": "34.120.160.120"
-                }
-            ]
-        },
-        "PivotableMxIp": {
-            "pivotable": False
-        },
-        "PivotableMxHost": {
-            "pivotable": False
-        },
-        "PivotableMxDomain": {
-            "pivotable": False
-        },
-        "PivotableGoogleAnalytics": {
-            "pivotable": False
-        },
-        "PivotableAdsense": {
-            "pivotable": False
-        }
+        "PivotableSslSubject": {"pivotable": True, "items": [{"count": 2, "value": "CN=demisto.com"}]},
+        "PivotableSslEmail": {"pivotable": False},
+        "PivotableNameServerHost": {"pivotable": True, "items": [{"count": 200, "value": "pdns112.ultradns.net"}]},
+        "PivotableNameServerIp": {"pivotable": True, "items": [{"count": 200, "value": "156.154.65.112"}]},
+        "PivotableNameServerDomain": {"pivotable": True, "items": [{"count": 200, "value": "ultradns.net"}]},
+        "PivotableSoaEmail": {"pivotable": True, "items": [{"count": 34, "value": "it-staff-sysadmin@paloaltonetworks.com"}]},
+        "PivotableIpAddress": {"pivotable": True, "items": [{"count": 16, "value": "34.120.160.120"}]},
+        "PivotableMxIp": {"pivotable": False},
+        "PivotableMxHost": {"pivotable": False},
+        "PivotableMxDomain": {"pivotable": False},
+        "PivotableGoogleAnalytics": {"pivotable": False},
+        "PivotableAdsense": {"pivotable": False},
     }
 
     assert demisto.results.call_count == 1

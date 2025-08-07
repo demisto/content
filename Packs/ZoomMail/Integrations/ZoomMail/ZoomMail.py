@@ -41,9 +41,7 @@ class ZoomMailClient(BaseClient):
         """
         Obtains an access token using the 'account_credentials' grant type.
         """
-        client_credentials = base64.b64encode(
-            f"{self.client_id}:{self.client_secret}".encode()
-        ).decode()
+        client_credentials = base64.b64encode(f"{self.client_id}:{self.client_secret}".encode()).decode()
 
         headers = {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -107,9 +105,7 @@ class ZoomMailClient(BaseClient):
         """
         if email is None:
             if not self.default_email:
-                raise ValueError(
-                    "No email address was provided and no default email address was set."
-                )
+                raise ValueError("No email address was provided and no default email address was set.")
             email = self.default_email
 
         url_suffix = f"/emails/mailboxes/{email}/threads/{thread_id}"
@@ -121,9 +117,7 @@ class ZoomMailClient(BaseClient):
             "pageToken": pageToken,
         }
 
-        response = self._http_request(
-            method="GET", url_suffix=url_suffix, params=params
-        )
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
         return response
 
@@ -191,15 +185,11 @@ class ZoomMailClient(BaseClient):
             "includeSpamTrash": str(include_spam_trash).lower(),
         }
 
-        response = self._http_request(
-            method="GET", url_suffix=url_suffix, params=params
-        )
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
         return response
 
-    def get_email_attachment(
-        self, email: Optional[str], message_id: str, attachment_id: str
-    ):
+    def get_email_attachment(self, email: Optional[str], message_id: str, attachment_id: str):
         """
         Retrieves a specific attachment from an email message in a user's mailbox.
 
@@ -255,9 +245,7 @@ class ZoomMailClient(BaseClient):
 
         params = {"format": msg_format, "metadata_headers": metadata_headers}
 
-        response = self._http_request(
-            method="GET", url_suffix=url_suffix, params=params
-        )
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
         return response
 
@@ -282,9 +270,7 @@ class ZoomMailClient(BaseClient):
 
         url_suffix = f"/emails/mailboxes/{email}/messages/send"
         body = {"raw": raw_message}
-        response = self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=body
-        )
+        response = self._http_request(method="POST", url_suffix=url_suffix, json_data=body)
         return response
 
     def get_mailbox_profile(self, email: Optional[str]):
@@ -419,17 +405,17 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
     for msg in messages:
         message_id = msg.get("id")
         thread_id = msg.get("threadId", "")
-        message_details = client.get_email_message(
-            email=fetch_from, message_id=message_id
-        )
+        message_details = client.get_email_message(email=fetch_from, message_id=message_id)
         internal_date = float(message_details.get("internalDate")) / 1000.0
 
         msg.update({"internalDate": internal_date})
 
         # Check if it's a new message, and if it's either all messages (fetch_threads is False) or only thread starters
-        if (internal_date > last_fetch_info["internalDate"] or (
-            internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"]
-        ) or last_page_fetch_token) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
+        if (
+            internal_date > last_fetch_info["internalDate"]
+            or (internal_date == last_fetch_info["internalDate"] and message_id not in last_fetch_info["ids"])
+            or last_page_fetch_token
+        ) and (fetch_threads or (not fetch_threads and message_id == thread_id)):
             incident = zoom_mail_to_incident(message_details, client, fetch_from)
             incidents.append(incident)
             if not last_page_fetch_token:
@@ -437,9 +423,7 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
     if message_dates:
         new_internal_date = max(message_dates)
-        new_ids = [
-            msg["id"] for msg in messages if msg["internalDate"] == new_internal_date
-        ]
+        new_ids = [msg["id"] for msg in messages if msg["internalDate"] == new_internal_date]
         if new_internal_date > last_fetch_info["internalDate"]:
             last_fetch_info = {"internalDate": new_internal_date, "ids": new_ids}
 
@@ -451,18 +435,14 @@ def fetch_incidents(client: ZoomMailClient, params: dict[str, str]) -> None:
 
     demisto.info(f"Found {len(incidents)} incidents to create and {len(messages) - len(incidents)} messages to skip.")
     demisto.debug(f"Last fetch info: {last_fetch_info}")
-    demisto.setLastRun(
-        {"last_fetch_info": last_fetch_info, "next_page_token": next_page_token}
-    )
+    demisto.setLastRun({"last_fetch_info": last_fetch_info, "next_page_token": next_page_token})
     demisto.incidents(incidents)
 
 
 """ COMMAND FUNCTIONS """
 
 
-def get_email_thread_command(
-    client: ZoomMailClient, args: dict[str, str]
-) -> CommandResults:
+def get_email_thread_command(client: ZoomMailClient, args: dict[str, str]) -> CommandResults:
     """
     Retrieves an email thread from the ZoomMail service and formats it for output.
 
@@ -486,9 +466,7 @@ def get_email_thread_command(
     email = args.get("email")
     if email is None:
         if not client.default_email:
-            raise ValueError(
-                "No email address was provided and no default email address was set."
-            )
+            raise ValueError("No email address was provided and no default email address was set.")
         email = client.default_email
     thread_id = args.get("thread_id")
     if not thread_id:
@@ -501,31 +479,20 @@ def get_email_thread_command(
     page_token = args.get("page_token", "")
 
     # API call to get the email thread
-    response = client.get_email_thread(
-        email, thread_id, msg_format, metadata_headers, max_results, page_token
-    )
+    response = client.get_email_thread(email, thread_id, msg_format, metadata_headers, max_results, page_token)
 
     # Prepare readable output
     if "messages" in response:
         messages_list = [f'- Message ID: {msg["id"]}' for msg in response["messages"]]
-        readable_output = f"Email Thread {thread_id} in mailbox {email}:\n" + "\n".join(
-            messages_list
-        )
-        output = {
-            'ZoomMail.Thread(val.id && val.id == obj.id)': response["messages"]
-        }
+        readable_output = f"Email Thread {thread_id} in mailbox {email}:\n" + "\n".join(messages_list)
+        output = {"ZoomMail.Thread(val.id && val.id == obj.id)": response["messages"]}
         if "pageToken" in response:
             output.update(
-                {'ZoomMail(val.ThreadNextToken == obj.ThreadNextToken)': {
-                    'ThreadNextToken': response["nextPageToken"]
-                }
-                }
+                {"ZoomMail(val.ThreadNextToken == obj.ThreadNextToken)": {"ThreadNextToken": response["nextPageToken"]}}
             )
     else:
         output = {}
-        readable_output = (
-            f"Email Thread {thread_id} in mailbox {email} has no messages."
-        )
+        readable_output = f"Email Thread {thread_id} in mailbox {email} has no messages."
 
     # Return command results
     return CommandResults(
@@ -555,9 +522,7 @@ def trash_email_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     email = args.get("email")
     if email is None:
         if not client.default_email:
-            raise ValueError(
-                "No email address was provided and no default email address was set."
-            )
+            raise ValueError("No email address was provided and no default email address was set.")
         email = client.default_email
     message_id = args.get("message_id")
     if not message_id:
@@ -599,9 +564,7 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     email = args.get("email")
     if email is None:
         if not client.default_email:
-            raise ValueError(
-                "No email address was provided and no default email address was set."
-            )
+            raise ValueError("No email address was provided and no default email address was set.")
         email = client.default_email
 
     max_results = args.get("max_results", "50")
@@ -620,14 +583,11 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     ]
 
     if message_id:
-
-        message = client.get_email_message(
-            email, message_id, msg_format, metadata_headers
-        )
+        message = client.get_email_message(email, message_id, msg_format, metadata_headers)
 
         if "payload" in message:
             payload = message.get("payload")
-            headers_info = parse_email_headers(payload.get('headers'))
+            headers_info = parse_email_headers(payload.get("headers"))
             body, html, attachments = parse_mail_parts([payload])
             human_readable = (
                 f"### Email Message {message_id}\n"
@@ -648,28 +608,15 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
             outputs_key_field="id",
             outputs=message,
         )
-    response = client.list_emails(
-        email, max_results, page_token, label_ids, query, include_spam_trash
-    )
+    response = client.list_emails(email, max_results, page_token, label_ids, query, include_spam_trash)
 
     if "messages" in response:
         readable_output = tableToMarkdown(
-            name=f'Messages in mailbox {email}',
-            t=response["messages"],
-            removeNull=True,
-            headerTransform=string_to_table_header
+            name=f"Messages in mailbox {email}", t=response["messages"], removeNull=True, headerTransform=string_to_table_header
         )
-        output = {
-            'ZoomMail.Email(val.id && val.id == obj.id)': response["messages"]
-        }
+        output = {"ZoomMail.Email(val.id && val.id == obj.id)": response["messages"]}
         if "pageToken" in response:
-            output.update(
-                {
-                    'ZoomMail(val.EmailNextToken == obj.EmailNextToken)': {
-                        'EmailNextToken': response["pageToken"]
-                    }
-                }
-            )
+            output.update({"ZoomMail(val.EmailNextToken == obj.EmailNextToken)": {"EmailNextToken": response["pageToken"]}})
     else:
         output = {}
         readable_output = f"No messages found in mailbox {email}."
@@ -680,9 +627,7 @@ def list_emails_command(client: ZoomMailClient, args: dict[str, str]) -> Command
     )
 
 
-def get_email_attachment_command(
-    client: ZoomMailClient, args: dict[str, Any]
-) -> CommandResults:
+def get_email_attachment_command(client: ZoomMailClient, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves a specific email attachment and returns it to the user, providing detailed feedback.
 
@@ -706,14 +651,10 @@ def get_email_attachment_command(
 
     # Validate that necessary arguments are provided
     if not message_id or not attachment_id:
-        raise ValueError(
-            "The 'message_id', and 'attachment_id' arguments are required."
-        )
+        raise ValueError("The 'message_id', and 'attachment_id' arguments are required.")
     if email is None:
         if not client.default_email:
-            raise ValueError(
-                "No email address was provided and no default email address was set."
-            )
+            raise ValueError("No email address was provided and no default email address was set.")
         email = client.default_email
 
     # API call to get the attachment
@@ -735,14 +676,10 @@ def get_email_attachment_command(
         )
     else:
         # Return a failure message if no data found
-        return CommandResults(
-            readable_output=f"No data found for attachment ID {attachment_id}."
-        )
+        return CommandResults(readable_output=f"No data found for attachment ID {attachment_id}.")
 
 
-def get_mailbox_profile_command(
-    client: ZoomMailClient, args: dict[str, Any]
-) -> CommandResults:
+def get_mailbox_profile_command(client: ZoomMailClient, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves and displays the mailbox profile for a specified email address.
 
@@ -760,9 +697,7 @@ def get_mailbox_profile_command(
     email = args.get("email")
     if email is None:
         if not client.default_email:
-            raise ValueError(
-                "No email address was provided and no default email address was set."
-            )
+            raise ValueError("No email address was provided and no default email address was set.")
         email = client.default_email
 
     # Retrieve the mailbox profile using the API client
@@ -770,9 +705,7 @@ def get_mailbox_profile_command(
 
     # Prepare the human-readable output
     creation_time = (
-        datetime.utcfromtimestamp(profile.get("createTime")).strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
-        )
+        datetime.utcfromtimestamp(profile.get("createTime")).strftime("%Y-%m-%dT%H:%M:%SZ")
         if (profile.get("createTime"))
         else "N/A"
     )
@@ -842,17 +775,9 @@ def list_users_command(client: ZoomMailClient, args: dict[str, str]) -> CommandR
         )
     )
 
-    output = {
-        'ZoomMail.User(val.id && val.id == obj.id)': users
-    }
+    output = {"ZoomMail.User(val.id && val.id == obj.id)": users}
     if "pageToken" in response:
-        output.update(
-            {
-                'ZoomMail(val.UserNextToken == obj.UserNextToken)': {
-                    'UserNextToken': response["nextPageToken"]
-                }
-            }
-        )
+        output.update({"ZoomMail(val.UserNextToken == obj.UserNextToken)": {"UserNextToken": response["nextPageToken"]}})
 
     # Return command results with structured data
     return CommandResults(
@@ -861,9 +786,7 @@ def list_users_command(client: ZoomMailClient, args: dict[str, str]) -> CommandR
     )
 
 
-def send_email_command(
-    client: ZoomMailClient, args: dict[str, Optional[str]]
-) -> CommandResults:
+def send_email_command(client: ZoomMailClient, args: dict[str, Optional[str]]) -> CommandResults:
     """
     Constructs and sends an email based on provided arguments.
 
@@ -886,13 +809,9 @@ def send_email_command(
         raise ValueError("Either the 'body' or 'html_body' argument is required.")
     if email is None:
         if not client.default_email:
-            raise ValueError(
-                "No email address was provided and no default email address was set."
-            )
+            raise ValueError("No email address was provided and no default email address was set.")
         email = client.default_email
-    message = create_email_message(
-        email, recipients, subject, body, html_body, entry_ids
-    )
+    message = create_email_message(email, recipients, subject, body, html_body, entry_ids)
 
     raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
     response = client.send_email(email, raw_message)
@@ -1029,23 +948,17 @@ def create_incident_labels(message_details: dict[str, Any]) -> list[dict[str, st
     single_fields = ["From", "Html"]
     for field in single_fields:
         if headers_dict.get(field):
-            labels.append(
-                {"type": f"Email/{field.lower()}", "value": headers_dict[field]}
-            )
+            labels.append({"type": f"Email/{field.lower()}", "value": headers_dict[field]})
 
     # Dynamic headers, attempting to future-proof the integration
-    dynamic_headers = [
-        key for key in headers_dict if key not in multi_fields + single_fields
-    ]
+    dynamic_headers = [key for key in headers_dict if key not in multi_fields + single_fields]
     for key in dynamic_headers:
         labels.append({"type": f"Email/Header/{key}", "value": headers_dict[key]})
 
     return labels
 
 
-def zoom_mail_to_incident(
-    msg: dict[str, Any], client: ZoomMailClient, email: Optional[str]
-) -> dict[str, Any]:
+def zoom_mail_to_incident(msg: dict[str, Any], client: ZoomMailClient, email: Optional[str]) -> dict[str, Any]:
     """
     Converts an email message into an incident format suitable for processing in an incident response system.
 
@@ -1062,15 +975,9 @@ def zoom_mail_to_incident(
     """
     # Extract body content and attachments from the email parts
     body_content, html_content, attachments = parse_mail_parts(msg["payload"]["parts"])
-    occurred_str = (
-        datetime.utcfromtimestamp(int(msg["internalDate"]) / 1000).isoformat() + "Z"
-    )
+    occurred_str = datetime.utcfromtimestamp(int(msg["internalDate"]) / 1000).isoformat() + "Z"
     subject = next(
-        (
-            header["value"]
-            for header in msg["payload"].get("headers", [])
-            if header["name"].lower() == "subject"
-        ),
+        (header["value"] for header in msg["payload"].get("headers", []) if header["name"].lower() == "subject"),
         "No Subject",
     )
 
@@ -1090,9 +997,7 @@ def zoom_mail_to_incident(
     return incident
 
 
-def process_attachments(
-    msg: dict[str, Any], client: ZoomMailClient, email: Optional[str]
-) -> list[dict[str, str]]:
+def process_attachments(msg: dict[str, Any], client: ZoomMailClient, email: Optional[str]) -> list[dict[str, str]]:
     """
     Process the attachments of an email, downloading and storing them if applicable.
 
@@ -1108,24 +1013,16 @@ def process_attachments(
     if "attachments" in msg:
         for attachment in msg["attachments"]:
             try:
-                attachment_data = client.get_email_attachment(
-                    email, msg["id"], attachment["ID"]
-                )
+                attachment_data = client.get_email_attachment(email, msg["id"], attachment["ID"])
                 if attachment_data.get("data"):
-                    file_data = base64.urlsafe_b64decode(
-                        attachment_data["data"].encode("ascii")
-                    )
+                    file_data = base64.urlsafe_b64decode(attachment_data["data"].encode("ascii"))
                     file_result = fileResult(attachment["Name"], file_data)
                     if file_result["Type"] == entryTypes["error"]:
                         demisto.error(file_result["Contents"])
                         continue
-                    file_names.append(
-                        {"path": file_result["FileID"], "name": attachment["Name"]}
-                    )
+                    file_names.append({"path": file_result["FileID"], "name": attachment["Name"]})
             except Exception as e:
-                demisto.error(
-                    f"Failed to retrieve attachment {attachment['ID']} from message {msg['id']}: {str(e)}"
-                )
+                demisto.error(f"Failed to retrieve attachment {attachment['ID']} from message {msg['id']}: {str(e)}")
     return file_names
 
 
@@ -1139,15 +1036,11 @@ def parse_email_headers(headers: List[Dict[str, str]]) -> Dict[str, str]:
     Returns:
         Dict[str, str]: A dictionary containing the 'Subject', 'From', and 'To' information.
     """
-    header_map = {header['name'].lower(): header['value'] for header in headers}
-    return {
-        "Subject": header_map.get('subject', ''),
-        "From": header_map.get('from', ''),
-        "To": header_map.get('to', '')
-    }
+    header_map = {header["name"].lower(): header["value"] for header in headers}
+    return {"Subject": header_map.get("subject", ""), "From": header_map.get("from", ""), "To": header_map.get("to", "")}
 
 
-def safe_bytes_to_string(byte_data: bytes, encoding: str = 'utf-8') -> str:
+def safe_bytes_to_string(byte_data: bytes, encoding: str = "utf-8") -> str:
     """
     Safely converts bytes to a string using the specified encoding, handling specific known errors.
 
@@ -1159,9 +1052,9 @@ def safe_bytes_to_string(byte_data: bytes, encoding: str = 'utf-8') -> str:
         str: The decoded string or a generic error message if decoding fails.
     """
     try:
-        return byte_data.decode(encoding, errors='ignore')
+        return byte_data.decode(encoding, errors="ignore")
     except UnicodeDecodeError:
-        return 'Unicode decode error.'
+        return "Unicode decode error."
 
 
 def correct_base64_errors(encoded_data: str) -> str:
@@ -1175,13 +1068,13 @@ def correct_base64_errors(encoded_data: str) -> str:
         str: The corrected base64 string.
     """
     # Filter out invalid base64 characters
-    valid_base64_chars = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
-    corrected_data = ''.join(char for char in encoded_data if char in valid_base64_chars)
+    valid_base64_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=")
+    corrected_data = "".join(char for char in encoded_data if char in valid_base64_chars)
 
     # Correct padding issues
     padding_needed = 4 - len(corrected_data) % 4
     if padding_needed != 4:
-        corrected_data += '=' * padding_needed
+        corrected_data += "=" * padding_needed
 
     return corrected_data
 
@@ -1199,13 +1092,13 @@ def decode_base64(encoded_data: str) -> str:
     """
     try:
         # Normalize the encoded data and attempt to correct errors
-        normalized_data = encoded_data.replace('-', '+').replace('_', '/')
+        normalized_data = encoded_data.replace("-", "+").replace("_", "/")
         corrected_data = correct_base64_errors(normalized_data)
 
-        decoded_bytes = base64.b64decode(corrected_data, altchars=b'+/')
+        decoded_bytes = base64.b64decode(corrected_data, altchars=b"+/")
         return safe_bytes_to_string(decoded_bytes)
     except ValueError as e:
-        return f'Value error: {str(e)}'
+        return f"Value error: {str(e)}"
 
 
 def parse_mail_parts(parts: List[Dict[str, Any]]) -> tuple[str, str, List[Dict[str, str]]]:
@@ -1224,18 +1117,20 @@ def parse_mail_parts(parts: List[Dict[str, Any]]) -> tuple[str, str, List[Dict[s
     attachments = []
 
     for part in parts:
-        if 'parts' in part and len(parts) > 0:
+        if "parts" in part and len(parts) > 0:
             # Recursively parse multipart sections
-            sub_body, sub_html, sub_attachments = parse_mail_parts(part['parts'])
+            sub_body, sub_html, sub_attachments = parse_mail_parts(part["parts"])
             body += sub_body
             html += sub_html
             attachments.extend(sub_attachments)
         if part.get("filename"):  # Attachment
-            attachments.append({
-                "ID": part.get("body", {}).get("attachmentId", ""),
-                "Name": part.get("filename", ""),
-                "Size": part.get("body", {}).get("size", 0),
-            })
+            attachments.append(
+                {
+                    "ID": part.get("body", {}).get("attachmentId", ""),
+                    "Name": part.get("filename", ""),
+                    "Size": part.get("body", {}).get("size", 0),
+                }
+            )
         else:
             if part.get("mimeType") == "text/plain":
                 body += decode_base64(part.get("body", {}).get("data", ""))
@@ -1321,12 +1216,8 @@ def main():
     args = demisto.args()
     command = demisto.command()
     base_url = params.get("url")
-    client_id = params.get("credentials", {}).get("identifier") or params.get(
-        "client_id"
-    )
-    client_secret = params.get("credentials", {}).get("password") or params.get(
-        "client_secret"
-    )
+    client_id = params.get("credentials", {}).get("identifier") or params.get("client_id")
+    client_secret = params.get("credentials", {}).get("password") or params.get("client_secret")
     account_id = params.get("account_id")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -1346,27 +1237,13 @@ def main():
         COMMAND_FUNCTIONS: dict[str, Callable] = {
             "fetch-incidents": lambda: fetch_incidents(client, params),
             "test-module": lambda: the_testing_module(client, params),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-move-trash": lambda: trash_email_command(
-                client, args
-            ),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-list": lambda: list_emails_command(
-                client, args
-            ),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-thread-list": lambda: get_email_thread_command(
-                client, args
-            ),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-attachment-get": lambda: get_email_attachment_command(
-                client, args
-            ),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-send-email": lambda: send_email_command(
-                client, args
-            ),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-mailbox-profile-get": lambda: get_mailbox_profile_command(
-                client, args
-            ),
-            f"{ZOOM_MAIL_COMMAND_PREFIX}-user-list": lambda: list_users_command(
-                client, args
-            ),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-move-trash": lambda: trash_email_command(client, args),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-list": lambda: list_emails_command(client, args),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-thread-list": lambda: get_email_thread_command(client, args),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-email-attachment-get": lambda: get_email_attachment_command(client, args),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-send-email": lambda: send_email_command(client, args),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-mailbox-profile-get": lambda: get_mailbox_profile_command(client, args),
+            f"{ZOOM_MAIL_COMMAND_PREFIX}-user-list": lambda: list_users_command(client, args),
         }
 
         if command in COMMAND_FUNCTIONS:

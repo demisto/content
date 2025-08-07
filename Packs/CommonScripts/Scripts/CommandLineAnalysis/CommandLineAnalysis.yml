@@ -19,7 +19,7 @@ outputs:
 - contextPath: CommandLineAnalysis.decoded_command
   description: The decoded Base64 command line string, if decoding was performed.
 - contextPath: CommandLineAnalysis.risk
-  description: The overall risk level derived from the command line analysis, classified as Low, Medium, High, or Critical.
+  description: The overall risk level derived from the command line analysis, classified as "Low Risk", "Medium Risk", "High Risk", or "Critical Risk".
 - contextPath: CommandLineAnalysis.score
   description: The normalized score (0-100) representing the risk associated with the analyzed command line.
 - contextPath: CommandLineAnalysis
@@ -80,12 +80,14 @@ outputs:
   description: Checks for AMSI bypass techniques in the decoded Base64 command line.
 - contextPath: CommandLineAnalysis.analysis.decoded.indicators
   description: Extracts indicators of compromise (IOCs) from the decoded Base64 command line.
+- contextPath: CommandLineAnalysis.analysis.original.macOS_suspicious_commands
+  description: Checks for suspicious macOS patterns in the decoded Base64 command line.
 - contextPath: CommandLineAnalysis.Double Encoding Detected
   description: Identifies nested Base64 strings.
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.11.10.116949
+dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

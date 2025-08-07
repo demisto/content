@@ -1,36 +1,85 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
-''' IMPORTS '''
-from typing import Tuple, Dict, List, Any
-from _collections import defaultdict
-import urllib3
+""" IMPORTS """
 import ast
+from _collections import defaultdict
+from typing import Any
+
+import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-API_VERSION = '/api/v3/'
-OAUTH = 'https://accounts.zoho.com/oauth/v2/token'
+""" CONSTANTS """
+API_VERSION = "/api/v3/"
+OAUTH = "https://accounts.zoho.com/oauth/v2/token"
 
-REQUEST_FIELDS = ['subject', 'description', 'request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority',
-                  'service_category', 'requester', 'assets', 'site', 'group', 'technician', 'category', 'subcategory',
-                  'item', 'email_ids_to_notify', 'is_fcr', 'resources', 'udf_fields', 'update_reason']
-FIELDS_WITH_NAME = ['request_type', 'impact', 'status', 'mode', 'level', 'urgency', 'priority', 'service_category',
-                    'requester', 'site', 'group', 'technician', 'category', 'subcategory', 'item']
-FIELDS_TO_IGNORE = ['has_draft', 'cancel_flag_comments']
-HUMAN_READABLE_FIELDS = ['CreatedTime', 'Id', 'Requester', 'Technician', 'Status', 'Subject']
-FIELDS_WITH_TIME = ['created_time', 'deleted_on', 'due_by_time', 'first_response_due_by_time', 'responded_time',
-                    'resolved_time', 'completed_time', 'assigned_time', 'last_updated_time', 'submitted_on']
+REQUEST_FIELDS = [
+    "subject",
+    "description",
+    "request_type",
+    "impact",
+    "status",
+    "mode",
+    "level",
+    "urgency",
+    "priority",
+    "service_category",
+    "requester",
+    "assets",
+    "site",
+    "group",
+    "technician",
+    "category",
+    "subcategory",
+    "item",
+    "email_ids_to_notify",
+    "is_fcr",
+    "resources",
+    "udf_fields",
+    "update_reason",
+]
+FIELDS_WITH_NAME = [
+    "request_type",
+    "impact",
+    "status",
+    "mode",
+    "level",
+    "urgency",
+    "priority",
+    "service_category",
+    "requester",
+    "site",
+    "group",
+    "technician",
+    "category",
+    "subcategory",
+    "item",
+]
+FIELDS_TO_IGNORE = ["has_draft", "cancel_flag_comments"]
+HUMAN_READABLE_FIELDS = ["CreatedTime", "Id", "Requester", "Technician", "Status", "Subject"]
+FIELDS_WITH_TIME = [
+    "created_time",
+    "deleted_on",
+    "due_by_time",
+    "first_response_due_by_time",
+    "responded_time",
+    "resolved_time",
+    "completed_time",
+    "assigned_time",
+    "last_updated_time",
+    "submitted_on",
+]
 
 SERVER_URL = {
-    'United States': 'https://sdpondemand.manageengine.com',
-    'Europe': 'https://sdpondemand.manageengine.eu',
-    'India': 'https://sdpondemand.manageengine.in',
-    'China': 'https://servicedeskplus.cn',
-    'Australia': 'https://servicedeskplus.net.au',
+    "United States": "https://sdpondemand.manageengine.com",
+    "Europe": "https://sdpondemand.manageengine.eu",
+    "India": "https://sdpondemand.manageengine.in",
+    "China": "https://servicedeskplus.cn",
+    "Australia": "https://servicedeskplus.net.au",
 }
 
 
@@ -40,9 +89,21 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, url: str, use_ssl: bool, use_proxy: bool, client_id: str = None, client_secret: str = None,
-                 refresh_token: str = None, technician_key: str = None, fetch_time: str = '7 days',
-                 fetch_status: list = None, fetch_limit: int = 50, fetch_filter: str = '', on_premise: bool = False):
+    def __init__(
+        self,
+        url: str,
+        use_ssl: bool,
+        use_proxy: bool,
+        client_id: str = None,
+        client_secret: str = None,
+        refresh_token: str = None,
+        technician_key: str = None,
+        fetch_time: str = "7 days",
+        fetch_status: list = None,
+        fetch_limit: int = 50,
+        fetch_filter: str = "",
+        on_premise: bool = False,
+    ):
         if fetch_status is None:
             fetch_status = []
         self.client_id = client_id
@@ -55,14 +116,11 @@ class Client(BaseClient):
         self.fetch_filter = fetch_filter
         self.on_premise = on_premise
         if on_premise:
-            super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
-                'Accept': 'application/v3+json',
-                'TECHNICIAN_KEY': technician_key
-            })
+            super().__init__(
+                url, verify=use_ssl, proxy=use_proxy, headers={"Accept": "application/v3+json", "TECHNICIAN_KEY": technician_key}
+            )
         else:
-            super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={
-                'Accept': 'application/v3+json'
-            })
+            super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={"Accept": "application/v3+json"})
 
             if self.refresh_token:
                 self.get_access_token()  # Add a valid access token to the headers
@@ -74,72 +132,73 @@ class Client(BaseClient):
         """
         previous_token = demisto.getIntegrationContext()
         # Check if there is an existing valid access token
-        if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
-            access_token = previous_token.get('access_token')
+        if previous_token.get("access_token") and previous_token.get("expiry_time") > date_to_timestamp(datetime.now()):
+            access_token = previous_token.get("access_token")
         else:
             params = {
-                'refresh_token': self.refresh_token,
-                'grant_type': 'refresh_token',
-                'client_id': self.client_id,
-                'client_secret': self.client_secret
+                "refresh_token": self.refresh_token,
+                "grant_type": "refresh_token",
+                "client_id": self.client_id,
+                "client_secret": self.client_secret,
             }
             try:
-                res = self.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
-                if 'error' in res:
+                res = self.http_request("POST", url_suffix="", full_url=OAUTH, params=params)
+                if "error" in res:
                     return_error(
-                        f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
-                        f'and Refresh Token.\n{res}')
-                if res.get('access_token'):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in') * 1000 - 10
-                    new_token = {
-                        'access_token': res.get('access_token'),
-                        'expiry_time': expiry_time
-                    }
+                        f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+                        f"and Refresh Token.\n{res}"
+                    )
+                if res.get("access_token"):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+                    expiry_time += res.get("expires_in") * 1000 - 10
+                    new_token = {"access_token": res.get("access_token"), "expiry_time": expiry_time}
                     demisto.setIntegrationContext(new_token)
-                    access_token = res.get('access_token')
+                    access_token = res.get("access_token")
             except Exception as e:
-                return_error(f'Error occurred while creating an access token. Please check the Client ID, Client Secret'
-                             f' and Refresh Token.\n\n{e.args[0]}')
-        self._headers.update({
-            'Authorization': 'Bearer ' + access_token
-        })
+                return_error(
+                    f"Error occurred while creating an access token. Please check the Client ID, Client Secret"
+                    f" and Refresh Token.\n\n{e.args[0]}"
+                )
+        self._headers.update({"Authorization": "Bearer " + access_token})
 
     def http_request(self, method, url_suffix, full_url=None, params=None):
         ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
         # handled by the client and not in the BaseClient
         try:
-            res = self._http_request(method, url_suffix, full_url=full_url, resp_type='response', ok_codes=ok_codes,
-                                     params=params)
+            res = self._http_request(
+                method, url_suffix, full_url=full_url, resp_type="response", ok_codes=ok_codes, params=params
+            )
             if res.status_code in [200, 201]:
                 try:
                     return res.json()
                 except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'
-                                           .format(res.content), exception)
+                    raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
 
             if res.status_code in [401]:
-                if not self.on_premise and demisto.getIntegrationContext().get('expiry_time', 0)\
-                        <= date_to_timestamp(datetime.now()):
+                if not self.on_premise and demisto.getIntegrationContext().get("expiry_time", 0) <= date_to_timestamp(
+                    datetime.now()
+                ):
                     self.get_access_token()
                     return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
-                    err_msg = f'Unauthorized request - check domain location and the given credentials \n{str(res.json())}'
+                    err_msg = f"Unauthorized request - check domain location and the given credentials \n{res.json()!s}"
                 except ValueError:
-                    err_msg = f'Unauthorized request - check domain location and the given credentials -\n{str(res)}'
+                    err_msg = f"Unauthorized request - check domain location and the given credentials -\n{res!s}"
                 raise DemistoException(err_msg)
 
         except Exception as e:
-            if 'SSL Certificate Verification Failed' in e.args[0]:
-                return_error('SSL Certificate Verification Failed - try selecting \'Trust any certificate\' '
-                             'checkbox in the integration configuration.')
+            if "SSL Certificate Verification Failed" in e.args[0]:
+                return_error(
+                    "SSL Certificate Verification Failed - try selecting 'Trust any certificate' "
+                    "checkbox in the integration configuration."
+                )
             raise DemistoException(e.args[0])
 
     def get_requests(self, request_id: str = None, params: dict = None):
         if request_id:
-            return self.http_request(method='GET', url_suffix=f'requests/{request_id}')
+            return self.http_request(method="GET", url_suffix=f"requests/{request_id}")
         else:
-            return self.http_request(method='GET', url_suffix='requests', params=params)
+            return self.http_request(method="GET", url_suffix="requests", params=params)
 
 
 def create_output(request: dict) -> dict:
@@ -153,16 +212,15 @@ def create_output(request: dict) -> dict:
         A dictionary containing all valid fields in the request
     """
     output = {}
-    for field in request.keys():
+    for field in request:
         value = request.get(field, None)
         if value not in [None, {}, []] and field not in FIELDS_TO_IGNORE:
             output[string_to_context_key(field)] = value
             if field in FIELDS_WITH_TIME:
-                output[string_to_context_key(field)] = \
-                    timestamp_to_datestring(request.get(field, {}).get('value'))
+                output[string_to_context_key(field)] = timestamp_to_datestring(request.get(field, {}).get("value"))
 
-    if output.get('Status'):
-        output['Status'] = request.get('status', {}).get('name')
+    if output.get("Status"):
+        output["Status"] = request.get("status", {}).get("name")
     return output
 
 
@@ -177,23 +235,19 @@ def args_to_query(args: dict) -> dict:
         A dictionary containing all valid valid query field that were passed in the args, converted into the format
         required for the http_request.
     """
-    request_fields: Dict[str, Any] = {}
+    request_fields: dict[str, Any] = {}
     for field in REQUEST_FIELDS:
         value = args.get(field, None)
         if value:
-            if field == 'udf_fields':
+            if field == "udf_fields":
                 request_fields[field] = f"{create_udf_field(value)}"
-            elif field not in FIELDS_WITH_NAME or (value[0] == '{' and value[-1] == '}'):  # if the second condition
+            elif field not in FIELDS_WITH_NAME or (value[0] == "{" and value[-1] == "}"):  # if the second condition
                 # holds the user entered an object as the field value and not only the name of the field. For more
                 # information please refer to the `service-desk-plus-request-create` command in the README.
                 request_fields[field] = value
             else:
-                request_fields[field] = {
-                    'name': value
-                }
-    return {
-        'request': request_fields
-    }
+                request_fields[field] = {"name": value}
+    return {"request": request_fields}
 
 
 def create_udf_field(udf_input: str):
@@ -209,22 +263,24 @@ def create_udf_field(udf_input: str):
     if not udf_input:
         return {}
     try:
-        if udf_input[0] == '{' and udf_input[-1] == '}':  # check if the user entered a dict as the value
+        if udf_input[0] == "{" and udf_input[-1] == "}":  # check if the user entered a dict as the value
             return ast.literal_eval(udf_input)
 
-        fields = udf_input.split(',')
+        fields = udf_input.split(",")
         udf_dict = {}
         for field in fields:
             if field:
-                field_key_value = field.split(':')
+                field_key_value = field.split(":")
                 if field_key_value[0] and field_key_value[1]:
                     udf_dict[field_key_value[0]] = field_key_value[1]
                 else:
-                    raise Exception('Invalid input')
+                    raise Exception("Invalid input")
         return udf_dict
     except Exception:
-        raise Exception('Illegal udf fields format. Input format should be a string of key and value separated by : '
-                        'Multiple key;value pairs can be given, separated with a comma')
+        raise Exception(
+            "Illegal udf fields format. Input format should be a string of key and value separated by : "
+            "Multiple key;value pairs can be given, separated with a comma"
+        )
 
 
 def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> dict:
@@ -240,17 +296,11 @@ def create_modify_linked_input_data(linked_requests_id: list, comment: str) -> d
     """
     all_linked_requests = []
     for request_id in linked_requests_id:
-        linked_request: Dict[str, Any] = {
-            'linked_request': {
-                'id': request_id
-            }
-        }
+        linked_request: dict[str, Any] = {"linked_request": {"id": request_id}}
         if comment:
-            linked_request['comments'] = comment
+            linked_request["comments"] = comment
         all_linked_requests.append(linked_request)
-    return {
-        'link_requests': all_linked_requests
-    }
+    return {"link_requests": all_linked_requests}
 
 
 def create_human_readable(output: dict) -> dict:
@@ -267,8 +317,8 @@ def create_human_readable(output: dict) -> dict:
     for field in HUMAN_READABLE_FIELDS:
         if output.get(field):
             hr[field] = output.get(field)
-            if field in ['Technician', 'Requester']:
-                hr[field] = output.get(field, {}).get('name')
+            if field in ["Technician", "Requester"]:
+                hr[field] = output.get(field, {}).get("name")
     return hr
 
 
@@ -283,11 +333,11 @@ def resolution_human_readable(output: dict) -> dict:
         A dictionary containing all the valid fields in the resolution output
     """
     hr = {}
-    for key in output.keys():
-        if key == 'SubmittedBy':
-            hr['SubmittedBy'] = output.get('SubmittedBy', {}).get('name', '')
+    for key in output:
+        if key == "SubmittedBy":
+            hr["SubmittedBy"] = output.get("SubmittedBy", {}).get("name", "")
         else:
-            hr[key] = output.get(key, '')
+            hr[key] = output.get(key, "")
     return hr
 
 
@@ -307,18 +357,16 @@ def create_requests_list_info(start_index, row_count, search_fields, filter_by):
     """
     list_info = {}
     if start_index is not None:
-        list_info['start_index'] = start_index
+        list_info["start_index"] = start_index
     if row_count is not None:
-        list_info['row_count'] = row_count
+        list_info["row_count"] = row_count
     if search_fields:
-        list_info['search_fields'] = search_fields
+        list_info["search_fields"] = search_fields
     if filter_by:
-        list_info['filter_by'] = filter_by
-    list_info['sort_field'] = 'created_time'
-    list_info['sort_order'] = 'asc'
-    return {
-        'list_info': list_info
-    }
+        list_info["filter_by"] = filter_by
+    list_info["sort_field"] = "created_time"
+    list_info["sort_order"] = "asc"
+    return {"list_info": list_info}
 
 
 def create_fetch_list_info(time_from: str, time_to: str, status: list, fetch_filter: str, fetch_limit: int) -> dict:
@@ -343,56 +391,47 @@ def create_fetch_list_info(time_from: str, time_to: str, status: list, fetch_fil
     """
     list_info = {}
     try:
-        search_criteria = [{
-            'field': 'created_time',
-            'values': [f'{time_from}', f'{time_to}'],
-            'condition': 'between'
-        }]
+        search_criteria = [{"field": "created_time", "values": [f"{time_from}", f"{time_to}"], "condition": "between"}]
         if fetch_filter:
             filters = ast.literal_eval(fetch_filter)
             if isinstance(filters, dict):
-                query: Dict[str, Any] = {
-                    'field': filters.get('field'),
-                    'condition': filters.get('condition'),
-                    'values': filters.get('values', '').split(','),
-                    'logical_operator': filters.get('logical_operator', 'AND')
+                query: dict[str, Any] = {
+                    "field": filters.get("field"),
+                    "condition": filters.get("condition"),
+                    "values": filters.get("values", "").split(","),
+                    "logical_operator": filters.get("logical_operator", "AND"),
                 }
-                if filters.get('logical_operator') == 'OR':
+                if filters.get("logical_operator") == "OR":
                     raise Exception('Only "AND" is allowed as a logical_operator')
                 search_criteria.append(query)
             else:
                 for filter in filters:
                     query = {
-                        'field': filter.get('field'),
-                        'condition': filter.get('condition'),
-                        'values': filter.get('values', '').split(','),
-                        'logical_operator': filter.get('logical_operator', 'AND')
+                        "field": filter.get("field"),
+                        "condition": filter.get("condition"),
+                        "values": filter.get("values", "").split(","),
+                        "logical_operator": filter.get("logical_operator", "AND"),
                     }
-                    if filter.get('logical_operator') == 'OR':
+                    if filter.get("logical_operator") == "OR":
                         raise Exception('Only "AND" is allowed as a logical_operator')
                     search_criteria.append(query)
         else:
             if status:
-                query = {
-                    'field': 'status.name',
-                    'values': status,
-                    'condition': 'is',
-                    'logical_operator': 'AND'
-                }
+                query = {"field": "status.name", "values": status, "condition": "is", "logical_operator": "AND"}
                 search_criteria.append(query)
 
         list_info = {
-            'search_criteria': search_criteria,
-            'sort_field': 'created_time',
-            'sort_order': 'asc',
-            'row_count': fetch_limit
+            "search_criteria": search_criteria,
+            "sort_field": "created_time",
+            "sort_order": "asc",
+            "row_count": fetch_limit,
         }
     except Exception as e:
-        return_error(f'Invalid input format for fetch query. Please see detailed information (?) for valid fetch query '
-                     f'format.\n{e.args[0]}')
-    return {
-        'list_info': list_info
-    }
+        return_error(
+            f"Invalid input format for fetch query. Please see detailed information (?) for valid fetch query "
+            f"format.\n{e.args[0]}"
+        )
+    return {"list_info": list_info}
 
 
 # Command functions:
@@ -407,37 +446,33 @@ def list_requests_command(client: Client, args: dict):
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id', None)
-    start_index = args.get('start_index', None)
-    row_count = args.get('page_size', None)
-    search_fields = args.get('search_fields', None)
-    filter_by = args.get('filter_by', None)
+    request_id = args.get("request_id", None)
+    start_index = args.get("start_index", None)
+    row_count = args.get("page_size", None)
+    search_fields = args.get("search_fields", None)
+    filter_by = args.get("filter_by", None)
     list_info = create_requests_list_info(start_index, row_count, search_fields, filter_by)
-    params = {
-        'input_data': f'{list_info}'
-    }
+    params = {"input_data": f"{list_info}"}
     result = client.get_requests(request_id, params)
 
     output = []
     hr = []
     context: dict = defaultdict(list)
     if request_id:
-        requests = [result.get('request', [])]
+        requests = [result.get("request", [])]
     else:
-        requests = result.get('requests', [])
+        requests = result.get("requests", [])
     for request in requests:
         request_output = create_output(request)
         output.append(request_output)
         hr.append(create_human_readable(request_output))
 
-    context['ServiceDeskPlus(val.ID===obj.ID)'] = {
-        'Request': output
-    }
-    markdown = tableToMarkdown('Requests', t=hr)
+    context["ServiceDeskPlus(val.ID===obj.ID)"] = {"Request": output}
+    markdown = tableToMarkdown("Requests", t=hr)
     return markdown, context, result
 
 
-def delete_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def delete_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Delete the request(s) with the given request_id
 
@@ -448,16 +483,16 @@ def delete_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id', '')
-    requests_list = request_id.split(',')
+    request_id = args.get("request_id", "")
+    requests_list = request_id.split(",")
     result = {}
     for request in requests_list:
-        result = client.http_request('DELETE', url_suffix=f'requests/{request}')
-    hr = f'### Successfully deleted request(s) {requests_list}'
+        result = client.http_request("DELETE", url_suffix=f"requests/{request}")
+    hr = f"### Successfully deleted request(s) {requests_list}"
     return hr, {}, result
 
 
-def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def create_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Create a new request with the given args
 
@@ -469,25 +504,21 @@ def create_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {
-        'input_data': f'{query}'
-    }
-    result = client.http_request('POST', url_suffix='requests', params=params)
-    request = result.get('request', None)
+    params = {"input_data": f"{query}"}
+    result = client.http_request("POST", url_suffix="requests", params=params)
+    request = result.get("request", None)
 
     output = {}
     context: dict = defaultdict(list)
     if request:
         output = create_output(request)
     hr = create_human_readable(output)
-    markdown = tableToMarkdown('Service Desk Plus request was successfully created', t=hr)
-    context['ServiceDeskPlus(val.ID===obj.ID)'] = {
-        'Request': output
-    }
+    markdown = tableToMarkdown("Service Desk Plus request was successfully created", t=hr)
+    context["ServiceDeskPlus(val.ID===obj.ID)"] = {"Request": output}
     return markdown, context, result
 
 
-def update_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def update_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Updates an existing request with the given args
 
@@ -499,26 +530,22 @@ def update_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {
-        'input_data': f'{query}'
-    }
-    request_id = args.get('request_id')
-    result = client.http_request('PUT', url_suffix=f'requests/{request_id}', params=params)
-    request = result.get('request', None)
+    params = {"input_data": f"{query}"}
+    request_id = args.get("request_id")
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}", params=params)
+    request = result.get("request", None)
     output = {}
     context: dict = defaultdict(list)
     if request:
         output = create_output(request)
 
     hr = create_human_readable(output)
-    markdown = tableToMarkdown('Service Desk Plus request was successfully updated', t=hr)
-    context['ServiceDeskPlus(val.ID===obj.ID)'] = {
-        'Request': output
-    }
+    markdown = tableToMarkdown("Service Desk Plus request was successfully updated", t=hr)
+    context["ServiceDeskPlus(val.ID===obj.ID)"] = {"Request": output}
     return markdown, context, result
 
 
-def assign_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def assign_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Assigns the given request to the given technician/group
 
@@ -530,16 +557,14 @@ def assign_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         Demisto Outputs.
     """
     query = args_to_query(args)
-    params = {
-        'input_data': f'{query}'
-    }
-    request_id = args.get('request_id')
-    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/_assign', params=params)
-    markdown = f'### Service Desk Plus request {request_id} was successfully assigned'
+    params = {"input_data": f"{query}"}
+    request_id = args.get("request_id")
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_assign", params=params)
+    markdown = f"### Service Desk Plus request {request_id} was successfully assigned"
     return markdown, {}, result
 
 
-def pickup_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def pickup_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Picks up the given request to the current technician
 
@@ -550,13 +575,13 @@ def pickup_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/pickup')
-    markdown = f'### Service Desk Plus request {request_id} was successfully picked up'
+    request_id = args.get("request_id")
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/pickup")
+    markdown = f"### Service Desk Plus request {request_id} was successfully picked up"
     return markdown, {}, result
 
 
-def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def linked_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Lists all the requests that are linked to the given request.
 
@@ -567,10 +592,10 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    result = client.http_request('GET', url_suffix=f'requests/{request_id}/link_requests')
+    request_id = args.get("request_id")
+    result = client.http_request("GET", url_suffix=f"requests/{request_id}/link_requests")
 
-    linked_requests = result.get('link_requests', [])
+    linked_requests = result.get("link_requests", [])
     context: dict = defaultdict(list)
     output = []
 
@@ -578,14 +603,12 @@ def linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
         request_output = create_output(request)
         output.append(request_output)
 
-    markdown = tableToMarkdown(f'Linked requests to request {request_id}', t=output, removeNull=True)
-    context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {
-        'LinkRequests': output
-    }
+    markdown = tableToMarkdown(f"Linked requests to request {request_id}", t=output, removeNull=True)
+    context["ServiceDeskPlus.Request(val.ID===obj.ID)"] = {"LinkRequests": output}
     return markdown, context, result
 
 
-def modify_linked_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def modify_linked_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Links/Un-links the given request with all the other requests that where passed as arguments.
 
@@ -596,23 +619,21 @@ def modify_linked_request_command(client: Client, args: dict) -> Tuple[str, dict
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    action = args.get('action')
-    linked_requests_id = args.get('linked_requests_id', '').split(',')
-    comment = args.get('comment', '')
+    request_id = args.get("request_id")
+    action = args.get("action")
+    linked_requests_id = args.get("linked_requests_id", "").split(",")
+    comment = args.get("comment", "")
     input_data = create_modify_linked_input_data(linked_requests_id, comment)
-    params = {
-        'input_data': f'{input_data}'
-    }
-    if action == 'Link':
-        result = client.http_request('POST', url_suffix=f'requests/{request_id}/link_requests', params=params)
+    params = {"input_data": f"{input_data}"}
+    if action == "Link":
+        result = client.http_request("POST", url_suffix=f"requests/{request_id}/link_requests", params=params)
     else:
-        result = client.http_request('DELETE', url_suffix=f'requests/{request_id}/link_requests', params=params)
+        result = client.http_request("DELETE", url_suffix=f"requests/{request_id}/link_requests", params=params)
     markdown = f"## {result.get('response_status', {}).get('messages')[0].get('message')}"
     return markdown, {}, result
 
 
-def add_resolution_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def add_resolution_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Adds the resolution to the given request
 
@@ -623,29 +644,22 @@ def add_resolution_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    resolution_content = args.get('resolution_content')
-    add_to_linked_requests = args.get('add_to_linked_requests') if args.get('add_to_linked_requests') else 'false'
-    query = {
-        'resolution': {
-            'content': resolution_content,
-            'add_to_linked_requests': add_to_linked_requests
-        }
-    }
-    params = {
-        'input_data': f'{query}'
-    }
-    result = client.http_request('POST', url_suffix=f'requests/{request_id}/resolutions', params=params)
+    request_id = args.get("request_id")
+    resolution_content = args.get("resolution_content")
+    add_to_linked_requests = args.get("add_to_linked_requests") if args.get("add_to_linked_requests") else "false"
+    query = {"resolution": {"content": resolution_content, "add_to_linked_requests": add_to_linked_requests}}
+    params = {"input_data": f"{query}"}
+    result = client.http_request("POST", url_suffix=f"requests/{request_id}/resolutions", params=params)
 
-    if add_to_linked_requests == 'true':
-        markdown = f'### Resolution was successfully added to {request_id} and the linked requests'
+    if add_to_linked_requests == "true":
+        markdown = f"### Resolution was successfully added to {request_id} and the linked requests"
     else:
-        markdown = f'### Resolution was successfully added to {request_id}'
+        markdown = f"### Resolution was successfully added to {request_id}"
 
     return markdown, {}, result
 
 
-def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def get_resolutions_list_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Gets the resolution of the given request
 
@@ -656,22 +670,20 @@ def get_resolutions_list_command(client: Client, args: dict) -> Tuple[str, dict,
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    result = client.http_request('GET', url_suffix=f'requests/{request_id}/resolutions')
+    request_id = args.get("request_id")
+    result = client.http_request("GET", url_suffix=f"requests/{request_id}/resolutions")
 
     context: dict = defaultdict(list)
-    output = create_output(result.get('resolution', {}))
+    output = create_output(result.get("resolution", {}))
     hr = {}
     if output:
-        context['ServiceDeskPlus.Request(val.ID===obj.ID)'] = {
-            'Resolution': output
-        }
+        context["ServiceDeskPlus.Request(val.ID===obj.ID)"] = {"Resolution": output}
         hr = resolution_human_readable(output)
-    markdown = tableToMarkdown(f'Resolution of request {request_id}', t=hr)
+    markdown = tableToMarkdown(f"Resolution of request {request_id}", t=hr)
     return markdown, context, result
 
 
-def close_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def close_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Close the request with the given request_id with comments and resolution defined by the user.
 
@@ -682,90 +694,78 @@ def close_request_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     Returns:
         Demisto Outputs.
     """
-    request_id = args.get('request_id')
-    closure_info: Dict[str, Any] = {
-        "requester_ack_resolution": args.get('requester_ack_resolution', 'false'),
-        "requester_ack_comments": args.get('requester_ack_comments', ''),
-        "closure_comments": args.get('closure_comments', ''),
+    request_id = args.get("request_id")
+    closure_info: dict[str, Any] = {
+        "requester_ack_resolution": args.get("requester_ack_resolution", "false"),
+        "requester_ack_comments": args.get("requester_ack_comments", ""),
+        "closure_comments": args.get("closure_comments", ""),
     }
-    if args.get('closure_code'):
-        closure_info["closure_code"] = {'name': args.get('closure_code')}
-    input_data = {
-        "request": {
-            "closure_info": closure_info
-        }
-    }
-    params = {
-        'input_data': f'{input_data}'
-    }
-    result = client.http_request('PUT', url_suffix=f'requests/{request_id}/_close', params=params)
-    hr = f'### Successfully closed request {request_id}'
+    if args.get("closure_code"):
+        closure_info["closure_code"] = {"name": args.get("closure_code")}
+    input_data = {"request": {"closure_info": closure_info}}
+    params = {"input_data": f"{input_data}"}
+    result = client.http_request("PUT", url_suffix=f"requests/{request_id}/_close", params=params)
+    hr = f"### Successfully closed request {request_id}"
     return hr, {}, result
 
 
 def fetch_incidents(client: Client, test_command: bool = False) -> list:
-    date_format = '%Y-%m-%dT%H:%M:%S'
+    date_format = "%Y-%m-%dT%H:%M:%S"
     last_run = {}
     if not test_command:
         last_run = demisto.getLastRun()
 
     if not last_run:  # if first time running
         try:
-            new_last_run = {
-                'time': date_to_timestamp(parse_date_range(client.fetch_time, date_format=date_format, utc=False)[0])
-            }
+            new_last_run = {"time": date_to_timestamp(parse_date_range(client.fetch_time, date_format=date_format, utc=False)[0])}
         except Exception as e:
-            return_error(f'Invalid fetch time range.\n{e.args[0]}')
+            return_error(f"Invalid fetch time range.\n{e.args[0]}")
     else:
         new_last_run = last_run
-    demisto_incidents: List = list()
-    time_from = new_last_run.get('time')
+    demisto_incidents: list = []
+    time_from = new_last_run.get("time")
     time_to = date_to_timestamp(datetime.now(), date_format=date_format)
-    list_info = create_fetch_list_info(str(time_from), str(time_to), client.fetch_status, client.fetch_filter,
-                                       client.fetch_limit + 1)
-    params = {
-        'input_data': f'{list_info}'
-    }
+    list_info = create_fetch_list_info(
+        str(time_from), str(time_to), client.fetch_status, client.fetch_filter, client.fetch_limit + 1
+    )
+    params = {"input_data": f"{list_info}"}
 
     # Get incidents from Service Desk Plus
-    demisto.info(f'Fetching ServiceDeskPlus incidents. with the query params: {str(params)}')
+    demisto.info(f"Fetching ServiceDeskPlus incidents. with the query params: {params!s}")
 
-    incidents = client.get_requests(params=params).get('requests', [])
+    incidents = client.get_requests(params=params).get("requests", [])
 
     if incidents:
         count = 0
-        last_run_id = last_run.get('id', '0')
-        last_incident_id = last_run.get('id', '0')
-        cur_time = new_last_run.get('time', 0)
-        incident_creation_time = new_last_run.get('time', 0)
+        last_run_id = last_run.get("id", "0")
+        last_incident_id = last_run.get("id", "0")
+        cur_time = new_last_run.get("time", 0)
+        incident_creation_time = new_last_run.get("time", 0)
 
         for incident in incidents:
             if count >= client.fetch_limit:
                 break
             # Prevent fetching twice the same incident - the last incident that was fetched in the last run, will be the
             # first incident in the returned incidents from the API call this time.
-            if incident.get('id') == last_run_id:
+            if incident.get("id") == last_run_id:
                 continue
-            incident_creation_time = int(incident.get('created_time', {}).get('value'))
+            incident_creation_time = int(incident.get("created_time", {}).get("value"))
             if incident_creation_time >= cur_time:
-                demisto_incidents.append({
-                    'name': f'{incident.get("subject")} - {incident.get("id")}',
-                    'occurred': timestamp_to_datestring(incident_creation_time),
-                    'rawJSON': json.dumps(incident)
-                })
+                demisto_incidents.append(
+                    {
+                        "name": f'{incident.get("subject")} - {incident.get("id")}',
+                        "occurred": timestamp_to_datestring(incident_creation_time),
+                        "rawJSON": json.dumps(incident),
+                    }
+                )
                 count += 1
-                last_incident_id = incident.get('id')
+                last_incident_id = incident.get("id")
 
         if demisto_incidents:
-            new_last_run.update({
-                'time': incident_creation_time,
-                'id': last_incident_id
-            })
+            new_last_run.update({"time": incident_creation_time, "id": last_incident_id})
 
     if not demisto_incidents:
-        new_last_run.update({
-            'time': time_to
-        })
+        new_last_run.update({"time": time_to})
 
     if not test_command:
         demisto.setLastRun(new_last_run)
@@ -785,20 +785,20 @@ def test_module(client: Client):
         'ok' if test passed, anything else will fail the test.
     """
     if not client.on_premise and not client.refresh_token:
-        return_error('Please enter a refresh token (see detailed instruction (?) for more information)')
+        return_error("Please enter a refresh token (see detailed instruction (?) for more information)")
     try:
-        client.http_request('GET', 'requests')
+        client.http_request("GET", "requests")
         params: dict = demisto.params()
 
-        if params.get('isFetch'):
+        if params.get("isFetch"):
             fetch_incidents(client, test_command=True)
-        return 'ok'
+        return "ok"
 
     except Exception as e:
         raise e
 
 
-def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
+def generate_refresh_token(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Creates for the user the refresh token for the app, given the code the user got when defining the scopes of the app.
 
@@ -812,18 +812,20 @@ def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
     """
     if client.on_premise:
         return_error("The command 'service-desk-plus-generate-refresh-token' can not be executed on on-premise.")
-    code = args.get('code')
+    code = args.get("code")
     params = {
-        'code': code,
-        'grant_type': 'authorization_code',
-        'client_id': client.client_id,
-        'client_secret': client.client_secret
+        "code": code,
+        "grant_type": "authorization_code",
+        "client_id": client.client_id,
+        "client_secret": client.client_secret,
     }
-    res = client.http_request('POST', url_suffix='', full_url=OAUTH, params=params)
-    if res.get('refresh_token'):
-        hr = f'### Refresh Token: {res.get("refresh_token")}\n Please paste the Refresh Token in the instance ' \
-             f'configuration and save it for future use.'
-    elif res.get('error'):
+    res = client.http_request("POST", url_suffix="", full_url=OAUTH, params=params)
+    if res.get("refresh_token"):
+        hr = (
+            f'### Refresh Token: {res.get("refresh_token")}\n Please paste the Refresh Token in the instance '
+            f'configuration and save it for future use.'
+        )
+    elif res.get("error"):
         hr = f'### Error: {res.get("error")}'
     else:
         hr = res
@@ -832,54 +834,57 @@ def generate_refresh_token(client: Client, args: Dict) -> Tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
-    server_url = params.get('server_url')
-    technician_key = params.get('credentials_technician_key', {}).get(
-        'password') or params.get('technician_key')
-    client_id = params.get('credentials_client', {}).get('identifier') or params.get('client_id')
-    client_secret = params.get('credentials_client', {}).get('password') or params.get('client_secret')
-    refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
-    if server_url == 'On-Premise':
-        client = Client(url=params.get('server_url_on_premise') + API_VERSION,
-                        use_ssl=not params.get('insecure', False),
-                        use_proxy=params.get('proxy', False),
-                        technician_key=technician_key,
-                        fetch_time=params.get('first_fetch') if params.get('first_fetch') else '7 days',
-                        fetch_status=params.get('fetch_status'),
-                        fetch_limit=int(params.get('max_fetch')) if params.get('max_fetch') else 50,
-                        fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '',
-                        on_premise=True)
+    server_url = params.get("server_url")
+    technician_key = params.get("credentials_technician_key", {}).get("password") or params.get("technician_key")
+    client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id")
+    client_secret = params.get("credentials_client", {}).get("password") or params.get("client_secret")
+    refresh_token = params.get("credentials_refresh_token", {}).get("password") or params.get("refresh_token")
+    if server_url == "On-Premise":
+        client = Client(
+            url=params.get("server_url_on_premise") + API_VERSION,
+            use_ssl=not params.get("insecure", False),
+            use_proxy=params.get("proxy", False),
+            technician_key=technician_key,
+            fetch_time=params.get("first_fetch") if params.get("first_fetch") else "7 days",
+            fetch_status=params.get("fetch_status"),
+            fetch_limit=int(params.get("max_fetch")) if params.get("max_fetch") else 50,
+            fetch_filter=params.get("fetch_filter") if params.get("fetch_filter") else "",
+            on_premise=True,
+        )
     else:
-        server_url = SERVER_URL[params.get('server_url')]
-        client = Client(url=server_url + API_VERSION,
-                        use_ssl=not params.get('insecure', False),
-                        use_proxy=params.get('proxy', False),
-                        client_id=client_id,
-                        client_secret=client_secret,
-                        refresh_token=refresh_token,
-                        fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
-                        fetch_status=params.get('fetch_status'),
-                        fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,
-                        fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '')
+        server_url = SERVER_URL[params.get("server_url")]
+        client = Client(
+            url=server_url + API_VERSION,
+            use_ssl=not params.get("insecure", False),
+            use_proxy=params.get("proxy", False),
+            client_id=client_id,
+            client_secret=client_secret,
+            refresh_token=refresh_token,
+            fetch_time=params.get("fetch_time") if params.get("fetch_time") else "7 days",
+            fetch_status=params.get("fetch_status"),
+            fetch_limit=int(params.get("fetch_limit")) if params.get("fetch_limit") else 50,
+            fetch_filter=params.get("fetch_filter") if params.get("fetch_filter") else "",
+        )
 
     commands = {
-        'service-desk-plus-generate-refresh-token': generate_refresh_token,
-        'service-desk-plus-requests-list': list_requests_command,
-        'service-desk-plus-request-delete': delete_request_command,
-        'service-desk-plus-request-create': create_request_command,
-        'service-desk-plus-request-update': update_request_command,
-        'service-desk-plus-request-assign': assign_request_command,
-        'service-desk-plus-request-pickup': pickup_request_command,
-        'service-desk-plus-request-close': close_request_command,
-        'service-desk-plus-linked-request-list': linked_request_command,
-        'service-desk-plus-link-request-modify': modify_linked_request_command,
-        'service-desk-plus-request-resolution-add': add_resolution_command,
-        'service-desk-plus-request-resolutions-list': get_resolutions_list_command
+        "service-desk-plus-generate-refresh-token": generate_refresh_token,
+        "service-desk-plus-requests-list": list_requests_command,
+        "service-desk-plus-request-delete": delete_request_command,
+        "service-desk-plus-request-create": create_request_command,
+        "service-desk-plus-request-update": update_request_command,
+        "service-desk-plus-request-assign": assign_request_command,
+        "service-desk-plus-request-pickup": pickup_request_command,
+        "service-desk-plus-request-close": close_request_command,
+        "service-desk-plus-linked-request-list": linked_request_command,
+        "service-desk-plus-link-request-modify": modify_linked_request_command,
+        "service-desk-plus-request-resolution-add": add_resolution_command,
+        "service-desk-plus-request-resolutions-list": get_resolutions_list_command,
     }
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
 
     try:
-        if command == 'test-module':
+        if command == "test-module":
             demisto.results(test_module(client))
         elif command == "fetch-incidents":
             incidents = fetch_incidents(client)
@@ -887,10 +892,10 @@ def main():
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
-            return_error('Command not found.')
+            return_error("Command not found.")
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {e}')
+        return_error(f"Failed to execute {command} command. Error: {e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

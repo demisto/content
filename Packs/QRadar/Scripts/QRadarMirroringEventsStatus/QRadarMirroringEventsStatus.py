@@ -6,7 +6,6 @@ HTML_TEMPLATE = (
     "<div style='color:#404142; text-align:center; font-size:17px;'>"
     "{status}"
     "</div>"
-
     "<div class='editable-field-wrapper' style='text-align:center;'>"
     "{message}"
     "</div>"
@@ -36,32 +35,28 @@ HTML_TEMPLATE = (
 def main():
     try:
         incident = demisto.incident()
-        custom_fields = incident.get('CustomFields', {})
-        last_mirror_in_time = custom_fields.get('lastmirroredtimestamp', None)
-        message = custom_fields.get('incomingmirrorerror', '')
+        custom_fields = incident.get("CustomFields", {})
+        last_mirror_in_time = custom_fields.get("lastmirroredtimestamp", None)
+        message = custom_fields.get("incomingmirrorerror", "")
 
-        if message == '':
-            status = 'Not Started'
-        elif message == 'Fetching events has reached events limit in this incident.':
-            status = 'Completed and Stopped'
-        elif message == 'All available events in the offense were fetched.':
-            status = 'Completed'
-        elif message == 'In queue.':
-            status = 'In Progress'
+        if message == "":
+            status = "Not Started"
+        elif message == "Fetching events has reached events limit in this incident.":
+            status = "Completed and Stopped"
+        elif message == "All available events in the offense were fetched.":
+            status = "Completed"
+        elif message == "In queue.":
+            status = "In Progress"
         else:
-            status = 'Failure'
+            status = "Failure"
 
         html = HTML_TEMPLATE.format(status=status, message=message, last_mirror_in_time=last_mirror_in_time)
 
-        return {
-            'ContentsFormat': 'html',
-            'Type': entryTypes['note'],
-            'Contents': html
-        }
+        return {"ContentsFormat": "html", "Type": entryTypes["note"], "Contents": html}
 
     except Exception as exp:
-        return_error('could not parse QRadar offense', error=exp)
+        return_error("could not parse QRadar offense", error=exp)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     return_results(main())

@@ -1,7 +1,17 @@
 from CommonServerPython import *
 
-POPULATE_INDICATOR_FIELDS = ["value", "indicator_type", "applications", "user", "firstSeen",
-                             "expiration", "lastSeen", "score", "title", "description"]
+POPULATE_INDICATOR_FIELDS = [
+    "value",
+    "indicator_type",
+    "applications",
+    "user",
+    "firstSeen",
+    "expiration",
+    "lastSeen",
+    "score",
+    "title",
+    "description",
+]
 
 INDICATOR_FIELDS_TO_MS_DEFENDER_IOC = {
     "value": "indicatorValue",
@@ -37,17 +47,17 @@ DBOT_SCORE_TO_MS_DEFENDER_SEVERITY = {
 
 
 def convert_unique_fields(ioc, action):
-    ioc['Severity'] = DBOT_SCORE_TO_MS_DEFENDER_SEVERITY[ioc.get('Severity')]  # XSOAR indicators always have score
-    if ioc.get('indicatorType'):
-        indicator_type = ioc.get('indicatorType')
-        indicator_value = ioc.get('indicatorValue', "")
-        if indicator_type == 'File':
+    ioc["Severity"] = DBOT_SCORE_TO_MS_DEFENDER_SEVERITY[ioc.get("Severity")]  # XSOAR indicators always have score
+    if ioc.get("indicatorType"):
+        indicator_type = ioc.get("indicatorType")
+        indicator_value = ioc.get("indicatorValue", "")
+        if indicator_type == "File":
             hash_type = get_hash_type(indicator_value)
-            if hash_type == 'md5':
+            if hash_type == "md5":
                 ioc["indicatorType"] = "FileMd5"
-            elif hash_type == 'sha1':
+            elif hash_type == "sha1":
                 ioc["indicatorType"] = "FileSha1"
-            if hash_type == 'sha256':
+            if hash_type == "sha256":
                 ioc["indicatorType"] = "FileSha256"
         elif indicator_type == "IP":
             ioc["indicatorType"] = "IpAddress"
@@ -60,26 +70,28 @@ def convert_unique_fields(ioc, action):
     # if you want to map the action field, you can do it here.
     # Note: the action arg is mandatory with MS Defender api
     # Possible values are: "Warn", "Block", "Audit", "Alert", "AlertAndBlock", "BlockAndRemediate" and "Allowed".
-    ioc['action'] = action
+    ioc["action"] = action
     # Note: the title arg is mandatory with MS Defender api, please change it
-    if not ioc.get('title'):
-        ioc['title'] = "XSOAR Indicator title"
+    if not ioc.get("title"):
+        ioc["title"] = "XSOAR Indicator title"
     # Note: the description arg is mandatory with MS Defender api, please change it
-    if not ioc.get('description'):
-        ioc['description'] = "XSOAR Indicator description"
+    if not ioc.get("description"):
+        ioc["description"] = "XSOAR Indicator description"
     return ioc
 
 
 def get_indicators_by_query():
-    action = demisto.args().pop('action')
-    demisto.args().update({'populateFields': POPULATE_INDICATOR_FIELDS})
-    indicators = execute_command('GetIndicatorsByQuery', args=demisto.args())
+    action = demisto.args().pop("action")
+    demisto.args().update({"populateFields": POPULATE_INDICATOR_FIELDS})
+    indicators = execute_command("GetIndicatorsByQuery", args=demisto.args())
     ms_defender_iocs = []
     if indicators:
         for indicator in indicators:
             # convert XSOAR indicator to MS Defender IOC
-            ms_defender_ioc = {INDICATOR_FIELDS_TO_MS_DEFENDER_IOC[indicator_field]: indicator_value for
-                               (indicator_field, indicator_value) in indicator.items()}
+            ms_defender_ioc = {
+                INDICATOR_FIELDS_TO_MS_DEFENDER_IOC[indicator_field]: indicator_value
+                for (indicator_field, indicator_value) in indicator.items()
+            }
             ms_defender_ioc = convert_unique_fields(ms_defender_ioc, action)
             ms_defender_iocs.append(ms_defender_ioc)
     return ms_defender_iocs
@@ -88,24 +100,29 @@ def get_indicators_by_query():
 def main():
     try:
         ms_defender_iocs = get_indicators_by_query()
-        human_readable = tableToMarkdown('TransformIndicatorToMSDefenderIOC is done:',
-                                         ms_defender_iocs, removeNull=True,
-                                         headers=list(INDICATOR_FIELDS_TO_MS_DEFENDER_IOC.values()))
+        human_readable = tableToMarkdown(
+            "TransformIndicatorToMSDefenderIOC is done:",
+            ms_defender_iocs,
+            removeNull=True,
+            headers=list(INDICATOR_FIELDS_TO_MS_DEFENDER_IOC.values()),
+        )
         context = {
-            'TransformIndicatorToMSDefenderIOC.JsonOutput': json.dumps(ms_defender_iocs),
-            'TransformIndicatorToMSDefenderIOC.Indicators': ms_defender_iocs,
+            "TransformIndicatorToMSDefenderIOC.JsonOutput": json.dumps(ms_defender_iocs),
+            "TransformIndicatorToMSDefenderIOC.Indicators": ms_defender_iocs,
         }
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': ms_defender_iocs,
-            'EntryContext': context,
-            'HumanReadable': human_readable,
-        })
+        demisto.results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["text"],
+                "Contents": ms_defender_iocs,
+                "EntryContext": context,
+                "HumanReadable": human_readable,
+            }
+        )
 
     except Exception as ex:
-        return_error(f'Failed to execute TransformIndicatorToMSDefenderIOC. Error: {str(ex)}')
+        return_error(f"Failed to execute TransformIndicatorToMSDefenderIOC. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

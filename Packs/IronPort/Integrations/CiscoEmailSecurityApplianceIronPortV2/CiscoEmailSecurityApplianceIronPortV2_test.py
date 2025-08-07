@@ -1,8 +1,9 @@
 import json
 import os
 from typing import Any
-import pytest
 from unittest.mock import patch
+
+import pytest
 from freezegun import freeze_time
 
 """MOCK PARAMETERS"""
@@ -24,9 +25,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(
-        os.path.join("test_data/outputs", file_name), encoding="utf-8"
-    ) as mock_file:
+    with open(os.path.join("test_data/outputs", file_name), encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -326,9 +325,7 @@ def test_list_entry_get_command(
         )
     ],
 )
-def test_list_entry_add_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_add_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry add.
     Given:
@@ -365,9 +362,7 @@ def test_list_entry_add_command(
         )
     ],
 )
-def test_list_entry_append_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_append_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry append.
     Given:
@@ -404,9 +399,7 @@ def test_list_entry_append_command(
         )
     ],
 )
-def test_list_entry_edit_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_edit_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry edit.
     Given:
@@ -442,9 +435,7 @@ def test_list_entry_edit_command(
         )
     ],
 )
-def test_list_entry_delete_command(
-    command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client
-):
+def test_list_entry_delete_command(command_arguments: dict[str, Any], expected_message: str, requests_mock, mock_client):
     """
     Scenario: List entry delete.
     Given:
@@ -800,9 +791,7 @@ def test_message_report_get_command(
         )
     ],
 )
-def test_format_number_list_argument(
-    number_list_argument: str, expected_result: list[int]
-):
+def test_format_number_list_argument(number_list_argument: str, expected_result: list[int]):
     """
     Scenario: Format number list argument.
     Given:
@@ -828,9 +817,7 @@ def test_format_number_list_argument(
         )
     ],
 )
-def test_format_custom_query_args(
-    custom_query_argument: str, expected_result: dict[str, Any]
-):
+def test_format_custom_query_args(custom_query_argument: str, expected_result: dict[str, Any]):
     """
     Scenario: Format custom query arguments for tracking message advanced filters.
     Given:
@@ -907,23 +894,15 @@ data_test_fetch_incidents = [
 ]
 
 
-@pytest.mark.parametrize(
-    "previous_run, fetch_size, expected_last_run", data_test_fetch_incidents
-)
+@pytest.mark.parametrize("previous_run, fetch_size, expected_last_run", data_test_fetch_incidents)
 @freeze_time("2023-06-29T00:00:00Z")
-def test_fetch_incidents(
-    mock_client, mocker, previous_run, fetch_size, expected_last_run
-):
+def test_fetch_incidents(mock_client, mocker, previous_run, fetch_size, expected_last_run):
     from CiscoEmailSecurityApplianceIronPortV2 import fetch_incidents
 
     mocker.patch.object(
         mock_client,
         "spam_quarantine_message_search_request",
-        return_value={
-            "data": [
-                {"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)
-            ]
-        },
+        return_value={"data": [{"attributes": {"date": "now"}, "mid": i + 1} for i in range(fetch_size)]},
     )
     incidents = [{"mid": i + 1} for i in range(fetch_size)]
     mocker.patch.object(
@@ -970,10 +949,11 @@ def test_convert_words_to_list():
     from CiscoEmailSecurityApplianceIronPortV2 import (
         convert_words_to_list,
     )
-    assert convert_words_to_list("['test']") == [['test']]
-    assert convert_words_to_list("['test1'],['test2']") == [['test1'], ['test2']]
-    assert convert_words_to_list("['test1',5],['test2',7]") == [['test1', 5], ['test2', 7]]
-    assert convert_words_to_list("['test1',5,'prefix'],['test2',7]") == [['test1', 5, 'prefix'], ['test2', 7]]
+
+    assert convert_words_to_list("['test']") == [["test"]]
+    assert convert_words_to_list("['test1'],['test2']") == [["test1"], ["test2"]]
+    assert convert_words_to_list("['test1',5],['test2',7]") == [["test1", 5], ["test2", 7]]
+    assert convert_words_to_list("['test1',5,'prefix'],['test2',7]") == [["test1", 5, "prefix"], ["test2", 7]]
 
 
 def test_dictionary_list_command(mocker, mock_client):
@@ -988,6 +968,7 @@ def test_dictionary_list_command(mocker, mock_client):
     from CiscoEmailSecurityApplianceIronPortV2 import (
         dictionary_list_command,
     )
+
     mock_response = {
         "data": [
             {
@@ -1003,10 +984,7 @@ def test_dictionary_list_command(mocker, mock_client):
             }
         ]
     }
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_list_request",
-        return_value=mock_response
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_list_request", return_value=mock_response)
 
     args = {"dictionary_name": "example_dictionary"}
     result = dictionary_list_command(mock_client, args)
@@ -1039,10 +1017,7 @@ def test_dictionary_add_command(mocker, mock_client):
         dictionary_add_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_add_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_add_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict", "words": "[['word1'],['word2']]"}
     result = dictionary_add_command(mock_client, args)
@@ -1063,10 +1038,7 @@ def test_dictionary_edit_command(mocker, mock_client):
         dictionary_edit_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_edit_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_edit_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict", "updated_name": "NewTestDict", "words": "[['word1'],['word2']]"}
     result = dictionary_edit_command(mock_client, args)
@@ -1087,10 +1059,7 @@ def test_dictionary_delete_command(mocker, mock_client):
         dictionary_delete_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_delete_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_delete_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict"}
     result = dictionary_delete_command(mock_client, args)
@@ -1110,10 +1079,7 @@ def test_dictionary_words_add_command(mocker, mock_client):
         dictionary_words_add_command,
     )
 
-    mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_add_request",
-        return_value={"status": "success"}
-    )
+    mocker.patch("CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_add_request", return_value={"status": "success"})
 
     args = {"dictionary_name": "TestDict", "words": "['word1', 'word2']"}
     result = dictionary_words_add_command(mock_client, args)
@@ -1135,11 +1101,321 @@ def test_dictionary_words_delete_command(mocker, mock_client):
     )
 
     mocker.patch(
-        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_delete_request",
-        return_value={"status": "success"}
+        "CiscoEmailSecurityApplianceIronPortV2.Client.dictionary_words_delete_request", return_value={"status": "success"}
     )
 
     args = {"dictionary_name": "TestDict", "words": "['word1', 'word2']"}
     result = dictionary_words_delete_command(mock_client, args)
 
     assert "Words deleted successfully from TestDict." in result.readable_output
+
+
+def test_dictionary_words_update_command(mock_client, requests_mock):
+    """
+    Scenario: Retrieve all URL lists.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import dictionary_words_update_command
+
+    args = {"dictionary_name": "TestDict", "words": "['*credit',6,'prefix'],['test2']"}
+    url = f"{BASE_URL}/config/dictionaries/TestDict/words?device_type=esa&mode=cluster"
+
+    mock_response = load_mock_response("updated_successfully.json")
+
+    requests_mock.put(url=url, json=mock_response)
+
+    result = dictionary_words_update_command(mock_client, args)
+    assert "Added successfully to TestDict." in result.readable_output
+
+
+def test_url_list_all_command(mock_client, requests_mock):
+    """
+    Scenario: Retrieve all URL lists.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import url_list_command
+
+    args = {"mode": "cluster", "limit": "50", "all_results": False}
+    url = f"{BASE_URL}/config/url_lists"
+
+    mock_response = load_mock_response("url_list.json")
+    requests_mock.get(url=url, json=mock_response)
+
+    result = url_list_command(mock_client, args)
+
+    assert result.outputs_prefix == "CiscoESA.URLList"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 3
+    assert result.outputs[0]["name"] == "urllisttest"
+
+
+def test_url_list_single_command(mock_client, requests_mock):
+    """
+    Scenario: Retrieve a specific URL list by name.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import url_list_command
+
+    args = {"mode": "cluster", "url_list_name": "BlockUrls"}
+    url = f"{BASE_URL}/config/url_lists/BlockUrls"
+
+    mock_response = load_mock_response("url_list_single.json")
+    requests_mock.get(url=url, json=mock_response)
+
+    result = url_list_command(mock_client, args)
+
+    assert result.outputs_prefix == "CiscoESA.URLList"
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["name"] == "urllisttest_single"
+
+
+def test_url_list_create_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import url_list_create_command
+
+    args = {"url_list_name": "TestList", "urls": "http://malicious.com,https://evil.com"}
+    url = f"{BASE_URL}/config/url_lists/TestList"
+    requests_mock.post(
+        url=url,
+        json=load_mock_response("added_successfully.json"),
+    )
+
+    result = url_list_create_command(mock_client, args)
+    assert "TestList" in result.readable_output
+
+
+def test_url_list_update_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import url_list_update_command
+
+    args = {"url_list_name": "TestList", "urls": "https://update.com"}
+    url = f"{BASE_URL}/config/url_lists/TestList"
+    requests_mock.put(url=url, json=load_mock_response("updated_successfully.json"))
+
+    result = url_list_update_command(mock_client, args)
+    assert "TestList" in result.readable_output
+
+
+def test_url_list_delete_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import url_list_delete_command
+
+    args = {"url_list_names": "TestList1,TestList2"}
+    url = f"{BASE_URL}/config/url_lists"
+    requests_mock.delete(url=url, json={"data": {"message": "Deleted Successfully"}})
+
+    result = url_list_delete_command(mock_client, args)
+    assert "TestList1" in result.readable_output
+    assert "TestList2" in result.readable_output
+
+
+def test_file_hash_list_all_command(mock_client, requests_mock):
+    """
+    Scenario: Retrieve all File Hash lists.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import file_hash_list_command
+
+    args = {"mode": "cluster"}
+    url = f"{BASE_URL}/config/file_hash_lists"
+    mock_response = load_mock_response("file_hash_list.json")
+    requests_mock.get(url=url, json=mock_response)
+
+    result = file_hash_list_command(mock_client, args)
+
+    assert result.outputs_prefix == "CiscoESA.FileHashList"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["name"] == "test"
+
+
+def test_file_hash_list_single_command(mock_client, requests_mock):
+    """
+    Scenario: Retrieve a specific File Hash list by name.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import file_hash_list_command
+
+    args = {"mode": "cluster", "file_hash_list_name": "MyList"}
+    url = f"{BASE_URL}/config/file_hash_lists/MyList"
+    mock_response = load_mock_response("file_hash_list_single.json")
+    requests_mock.get(url=url, json=mock_response)
+
+    result = file_hash_list_command(mock_client, args)
+
+    assert result.outputs_prefix == "CiscoESA.FileHashList"
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["name"] == "test"
+
+
+def test_file_hash_create_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import file_hash_create_command
+
+    args = {
+        "file_hash_list_name": "MalwareHashes",
+        "filehashes": "abcd1234,abcd5678",
+        "description": "Test hash list",
+        "list_type": "sha256",
+    }
+
+    url = f"{BASE_URL}/config/file_hash_lists/MalwareHashes"
+    requests_mock.post(url=url, json=load_mock_response("added_successfully.json"))
+
+    result = file_hash_create_command(mock_client, args)
+    assert "MalwareHashes" in result.readable_output
+
+
+def test_file_hash_update_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import file_hash_update_command
+
+    args = {"file_hash_list_name": "MalwareHashes", "filehashes": "updated1234"}
+
+    url = f"{BASE_URL}/config/file_hash_lists/MalwareHashes"
+    requests_mock.put(url=url, json=load_mock_response("updated_successfully.json"))
+
+    result = file_hash_update_command(mock_client, args)
+    assert "MalwareHashes" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "response_file_name, args, expected_rule_id",
+    [
+        ("pvo_quarantine_list.json", {"type": "pvo"}, "Malware: Malware"),
+    ],
+)
+def test_pvo_quarantine_list_command(response_file_name, args, expected_rule_id, mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import pvo_quarantine_list_command
+
+    url = f"{BASE_URL}/quarantine/rules"
+    mock_response = load_mock_response(response_file_name)
+    requests_mock.get(url=url, json=mock_response)
+
+    result = pvo_quarantine_list_command(mock_client, args)
+    assert result.outputs_prefix == "CiscoESA.QuarantineRule"
+    assert any(entry["rule_id"] == expected_rule_id for entry in result.outputs)
+
+
+def test_pvo_quarantine_release_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import pvo_quarantine_release_command
+
+    args = {"rule_ids": "pvo_123", "quarantine_type": "pvo"}
+    url = f"{BASE_URL}/quarantine/rules"
+    requests_mock.post(url=url, json={})
+
+    result = pvo_quarantine_release_command(mock_client, args)
+    assert "pvo_123" in result.readable_output
+
+
+def test_pvo_quarantine_delete_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import pvo_quarantine_delete_command
+
+    args = {"rule_ids": "pvo_123", "quarantine_type": "pvo"}
+    url = f"{BASE_URL}/quarantine/rules"
+    requests_mock.delete(url=url, json={})
+
+    result = pvo_quarantine_delete_command(mock_client, args)
+    assert "pvo_123" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "response_file_name, args, expected_sender",
+    [
+        (
+            "user_entry_list.json",
+            {"mode": "cluster", "policy_name": "Inbound Policy"},
+            "yyo@[1.11.11.1]",
+        )
+    ],
+)
+def test_user_entry_list_command(response_file_name, args, expected_sender, mock_client, requests_mock):
+    """
+    Scenario: Retrieve user entry list for a given mail policy.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import user_entry_list_command
+
+    url = f"{BASE_URL}/config/incoming_mail_policies/{args['policy_name']}/senders_and_recipients"
+    mock_response = load_mock_response(response_file_name)
+    requests_mock.get(url=url, json=mock_response)
+
+    result = user_entry_list_command(mock_client, args)
+    assert result.outputs_prefix == "CiscoESA.IncomingMailPolicyUser"
+
+    # Look through sender domain entries explicitly
+    found = any(
+        expected_sender in entry.get("sender_config", {}).get("sender", {}).get("domain_entries", []) for entry in result.outputs
+    )
+
+    assert found, f"Expected sender {expected_sender} not found in outputs"
+
+
+def test_user_entry_add_command(mock_client, requests_mock):
+    """
+    Scenario: Add sender/receiver entries to a mail policy.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import user_entry_add_command
+
+    args = {
+        "mode": "cluster",
+        "policy_name": "Inbound Policy",
+        "sender_domain_entries": "user@example.com",
+        "receiver_operation": "and",
+        "receiver_domain_entries": "target@example.com",
+    }
+
+    url = f"{BASE_URL}/config/incoming_mail_policies/{args['policy_name']}/senders_and_recipients"
+    requests_mock.post(url=url, json=load_mock_response("added_successfully.json"))
+
+    result = user_entry_add_command(mock_client, args)
+    assert "Inbound Policy" in result.readable_output
+
+
+def test_user_entry_update_command(mock_client, requests_mock):
+    """
+    Scenario: Update sender/receiver entries in a mail policy.
+    """
+    from CiscoEmailSecurityApplianceIronPortV2 import user_entry_update_command
+
+    args = {
+        "mode": "cluster",
+        "policy_name": "Inbound Policy",
+        "sender_domain_entries": "updated@example.com",
+        "receiver_operation": "or",
+        "receiver_domain_entries": "any@example.com",
+    }
+
+    url = f"{BASE_URL}/config/incoming_mail_policies/{args['policy_name']}/senders_and_recipients"
+
+    requests_mock.get(url=url, json=load_mock_response("user_entry_list.json"))
+    requests_mock.put(url=url, json=load_mock_response("updated_successfully.json"))
+
+    result = user_entry_update_command(mock_client, args)
+    assert "Inbound Policy" in result.readable_output
+
+
+def test_message_connection_details_get_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import message_connection_details_get_command
+
+    args = {
+        "serial_number": "TEST_SERIAL",
+        "message_ids": "123,456",
+        "injection_connection_id": "789",
+    }
+
+    url = f"{BASE_URL}/message-tracking/connection-details"
+    mock_response = load_mock_response("message_connection_details_get.json")
+    requests_mock.get(url, json=mock_response)
+
+    result = message_connection_details_get_command(mock_client, args)
+
+    assert result.outputs_prefix == "CiscoESA.MessageConnection"
+    assert isinstance(result.outputs, dict)
+    assert "Message" in result.outputs
+
+
+def test_message_remediation_details_get_command(mock_client, requests_mock):
+    from CiscoEmailSecurityApplianceIronPortV2 import message_remediation_details_get_command
+
+    args = {"serial_number": "TEST_SERIAL", "message_ids": "999", "injection_connection_id": "555"}
+
+    url = f"{BASE_URL}/message-tracking/remediation-details"
+    mock_response = load_mock_response("message_remediation_details_get.json")
+    requests_mock.get(url, json=mock_response)
+
+    result = message_remediation_details_get_command(mock_client, args)
+
+    assert result.outputs_prefix == "CiscoESA.MessageRemediation"
+    assert isinstance(result.outputs, dict)
+    assert "batch_details" in result.outputs
+    assert "message_details" in result.outputs

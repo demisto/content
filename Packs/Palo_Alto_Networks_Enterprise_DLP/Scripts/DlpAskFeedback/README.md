@@ -1,6 +1,7 @@
 Sends a message via Slack to the user whose file upload violated DLP policies and triggered the incident.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,16 +10,21 @@ Sends a message via Slack to the user whose file upload violated DLP policies an
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * send-notification
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * DLP Incident Feedback Loop
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -35,5 +41,6 @@ This script is used in the following playbooks and scripts.
 | question_type | Whether to ask the user about the file content or about exemption. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

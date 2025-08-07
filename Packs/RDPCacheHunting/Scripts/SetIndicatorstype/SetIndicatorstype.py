@@ -14,33 +14,21 @@ def parse_data(list_content):
     for list_element in top_lists:
         random_number = random.randint(0, 16777215)
         hex_number = str(hex(random_number))  # convert to hexadecimal
-        color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
+        color = f"#{hex_number[2:].zfill(6)}"  # remove 0x and prepend '#'
         list_widget_data = {
-            "data": [
-                list_element[1]
-            ],
+            "data": [list_element[1]],
             "groups": None,
             "name": str(list_element[0]),
             "label": str(list_element[0]),
-            "color": color
+            "color": color,
         }
         lists_data.append(list_widget_data)
 
-    return {
-        "Type": 17,
-        "ContentsFormat": "pie",
-        "Contents": {
-            "stats":
-                lists_data,
-            "params": {
-                "layout": "horizontal"
-            }
-        }
-    }
+    return {"Type": 17, "ContentsFormat": "pie", "Contents": {"stats": lists_data, "params": {"layout": "horizontal"}}}
 
 
 def main():
-    data = demisto.context().get('ExtractedIndicators')
+    data = demisto.context().get("ExtractedIndicators")
     data = argToList(data)
     if data:
         list_content = []
@@ -57,20 +45,10 @@ def main():
             "ContentsFormat": "bar",
             "Contents": {
                 "stats": [
-                    {
-                        "data": [
-                            0
-                        ],
-                        "groups": None,
-                        "name": "N/A",
-                        "label": "N/A",
-                        "color": "rgb(255, 23, 68)"
-                    },
+                    {"data": [0], "groups": None, "name": "N/A", "label": "N/A", "color": "rgb(255, 23, 68)"},
                 ],
-                "params": {
-                    "layout": "horizontal"
-                }
-            }
+                "params": {"layout": "horizontal"},
+            },
         }
 
     return_results(data)

@@ -1,14 +1,14 @@
-from PCComputeImageComplianceIssuesButton import (
-    run_prisma_cloud_compute_images_scan_list,
-    filter_compliance_issues,
-    process_and_output_compliance_issues,
-    main,
-)
-import pytest
 import json
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
+import demistomock as demisto  # noqa: F401
+import pytest
+from CommonServerPython import *  # noqa: F401
+from PCComputeImageComplianceIssuesButton import (
+    filter_compliance_issues,
+    main,
+    process_and_output_compliance_issues,
+    run_prisma_cloud_compute_images_scan_list,
+)
 
 # Import the script you want to test
 
@@ -45,7 +45,7 @@ PROCESSED_TEST_CASES = [
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
                 "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
-                               "some applications.",
+                "some applications.",
             }
         ],
     ),
@@ -65,7 +65,7 @@ PROCESSED_TEST_CASES = [
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
                 "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
-                               "some "
+                "some "
                 "applications.",
             },
             {
@@ -96,7 +96,7 @@ PROCESSED_TEST_CASES = [
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
                 "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
-                               "some applications.",
+                "some applications.",
             },
             {
                 "ComplianceID": "6116",
@@ -183,9 +183,7 @@ def test_filter_compliance_issues(args, expected):
     Then:
         Assert the returned output matches the filtered results, based on the "FILTERED_TEST_CASES" object.
     """
-    filtered_results = filter_compliance_issues(
-        args.get("compliance_issues"), args.get("compliance_ids")
-    )
+    filtered_results = filter_compliance_issues(args.get("compliance_issues"), args.get("compliance_ids"))
     assert filtered_results == expected
 
 
@@ -201,9 +199,7 @@ def test_process_and_output_compliance_issues(args, expected):
     Then:
         Assert the returned output matches the processed results, based on the "PROCESSED_TEST_CASES" object.
     """
-    processed_results = process_and_output_compliance_issues(
-        args.get("compliance_issues"), args.get("image_id")
-    )
+    processed_results = process_and_output_compliance_issues(args.get("compliance_issues"), args.get("image_id"))
     assert processed_results.outputs["compliance_issues"] == expected
 
 
@@ -226,7 +222,4 @@ def test_main_function_with_error(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     main()
     err_msg = return_error_mock.call_args_list[0][0][0]
-    assert (
-        "Invalid image_id. It should be in the format 'sha256:{64 characters}'."
-        in err_msg
-    )
+    assert "Invalid image_id. It should be in the format 'sha256:{64 characters}'." in err_msg

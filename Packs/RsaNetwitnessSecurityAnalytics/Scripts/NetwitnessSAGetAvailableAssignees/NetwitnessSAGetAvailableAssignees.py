@@ -22,9 +22,9 @@ def main():  # pragma: no cover
     try:
         netwitness_im_get_available_assignees()
     except Exception as e:
-        err_msg = f'Encountered an error while running the script: [{e}]'
+        err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

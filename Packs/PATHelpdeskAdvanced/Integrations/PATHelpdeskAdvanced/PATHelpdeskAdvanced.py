@@ -1,22 +1,20 @@
 import contextlib
+from collections.abc import Callable, Iterable
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Literal, NamedTuple
-from collections.abc import Iterable, Callable
-import more_itertools
-from requests import Response
-
 
 import demistomock as demisto
+import more_itertools
 from CommonServerPython import *  # noqa: F401
+from requests import Response
+
 from CommonServerUserPython import *  # noqa
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "HelpdeskAdvanced"
 OPERATORS = ("eq", "gt", "lt", "ge", "le", "sw", "nw", "ne")
-FILTER_CONDITION_REGEX = re.compile(
-    rf"\A\"(?P<key>.*?)\" (?P<op>{'|'.join(OPERATORS)}) (?P<value>(?:\".*?\"|null))\Z"
-)
+FILTER_CONDITION_REGEX = re.compile(rf"\A\"(?P<key>.*?)\" (?P<op>{'|'.join(OPERATORS)}) (?P<value>(?:\".*?\"|null))\Z")
 PAT_DATE_FORMAT_REGEX = re.compile(r"/Date\((\d+)\)/")
 HTML_H_TAG_REGEX = re.compile(r"<h\d>(.*?)<\/h\d>", flags=re.S)
 
@@ -121,8 +119,7 @@ class Filter(NamedTuple):
     def _parse(string: str) -> "Filter":
         if not (match := FILTER_CONDITION_REGEX.match(string)):
             raise DemistoException(
-                f"Cannot parse {string}. "
-                'Expected a phrase of the form ["key" operator "value"] or ["key" operator null]'
+                f'Cannot parse {string}. Expected a phrase of the form ["key" operator "value"] or ["key" operator null]'
             )
         return Filter(
             key=match["key"],
@@ -132,9 +129,7 @@ class Filter(NamedTuple):
 
     @staticmethod
     def parse_list(strings: Iterable[str] | str) -> List["Filter"]:
-        return [
-            Filter._parse(string) for string in more_itertools.always_iterable(strings)
-        ]
+        return [Filter._parse(string) for string in more_itertools.always_iterable(strings)]
 
     @property
     def dict(self):
@@ -151,12 +146,7 @@ class Filter(NamedTuple):
         Returns:
             str: The JSON string representation of the filters, as list.
         """
-        return json.dumps(
-            [
-                filter.dict
-                for filter in more_itertools.always_iterable(filters, base_type=Filter)
-            ]
-        )
+        return json.dumps([filter.dict for filter in more_itertools.always_iterable(filters, base_type=Filter)])
 
 
 def safe_arg_to_number(argument: str | None, argument_name: str) -> int:
@@ -172,14 +162,14 @@ def create_params_dict(
     optional_fields: tuple[Field, ...] = (),
     **kwargs,
 ) -> dict[str, Any]:
-    return {field.hda_name: kwargs[field.demisto_name] for field in required_fields} | {
-        field.hda_name: kwargs[field.demisto_name]
-        for field in optional_fields
-        if field.demisto_name in kwargs
-    } | {
-        # an exception to the rule
-        PROBLEM_HTML.hda_name: kwargs["problem"],
-    }
+    return (
+        {field.hda_name: kwargs[field.demisto_name] for field in required_fields}
+        | {field.hda_name: kwargs[field.demisto_name] for field in optional_fields if field.demisto_name in kwargs}
+        | {
+            # an exception to the rule
+            PROBLEM_HTML.hda_name: kwargs["problem"],
+        }
+    )
 
 
 class RequestNotSuccessfulError(DemistoException):
@@ -188,14 +178,8 @@ class RequestNotSuccessfulError(DemistoException):
         with contextlib.suppress(JSONDecodeError):
             json_response = response.json()
 
-        suffix = (
-            f": {description}."
-            if (description := json_response.get("result", {}).get("desc"))
-            else "."
-        )
-        super().__init__(
-            f"{attempted_action.capitalize()} failed{suffix}", res=response
-        )
+        suffix = f": {description}." if (description := json_response.get("result", {}).get("desc")) else "."
+        super().__init__(f"{attempted_action.capitalize()} failed{suffix}", res=response)
 
 
 def map_id_to_description(response: dict) -> dict[str, str]:
@@ -204,11 +188,7 @@ def map_id_to_description(response: dict) -> dict[str, str]:
 
 def convert_response_dates(response: dict) -> dict:
     def convert_value(value: str) -> str | datetime:
-        if (
-            isinstance(value, str)
-            and value
-            and (match := PAT_DATE_FORMAT_REGEX.match(value))
-        ):
+        if isinstance(value, str) and value and (match := PAT_DATE_FORMAT_REGEX.match(value)):
             return datetime.fromtimestamp(
                 int(match[1][:-3]),  # :-3 omits miliseconds
                 tz=timezone.utc,
@@ -267,9 +247,7 @@ class Client(BaseClient):
         )
         try:
             response_body = json.loads(response.text)
-            if (require_success_true or ("success" in response_body)) and (
-                response_body["success"] is not True
-            ):
+            if (require_success_true or ("success" in response_body)) and (response_body["success"] is not True):
                 # Some endpoints only contain the `success` key on failure ¯\_(ツ)_/¯
                 raise RequestNotSuccessfulError(response, attempted_action)
             return response_body
@@ -318,9 +296,7 @@ class Client(BaseClient):
         # Check integration context
         integration_context = demisto.getIntegrationContext()
         previous_refresh_token = integration_context.get("refresh_token")
-        raw_previous_expiry_utc: str | None = integration_context.get(
-            "token_expiry_utc"
-        )
+        raw_previous_expiry_utc: str | None = integration_context.get("token_expiry_utc")
 
         # Do we need to log in again, or can we just refresh?
         if (
@@ -329,21 +305,15 @@ class Client(BaseClient):
             and token_expiry_utc > (datetime.utcnow() + timedelta(seconds=5))
         ):
             try:
-                demisto.debug(
-                    "refresh token is valid, using it to generate a request token"
-                )
+                demisto.debug("refresh token is valid, using it to generate a request token")
                 return generate_using_refresh_token(previous_refresh_token)
 
             except RequestNotSuccessfulError:
-                demisto.debug(
-                    "failed using refresh token, getting a new one using username and password"
-                )
+                demisto.debug("failed using refresh token, getting a new one using username and password")
                 return generate_new_refresh_token()
 
         else:
-            demisto.debug(
-                "refresh token expired or missing, logging in with username and password. {token.expiry_utc=}"
-            )
+            demisto.debug("refresh token expired or missing, logging in with username and password. {token.expiry_utc=}")
             return generate_new_refresh_token()
 
     def create_ticket(self, **kwargs) -> dict:
@@ -433,16 +403,12 @@ class Client(BaseClient):
             "limit": safe_arg_to_number(kwargs["limit"], "limit"),
         }
 
-        if (raw_filter := kwargs.get("filter")) and (
-            custom_filter := Filter.parse_list(raw_filter)
-        ):
+        if (raw_filter := kwargs.get("filter")) and (custom_filter := Filter.parse_list(raw_filter)):
             params["filter"] = Filter.dumps_list(custom_filter)
 
         if ticket_id := kwargs.get(TICKET_ID.demisto_name):
             if raw_filter:
-                raise DemistoException(
-                    "The ticket_id and filter arguments cannot be used at the same time."
-                )
+                raise DemistoException("The ticket_id and filter arguments cannot be used at the same time.")
             # if only ticket_id is passed, use it to filter
             params["filter"] = Filter.dumps_list(Filter(ID.hda_name, "eq", ticket_id))
 
@@ -505,9 +471,7 @@ class Client(BaseClient):
                     {
                         TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
                         TEXT_HTML.hda_name: kwargs["comment"],
-                        SITE_VISIBLE.hda_name: argToBoolean(
-                            kwargs[SITE_VISIBLE.demisto_name]
-                        ),
+                        SITE_VISIBLE.hda_name: argToBoolean(kwargs[SITE_VISIBLE.demisto_name]),
                         OBJECT_TYPE_ID.hda_name: "90",  # hardcoded by design. 90 marks ObjectTypeIDField
                     }
                 ),
@@ -542,14 +506,10 @@ class Client(BaseClient):
         ticket_id: str,
         note: str | None = None,
     ) -> dict:
-        allowed_id_values = tuple(
-            item[ID.hda_name] for item in self.list_ticket_statuses(limit=None)["data"]
-        )
+        allowed_id_values = tuple(item[ID.hda_name] for item in self.list_ticket_statuses(limit=None)["data"])
 
         if status_id not in allowed_id_values:
-            raise DemistoException(
-                f"Invalid {status_id=}. Possible values are {','.join(sorted(allowed_id_values))}"
-            )
+            raise DemistoException(f"Invalid {status_id=}. Possible values are {','.join(sorted(allowed_id_values))}")
 
         params = {
             "ticketID": ticket_id,
@@ -625,9 +585,7 @@ class Client(BaseClient):
         }
 
         if user_ids := argToList(kwargs.get("user_id")):
-            params["filter"] = Filter.dumps_list(
-                tuple(Filter(ID.hda_name, "eq", id_) for id_ in user_ids)
-            )
+            params["filter"] = Filter.dumps_list(tuple(Filter(ID.hda_name, "eq", id_) for id_ in user_ids))
 
         return self.http_request(
             url_suffix="WSC/Projection",
@@ -698,14 +656,9 @@ def pat_table_to_markdown(
     **kwargs,
 ) -> str:
     def replace_fields(item: Any):
-        string_key_replacements = {
-            k.hda_name: v.hda_name for k, v in (field_replacements or {}).items()
-        }
+        string_key_replacements = {k.hda_name: v.hda_name for k, v in (field_replacements or {}).items()}
         if isinstance(item, dict):
-            return {
-                string_key_replacements.get(key, key): value
-                for key, value in item.items()
-            }
+            return {string_key_replacements.get(key, key): value for key, value in item.items()}
         elif isinstance(item, list):
             return [replace_fields(v) for v in item]
         return item
@@ -844,9 +797,7 @@ def list_ticket_attachments_command(client: Client, args: dict) -> CommandResult
 
 
 def list_ticket_statuses_command(client: Client, args: dict) -> CommandResults:
-    response = client.list_ticket_statuses(
-        limit=safe_arg_to_number(args["limit"], "limit")
-    )
+    response = client.list_ticket_statuses(limit=safe_arg_to_number(args["limit"], "limit"))
     response = convert_response_dates(response)
 
     return CommandResults(

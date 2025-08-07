@@ -29,14 +29,13 @@ import json
 
 
 def util_load_json(path):
-    with open(path, "r") as file:
+    with open(path) as file:
         text = file.read()
         return json.loads(text)
 
 
 def test_get_latest_incident(requests_mock):
-    from ZerohackXDR import Client, get_latest_incident
-    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL
+    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL, Client, get_latest_incident
 
     # Initialising the client.
     client = Client(
@@ -48,17 +47,13 @@ def test_get_latest_incident(requests_mock):
 
     mock_response = util_load_json("test_data/get_latest_incident.json")
 
-    requests_mock.register_uri(
-        "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response
-    )
+    requests_mock.register_uri("GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response)
     incident = get_latest_incident(client, severity_level=4)
     assert isinstance(incident, dict)
 
 
 def test_fetch_incidents(requests_mock):
-    from ZerohackXDR import Client, fetch_incidents
-    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL
-    from ZerohackXDR import ZEROHACK_SEVERITIES
+    from ZerohackXDR import ZEROHACK_SEVERITIES, ZEROHACK_XDR_API_BASE_URL, Client, fetch_incidents
 
     # Initialising the client.
     client = Client(
@@ -68,7 +63,7 @@ def test_fetch_incidents(requests_mock):
         proxy=False,
     )
     min_severity = "4"
-    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
+    severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity) :]
     max_results_per_severity = 10
     mock_responses = util_load_json("test_data/fetch_incidents.json")
 
@@ -78,9 +73,7 @@ def test_fetch_incidents(requests_mock):
 
     last_run = {"last_fetch": 1662120898}
 
-    requests_mock.register_uri(
-        "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", responses_list
-    )
+    requests_mock.register_uri("GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", responses_list)
 
     next_run, incidents = fetch_incidents(
         client=client,
@@ -98,6 +91,7 @@ def test_fetch_incidents(requests_mock):
 
 def test_convert_to_demisto_severity():
     from ZerohackXDR import convert_to_demisto_severity
+
     severity_level = convert_to_demisto_severity("3.0")
     assert isinstance(severity_level, int)
     assert severity_level == 2
@@ -120,12 +114,11 @@ def test_main():
 
     output = main()
 
-    assert isinstance(output, type(None))
+    assert output is None
 
 
 def test_test_module(requests_mock):
-    from ZerohackXDR import Client, test_module
-    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL
+    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL, Client, test_module
 
     # Initialising the client.
     client = Client(
@@ -137,7 +130,5 @@ def test_test_module(requests_mock):
 
     mock_response = util_load_json("test_data/get_latest_incident.json")
 
-    requests_mock.register_uri(
-        "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response
-    )
-    assert test_module(client) == 'ok'
+    requests_mock.register_uri("GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response)
+    assert test_module(client) == "ok"

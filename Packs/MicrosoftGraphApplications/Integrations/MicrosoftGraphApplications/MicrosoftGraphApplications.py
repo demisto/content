@@ -4,37 +4,48 @@ https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph
 """
 
 import urllib3
-from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from MicrosoftApiModule import *  # noqa: E402
+
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Client Credentials': CLIENT_CREDENTIALS}
-SCOPE_BY_CONNECTION = {'Device Code': 'offline_access Application.ReadWrite.All',
-                       'Client Credentials': 'https://graph.microsoft.com/.default'}
+GRANT_BY_CONNECTION = {"Device Code": DEVICE_CODE, "Client Credentials": CLIENT_CREDENTIALS}
+SCOPE_BY_CONNECTION = {
+    "Device Code": "offline_access Application.ReadWrite.All",
+    "Client Credentials": "https://graph.microsoft.com/.default",
+}
 
 
 class Client:
-    def __init__(self, app_id: str, verify: bool, proxy: bool, connection_type: str, tenant_id: str, enc_key: str,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
-                 managed_identities_client_id: Optional[str] = None):
-        if app_id and '@' in app_id:
-            app_id, refresh_token = app_id.split('@')
+    def __init__(
+        self,
+        app_id: str,
+        verify: bool,
+        proxy: bool,
+        connection_type: str,
+        tenant_id: str,
+        enc_key: str,
+        azure_ad_endpoint: str = "https://login.microsoftonline.com",
+        managed_identities_client_id: Optional[str] = None,
+    ):
+        if app_id and "@" in app_id:
+            app_id, refresh_token = app_id.split("@")
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        token_retrieval_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Client' not in \
-                                                                                                     connection_type \
-            else None
+        token_retrieval_url = (
+            "https://login.microsoftonline.com/organizations/oauth2/v2.0/token" if "Client" not in connection_type else None
+        )
 
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
             token_retrieval_url=token_retrieval_url,
             grant_type=GRANT_BY_CONNECTION.get(connection_type),
-            base_url='https://graph.microsoft.com',
+            base_url="https://graph.microsoft.com",
             verify=verify,
             proxy=proxy,
             scope=SCOPE_BY_CONNECTION.get(connection_type),
@@ -48,10 +59,7 @@ class Client:
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
 
-    def get_service_principals(
-            self,
-            limit: int
-    ) -> list:
+    def get_service_principals(self, limit: int) -> list:
         """Get all service principals.
 
         Arguments:
@@ -63,29 +71,20 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list?view=graph-rest-1.0&tabs=http
         """
-        suffix = 'v1.0/servicePrincipals'
+        suffix = "v1.0/servicePrincipals"
         if limit > 0:
-            res = self.ms_client.http_request(
-                'GET',
-                suffix + f'?$top={limit}'
-            )
-            return res['value']
+            res = self.ms_client.http_request("GET", suffix + f"?$top={limit}")
+            return res["value"]
         else:  # unlimited, should page
             results = []
-            res = self.ms_client.http_request(
-                'GET',
-                suffix
-            )
-            results.extend(res.get('value'))
-            while next_link := res.get('@odata.nextLink'):
-                res = self.ms_client.http_request('GET', '', next_link)
-                results.extend(res.get('value'))
+            res = self.ms_client.http_request("GET", suffix)
+            results.extend(res.get("value"))
+            while next_link := res.get("@odata.nextLink"):
+                res = self.ms_client.http_request("GET", "", next_link)
+                results.extend(res.get("value"))
             return results
 
-    def get_single_service_principal(
-            self,
-            service_id: str
-    ):
+    def get_single_service_principal(self, service_id: str):
         """
 
         Arguments:
@@ -97,14 +96,10 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/serviceprincipal-get?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals{service_id}'
-        return self.ms_client.http_request(method='GET', url_suffix=suffix)
+        suffix = f"v1.0/servicePrincipals{service_id}"
+        return self.ms_client.http_request(method="GET", url_suffix=suffix)
 
-    def update_single_service_principal(
-            self,
-            service_id: str,
-            data: dict
-    ):
+    def update_single_service_principal(self, service_id: str, data: dict):
         """
 
         Arguments:
@@ -117,13 +112,10 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/serviceprincipal-update?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals{service_id}'
-        return self.ms_client.http_request(method='PATCH', url_suffix=suffix, json_data=data, return_empty_response=True)
+        suffix = f"v1.0/servicePrincipals{service_id}"
+        return self.ms_client.http_request(method="PATCH", url_suffix=suffix, json_data=data, return_empty_response=True)
 
-    def delete_service_principals(
-            self,
-            service_id: str
-    ):
+    def delete_service_principals(self, service_id: str):
         """Deletes a given id from authorized apps.
 
         Arguments:
@@ -138,13 +130,9 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-delete?view=graph-rest-1.0&tabs=http
         """
-        self.ms_client.http_request(method='DELETE', url_suffix=f'v1.0/servicePrincipals{service_id}', return_empty_response=True)
+        self.ms_client.http_request(method="DELETE", url_suffix=f"v1.0/servicePrincipals{service_id}", return_empty_response=True)
 
-    def add_password_service_principal(
-            self,
-            service_id: str,
-            data: dict
-    ):
+    def add_password_service_principal(self, service_id: str, data: dict):
         """
 
         Arguments:
@@ -157,15 +145,11 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/application-addpassword?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals{service_id}/addPassword'
+        suffix = f"v1.0/servicePrincipals{service_id}/addPassword"
         json_data = {"passwordCredential": data}
-        return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=json_data)
+        return self.ms_client.http_request(method="POST", url_suffix=suffix, json_data=json_data)
 
-    def remove_password_service_principal(
-            self,
-            service_id: str,
-            data: dict
-    ):
+    def remove_password_service_principal(self, service_id: str, data: dict):
         """
 
         Arguments:
@@ -179,14 +163,10 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals{service_id}/removePassword'
-        return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=data, return_empty_response=True)
+        suffix = f"v1.0/servicePrincipals{service_id}/removePassword"
+        return self.ms_client.http_request(method="POST", url_suffix=suffix, json_data=data, return_empty_response=True)
 
-    def unlock_configuration_service_principal(
-            self,
-            service_id: str,
-            lock: bool
-    ):
+    def unlock_configuration_service_principal(self, service_id: str, lock: bool):
         """
 
         Arguments:
@@ -199,31 +179,33 @@ class Client:
         Docs:
             https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
         """
-        data = {"servicePrincipalLockConfiguration":
-                {"isEnabled": lock,
-                 "credentialsWithUsageSign": True,
-                 "credentialsWithUsageVerify": True}
-                }
-        suffix = f'/beta/applications/{service_id}'
-        return self.ms_client.http_request(method='PATCH', url_suffix=suffix, json_data=data, return_empty_response=True)
+        data = {
+            "servicePrincipalLockConfiguration": {
+                "isEnabled": lock,
+                "credentialsWithUsageSign": True,
+                "credentialsWithUsageVerify": True,
+            }
+        }
+        suffix = f"/beta/applications/{service_id}"
+        return self.ms_client.http_request(method="PATCH", url_suffix=suffix, json_data=data, return_empty_response=True)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def start_auth(client: Client) -> CommandResults:
-    result = client.ms_client.start_auth('!msgraph-apps-auth-complete')
+    result = client.ms_client.start_auth("!msgraph-apps-auth-complete")
     return CommandResults(readable_output=result)
 
 
 def complete_auth(client: Client) -> str:
     client.ms_client.get_access_token()
-    return '✅ Authorization completed successfully.'
+    return "✅ Authorization completed successfully."
 
 
 def test_connection(client: Client) -> str:
     client.ms_client.get_access_token()
-    return '✅ Success!'
+    return "✅ Success!"
 
 
 def list_service_principals_command(ms_client: Client, args: dict) -> CommandResults:
@@ -236,22 +218,22 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
     Returns:
         Results to post in demisto
     """
-    limit_str = args.get('limit', '')
+    limit_str = args.get("limit", "")
     try:
         limit = int(limit_str)
     except ValueError:
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
     results = ms_client.get_service_principals(limit)
     return CommandResults(
-        'MSGraphApplication',
-        'id',
+        "MSGraphApplication",
+        "id",
         outputs=results,
         readable_output=tableToMarkdown(
-            'Available services (applications):',
+            "Available services (applications):",
             results,
-            headers=['id', 'appId', 'appDisplayName', 'accountEnabled', 'deletedDateTime'],
-            removeNull=True
-        )
+            headers=["id", "appId", "appDisplayName", "accountEnabled", "deletedDateTime"],
+            removeNull=True,
+        ),
     )
 
 
@@ -266,8 +248,8 @@ def validate_service_principal_input(args: dict) -> tuple[str, Optional[Any]]:
         If the two arguments are missing, raise an exception, otherwise return the (object) id.
         This validation returns tuple, the first element will be sent to the api call, the second is the given id/app id as is.
     """
-    object_id = args.get('id')
-    app_client_id = args.get('app_id')
+    object_id = args.get("id")
+    app_client_id = args.get("app_id")
     if not (object_id or app_client_id):
         raise DemistoException("Either the (object's) `id` or the `application_id` arguments must be provided.")
 
@@ -290,15 +272,15 @@ def get_service_principal_command(ms_client: Client, args: dict) -> CommandResul
     id_for_request, service_id = validate_service_principal_input(args=args)
     results = ms_client.get_single_service_principal(id_for_request)
     return CommandResults(
-        'MSGraphApplication',
-        'id',
+        "MSGraphApplication",
+        "id",
         outputs=results,
         readable_output=tableToMarkdown(
-            'Service Principal (application):',
+            "Service Principal (application):",
             results,
-            headers=['id', 'appId', 'appDisplayName', 'accountEnabled', 'deletedDateTime'],
-            removeNull=True
-        )
+            headers=["id", "appId", "appDisplayName", "accountEnabled", "deletedDateTime"],
+            removeNull=True,
+        ),
     )
 
 
@@ -313,16 +295,14 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
         an informative message.
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
-    fields_to_update = {"app_role_assignment_required": "appRoleAssignmentRequired", "display_name": "displayName",
-                        "preferred_single_sign_on_mode": "preferredSingleSignOnMode"
-                        }
+    fields_to_update = {
+        "app_role_assignment_required": "appRoleAssignmentRequired",
+        "display_name": "displayName",
+        "preferred_single_sign_on_mode": "preferredSingleSignOnMode",
+    }
     boolean_fields_to_update = {"account_enabled": "accountEnabled", "app_role_assignment_required": "appRoleAssignmentRequired"}
 
-    data = {
-        fields_to_update[field]: args[field]
-        for field in fields_to_update
-        if field in args
-    }
+    data = {fields_to_update[field]: args[field] for field in fields_to_update if field in args}
 
     for field in boolean_fields_to_update:
         if field in args:
@@ -330,9 +310,7 @@ def update_service_principal_command(ms_client: Client, args: dict) -> CommandRe
 
     ms_client.update_single_service_principal(id_for_request, data=data)
 
-    return CommandResults(
-        readable_output=f'Service {service_id} was updated successfully.'
-    )
+    return CommandResults(readable_output=f"Service {service_id} was updated successfully.")
 
 
 def remove_service_principals_command(ms_client: Client, args: dict) -> CommandResults:
@@ -347,9 +325,7 @@ def remove_service_principals_command(ms_client: Client, args: dict) -> CommandR
     """
     id_for_request, service_id = validate_service_principal_input(args=args)
     ms_client.delete_service_principals(id_for_request)
-    return CommandResults(
-        readable_output=f'Service {service_id} was deleted.'
-    )
+    return CommandResults(readable_output=f"Service {service_id} was deleted.")
 
 
 def add_password_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
@@ -367,11 +343,7 @@ def add_password_service_principal_command(ms_client: Client, args: dict) -> Com
 
     fields_for_body_request = {"display_name": "displayName", "end_date_time": "endDateTime", "start_date_time": "startDateTime"}
 
-    data = {
-        fields_for_body_request[field]: args[field]
-        for field in fields_for_body_request
-        if field in args
-    }
+    data = {fields_for_body_request[field]: args[field] for field in fields_for_body_request if field in args}
 
     # If the user didn't pass the expiration time, we set it to 1 hour when the API set it to +2 years.
     if "endDateTime" not in data:
@@ -380,10 +352,10 @@ def add_password_service_principal_command(ms_client: Client, args: dict) -> Com
     results = ms_client.add_password_service_principal(id_for_request, data=data)
 
     return CommandResults(
-        'MSGraphApplication',
-        'id',
+        "MSGraphApplication",
+        "id",
         outputs=results,
-        readable_output=f'A password was added to application {service_id} successfully.'
+        readable_output=f"A password was added to application {service_id} successfully.",
     )
 
 
@@ -404,9 +376,7 @@ def remove_password_service_principal_command(ms_client: Client, args: dict) -> 
 
     ms_client.remove_password_service_principal(id_for_request, data=data)
 
-    return CommandResults(
-        readable_output=f'The password of the unique identifier {args["key_id"]} was removed successfully.'
-    )
+    return CommandResults(readable_output=f'The password of the unique identifier {args["key_id"]} was removed successfully.')
 
 
 def change_configuration_service_principal_lock_status(ms_client: Client, args: dict, lock: bool) -> CommandResults:
@@ -445,10 +415,11 @@ def test_module(client: Client) -> str:
     """
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if client.connection_type == 'Device Code':
+    if client.connection_type == "Device Code":
         raise DemistoException(
             "Test module is available for Client Credentials or Azure Managed Identities only,"
-            " for other authentication types use the msgraph-apps-auth-start command")
+            " for other authentication types use the msgraph-apps-auth-start command"
+        )
 
     test_connection(client)
     return "ok"
@@ -456,59 +427,59 @@ def test_module(client: Client) -> str:
 
 def main():  # pragma: no cover
     handle_proxy()
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
         command = demisto.command()
         params = demisto.params()
         args = demisto.args()
         client = Client(
-            app_id=params.get('app_id', ''),
-            verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
-            enc_key=(params.get('credentials', {})).get('password'),
-            tenant_id=params.get('tenant_id'),
-            connection_type=params.get('authentication_type', 'Device Code'),
-            managed_identities_client_id=get_azure_managed_identities_client_id(params)
+            app_id=params.get("app_id", ""),
+            verify=not params.get("insecure", False),
+            proxy=params.get("proxy", False),
+            azure_ad_endpoint=params.get("azure_ad_endpoint", "https://login.microsoftonline.com")
+            or "https://login.microsoftonline.com",
+            enc_key=(params.get("credentials", {})).get("password"),
+            tenant_id=params.get("tenant_id"),
+            connection_type=params.get("authentication_type", "Device Code"),
+            managed_identities_client_id=get_azure_managed_identities_client_id(params),
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
-        elif command == 'msgraph-apps-auth-start':
+        elif command == "msgraph-apps-auth-start":
             return_results(start_auth(client))
-        elif command == 'msgraph-apps-auth-complete':
+        elif command == "msgraph-apps-auth-complete":
             return_results(complete_auth(client))
-        elif command == 'msgraph-apps-auth-test':
+        elif command == "msgraph-apps-auth-test":
             return_results(test_connection(client))
-        elif command == 'msgraph-apps-auth-reset':
+        elif command == "msgraph-apps-auth-reset":
             return_results(reset_auth())
-        elif command == 'msgraph-apps-service-principal-list':
+        elif command == "msgraph-apps-service-principal-list":
             return_results(list_service_principals_command(client, args))
-        elif command == 'msgraph-apps-service-principal-remove':
+        elif command == "msgraph-apps-service-principal-remove":
             return_results(remove_service_principals_command(client, args))
-        elif command == 'msgraph-apps-service-principal-get':
+        elif command == "msgraph-apps-service-principal-get":
             return_results(get_service_principal_command(client, args))
-        elif command == 'msgraph-apps-service-principal-update':
+        elif command == "msgraph-apps-service-principal-update":
             return_results(update_service_principal_command(client, args))
-        elif command == 'msgraph-apps-service-principal-password-add':
+        elif command == "msgraph-apps-service-principal-password-add":
             return_results(add_password_service_principal_command(client, args))
-        elif command == 'msgraph-apps-service-principal-password-remove':
+        elif command == "msgraph-apps-service-principal-password-remove":
             return_results(remove_password_service_principal_command(client, args))
-        elif command == 'msgraph-apps-service-principal-unlock-configuration':
+        elif command == "msgraph-apps-service-principal-unlock-configuration":
             return_results(change_configuration_service_principal_lock_status(client, args, lock=False))
-        elif command == 'msgraph-apps-service-principal-lock-configuration':
+        elif command == "msgraph-apps-service-principal-lock-configuration":
             return_results(change_configuration_service_principal_lock_status(client, args, lock=True))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

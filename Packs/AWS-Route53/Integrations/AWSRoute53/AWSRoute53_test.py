@@ -2,11 +2,7 @@ import importlib
 
 AWS_ROUTE53 = importlib.import_module("AWSRoute53")
 
-TEST_PARAMS = {
-    'roleArn': 'test_arn',
-    'roleSessionName': 'test_role_session',
-    'roleSessionDuration': 'test_role_session_duration'
-}
+TEST_PARAMS = {"roleArn": "test_arn", "roleSessionName": "test_role_session", "roleSessionDuration": "test_role_session_duration"}
 
 
 class AWSClient:  # pragma: no cover
@@ -48,18 +44,20 @@ def test_create_record(mocker):
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
-    args.update({
-        'hostedZoneId': 'test-domain.com',
-        'source': 'foo.test-domain.com',
-        'type': 'CNAME',
-        'ttl': 300,
-        'target': 'google.com',
-        'comment': 'redirect to google.com'
-    })
+    args.update(
+        {
+            "hostedZoneId": "test-domain.com",
+            "source": "foo.test-domain.com",
+            "type": "CNAME",
+            "ttl": 300,
+            "target": "google.com",
+            "comment": "redirect to google.com",
+        }
+    )
     response = {
-        'ChangeInfo': {
-            'Id': '__mock_id__',
-            'Status': 'changed',
+        "ChangeInfo": {
+            "Id": "__mock_id__",
+            "Status": "changed",
         }
     }
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
@@ -67,10 +65,10 @@ def test_create_record(mocker):
     session = AWSRoute53Client()
     res = AWS_ROUTE53.create_record(args, session)
     data = {
-        'Id': '__mock_id__',
-        'Status': 'changed',
+        "Id": "__mock_id__",
+        "Status": "changed",
     }
-    assert tableToMarkdown('AWS Route53 record created', data) == res.readable_output
+    assert tableToMarkdown("AWS Route53 record created", data) == res.readable_output
 
 
 def test_delete_record(mocker):
@@ -85,16 +83,18 @@ def test_delete_record(mocker):
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
-    args.update({
-        'hostedZoneId': 'test-domain.com',
-        'source': 'foo.test-domain.com',
-        'type': 'CNAME',
-        'ttl': 300,
-    })
+    args.update(
+        {
+            "hostedZoneId": "test-domain.com",
+            "source": "foo.test-domain.com",
+            "type": "CNAME",
+            "ttl": 300,
+        }
+    )
     response = {
-        'ChangeInfo': {
-            'Id': '__mock_id__',
-            'Status': 'deleted',
+        "ChangeInfo": {
+            "Id": "__mock_id__",
+            "Status": "deleted",
         }
     }
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
@@ -102,10 +102,10 @@ def test_delete_record(mocker):
     session = AWSRoute53Client()
     res = AWS_ROUTE53.delete_record(args, session)
     data = {
-        'Id': '__mock_id__',
-        'Status': 'deleted',
+        "Id": "__mock_id__",
+        "Status": "deleted",
     }
-    assert tableToMarkdown('AWS Route53 record deleted', data) == res.readable_output
+    assert tableToMarkdown("AWS Route53 record deleted", data) == res.readable_output
 
 
 def test_upsert_record(mocker):
@@ -120,18 +120,20 @@ def test_upsert_record(mocker):
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
-    args.update({
-        'hostedZoneId': 'test-domain.com',
-        'source': 'foo.test-domain.com',
-        'type': 'CNAME',
-        'ttl': 300,
-        'target': 'palo.com',
-        'comment': 'redirect to palo.com'
-    })
+    args.update(
+        {
+            "hostedZoneId": "test-domain.com",
+            "source": "foo.test-domain.com",
+            "type": "CNAME",
+            "ttl": 300,
+            "target": "palo.com",
+            "comment": "redirect to palo.com",
+        }
+    )
     response = {
-        'ChangeInfo': {
-            'Id': '__mock_id__',
-            'Status': 'updated',
+        "ChangeInfo": {
+            "Id": "__mock_id__",
+            "Status": "updated",
         }
     }
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
@@ -139,10 +141,10 @@ def test_upsert_record(mocker):
     session = AWSRoute53Client()
     res = AWS_ROUTE53.upsert_record(args, session)
     data = {
-        'Id': '__mock_id__',
-        'Status': 'updated',
+        "Id": "__mock_id__",
+        "Status": "updated",
     }
-    assert tableToMarkdown('AWS Route53 record Upsert', data) == res.readable_output
+    assert tableToMarkdown("AWS Route53 record Upsert", data) == res.readable_output
 
 
 def test_list_hosted_zones(mocker):
@@ -157,11 +159,11 @@ def test_list_hosted_zones(mocker):
     from CommonServerPython import tableToMarkdown
 
     response = {
-        'HostedZones': [
+        "HostedZones": [
             {
-                'Name': 'test-domain.com',
-                'Id': 'xxx',
-                'ResourceRecordSetCount': 5,
+                "Name": "test-domain.com",
+                "Id": "xxx",
+                "ResourceRecordSetCount": 5,
             }
         ]
     }
@@ -170,11 +172,11 @@ def test_list_hosted_zones(mocker):
     session = AWSRoute53Client()
     res = AWS_ROUTE53.list_hosted_zones(session)
     data = {
-        'Name': 'test-domain.com',
-        'Id': 'xxx',
-        'ResourceRecordSetCount': 5,
+        "Name": "test-domain.com",
+        "Id": "xxx",
+        "ResourceRecordSetCount": 5,
     }
-    assert tableToMarkdown('AWS Route53 Hosted Zones', data) == res.readable_output
+    assert tableToMarkdown("AWS Route53 Hosted Zones", data) == res.readable_output
 
 
 def test_list_resource_record_sets(mocker):
@@ -189,24 +191,21 @@ def test_list_resource_record_sets(mocker):
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
-    args.update({
-        'HostedZoneId': '__x__',
-        'startRecordName': 'aaa',
-        'startRecordType': 'CNAME',
-        'startRecordIdentifier': 'a',
-    })
+    args.update(
+        {
+            "HostedZoneId": "__x__",
+            "startRecordName": "aaa",
+            "startRecordType": "CNAME",
+            "startRecordIdentifier": "a",
+        }
+    )
     response = {
-        'ResourceRecordSets': [
+        "ResourceRecordSets": [
             {
-                'Name': 'a.test-domain.com',
-                'Type': 'A',
-                'TTL': 555,
-                'ResourceRecords':
-                    [
-                        {
-                            "Value": 'test-domain.com'
-                        }
-                    ],
+                "Name": "a.test-domain.com",
+                "Type": "A",
+                "TTL": 555,
+                "ResourceRecords": [{"Value": "test-domain.com"}],
             }
         ]
     }
@@ -216,13 +215,13 @@ def test_list_resource_record_sets(mocker):
     res = AWS_ROUTE53.list_resource_record_sets(args, session)
     data = [
         {
-            'Name': 'a.test-domain.com',
-            'Type': 'A',
-            'TTL': 555,
-            'ResourceRecords': 'test-domain.com',
+            "Name": "a.test-domain.com",
+            "Type": "A",
+            "TTL": 555,
+            "ResourceRecords": "test-domain.com",
         }
     ]
-    assert tableToMarkdown('AWS Route53 Record Sets', data) == res.readable_output
+    assert tableToMarkdown("AWS Route53 Record Sets", data) == res.readable_output
 
 
 def test_list_resource_record_sets_no_ttl(mocker):
@@ -241,23 +240,20 @@ def test_list_resource_record_sets_no_ttl(mocker):
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
-    args.update({
-        'HostedZoneId': '__x__',
-        'startRecordName': 'aaa',
-        'startRecordType': 'CNAME',
-        'startRecordIdentifier': 'a',
-    })
+    args.update(
+        {
+            "HostedZoneId": "__x__",
+            "startRecordName": "aaa",
+            "startRecordType": "CNAME",
+            "startRecordIdentifier": "a",
+        }
+    )
     response = {
-        'ResourceRecordSets': [
+        "ResourceRecordSets": [
             {
-                'Name': 'a.test-domain.com',
-                'Type': 'A',
-                'ResourceRecords':
-                    [
-                        {
-                            "Value": 'test-domain.com'
-                        }
-                    ],
+                "Name": "a.test-domain.com",
+                "Type": "A",
+                "ResourceRecords": [{"Value": "test-domain.com"}],
             }
         ]
     }
@@ -267,15 +263,13 @@ def test_list_resource_record_sets_no_ttl(mocker):
     res = AWS_ROUTE53.list_resource_record_sets(args, session)
     data = [
         {
-            'Name': 'a.test-domain.com',
-            'Type': 'A',
-            'ResourceRecords': 'test-domain.com',
+            "Name": "a.test-domain.com",
+            "Type": "A",
+            "ResourceRecords": "test-domain.com",
         }
     ]
-    assert tableToMarkdown('AWS Route53 Record Sets', data) == res.readable_output
-    assert res.outputs == [
-        {'Name': 'a.test-domain.com', 'Type': 'A', 'ResourceRecords': [{'Value': 'test-domain.com'}]}
-    ]
+    assert tableToMarkdown("AWS Route53 Record Sets", data) == res.readable_output
+    assert res.outputs == [{"Name": "a.test-domain.com", "Type": "A", "ResourceRecords": [{"Value": "test-domain.com"}]}]
 
 
 def test_waiter_resource_record_sets_changed(mocker):
@@ -289,11 +283,13 @@ def test_waiter_resource_record_sets_changed(mocker):
     """
 
     args = TEST_PARAMS
-    args.update({
-        'id': '__x__',
-        'waiterDelay': 60,
-        'waiterMaxAttempts': 3,
-    })
+    args.update(
+        {
+            "id": "__x__",
+            "waiterDelay": 60,
+            "waiterMaxAttempts": 3,
+        }
+    )
 
     mocker.patch.object(AWSRoute53ClientWaiter, "wait", return_value={})
 
@@ -314,28 +310,30 @@ def test_test_dns_answer(mocker):
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
-    args.update({
-        'HostedZoneId': '__x__',
-        'RecordName': 'a.test-domain.com',
-        'RecordType': 'CNAME',
-        'resolverIP': '8.8.8.8',
-    })
+    args.update(
+        {
+            "HostedZoneId": "__x__",
+            "RecordName": "a.test-domain.com",
+            "RecordType": "CNAME",
+            "resolverIP": "8.8.8.8",
+        }
+    )
     response = {
-        'Nameserver': '__Nameserver__',
-        'RecordName': '__RecordName__',
-        'RecordType': '__RecordType__',
-        'ResponseCode': '__ResponseCode__',
-        'Protocol': '__Protocol__',
+        "Nameserver": "__Nameserver__",
+        "RecordName": "__RecordName__",
+        "RecordType": "__RecordType__",
+        "ResponseCode": "__ResponseCode__",
+        "Protocol": "__Protocol__",
     }
     mocker.patch.object(AWSRoute53Client, "test_dns_answer", return_value=response)
 
     session = AWSRoute53Client()
     res = AWS_ROUTE53.test_dns_answer(args, session)
     data = {
-        'Nameserver': '__Nameserver__',
-        'RecordName': '__RecordName__',
-        'RecordType': '__RecordType__',
-        'ResponseCode': '__ResponseCode__',
-        'Protocol': '__Protocol__',
+        "Nameserver": "__Nameserver__",
+        "RecordName": "__RecordName__",
+        "RecordType": "__RecordType__",
+        "ResponseCode": "__ResponseCode__",
+        "Protocol": "__Protocol__",
     }
-    assert tableToMarkdown('AWS Route53 Test DNS Answer', data) == res.readable_output
+    assert tableToMarkdown("AWS Route53 Test DNS Answer", data) == res.readable_output

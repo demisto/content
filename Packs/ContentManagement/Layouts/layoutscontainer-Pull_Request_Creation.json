@@ -261,7 +261,18 @@
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+                            {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cicdkeepplaceholdersinfiles",
+								"height": 53,
+								"id": "cicdkeepplaceholdersinfiles",
+								"index": 6,
+								"listId": "caseinfoid-field-changed-caseinfoid-6cfc7250-efdc-11ec-ad08-d9ee2c4fe212",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
                         ],
                         "maxW": 3,
                         "minH": 1,
@@ -375,6 +386,10 @@
                     },
                     {
 						"fieldId": "incident_cicdazuredevopstargetref",
+						"isVisible": true
+					},
+                    {
+						"fieldId": "incident_cicdkeepplaceholdersinfiles",
 						"isVisible": true
 					}
                 ],

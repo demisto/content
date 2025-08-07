@@ -1,12 +1,13 @@
-import pytest
 import json
+
+import pytest
+from CommonServerPython import DemistoException
 from SpyCloudEnterpriseProtectionFeed import (
     Client,
-    fetch_incident,
     create_spycloud_args,
+    fetch_incident,
     remove_duplicate,
 )
-from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -14,9 +15,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-client = Client(
-    base_url="http://test.com/", apikey="test_123", proxy=False, verify=False
-)
+client = Client(base_url="http://test.com/", apikey="test_123", proxy=False, verify=False)
 WATCHLIST_DATA = util_load_json("test_data/breach_data_by_indicator.json")
 INCIDENTS = util_load_json("test_data/incidents.json")
 MODIFIED_RESPONSE = util_load_json("test_data/modified_response.json")
@@ -48,21 +47,13 @@ def test_spy_cloud_error_handler():
         client.spy_cloud_error_handler(response)
 
     # test case for 403 Invalid API Key
-    response = MockResponse(
-        status_code=403, headers={"SpyCloud-Error": "Invalid API key"}
-    )
-    err_msg = (
-        "Authorization Error:"
-        " The provided API Key for SpyCloud is invalid."
-        " Please provide a valid API Key."
-    )
+    response = MockResponse(status_code=403, headers={"SpyCloud-Error": "Invalid API key"})
+    err_msg = "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
     with pytest.raises(DemistoException, match=err_msg):
         client.spy_cloud_error_handler(response)
 
     # test case for other errors
-    response = MockResponse(
-        status_code=500, json_data={"message": "Internal server error"}
-    )
+    response = MockResponse(status_code=500, json_data={"message": "Internal server error"})
     with pytest.raises(DemistoException, match="Internal server error"):
         client.spy_cloud_error_handler(response)
 

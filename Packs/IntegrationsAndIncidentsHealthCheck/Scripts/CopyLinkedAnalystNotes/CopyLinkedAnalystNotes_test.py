@@ -4,12 +4,12 @@ from test_data.constants import CURRENT_INCIDENT, LINKED_INCIDENTS, MAIN_INTEGRA
 
 
 def test_create_grids(mocker):
-    mocker.patch.object(demisto, 'executeCommand', return_value=LINKED_INCIDENTS)
-    mocker.patch.object(demisto, 'incidents', return_value=CURRENT_INCIDENT)
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "executeCommand", return_value=LINKED_INCIDENTS)
+    mocker.patch.object(demisto, "incidents", return_value=CURRENT_INCIDENT)
+    mocker.patch.object(demisto, "results")
 
-    custom_fields = CURRENT_INCIDENT[0].get('CustomFields')
-    linked_incident = custom_fields.get('similarincident')
+    custom_fields = CURRENT_INCIDENT[0].get("CustomFields")
+    linked_incident = custom_fields.get("similarincident")
 
     integration_grid, incident_grid = create_grids(custom_fields, linked_incident)
 

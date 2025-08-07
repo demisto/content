@@ -1,0 +1,28 @@
+args:
+- description: CSV list of indicator values.
+  name: values
+  required: true
+- description: 'CSV list of fields to extract using JSON dot notation.Example: expirationSource.brand'
+  name: fields
+  required: true
+comment: Search indicators for text results.  Results are placed in the search results buffer where they can be added to the LLM's conversation context.
+commonfields:
+  id: AnyLlmSearchXsoarIndicators
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmSearchXsoarIndicators
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

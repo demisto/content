@@ -1,0 +1,32 @@
+args:
+- name: EntryID
+  description: The entry ID of the PDF file.
+  isArray: false
+  required: true
+comment: 'Returns wether a PDF is both valid and encrypted.'
+commonfields:
+  id: CheckPDFEncryptionAndValidity
+  version: -1
+enabled: false
+name: CheckPDFEncryptionAndValidity
+outputs:
+- contextPath: File.IsEncrypted
+  description: 'True if PDF file is encrypted, False otherwise.'
+  type: Boolean
+- contextPath: File.IsValid
+  description: 'True if PDF file is readable, False otherwise.'
+  type: Boolean
+- contextPath: File.EntryID
+  description: 'The entry ID of the file.'
+  type: String
+script: ''
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/readpdf:1.0.0.2034953
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

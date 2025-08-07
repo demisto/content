@@ -18,6 +18,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - defaultvalue: "1000"
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch
@@ -81,7 +82,7 @@ script:
       required: true
     description: Gets events from FireEye ETP. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: fireeye-etp-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   script: ""
   subtype: python3
@@ -89,5 +90,6 @@ script:
 fromversion: 8.2.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

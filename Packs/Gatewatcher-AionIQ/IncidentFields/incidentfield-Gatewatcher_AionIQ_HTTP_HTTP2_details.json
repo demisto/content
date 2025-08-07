@@ -1,0 +1,32 @@
+{
+    "id": "incident_gatewatcherhttphttp2",
+    "version": -1,
+    "modified": "2024-11-29T11:06:13.39629245+01:00",
+    "name": "Gatewatcher AionIQ HTTP HTTP2 details",
+    "ownerOnly": false,
+    "cliName": "gatewatcherhttphttp2",
+    "type": "shortText",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Gatewatcher Incident",
+        "Gatewatcher Alert Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

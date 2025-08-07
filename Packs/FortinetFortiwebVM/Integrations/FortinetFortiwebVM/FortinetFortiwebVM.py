@@ -2,9 +2,9 @@ import re
 from abc import abstractmethod
 from collections.abc import Callable
 from enum import Enum
+from functools import partial
 from http import HTTPStatus
 from typing import Any
-from functools import partial
 
 from CommonServerPython import *
 from requests import Response
@@ -42,13 +42,7 @@ class ArgumentValues(Enum):
     TRUE_TRANSPARENT_PROXY = "True Transparent Proxy"
     TRANSPARENT_INSPECTION = "Transparent Inspection"
     WCCP = "WCCP"
-    SERVER_POOL_TYPE = [
-        REVERSE_PROXY,
-        OFFLINE_PROTECTION,
-        TRUE_TRANSPARENT_PROXY,
-        TRANSPARENT_INSPECTION,
-        WCCP
-    ]
+    SERVER_POOL_TYPE = [REVERSE_PROXY, OFFLINE_PROTECTION, TRUE_TRANSPARENT_PROXY, TRANSPARENT_INSPECTION, WCCP]
     SERVER_BALANCE = "Server Balance"
     SINGLE_SERVER = "Single Server"
     SERVER_POOL_BALANCE = [SERVER_BALANCE, SINGLE_SERVER]
@@ -68,7 +62,7 @@ class ArgumentValues(Enum):
         FULL_URI_HASH,
         HOST_HASH,
         HOST_DOMAIN_HASH,
-        SOURCE_IP_HASH
+        SOURCE_IP_HASH,
     ]
     SERVER_POOL_HTTP_REUSE = [
         "Aggressive",
@@ -109,24 +103,16 @@ class OutputTitle(Enum):
     IP_LIST_GROUP_LIST = "IP Lists Groups:"
     IP_LIST_MEMBER_CREATE = "IP List member successfully created!"
     IP_LIST_MEMBER_LIST = "IP Lists Members:"
-    HTTP_CONTENT_ROUTING_MEMBER_CREATE = (
-        "HTTP content routing member succesfuly created!"
-    )
+    HTTP_CONTENT_ROUTING_MEMBER_CREATE = "HTTP content routing member succesfuly created!"
     HTTP_CONTENT_ROUTING_MEMBER_LIST = "HTTP Content Routing Policy Members:"
     GEO_IP_GROUP_LIST = "Geo IP group:"
     GEO_IP_MEMBER_ADD = "Geo IP member successfully added!"
     GEO_IP_MEMBER_LIST = "Geo IP member:"
     SERVER_POLICY_LIST = "Server Policies:"
     CUSTOM_WHITELIST_URL_CREATE = "Custom whitelist URL member succesfuly created!"
-    CUSTOM_WHITELIST_PARAMETER_CREATE = (
-        "Custom whitelist Parameter member succesfuly created!"
-    )
-    CUSTOM_WHITELIST_COOKIE_CREATE = (
-        "Custom whitelist Cookie member succesfuly created!"
-    )
-    CUSTOM_WHITELIST_HEADER_FIELD_CREATE = (
-        "Custom whitelist Header Field member succesfuly created!"
-    )
+    CUSTOM_WHITELIST_PARAMETER_CREATE = "Custom whitelist Parameter member succesfuly created!"
+    CUSTOM_WHITELIST_COOKIE_CREATE = "Custom whitelist Cookie member succesfuly created!"
+    CUSTOM_WHITELIST_HEADER_FIELD_CREATE = "Custom whitelist Header Field member succesfuly created!"
     CUSTOM_WHITELIST_LIST = "Custom whitelist members:"
     CUSTOM_PREDEFINED_LIST = "Custom predefined members:"
 
@@ -140,12 +126,8 @@ class OutputTitle(Enum):
     IP_LIST_GROUP_DELETE = "IP List group successfully deleted!"
     IP_LIST_MEMBER_UPDATE = "IP List member successfully updated!"
     IP_LIST_MEMBER_DELETE = "IP List member successfully deleted!"
-    HTTP_CONTENT_ROUTING_MEMBER_UPDATE = (
-        "HTTP content routing member succesfuly updated!"
-    )
-    HTTP_CONTENT_ROUTING_MEMBER_DELETE = (
-        "HTTP content routing member succesfuly deleted!"
-    )
+    HTTP_CONTENT_ROUTING_MEMBER_UPDATE = "HTTP content routing member succesfuly updated!"
+    HTTP_CONTENT_ROUTING_MEMBER_DELETE = "HTTP content routing member succesfuly deleted!"
     GEO_IP_GROUP_CREATE = "Geo IP group successfully created!"
     GEO_IP_GROUP_UPDATE = "Geo IP group successfully updated!"
     GEO_IP_GROUP_DELETE = "Geo IP group successfully deleted!"
@@ -154,19 +136,11 @@ class OutputTitle(Enum):
     SERVER_POLICY_UPDATE = "Server Policy succesfuly updated!"
     SERVER_POLICY_DELETE = "Server Policy succesfuly deleted!"
     CUSTOM_WHITELIST_URL_UPDATE = "Custom whitelist URL member succesfuly updated!"
-    CUSTOM_WHITELIST_PARAMETER_UPDATE = (
-        "Custom whitelist Parameter member succesfuly updated!"
-    )
-    CUSTOM_WHITELIST_COOKIE_UPDATE = (
-        "Custom whitelist Cookie member succesfuly updated!"
-    )
-    CUSTOM_WHITELIST_HEADER_FIELD_UPDATE = (
-        "Custom whitelist Header Field member succesfuly updated!"
-    )
+    CUSTOM_WHITELIST_PARAMETER_UPDATE = "Custom whitelist Parameter member succesfuly updated!"
+    CUSTOM_WHITELIST_COOKIE_UPDATE = "Custom whitelist Cookie member succesfuly updated!"
+    CUSTOM_WHITELIST_HEADER_FIELD_UPDATE = "Custom whitelist Header Field member succesfuly updated!"
     CUSTOM_WHITELIST_DELETE = "Custom whitelist member successfully deleted!"
-    CUSTOM_PREDIFINED_UPDATE = (
-        "Custom predifined whitelist member successfully updated!"
-    )
+    CUSTOM_PREDIFINED_UPDATE = "Custom predifined whitelist member successfully updated!"
     URL_ACCESS_RULE_GROUP = "URL access rule group"
     URL_ACCESS_RULE_CONDITION = "URL access rule condition"
     VIRTUAL_SERVER_GROUP = "Virtual server group"
@@ -193,18 +167,14 @@ class ErrorMessage(Enum):
     IP = "is not a valid IPv4/IPv6 address."
     ALLOW_IP_V1 = "Allow only ip not supported by version 1."
     IS_DEFAULT = "is_default should be yes/no"
-    INHERIT_WEB_PROTECTION_PROFILE = (
-        "inherit_web_protection_profile should be enable/disable"
-    )
+    INHERIT_WEB_PROTECTION_PROFILE = "inherit_web_protection_profile should be enable/disable"
     STATUS = "status should be enable/disable"
     PROTOCOL = "It must to insert at least one HTTP or HTTPS service."
     DEPLOYMENT_MODE = 'deployment_mode should be "HTTP Content Routing"/"Single Server/Server Balance"'
     SERVER_POOL = 'Server pool is requierd argument while deployment_mode is "Single Server/Server Balance".'
     SCRIPTING = "scripting should be enable/disable"
     SCRIPTING_LIST = "At Least one scripting is required."
-    CERTIFICATE_TYPE = (
-        'certificate_type should be "Local"/"Multi Certificate"/"Letsencrypt"'
-    )
+    CERTIFICATE_TYPE = 'certificate_type should be "Local"/"Multi Certificate"/"Letsencrypt"'
     REQUEST_URL = "Request URL must start with  / ."
     REQUEST_URL_INSERT = "Please insert request_url."
     REQUEST_TYPE = 'request_type should be "Simple String"/"Regular Expression"'
@@ -226,12 +196,8 @@ class ErrorMessage(Enum):
     SYN_COOKIE = "syn_cookie should be enable/disable"
     URL_CASE_SENSITIVITY = "url_case_sensitivity should be enable/disable"
     HALF_OPEN_THRESH = "half_open_thresh should be a number in range of 10-10,000."
-    RETRY_TIMES_ON_CONNECT = (
-        "retry_times_on_connect_failure should be a number in range of 1-5."
-    )
-    RETRY_TIMES_ON_HTTP = (
-        "retry_times_on_http_layer should be a number in range of 1-5."
-    )
+    RETRY_TIMES_ON_CONNECT = "retry_times_on_connect_failure should be a number in range of 1-5."
+    RETRY_TIMES_ON_HTTP = "retry_times_on_http_layer should be a number in range of 1-5."
     RETRY_ON_HTTP_RESPONSE_CODES = "Please insert codes from the list."
     ARGUMENT = "{0} argument should be {1}"
     INSERT_VALUE = "Please insert {0}."
@@ -249,15 +215,11 @@ class Parser:
         pass
 
     @abstractmethod
-    def parse_protected_hostname_group(
-        self, protected_hostname_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_protected_hostname_group(self, protected_hostname_group: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def parse_protected_hostname_member(
-        self, protected_hostname_member: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_protected_hostname_member(self, protected_hostname_member: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -269,9 +231,7 @@ class Parser:
         pass
 
     @abstractmethod
-    def parse_http_content_routing_member(
-        self, http_content_routing_member: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_http_content_routing_member(self, http_content_routing_member: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -299,9 +259,7 @@ class Parser:
         pass
 
     @abstractmethod
-    def parse_custom_whitelist(
-        self, custom_whitelist: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_custom_whitelist(self, custom_whitelist: dict[str, Any]) -> dict[str, Any]:
         pass
 
     def parse_custom_predifined_whitelist(self, data: dict[str, Any]) -> dict[str, Any]:
@@ -316,9 +274,7 @@ class Parser:
     def parse_http_service(self, policy: dict[str, Any]) -> dict[str, Any]:
         return {"id": policy["name"]}
 
-    def parse_operation_status(
-        self, operation_network: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_operation_status(self, operation_network: dict[str, Any]) -> dict[str, Any]:
         """Parse for operation status.
 
         Args:
@@ -353,21 +309,15 @@ class Parser:
         return {"id": data["name"]}
 
     @abstractmethod
-    def parse_url_access_rule_group(
-        self, access_rule_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_url_access_rule_group(self, access_rule_group: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def parse_url_access_rule_condition(
-        self, url_access_rule_condition: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_url_access_rule_condition(self, url_access_rule_condition: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def parse_virtual_server_group(
-        self, virtual_server_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_virtual_server_group(self, virtual_server_group: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @property
@@ -548,14 +498,10 @@ class Parser:
         return {True: "enable", False: "disable"}
 
     @abstractmethod
-    def parse_persistence_policy(
-        self, persistence_policy: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_persistence_policy(self, persistence_policy: dict[str, Any]) -> dict[str, Any]:
         pass
 
-    def parse_virtual_server_item(
-        self, virtual_server_item: dict[str, Any]
-    ):
+    def parse_virtual_server_item(self, virtual_server_item: dict[str, Any]):
         pass
 
     @abstractmethod
@@ -563,9 +509,7 @@ class Parser:
         pass
 
     @abstractmethod
-    def parse_server_pool_rule(
-        self, server_pool_rule: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_server_pool_rule(self, server_pool_rule: dict[str, Any]) -> dict[str, Any]:
         pass
 
     def parse_snakify_with_id(self, obj: dict[str, Any]):
@@ -593,9 +537,7 @@ class ParserV1(Parser):
         """
         return common_headers + v1_only_headers
 
-    def parse_protected_hostname_group(
-        self, protected_hostname_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_protected_hostname_group(self, protected_hostname_group: dict[str, Any]) -> dict[str, Any]:
         """Parse for protected hostname group.
 
         Args:
@@ -605,22 +547,16 @@ class ParserV1(Parser):
         Returns:
             Dict[str, Any]: Parsed dictionary.
         """
-        action_val = self.action_api_to_user_mapper[
-            protected_hostname_group["defaultAction"]
-        ]
+        action_val = self.action_api_to_user_mapper[protected_hostname_group["defaultAction"]]
         group = {
             "id": protected_hostname_group["_id"],
             "can_delete": protected_hostname_group["can_delete"],
             "default_action": action_val,
-            "protected_hostname_count": protected_hostname_group[
-                "protectedHostnameCount"
-            ],
+            "protected_hostname_count": protected_hostname_group["protectedHostnameCount"],
         }
         return group
 
-    def parse_protected_hostname_member(
-        self, protected_hostname_member: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_protected_hostname_member(self, protected_hostname_member: dict[str, Any]) -> dict[str, Any]:
         """Parse for protected hostname member.
 
         Args:
@@ -632,9 +568,7 @@ class ParserV1(Parser):
         """
         group = {
             "id": protected_hostname_member["_id"],
-            "action": self.action_api_to_user_mapper[
-                protected_hostname_member["action"]
-            ],
+            "action": self.action_api_to_user_mapper[protected_hostname_member["action"]],
             "host": protected_hostname_member["host"],
         }
         return group
@@ -675,9 +609,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def parse_http_content_routing_member(
-        self, http_content_routing_member: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_http_content_routing_member(self, http_content_routing_member: dict[str, Any]) -> dict[str, Any]:
         """Parse for HTTP content routing member.
 
         Args:
@@ -688,15 +620,11 @@ class ParserV1(Parser):
             Dict[str, Any]: Parsed dictionary.
         """
         id_default = http_content_routing_member["default"]
-        inherit_web_protection_profile = http_content_routing_member[
-            "inheritWebProtectionProfile"
-        ]
+        inherit_web_protection_profile = http_content_routing_member["inheritWebProtectionProfile"]
         parsed_data = {
             "id": http_content_routing_member["_id"],
             "default": id_default,
-            "http_content_routing_policy": http_content_routing_member[
-                "http_content_routing_policy"
-            ],
+            "http_content_routing_policy": http_content_routing_member["http_content_routing_policy"],
             "inherit_web_protection_profile": inherit_web_protection_profile,
             "profile": http_content_routing_member["profile"],
         }
@@ -801,15 +729,9 @@ class ParserV1(Parser):
         """
         parsed_data = {
             "name": policy["_id"],
-            "deployment_mode": self.deployment_mode_api_to_user_mapper[
-                policy["depInMode"]
-            ],
+            "deployment_mode": self.deployment_mode_api_to_user_mapper[policy["depInMode"]],
             "virtual_server": policy["virtualServer"],
-            "protocol": ",".join(
-                remove_empty_elements(
-                    [policy.get("HTTPService"), policy.get("HTTPSService")]
-                )
-            ),
+            "protocol": ",".join(remove_empty_elements([policy.get("HTTPService"), policy.get("HTTPSService")])),
             "web_protection_profile": policy.get("InlineProtectionProfile") or "",
             "monitor_mode": policy["MonitorMode"],
             "http_service": policy.get("HTTPService") or "",
@@ -828,9 +750,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def parse_custom_whitelist(
-        self, custom_whitelist: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_custom_whitelist(self, custom_whitelist: dict[str, Any]) -> dict[str, Any]:
         """Parse for custom whitelist member dict.
 
         Args:
@@ -855,9 +775,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def parse_url_access_rule_group(
-        self, access_rule_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_url_access_rule_group(self, access_rule_group: dict[str, Any]) -> dict[str, Any]:
         """Parse for URL access rule group dict.
 
         Args:
@@ -879,9 +797,7 @@ class ParserV1(Parser):
             "count": access_rule_group.get("count"),
         }
 
-    def parse_url_access_rule_condition(
-        self, url_access_rule_condition: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_url_access_rule_condition(self, url_access_rule_condition: dict[str, Any]) -> dict[str, Any]:
         """Parse for URL access rule condition dict.
 
         Args:
@@ -892,33 +808,28 @@ class ParserV1(Parser):
         """
         return {
             "id": url_access_rule_condition.get("_id"),
-            "url_type": dict_safe_get(self.url_type_api_to_user_mapper, [
-                url_access_rule_condition.get("urlType")]
-            ),
+            "url_type": dict_safe_get(self.url_type_api_to_user_mapper, [url_access_rule_condition.get("urlType")]),
             "url_pattern": url_access_rule_condition.get("urlPattern"),
-            "meet_this_condition_if": dict_safe_get(self.meet_condition_api_to_user_mapper, [
-                url_access_rule_condition.get("meetthisconditionif")]
+            "meet_this_condition_if": dict_safe_get(
+                self.meet_condition_api_to_user_mapper, [url_access_rule_condition.get("meetthisconditionif")]
             ),
-            "source_address": dict_safe_get(self.enable_disable_to_boolean_mapper, [
-                url_access_rule_condition.get("sourceAddress")]
+            "source_address": dict_safe_get(
+                self.enable_disable_to_boolean_mapper, [url_access_rule_condition.get("sourceAddress")]
             ),
-            "source_address_type": dict_safe_get(self.source_address_type_api_to_user_mapper, [
-                url_access_rule_condition.get("sourceAddressType")]
+            "source_address_type": dict_safe_get(
+                self.source_address_type_api_to_user_mapper, [url_access_rule_condition.get("sourceAddressType")]
             ),
             "ip_range": url_access_rule_condition.get("iPv4IPv6"),
-            "ip_type": dict_safe_get(self.ip_type_api_to_user_mapper, [
-                url_access_rule_condition.get("type")]
-            ),
+            "ip_type": dict_safe_get(self.ip_type_api_to_user_mapper, [url_access_rule_condition.get("type")]),
             "domain": url_access_rule_condition.get("domain"),
-            "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [
-                url_access_rule_condition.get("source_domain_type")]
-            ) or "",
+            "source_domain_type": dict_safe_get(
+                self.url_type_api_to_user_mapper, [url_access_rule_condition.get("source_domain_type")]
+            )
+            or "",
             "source_domain": url_access_rule_condition.get("source_domain"),
         }
 
-    def parse_virtual_server_group(
-        self, virtual_server_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_virtual_server_group(self, virtual_server_group: dict[str, Any]) -> dict[str, Any]:
         return self.parse_snakify_with_id(virtual_server_group)
 
     @property
@@ -1221,9 +1132,7 @@ class ParserV1(Parser):
         """
         return reverse_dict(self.server_pool_rule_status_user_to_api_mapper)
 
-    def parse_persistence_policy(
-        self, persistence_policy: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_persistence_policy(self, persistence_policy: dict[str, Any]) -> dict[str, Any]:
         """Parse for Persistence policy dict.
 
         Args:
@@ -1249,9 +1158,7 @@ class ParserV1(Parser):
             "persistence": server_pool.get("persistence", ""),
         }
 
-    def parse_server_pool_rule(
-        self, server_pool_rule: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_server_pool_rule(self, server_pool_rule: dict[str, Any]) -> dict[str, Any]:
         return {
             "id": server_pool_rule.get("_id"),
             "server_type": server_pool_rule.get("serverType1") or server_pool_rule.get("serverType2"),
@@ -1288,9 +1195,7 @@ class ParserV2(Parser):
         """
         return common_headers + v2_only_headers
 
-    def parse_protected_hostname_group(
-        self, protected_hostname_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_protected_hostname_group(self, protected_hostname_group: dict[str, Any]) -> dict[str, Any]:
         """Parse for protected hostname group.
 
         Args:
@@ -1300,9 +1205,7 @@ class ParserV2(Parser):
         Returns:
             Dict[str, Any]: Parsed dictionary.
         """
-        action_val = self.action_api_to_user_mapper[
-            protected_hostname_group["default-action"]
-        ]
+        action_val = self.action_api_to_user_mapper[protected_hostname_group["default-action"]]
         group = {
             "id": protected_hostname_group["name"],
             "default_action": action_val,
@@ -1310,9 +1213,7 @@ class ParserV2(Parser):
         }
         return group
 
-    def parse_protected_hostname_member(
-        self, protected_hostname_member: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_protected_hostname_member(self, protected_hostname_member: dict[str, Any]) -> dict[str, Any]:
         """Parse for protected hostname member.
 
         Args:
@@ -1324,9 +1225,7 @@ class ParserV2(Parser):
         """
         group = {
             "id": protected_hostname_member["id"],
-            "action": self.action_api_to_user_mapper[
-                protected_hostname_member["action"]
-            ],
+            "action": self.action_api_to_user_mapper[protected_hostname_member["action"]],
             "host": protected_hostname_member["host"],
             "ignore_port": protected_hostname_member["ignore-port"],
             "include_subdomains": protected_hostname_member["include-subdomains"],
@@ -1374,9 +1273,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def parse_http_content_routing_member(
-        self, http_content_routing_member: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_http_content_routing_member(self, http_content_routing_member: dict[str, Any]) -> dict[str, Any]:
         """Parse for HTTP content routing member.
 
         Args:
@@ -1389,12 +1286,8 @@ class ParserV2(Parser):
         parsed_data = {
             "id": http_content_routing_member["id"],
             "default": http_content_routing_member["is-default"],
-            "http_content_routing_policy": http_content_routing_member[
-                "content-routing-policy-name"
-            ],
-            "inherit_web_protection_profile": http_content_routing_member[
-                "profile-inherit"
-            ],
+            "http_content_routing_policy": http_content_routing_member["content-routing-policy-name"],
+            "inherit_web_protection_profile": http_content_routing_member["profile-inherit"],
             "profile": http_content_routing_member["web-protection-profile"],
             "status": http_content_routing_member["status"],
         }
@@ -1516,17 +1409,9 @@ class ParserV2(Parser):
         """
         parsed_data = {
             "name": policy["name"],
-            "deployment_mode": self.deployment_mode_api_to_user_mapper[
-                policy["deployment-mode"]
-            ],
+            "deployment_mode": self.deployment_mode_api_to_user_mapper[policy["deployment-mode"]],
             "virtual_server": policy["vserver"],
-            "protocol": ",".join(
-                [
-                    service
-                    for service in [policy["service"], policy["https-service"]]
-                    if service
-                ]
-            ),
+            "protocol": ",".join([service for service in [policy["service"], policy["https-service"]] if service]),
             "web_protection_profile": policy["web-protection-profile"],
             "monitor_mode": policy["monitor-mode"],
             "http_service": policy["service"],
@@ -1556,9 +1441,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def parse_custom_whitelist(
-        self, custom_whitelist: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_custom_whitelist(self, custom_whitelist: dict[str, Any]) -> dict[str, Any]:
         """Parse for custom whitelist member dict.
 
         Args:
@@ -1573,34 +1456,22 @@ class ParserV2(Parser):
             "type": self.custom_whitelist_api_to_user_mapper[custom_whitelist["type"]],
             "name": custom_whitelist["name"],
             "status": custom_whitelist["status"],
-            "name_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("name-type", ""), ""
-            ),
+            "name_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("name-type", ""), ""),
             "request_url_status": custom_whitelist["request-file-status"],
-            "request_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("request-type", ""), ""
-            ),
+            "request_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("request-type", ""), ""),
             "request_url": custom_whitelist["request-file"],
             "domain_status": custom_whitelist["domain-status"],
-            "domain_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("domain-type", ""), ""
-            ),
+            "domain_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("domain-type", ""), ""),
             "domain": custom_whitelist["domain"],
             "path": custom_whitelist["path"],
-            "header_name_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("header-type", ""), ""
-            ),
+            "header_name_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("header-type", ""), ""),
             "value_status": custom_whitelist["value-status"],
-            "header_value_type": self.request_type_user_to_api_mapper.get(
-                custom_whitelist.get("value-type", ""), ""
-            ),
+            "header_value_type": self.request_type_user_to_api_mapper.get(custom_whitelist.get("value-type", ""), ""),
             "value": custom_whitelist["value"],
         }
         return parsed_data
 
-    def parse_url_access_rule_group(
-        self, access_rule_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_url_access_rule_group(self, access_rule_group: dict[str, Any]) -> dict[str, Any]:
         """Parse for URL access rule group dict.
 
         Args:
@@ -1619,9 +1490,7 @@ class ParserV2(Parser):
             "count": access_rule_group.get("sz_match-condition"),
         }
 
-    def parse_virtual_server_group(
-        self, virtual_server_group: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_virtual_server_group(self, virtual_server_group: dict[str, Any]) -> dict[str, Any]:
         """Parse for URL access rule group dict.
 
         Args:
@@ -1635,9 +1504,7 @@ class ParserV2(Parser):
             "items_count": virtual_server_group.get("sz_vip-list"),
         }
 
-    def parse_url_access_rule_condition(
-        self, url_access_rule_condition: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_url_access_rule_condition(self, url_access_rule_condition: dict[str, Any]) -> dict[str, Any]:
         """Parse for URL access rule condition dict.
 
         Args:
@@ -1653,25 +1520,15 @@ class ParserV2(Parser):
         source_domain_type = url_access_rule_condition.get("source-domain-type")
         return {
             "id": url_access_rule_condition.get("id"),
-            "url_type": dict_safe_get(self.url_type_api_to_user_mapper, [
-                url_type]
-            ),
+            "url_type": dict_safe_get(self.url_type_api_to_user_mapper, [url_type]),
             "url_pattern": url_access_rule_condition.get("reg-exp"),
-            "meet_this_condition_if": dict_safe_get(self.meet_condition_api_to_user_mapper, [
-                meet_this_condition_if]
-            ),
+            "meet_this_condition_if": dict_safe_get(self.meet_condition_api_to_user_mapper, [meet_this_condition_if]),
             "source_address": url_access_rule_condition.get("sip-address-check"),
-            "source_address_type": dict_safe_get(self.source_address_type_api_to_user_mapper, [
-                source_address_type]
-            ),
+            "source_address_type": dict_safe_get(self.source_address_type_api_to_user_mapper, [source_address_type]),
             "ip_range": url_access_rule_condition.get("sip-address-value"),
-            "ip_type": dict_safe_get(self.ip_type_api_to_user_mapper, [
-                ip_type]
-            ),
+            "ip_type": dict_safe_get(self.ip_type_api_to_user_mapper, [ip_type]),
             "domain": url_access_rule_condition.get("sip-address-domain"),
-            "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [
-                source_domain_type]
-            ) or "",
+            "source_domain_type": dict_safe_get(self.url_type_api_to_user_mapper, [source_domain_type]) or "",
             "source_domain": url_access_rule_condition.get("source-domain"),
             "only_method_check": url_access_rule_condition.get("only-method-check"),
             "only_protocol_check": url_access_rule_condition.get("only-protocol-check"),
@@ -2007,9 +1864,7 @@ class ParserV2(Parser):
         """
         return reverse_dict(self.server_pool_rule_status_user_to_api_mapper)
 
-    def parse_persistence_policy(
-        self, persistence_policy: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_persistence_policy(self, persistence_policy: dict[str, Any]) -> dict[str, Any]:
         """Parse for Persistence policy dict.
 
         Args:
@@ -2023,9 +1878,7 @@ class ParserV2(Parser):
             "type": persistence_policy.get("type"),
         }
 
-    def parse_virtual_server_item(
-        self, virtual_server_item: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_virtual_server_item(self, virtual_server_item: dict[str, Any]) -> dict[str, Any]:
         """Parse for Virtual server item dict.
 
         Args:
@@ -2062,9 +1915,7 @@ class ParserV2(Parser):
             "server_pool_id": server_pool.get("server-pool-id"),
         }
 
-    def parse_server_pool_rule(
-        self, server_pool_rule: dict[str, Any]
-    ) -> dict[str, Any]:
+    def parse_server_pool_rule(self, server_pool_rule: dict[str, Any]) -> dict[str, Any]:
         return {
             "id": server_pool_rule.get("id"),
             "server_type": server_pool_rule.get("server-type"),
@@ -2101,9 +1952,7 @@ class Client(BaseClient):
         parser_class = {"V1": ParserV1, "V2": ParserV2}[version]
         self.parser: Parser = parser_class()
         headers = {"Content-Type": "application/json", "Authorization": api_key}
-        super().__init__(
-            base_url=self.base_url, verify=verify, headers=headers, proxy=proxy
-        )
+        super().__init__(base_url=self.base_url, verify=verify, headers=headers, proxy=proxy)
 
     def _http_request(self, *args, **kwargs):
         kwargs["error_handler"] = self.error_handler
@@ -2146,13 +1995,9 @@ class Client(BaseClient):
         """
         error_code = res.status_code
         if res.status_code == HTTPStatus.UNAUTHORIZED:
-            raise DemistoException(
-                "Authorization Error: make sure Username and Password are set correctly."
-            )
+            raise DemistoException("Authorization Error: make sure Username and Password are set correctly.")
         if res.status_code == HTTPStatus.NOT_FOUND:
-            raise DemistoException(
-                "Connection Error: Make sure server URL is set correctly."
-            )
+            raise DemistoException("Connection Error: Make sure server URL is set correctly.")
         output = {}
         try:
             output = res.json()
@@ -2166,18 +2011,12 @@ class Client(BaseClient):
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
             if error in self.not_exist_error_list:
-                raise DemistoException(
-                    f"{ErrorMessage.NOT_EXIST.value} {output}", res=res
-                )
+                raise DemistoException(f"{ErrorMessage.NOT_EXIST.value} {output}", res=res)
             # create
             elif error in self.exist_error_list:
-                raise DemistoException(
-                    f"{ErrorMessage.ALREADY_EXIST.value} {output}", res=res
-                )
+                raise DemistoException(f"{ErrorMessage.ALREADY_EXIST.value} {output}", res=res)
             elif error in self.wrong_parameter_error_list:
-                raise DemistoException(
-                    f"{ErrorMessage.ARGUMENTS.value} {output}", res=res
-                )
+                raise DemistoException(f"{ErrorMessage.ARGUMENTS.value} {output}", res=res)
 
             else:
                 raise DemistoException(
@@ -2253,9 +2092,7 @@ class Client(BaseClient):
             "Info",
         ]:
             raise ValueError(ErrorMessage.SEVERITY.value)
-        if args.get("ignore_x_forwarded_for") and args[
-            "ignore_x_forwarded_for"
-        ] not in [
+        if args.get("ignore_x_forwarded_for") and args["ignore_x_forwarded_for"] not in [
             "enable",
             "disable",
         ]:
@@ -2318,9 +2155,7 @@ class Client(BaseClient):
         """
         if args.get("is_default") and args["is_default"] not in ["yes", "no"]:
             raise ValueError(ErrorMessage.IS_DEFAULT.value)
-        if args.get("inherit_web_protection_profile") and args[
-            "inherit_web_protection_profile"
-        ] not in [
+        if args.get("inherit_web_protection_profile") and args["inherit_web_protection_profile"] not in [
             "enable",
             "disable",
         ]:
@@ -2350,9 +2185,7 @@ class Client(BaseClient):
             "Info",
         ]:
             raise ValueError(ErrorMessage.SEVERITY.value)
-        if args.get("ignore_x_forwarded_for") and args[
-            "ignore_x_forwarded_for"
-        ] not in [
+        if args.get("ignore_x_forwarded_for") and args["ignore_x_forwarded_for"] not in [
             "enable",
             "disable",
         ]:
@@ -2638,14 +2471,10 @@ class Client(BaseClient):
             "Single Server/Server Balance",
         ]:
             raise ValueError(ErrorMessage.DEPLOYMENT_MODE.value)
-        if args["deployment_mode"] == "Single Server/Server Balance" and not args.get(
-            "server_pool"
-        ):
+        if args["deployment_mode"] == "Single Server/Server Balance" and not args.get("server_pool"):
             raise ValueError(ErrorMessage.SERVER_POOL.value)
 
-    def validate_custom_whitelist(
-        self, args: dict[str, Any], member_type: str | None = None
-    ):
+    def validate_custom_whitelist(self, args: dict[str, Any], member_type: str | None = None):
         """Custom whitelist member args validator.
 
         Args:
@@ -2655,15 +2484,9 @@ class Client(BaseClient):
             DemistoException: Errors.
         """
         if args.get("type") and args["type"] != member_type:
-            raise ValueError(
-                f"You can't update {args['type']} member with {member_type} update command."
-            )
+            raise ValueError(f"You can't update {args['type']} member with {member_type} update command.")
         if member_type == "URL":
-            if (
-                args.get("request_type") == "Simple String"
-                and args.get("request_url")
-                and args["request_url"][0] != "/"
-            ):
+            if args.get("request_type") == "Simple String" and args.get("request_url") and args["request_url"][0] != "/":
                 raise ValueError(ErrorMessage.REQUEST_URL.value)
             if args.get("request_type") and args["request_type"] not in [
                 "Simple String",
@@ -2689,12 +2512,11 @@ class Client(BaseClient):
         Returns:
             CommandResults: outputs, readable outputs and raw response for XSOAR.
         """
-        if (host_status := args.get("host_status")) and \
-                host_status == ArgumentValues.ENABLE.value and not args.get("host"):
+        if (host_status := args.get("host_status")) and host_status == ArgumentValues.ENABLE.value and not args.get("host"):
             raise ValueError(ErrorMessage.INSERT_VALUE.value.format("host"))
 
     def validate_url_access_rule_condition(self, args: dict[str, Any]):
-        """ URL access rule condition args validator.
+        """URL access rule condition args validator.
 
         Args:
             args (Dict[str, Any]): Command arguments from XSOAR.
@@ -2759,37 +2581,23 @@ class Client(BaseClient):
             ValueError: Errors that help the user to insert the required arguments.
         """
         validate = partial(validate_argument, args=args)
-        if args.get('server_type') == 'IP':
-            validate(key_='ip')
-        if args.get('server_type') == 'Domain':
-            validate(key_='domain')
-        port = arg_to_number(args.get('port'))
-        connection_limit = arg_to_number(args.get('connection_limit'))
-        if (
-            port is not None
-            and not SERVER_POOL_MIN_PORT <= port <= SERVER_POOL_MAX_PORT
-        ):
-            raise ValueError(
-                f"The port valid range is {SERVER_POOL_MIN_PORT}-{SERVER_POOL_MAX_PORT}."
-            )
-        if (
-            connection_limit is not None
-            and not MIN_CONNECTION_LIMIT <= connection_limit <= MAX_CONNECTION_LIMIT
-        ):
-            raise ValueError(
-                f"The connection_limit valid range is {MIN_CONNECTION_LIMIT}-{MAX_CONNECTION_LIMIT}."
-            )
+        if args.get("server_type") == "IP":
+            validate(key_="ip")
+        if args.get("server_type") == "Domain":
+            validate(key_="domain")
+        port = arg_to_number(args.get("port"))
+        connection_limit = arg_to_number(args.get("connection_limit"))
+        if port is not None and not SERVER_POOL_MIN_PORT <= port <= SERVER_POOL_MAX_PORT:
+            raise ValueError(f"The port valid range is {SERVER_POOL_MIN_PORT}-{SERVER_POOL_MAX_PORT}.")
+        if connection_limit is not None and not MIN_CONNECTION_LIMIT <= connection_limit <= MAX_CONNECTION_LIMIT:
+            raise ValueError(f"The connection_limit valid range is {MIN_CONNECTION_LIMIT}-{MAX_CONNECTION_LIMIT}.")
 
     @abstractmethod
-    def protected_hostname_create_request(
-        self, name: str, default_action: str
-    ) -> dict[str, Any]:
+    def protected_hostname_create_request(self, name: str, default_action: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def protected_hostname_update_request(
-        self, name: str, default_action: str | None
-    ) -> dict[str, Any]:
+    def protected_hostname_update_request(self, name: str, default_action: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2812,9 +2620,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def protected_hostname_member_create_request(
-        self, name: str, host: str, action: str, **kwargs
-    ) -> dict[str, Any]:
+    def protected_hostname_member_create_request(self, name: str, host: str, action: str, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2824,15 +2630,11 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def protected_hostname_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def protected_hostname_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def protected_hostname_member_list_request(
-        self, group_name: str, **kwargs
-    ) -> dict[str, Any]:
+    def protected_hostname_member_list_request(self, group_name: str, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2852,9 +2654,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def ip_list_member_create_request(
-        self, group_name: str, member_type: str, ip_address: str, **kwargs
-    ) -> dict[str, Any]:
+    def ip_list_member_create_request(self, group_name: str, member_type: str, ip_address: str, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2869,9 +2669,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def ip_list_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def ip_list_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2902,15 +2700,11 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def http_content_routing_member_delete_request(
-        self, policy_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def http_content_routing_member_delete_request(self, policy_name: str, member_id: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def http_content_routing_member_list_request(
-        self, policy_name: str, **kwargs
-    ) -> dict[str, Any]:
+    def http_content_routing_member_list_request(self, policy_name: str, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -2944,21 +2738,15 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def geo_ip_member_add_request(
-        self, group_name: str, countries_list: List[str]
-    ) -> dict[str, Any]:
+    def geo_ip_member_add_request(self, group_name: str, countries_list: List[str]) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def geo_ip_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def geo_ip_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def geo_ip_member_list_request(
-        self, group_name: str
-    ) -> Union[dict[str, Any], List[dict[str, Any]]]:
+    def geo_ip_member_list_request(self, group_name: str) -> Union[dict[str, Any], List[dict[str, Any]]]:
         pass
 
     @abstractmethod
@@ -3051,9 +2839,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def custom_whitelist_url_create_request(
-        self, request_type: str, request_url: str
-    ) -> dict[str, Any]:
+    def custom_whitelist_url_create_request(self, request_type: str, request_url: str) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3067,9 +2853,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def custom_whitelist_parameter_create_request(
-        self, name: str, **kwargs
-    ) -> dict[str, Any]:
+    def custom_whitelist_parameter_create_request(self, name: str, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3079,9 +2863,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def custom_whitelist_cookie_create_request(
-        self, name: str, domain: str | None, path: str | None
-    ) -> dict[str, Any]:
+    def custom_whitelist_cookie_create_request(self, name: str, domain: str | None, path: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3126,9 +2908,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def custom_predifined_whitelist_update_request(
-        self, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    def custom_predifined_whitelist_update_request(self, data: dict[str, Any]) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3203,15 +2983,11 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def url_access_rule_condition_delete_request(
-        self, group_name: str | None, member_id: str | None
-    ) -> dict[str, Any]:
+    def url_access_rule_condition_delete_request(self, group_name: str | None, member_id: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def url_access_rule_condition_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def url_access_rule_condition_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3298,15 +3074,11 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def virtual_server_item_delete_request(
-        self, group_name: str | None, member_id: str | None
-    ) -> dict[str, Any]:
+    def virtual_server_item_delete_request(self, group_name: str | None, member_id: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def virtual_server_item_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def virtual_server_item_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod
@@ -3363,15 +3135,11 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def server_pool_rule_delete_request(
-        self, group_name: str | None, rule_id: str | None
-    ) -> dict[str, Any]:
+    def server_pool_rule_delete_request(self, group_name: str | None, rule_id: str | None) -> dict[str, Any]:
         pass
 
     @abstractmethod
-    def server_pool_rule_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def server_pool_rule_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         pass
 
 
@@ -3498,9 +3266,7 @@ class ClientV1(Client):
                 not args.get("ipv6_address"),
             ]
         ):
-            raise ValueError(
-                ErrorMessage.INSERT_VALUE.value.format("ipv4_address or ipv6_address")
-            )
+            raise ValueError(ErrorMessage.INSERT_VALUE.value.format("ipv4_address or ipv6_address"))
 
     def get_object_id(
         self,
@@ -3523,9 +3289,7 @@ class ClientV1(Client):
         Returns:
             str: Member ID
         """
-        member_data = get_object_data(
-            self.version, by_key, value, get_request, object_id
-        )
+        member_data = get_object_data(self.version, by_key, value, get_request, object_id)
         return member_data["_id"] if member_data else "Can not find the id"
 
     def validate_server_pool_rule(self, args: dict[str, Any], group_type: str, command_action: str):
@@ -3546,14 +3310,14 @@ class ClientV1(Client):
         parsed = self.parser.parse_server_pool(res)
         key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
         if group_type != parsed[key_]:
-            raise ValueError(f'Can not {command_action} the rule. The group {key_} is "{parsed[key_]}", '
-                             + f'the rule type is "{group_type}". Please use group with "{parsed[key_]}" {key_} '
-                             + f'or use {group_type} {command_action} command.')
+            raise ValueError(
+                f'Can not {command_action} the rule. The group {key_} is "{parsed[key_]}", '
+                + f'the rule type is "{group_type}". Please use group with "{parsed[key_]}" {key_} '
+                + f"or use {group_type} {command_action} command."
+            )
         super().validate_server_pool_rule(args, group_type, command_action)
 
-    def protected_hostname_create_request(
-        self, name: str, default_action: str
-    ) -> dict[str, Any]:
+    def protected_hostname_create_request(self, name: str, default_action: str) -> dict[str, Any]:
         """Create a new protected hostname.
 
         Args:
@@ -3573,9 +3337,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def protected_hostname_update_request(
-        self, name: str, default_action: str | None
-    ) -> dict[str, Any]:
+    def protected_hostname_update_request(self, name: str, default_action: str | None) -> dict[str, Any]:
         """Update a protected hostname.
 
         Args:
@@ -3625,9 +3387,7 @@ class ClientV1(Client):
             url_suffix="ServerObjects/ProtectedHostnames/ProtectedHostnames",
         )
 
-    def protected_hostname_member_create_request(
-        self, name: str, host: str, action: str, **kwargs
-    ) -> dict[str, Any]:
+    def protected_hostname_member_create_request(self, name: str, host: str, action: str, **kwargs) -> dict[str, Any]:
         """Create a new protected hostname member.
 
         Args:
@@ -3670,9 +3430,7 @@ class ClientV1(Client):
         )
         return self._http_request(method="PUT", url_suffix=edp, json_data=data)
 
-    def protected_hostname_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def protected_hostname_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         """Delete a protected hostname member.
 
         Args:
@@ -3682,13 +3440,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        endpoint = \
-            f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}"
+        endpoint = f"ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}"
         return self._http_request(method="DELETE", url_suffix=endpoint)
 
-    def protected_hostname_member_list_request(
-        self, group_name: str, **kwargs
-    ) -> dict[str, Any]:
+    def protected_hostname_member_list_request(self, group_name: str, **kwargs) -> dict[str, Any]:
         """List protected hostname members.
 
         Args:
@@ -3715,9 +3470,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1.
         """
         data = {"name": group_name}
-        return self._http_request(
-            method="POST", url_suffix="WebProtection/Access/IPList", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="WebProtection/Access/IPList", json_data=data)
 
     def ip_list_group_update_request(self, group_name: str, **kwargs) -> dict[str, Any]:
         """Update an ip list group.
@@ -3748,13 +3501,9 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="WebProtection/Access/IPList"
-        )
+        return self._http_request(method="GET", url_suffix="WebProtection/Access/IPList")
 
-    def ip_list_member_create_request(
-        self, group_name: str, member_type: str, ip_address: str, **kwargs
-    ) -> dict[str, Any]:
+    def ip_list_member_create_request(self, group_name: str, member_type: str, ip_address: str, **kwargs) -> dict[str, Any]:
         """Create an IP list member.
 
         Args:
@@ -3837,9 +3586,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def ip_list_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def ip_list_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         """Delete an IP list member.
 
         Args:
@@ -3889,9 +3636,7 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "http_content_routing_policy": http_content_routing_policy,
-                "defaultpage": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [is_default]
-                ),
+                "defaultpage": dict_safe_get(self.parser.boolean_user_to_api_mapper, [is_default]),
                 "inheritWebProtectionProfile": dict_safe_get(
                     self.parser.boolean_user_to_api_mapper,
                     [inherit_webprotection_profile],
@@ -3931,9 +3676,7 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "http_content_routing_policy": http_content_routing_policy,
-                "defaultpage": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [is_default]
-                ),
+                "defaultpage": dict_safe_get(self.parser.boolean_user_to_api_mapper, [is_default]),
                 "inheritWebProtectionProfile": dict_safe_get(
                     self.parser.boolean_user_to_api_mapper,
                     [inherit_webprotection_profile],
@@ -3947,9 +3690,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def http_content_routing_member_delete_request(
-        self, policy_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def http_content_routing_member_delete_request(self, policy_name: str, member_id: str) -> dict[str, Any]:
         """Delete an HTTP content routing member.
 
         Args:
@@ -3964,9 +3705,7 @@ class ClientV1(Client):
             url_suffix=f"Policy/ServerPolicy/ServerPolicy/{policy_name}/EditContentRouting/{member_id}",
         )
 
-    def http_content_routing_member_list_request(
-        self, policy_name: str, **kwargs
-    ) -> dict[str, Any]:
+    def http_content_routing_member_list_request(self, policy_name: str, **kwargs) -> dict[str, Any]:
         """List HTTP content routing members.
 
         Args:
@@ -4002,16 +3741,12 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "name": name,
-                "severity": dict_safe_get(
-                    self.parser.severity_user_to_api_mapper, [severity]
-                ),
+                "severity": dict_safe_get(self.parser.severity_user_to_api_mapper, [severity]),
                 "triggerPolicy": trigger_policy,
                 "except": exception,
             }
         )
-        return self._http_request(
-            method="POST", url_suffix="WebProtection/Access/GeoIP", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="WebProtection/Access/GeoIP", json_data=data)
 
     def geo_ip_group_update_request(
         self,
@@ -4034,9 +3769,7 @@ class ClientV1(Client):
         """
         data = remove_empty_elements(
             {
-                "severity": dict_safe_get(
-                    self.parser.severity_user_to_api_mapper, [severity]
-                ),
+                "severity": dict_safe_get(self.parser.severity_user_to_api_mapper, [severity]),
                 "triggerPolicy": trigger_policy,
                 "except": exception,
             }
@@ -4068,9 +3801,7 @@ class ClientV1(Client):
         """
         return self._http_request(method="GET", url_suffix="WebProtection/Access/GeoIP")
 
-    def geo_ip_member_add_request(
-        self, group_name: str, countries_list: List[str]
-    ) -> dict[str, Any]:
+    def geo_ip_member_add_request(self, group_name: str, countries_list: List[str]) -> dict[str, Any]:
         """Add a new Geo IP member.
 
         Args:
@@ -4087,9 +3818,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def geo_ip_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def geo_ip_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         """Delete a new Geo IP member.
 
         Args:
@@ -4120,9 +3849,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="System/Status/StatusOperation"
-        )
+        return self._http_request(method="GET", url_suffix="System/Status/StatusOperation")
 
     def policy_status_get_request(self) -> dict[str, Any]:
         """Gets policy status.
@@ -4146,9 +3873,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="ServerObjects/Server/ServerPool"
-        )
+        return self._http_request(method="GET", url_suffix="ServerObjects/Server/ServerPool")
 
     def http_service_list_request(self) -> dict[str, Any]:
         """List the HTTP services.
@@ -4156,9 +3881,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="ServerObjects/Service/HttpServiceList"
-        )
+        return self._http_request(method="GET", url_suffix="ServerObjects/Service/HttpServiceList")
 
     def inline_protction_profile_list_request(self) -> dict[str, Any]:
         """List the Inline protection profiles.
@@ -4177,9 +3900,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="ServerObjects/Server/VirtualServer"
-        )
+        return self._http_request(method="GET", url_suffix="ServerObjects/Server/VirtualServer")
 
     def http_content_routing_poicy_list_request(self) -> dict[str, Any]:
         """List the HTTP content routing policies.
@@ -4187,9 +3908,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="ServerObjects/Server/HTTPContentRoutingPolicy"
-        )
+        return self._http_request(method="GET", url_suffix="ServerObjects/Server/HTTPContentRoutingPolicy")
 
     def server_policy_data_builder(
         self,
@@ -4216,39 +3935,25 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "name": name,
-                "depInMode": dict_safe_get(
-                    self.parser.deployment_mode_user_to_api_mapper, [deployment_mode]
-                ),
+                "depInMode": dict_safe_get(self.parser.deployment_mode_user_to_api_mapper, [deployment_mode]),
                 "virtualServer": virtual_server,
                 "serverPool": server_pool,
                 "protectedHostnames": protected_hostnames,
-                "clientRealIP": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [client_real_ip]
-                ),
-                "syncookie": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [syn_cookie]
-                ),
+                "clientRealIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [client_real_ip]),
+                "syncookie": dict_safe_get(self.parser.boolean_user_to_api_mapper, [syn_cookie]),
                 "halfopenThresh": half_open_thresh,
                 "HTTPService": http_service,
                 "HTTPSService": https_service,
                 "http2": dict_safe_get(self.parser.boolean_user_to_api_mapper, [http2]),
                 "sslprotocols": {"tls_v10": 0, "tls_v11": 0, "tls_v12": 1},
                 "local": certificate,
-                "hRedirectoHttps": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [redirect_to_https]
-                ),
+                "hRedirectoHttps": dict_safe_get(self.parser.boolean_user_to_api_mapper, [redirect_to_https]),
                 "InlineProtectionProfile": inline_protection_profile,
-                "MonitorMode": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [monitor_mode]
-                ),
-                "URLCaseSensitivity": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [url_case_sensitivity]
-                ),
+                "MonitorMode": dict_safe_get(self.parser.boolean_user_to_api_mapper, [monitor_mode]),
+                "URLCaseSensitivity": dict_safe_get(self.parser.boolean_user_to_api_mapper, [url_case_sensitivity]),
                 "comments": comments,
                 # HTTP content routing deployment mode
-                "prefer_cur_session": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [match_once]
-                ),
+                "prefer_cur_session": dict_safe_get(self.parser.boolean_user_to_api_mapper, [match_once]),
                 "intergroup": intergroup,
             }
         )
@@ -4316,9 +4021,7 @@ class ClientV1(Client):
             comments=comments,
             match_once=match_once,
         )
-        return self._http_request(
-            method="POST", url_suffix="Policy/ServerPolicy/ServerPolicy", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="Policy/ServerPolicy/ServerPolicy", json_data=data)
 
     def server_policy_update_request(
         self,
@@ -4417,13 +4120,9 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="Policy/ServerPolicy/ServerPolicy"
-        )
+        return self._http_request(method="GET", url_suffix="Policy/ServerPolicy/ServerPolicy")
 
-    def custom_whitelist_url_create_request(
-        self, request_type: str, request_url: str
-    ) -> dict[str, Any]:
+    def custom_whitelist_url_create_request(self, request_type: str, request_url: str) -> dict[str, Any]:
         """Create Custom whitelist url member.
 
         Args:
@@ -4436,9 +4135,7 @@ class ClientV1(Client):
         """
         data = {
             "type": self.URL_TYPE,
-            "requestType": dict_safe_get(
-                self.parser.request_type_user_to_api_mapper, [request_type]
-            ),
+            "requestType": dict_safe_get(self.parser.request_type_user_to_api_mapper, [request_type]),
             "requestURL": request_url,
             "enable": True,
         }
@@ -4469,13 +4166,9 @@ class ClientV1(Client):
         data = remove_empty_elements(
             {
                 "type": 1,
-                "requestType": dict_safe_get(
-                    self.parser.request_type_user_to_api_mapper, [request_type]
-                ),
+                "requestType": dict_safe_get(self.parser.request_type_user_to_api_mapper, [request_type]),
                 "requestURL": request_url,
-                "status": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [status]
-                ),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [status]),
             }
         )
         return self._http_request(
@@ -4490,13 +4183,9 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="ServerObjects/Global/CustomGlobalWhiteList"
-        )
+        return self._http_request(method="GET", url_suffix="ServerObjects/Global/CustomGlobalWhiteList")
 
-    def custom_whitelist_parameter_create_request(
-        self, name: str, **kwargs
-    ) -> dict[str, Any]:
+    def custom_whitelist_parameter_create_request(self, name: str, **kwargs) -> dict[str, Any]:
         """Create custom whitelist parameter member.
 
         Args:
@@ -4533,9 +4222,7 @@ class ClientV1(Client):
             {
                 "type": self.PARAMETER_TYPE,
                 "itemName": name,
-                "status": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [status]
-                ),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [status]),
             }
         )
         return self._http_request(
@@ -4544,9 +4231,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def custom_whitelist_cookie_create_request(
-        self, name: str, domain: str | None, path: str | None
-    ) -> dict[str, Any]:
+    def custom_whitelist_cookie_create_request(self, name: str, domain: str | None, path: str | None) -> dict[str, Any]:
         """Create custom whitelist cookie member.
 
         Args:
@@ -4598,9 +4283,7 @@ class ClientV1(Client):
                 "itemName": name,
                 "domain": domain,
                 "path": path,
-                "status": dict_safe_get(
-                    self.parser.boolean_user_to_api_mapper, [status]
-                ),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [status]),
             }
         )
         return self._http_request(
@@ -4627,9 +4310,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="WebProtection/Access/GeoIPExceptionsList"
-        )
+        return self._http_request(method="GET", url_suffix="WebProtection/Access/GeoIPExceptionsList")
 
     def trigger_policy_list_request(self) -> dict[str, Any]:
         """List the Trigger Policies.
@@ -4637,9 +4318,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="LogReport/LogPolicy/TriggerList"
-        )
+        return self._http_request(method="GET", url_suffix="LogReport/LogPolicy/TriggerList")
 
     def custom_predifined_whitelist_list_handler(
         self,
@@ -4649,13 +4328,9 @@ class ClientV1(Client):
         if isinstance(response, list):
             data = response
             if object_type:
-                return dict_safe_get(
-                    find_dict_in_array(data, "type", object_type), ["details"]
-                )
+                return dict_safe_get(find_dict_in_array(data, "type", object_type), ["details"])
             else:
-                return [
-                    member for object_type in data for member in object_type["details"]
-                ]
+                return [member for object_type in data for member in object_type["details"]]
         return []
 
     def custom_predifined_whitelist_list_request(self) -> List[dict[str, Any]]:
@@ -4669,9 +4344,7 @@ class ClientV1(Client):
             url_suffix="ServerObjects/Global/CustomPredefinedGlobalWhiteList",
         )
 
-    def custom_predifined_whitelist_update_request(
-        self, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    def custom_predifined_whitelist_update_request(self, data: dict[str, Any]) -> dict[str, Any]:
         """Update a Custom Predifined members.
 
         Returns:
@@ -4689,9 +4362,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="System/Certificates/InterCAGroupList"
-        )
+        return self._http_request(method="GET", url_suffix="System/Certificates/InterCAGroupList")
 
     def url_access_rule_group_create_request(
         self,
@@ -4761,8 +4432,7 @@ class ClientV1(Client):
                 "name": name,
                 "action": self.parser.url_action_user_to_api_mapper.get(action) if action else None,
                 "triggerPolicy": trigger_policy,
-                "severity": self.parser.severity_user_to_api_mapper.get(severity)
-                if severity else None,
+                "severity": self.parser.severity_user_to_api_mapper.get(severity) if severity else None,
                 "hostStatus": self.parser.boolean_user_to_api_mapper.get(host_status) if host_status else None,
                 "host": host if host_status == ArgumentValues.ENABLE.value else None,
             }
@@ -4828,9 +4498,7 @@ class ClientV1(Client):
         Returns:
             dict[str, Any]: URL access rule condition object for Fortiwev V1.
         """
-        source_address_type = (
-            source_address_type if source_address == ArgumentValues.ENABLE.value else None
-        )
+        source_address_type = source_address_type if source_address == ArgumentValues.ENABLE.value else None
         match source_address_type:
             case ArgumentValues.IP.value:
                 ip_type = None
@@ -4850,21 +4518,13 @@ class ClientV1(Client):
             {
                 "urlType": dict_safe_get(self.parser.url_type_user_to_api_mapper, [url_type]),
                 "urlPattern": url_pattern,
-                "meetThisConditionIf": dict_safe_get(self.parser.meet_condition_user_to_api_mapper, [
-                    meet_this_condition_if]
-                ),
-                "sourceAddress": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
-                    source_address]
-                ),
-                "sourceAddressType": dict_safe_get(self.parser.source_address_type_user_to_api_mapper, [
-                    source_address_type]
-                ),
+                "meetThisConditionIf": dict_safe_get(self.parser.meet_condition_user_to_api_mapper, [meet_this_condition_if]),
+                "sourceAddress": dict_safe_get(self.parser.boolean_user_to_api_mapper, [source_address]),
+                "sourceAddressType": dict_safe_get(self.parser.source_address_type_user_to_api_mapper, [source_address_type]),
                 "iPv4IPv6": ip_range,
                 "type": self.parser.ip_type_user_to_api_mapper.get(ip_type) if ip_type else None,
                 "domain": ip,
-                "source_domain_type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [
-                    source_domain_type]
-                ),
+                "source_domain_type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [source_domain_type]),
                 "source_domain": source_domain,
             }
         )
@@ -4972,9 +4632,7 @@ class ClientV1(Client):
             json_data=data,
         )
 
-    def url_access_rule_condition_delete_request(
-        self, group_name: str | None, condition_id: str | None
-    ) -> dict[str, Any]:
+    def url_access_rule_condition_delete_request(self, group_name: str | None, condition_id: str | None) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
         Args:
@@ -4987,9 +4645,7 @@ class ClientV1(Client):
         endpoint = f"WebProtection/Access/URLAccessRule/{group_name}/URLAccessRuleNewURLAccessCondition/{condition_id}"
         return self._http_request(method="DELETE", url_suffix=endpoint)
 
-    def url_access_rule_condition_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def url_access_rule_condition_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         """List URL access rule conditions.
 
         Args:
@@ -5007,9 +4663,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        return self._http_request(
-            method="GET", url_suffix="ServerObjects/Server/Persistence"
-        )
+        return self._http_request(method="GET", url_suffix="ServerObjects/Server/Persistence")
 
     def server_health_check_list_request(self) -> dict[str, Any]:
         """List all the server health check policies.
@@ -5102,12 +4756,8 @@ class ClientV1(Client):
                 "interface": kwargs.get("interface"),
                 "ipv4Address": kwargs.get("ipv4_address"),
                 "ipv6Address": kwargs.get("ipv6_address"),
-                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
-                    kwargs.get("status")]
-                ),
-                "useInterfaceIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
-                    kwargs.get("use_interface_ip")]
-                ),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("status")]),
+                "useInterfaceIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("use_interface_ip")]),
             }
         )
         return self._http_request(
@@ -5140,12 +4790,8 @@ class ClientV1(Client):
                 "interface": kwargs.get("interface"),
                 "ipv4Address": kwargs.get("ipv4_address"),
                 "ipv6Address": kwargs.get("ipv6_address"),
-                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
-                    kwargs.get("status")]
-                ),
-                "useInterfaceIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [
-                    kwargs.get("use_interface_ip")]
-                ),
+                "status": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("status")]),
+                "useInterfaceIP": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("use_interface_ip")]),
             }
         )
         return self._http_request(
@@ -5201,9 +4847,7 @@ class ClientV1(Client):
     ) -> dict[str, Any]:
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
-    def virtual_server_item_delete_request(
-        self, group_name: str | None, condition_id: str | None
-    ) -> dict[str, Any]:
+    def virtual_server_item_delete_request(self, group_name: str | None, condition_id: str | None) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
         Args:
@@ -5215,9 +4859,7 @@ class ClientV1(Client):
         """
         raise NotImplementedError(ErrorMessage.V1_NOT_SUPPORTED.value)
 
-    def virtual_server_item_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def virtual_server_item_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         """List URL access rule conditions.
 
         Args:
@@ -5243,9 +4885,7 @@ class ClientV1(Client):
                 "name": name,
                 "type": dict_safe_get(self.parser.server_pool_group_type_user_to_api_mapper, [type]),
                 "comments": comments,
-                "singleServerOrServerBalance": dict_safe_get(
-                    self.parser.server_type_user_to_api_mapper, [server_balance]
-                ),
+                "singleServerOrServerBalance": dict_safe_get(self.parser.server_type_user_to_api_mapper, [server_balance]),
                 "serverHealthCheck": health_check,
                 "loadBalancingAlgorithm": dict_safe_get(self.parser.lb_algo_user_to_api_mapper, [lb_algo]),
                 "persistence": persistence,
@@ -5326,15 +4966,9 @@ class ClientV1(Client):
     ) -> dict[str, Any]:
         return remove_empty_elements(
             {
-                "status1": dict_safe_get(
-                    self.parser.server_pool_rule_status_user_to_api_mapper, [kwargs.get("status")]
-                ),
-                "status2": dict_safe_get(
-                    self.parser.server_pool_rule_status_user_to_api_mapper, [kwargs.get("status")]
-                ),
-                "serverType1": dict_safe_get(
-                    self.parser.server_pool_rule_type_user_to_api_mapper, [kwargs.get("server_type")]
-                ),
+                "status1": dict_safe_get(self.parser.server_pool_rule_status_user_to_api_mapper, [kwargs.get("status")]),
+                "status2": dict_safe_get(self.parser.server_pool_rule_status_user_to_api_mapper, [kwargs.get("status")]),
+                "serverType1": dict_safe_get(self.parser.server_pool_rule_type_user_to_api_mapper, [kwargs.get("server_type")]),
                 "serverType2": "1",  # IP in case the group type != reverse proxy.
                 "ip": kwargs.get("ip"),
                 "domain": kwargs.get("domain"),
@@ -5350,8 +4984,7 @@ class ClientV1(Client):
                 "warmUp": kwargs.get("warm_up"),
                 "warmRate": kwargs.get("warm_rate"),
                 "backupServer": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("backup_server")]),
-                "inHeritHCheck": dict_safe_get(self.parser.boolean_user_to_api_mapper,
-                                               [kwargs.get("health_check_inherit")]),
+                "inHeritHCheck": dict_safe_get(self.parser.boolean_user_to_api_mapper, [kwargs.get("health_check_inherit")]),
             }
         )
 
@@ -5373,18 +5006,14 @@ class ClientV1(Client):
         rule_id: str,
         **kwargs,
     ) -> dict[str, Any]:
-        data = self.build_server_pool_rule(
-            **kwargs
-        )
+        data = self.build_server_pool_rule(**kwargs)
         return self._http_request(
             method="PUT",
             url_suffix=f"ServerObjects/Server/ServerPool/{group_name}/EditServerPoolRule/{rule_id}",
             json_data=data,
         )
 
-    def server_pool_rule_delete_request(
-        self, group_name: str | None, rule_id: str | None
-    ) -> dict[str, Any]:
+    def server_pool_rule_delete_request(self, group_name: str | None, rule_id: str | None) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
         Args:
@@ -5399,9 +5028,7 @@ class ClientV1(Client):
             url_suffix=f"ServerObjects/Server/ServerPool/{group_name}/EditServerPoolRule/{rule_id}",
         )
 
-    def server_pool_rule_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def server_pool_rule_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         """List URL access rule conditions.
 
         Args:
@@ -5452,9 +5079,7 @@ class ClientV2(Client):
         Returns:
             str: API key.
         """
-        to_encode = (
-            "{" + f'"username":"{username}","password":"{password}","vdom":"root"' + "}"
-        )
+        to_encode = "{" + f'"username":"{username}","password":"{password}","vdom":"root"' + "}"
         return b64_encode(to_encode)
 
     @property
@@ -5493,9 +5118,7 @@ class ClientV2(Client):
         Returns:
             Union[int,str]: Error value.
         """
-        return dict_safe_get(error, ["results", "errcode"]) or dict_safe_get(
-            error, ["results", "pingResult"]
-        )
+        return dict_safe_get(error, ["results", "errcode"]) or dict_safe_get(error, ["results", "pingResult"])
 
     def get_object_id(
         self,
@@ -5597,9 +5220,7 @@ class ClientV2(Client):
             "disable",
         ]:
             raise ValueError(ErrorMessage.RETRY_ON_HTTP_LAYER.value)
-        if args.get("retry_on_connect_failure") and args[
-            "retry_on_connect_failure"
-        ] not in ["enable", "disable"]:
+        if args.get("retry_on_connect_failure") and args["retry_on_connect_failure"] not in ["enable", "disable"]:
             raise ValueError(ErrorMessage.RETRY_ON_CONNECT_FAILURE.value)
         if args.get("syn_cookie") and args["syn_cookie"] not in [
             "enable",
@@ -5615,29 +5236,17 @@ class ClientV2(Client):
         if half_open_thresh and not 10 <= half_open_thresh <= 10000:
             raise ValueError(ErrorMessage.HALF_OPEN_THRESH.value)
         arg_to_number(args.get("retry_on_cache_size"))
-        retry_times_on_connect_failure = arg_to_number(
-            args.get("retry_times_on_connect_failure")
-        )
-        if (
-            retry_times_on_connect_failure
-            and not 1 <= retry_times_on_connect_failure <= 5
-        ):
+        retry_times_on_connect_failure = arg_to_number(args.get("retry_times_on_connect_failure"))
+        if retry_times_on_connect_failure and not 1 <= retry_times_on_connect_failure <= 5:
             raise ValueError(ErrorMessage.RETRY_TIMES_ON_CONNECT.value)
         retry_times_on_http_layer = arg_to_number(args.get("retry_times_on_http_layer"))
         if retry_times_on_http_layer and not 1 <= retry_times_on_http_layer <= 5:
             raise ValueError(ErrorMessage.RETRY_TIMES_ON_HTTP.value)
-        retry_on_http_response_codes = [
-            arg_to_number(code)
-            for code in argToList(args.get("retry_on_http_response_codes"))
-        ]
-        if not set(retry_on_http_response_codes).issubset(
-            [404, 408, 500, 501, 502, 503, 504]
-        ):
+        retry_on_http_response_codes = [arg_to_number(code) for code in argToList(args.get("retry_on_http_response_codes"))]
+        if not set(retry_on_http_response_codes).issubset([404, 408, 500, 501, 502, 503, 504]):
             raise ValueError(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
 
-    def validate_custom_whitelist(
-        self, args: dict[str, Any], member_type: str | None = None
-    ):
+    def validate_custom_whitelist(self, args: dict[str, Any], member_type: str | None = None):
         """Custom whitelist member args validator.
 
         Args:
@@ -5666,16 +5275,17 @@ class ClientV2(Client):
                     "Regular Expression",
                 ]:
                     raise ValueError(ErrorMessage.REQUEST_TYPE.value)
-                if (
-                    args.get("request_type") == "Simple String"
-                    and args.get("request_url")
-                    and args["request_url"][0] != "/"
-                ):
+                if args.get("request_type") == "Simple String" and args.get("request_url") and args["request_url"][0] != "/":
                     raise ValueError(ErrorMessage.REQUEST_URL.value)
-        if member_type == "Header Field" and args.get("header_name_type") and args["header_name_type"] not in [
-            "Simple String",
-            "Regular Expression",
-        ]:
+        if (
+            member_type == "Header Field"
+            and args.get("header_name_type")
+            and args["header_name_type"]
+            not in [
+                "Simple String",
+                "Regular Expression",
+            ]
+        ):
             raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
 
     def validate_virtual_server_item(self, args: dict[str, Any]):
@@ -5701,9 +5311,9 @@ class ClientV2(Client):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        if args.get("health_check") and args.get('type') == ArgumentValues.TRUE_TRANSPARENT_PROXY.value:
-            validate_argument(args=args, key_='health_check_source_ip')
-            validate_argument(args=args, key_='health_check_source_ip_v6')
+        if args.get("health_check") and args.get("type") == ArgumentValues.TRUE_TRANSPARENT_PROXY.value:
+            validate_argument(args=args, key_="health_check_source_ip")
+            validate_argument(args=args, key_="health_check_source_ip_v6")
         super().validate_server_pool_group(args, action)
 
     def validate_server_pool_rule(self, args: dict[str, Any], group_type: str, command_action: str):
@@ -5717,18 +5327,18 @@ class ClientV2(Client):
         Raises:
             ValueError: Errors that help the user to insert the required arguments.
         """
-        res = self.server_pool_group_list_request(name=args.get("group_name")).get('results', {})
+        res = self.server_pool_group_list_request(name=args.get("group_name")).get("results", {})
         parsed = self.parser.parse_server_pool(res)
         key_ = "type" if group_type in ArgumentValues.SERVER_POOL_TYPE.value else "protocol"
         if group_type != parsed[key_]:
-            raise ValueError(f'Can not {command_action} the rule. The group {key_} is "{parsed[key_]}", '
-                             + f'the rule type is "{group_type}". Please use group with "{parsed[key_]}" {key_} '
-                             + f'or use {group_type} {command_action} command.')
+            raise ValueError(
+                f'Can not {command_action} the rule. The group {key_} is "{parsed[key_]}", '
+                + f'the rule type is "{group_type}". Please use group with "{parsed[key_]}" {key_} '
+                + f"or use {group_type} {command_action} command."
+            )
         super().validate_server_pool_rule(args, group_type, command_action)
 
-    def protected_hostname_create_request(
-        self, name: str, default_action: str
-    ) -> dict[str, Any]:
+    def protected_hostname_create_request(self, name: str, default_action: str) -> dict[str, Any]:
         """Create a new protected hostname.
 
         Args:
@@ -5739,22 +5349,16 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
 
-        action_val = dict_safe_get(
-            self.parser.action_user_to_api_mapper, [default_action]
-        )
+        action_val = dict_safe_get(self.parser.action_user_to_api_mapper, [default_action])
         data = {
             "data": {
                 "name": name,
                 "default-action": action_val,
             }
         }
-        return self._http_request(
-            method="POST", url_suffix="cmdb/server-policy/allow-hosts", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="cmdb/server-policy/allow-hosts", json_data=data)
 
-    def protected_hostname_update_request(
-        self, name: str, default_action: str | None
-    ) -> dict[str, Any]:
+    def protected_hostname_update_request(self, name: str, default_action: str | None) -> dict[str, Any]:
         """Update a protected hostname.
 
         Args:
@@ -5769,9 +5373,7 @@ class ClientV2(Client):
             "data": remove_empty_elements(
                 {
                     "name": name,
-                    "default-action": dict_safe_get(
-                        self.parser.action_user_to_api_mapper, [default_action]
-                    ),
+                    "default-action": dict_safe_get(self.parser.action_user_to_api_mapper, [default_action]),
                 }
             )
         }
@@ -5793,9 +5395,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {"mkey": name}
-        return self._http_request(
-            method="DELETE", url_suffix="cmdb/server-policy/allow-hosts", params=params
-        )
+        return self._http_request(method="DELETE", url_suffix="cmdb/server-policy/allow-hosts", params=params)
 
     def protected_hostname_list_request(self, **kwargs) -> dict[str, Any]:
         """Get protected hostnames.
@@ -5804,13 +5404,9 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = remove_empty_elements({"mkey": kwargs.get("name")})
-        return self._http_request(
-            method="GET", url_suffix="cmdb/server-policy/allow-hosts", params=params
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/server-policy/allow-hosts", params=params)
 
-    def protected_hostname_member_create_request(
-        self, name: str, host: str, action: str, **kwargs
-    ) -> dict[str, Any]:
+    def protected_hostname_member_create_request(self, name: str, host: str, action: str, **kwargs) -> dict[str, Any]:
         """Create a new protected hostname member.
 
         Args:
@@ -5834,9 +5430,7 @@ class ClientV2(Client):
                 "host": host,
             }
         }
-        return self._http_request(
-            method="POST", url_suffix=endpoint, json_data=data, params=params
-        )
+        return self._http_request(method="POST", url_suffix=endpoint, json_data=data, params=params)
 
     def protected_hostname_member_update_request(
         self, group_name: str, member_id: str, host: str | None, **kwargs
@@ -5862,21 +5456,15 @@ class ClientV2(Client):
             "data": remove_empty_elements(
                 {
                     "host": host,
-                    "action": dict_safe_get(
-                        self.parser.action_user_to_api_mapper, [kwargs.get("action")]
-                    ),
+                    "action": dict_safe_get(self.parser.action_user_to_api_mapper, [kwargs.get("action")]),
                     "ignore-port": kwargs.get("ignore_port"),
                     "include-subdomains": kwargs.get("include_subdomains"),
                 }
             )
         }
-        return self._http_request(
-            method="PUT", url_suffix=endpoint, json_data=data, params=params
-        )
+        return self._http_request(method="PUT", url_suffix=endpoint, json_data=data, params=params)
 
-    def protected_hostname_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def protected_hostname_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         """Delete a protected hostname member.
 
         Args:
@@ -5893,9 +5481,7 @@ class ClientV2(Client):
         }
         return self._http_request(method="DELETE", url_suffix=endpoint, params=params)
 
-    def protected_hostname_member_list_request(
-        self, group_name: str, **kwargs
-    ) -> dict[str, Any]:
+    def protected_hostname_member_list_request(self, group_name: str, **kwargs) -> dict[str, Any]:
         """List protected hostname members.
 
         Args:
@@ -5927,9 +5513,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        action_val = dict_safe_get(
-            self.parser.action_user_to_api_mapper, [kwargs["action"]]
-        )
+        action_val = dict_safe_get(self.parser.action_user_to_api_mapper, [kwargs["action"]])
         data = {
             "data": {
                 "name": group_name,
@@ -5940,9 +5524,7 @@ class ClientV2(Client):
                 "trigger-policy": kwargs.get("trigger_policy"),
             }
         }
-        response = self._http_request(
-            method="POST", url_suffix="cmdb/waf/ip-list", json_data=data
-        )
+        response = self._http_request(method="POST", url_suffix="cmdb/waf/ip-list", json_data=data)
         return response
 
     def ip_list_group_update_request(self, group_name: str, **kwargs) -> dict[str, Any]:
@@ -5964,9 +5546,7 @@ class ClientV2(Client):
             "data": remove_empty_elements(
                 {
                     "name": group_name,
-                    "action": dict_safe_get(
-                        self.parser.action_user_to_api_mapper, [kwargs.get("action")]
-                    ),
+                    "action": dict_safe_get(self.parser.action_user_to_api_mapper, [kwargs.get("action")]),
                     "block-period": kwargs.get("block_period"),
                     "severity": kwargs.get("severity"),
                     "ignore-x-forwarded-for": kwargs.get("ignore_x_forwarded_for"),
@@ -5974,9 +5554,7 @@ class ClientV2(Client):
                 }
             )
         }
-        return self._http_request(
-            method="PUT", url_suffix="cmdb/waf/ip-list", json_data=data, params=params
-        )
+        return self._http_request(method="PUT", url_suffix="cmdb/waf/ip-list", json_data=data, params=params)
 
     def ip_list_group_delete_request(self, group_name: str) -> dict[str, Any]:
         """Delete an IP list group.
@@ -5988,9 +5566,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {"mkey": group_name}
-        return self._http_request(
-            method="DELETE", url_suffix="cmdb/waf/ip-list", params=params
-        )
+        return self._http_request(method="DELETE", url_suffix="cmdb/waf/ip-list", params=params)
 
     def ip_list_group_list_request(self, **kwargs) -> dict[str, Any]:
         """List the IP list groups.
@@ -6003,13 +5579,9 @@ class ClientV2(Client):
         """
         group_name = kwargs.get("group_name")
         params = {"mkey": group_name} if group_name else {}
-        return self._http_request(
-            method="GET", url_suffix="cmdb/waf/ip-list", params=params
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/waf/ip-list", params=params)
 
-    def ip_list_member_create_request(
-        self, group_name: str, member_type: str, ip_address: str, **kwargs
-    ) -> dict[str, Any]:
+    def ip_list_member_create_request(self, group_name: str, member_type: str, ip_address: str, **kwargs) -> dict[str, Any]:
         """Create an IP list member.
 
         Args:
@@ -6058,9 +5630,7 @@ class ClientV2(Client):
         data: dict[str, Any] = {
             "data": remove_empty_elements(
                 {
-                    "type": dict_safe_get(
-                        self.parser.type_user_to_api_mapper, [member_type]
-                    ),
+                    "type": dict_safe_get(self.parser.type_user_to_api_mapper, [member_type]),
                     "ip": ip_address,
                 }
             )
@@ -6072,9 +5642,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def ip_list_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def ip_list_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         """Delete an IP list member.
 
         Args:
@@ -6100,9 +5668,7 @@ class ClientV2(Client):
         params = {"mkey": group_name}
         if member_id := kwargs.get("member_id"):
             params.update({"sub_mkey": member_id})
-        return self._http_request(
-            method="GET", url_suffix="cmdb/waf/ip-list/members", params=params
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/waf/ip-list/members", params=params)
 
     def http_content_routing_member_add_request(
         self,
@@ -6185,9 +5751,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def http_content_routing_member_delete_request(
-        self, policy_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def http_content_routing_member_delete_request(self, policy_name: str, member_id: str) -> dict[str, Any]:
         """Delete an HTTP content routing member.
 
         Args:
@@ -6204,9 +5768,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def http_content_routing_member_list_request(
-        self, policy_name: str, **kwargs
-    ) -> dict[str, Any]:
+    def http_content_routing_member_list_request(self, policy_name: str, **kwargs) -> dict[str, Any]:
         """List HTTP content routing members.
 
         Args:
@@ -6251,9 +5813,7 @@ class ClientV2(Client):
         data = {
             "data": {
                 "name": name,
-                "action": dict_safe_get(
-                    self.parser.action_user_to_api_mapper, [kwargs["action"]]
-                ),
+                "action": dict_safe_get(self.parser.action_user_to_api_mapper, [kwargs["action"]]),
                 "block-period": kwargs["block_period"],
                 "severity": severity,
                 "trigger": trigger_policy,
@@ -6261,9 +5821,7 @@ class ClientV2(Client):
                 "ignore-x-forwarded-for": kwargs["ignore_x_forwarded_for"],
             }
         }
-        return self._http_request(
-            method="POST", url_suffix="cmdb/waf/geo-block-list", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="cmdb/waf/geo-block-list", json_data=data)
 
     def geo_ip_group_update_request(
         self,
@@ -6292,9 +5850,7 @@ class ClientV2(Client):
         data = {
             "data": remove_empty_elements(
                 {
-                    "action": dict_safe_get(
-                        self.parser.action_user_to_api_mapper, [kwargs.get("action")]
-                    ),
+                    "action": dict_safe_get(self.parser.action_user_to_api_mapper, [kwargs.get("action")]),
                     "block-period": kwargs.get("block_period"),
                     "ignore-x-forwarded-for": kwargs.get("ignore_x_forwarded_for"),
                     "severity": severity,
@@ -6321,9 +5877,7 @@ class ClientV2(Client):
         """
 
         params = {"mkey": name}
-        return self._http_request(
-            method="DELETE", url_suffix="cmdb/waf/geo-block-list", params=params
-        )
+        return self._http_request(method="DELETE", url_suffix="cmdb/waf/geo-block-list", params=params)
 
     def geo_ip_group_list_request(self, **kwargs) -> dict[str, Any]:
         """List the Geo IP groups.
@@ -6337,13 +5891,9 @@ class ClientV2(Client):
 
         name = kwargs.get("name")
         params = {"mkey": name} if name else {}
-        return self._http_request(
-            method="GET", url_suffix="cmdb/waf/geo-block-list", params=params
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/waf/geo-block-list", params=params)
 
-    def geo_ip_member_add_request(
-        self, group_name: str, countries_list: List[str]
-    ) -> dict[str, Any]:
+    def geo_ip_member_add_request(self, group_name: str, countries_list: List[str]) -> dict[str, Any]:
         """Add a new Geo IP member.
 
         Args:
@@ -6366,9 +5916,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def geo_ip_member_delete_request(
-        self, group_name: str, member_id: str
-    ) -> dict[str, Any]:
+    def geo_ip_member_delete_request(self, group_name: str, member_id: str) -> dict[str, Any]:
         """Delete a Geo IP member.
 
         Args:
@@ -6408,9 +5956,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        return self._http_request(
-            method="GET", url_suffix="system/status.systemoperation"
-        )
+        return self._http_request(method="GET", url_suffix="system/status.systemoperation")
 
     def policy_status_get_request(self) -> dict[str, Any]:
         """Gets policy status.
@@ -6434,9 +5980,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        return self._http_request(
-            method="GET", url_suffix="cmdb/server-policy/server-pool"
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/server-policy/server-pool")
 
     def http_service_list_request(self) -> dict[str, Any]:
         """List the HTTP services.
@@ -6444,9 +5988,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        return self._http_request(
-            method="GET", url_suffix="cmdb/server-policy/service.predefined"
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/server-policy/service.predefined")
 
     def inline_protction_profile_list_request(self) -> dict[str, Any]:
         """List the Inline protection profiles.
@@ -6454,9 +5996,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        return self._http_request(
-            method="GET", url_suffix="cmdb/waf/web-protection-profile.inline-protection"
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/waf/web-protection-profile.inline-protection")
 
     def virtual_server_list_request(self) -> dict[str, Any]:
         """List the virtual servers.
@@ -6472,9 +6012,7 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        return self._http_request(
-            method="GET", url_suffix="cmdb/server-policy/http-content-routing-policy"
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/server-policy/http-content-routing-policy")
 
     def handle_certificates(
         self,
@@ -6599,9 +6137,7 @@ class ClientV2(Client):
                     "retry-times-on-connect-failure": retry_times_on_connect_failure,
                     "retry-on-http-layer": retry_on_http_layer,
                     "retry-times-on-http-layer": retry_times_on_http_layer,
-                    "retry-on-http-response-codes": " ".join(
-                        retry_on_http_response_codes
-                    )
+                    "retry-on-http-response-codes": " ".join(retry_on_http_response_codes)
                     if retry_on_http_response_codes
                     else None,
                     "scripting": scripting,
@@ -6618,11 +6154,7 @@ class ClientV2(Client):
                 }
             )
         }
-        data.update(
-            self.handle_certificates(
-                certificate_type, certificate, multi_certificate, lets_certificate
-            )
-        )
+        data.update(self.handle_certificates(certificate_type, certificate, multi_certificate, lets_certificate))
         return data
 
     def server_policy_create_request(
@@ -6720,9 +6252,7 @@ class ClientV2(Client):
             lets_certificate=kwards.get("lets_certificate"),
             multi_certificate=kwards.get("multi_certificate"),
         )
-        return self._http_request(
-            method="POST", url_suffix="cmdb/server-policy/policy", json_data=data
-        )
+        return self._http_request(method="POST", url_suffix="cmdb/server-policy/policy", json_data=data)
 
     def server_policy_update_request(
         self,
@@ -6791,9 +6321,7 @@ class ClientV2(Client):
         params = {"mkey": name}
         data = self.server_policy_data_builder(
             name=name,
-            deployment_mode=dict_safe_get(
-                self.parser.deployment_mode_user_to_api_mapper, [deployment_mode]
-            ),
+            deployment_mode=dict_safe_get(self.parser.deployment_mode_user_to_api_mapper, [deployment_mode]),
             virtual_server=virtual_server,
             server_pool=server_pool,
             protected_hostnames=protected_hostnames,
@@ -6982,9 +6510,7 @@ class ClientV2(Client):
         Returns:
             dict[str, Any]: URL access rule condition object for Fortiwev V2.
         """
-        source_address_type = (
-            source_address_type if source_address == ArgumentValues.ENABLE.value else None
-        )
+        source_address_type = source_address_type if source_address == ArgumentValues.ENABLE.value else None
 
         match source_address_type:
             case ArgumentValues.IP.value:
@@ -7006,22 +6532,14 @@ class ClientV2(Client):
                 {
                     "type": self.parser.url_type_user_to_api_mapper.get(url_type) if url_type else None,
                     "sip-address-check": source_address,
-                    "sip-address-type": dict_safe_get(self.parser.source_address_type_user_to_api_mapper, [
-                        source_address_type]
-                    ),
+                    "sip-address-type": dict_safe_get(self.parser.source_address_type_user_to_api_mapper, [source_address_type]),
                     "sip-address-value": ip_range,
-                    "sdomain-type": dict_safe_get(self.parser.ip_type_user_to_api_mapper, [
-                        ip_type]
-                    ),
-                    "source-domain-type": dict_safe_get(self.parser.url_type_user_to_api_mapper, [
-                        source_domain_type]
-                    ),
+                    "sdomain-type": dict_safe_get(self.parser.ip_type_user_to_api_mapper, [ip_type]),
+                    "source-domain-type": dict_safe_get(self.parser.url_type_user_to_api_mapper, [source_domain_type]),
                     "sip-address-domain": ip,
                     "source-domain": source_domain,
                     "reg-exp": url_pattern,
-                    "reverse-match": dict_safe_get(self.parser.meet_condition_user_to_api_mapper, [
-                        meet_this_condition_if]
-                    ),
+                    "reverse-match": dict_safe_get(self.parser.meet_condition_user_to_api_mapper, [meet_this_condition_if]),
                 }
             )
         }
@@ -7132,9 +6650,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def url_access_rule_condition_delete_request(
-        self, group_name: str | None, member_id: str | None
-    ) -> dict[str, Any]:
+    def url_access_rule_condition_delete_request(self, group_name: str | None, member_id: str | None) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
         Args:
@@ -7151,9 +6667,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def url_access_rule_condition_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def url_access_rule_condition_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         """List URL access rule conditions.
 
         Args:
@@ -7180,9 +6694,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {"mkey": policy_name}
-        return self._http_request(
-            method="DELETE", url_suffix="cmdb/server-policy/policy", params=params
-        )
+        return self._http_request(method="DELETE", url_suffix="cmdb/server-policy/policy", params=params)
 
     def server_policy_list_request(self, **kwargs) -> dict[str, Any]:
         """List the server policies.
@@ -7192,13 +6704,9 @@ class ClientV2(Client):
         """
         name = kwargs.get("name")
         params = {"mkey": name} if name else {}
-        return self._http_request(
-            method="GET", url_suffix="cmdb/server-policy/policy", params=params
-        )
+        return self._http_request(method="GET", url_suffix="cmdb/server-policy/policy", params=params)
 
-    def custom_whitelist_url_create_request(
-        self, request_type: str, request_url: str
-    ) -> dict[str, Any]:
+    def custom_whitelist_url_create_request(self, request_type: str, request_url: str) -> dict[str, Any]:
         """Create Custom whitelist url member.
 
         Args:
@@ -7212,9 +6720,7 @@ class ClientV2(Client):
         data = {
             "data": {
                 "type": "URL",
-                "request-type": dict_safe_get(
-                    self.parser.request_type_user_to_api_mapper, [request_type]
-                ),
+                "request-type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [request_type]),
                 "request-file": request_url,
             }
         }
@@ -7246,9 +6752,7 @@ class ClientV2(Client):
             {
                 "data": {
                     "type": "URL",
-                    "request-type": dict_safe_get(
-                        self.parser.request_type_user_to_api_mapper, [request_type]
-                    ),
+                    "request-type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [request_type]),
                     "request-file": request_url,
                     "status": status,
                 }
@@ -7275,9 +6779,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def custom_whitelist_parameter_create_request(
-        self, name: str, **kwargs
-    ) -> dict[str, Any]:
+    def custom_whitelist_parameter_create_request(self, name: str, **kwargs) -> dict[str, Any]:
         """Create custom whitelist parameter member.
 
         Args:
@@ -7377,9 +6879,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def custom_whitelist_cookie_create_request(
-        self, name: str, domain: str | None, path: str | None
-    ) -> dict[str, Any]:
+    def custom_whitelist_cookie_create_request(self, name: str, domain: str | None, path: str | None) -> dict[str, Any]:
         """Create custom whitelist cookie member.
 
         Args:
@@ -7471,14 +6971,10 @@ class ClientV2(Client):
             {
                 "data": {
                     "type": "Header_Field",
-                    "header-type": dict_safe_get(
-                        self.parser.request_type_user_to_api_mapper, [header_name_type]
-                    ),
+                    "header-type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [header_name_type]),
                     "name": name,
                     "value-status": value_status,
-                    "value-type": dict_safe_get(
-                        self.parser.request_type_user_to_api_mapper, [header_value_type]
-                    ),
+                    "value-type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [header_value_type]),
                     "value": value,
                 }
             }
@@ -7518,14 +7014,10 @@ class ClientV2(Client):
             {
                 "data": {
                     "type": "Header_Field",
-                    "header-type": dict_safe_get(
-                        self.parser.request_type_user_to_api_mapper, [header_name_type]
-                    ),
+                    "header-type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [header_name_type]),
                     "name": name,
                     "value-status": value_status,
-                    "value-type": dict_safe_get(
-                        self.parser.request_type_user_to_api_mapper, [header_value_type]
-                    ),
+                    "value-type": dict_safe_get(self.parser.request_type_user_to_api_mapper, [header_value_type]),
                     "value": value,
                     "status": status,
                 }
@@ -7578,14 +7070,10 @@ class ClientV2(Client):
         if isinstance(response, dict):
             data = response["results"]
             if object_type:
-                rel_data = dict_safe_get(
-                    find_dict_in_array(data, "type", object_type), ["details"]
-                )
+                rel_data = dict_safe_get(find_dict_in_array(data, "type", object_type), ["details"])
                 return {"results": rel_data}
             else:
-                rel_data = [
-                    member for object_type in data for member in object_type["details"]
-                ]
+                rel_data = [member for object_type in data for member in object_type["details"]]
                 return {"results": rel_data}
         return {}
 
@@ -7600,9 +7088,7 @@ class ClientV2(Client):
             url_suffix="policy/serverobjects.global.predefinedglobalwhitelist",
         )
 
-    def custom_predifined_whitelist_update_request(
-        self, data: dict[str, Any]
-    ) -> dict[str, Any]:
+    def custom_predifined_whitelist_update_request(self, data: dict[str, Any]) -> dict[str, Any]:
         """Update a Custom Predifined members.
 
         Returns:
@@ -7823,7 +7309,7 @@ class ClientV2(Client):
                     "interface": interface,
                     "use-interface-ip": use_interface_ip,
                     "status": status,
-                    "vip": virtual_ip if use_interface_ip == 'disable' else None,
+                    "vip": virtual_ip if use_interface_ip == "disable" else None,
                 }
             )
         }
@@ -7874,9 +7360,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def virtual_server_item_delete_request(
-        self, group_name: str | None, member_id: str | None
-    ) -> dict[str, Any]:
+    def virtual_server_item_delete_request(self, group_name: str | None, member_id: str | None) -> dict[str, Any]:
         """Delete a virtual server item.
 
         Args:
@@ -7893,9 +7377,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def virtual_server_item_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def virtual_server_item_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         """List virtual server items.
 
         Args:
@@ -7932,7 +7414,6 @@ class ClientV2(Client):
         adfs_server_name: str | None = None,
         health_check_source_ip: str | None = None,
         health_check_source_ip_v6: str | None = None,
-
     ) -> dict[str, Any]:
         """Build server pool group object.
 
@@ -7962,12 +7443,8 @@ class ClientV2(Client):
             {
                 "data": {
                     "name": name,
-                    "type": type and self.parser.server_pool_group_type_user_to_api_mapper.get(
-                        type
-                    ),
-                    "server-balance": server_balance and self.parser.server_type_user_to_api_mapper.get(
-                        server_balance
-                    ),
+                    "type": type and self.parser.server_pool_group_type_user_to_api_mapper.get(type),
+                    "server-balance": server_balance and self.parser.server_type_user_to_api_mapper.get(server_balance),
                     "lb-algo": lb_algo and self.parser.lb_algo_user_to_api_mapper.get(lb_algo),
                     "comment": comments,
                     "health": health_check,
@@ -7981,10 +7458,8 @@ class ClientV2(Client):
                     "server-pool-id": server_pool_id,
                     "proxy-protocol-version": proxy_protocol_version and proxy_protocol_version.lower(),
                     "adfs-server-name": adfs_server_name,
-
                     "hlck-sip": health_check_source_ip,
                     "hlck-sip6": health_check_source_ip_v6,
-
                 }
             }
         )
@@ -8149,7 +7624,6 @@ class ClientV2(Client):
         multi_certificate: str | None = None,
         letsencrypt: str | None = None,
         certficate_intermediate_group: str | None = None,
-
         implicit_ssl: str | None = None,
         registration_username: str | None = None,
         registration_password: str | None = None,
@@ -8194,16 +7668,14 @@ class ClientV2(Client):
             dict[str, Any]: Server pool object.
         """
         cert_type = None if not certificate_type else "enable" if certificate_type == "Letsencrypt" else "disable"
-        enable_multi_certificate = \
-            None if not certificate_type else 'enable' if certificate_type == "Multi Certificate" else "disable"
+        enable_multi_certificate = (
+            None if not certificate_type else "enable" if certificate_type == "Multi Certificate" else "disable"
+        )
         return remove_empty_elements(
             {
-                "data":
-                {
-                    "status": self.parser.server_pool_rule_status_user_to_api_mapper.get(status)
-                    if status else None,
-                    "server-type": self.parser.server_pool_rule_type_user_to_api_mapper.get(server_type)
-                    if server_type else None,
+                "data": {
+                    "status": self.parser.server_pool_rule_status_user_to_api_mapper.get(status) if status else None,
+                    "server-type": self.parser.server_pool_rule_type_user_to_api_mapper.get(server_type) if server_type else None,
                     "sdn-addr-type": sdn_address_type,
                     "sdn": sdn_connector,
                     "filter": filter,
@@ -8225,14 +7697,11 @@ class ClientV2(Client):
                     "backup-server": backup_server,
                     "sni": enable_sni,
                     "sni-certificate": sni_certificate,
-
                     "multi-certificate": enable_multi_certificate,
                     "certificate-type": cert_type,
-
                     "intermediate-certificate-group": certficate_intermediate_group,
                     "certificate-group": multi_certificate,
                     "lets-certificate": letsencrypt,
-
                     "implicit_ssl": implicit_ssl,
                     "adfs-username": registration_username,
                     "adfs-password": registration_password,
@@ -8290,9 +7759,7 @@ class ClientV2(Client):
         args.pop("group_name")
         args.pop("rule_id")
         args |= args.pop("kwargs")
-        data = self.build_server_pool_rule(
-            **args
-        )
+        data = self.build_server_pool_rule(**args)
         params = {"mkey": group_name, "sub_mkey": rule_id}
         return self._http_request(
             method="PUT",
@@ -8349,9 +7816,7 @@ class ClientV2(Client):
         args.pop("self")
         args.pop("group_name")
         args |= args.pop("kwargs")
-        data = self.build_server_pool_rule(
-            **args
-        )
+        data = self.build_server_pool_rule(**args)
         params = {"mkey": group_name}
         return self._http_request(
             method="POST",
@@ -8360,9 +7825,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def server_pool_rule_delete_request(
-        self, group_name: str | None, rule_id: str | None
-    ) -> dict[str, Any]:
+    def server_pool_rule_delete_request(self, group_name: str | None, rule_id: str | None) -> dict[str, Any]:
         """Delete an URL access rule condition.
 
         Args:
@@ -8379,9 +7842,7 @@ class ClientV2(Client):
             params=params,
         )
 
-    def server_pool_rule_list_request(
-        self, group_name: str | None, **kwargs
-    ) -> dict[str, Any]:
+    def server_pool_rule_list_request(self, group_name: str | None, **kwargs) -> dict[str, Any]:
         """List URL access rule conditions.
 
         Args:
@@ -8399,9 +7860,7 @@ class ClientV2(Client):
         )
 
 
-def protected_hostname_group_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a new protected hostname.
 
     Args:
@@ -8413,9 +7872,7 @@ def protected_hostname_group_create_command(
     """
     client.validate_protected_hostname_group(args=args)
     name = args["name"]
-    response = client.protected_hostname_create_request(
-        name=name, default_action=args["default_action"]
-    )
+    response = client.protected_hostname_create_request(name=name, default_action=args["default_action"])
     command_results = generate_simple_command_results(
         object_type=OutputTitle.PROTECTED_HOSTNAME_GROUP.value,
         object_name=name,
@@ -8425,9 +7882,7 @@ def protected_hostname_group_create_command(
     return command_results
 
 
-def protected_hostname_group_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a protected hostname.
 
     Args:
@@ -8439,9 +7894,7 @@ def protected_hostname_group_update_command(
     """
     client.validate_protected_hostname_group(args=args)
     name = args["name"]
-    response = client.protected_hostname_update_request(
-        name=name, default_action=args.get("default_action")
-    )
+    response = client.protected_hostname_update_request(name=name, default_action=args.get("default_action"))
     command_results = generate_simple_command_results(
         object_type=OutputTitle.PROTECTED_HOSTNAME_GROUP.value,
         object_name=name,
@@ -8451,9 +7904,7 @@ def protected_hostname_group_update_command(
     return command_results
 
 
-def protected_hostname_group_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_group_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a protected hostname.
 
     Args:
@@ -8474,9 +7925,7 @@ def protected_hostname_group_delete_command(
     return command_results
 
 
-def protected_hostname_group_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get protected hostname list / object.
 
     Args:
@@ -8519,9 +7968,7 @@ def protected_hostname_group_list_command(
     return command_results
 
 
-def protected_hostname_member_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_member_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a new protected hostname member.
 
     Args:
@@ -8558,9 +8005,7 @@ def protected_hostname_member_create_command(
     return command_results
 
 
-def protected_hostname_member_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_member_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a protected hostname member.
 
     Args:
@@ -8601,9 +8046,7 @@ def protected_hostname_member_update_command(
     return command_results
 
 
-def protected_hostname_member_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_member_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a protected hostname member.
 
     Args:
@@ -8616,9 +8059,7 @@ def protected_hostname_member_delete_command(
 
     protected_hostname = args["group_name"]
     member_id = args["member_id"]
-    response = client.protected_hostname_member_delete_request(
-        protected_hostname, member_id
-    )
+    response = client.protected_hostname_member_delete_request(protected_hostname, member_id)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.PROTECTED_HOSTNAME_MEMBER.value,
         object_name=member_id,
@@ -8628,9 +8069,7 @@ def protected_hostname_member_delete_command(
     return command_results
 
 
-def protected_hostname_member_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def protected_hostname_member_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List protected hostname members.
 
     Args:
@@ -8643,9 +8082,7 @@ def protected_hostname_member_list_command(
 
     group_name = args["group_name"]
     member_id = args.get("member_id")
-    response = client.protected_hostname_member_list_request(
-        group_name=group_name, member_id=member_id
-    )
+    response = client.protected_hostname_member_list_request(group_name=group_name, member_id=member_id)
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
@@ -8678,9 +8115,7 @@ def protected_hostname_member_list_command(
     return command_results
 
 
-def ip_list_group_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def ip_list_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create an IP list group.
 
     Args:
@@ -8711,9 +8146,7 @@ def ip_list_group_create_command(
     return command_results
 
 
-def ip_list_group_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def ip_list_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update an IP list group.
 
     Args:
@@ -8743,9 +8176,7 @@ def ip_list_group_update_command(
     return command_results
 
 
-def ip_list_group_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def ip_list_group_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     group_name = args["name"]
     response = client.ip_list_group_delete_request(group_name)
     command_results = generate_simple_command_results(
@@ -8801,9 +8232,7 @@ def ip_list_group_list_command(client: Client, args: dict[str, Any]) -> CommandR
     return command_results
 
 
-def ip_list_member_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def ip_list_member_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a new IP list member.
 
     Args:
@@ -8840,9 +8269,7 @@ def ip_list_member_create_command(
     return command_results
 
 
-def ip_list_member_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def ip_list_member_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update an IP list member.
 
     Args:
@@ -8885,9 +8312,7 @@ def ip_list_member_update_command(
     return command_results
 
 
-def ip_list_member_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def ip_list_member_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete an IP list member.
 
     Args:
@@ -8921,16 +8346,12 @@ def ip_list_member_list_command(client: Client, args: dict[str, Any]) -> Command
     """
     group_name = args["group_name"]
     member_id = args.get("member_id")
-    response = client.ip_list_member_list_request(
-        group_name=group_name, member_id=member_id
-    )
+    response = client.ip_list_member_list_request(group_name=group_name, member_id=member_id)
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client, response, client.parser.parse_ip_list_member, args, member_id
     )
     outputs = {"group_name": group_name, "Members": parsed_data}
-    headers = client.parser.create_output_headers(
-        client.version, ["id", "type", "ip"], ["severity", "trigger_policy"], []
-    )
+    headers = client.parser.create_output_headers(client.version, ["id", "type", "ip"], ["severity", "trigger_policy"], [])
     readable_output = tableToMarkdown(
         name=OutputTitle.IP_LIST_MEMBER_LIST.value,
         metadata=pagination_message,
@@ -8948,9 +8369,7 @@ def ip_list_member_list_command(client: Client, args: dict[str, Any]) -> Command
     return command_results
 
 
-def http_content_routing_member_add_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def http_content_routing_member_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Add an HTTP content routing members.
 
     Args:
@@ -8988,9 +8407,7 @@ def http_content_routing_member_add_command(
     return command_results
 
 
-def http_content_routing_member_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def http_content_routing_member_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update an HTTP content routing members.
 
     Args:
@@ -9031,9 +8448,7 @@ def http_content_routing_member_update_command(
     return command_results
 
 
-def http_content_routing_member_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def http_content_routing_member_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete an HTTP content routing members.
 
     Args:
@@ -9055,9 +8470,7 @@ def http_content_routing_member_delete_command(
     return command_results
 
 
-def http_content_routing_member_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def http_content_routing_member_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List HTTP content routing members.
 
     Args:
@@ -9069,9 +8482,7 @@ def http_content_routing_member_list_command(
     """
     policy_name = args["policy_name"]
     member_id = args.get("id")
-    response = client.http_content_routing_member_list_request(
-        policy_name, member_id=member_id
-    )
+    response = client.http_content_routing_member_list_request(policy_name, member_id=member_id)
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client,
         response,
@@ -9271,14 +8682,10 @@ def geo_ip_member_add_command(client: Client, args: dict[str, Any]) -> CommandRe
     all_countries = countries
     if isinstance(client, ClientV1):
         # Get last countries
-        old_countries_list: List[str] = client.geo_ip_member_list_request(
-            group_name=group_name
-        )[0]["SSet"]
+        old_countries_list: List[str] = client.geo_ip_member_list_request(group_name=group_name)[0]["SSet"]
         all_countries = set(countries)
         all_countries = list(all_countries.union(old_countries_list))
-    response = client.geo_ip_member_add_request(
-        group_name=group_name, countries_list=all_countries
-    )
+    response = client.geo_ip_member_add_request(group_name=group_name, countries_list=all_countries)
     # Get the new IDs
     get_response = client.geo_ip_member_list_request(group_name=group_name)
     parsed_data, pagination_message, formatted_response = list_response_handler(
@@ -9302,9 +8709,7 @@ def geo_ip_member_add_command(client: Client, args: dict[str, Any]) -> CommandRe
     return command_results
 
 
-def geo_ip_member_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def geo_ip_member_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a Geo IP member.
 
     Args:
@@ -9317,9 +8722,7 @@ def geo_ip_member_delete_command(
 
     group_name = args["group_name"]
     member_id = args["member_id"]
-    response = client.geo_ip_member_delete_request(
-        group_name=group_name, member_id=member_id
-    )
+    response = client.geo_ip_member_delete_request(group_name=group_name, member_id=member_id)
     command_results = generate_simple_command_results(
         object_type=OutputTitle.GEO_IP_MEMBER.value,
         object_name=member_id,
@@ -9364,9 +8767,7 @@ def geo_ip_member_list_command(client: Client, args: dict[str, Any]) -> CommandR
     return command_results
 
 
-def operation_status_get_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def operation_status_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get operation status.
 
     Args:
@@ -9572,9 +8973,7 @@ def http_service_list_command(client: Client, args: dict[str, Any]) -> CommandRe
     return command_results
 
 
-def inline_protection_profile_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def inline_protection_profile_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List the Inline protection profiles.
 
     Args:
@@ -9638,9 +9037,7 @@ def virtual_server_list_command(client: Client, args: dict[str, Any]) -> Command
     return command_results
 
 
-def http_content_routing_policy_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def http_content_routing_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List the HTTP content routing policies.
 
     Args:
@@ -9742,9 +9139,7 @@ def trigger_policy_list_command(client: Client, args: dict[str, Any]) -> Command
     return command_results
 
 
-def certificate_intermediate_group_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def certificate_intermediate_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List the Certificate intermediate groups.
 
     Args:
@@ -9775,9 +9170,7 @@ def certificate_intermediate_group_list_command(
     return command_results
 
 
-def url_access_rule_group_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create an URL access rule group.
 
     Args:
@@ -9806,9 +9199,7 @@ def url_access_rule_group_create_command(
     return command_results
 
 
-def url_access_rule_group_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update an URL access rule group.
 
     Args:
@@ -9837,9 +9228,7 @@ def url_access_rule_group_update_command(
     return command_results
 
 
-def url_access_rule_group_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_group_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete an URL access rule group.
 
     Args:
@@ -9860,9 +9249,7 @@ def url_access_rule_group_delete_command(
     return command_results
 
 
-def url_access_rule_group_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List URL access rule groups.
 
     Args:
@@ -9903,9 +9290,7 @@ def url_access_rule_group_list_command(
     return command_results
 
 
-def url_access_rule_condition_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_condition_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create an URL access rule condition.
 
     Args:
@@ -9939,8 +9324,7 @@ def url_access_rule_condition_create_command(
         group_name,
     )
     outputs = {"id": group_name, "Condition": {"id": member_id}}
-    readable_text = \
-        f"URL access rule condition {member_id} was successfully added to URL access rule group {group_name}."
+    readable_text = f"URL access rule condition {member_id} was successfully added to URL access rule group {group_name}."
     command_results = generate_simple_context_data_command_results(
         "id",
         None,
@@ -9948,14 +9332,12 @@ def url_access_rule_condition_create_command(
         readable_text,
         "FortiwebVM.URLAccessRuleGroup",
         readable_outputs=outputs["Condition"],
-        outputs=outputs
+        outputs=outputs,
     )
     return command_results
 
 
-def url_access_rule_condition_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_condition_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update an URL access rule condition.
 
     Args:
@@ -10001,9 +9383,7 @@ def url_access_rule_condition_update_command(
     return command_results
 
 
-def url_access_rule_condition_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_condition_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete an URL access rule condition.
 
     Args:
@@ -10026,9 +9406,7 @@ def url_access_rule_condition_delete_command(
     return command_results
 
 
-def url_access_rule_condition_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def url_access_rule_condition_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List URL access rule conditions.
 
     Args:
@@ -10040,16 +9418,9 @@ def url_access_rule_condition_list_command(
     """
     group_name = args.get("group_name")
     condition_id = args.get("condition_id")
-    response = client.url_access_rule_condition_list_request(
-        group_name, condition_id=condition_id
-    )
+    response = client.url_access_rule_condition_list_request(group_name, condition_id=condition_id)
     parsed_data, pagination_message, _ = list_response_handler(
-        client,
-        response,
-        client.parser.parse_url_access_rule_condition,
-        args,
-        condition_id,
-        sub_object_key='id'
+        client, response, client.parser.parse_url_access_rule_condition, args, condition_id, sub_object_key="id"
     )
     outputs = {"id": group_name, "Condition": parsed_data}
     headers = client.parser.create_output_headers(
@@ -10101,9 +9472,7 @@ def read_json_policy(json_template_id: str, name: str) -> dict[str, Any]:
     return args
 
 
-def server_policy_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_policy_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a server policy.
 
     Args:
@@ -10143,14 +9512,10 @@ def server_policy_create_command(
         retry_on=args.get("retry_on"),
         retry_on_cache_size=arg_to_number(args.get("retry_on_cache_size")),
         retry_on_connect_failure=args.get("retry_on_connect_failure"),
-        retry_times_on_connect_failure=arg_to_number(
-            args.get("retry_times_on_connect_failure")
-        ),
+        retry_times_on_connect_failure=arg_to_number(args.get("retry_times_on_connect_failure")),
         retry_on_http_layer=args.get("retry_on_http_layer"),
         retry_times_on_http_layer=arg_to_number(args.get("retry_times_on_http_layer")),
-        retry_on_http_response_codes=argToList(
-            args.get("retry_on_http_response_codes")
-        ),
+        retry_on_http_response_codes=argToList(args.get("retry_on_http_response_codes")),
         certificate_type=args.get("certificate_type"),
         lets_certificate=args.get("lets_certificate"),
         multi_certificate=args.get("multi_certificate"),
@@ -10169,9 +9534,7 @@ def server_policy_create_command(
     return command_results
 
 
-def server_policy_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_policy_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a server policy.
 
     Args:
@@ -10223,9 +9586,7 @@ def server_policy_update_command(
         retry_times_on_connect_failure=args.get("retry_times_on_connect_failure"),
         retry_on_http_layer=args.get("retry_on_http_layer"),
         retry_times_on_http_layer=args.get("retry_times_on_http_layer"),
-        retry_on_http_response_codes=argToList(
-            args.get("retry_on_http_response_codes")
-        ),
+        retry_on_http_response_codes=argToList(args.get("retry_on_http_response_codes")),
         certificate_type=args.get("certificate_type"),
         lets_certificate=args.get("lets_certificate"),
         multi_certificate=args.get("multi_certificate"),
@@ -10244,9 +9605,7 @@ def server_policy_update_command(
     return command_results
 
 
-def server_policy_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_policy_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a server policy.
 
     Args:
@@ -10312,9 +9671,7 @@ def server_policy_list_command(client: Client, args: dict[str, Any]) -> CommandR
     return command_results
 
 
-def custom_whitelist_url_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_url_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a custom whitelist url member.
 
     Args:
@@ -10327,9 +9684,7 @@ def custom_whitelist_url_create_command(
 
     client.validate_custom_whitelist(args=args, member_type="URL")
     request_url = args["request_url"]
-    response = client.custom_whitelist_url_create_request(
-        request_type=args["request_type"], request_url=request_url
-    )
+    response = client.custom_whitelist_url_create_request(request_type=args["request_type"], request_url=request_url)
     member_id = client.get_object_id(
         response,
         "requestURL",
@@ -10348,9 +9703,7 @@ def custom_whitelist_url_create_command(
     return command_results
 
 
-def custom_whitelist_url_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_url_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a custom whitelist url member.
 
     Args:
@@ -10387,9 +9740,7 @@ def custom_whitelist_url_update_command(
     return command_results
 
 
-def custom_whitelist_parameter_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_parameter_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a custom whitelist parameter member.
 
     Args:
@@ -10412,9 +9763,7 @@ def custom_whitelist_parameter_create_command(
         domain_type=args.get("domain_type"),
         domain=args.get("domain"),
     )
-    member_id = client.get_object_id(
-        response, "itemName", name, client.custom_whitelist_list_request
-    )
+    member_id = client.get_object_id(response, "itemName", name, client.custom_whitelist_list_request)
 
     command_results = generate_simple_context_data_command_results(
         "id",
@@ -10452,17 +9801,9 @@ def get_object_data_before_update(
     Returns:
         Dict[str, Any]: The object data from the get response.
     """
-    if not requested_version or (
-        requested_version and client.version == requested_version
-    ):
-        by_key = (
-            "_id"
-            if client.version == ClientV1.API_VER
-            else by_key if by_key else "id"
-        )
-        old_args = get_object_data(
-            client.version, by_key, value, get_request, object_id
-        )
+    if not requested_version or (requested_version and client.version == requested_version):
+        by_key = "_id" if client.version == ClientV1.API_VER else by_key if by_key else "id"
+        old_args = get_object_data(client.version, by_key, value, get_request, object_id)
         if not old_args:
             return args
         parsed_data: dict[str, Any] = _parser(old_args)
@@ -10471,9 +9812,7 @@ def get_object_data_before_update(
     return args
 
 
-def custom_whitelist_parameter_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_parameter_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a custom whitelist parameter member.
 
     Args:
@@ -10515,9 +9854,7 @@ def custom_whitelist_parameter_update_command(
     return command_results
 
 
-def custom_whitelist_cookie_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_cookie_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a custom whitelist cookie member.
 
     Args:
@@ -10529,12 +9866,8 @@ def custom_whitelist_cookie_create_command(
     """
     client.validate_custom_whitelist(args=args, member_type="Cookie")
     name = args["name"]
-    response = client.custom_whitelist_cookie_create_request(
-        name=name, domain=args.get("domain"), path=args.get("path")
-    )
-    member_id = client.get_object_id(
-        response, "itemName", name, client.custom_whitelist_list_request
-    )
+    response = client.custom_whitelist_cookie_create_request(name=name, domain=args.get("domain"), path=args.get("path"))
+    member_id = client.get_object_id(response, "itemName", name, client.custom_whitelist_list_request)
 
     command_results = generate_simple_context_data_command_results(
         "id",
@@ -10547,9 +9880,7 @@ def custom_whitelist_cookie_create_command(
     return command_results
 
 
-def custom_whitelist_cookie_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_cookie_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a custom whitelist cookie member.
 
     Args:
@@ -10586,9 +9917,7 @@ def custom_whitelist_cookie_update_command(
     return command_results
 
 
-def custom_whitelist_header_field_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_header_field_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a custom whitelist header field member.
 
     Args:
@@ -10609,9 +9938,7 @@ def custom_whitelist_header_field_create_command(
         header_value_type=args.get("header_value_type"),
         value=args.get("value"),
     )
-    member_id = client.get_object_id(
-        response, "itemName", name, client.custom_whitelist_list_request
-    )
+    member_id = client.get_object_id(response, "itemName", name, client.custom_whitelist_list_request)
 
     command_results = generate_simple_context_data_command_results(
         "id",
@@ -10624,9 +9951,7 @@ def custom_whitelist_header_field_create_command(
     return command_results
 
 
-def custom_whitelist_header_field_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_header_field_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a custom whitelist header field member.
 
     Args:
@@ -10668,9 +9993,7 @@ def custom_whitelist_header_field_update_command(
     return command_results
 
 
-def custom_whitelist_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a custom whitelist member.
 
     Args:
@@ -10692,9 +10015,7 @@ def custom_whitelist_delete_command(
     return command_results
 
 
-def custom_whitelist_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_whitelist_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List custom whitelist members.
 
     Args:
@@ -10727,9 +10048,7 @@ def custom_whitelist_list_command(
     return command_results
 
 
-def custom_predifined_whitelist_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_predifined_whitelist_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List the Custom Predifined members.
 
     Args:
@@ -10744,9 +10063,7 @@ def custom_predifined_whitelist_list_command(
     object_type = args.get("type")
     response = client.custom_predifined_whitelist_list_request()
 
-    response = client.custom_predifined_whitelist_list_handler(
-        response=response, object_type=object_type
-    )
+    response = client.custom_predifined_whitelist_list_handler(response=response, object_type=object_type)
 
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
@@ -10772,9 +10089,7 @@ def custom_predifined_whitelist_list_command(
     return command_results
 
 
-def custom_predifined_whitelist_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def custom_predifined_whitelist_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a Custom Predifined member.
 
     Args:
@@ -10861,9 +10176,7 @@ def list_response_handler(
     return parsed_data, pagination_message, response
 
 
-def parser_handler(
-    data: List[dict[str, Any]], data_parser: Callable
-) -> List[dict[str, Any]]:
+def parser_handler(data: List[dict[str, Any]], data_parser: Callable) -> List[dict[str, Any]]:
     """Parse the data by parser command.
 
     Args:
@@ -10876,9 +10189,7 @@ def parser_handler(
     return [data_parser(data_to_parse) for data_to_parse in data]
 
 
-def paginate_results(
-    version: str, response: Union[List, dict[str, Any]], args: dict[str, Any]
-) -> tuple[list, str]:
+def paginate_results(version: str, response: Union[List, dict[str, Any]], args: dict[str, Any]) -> tuple[list, str]:
     """Executing Manual paginate_results  (using the page and page size arguments)
         or Automatic paginate_results  (display a number of total results).
     Args:
@@ -10902,7 +10213,7 @@ def paginate_results(
     if page and page_size:
         if page_size < len(output):
             first_item = page_size * (page - 1)
-            return output[first_item: (first_item + page_size)], pagination_message
+            return output[first_item : (first_item + page_size)], pagination_message
 
         pagination_message = f"Showing page {page}. \n Current page size: {page_size}"
         return output, pagination_message
@@ -10910,9 +10221,7 @@ def paginate_results(
     return output, pagination_message
 
 
-def find_dict_in_array(
-    container: List[dict[str, Any]], key: str, value: str
-) -> dict[str, Any] | None:
+def find_dict_in_array(container: List[dict[str, Any]], key: str, value: str) -> dict[str, Any] | None:
     """Gets dictionary object in list of dictionaries.The search is by key that exist in each dictionary.
 
     Args:
@@ -10930,9 +10239,7 @@ def find_dict_in_array(
     return None
 
 
-def find_dicts_in_array(
-    container: List[dict[str, Any]], key: str, value: List[str]
-) -> List[dict[str, Any]]:
+def find_dicts_in_array(container: List[dict[str, Any]], key: str, value: List[str]) -> List[dict[str, Any]]:
     """Gets dictionaries object in list of dictionaries.The search is by key that exist in each dictionary.
 
     Args:
@@ -10967,9 +10274,7 @@ def get_object_data(
         Optional[Dict[str, Any]]: The object data from the get response.
     """
     if members_list := get_request(object_id) if object_id else get_request():
-        members_list = (
-            members_list if version == ClientV1.API_VER else members_list["results"]
-        )
+        members_list = members_list if version == ClientV1.API_VER else members_list["results"]
         return find_dict_in_array(members_list, by_key, value)
     return None
 
@@ -10989,11 +10294,7 @@ def test_module(client: Client) -> str:
     try:
         client.protected_hostname_list_request()
     except DemistoException as error:
-        if (
-            error.res
-            and error.res.status_code
-            and error.res.status_code == HTTPStatus.UNAUTHORIZED
-        ):
+        if error.res and error.res.status_code and error.res.status_code == HTTPStatus.UNAUTHORIZED:
             return "Authorization Error: make sure API key is correctly set"
         raise error
     except Exception as error:
@@ -11033,8 +10334,13 @@ def generate_simple_command_results(
 
 
 def generate_simple_context_data_command_results(
-    key: str, value: str | None, response: dict[str, Any], message: str, outputs_prefix: str,
-    readable_outputs: dict[str, Any] | None = None, outputs: dict[str, Any] | None = None,
+    key: str,
+    value: str | None,
+    response: dict[str, Any],
+    message: str,
+    outputs_prefix: str,
+    readable_outputs: dict[str, Any] | None = None,
+    outputs: dict[str, Any] | None = None,
 ) -> CommandResults:
     """Genarte a simple command result with output (with context data).
 
@@ -11051,11 +10357,7 @@ def generate_simple_context_data_command_results(
         CommandResults: CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     outputs = outputs or {key: value}
-    readable_output = tableToMarkdown(
-        message,
-        readable_outputs or outputs,
-        headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown(message, readable_outputs or outputs, headerTransform=string_to_table_header)
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix=outputs_prefix,
@@ -11084,8 +10386,15 @@ def validate_argument(args: dict[str, Any], key_: str, values: List[str] | None 
         raise ValueError(ErrorMessage.INSERT_VALUE.value.format(key_))
 
 
-def dependencies_handler(client: Client, args: dict[str, Any], request_command: Callable,
-                         parser_command: Callable, title: str, headers: list, outputs_prefix: str) -> CommandResults:
+def dependencies_handler(
+    client: Client,
+    args: dict[str, Any],
+    request_command: Callable,
+    parser_command: Callable,
+    title: str,
+    headers: list,
+    outputs_prefix: str,
+) -> CommandResults:
     """
     Handler for dependencies commands.
 
@@ -11134,18 +10443,18 @@ def persistence_list_command(client: Client, args: dict[str, Any]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.persistence_policy_list_request,
-                                parser_command=client.parser.parse_persistence_policy,
-                                title="Persistence policy:",
-                                headers=["id", "type"],
-                                outputs_prefix="FortiwebVM.PersistencePolicy")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.persistence_policy_list_request,
+        parser_command=client.parser.parse_persistence_policy,
+        title="Persistence policy:",
+        headers=["id", "type"],
+        outputs_prefix="FortiwebVM.PersistencePolicy",
+    )
 
 
-def server_health_check_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_health_check_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the server health check policies.
 
     Args:
@@ -11155,18 +10464,18 @@ def server_health_check_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.server_health_check_list_request,
-                                parser_command=client.parser.parse_simple_name,
-                                title="Server health check:",
-                                headers=["id"],
-                                outputs_prefix="FortiwebVM.ServerHealthCheck")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.server_health_check_list_request,
+        parser_command=client.parser.parse_simple_name,
+        title="Server health check:",
+        headers=["id"],
+        outputs_prefix="FortiwebVM.ServerHealthCheck",
+    )
 
 
-def local_certificate_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def local_certificate_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the local certificates.
 
     Args:
@@ -11176,18 +10485,18 @@ def local_certificate_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.local_certificate_list_request,
-                                parser_command=client.parser.parse_snakify_with_id,
-                                title="Local certificate:",
-                                headers=["id", "valid_to", "subject", "status"],
-                                outputs_prefix="FortiwebVM.LocalCertificate")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.local_certificate_list_request,
+        parser_command=client.parser.parse_snakify_with_id,
+        title="Local certificate:",
+        headers=["id", "valid_to", "subject", "status"],
+        outputs_prefix="FortiwebVM.LocalCertificate",
+    )
 
 
-def multi_certificate_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def multi_certificate_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the multi certificates.
 
     Args:
@@ -11197,18 +10506,18 @@ def multi_certificate_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.multi_certificate_list_request,
-                                parser_command=client.parser.parse_simple_name,
-                                title="Multi certificate:",
-                                headers=["id"],
-                                outputs_prefix="FortiwebVM.MultiCertificate")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.multi_certificate_list_request,
+        parser_command=client.parser.parse_simple_name,
+        title="Multi certificate:",
+        headers=["id"],
+        outputs_prefix="FortiwebVM.MultiCertificate",
+    )
 
 
-def sni_certificate_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def sni_certificate_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the SNI certificates.
 
     Args:
@@ -11218,18 +10527,18 @@ def sni_certificate_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.sni_certificate_list_request,
-                                parser_command=client.parser.parse_simple_name,
-                                title="SNI certificate:",
-                                headers=["id"],
-                                outputs_prefix="FortiwebVM.SNICertificate")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.sni_certificate_list_request,
+        parser_command=client.parser.parse_simple_name,
+        title="SNI certificate:",
+        headers=["id"],
+        outputs_prefix="FortiwebVM.SNICertificate",
+    )
 
 
-def sdn_connector_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def sdn_connector_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the SNI certificates.
 
     Args:
@@ -11239,13 +10548,15 @@ def sdn_connector_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.sdn_connector_list_request,
-                                parser_command=client.parser.parse_simple_name,
-                                title="SDN collectors:",
-                                headers=["id"],
-                                outputs_prefix="FortiwebVM.SDNCollector")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.sdn_connector_list_request,
+        parser_command=client.parser.parse_simple_name,
+        title="SDN collectors:",
+        headers=["id"],
+        outputs_prefix="FortiwebVM.SDNCollector",
+    )
 
 
 def virtual_ip_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -11258,13 +10569,15 @@ def virtual_ip_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.virtual_ip_list_request,
-                                parser_command=client.parser.parse_simple_name,
-                                title="Virtaul IP:",
-                                headers=["id"],
-                                outputs_prefix="FortiwebVM.VirtualIP")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.virtual_ip_list_request,
+        parser_command=client.parser.parse_simple_name,
+        title="Virtaul IP:",
+        headers=["id"],
+        outputs_prefix="FortiwebVM.VirtualIP",
+    )
 
 
 def letsencrypt_certificate_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -11277,18 +10590,18 @@ def letsencrypt_certificate_list_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.letsencrypt_certificate_list_request,
-                                parser_command=client.parser.parse_simple_name,
-                                title="Letsencrypt certificate:",
-                                headers=["id"],
-                                outputs_prefix="FortiwebVM.Letsencrypt")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.letsencrypt_certificate_list_request,
+        parser_command=client.parser.parse_simple_name,
+        title="Letsencrypt certificate:",
+        headers=["id"],
+        outputs_prefix="FortiwebVM.Letsencrypt",
+    )
 
 
-def network_inteface_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def network_inteface_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List all the network intefaces.
 
     Args:
@@ -11298,24 +10611,18 @@ def network_inteface_list_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    return dependencies_handler(client=client,
-                                args=args,
-                                request_command=client.network_interface_list_request,
-                                parser_command=client.parser.parse_snakify_with_id,
-                                title="Network interface:",
-                                headers=["name",
-                                         "ipv4_netmask",
-                                         "ipv4_access",
-                                         "ipv6_netmask",
-                                         "ipv6_access",
-                                         "status",
-                                         "type"],
-                                outputs_prefix="FortiwebVM.NetworkInterface")
+    return dependencies_handler(
+        client=client,
+        args=args,
+        request_command=client.network_interface_list_request,
+        parser_command=client.parser.parse_snakify_with_id,
+        title="Network interface:",
+        headers=["name", "ipv4_netmask", "ipv4_access", "ipv6_netmask", "ipv6_access", "status", "type"],
+        outputs_prefix="FortiwebVM.NetworkInterface",
+    )
 
 
-def virtual_server_group_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a virtual server group.
 
     Args:
@@ -11344,9 +10651,7 @@ def virtual_server_group_create_command(
     return command_results
 
 
-def virtual_server_group_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a virtual server group.
 
     Args:
@@ -11375,9 +10680,7 @@ def virtual_server_group_update_command(
     return command_results
 
 
-def virtual_server_group_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_group_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a virtual server group.
 
     Args:
@@ -11398,9 +10701,7 @@ def virtual_server_group_delete_command(
     return command_results
 
 
-def virtual_server_group_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List virtual server groups.
 
     Args:
@@ -11443,9 +10744,7 @@ def virtual_server_group_list_command(
     return command_results
 
 
-def virtual_server_item_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_item_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a virtual server item.
 
     Args:
@@ -11466,8 +10765,7 @@ def virtual_server_item_create_command(
     )
     member_id = dict_safe_get(response, ["results", "id"])
     outputs = {"id": group_name, "Item": {"id": member_id}}
-    readable_text = \
-        f"Virtual server item {member_id} was successfully added to virtual server group {group_name}."
+    readable_text = f"Virtual server item {member_id} was successfully added to virtual server group {group_name}."
     command_results = generate_simple_context_data_command_results(
         "id",
         None,
@@ -11480,9 +10778,7 @@ def virtual_server_item_create_command(
     return command_results
 
 
-def virtual_server_item_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_item_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a virtual server item.
 
     Args:
@@ -11512,9 +10808,7 @@ def virtual_server_item_update_command(
     return command_results
 
 
-def virtual_server_item_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_item_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a virtual server item.
 
     Args:
@@ -11537,9 +10831,7 @@ def virtual_server_item_delete_command(
     return command_results
 
 
-def virtual_server_item_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def virtual_server_item_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List virtual server items.
 
     Args:
@@ -11551,9 +10843,7 @@ def virtual_server_item_list_command(
     """
     group_name = args.get("group_name")
     item_id = args.get("item_id")
-    response = client.virtual_server_item_list_request(
-        group_name, item_id=item_id
-    )
+    response = client.virtual_server_item_list_request(group_name, item_id=item_id)
     parsed_data, pagination_message, _ = list_response_handler(
         client,
         response,
@@ -11582,9 +10872,7 @@ def virtual_server_item_list_command(
     return command_results
 
 
-def server_pool_group_create_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_pool_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a server pool group.
 
     Args:
@@ -11606,9 +10894,7 @@ def server_pool_group_create_command(
     return command_results
 
 
-def server_pool_group_update_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_pool_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Update a server pool group.
 
     Args:
@@ -11630,9 +10916,7 @@ def server_pool_group_update_command(
     return command_results
 
 
-def server_pool_group_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_pool_group_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a server pool group.
 
     Args:
@@ -11653,9 +10937,7 @@ def server_pool_group_delete_command(
     return command_results
 
 
-def server_pool_group_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_pool_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List server pool groups.
 
     Args:
@@ -11706,9 +10988,7 @@ def server_pool_group_list_command(
     return command_results
 
 
-def server_pool_rule_create_command(
-    client: Client, args: dict[str, Any], group_type: str
-) -> CommandResults:
+def server_pool_rule_create_command(client: Client, args: dict[str, Any], group_type: str) -> CommandResults:
     """Create a server pool rule.
 
     Args:
@@ -11731,8 +11011,7 @@ def server_pool_rule_create_command(
         group_name,
     )
     outputs = {"id": group_name, "Rule": {"id": member_id}}
-    readable_text = \
-        f"{OutputTitle.SERVER_POOL_RULE.value} {member_id} was successfully added to server pool group {group_name}."
+    readable_text = f"{OutputTitle.SERVER_POOL_RULE.value} {member_id} was successfully added to server pool group {group_name}."
     return generate_simple_context_data_command_results(
         "id",
         None,
@@ -11744,9 +11023,7 @@ def server_pool_rule_create_command(
     )
 
 
-def server_pool_rule_update_command(
-    client: Client, args: dict[str, Any], group_type: str
-) -> CommandResults:
+def server_pool_rule_update_command(client: Client, args: dict[str, Any], group_type: str) -> CommandResults:
     """Update a server pool rule.
 
     Args:
@@ -11768,9 +11045,7 @@ def server_pool_rule_update_command(
     )
 
 
-def server_pool_rule_delete_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_pool_rule_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Delete a server pool rule.
 
     Args:
@@ -11793,9 +11068,7 @@ def server_pool_rule_delete_command(
     return command_results
 
 
-def server_pool_rule_list_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def server_pool_rule_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List server pool rules.
 
     Args:
@@ -11807,9 +11080,7 @@ def server_pool_rule_list_command(
     """
     group_name = args.get("group_name")
     rule_id = args.get("rule_id")
-    response = client.server_pool_rule_list_request(
-        group_name, rule_id=rule_id
-    )
+    response = client.server_pool_rule_list_request(group_name, rule_id=rule_id)
     parsed_data, pagination_message, _ = list_response_handler(
         client,
         response,
@@ -11960,7 +11231,6 @@ def main() -> None:
         "fortiwebvm-server-pool-ftp-rule-update": ArgumentValues.FTP.value,
         "fortiwebvm-server-pool-adfs-rule-create": ArgumentValues.ADFS.value,
         "fortiwebvm-server-pool-adfs-rule-update": ArgumentValues.ADFS.value,
-
     }
     server_pool_rule_create_commands = [
         "fortiwebvm-server-pool-reverse-proxy-rule-create",
@@ -12003,7 +11273,7 @@ def main() -> None:
 
     except Exception as error:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(error)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{error!s}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

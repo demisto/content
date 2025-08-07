@@ -1,20 +1,17 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-
 # IMPORTS
-
 import cabby
+import dateutil
+import dateutil.parser
+import demistomock as demisto
+import pytz
 import requests
 import urllib3
-import dateutil
-import pytz
-import dateutil.parser
 from bs4 import BeautifulSoup
-from netaddr import IPAddress, iprange_to_cidrs, IPNetwork
+from CommonServerPython import *
+from netaddr import IPAddress, IPNetwork, iprange_to_cidrs
 from six import string_types  # type: ignore
-from typing import Dict, List, Optional
+
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,53 +28,53 @@ EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 
 def package_extract_properties(package):
     """Extracts properties from the STIX package"""
-    result: Dict[str, str] = {}
+    result: dict[str, str] = {}
 
-    header = package.find_all('STIX_Header')
+    header = package.find_all("STIX_Header")
     if len(header) == 0:
         return result
 
     # share level
-    mstructures = header[0].find_all('Marking_Structure')
+    mstructures = header[0].find_all("Marking_Structure")
     for ms in mstructures:
-        type_ = ms.get('xsi:type')
+        type_ = ms.get("xsi:type")
         if type_ is result:
             continue
 
-        color = ms.get('color')
+        color = ms.get("color")
         if color is result:
             continue
 
         type_ = type_.lower()
-        if 'tlpmarkingstructuretype' not in type_:
+        if "tlpmarkingstructuretype" not in type_:
             continue
 
-        result['share_level'] = color.lower()  # https://www.us-cert.gov/tlp
+        result["share_level"] = color.lower()  # https://www.us-cert.gov/tlp
         break
 
     # decode title
-    title = next((c for c in header[0] if c.name == 'Title'), None)
+    title = next((c for c in header[0] if c.name == "Title"), None)
     if title is not None:
-        result['stix_package_title'] = title.text
+        result["stix_package_title"] = title.text
 
     # decode description
-    description = next((c for c in header[0] if c.name == 'Description'), None)
+    description = next((c for c in header[0] if c.name == "Description"), None)
     if description is not None:
-        result['stix_package_description'] = description.text
+        result["stix_package_description"] = description.text
 
     # decode description
-    sdescription = next((c for c in header[0] if c.name == 'Short_Description'), None)
+    sdescription = next((c for c in header[0] if c.name == "Short_Description"), None)
     if sdescription is not None:
-        result['stix_package_short_description'] = sdescription.text
+        result["stix_package_short_description"] = sdescription.text
 
     # decode identity name from information_source
-    information_source = next((c for c in header[0] if c.name == 'Information_Source'), None)
+    information_source = next((c for c in header[0] if c.name == "Information_Source"), None)
     if information_source is not None:
-        identity = next((c for c in information_source if c.name == 'Identity'), None)
+        identity = next((c for c in information_source if c.name == "Identity"), None)
         if identity is not None:
-            name = next((c for c in identity if c.name == 'Name'))
+            name = next(c for c in identity if c.name == "Name")
             if name is not None:
-                result['stix_package_information_source'] = name.text
+                result["stix_package_information_source"] = name.text
 
     return result
 
@@ -86,15 +83,15 @@ def observable_extract_properties(observable):
     """Extracts properties from observable"""
     result = {}
 
-    title = next((c for c in observable if c.name == 'Title'), None)
+    title = next((c for c in observable if c.name == "Title"), None)
     if title is not None:
         title = title.text
-        result['stix_title'] = title
+        result["stix_title"] = title
 
-    description = next((c for c in observable if c.name == 'Description'), None)
+    description = next((c for c in observable if c.name == "Description"), None)
     if description is not None:
         description = description.text
-        result['stix_description'] = description
+        result["stix_description"] = description
 
     return result
 
@@ -102,123 +99,120 @@ def observable_extract_properties(observable):
 """ TAXII STIX DECODE """
 
 
-class AddressObject(object):
+class AddressObject:
     """
     Implements address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/AddressObj/AddressObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
-        indicator = props.find('Address_Value')
+        indicator = props.find("Address_Value")
         if indicator is None:
             return []
-        indicator = indicator.string.encode('ascii', 'replace').decode()
+        indicator = indicator.string.encode("ascii", "replace").decode()
 
-        acategory = props.get('category', None)
+        acategory = props.get("category", None)
         if acategory is None:
             try:
                 # if ',' in the ip address then we have a range (10.0.0.0,10.0.0.255)
                 # and we want to change it to a CIDR object (10.0.0.0/24)
-                if ',' in indicator:
-                    ips = indicator.split(',')
+                if "," in indicator:
+                    ips = indicator.split(",")
                     indicator = str(iprange_to_cidrs(ips[0], ips[1])[0].cidr)
                     cidr = IPNetwork(indicator)
                     if cidr.version == 4:
-                        type_ = 'CIDR'
+                        type_ = "CIDR"
                     elif cidr.version == 6:
-                        type_ = 'IPv6CIDR'
+                        type_ = "IPv6CIDR"
                     else:
-                        LOG('Unknown ip version: {!r}'.format(cidr.version))
+                        LOG(f"Unknown ip version: {cidr.version!r}")
                         return []
 
                 else:
                     ip = IPAddress(indicator)
                     if ip.version == 4:
-                        type_ = 'IP'
+                        type_ = "IP"
                     elif ip.version == 6:
-                        type_ = 'IPv6'
+                        type_ = "IPv6"
                     else:
-                        LOG('Unknown ip version: {!r}'.format(ip.version))
+                        LOG(f"Unknown ip version: {ip.version!r}")
                         return []
 
             except Exception:
                 return []
 
-        elif acategory == 'ipv4-addr':
+        elif acategory == "ipv4-addr":
             # if ',' in the ip address then we have a range (10.0.0.0,10.0.0.255)
             # and we want to change it to a CIDR object (10.0.0.0/24)
-            if ',' in indicator:
-                ips = indicator.split(',')
+            if "," in indicator:
+                ips = indicator.split(",")
                 indicator = str(iprange_to_cidrs(ips[0], ips[1])[0].cidr)
-                type_ = 'CIDR'
+                type_ = "CIDR"
 
             else:
-                type_ = 'IP'
+                type_ = "IP"
 
-        elif acategory == 'ipv6-addr':
+        elif acategory == "ipv6-addr":
             # Same logic as above just for ipv6
-            if ',' in indicator:
-                ips = indicator.split(',')
+            if "," in indicator:
+                ips = indicator.split(",")
                 indicator = str(iprange_to_cidrs(ips[0], ips[1])[0].cidr)
-                type_ = 'IPv6CIDR'
+                type_ = "IPv6CIDR"
 
             else:
-                type_ = 'IPv6'
+                type_ = "IPv6"
 
-        elif acategory == 'e-mail':
-            type_ = 'Email'
+        elif acategory == "e-mail":
+            type_ = "Email"
 
         else:
-            LOG('Unknown AddressObjectType category: {!r}'.format(acategory))
+            LOG(f"Unknown AddressObjectType category: {acategory!r}")
             return []
 
-        return [{
-            'indicator': indicator,
-            'type': type_
-        }]
+        return [{"indicator": indicator, "type": type_}]
 
 
-class DomainNameObject(object):
+class DomainNameObject:
     """
     Implements domain object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/DomainNameObj/DomainNameObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
-        dtype = props.get('type', 'FQDN')
-        if dtype != 'FQDN':
+        dtype = props.get("type", "FQDN")
+        if dtype != "FQDN":
             return []
 
-        domain = props.find('Value')
+        domain = props.find("Value")
         if domain is None:
             return []
 
-        return [{
-            'indicator': domain.string.encode('ascii', 'replace').decode(),
-            'type': 'Domain'
-        }]
+        return [{"indicator": domain.string.encode("ascii", "replace").decode(), "type": "Domain"}]
 
 
-class FileObject(object):
+class FileObject:
     """
     Implements file object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/FileObj/FileObjectType/
     """
+
     @staticmethod
     def _decode_basic_props(props):
         result = {}
 
-        name = next((c for c in props if c.name == 'File_Name'), None)
+        name = next((c for c in props if c.name == "File_Name"), None)
         if name is not None:
-            result['stix_file_name'] = name.text
+            result["stix_file_name"] = name.text
 
-        size = next((c for c in props if c.name == 'File_Size'), None)
+        size = next((c for c in props if c.name == "File_Size"), None)
         if size is not None:
-            result['stix_file_size'] = size.text
+            result["stix_file_size"] = size.text
 
-        format = next((c for c in props if c.name == 'File_Format'), None)
+        format = next((c for c in props if c.name == "File_Format"), None)
         if format is not None:
-            result['stix_file_format'] = format.text
+            result["stix_file_format"] = format.text
 
         return result
 
@@ -228,151 +222,148 @@ class FileObject(object):
 
         bprops = FileObject._decode_basic_props(props)
 
-        hashes = props.find_all('Hash')
+        hashes = props.find_all("Hash")
         for h in hashes:
-            htype = h.find('Type')
+            htype = h.find("Type")
             if htype is None:
                 continue
             htype = htype.string.lower()
-            if htype not in ['md5', 'sha1', 'sha256', 'ssdeep']:
+            if htype not in ["md5", "sha1", "sha256", "ssdeep"]:
                 continue
 
-            value = h.find('Simple_Hash_Value')
+            value = h.find("Simple_Hash_Value")
             if value is None:
                 continue
             value = value.string.lower()
 
-            result.append({
-                'indicator': value,
-                'htype': htype,
-                'type': 'File'
-            })
+            result.append({"indicator": value, "htype": htype, "type": "File"})
 
         for r in result:
             for r2 in result:
-                if r['htype'] == r2['htype']:
+                if r["htype"] == r2["htype"]:
                     continue
 
-                r['stix_file_{}'.format(r2['htype'])] = r2['indicator']
+                r["stix_file_{}".format(r2["htype"])] = r2["indicator"]
 
             r.update(bprops)
 
         return result
 
 
-class URIObject(object):
+class URIObject:
     """
     Implements URI object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/URIObj/URIObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
-        utype = props.get('type', 'URL')
-        if utype == 'URL':
-            type_ = 'URL'
-        elif utype == 'Domain Name':
-            type_ = 'Domain'
+        utype = props.get("type", "URL")
+        if utype == "URL":
+            type_ = "URL"
+        elif utype == "Domain Name":
+            type_ = "Domain"
         else:
             return []
 
-        url = props.find('Value')
+        url = props.find("Value")
         if url is None:
             return []
 
-        return [{
-            'indicator': url.string.encode('utf8', 'replace').decode(),
-            'type': type_
-        }]
+        return [{"indicator": url.string.encode("utf8", "replace").decode(), "type": type_}]
 
 
-class SocketAddressObject(object):
+class SocketAddressObject:
     """
     Implements socket address object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/SocketAddressObj/SocketAddressObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
-        ip = props.get('ip_address', None)
+        ip = props.get("ip_address", None)
         if ip:
             return AddressObject.decode(ip)
         return []
 
 
-class LinkObject(object):
+class LinkObject:
     """
     Implements link object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/LinkObj/LinkObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
-        ltype = props.get('type', 'URL')
-        if ltype != 'URL':
-            LOG('Unhandled LinkObjectType type: {}'.format(ltype))
+        ltype = props.get("type", "URL")
+        if ltype != "URL":
+            LOG(f"Unhandled LinkObjectType type: {ltype}")
             return []
-        value = props.get('value', None)
+        value = props.get("value", None)
         if value is None:
-            LOG('no value in observable LinkObject')
+            LOG("no value in observable LinkObject")
             return []
         if not isinstance(value, string_types):
-            value = value.get('value', None)
+            value = value.get("value", None)
             if value is None:
-                LOG('no value in observable LinkObject')
+                LOG("no value in observable LinkObject")
                 return []
-        return [{
-            'indicator': value,
-            'type': ltype
-        }]
+        return [{"indicator": value, "type": ltype}]
 
 
-class HTTPSessionObject(object):
+class HTTPSessionObject:
     """
     Implements http session object indicator decoding
     based on: https://stixproject.github.io/data-model/1.2/HTTPSessionObj/HTTPSessionObjectType/
     """
+
     @staticmethod
     def decode(props, **kwargs):
-        if 'http_request_response' in props.keys():
-            tmp = props['http_request_response']
+        if "http_request_response" in props:
+            tmp = props["http_request_response"]
 
             if len(tmp) == 1:
                 item = tmp[0]
-                http_client_request = item.get('http_client_request', None)
+                http_client_request = item.get("http_client_request", None)
                 if http_client_request is not None:
-                    http_request_header = http_client_request.get('http_request_header', None)
+                    http_request_header = http_client_request.get("http_request_header", None)
                     if http_request_header is not None:
-                        raw_header = http_request_header.get('raw_header', None)
+                        raw_header = http_request_header.get("raw_header", None)
                         if raw_header is not None:
-                            return [{
-                                'indicator': raw_header.split('\n')[0],
-                                'type': 'http-session',  # we don't support this type natively in demisto
-                                'header': raw_header
-                            }]
+                            return [
+                                {
+                                    "indicator": raw_header.split("\n")[0],
+                                    "type": "http-session",  # we don't support this type natively in demisto
+                                    "header": raw_header,
+                                }
+                            ]
             else:
-                LOG('multiple HTTPSessionObjectTypes not supported')
+                LOG("multiple HTTPSessionObjectTypes not supported")
         return []
 
 
-class StixDecode(object):
+class StixDecode:
     """
     Decode STIX strings formatted as xml, and extract indicators from them
     """
+
     DECODERS = {
-        'DomainNameObjectType': DomainNameObject.decode,
-        'FileObjectType': FileObject.decode,
-        'WindowsFileObjectType': FileObject.decode,
-        'URIObjectType': URIObject.decode,
-        'AddressObjectType': AddressObject.decode,
-        'SocketAddressObjectType': SocketAddressObject.decode,
-        'LinkObjectType': LinkObject.decode,
-        'HTTPSessionObjectType': HTTPSessionObject.decode,
+        "DomainNameObjectType": DomainNameObject.decode,
+        "FileObjectType": FileObject.decode,
+        "WindowsFileObjectType": FileObject.decode,
+        "URIObjectType": URIObject.decode,
+        "AddressObjectType": AddressObject.decode,
+        "SocketAddressObjectType": SocketAddressObject.decode,
+        "LinkObjectType": LinkObject.decode,
+        "HTTPSessionObjectType": HTTPSessionObject.decode,
     }
 
     @staticmethod
     def object_extract_properties(props, kwargs):
-        type_ = props.get('xsi:type').rsplit(':')[-1]
+        type_ = props.get("xsi:type").rsplit(":")[-1]
 
         if type_ not in StixDecode.DECODERS:
-            LOG('Unhandled cybox Object type: {!r} - {!r}'.format(type_, props))
+            LOG(f"Unhandled cybox Object type: {type_!r} - {props!r}")
             return []
 
         return StixDecode.DECODERS[type_](props, **kwargs)
@@ -391,7 +382,7 @@ class StixDecode(object):
         result = {}
 
         for iv in indicators:
-            result['{}:{}'.format(iv['indicator'], iv['type'])] = iv
+            result["{}:{}".format(iv["indicator"], iv["type"])] = iv
 
         return result.values()
 
@@ -399,48 +390,48 @@ class StixDecode(object):
     def decode(content, **kwargs):
         result = []
 
-        package = BeautifulSoup(content, 'xml')
+        package = BeautifulSoup(content, "xml")
 
-        if package.contents[0].name != 'STIX_Package':
+        if package.contents[0].name != "STIX_Package":
             return None, []
 
         package = package.contents[0]
 
-        timestamp = package.get('timestamp', None)
+        timestamp = package.get("timestamp", None)
         if timestamp is not None:
             timestamp = StixDecode._parse_stix_timestamp(timestamp)
 
         pprops = package_extract_properties(package)
 
-        indicators = package.find_all('Indicator')
+        indicators = package.find_all("Indicator")
 
         for ind in indicators:
-            observables = ind.find_all('Observable')
+            observables = ind.find_all("Observable")
             for o in observables:
                 gprops = observable_extract_properties(o)
 
-                obj = next((ob for ob in o if ob.name == 'Object'), None)
+                obj = next((ob for ob in o if ob.name == "Object"), None)
                 if obj is None:
                     continue
 
                 # main properties
-                properties = next((c for c in obj if c.name == 'Properties'), None)
+                properties = next((c for c in obj if c.name == "Properties"), None)
                 if properties is not None:
                     for r in StixDecode.object_extract_properties(properties, kwargs):
                         r.update(gprops)
                         r.update(pprops)
-                        r.update({'added_time': ind.get('timestamp') + 'Z'})
+                        r.update({"added_time": ind.get("timestamp") + "Z"})
 
                         result.append(r)
 
                 # then related objects
-                related = next((c for c in obj if c.name == 'Related_Objects'), None)
+                related = next((c for c in obj if c.name == "Related_Objects"), None)
                 if related is not None:
                     for robj in related:
-                        if robj.name != 'Related_Object':
+                        if robj.name != "Related_Object":
                             continue
 
-                        properties = next((c for c in robj if c.name == 'Properties'), None)
+                        properties = next((c for c in robj if c.name == "Properties"), None)
                         if properties is None:
                             continue
 
@@ -458,17 +449,24 @@ class StixDecode(object):
 class Client:
     """Client for AlienVault OTX Feed - gets indicator lists from collections using TAXII client
 
-        Attributes:
-            api_key(str): The API key for AlienVault OTX.
-            collection(str): The collections on which to run the feed.
-            insecure(bool): Use SSH on http request.
-            proxy(str): Use system proxy.
-            all_collections(bool): Whether to run on all active collections.
-        """
+    Attributes:
+        api_key(str): The API key for AlienVault OTX.
+        collection(str): The collections on which to run the feed.
+        insecure(bool): Use SSH on http request.
+        proxy(str): Use system proxy.
+        all_collections(bool): Whether to run on all active collections.
+    """
 
-    def __init__(self, api_key: str, collection: str, insecure: bool = False, proxy: bool = False,
-                 all_collections: bool = False, tags: list = [], tlp_color: Optional[str] = None):
-
+    def __init__(
+        self,
+        api_key: str,
+        collection: str,
+        insecure: bool = False,
+        proxy: bool = False,
+        all_collections: bool = False,
+        tags: list = [],
+        tlp_color: str | None = None,
+    ):
         taxii_client = cabby.create_client(discovery_path="https://otx.alienvault.com/taxii/discovery")
         taxii_client.set_auth(username=str(api_key), password="foo", verify_ssl=not insecure)
         if proxy:
@@ -483,11 +481,10 @@ class Client:
             self.collections = self.get_all_collections()
 
         else:
-            if collection is None or collection == '':
-                return_error(f"No collection set. Here is a list of all accessible collections: "
-                             f"{self.get_all_collections()}")
+            if collection is None or collection == "":
+                return_error(f"No collection set. Here is a list of all accessible collections: {self.get_all_collections()}")
 
-            self.collections = collection.split(',')
+            self.collections = collection.split(",")
 
     def get_all_collections(self):
         """Gets a list of all collections listed in the AlienVault OTX instance.
@@ -512,7 +509,7 @@ class Client:
             list. A list of XML elements (strings).
         """
         if not begin_date:
-            begin_date, _ = parse_date_range(demisto.params().get('initial_interval'))
+            begin_date, _ = parse_date_range(demisto.params().get("initial_interval"))
 
         if begin_date.tzinfo is None:
             begin_date = begin_date.replace(tzinfo=pytz.UTC)
@@ -532,7 +529,7 @@ class Client:
         return StixDecode.decode(response)
 
 
-def module_test_command(client: Client, args: Dict):
+def module_test_command(client: Client, args: dict):
     """Test module for the integration
     will run on all the collections given and check for a response.
     if all_collections is checked will return an error only in case no collection returned a response.
@@ -561,16 +558,18 @@ def module_test_command(client: Client, args: Dict):
                     continue
 
     if not client.all_collections and len(failed_collections) > 0:
-        raise Exception(f"Unable to poll from the collections {str(failed_collections)} check the collection names and "
-                        f"configuration on Alien Vault")
+        raise Exception(
+            f"Unable to poll from the collections {failed_collections!s} check the collection names and "
+            f"configuration on Alien Vault"
+        )
 
     if len(passed_collections) == 0:
         raise Exception("Unable to poll from any collection - please check the configuration on Alien Vault")
 
-    return 'ok', {}, {}
+    return "ok", {}, {}
 
 
-def get_indicators_command(client: Client, args: Dict):
+def get_indicators_command(client: Client, args: dict):
     """Runs fetch indicators and return the indicators.
 
     Args:
@@ -580,10 +579,10 @@ def get_indicators_command(client: Client, args: Dict):
     Returns:
         str,dict,dict. The human readable, and rawJSON from the command - no context created.
     """
-    limit = int(args.get('limit', 50))
+    limit = int(args.get("limit", 50))
 
-    if args.get('begin_date'):
-        begin_date, _ = parse_date_range(args.get('begin_date'))
+    if args.get("begin_date"):
+        begin_date, _ = parse_date_range(args.get("begin_date"))
     else:
         begin_date = None
 
@@ -610,25 +609,25 @@ def parse_indicators(sub_indicator_list, full_indicator_list, tags, tlp_color):
     parsed_indicator_list = []  # type: List
     for indicator in sub_indicator_list:
         # If the indicator was already seen, skip it.
-        if indicator['indicator'] in full_indicator_list:
+        if indicator["indicator"] in full_indicator_list:
             continue
 
-        indicator['value'] = indicator['indicator']
-        indicator['fields'] = {
+        indicator["value"] = indicator["indicator"]
+        indicator["fields"] = {
             "description": indicator["stix_package_short_description"],
             "tags": tags,
-            "firstseenbysource": indicator.get('added_time')
+            "firstseenbysource": indicator.get("added_time"),
         }
         if tlp_color:
-            indicator['fields']['trafficlightprotocol'] = tlp_color
+            indicator["fields"]["trafficlightprotocol"] = tlp_color
 
         temp_copy = indicator.copy()
 
-        del indicator['indicator']
+        del indicator["indicator"]
 
-        indicator['rawJSON'] = temp_copy
+        indicator["rawJSON"] = temp_copy
         parsed_indicator_list.append(indicator)
-        full_indicator_list.append(indicator['value'])
+        full_indicator_list.append(indicator["value"])
 
     return parsed_indicator_list, full_indicator_list
 
@@ -637,9 +636,9 @@ def get_latest_indicator_time(indicators_list):
     if not indicators_list:
         return None
 
-    latest_indicator_time = dateutil.parser.parse(indicators_list[0].get('added_time', '1970-01-01T00:00:00Z'))
+    latest_indicator_time = dateutil.parser.parse(indicators_list[0].get("added_time", "1970-01-01T00:00:00Z"))
     for ind in indicators_list:
-        indicator_time = dateutil.parser.parse(ind.get('added_time', '1970-01-01T00:00:00Z'))
+        indicator_time = dateutil.parser.parse(ind.get("added_time", "1970-01-01T00:00:00Z"))
         if indicator_time > latest_indicator_time:
             latest_indicator_time = indicator_time
 
@@ -689,26 +688,30 @@ def fetch_indicators_command(client: Client, limit=None, begin_date=None):
 
 def main():
     params = demisto.params()
-    tags = argToList(params.get('feedTags'))
-    tlp_color = params.get('tlp_color')
-    api_key = params.get('credentials', {}).get('password') or params.get('api_key')
-    client = Client(api_key, params.get('collections'), params.get('insecure'), params.get('proxy'),
-                    params.get('all_collections'), tags=tags, tlp_color=tlp_color)
+    tags = argToList(params.get("feedTags"))
+    tlp_color = params.get("tlp_color")
+    api_key = params.get("credentials", {}).get("password") or params.get("api_key")
+    client = Client(
+        api_key,
+        params.get("collections"),
+        params.get("insecure"),
+        params.get("proxy"),
+        params.get("all_collections"),
+        tags=tags,
+        tlp_color=tlp_color,
+    )
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     # Switch case
-    commands = {
-        'test-module': module_test_command,
-        'alienvaultotx-get-indicators': get_indicators_command
-    }
+    commands = {"test-module": module_test_command, "alienvaultotx-get-indicators": get_indicators_command}
     try:
         integration_cache = demisto.getIntegrationContext()
-        begin_date = integration_cache.get('begin_date')
+        begin_date = integration_cache.get("begin_date")
 
-        if demisto.command() == 'fetch-indicators':
+        if demisto.command() == "fetch-indicators":
             if not begin_date:
-                begin_date = demisto.params().get('initial_interval')
+                begin_date = demisto.params().get("initial_interval")
                 if begin_date:
                     begin_date, _ = parse_date_range(begin_date)
 
@@ -732,8 +735,8 @@ def main():
             readable_output, outputs, raw_response = commands[command](client, demisto.args())
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
+        raise Exception(f"Error in {SOURCE_NAME} Integration [{e}]")
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == "__main__":
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()

@@ -13,7 +13,7 @@ args = demisto.args()
  In this case we set it to be 'incident' as this script is in charge of querying incidents.
 """
 
-BUSINESS_OBJECT_TYPE = 'Incident'
+BUSINESS_OBJECT_TYPE = "Incident"
 
 """
  `OUTPUT_FIELDS` should contain all the fields you wish to include in the returned business object list.
@@ -31,22 +31,22 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  the `OUTPUT_PATH` variable.
  """
 OUTPUT_FIELDS = [
-    'RecordId',
-    'PublicId',
-    'Description',
-    'Priority',
-    'CustomerDisplayName',
-    'OwnedBy',
-    'Service',
-    'CreatedDateTime',
-    'TotalTasks'
+    "RecordId",
+    "PublicId",
+    "Description",
+    "Priority",
+    "CustomerDisplayName",
+    "OwnedBy",
+    "Service",
+    "CreatedDateTime",
+    "TotalTasks",
 ]
 
 """
 `OUTPUT_PATH` is the path where all queried results will appear after the search. You can modify this path if you wish,
 but remember to change the output prefix in the integration outputs as well.
 """
-OUTPUT_PATH = 'Cherwell.QueryResults'
+OUTPUT_PATH = "Cherwell.QueryResults"
 
 # ####################################################################################
 # ############################## EXECUTION PART ######################################
@@ -54,10 +54,7 @@ OUTPUT_PATH = 'Cherwell.QueryResults'
 
 
 def build_arguments():
-    arguments = {
-        'type': BUSINESS_OBJECT_TYPE,
-        'query': args.get('query')
-    }
+    arguments = {"type": BUSINESS_OBJECT_TYPE, "query": args.get("query")}
     return arguments
 
 
@@ -74,20 +71,22 @@ def build_context(object_list, filter_fields):
 
 def build_output_list():
     output_fields = OUTPUT_FIELDS
-    if 'RecordId' not in output_fields:
-        output_fields.append('RecordId')
-    if 'PublicId' not in output_fields:
-        output_fields.append('PublicId')
+    if "RecordId" not in output_fields:
+        output_fields.append("RecordId")
+    if "PublicId" not in output_fields:
+        output_fields.append("PublicId")
     return output_fields
 
 
-result = demisto.executeCommand('cherwell-query-business-object', build_arguments())[0]
-business_object_list = list(result.get('EntryContext').items())[0][1]
-md = tableToMarkdown('Query Results', business_object_list, headers=build_output_list(), headerTransform=pascalToSpace)
-demisto.results({
-    'Type': result.get('Type'),
-    'ContentsFormat': result.get('ContentsFormat'),
-    'Contents': result.get('Contents'),
-    'HumanReadable': md,
-    'EntryContext': {OUTPUT_PATH: build_context(business_object_list, build_output_list())}
-})
+result = demisto.executeCommand("cherwell-query-business-object", build_arguments())[0]
+business_object_list = list(result.get("EntryContext").items())[0][1]
+md = tableToMarkdown("Query Results", business_object_list, headers=build_output_list(), headerTransform=pascalToSpace)
+demisto.results(
+    {
+        "Type": result.get("Type"),
+        "ContentsFormat": result.get("ContentsFormat"),
+        "Contents": result.get("Contents"),
+        "HumanReadable": md,
+        "EntryContext": {OUTPUT_PATH: build_context(business_object_list, build_output_list())},
+    }
+)

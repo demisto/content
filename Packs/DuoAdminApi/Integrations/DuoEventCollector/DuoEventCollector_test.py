@@ -1,19 +1,29 @@
-
-import pytest
 import json
-import dateparser
-from freezegun import freeze_time
 from datetime import datetime, timedelta
-import demistomock as demisto
 from unittest.mock import MagicMock, patch
-from DuoEventCollector import (Client, GetEvents, LogType, Params, parse_events, main,
-                               parse_mintime, validate_request_order_array, calculate_window)
-DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+import dateparser
+import demistomock as demisto
+import pytest
+from DuoEventCollector import (
+    Client,
+    GetEvents,
+    LogType,
+    Params,
+    calculate_window,
+    main,
+    parse_events,
+    parse_mintime,
+    validate_request_order_array,
+)
+from freezegun import freeze_time
+
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 @pytest.fixture
 def ret_fresh_client(ret_fresh_parameters):
-    return Client(Params(**ret_fresh_parameters, mintime={}))   # type: ignore
+    return Client(Params(**ret_fresh_parameters, mintime={}))  # type: ignore
 
 
 @pytest.fixture
@@ -26,7 +36,7 @@ def ret_fresh_parameters():
         "proxy": False,
         "retries": "5",
         "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
-        "fetch_delay": "0"
+        "fetch_delay": "0",
     }
     calculate_window(params)
     return params
@@ -40,11 +50,11 @@ global_demisto_params = {
     "proxy": False,
     "retries": "5",
     "secret_key": {"password": "YK6mtSzXXXXXXXXXXX", "passwordChanged": False},
-    "fetch_delay": "0"
+    "fetch_delay": "0",
 }
 
 calculate_window(global_demisto_params)
-client = Client(Params(**global_demisto_params, mintime={}))     # type: ignore
+client = Client(Params(**global_demisto_params, mintime={}))  # type: ignore
 
 get_events = GetEvents(
     client=client,
@@ -102,16 +112,13 @@ def test_parse_events(event, expected_res):
 
 def test_call():
     mock_admin_api = MagicMock()
-    mock_response = load_json('./test_data/authenticationV2.json')
+    mock_response = load_json("./test_data/authenticationV2.json")
     mock_admin_api.get_authentication_log.return_value = mock_response
     client.admin_api = mock_admin_api
-    client.params.mintime = {LogType.AUTHENTICATION: {'min_time': '16843543575', 'next_offset': []}}
-    client.params.fetch_delay = '0'
+    client.params.mintime = {LogType.AUTHENTICATION: {"min_time": "16843543575", "next_offset": []}}
+    client.params.fetch_delay = "0"
     _, metadata = client.call([LogType.AUTHENTICATION])
-    assert metadata == {
-        "next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"],
-        "total_objects": 1
-    }
+    assert metadata == {"next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"], "total_objects": 1}
 
 
 def test_setLastRun_when_no_new_events(ret_fresh_client, ret_fresh_parameters, mocker):
@@ -124,22 +131,26 @@ def test_setLastRun_when_no_new_events(ret_fresh_client, ret_fresh_parameters, m
         validate that the lastRun is being set to the last batch send from XSIAM.
     """
     client = ret_fresh_client
-    event1 = load_json('./test_data/authenticationV2.json').get('authlogs', [])[0]
-    mocker.patch.object(demisto, 'params', return_value=ret_fresh_parameters)
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
-    mocker.patch.object(demisto, 'command', return_value='fetch-events')
-    mocker.patch.object(Client, 'call', side_effect=[([event1], {
-        "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74",
-        "total_objects": 3
-    }), ([], {})])
-    mocker.patch('DuoEventCollector.send_events_to_xsiam', return_vaule=None)
+    event1 = load_json("./test_data/authenticationV2.json").get("authlogs", [])[0]
+    mocker.patch.object(demisto, "params", return_value=ret_fresh_parameters)
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(
+        Client,
+        "call",
+        side_effect=[
+            ([event1], {"next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74", "total_objects": 3}),
+            ([], {}),
+        ],
+    )
+    mocker.patch("DuoEventCollector.send_events_to_xsiam", return_vaule=None)
     mock_get_events = GetEvents(client, [LogType.AUTHENTICATION])
-    with patch('DuoEventCollector.GetEvents', return_value=mock_get_events):
+    with patch("DuoEventCollector.GetEvents", return_value=mock_get_events):
         # call the main function
         main()
-        assert mock_get_events.get_last_run().get('after') == {LogType.AUTHENTICATION: {
-            "next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74"
-        }}
+        assert mock_get_events.get_last_run().get("after") == {
+            LogType.AUTHENTICATION: {"next_offset": "1666714065304,5bf1a860-fe39-49e3-be29-217659663a74"}
+        }
 
 
 def test_set_next_run_filter_v1(ret_fresh_client):
@@ -166,12 +177,9 @@ def test_set_next_run_filter_v2(ret_fresh_client):
         Assert that the min time for next run is correct.
     """
     client = ret_fresh_client
-    metadata = {"metadata": {
-        "next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"],
-        "total_objects": 1
-    }}
+    metadata = {"metadata": {"next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"], "total_objects": 1}}
     client.set_next_run_filter_v2(LogType.AUTHENTICATION, metadata)
-    assert client.params.mintime[LogType.AUTHENTICATION] == {'next_offset': metadata.get('next_offset')}
+    assert client.params.mintime[LogType.AUTHENTICATION] == {"next_offset": metadata.get("next_offset")}
 
 
 def test_parse_mintime():
@@ -201,14 +209,14 @@ def test_handle_authentication_logs(ret_fresh_client):
     Then:
         Validate that the events return are accessed properly
     """
-    authentication_response = load_json('./test_data/authenticationV2.json')
+    authentication_response = load_json("./test_data/authenticationV2.json")
     client: Client = ret_fresh_client
-    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1579878696'}
-    with patch.object(client.admin_api, 'get_authentication_log', return_value=authentication_response):
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": "1579878696"}
+    with patch.object(client.admin_api, "get_authentication_log", return_value=authentication_response):
         events, metadata = client.handle_authentication_logs()
 
-    assert events == authentication_response.get('authlogs')
-    assert metadata == authentication_response.get('metadata')
+    assert events == authentication_response.get("authlogs")
+    assert metadata == authentication_response.get("metadata")
 
 
 @freeze_time("2024-01-24 17:00:00 UTC")
@@ -230,11 +238,11 @@ def test_handle_v2_logs_no_events(mocker):
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2024-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
     client = Client(Params(**params, mintime={}))
-    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000'}
-    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000'}
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": "1706115540000"}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": "1706115540000"}
 
     events_auth, metadata_auth = client.handle_authentication_logs()
     events_tel, metadata_tel = client.handle_telephony_logs_v2()
@@ -264,37 +272,39 @@ def test_handle_v2_test_args(mocker):
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": end_window,
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
     client = Client(Params(**params, mintime={}))
-    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115240000'}
-    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115240000'}
-    maxtime = '1706115300000'
-    mintime = '1706115240000'
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": "1706115240000"}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": "1706115240000"}
+    maxtime = "1706115300000"
+    mintime = "1706115240000"
 
     # authentication , no next_offset
-    request_1 = mocker.patch.object(client.admin_api, 'get_authentication_log')
+    request_1 = mocker.patch.object(client.admin_api, "get_authentication_log")
     client.handle_authentication_logs()
-    request_1.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    request_1.assert_called_with(mintime=mintime, api_version=2, limit="10", sort="ts:asc", maxtime=maxtime)
     # telephony no next_offset
-    request_2 = mocker.patch.object(client.admin_api, 'get_telephony_log')
+    request_2 = mocker.patch.object(client.admin_api, "get_telephony_log")
     client.handle_telephony_logs_v2()
-    request_2.assert_called_with(mintime=mintime, api_version=2, limit='10', sort='ts:asc', maxtime=maxtime)
+    request_2.assert_called_with(mintime=mintime, api_version=2, limit="10", sort="ts:asc", maxtime=maxtime)
 
     next_offset_auth = ["1706115240000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"]
     next_offset_tel = "1706115240000,af0ba235-0b33-23c8-bc23-a31aa0231de8"
-    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": '1706115540000', "next_offset": next_offset_auth}
-    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1706115540000', "next_offset": next_offset_tel}
+    client.params.mintime[LogType.AUTHENTICATION] = {"min_time": "1706115540000", "next_offset": next_offset_auth}
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": "1706115540000", "next_offset": next_offset_tel}
     # authentication with next_offset
-    request_3 = mocker.patch.object(client.admin_api, 'get_authentication_log')
+    request_3 = mocker.patch.object(client.admin_api, "get_authentication_log")
     client.handle_authentication_logs()
-    request_3.assert_called_with(next_offset=next_offset_auth, mintime=mintime, api_version=2,
-                                 limit='10', sort='ts:asc', maxtime=maxtime)
+    request_3.assert_called_with(
+        next_offset=next_offset_auth, mintime=mintime, api_version=2, limit="10", sort="ts:asc", maxtime=maxtime
+    )
     # telephony with next_offset
-    request_4 = mocker.patch.object(client.admin_api, 'get_telephony_log')
+    request_4 = mocker.patch.object(client.admin_api, "get_telephony_log")
     client.handle_telephony_logs_v2()
-    request_4.assert_called_with(next_offset=next_offset_tel, mintime=mintime, api_version=2,
-                                 limit='10', sort='ts:asc', maxtime=maxtime)
+    request_4.assert_called_with(
+        next_offset=next_offset_tel, mintime=mintime, api_version=2, limit="10", sort="ts:asc", maxtime=maxtime
+    )
 
 
 def test_handle_telephony_logs_v2(ret_fresh_client):
@@ -306,14 +316,14 @@ def test_handle_telephony_logs_v2(ret_fresh_client):
     Then:
         Validate that the events return are accessed properly
     """
-    telephony_response = load_json('./test_data/telephonyV2.json')
+    telephony_response = load_json("./test_data/telephonyV2.json")
     client: Client = ret_fresh_client
-    client.params.mintime[LogType.TELEPHONY] = {"min_time": '1579878696'}
-    with patch.object(client.admin_api, 'get_telephony_log', return_value=telephony_response):
+    client.params.mintime[LogType.TELEPHONY] = {"min_time": "1579878696"}
+    with patch.object(client.admin_api, "get_telephony_log", return_value=telephony_response):
         events, metadata = client.handle_telephony_logs_v2()
 
-    assert events == telephony_response.get('items')
-    assert metadata == telephony_response.get('metadata')
+    assert events == telephony_response.get("items")
+    assert metadata == telephony_response.get("metadata")
 
 
 def test_handle_telephony_logs_v1(ret_fresh_client):
@@ -325,10 +335,10 @@ def test_handle_telephony_logs_v1(ret_fresh_client):
     Then:
         Validate that the events return are accessed properly
     """
-    telephony_response = load_json('./test_data/telephonyV1.json')
+    telephony_response = load_json("./test_data/telephonyV1.json")
     client: Client = ret_fresh_client
-    client.params.mintime[LogType.TELEPHONY] = '1579878696'
-    with patch.object(client.admin_api, 'get_telephony_log', return_value=telephony_response):
+    client.params.mintime[LogType.TELEPHONY] = "1579878696"
+    with patch.object(client.admin_api, "get_telephony_log", return_value=telephony_response):
         ret_events = client.handle_telephony_logs_v1()
 
     assert telephony_response == ret_events
@@ -343,10 +353,10 @@ def test_handle_administration_logs(ret_fresh_client):
     Then:
         Validate that the events return are accessed properly
     """
-    administration_response = load_json('./test_data/administration.json')
+    administration_response = load_json("./test_data/administration.json")
     client: Client = ret_fresh_client
     client.params.mintime[LogType.ADMINISTRATION] = 12345
-    with patch.object(client.admin_api, 'get_administrator_log', return_value=administration_response):
+    with patch.object(client.admin_api, "get_administrator_log", return_value=administration_response):
         ret_events = client.handle_administration_logs()
 
     assert administration_response == ret_events
@@ -371,11 +381,11 @@ def test_handle_v1_logs_no_events(ret_fresh_client):
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2024-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
     client = Client(Params(**params, mintime={}))
-    client.params.mintime[LogType.ADMINISTRATION] = '1706115540'
-    client.params.mintime[LogType.TELEPHONY] = '1706115540'
+    client.params.mintime[LogType.ADMINISTRATION] = "1706115540"
+    client.params.mintime[LogType.TELEPHONY] = "1706115540"
 
     events_admin = client.handle_administration_logs()
     events_tel = client.handle_telephony_logs_v1()
@@ -383,12 +393,17 @@ def test_handle_v1_logs_no_events(ret_fresh_client):
     assert not events_tel
 
 
-@pytest.mark.parametrize('log_type_list, expected_res', [(['AUTHENTICATION'], True),
-                                                         (['AUTHENTICATION', 'TELEPHONY'], True),
-                                                         ([], True),
-                                                         (['banana'], 'banana'),
-                                                         (['AUTHENTICATION', 'TELEPONY'], 'TELEPONY'),
-                                                         (['AUTHENTICATION', 'TELEPONY', 'ADMIN'], 'TELEPONY,ADMIN')])
+@pytest.mark.parametrize(
+    "log_type_list, expected_res",
+    [
+        (["AUTHENTICATION"], True),
+        (["AUTHENTICATION", "TELEPHONY"], True),
+        ([], True),
+        (["banana"], "banana"),
+        (["AUTHENTICATION", "TELEPONY"], "TELEPONY"),
+        (["AUTHENTICATION", "TELEPONY", "ADMIN"], "TELEPONY,ADMIN"),
+    ],
+)
 def test_validate_request_order_array(log_type_list, expected_res):
     """
     Given:
@@ -403,7 +418,7 @@ def test_validate_request_order_array(log_type_list, expected_res):
 
 @freeze_time("2024-01-20 17:00:00 UTC")
 def test_events_in_window_all_in():
-    """ case d
+    """case d
     Given:
         A list of log/events.
     When:
@@ -411,7 +426,7 @@ def test_events_in_window_all_in():
     Then:
         Validate that the all events are returned.
     """
-    input_events = load_json('./test_data/events_in_window_v1_administration.json')
+    input_events = load_json("./test_data/events_in_window_v1_administration.json")
     params = {
         "after": "1 month",
         "host": "api-host.duosecurity.com",
@@ -421,12 +436,12 @@ def test_events_in_window_all_in():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 16:55:00", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
 
     client = Client(Params(**params, mintime={}))
 
-    request_order = ['ADMINISTRATION']
+    request_order = ["ADMINISTRATION"]
 
     get_events_obj = GetEvents(client, request_order)
     output_events, reached_end_window = get_events_obj.events_in_window(input_events)
@@ -436,7 +451,7 @@ def test_events_in_window_all_in():
 
 @freeze_time("2020-01-24 15:16:33 UTC")
 def test_events_in_window_some_in():
-    """ case c
+    """case c
     Given:
         A list of log/events.
     When:
@@ -444,7 +459,7 @@ def test_events_in_window_some_in():
     Then:
         Validate that some events are returned.
     """
-    input_events = load_json('./test_data/events_in_window_v1_administration.json')
+    input_events = load_json("./test_data/events_in_window_v1_administration.json")
     params = {
         "after": "1 month",
         "host": "api-host.duosecurity.com",
@@ -454,12 +469,12 @@ def test_events_in_window_some_in():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
 
     client = Client(Params(**params, mintime={}))
 
-    request_order = ['ADMINISTRATION']
+    request_order = ["ADMINISTRATION"]
 
     get_events_obj = GetEvents(client, request_order)
     output_events, reached_end_window = get_events_obj.events_in_window(input_events)
@@ -469,7 +484,7 @@ def test_events_in_window_some_in():
 
 @freeze_time("2020-01-24 15:16:33 UTC")
 def test_events_in_window_none_in():
-    """ case b
+    """case b
     Given:
         A list of log/events.
     When:
@@ -477,7 +492,7 @@ def test_events_in_window_none_in():
     Then:
         Validate that none of the events are returned.
     """
-    input_events = load_json('./test_data/events_in_window_v1_administration.json')
+    input_events = load_json("./test_data/events_in_window_v1_administration.json")
     params = {
         "after": "1 month",
         "host": "api-host.duosecurity.com",
@@ -487,12 +502,12 @@ def test_events_in_window_none_in():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:09:33", DATE_FORMAT),
-        "fetch_delay": "7"
+        "fetch_delay": "7",
     }
 
     client = Client(Params(**params, mintime={}))
 
-    request_order = ['ADMINISTRATION']
+    request_order = ["ADMINISTRATION"]
 
     get_events_obj = GetEvents(client, request_order)
     output_events, reached_end_window = get_events_obj.events_in_window(input_events)
@@ -502,7 +517,7 @@ def test_events_in_window_none_in():
 
 @freeze_time("2020-01-24 15:16:33 UTC")
 def test_events_in_window_all_no_delay():
-    """ case a
+    """case a
     Given:
         A list of log/events.
     When:
@@ -510,7 +525,7 @@ def test_events_in_window_all_no_delay():
     Then:
         Validate that all events are returned, because we don't want to apply a delay.
     """
-    input_events = load_json('./test_data/events_in_window_v1_administration.json')
+    input_events = load_json("./test_data/events_in_window_v1_administration.json")
     params = {
         "after": "1 month",
         "host": "api-host.duosecurity.com",
@@ -520,12 +535,12 @@ def test_events_in_window_all_no_delay():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "0"
+        "fetch_delay": "0",
     }
 
     client = Client(Params(**params, mintime={}))
 
-    request_order = ['ADMINISTRATION']
+    request_order = ["ADMINISTRATION"]
 
     get_events_obj = GetEvents(client, request_order)
     output_events, reached_end_window = get_events_obj.events_in_window(input_events)
@@ -535,7 +550,7 @@ def test_events_in_window_all_no_delay():
 
 @freeze_time("2020-01-24 15:16:33 UTC")
 def test_calculate_window():
-    """ case a
+    """case a
     Given:
         A list of log/events.
     When:
@@ -551,10 +566,10 @@ def test_calculate_window():
         "proxy": False,
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
     calculate_window(params)
-    assert params['end_window'] == datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT)
+    assert params["end_window"] == datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT)
 
 
 @freeze_time("2020-01-24 15:16:33 UTC")
@@ -576,7 +591,7 @@ def test_check_window_before_call_no_delay():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:16:33", DATE_FORMAT),
-        "fetch_delay": "0"
+        "fetch_delay": "0",
     }
 
     client = Client(Params(**params, mintime={}))
@@ -605,7 +620,7 @@ def test_check_window_before_call_small_delay():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
 
     client = Client(Params(**params, mintime={}))
@@ -635,7 +650,7 @@ def test_check_window_before_call_v2_format():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2022-10-25 16:07:46", DATE_FORMAT),
-        "fetch_delay": "9"
+        "fetch_delay": "9",
     }
 
     client = Client(Params(**params, mintime={}))
@@ -665,7 +680,7 @@ def test_check_window_before_call_not_in_window():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
 
     client = Client(Params(**params, mintime={}))
@@ -694,7 +709,7 @@ def test_check_window_before_call_5_sec_time_delta():
         "retries": "5",
         "secret_key": {"password": "password", "passwordChanged": False},
         "end_window": datetime.strptime("2020-01-24 15:11:33", DATE_FORMAT),
-        "fetch_delay": "5"
+        "fetch_delay": "5",
     }
 
     client = Client(Params(**params, mintime={}))

@@ -4,7 +4,7 @@ name: Suspicious Local Administrator Login
 description: "This playbook addresses the following alerts:\n \n- Suspicious local
   administrator login\n \nPlaybook Stages:\n \nInvestigation:\n \n- Retrieves the
   name of the process image involved in the alert.\n- Checks for related Powershell/Command
-  and Scripting/WMI alerts in the incident.\n- Retrieves the host risk score.\n \nContainment:\n
+  and Scripting/WMI alerts in the <-incident->.\n- Retrieves the host risk score.\n \nContainment:\n
   \n- Provide a manual task for an analyst to review the findings and decide the next
   steps.\n- Possible actions:\n - Disable User.\n - Take no action.\n \nRequirements:
   \n\n- For response actions, the following integration is required: Core - IR."
@@ -750,7 +750,7 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

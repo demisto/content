@@ -6,9 +6,7 @@ TAEGIS_ALERT = {
         "title": "Test Alert",
         "description": "This is a test alert",
         "severity": 0.5,
-        "created_at": {
-            "seconds": 1686083555
-        }
+        "created_at": {"seconds": 1686083555},
     },
     "url": f"{TAEGIS_URL}/alerts/alert:%2F%2Fpriv:crowdstrike:11772:1666247222095:4e41ec02-ca53-5ff7-95cc-eda434221ba6",
 }
@@ -22,12 +20,7 @@ TAEGIS_ASSET = {
     "endpointType": "ENDPOINT_REDCLOAK",
     "firstDiskSerial": "\\x98765",
     "hostId": "110d1fd3a23c95c0120d0d10451cb001",
-    "hostnames": [
-        {
-            "hostname": "WIN-DESKTOP",
-            "id": "1236c34a-18ab-32c0-a584-8e5a32e617b8"
-        }
-    ],
+    "hostnames": [{"hostname": "WIN-DESKTOP", "id": "1236c34a-18ab-32c0-a584-8e5a32e617b8"}],
     "id": "123abc12-1111-22b2-3333-44446632c8fd",
     "ingestTime": "2023-01-15T08:01:35Z",
     "kernelRelease": "",
@@ -41,14 +34,8 @@ TAEGIS_ASSET = {
     "sensorVersion": "2.8.5.0",
     "systemType": "NT_SERVER",
     "systemVolumeSerial": "\\x33363336323333333036",
-    "tags": [
-        {
-            "__typename": "Tag",
-            "key": "",
-            "tag": "SERVER:TestMachine"
-        }
-    ],
-    "updatedAt": "2022-05-23T01:20:16.295598Z"
+    "tags": [{"__typename": "Tag", "key": "", "tag": "SERVER:TestMachine"}],
+    "updatedAt": "2022-05-23T01:20:16.295598Z",
 }
 
 TAEGIS_COMMENT = {
@@ -97,23 +84,16 @@ TAEGIS_PLAYBOOK_EXECUTION = {
     "executionTime": 1442,
     "id": TAEGIS_PLAYBOOK_EXECUTION_ID,
     "inputs": {
-        "PagerDuty": {
-            "dedup_key": "25f16f6c-dbc1-4efe-85a7-385e73f94efc"
-        },
+        "PagerDuty": {"dedup_key": "25f16f6c-dbc1-4efe-85a7-385e73f94efc"},
         "alert": {
             "description": "Please, verify the login was authorized.",
             "message": "Test Alert: Successful Login for User",
             "severity": 0.9,
-            "uuid": "25f16f6c-dbc1-4efe-85a7-385e73f94efc"
+            "uuid": "25f16f6c-dbc1-4efe-85a7-385e73f94efc",
         },
-        "event": "create"
+        "event": "create",
     },
-    "instance": {
-        "name": "My Playbook Instance",
-        "playbook": {
-            "name": "My Playbook Name"
-        }
-    },
+    "instance": {"name": "My Playbook Instance", "playbook": {"name": "My Playbook Name"}},
     "outputs": "25f16f6c-dbc1-4efe-85a7-385e73f94efc",
     "state": "Completed",
     "updatedAt": "2022-02-10T13:51:31Z",
@@ -140,26 +120,13 @@ EXECUTE_PLAYBOOK_RESPONSE = {
     }
 }
 
-EXECUTE_PLAYBOOK_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "must be defined",
-            "path": [
-                "variables",
-                "id"
-            ]
-        }
-    ]
-}
+EXECUTE_PLAYBOOK_BAD_RESPONSE = {"data": {}, "errors": [{"message": "must be defined", "path": ["variables", "id"]}]}
 
 
 FETCH_ALERTS_RESPONSE = {
     "data": {
         "alertsServiceSearch": {
-            "alerts": {
-                "list": [TAEGIS_ALERT]
-            },
+            "alerts": {"list": [TAEGIS_ALERT]},
             "total_results": 1,
         }
     }
@@ -168,34 +135,15 @@ FETCH_ALERTS_RESPONSE = {
 FETCH_ALERTS_BY_ID_RESPONSE = {
     "data": {
         "alertsServiceRetrieveAlertsById": {
-            "alerts": {
-                "list": [TAEGIS_ALERT]
-            },
+            "alerts": {"list": [TAEGIS_ALERT]},
             "total_results": 1,
         }
     }
 }
 
-FETCH_ASSETS_RESPONSE = {
-    "data": {
-        "searchAssetsV2": {
-            "assets": [TAEGIS_ASSET]
-        }
-    }
-}
+FETCH_ASSETS_RESPONSE = {"data": {"searchAssetsV2": {"assets": [TAEGIS_ASSET]}}}
 
-FETCH_ASSETS_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "Cannot query requested field",
-            "path": [
-                "input",
-                "unknown_id"
-            ]
-        }
-    ]
-}
+FETCH_ASSETS_BAD_RESPONSE = {"data": {}, "errors": [{"message": "Cannot query requested field", "path": ["input", "unknown_id"]}]}
 
 CREATE_COMMENT_RESPONSE = {
     "data": {
@@ -212,22 +160,16 @@ CREATE_UPDATE_COMMENT_BAD_RESPONSE = {
             "message": "Comment cannot be empty",
             "path": [
                 "comment",
-            ]
+            ],
         }
-    ]
+    ],
 }
 
-FETCH_COMMENT_RESPONSE = {
-    "data": {
-        "comment": TAEGIS_COMMENT
-    }
-}
+FETCH_COMMENT_RESPONSE = {"data": {"comment": TAEGIS_COMMENT}}
 
 FETCH_COMMENTS_RESPONSE = {
     "data": {
-        "commentsV2": {
-            "comments": [TAEGIS_COMMENT]
-        },
+        "commentsV2": {"comments": [TAEGIS_COMMENT]},
     }
 }
 
@@ -238,9 +180,9 @@ FETCH_COMMENTS_BAD_RESPONSE = {
             "message": "Comment not found",
             "path": [
                 "comment",
-            ]
+            ],
         }
-    ]
+    ],
 }
 
 UPDATE_COMMENT_RESPONSE = {
@@ -251,77 +193,23 @@ UPDATE_COMMENT_RESPONSE = {
     }
 }
 
-FETCH_ENDPOINT_RESPONSE = {
-    "data": {
-        "assetEndpointInfo": TAEGIS_ENDPOINT
-    }
-}
+FETCH_ENDPOINT_RESPONSE = {"data": {"assetEndpointInfo": TAEGIS_ENDPOINT}}
 
-FETCH_ENDPOINT_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "failed to fetch endpoint",
-            "path": []
-        }
-    ]
-}
+FETCH_ENDPOINT_BAD_RESPONSE = {"data": {}, "errors": [{"message": "failed to fetch endpoint", "path": []}]}
 
-FETCH_INCIDENTS_RESPONSE = {
-    "data": {
-        "investigationsSearch": {
-            "investigations": [TAEGIS_INVESTIGATION]
-        }
-    }
-}
+FETCH_INCIDENTS_RESPONSE = {"data": {"investigationsSearch": {"investigations": [TAEGIS_INVESTIGATION]}}}
 
-FETCH_INCIDENTS_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "failed to fetch investigations",
-            "path": []
-        }
-    ]
-}
+FETCH_INCIDENTS_BAD_RESPONSE = {"data": {}, "errors": [{"message": "failed to fetch investigations", "path": []}]}
 
-FETCH_INVESTIGATION_RESPONSE = {
-    "data": {
-        "investigationV2": TAEGIS_INVESTIGATION
-    }
-}
+FETCH_INVESTIGATION_RESPONSE = {"data": {"investigationV2": TAEGIS_INVESTIGATION}}
 
-FETCH_INVESTIGATIONS_RESPONSE = {
-    "data": {
-        "investigationsSearch": {
-            "investigations": [TAEGIS_INVESTIGATION]
-        }
-    }
-}
+FETCH_INVESTIGATIONS_RESPONSE = {"data": {"investigationsSearch": {"investigations": [TAEGIS_INVESTIGATION]}}}
 
-FETCH_INVESTIGATION_ALERTS_RESPONSE = {
-    "data": {
-        "investigationAlerts": {
-            "alerts": [TAEGIS_ALERT]
-        }
-    }
-}
+FETCH_INVESTIGATION_ALERTS_RESPONSE = {"data": {"investigationAlerts": {"alerts": [TAEGIS_ALERT]}}}
 
-FETCH_PLAYBOOK_EXECUTION_RESPONSE = {
-    "data": {
-        "playbookExecution": TAEGIS_PLAYBOOK_EXECUTION
-    }
-}
+FETCH_PLAYBOOK_EXECUTION_RESPONSE = {"data": {"playbookExecution": TAEGIS_PLAYBOOK_EXECUTION}}
 
-FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "failed to execute playbook",
-            "path": []
-        }
-    ]
-}
+FETCH_PLAYBOOK_EXECUTION_BAD_RESPONSE = {"data": {}, "errors": [{"message": "failed to execute playbook", "path": []}]}
 
 CREATE_INVESTIGATION_RESPONSE = {
     "data": {
@@ -347,18 +235,7 @@ FETCH_USER_RESPONSE = {
     }
 }
 
-FETCH_USERS_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "invalid format",
-            "path": [
-                "variables",
-                "id"
-            ]
-        }
-    ]
-}
+FETCH_USERS_BAD_RESPONSE = {"data": {}, "errors": [{"message": "invalid format", "path": ["variables", "id"]}]}
 
 FETCH_USERS_RESPONSE = {
     "data": {
@@ -376,18 +253,9 @@ INVESTIGATION_ARCHIVE_RESPONSE = {
     }
 }
 
-INVESTIGATION_ARCHIVE_ALREADY_COMPLETE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "sql: no rows in result set"
-        }
-    ]
-}
+INVESTIGATION_ARCHIVE_ALREADY_COMPLETE = {"data": {}, "errors": [{"message": "sql: no rows in result set"}]}
 
-INVESTIGATION_NOT_ARCHIVED_RESPONSE = {
-    'data': None, 'errors': [{'Offset': 182}]
-}
+INVESTIGATION_NOT_ARCHIVED_RESPONSE = {"data": None, "errors": [{"Offset": 182}]}
 
 INVESTIGATION_UNARCHIVE_RESPONSE = {
     "data": {
@@ -405,46 +273,19 @@ ISOLATE_ASSET_RESPONSE = {
     }
 }
 
-ISOLATE_ASSET_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "invalid format",
-            "path": [
-                "variables",
-                "id"
-            ]
-        }
-    ]
-}
+ISOLATE_ASSET_BAD_RESPONSE = {"data": {}, "errors": [{"message": "invalid format", "path": ["variables", "id"]}]}
 
 UPDATE_ALERT_STATUS_RESPONSE = {
     "data": {
-        "alertsServiceUpdateResolutionInfo": {
-            "reason": "feedback updates successfully applied",
-            "resolution_status": "SUCCESS"
-        }
+        "alertsServiceUpdateResolutionInfo": {"reason": "feedback updates successfully applied", "resolution_status": "SUCCESS"}
     }
 }
 
-UPDATE_ALERT_STATUS_BAD_RESPONSE = {
-    "data": {},
-    "errors": [
-        {
-            "message": "invalid format",
-            "path": [
-                "variables",
-                "id"
-            ]
-        }
-    ]
-}
+UPDATE_ALERT_STATUS_BAD_RESPONSE = {"data": {}, "errors": [{"message": "invalid format", "path": ["variables", "id"]}]}
 
 TAEGIS_ADD_EVIDENCE_TO_INVESTIGATION_RESPONSE = {
     "data": {
-        "addEvidenceToInvestigation": {
-            "investigationId": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]
-        },
+        "addEvidenceToInvestigation": {"investigationId": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]},
     }
 }
 
@@ -454,7 +295,7 @@ CREATE_SHARELINK_RESPONSE = {
             "createdTime": "2023-06-12T15:59:45.526512Z",
             "id": "73a223f4-76d5-448a-8281-a361a2c2ce74",
             "linkRef": "7a021411-01b6-4101-843e-c14218063c02",
-            "linkTarget": ""
+            "linkTarget": "",
         }
     }
 }

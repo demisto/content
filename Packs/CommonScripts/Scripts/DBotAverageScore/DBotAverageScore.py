@@ -1,7 +1,7 @@
+from collections import defaultdict
+
 import demistomock as demisto
 from CommonServerPython import *
-
-from collections import defaultdict
 
 
 def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandResults:
@@ -17,9 +17,9 @@ def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandR
     scores = defaultdict(list)  # Format is 'indicator: [collected scores]'
 
     for dbot_score_item in context_data:
-        indicator = dbot_score_item['Indicator']
+        indicator = dbot_score_item["Indicator"]
 
-        scores[indicator].append(dbot_score_item['Score'])
+        scores[indicator].append(dbot_score_item["Score"])
 
     context_output = []
 
@@ -27,10 +27,10 @@ def calculate_all_average_scores(context_data: list[dict[str, Any]]) -> CommandR
         context_output.append(calculate_average_score(indicator=indicator, scores_list=scores_list))
 
     return CommandResults(
-        outputs_prefix='DBotAvgScore',
-        outputs_key_field='Indicator',
+        outputs_prefix="DBotAvgScore",
+        outputs_key_field="Indicator",
         outputs=context_output,
-        readable_output=tableToMarkdown('DBot Average Scores', t=context_output),
+        readable_output=tableToMarkdown("DBot Average Scores", t=context_output),
     )
 
 
@@ -50,13 +50,13 @@ def calculate_average_score(indicator: str, scores_list: list[int]) -> dict:
     scores_list = [score for score in scores_list if score != 0]  # Remove '0' values
 
     if not scores_list:  # If all values were '0', we have an empty list
-        return {'Indicator': indicator, 'Score': 0}
+        return {"Indicator": indicator, "Score": 0}
 
-    return {'Indicator': indicator, 'Score': sum(scores_list) / len(scores_list)}
+    return {"Indicator": indicator, "Score": sum(scores_list) / len(scores_list)}
 
 
-def main():   # pragma: no cover
-    dbot_score_context_data: list | dict = demisto.context().get('DBotScore', [])
+def main():  # pragma: no cover
+    dbot_score_context_data: list | dict = demisto.context().get("DBotScore", [])
 
     # If there is only a single DBotScore entry, the server returns it as a single dict, and not inside a list.
     if isinstance(dbot_score_context_data, dict):
@@ -65,5 +65,5 @@ def main():   # pragma: no cover
     return_results(calculate_all_average_scores(dbot_score_context_data))
 
 
-if __name__ in ("__main__", "builtin", "builtins"):   # pragma: no cover
+if __name__ in ("__main__", "builtin", "builtins"):  # pragma: no cover
     main()

@@ -1,9 +1,9 @@
 import demistomock as demisto
-from CommonServerPython import *
-from TAXII2ApiModule import *
 import plyara
 import plyara.utils
 import tldextract
+from CommonServerPython import *
+from TAXII2ApiModule import *
 
 CONTEXT_PREFIX = "GITHUB"
 RAW_RESPONSE = []
@@ -49,7 +49,9 @@ class Client(BaseClient):
             demisto.debug(f"There are many comites currently bringing them all...,  currently exist:{response}")
         return all_commits
 
-    def get_files_between_commits(self, base: str, head: str, include_base_commit: bool) -> tuple[list[dict[str, str]], str]:  # pragma: no cover  # noqa: E501
+    def get_files_between_commits(
+        self, base: str, head: str, include_base_commit: bool
+    ) -> tuple[list[dict[str, str]], str]:  # pragma: no cover  # noqa: E501
         """
         Retrieves the list of files changed between two commits and the SHA of the base commit.
 
@@ -91,45 +93,55 @@ class Client(BaseClient):
         return response["files"], base_sha
 
 
-def filter_out_files_by_status(commits_files: list, statuses=("added", "modified")) -> list:
+def filter_out_files_by_status(commits_files: list, statuses: tuple[str, ...] = ("added", "modified")) -> list[dict]:
     """
-    Parses files from a list of commit files based on their status.
+    Filters files from a list of commit files based on their GIT status.
 
     Args:
         commits_files (list): A list of dictionaries representing commit files.
+        statuses (tuple): A list of GIT statuses to filter files by.
 
     Returns:
-        list: A list of URLs for files that are added or modified.
+        list[dict]: A list of dictionaries containing information about files that match the GIT statuses.
     """
-    relevant_files: list[dict] = []
-    for file in commits_files:
-        if file.get("status") in statuses:
-            relevant_files.append(file.get("raw_url"))
-    return relevant_files
+    return [commit_file for commit_file in commits_files if commit_file["status"] in statuses]
 
 
-def get_content_files_from_repo(client: Client, relevant_files: list[str], params: dict):
+def get_content_files_from_repo(client: Client, relevant_files: list[dict], params: dict) -> list:
     """
     Retrieves content of relevant files based on specified extensions.
 
     Args:
         client (Client): An instance of the client used for HTTP requests.
-        relevant_files (list): A list of URLs for relevant files.
+        relevant_files (list): A list of dictionaries containing information about files.
 
     Returns:
         list: A list of file contents fetched via HTTP requests.
     """
     global RAW_RESPONSE
-    resp_type = "json" if params.get("feedType") == "STIX" else "text"
     extensions_to_fetch = argToList(params.get("extensions_to_fetch") or [])
-    relevant_files = [file for file in relevant_files if any(file.endswith(ext) for ext in extensions_to_fetch)]
-    raw_data_files = [{file: client._http_request("GET", full_url=file, resp_type=resp_type)} for file in relevant_files]
-    demisto.debug(f"list of all files raw_data :{raw_data_files}")
-    RAW_RESPONSE = [list(file.values()) for file in raw_data_files]
+
+    skipped_file_paths: list[str] = []
+    raw_data_files: list[dict] = []
+
+    for relevant_file in relevant_files:
+        file_path = relevant_file["filename"]
+        if not file_path.endswith(tuple(extensions_to_fetch)):
+            skipped_file_paths.append(file_path)
+            continue
+        file_commit = relevant_file["sha"]
+        file_url = relevant_file["contents_url"]
+        demisto.debug(f"Getting contents of file: {file_path} in commit: {file_commit} using URL: {file_url}.")
+        file_contents = client._http_request(method="GET", full_url=file_url)["content"]
+        raw_data_files.append({file_path: base64.b64decode(file_contents).decode("utf-8")})
+
+    demisto.debug(f"Skipped {len(skipped_file_paths)} files: {skipped_file_paths}.")
+    demisto.debug(f"List of all files raw data: {raw_data_files}.")
+    RAW_RESPONSE = [list(raw_data_file.values()) for raw_data_file in raw_data_files]
     return raw_data_files
 
 
-def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list, str]:
+def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: bool) -> tuple[list[dict], str]:
     """
     Retrieves relevant files modified between commits and the current repository head.
 
@@ -138,7 +150,7 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
         last_commit_fetch (str): The SHA of the last fetched commit.
 
     Returns:
-        tuple: A tuple containing a list of relevant file URLs and the SHA of the current repository head.
+        tuple[list[dict], str]: A tuple containing a list of relevant file information and the SHA of the current repository head.
     """
     try:
         all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
@@ -454,7 +466,7 @@ def fetch_indicators(
         if tlp_color:
             item["fields"]["trafficlightprotocol"] = tlp_color
         if enrichment_excluded:
-            item['enrichmentExcluded'] = enrichment_excluded
+            item["enrichmentExcluded"] = enrichment_excluded
         indicators.append(item)
     demisto.debug(f"After fetch command last run: {last_commit_info}")
     if last_commit_info:
@@ -494,7 +506,9 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
         Outputs.
     """
     limit = arg_to_number(args.get("limit"))
-    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
+    enrichment_excluded = argToBoolean(params.get("enrichmentExcluded", False)) or (
+        params.get("tlp_color") == "RED" and is_xsiam_or_xsoar_saas()
+    )
     indicators: list = []
     try:
         if limit and limit <= 0:
@@ -515,7 +529,7 @@ def get_indicators_command(client: Client, params: dict, args: dict = {}) -> Com
                 indicators = indicators[:limit]
             for indicator in indicators:
                 if enrichment_excluded:
-                    indicator['enrichmentExcluded'] = enrichment_excluded
+                    indicator["enrichmentExcluded"] = enrichment_excluded
 
                 hr_indicators.append(
                     {
@@ -554,11 +568,20 @@ def fetch_indicators_command(client: Client, params: dict, args) -> list[dict]:
     """
     feed_tags = argToList(params.get("feedTags", ""))
     tlp_color = params.get("tlp_color")
-    enrichment_excluded = argToBoolean(params.get('enrichmentExcluded', False))
+    enrichment_excluded = argToBoolean(params.get("enrichmentExcluded", False)) or (
+        params.get("tlp_color") == "RED" and is_xsiam_or_xsoar_saas()
+    )
     limit = int(params.get("limit", -1))
     last_commit_fetch = demisto.getLastRun().get("last_commit")
-    indicators = fetch_indicators(client, last_commit_fetch, params, tlp_color=tlp_color, feed_tags=feed_tags, limit=limit,
-                                  enrichment_excluded=enrichment_excluded)
+    indicators = fetch_indicators(
+        client,
+        last_commit_fetch,
+        params,
+        tlp_color=tlp_color,
+        feed_tags=feed_tags,
+        limit=limit,
+        enrichment_excluded=enrichment_excluded,
+    )
     return indicators
 
 
@@ -606,7 +629,7 @@ def main():  # pragma: no cover
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

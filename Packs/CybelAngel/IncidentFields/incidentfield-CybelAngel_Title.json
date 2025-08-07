@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangeltitle",
+	"closeForm": true,
+	"content": true,
+	"description": "Title for the incident Report",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangeltitle",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel Title",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"group": 0,
+	"fromVersion": "6.2.0"
+}

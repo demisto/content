@@ -1,0 +1,25 @@
+args:
+- description: name of the file uploaded to the war room.
+  name: name
+  required: true
+comment: Processes a war room file entry for uploading as an LLM document by AnyLlmUploadDocument so that a full text search can also be performed on the document after uploading.
+commonfields:
+  id: AnyLlmUploadFileEntry
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmUploadFileEntry
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -115,7 +115,7 @@ script:
       type: boolean
     description: Collecting blobs, most commonly pcap from an incident
     execution: true
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.12.8.1983910
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

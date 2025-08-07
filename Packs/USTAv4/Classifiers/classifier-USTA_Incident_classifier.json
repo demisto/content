@@ -1,0 +1,16 @@
+{
+    "description": "",
+    "feed": false,
+    "fromVersion": "6.10.0",
+    "id": "USTA Incident Classifier",
+    "keyTypeMap": {
+        "compromised-credentials": "USTA Account Takeover Prevention",
+        "credit-card": "USTA Stolen Credit Card"
+    },
+    "name": "USTA Incident Classifier",
+    "transformer": {
+        "simple": "content_type"
+    },
+    "type": "classification",
+    "version": -1
+}

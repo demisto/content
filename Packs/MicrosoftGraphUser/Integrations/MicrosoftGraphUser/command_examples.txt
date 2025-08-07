@@ -1,0 +1,11 @@
+!msgraph-user-unblock user=123456-abcd-7890-erty-987qwe987
+!msgraph-user-update user=123456-abcd-7890-erty-987qwe987 updated_fields="MobilePhone=050123456"
+!msgraph-user-get user=123456-abcd-7890-erty-987qwe987
+!msgraph-user-list
+!msgraph-direct-reports user=123456-abcd-7890-erty-987qwe987
+!msgraph-user-get-manager user=123456-abcd-7890-erty-987qwe987
+!msgraph-user-assign-manager user=123456-abcd-7890-erty-987qwe987 manager=9627hp-sq12-b65m-4256h6h
+!msgraph-user-test
+!msgraph-user-tap-policy-create user_id=123456-abcd-7890-erty-987qwe987 zip_password=123
+!msgraph-user-tap-policy-list user_id=123456-abcd-7890-erty-987qwe987
+!msgraph-user-tap-policy-delete policy_id=r4y67u4-69nh-h671-a4bj8922 user_id=123456-abcd-7890-erty-987qwe987

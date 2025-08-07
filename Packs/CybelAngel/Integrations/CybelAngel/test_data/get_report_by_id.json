@@ -1,0 +1,95 @@
+{
+    "id": "test-report-id",
+    "severity": 4,
+    "stream": "34bb7275-9c93-481c-a256-2d4089210e5a",
+    "status": "open",
+    "abstract": "On November 2nd, 2021, Our service detected an open web server with a banner matching one of your keywords on **port 443, HTTP over SSL**.\n\n\n\nThe discovered asset consists a **Seegal Industries login portal.**\n\n\n\nOn this port, **53 CVEs** are listed and 11 have a severity rated as High or Critical by the NIST (https://nvd.nist.gov/).\n\n\n\n* CVE-2010-0425 (severity : 10.0)\n\n*modules/arch/win32/mod_isapi.c in mod_isapi in the Apache HTTP Server 2.0.37 through 2.0.63, 2.2.0 through 2.2.14, and 2.3.x before 2.3.7, when running on Windows, does not ensure that request processing is complete before calling isapi_unload for an ISAPI .dll module, which allows remote attackers to execute arbitrary code via unspecified vectors related to a crafted request, a reset packet, and \"orphaned callback pointers.\"*\n\n\n\n* CVE-2007-6423 (severity : 7.8)\n\n** DISPUTED ** Unspecified vulnerability in mod_proxy_balancer for Apache HTTP Server 2.2.x before 2.2.7-dev, when running on Windows, allows remote attackers to trigger memory corruption via a long URL. NOTE: the vendor could not reproduce this issue.*\n\n\n\n* CVE-2011-3192 (severity : 7.8)\n\n*The byterange filter in the Apache HTTP Server 1.3.x, 2.0.x through 2.0.64, and 2.2.x through 2.2.19 allows remote attackers to cause a denial of service (memory and CPU consumption) via a Range header that expresses multiple overlapping ranges, as exploited in the wild in August 2011, a different vulnerability than CVE-2007-0086.*",
+    "abuse_email": "",
+    "analysis": "",
+    "title": "Test Report Title",
+    "asset_urls": [],
+    "attachments": [],
+    "board": "",
+    "category": "iot",
+    "city": "",
+    "country_code": "",
+    "created_at": "2021-12-01T15:44:49.852033Z",
+    "detected_at": "2021-12-01T10:45:00+00:00",
+    "domain_registered_at": null,
+    "hostnames": [],
+    "incident_id": "YAZ1MQ",
+    "incident_type": "cve",
+    "investigation_id": "60f8b8d4-515c-492f-be96-1615169cc034:f994e0e0-9950-4c99-90c8-a074c16146bc:ef15f1ee-5427-4fda-8975-a0c06d55e9a1",
+    "ip": "0.0.0.0",
+    "keywords": [
+        {
+            "id": "46ba52b6-c789-47ea-adf7-1af9e08acc40",
+            "name": "SEEGAL"
+        }
+    ],
+    "language": null,
+    "liveness": {
+        "online": true,
+        "last_checked_at": "2021-12-01T15:44:49.614960+00:00"
+    },
+    "location": "United States",
+    "mx_servers": [],
+    "ns_servers": [],
+    "origins": [
+        {
+            "type": "",
+            "value": ""
+        }
+    ],
+    "port": 80,
+    "registrant_email": "",
+    "registrar_name": "",
+    "report_type": "incident_report",
+    "report_content": null,
+    "risks": [
+        {
+            "type": "vulnerability",
+            "message": "CVEs are publicly known vulnerabilities that represent a commmon entry gate for attackers. However, most of them are heavily documented and often patchable."
+        },
+        {
+            "type": "sensitive_open_ports",
+            "message": ""
+        }
+    ],
+    "samples": [
+        {
+            "type": "other",
+            "sample": "<img alt=\"cba-image\" src=\"/api/v1/assets/report_image/d078cdee-96xx-43c2-bf7a-f3d7c714d415\" width=\"90%\" style=\"display: block; margin: auto; cursor: default;\"><p><br></p>"
+        }
+    ],
+    "screenshots": [],
+    "sender": "jd@example.com",
+    "sender_tenant_id": "example",
+    "sent_at": "2023-10-19T14:27:33+00:00",
+    "source": "",
+    "solved_at": null,
+    "suggestions": [
+        {
+            "type": "other",
+            "message": "<ul><li>Consider updating your software to the latest available version, as part of your company's internal patch and software management system.</li><li>Alternatively, implement technical solutions or human processes to mitigate any potential attack on this server.</li></ul><p><br></p>"
+        }
+    ],
+    "threat": null,
+    "updated_at": "2023-10-19T14:27:33.541560",
+    "volume": null,
+    "whois": "",
+    "tags": [
+        "test",
+        "lklök",
+        "ljlöj",
+        "what",
+        "hello",
+        "barbara"
+    ],
+    "url": "https://example.com/reports/8bb43081-3349-4c89-b301-8dff0dcca56e",
+    "usergroups": [],
+    "user_session": null,
+    "machine_name": null,
+    "malware_location": null,
+    "malware_name": null
+}

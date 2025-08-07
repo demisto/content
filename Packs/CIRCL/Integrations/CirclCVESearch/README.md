@@ -2,13 +2,12 @@ Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-
 
 ## Configure CIRCL CVE Search in Cortex
 
-
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Use system proxy settings | False |
-| Trust any certificate (not secure) | False |
-
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Server URL |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
@@ -18,6 +17,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### cve-latest
 
 ***
+Deprecated. use NVD feed 2.0 instead.
 Returns the latest updated CVEs.
 
 #### Base Command
@@ -88,7 +88,6 @@ Returns CVE information by CVE ID.
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
-
 
 ##### Command Example
 

@@ -1,7 +1,9 @@
 Use this content pack to manage your needs as an IT department.
 
 ## What does this pack do?
+
 The integration in this pack enables you to:
+
 - Fetch service reports.
 - List and search assets.
 - List and search users.

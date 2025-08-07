@@ -1,32 +1,33 @@
+import demistomock as demisto
+import pytest
 from IsListExist import main
 
-import pytest
 
-import demistomock as demisto
-
-
-@pytest.mark.parametrize('list_name,get_list_res,expected', [
-    (
-        'list1',
-        [
-            {
-                'Type': 1,
-                'Contents': 'list content',
-            }
-        ],
-        'yes',
-    ),
-    (
-        'list2',
-        [
-            {
-                'Type': 4,
-                'Contents': 'Item not found',
-            }
-        ],
-        'no',
-    ),
-])
+@pytest.mark.parametrize(
+    "list_name,get_list_res,expected",
+    [
+        (
+            "list1",
+            [
+                {
+                    "Type": 1,
+                    "Contents": "list content",
+                }
+            ],
+            "yes",
+        ),
+        (
+            "list2",
+            [
+                {
+                    "Type": 4,
+                    "Contents": "Item not found",
+                }
+            ],
+            "no",
+        ),
+    ],
+)
 def test_is_list_exist(mocker, list_name, get_list_res, expected):
     """
     Given:
@@ -40,10 +41,14 @@ def test_is_list_exist(mocker, list_name, get_list_res, expected):
         - Case A: Ensure yes is returned
         - Case B: Ensure no is returned
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'listName': list_name,
-    })
-    mocker.patch.object(demisto, 'executeCommand', return_value=get_list_res)
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "listName": list_name,
+        },
+    )
+    mocker.patch.object(demisto, "executeCommand", return_value=get_list_res)
+    mocker.patch.object(demisto, "results")
     main()
     demisto.results.assert_called_with(expected)

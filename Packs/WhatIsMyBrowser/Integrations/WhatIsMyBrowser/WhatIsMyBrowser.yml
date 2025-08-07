@@ -4,7 +4,7 @@ commonfields:
 name: WhatsMyBrowser
 display: WhatIsMyBrowser
 category: Data Enrichment & Threat Intelligence
-description: Parse user agents and determine if they are malicious as well as enrich information about the agent
+description: Parse user agents and determine if they are malicious as well as enrich information about the agent.
 configuration:
 - display: URL for WhatIsMyBrowser
   name: url
@@ -38,35 +38,35 @@ script:
     arguments:
     - name: UserAgent
       required: true
-      description: User Agent String
+      description: User Agent String.
     outputs:
     - contextPath: UA.Parse.Software
-      description: Software extracted from UA string
+      description: Software extracted from UA string.
       type: string
     - contextPath: UA.Parse.SoftwareName
-      description: Software Name extracted from UA string
+      description: Software Name extracted from UA string.
       type: string
     - contextPath: UA.Parse.OperatingSystem
-      description: Operating System extracted from UA string
+      description: Operating System extracted from UA string.
       type: string
     - contextPath: UA.Parse.Abusive
-      description: Whether or not the UA has been identified as abusive
+      description: Whether or not the UA has been identified as abusive.
       type: boolean
     - contextPath: UA.Parse.OperatingSystemName
-      description: Operating System Name extracted from UA string
+      description: Operating System Name extracted from UA string.
       type: string
     - contextPath: UA.Parse.UserAgent
-      description: User agent string
+      description: User agent string.
       type: string
     - contextPath: UA.Parse.HardwareType
-      description: Hardware Type as extracted from UA string
+      description: Hardware Type as extracted from UA string.
       type: string
     - contextPath: UA.Parse.HardwareSubType
-      description: Hardware Sub Type as extracted from UA string
+      description: Hardware Sub Type as extracted from UA string.
       type: string
-    description: Parses a User Agent string
+    description: Parses a User Agent string.
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
 tests:
 - WhatsMyBrowser-Test
 fromversion: 5.0.0

@@ -1,74 +1,52 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
 import traceback
-from typing import Any, Dict
+from typing import Any
 
+import demistomock as demisto  # noqa: F401
 import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
     def get_lists(self):
-        return self._http_request(
-            method='GET',
-            url_suffix='/api/v2/policy/urllist'
-        )
+        return self._http_request(method="GET", url_suffix="/api/v2/policy/urllist")
 
     def get_list(self, list_id):
-        return self._http_request(
-            method='GET',
-            url_suffix=f'/api/v2/policy/urllist/{list_id}'
-        )
+        return self._http_request(method="GET", url_suffix=f"/api/v2/policy/urllist/{list_id}")
 
     def patch_list(self, list_id, url_list_object, action):
         return self._http_request(
-            method='PATCH',
-            url_suffix=f'/api/v2/policy/urllist/{list_id}/{action}',
-            json_data=url_list_object
+            method="PATCH", url_suffix=f"/api/v2/policy/urllist/{list_id}/{action}", json_data=url_list_object
         )
 
     def replace_url_list(self, list_id, url_list_object):
-        return self._http_request(
-            method='PUT',
-            url_suffix=f'/api/v2/policy/urllist/{list_id}',
-            json_data=url_list_object
-        )
+        return self._http_request(method="PUT", url_suffix=f"/api/v2/policy/urllist/{list_id}", json_data=url_list_object)
 
     def deploy_lists(self):
-        return self._http_request(
-            method='POST',
-            url_suffix='/api/v2/policy/urllist/deploy'
-        )
+        return self._http_request(method="POST", url_suffix="/api/v2/policy/urllist/deploy")
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
-def create_url_list_object(urls, type_='exact'):
-    return {
-        'data': {
-            'urls': urls,
-            'type': type_
-        }
-    }
+def create_url_list_object(urls, type_="exact"):
+    return {"data": {"urls": urls, "type": type_}}
 
 
 def get_list_id_from_name(client, list_name):
     # get list ID from lists, filtered by list name
     lists = client.get_lists()
-    list_id = [listt.get('id') for listt in lists if listt.get('name') == list_name]
+    list_id = [listt.get("id") for listt in lists if listt.get("name") == list_name]
     if len(list_id) == 0:
         raise Exception(f'A Netskope URL List with the name "{list_name}" does not exist')
     elif len(list_id) == 1:
@@ -77,7 +55,7 @@ def get_list_id_from_name(client, list_name):
         raise Exception(f'Found multiple Netskope URL Lists with the name "{list_name}"')
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -95,35 +73,25 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client._http_request(
-            method='GET',
-            url_suffix='/api/v2/policy/urllist'
-        )
+        client._http_request(method="GET", url_suffix="/api/v2/policy/urllist")
     except DemistoException as e:
-        if 'Unauthorized' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Unauthorized" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
-def get_lists(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_lists(client: Client, args: dict[str, Any]) -> CommandResults:
     r = client.get_lists()
 
-    markdown = tableToMarkdown('Retrieved all applied and pending lists', r)
+    markdown = tableToMarkdown("Retrieved all applied and pending lists", r)
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Netskope',
-        outputs_key_field='',
-        outputs={
-            'URLList': r
-        }
-    )
+    return CommandResults(readable_output=markdown, outputs_prefix="Netskope", outputs_key_field="", outputs={"URLList": r})
 
 
-def get_list(client: Client, args: Dict[str, Any]) -> CommandResults:
-    list_name = args.get('list_name')
+def get_list(client: Client, args: dict[str, Any]) -> CommandResults:
+    list_name = args.get("list_name")
 
     list_id = get_list_id_from_name(client, list_name)
 
@@ -131,22 +99,15 @@ def get_list(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     markdown = tableToMarkdown(f'Retrieved "{list_name}" list', r)
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Netskope',
-        outputs_key_field='',
-        outputs={
-            'URLList': r
-        }
-    )
+    return CommandResults(readable_output=markdown, outputs_prefix="Netskope", outputs_key_field="", outputs={"URLList": r})
 
 
-def add_url(client: Client, args: Dict[str, Any]) -> CommandResults:
-    list_name = args.get('list_name')
-    url = argToList(args.get('url'))
+def add_url(client: Client, args: dict[str, Any]) -> CommandResults:
+    list_name = args.get("list_name")
+    url = argToList(args.get("url"))
 
     if len(url) == 0:
-        raise Exception('received an empty list of URLs')
+        raise Exception("received an empty list of URLs")
 
     list_id = get_list_id_from_name(client, list_name)
 
@@ -157,35 +118,28 @@ def add_url(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     # append urls to list
     url_list_object = create_url_list_object(urls)
-    r = client.patch_list(list_id, url_list_object, 'append')
+    r = client.patch_list(list_id, url_list_object, "append")
 
     # apply pending changes
     client.deploy_lists()
 
     markdown = tableToMarkdown(f'Added "{url}" to "{r.get("name")}" list', r)
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Netskope',
-        outputs_key_field='',
-        outputs={
-            'URLList': r
-        }
-    )
+    return CommandResults(readable_output=markdown, outputs_prefix="Netskope", outputs_key_field="", outputs={"URLList": r})
 
 
-def remove_url(client: Client, args: Dict[str, Any]) -> CommandResults:
-    list_name = args.get('list_name')
-    url = argToList(args.get('url'))
+def remove_url(client: Client, args: dict[str, Any]) -> CommandResults:
+    list_name = args.get("list_name")
+    url = argToList(args.get("url"))
 
     if len(url) == 0:
-        raise Exception('received an empty list of URLs')
+        raise Exception("received an empty list of URLs")
 
     list_id = get_list_id_from_name(client, list_name)
 
     # get urls from list
     r = client.get_list(list_id)
-    urls = r.get('data').get('urls')
+    urls = r.get("data").get("urls")
 
     # remove urls
     urls_found = []
@@ -199,30 +153,23 @@ def remove_url(client: Client, args: Dict[str, Any]) -> CommandResults:
         urls.remove(u)
 
     # write urls to list
-    url_list_object = create_url_list_object(urls, r.get('data').get('type'))
-    r = client.patch_list(list_id, url_list_object, 'replace')
+    url_list_object = create_url_list_object(urls, r.get("data").get("type"))
+    r = client.patch_list(list_id, url_list_object, "replace")
 
     # apply pending changes
     client.deploy_lists()
 
     message = f'Remove URLs from "{r.get("name")}" list'
     if urls_found:
-        message += f'\nRemoved: {urls_found}'
+        message += f"\nRemoved: {urls_found}"
     if urls_not_found:
         message += f"\nNot found: {urls_not_found}"
     markdown = tableToMarkdown(message, r)
 
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Netskope',
-        outputs_key_field='',
-        outputs={
-            'URLList': r
-        }
-    )
+    return CommandResults(readable_output=markdown, outputs_prefix="Netskope", outputs_key_field="", outputs={"URLList": r})
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -234,32 +181,25 @@ def main() -> None:
 
     api_key = demisto.params().get("api_key_credentials", {}).get("password") or demisto.params().get("api_key")
     if not api_key:
-        return_error('Please provide a valid API Key')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+        return_error("Please provide a valid API Key")
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
 
-    headers = {
-        'Netskope-Api-Token': api_key
-    }
+    headers = {"Netskope-Api-Token": api_key}
 
     commands = {
-        'netskopev2-get-lists': get_lists,
-        'netskopev2-get-list': get_list,
-        'netskopev2-add-url': add_url,
-        'netskopev2-remove-url': remove_url
+        "netskopev2-get-lists": get_lists,
+        "netskopev2-get-list": get_list,
+        "netskopev2-add-url": add_url,
+        "netskopev2-remove-url": remove_url,
     }
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=demisto.params()['url'],
-            verify=verify_certificate,
-            proxy=proxy,
-            headers=headers
-        )
+        client = Client(base_url=demisto.params()["url"], verify=verify_certificate, proxy=proxy, headers=headers)
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
         if command in commands:
             return_results(commands[command](client, demisto.args()))
@@ -267,11 +207,11 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

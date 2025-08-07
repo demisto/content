@@ -1,6 +1,7 @@
 Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encode
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encode
 | state_or_province | State or province of the certificate issuer. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -29,11 +32,12 @@ Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encode
 | Certificate.PrivateKey | The binary certificate \(.pfx file\). | String |
 | Certificate.PrivateKeyBase64 | The private key encoded in Base64 to use in the integration parameter. | String |
 
-
 ## Script Example
+
 ```!CreateCertificate days=365 password=<Will-Prompt-After-Enter> country=FR friendly_name=MyCertificate```
 
 ## Context Example
+
 ```json
 {
     "Certificate": {
@@ -87,8 +91,8 @@ Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encode
 
 ## Human Readable Output
 
->### Use those certificates to connect to the desired service.
+>### Use those certificates to connect to the desired service
+>
 >| PrivateKey | PrivateKeyBase64 | PublicKey
 >| --- | --- | ---
 >| "certificate.pfx" | "certificateBase64.txt" | "publickey.cer"
-

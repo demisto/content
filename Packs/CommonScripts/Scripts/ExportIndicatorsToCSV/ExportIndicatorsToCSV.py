@@ -9,34 +9,39 @@ def main():
     if demisto.args().get("columns"):
         indicator_columns = [x.strip() for x in demisto.args().get("columns").split(",")]
     else:
-        indicator_columns = ["id", "indicator_type", "value", "score", "timestamp",
-                             "relatedIncCount", "sourceBrands", "expirationStatus", "expiration", "modified"]
+        indicator_columns = [
+            "id",
+            "indicator_type",
+            "value",
+            "score",
+            "timestamp",
+            "relatedIncCount",
+            "sourceBrands",
+            "expirationStatus",
+            "expiration",
+            "modified",
+        ]
 
     # body for the indicator request
     indicator_body = {
         "all": True,
         "filter": {
             "query": indicator_query,
-            "sort": [{
-                "field": "calculatedTime",
-                "asc": False
-            }],
-            "period": {
-                "by": "day",
-                "fromValue": indicator_seen_days
-            }
+            "sort": [{"field": "calculatedTime", "asc": False}],
+            "period": {"by": "day", "fromValue": indicator_seen_days},
         },
-        "columns": indicator_columns
+        "columns": indicator_columns,
     }
 
     # generate the file
-    res = demisto.executeCommand("core-api-post", {"uri": "/indicators/batch/exportToCsv",
-                                                   "body": indicator_body})[0]["Contents"]["response"]
+    res = demisto.executeCommand("core-api-post", {"uri": "/indicators/batch/exportToCsv", "body": indicator_body})[0][
+        "Contents"
+    ]["response"]
 
     # download the file and return to the war room
     file = demisto.executeCommand("core-api-get", {"uri": f"/indicators/csv/{res}"})[0]["Contents"]["response"]
     demisto.results(fileResult(res, file))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

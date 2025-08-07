@@ -26,6 +26,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+
 from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
@@ -42,12 +43,14 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
 # So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
+MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
+# So if you're using a "heavy" API it is recommended to use maximum of 9MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -60,25 +63,6 @@ HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
-    """
-        Register a module in the line mapping for the traceback line correction algorithm.
-
-        :type module_name: ``str``
-        :param module_name: The name of the module. (required)
-
-        :type start_end: ``str``
-        :param start_end: Whether to register the line as the start or the end of the module.
-            Possible values: start, end. (required)
-
-        :type line: ``int``
-        :param line: the line number to record. (required)
-
-        :type wrapper: ``int``
-        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
-
-        :return: None
-        :rtype: ``None``
-    """
     global _MODULES_LINE_MAPPING
     default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
     try:
@@ -98,15 +82,6 @@ def register_module_line(module_name, start_end, line, wrapper=0):
 
 
 def _find_relevant_module(line):
-    """
-    Find which module contains the given line number.
-
-    :type line: ``int``
-    :param trace_str: Line number to search. (required)
-
-    :return: The name of the module.
-    :rtype: ``str``
-    """
     global _MODULES_LINE_MAPPING
 
     relevant_module = ''
@@ -121,15 +96,6 @@ def _find_relevant_module(line):
 
 
 def fix_traceback_line_numbers(trace_str):
-    """
-    Fixes the given traceback line numbers.
-
-    :type trace_str: ``str``
-    :param trace_str: The traceback string to edit. (required)
-
-    :return: The new formated traceback.
-    :rtype: ``str``
-    """
 
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
@@ -293,6 +259,7 @@ class EntryType(object):
     WARNING = 11
     STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
+    DEBUG_MODE_FILE = 16
     WIDGET = 17
     EXECUTION_METRICS = 19
 
@@ -368,6 +335,100 @@ class FileAttachmentType(object):
     :rtype: ``str``
     """
     ATTACHED = "attached_file"
+
+
+class QuickActionPreview(object):
+    """
+    A container class for storing quick action data previews.
+    This class is intended to be populated by commands like `!get-remote-data-preview`
+    and placed directly into the root context under `QuickActionPreview`.
+
+    :return: None
+    :rtype: ``None``.
+    """
+    def __init__(self, id=None, title=None, description=None, status=None,
+                 assignee=None, creation_date=None, severity=None):
+        """
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+        Attributes:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+        :return: None
+        :rtype: ``None``
+        """
+        self.id = id
+        self.title = title
+        self.description = description
+        self.status = status
+        self.assignee = assignee
+        self.creation_date = creation_date
+        self.severity = severity
+
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+        if missing_fields:
+            demisto.debug("Missing fields: {}".format(', '.join(missing_fields)))
+
+    def to_context(self):
+        """
+        Converts the instance to a dictionary.
+
+        :return: Dictionary representation of the QuickActionPreview instance.
+        :rtype: dict
+        """
+        return self.__dict__
+
+
+class MirrorObject(object):
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    :return: None
+    :rtype: ``None``.
+    """
+    def __init__(self, object_url=None, object_id=None, object_name=None):
+        """
+        A container class for storing ticket metadata used in mirroring integrations.
+        This class is intended to be populated by commands like `!jira-create-issue`
+        and placed directly into the root context under `MirrorObject`.
+        Attributes:
+            object_url (Optional[str]): Direct URL to the created ticket for preview/use.
+            object_id (Optional[str]): Unique identifier of the created ticket.
+        :return: None
+        :rtype: ``None``.
+        """
+        self.object_url = object_url
+        self.object_id = object_id
+        self.object_name = object_name
+
+        missing_fields_list = []
+        if self.object_url is None:
+            missing_fields_list.append('object_url')
+        if self.object_id is None:
+            missing_fields_list.append('object_id')
+        if self.object_name is None:
+            missing_fields_list.append('object_name')
+
+        if missing_fields_list:
+            debug_message = "MirrorObject: Initialized with missing mandatory fields: {}"
+            demisto.debug(debug_message.format(', '.join(missing_fields_list)))
+
+    def to_context(self):
+        """
+        Converts the instance to a dictionary.
+
+        :return: Dictionary representation of the MirrorObject instance.
+        :rtype: dict
+        """
+        return self.__dict__
 
 
 brands = {
@@ -1618,10 +1679,8 @@ def stringUnEscape(st):
 def doubleBackslashes(st):
     """
        Double any backslashes in the given string if it contains two backslashes.
-
        :type st: ``str``
        :param st: The string to be modified (required).
-
        :return: A modified string with doubled backslashes.
        :rtype: ``str``
     """
@@ -2034,10 +2093,25 @@ def argToBoolean(value):
     else:
         raise ValueError('Argument is neither a string nor a boolean')
 
+def arg_to_bool_or_none(value):
+    """
+    Converts a value to a boolean or None.
+
+    :type value: ``Any``
+    :param value: The value to convert to boolean or None.
+
+    :return: Returns None if the input is None, otherwise returns the boolean representation of the value using the argToBoolean function.
+    :rtype: ``bool`` or ``None``
+    """
+    if value is None:
+        return None
+    else:
+        return argToBoolean(value)
 
 def appendContext(key, data, dedup=False):
     """
-       Append data to the investigation context
+       Append data to the investigation context.
+       Usable by scripts not integrations, since it uses setContext
 
        :type key: ``str``
        :param key: The context path (required)
@@ -2249,7 +2323,8 @@ class JsonTransformer:
         if isinstance(json_input, list):
             if not json_input or (not isinstance(json_input[0], list) and not isinstance(json_input[0], dict)):
                 # if the items of the lists are primitive, put the values in one line
-                yield path, 'values', ', '.join(json_input)
+                yield path, 'values', ', '.join(str(x) for x in json_input)
+
             else:
                 for i, item in enumerate(json_input):
                     for res in self.json_to_path_generator(item, path + [i]):  # this is yield from for python2 BC
@@ -2585,7 +2660,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = r"\`*_{}[]()#+-!|"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!|~"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -6793,7 +6868,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
             ms = ms / 1000.0
 
         if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+            return datetime.fromtimestamp(ms, tz=timezone.utc)
         else:
             return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
@@ -7257,6 +7332,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type extended_payload: ``dict``
+    :param extended_payload: (Optional) A dictionary representing the contents of ExtendedPayload for synchronization.
+
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
@@ -7290,9 +7368,10 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
+                 extended_payload=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7333,6 +7412,7 @@ class CommandResults:
         self.tags = tags
         self.scheduled_command = scheduled_command
         self.relationships = relationships
+        self.extended_payload = extended_payload
         self.execution_metrics = execution_metrics
         self.replace_existing = replace_existing
 
@@ -7428,6 +7508,10 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relationships
         }
+
+        if self.extended_payload:
+            return_entry['ExtendedPayload'] = self.extended_payload
+
         if tags:
             # This is for backward compatibility reasons
             return_entry['Tags'] = tags
@@ -8730,13 +8814,22 @@ def is_xsiam():
     return demisto.demistoVersion().get("platform") == "x2"
 
 
+def is_platform():
+    """Determines whether or not the platform is platform.
+
+    :return: True iff the platform is unified_platform.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "unified_platform"
+
+
 def is_using_engine():
     """Determines whether or not the platform is using engine.
-    NOTE: 
+    NOTE:
      - This method works only for system integrations (not custom).
      - On xsoar 8, this method works only for integrations that runs on the xsoar pod - not on the engine-0 (mainly long running
        integrations) such as:  EDL, Cortex Core - IOC, Cortex Core - IR, ExportIndicators, Generic Webhook, PingCastle,
-       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator, 
+       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator,
        XSOAR-Web-Server, Microsoft Teams, AWS-SNS-Listener.
 
     :return: True iff the platform is using engine.
@@ -8780,7 +8873,7 @@ def is_integration_instance_running_on_engine():
 
 
 def get_engine_base_url(engine_id):
-    """Gets the xsoar engine id and returns it's base url. 
+    """Gets the xsoar engine id and returns it's base url.
     For example: for engine_id = '4ccccccc-5aaa-4000-b666-dummy_id', base url = '11.180.111.111:1443'.
 
     :type engine_id: ``str``
@@ -8835,7 +8928,7 @@ class DemistoHandler(logging.Handler):
 
 def censor_request_logs(request_log):
     """
-    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask.
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
     :param request_log: The request log to censor
     :type request_log: ``str``
@@ -8856,8 +8949,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT", "Basic" or "LOG" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic", "log"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -9173,7 +9266,7 @@ if 'requests' in sys.modules:
 
         # The ciphers string used to replace default cipher string
 
-        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+        CIPHERS_STRING = '@SECLEVEL=0:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                          'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
         class SSLAdapter(HTTPAdapter):
@@ -10753,7 +10846,7 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
             demisto.debug(
                 "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
-            demisto.debug(e)
+            demisto.debug(str(e))
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 
@@ -11238,7 +11331,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     :param name: The name of the command
 
     :type interval: ``int``
-    :param interval: How many seconds until the next run
+    :param interval: How many seconds until the next run. Recommended range: 30-60 seconds.
 
     :type timeout: ``int``
     :param timeout: How long
@@ -11286,97 +11379,20 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     return dec
 
 
-def get_pack_version(pack_name=''):
+def get_pack_version():
     """
-    Get a pack version.
-    The version can be retrieved either by a pack name or by the calling script/integration in which
-    script/integration is part of.
+    Get the pack version.
+    The version can be retrieved only for the pack that contains the running script or integration.
 
-    To get the version of the pack in which the calling script/integration is part of,
-    just call the function without pack_name.
-
-    :type pack_name: ``str``
-    :param pack_name: the pack name as mentioned in the pack metadata file to query its version.
-            use only if querying by a pack name.
-
-    :return: The pack version in which the integration/script is part of / the version of the requested pack name in
-        case provided. in case not found returns empty string.
+    :return: The pack version in which the integration/script is part of, in case not found returns empty string.
     :rtype: ``str``
     """
-
-    def _get_packs_by_query(_body_request):
-        packs_body_response = demisto.internalHttpRequest(
-            'POST', uri='/contentpacks/marketplace/search', body=json.dumps(body_request)
-        )
-        return _load_response(_response=packs_body_response.get('body')).get('packs') or []
-
-    def _load_response(_response):
-        try:
-            return json.loads(_response)
-        except json.JSONDecodeError:  # type: ignore[attr-defined]
-            demisto.debug('Unable to load response {response}'.format(response=_response))
-            return {}
-
-    def _extract_current_pack_version(_packs, _query_type, _entity_name):
-        # in case we have more than 1 pack returned from the search, need to make sure to retrieve the correct pack
-        if query_type == 'automation' or query_type == 'integration':
-            for pack in _packs:
-                for content_entity in (pack.get('contentItems') or {}).get(_query_type) or []:
-                    if (content_entity.get('name') or '') == _entity_name:
-                        return pack.get('currentVersion') or ''
-        else:
-            for pack in _packs:
-                if pack.get('name') == _entity_name:
-                    return pack.get('currentVersion') or ''
-        return ''
-
-    def _extract_integration_display_name(_integration_brand):
-        integrations_body_response = demisto.internalHttpRequest(
-            'POST', uri='/settings/integration/search', body=json.dumps({})
-        )
-        integrations_body_response = _load_response(_response=integrations_body_response.get('body'))
-        integrations = integrations_body_response.get('configurations') or []
-
-        for integration in integrations:
-            integration_display_name = integration.get('display')
-            if integration.get('id') == _integration_brand and integration_display_name:
-                return integration_display_name
-        return ''
-
-    # query by pack name
-    if pack_name:
-        entity_name = pack_name
-        body_request = {'packsQuery': entity_name}
-        query_type = 'pack'
-    # query by integration name
-    elif demisto.callingContext.get('integration'):  # True means its integration, False means its script/automation.
-        entity_name = (demisto.callingContext.get('context') or {}).get('IntegrationBrand') or ''
-        body_request = {'integrationsQuery': entity_name}
-        query_type = 'integration'
-    # query by script/automation name
+    global_name = "CONSTANT_PACK_VERSION"
+    global_vars = globals()
+    if global_name in global_vars:
+        return global_vars[global_name]
     else:
-        entity_name = (demisto.callingContext.get('context') or {}).get('ScriptName') or ''
-        body_request = {'automationQuery': entity_name}
-        query_type = 'automation'
-
-    pack_version = _extract_current_pack_version(
-        _packs=_get_packs_by_query(_body_request=body_request),
-        _query_type=query_type,
-        _entity_name=entity_name
-    )
-    if not pack_version and query_type == 'integration':
-        # handle the case where the display name of the integration is not the same as the integration brand
-        integration_display = _extract_integration_display_name(_integration_brand=entity_name)
-        if integration_display and integration_display != entity_name:
-            body_request['integrationsQuery'] = integration_display
-
-            return _extract_current_pack_version(
-                _packs=_get_packs_by_query(_body_request=body_request),
-                _query_type=query_type,
-                _entity_name=integration_display
-            )
         return ''
-    return pack_version
 
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
@@ -12073,8 +12089,14 @@ def split_data_to_chunks(data, target_chunk_size):
             yield chunk
             chunk = []
             chunk_size = 0
+        data_part_size = sys.getsizeof(data_part)
+        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
+            demisto.error(
+                "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
+                                                                                                             MAX_ALLOWED_ENTRY_SIZE))
+            continue
         chunk.append(data_part)
-        chunk_size += sys.getsizeof(data_part)
+        chunk_size += data_part_size
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
@@ -12650,7 +12672,7 @@ def content_profiler(func):
 
 
 def find_and_remove_sensitive_text(text, pattern):
-    """
+    r"""
     Finds all appearances of sensitive information in a string using regex and adds the sensitive
     information to the list of strings that should not appear in any logs.
     The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
@@ -12659,16 +12681,13 @@ def find_and_remove_sensitive_text(text, pattern):
     >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
     >>> find_and_remove_sensitive_text(text, pattern)
     Sensitive text added to be masked in the logs: ABC
-
     >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
     >>> find_and_remove_sensitive_text(text, pattern)
     Sensitive text added to be masked in the logs: ID123 and id321
-
     :param text: The input text containing the sensitive information.
     :type text: str
     :param pattern: The regex pattern to match the sensitive information.
     :type pattern: str
-
     :return: None
     :rtype: ``None``
     """
@@ -12689,7 +12708,97 @@ def find_and_remove_sensitive_text(text, pattern):
     return
 
 
-from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402the
+def execute_polling_command(
+    command_name,
+    args,
+    using_brand=None,
+    polling_interval_arg_name="interval_in_seconds",
+    default_polling_interval=30,
+    polling_timeout_arg_name="timeout_in_seconds",
+    default_polling_timeout=600,
+):
+    r"""
+    ###########################################
+    DO NOT USE THIS UNLESS ABOLUTLY NECESSERY!
+    ###########################################
+    This is intended only for special cases where polling is not supported.
+    Continuously executes a specified command and sleeps until the command indicates polling is done or a
+    timeout is reached.
+    :param command_name: The name of the initial Demisto command to execute.
+    :type command_name: ``str``
+    :param args: A dictionary of arguments to pass to the command.
+    :type args: ``dict``
+    :param using_brand: The optional ID of the integration to use.
+    :type using_brand: ``str``
+    :param polling_interval_arg_name: The name of the argument in 'args' that specifies the polling interval in seconds.
+    :type polling_interval_arg_name: ``str``
+    :param default_polling_interval: The default polling interval in seconds if not specified in 'args'.
+    :type default_polling_interval: ``int``
+    :param polling_timeout_arg_name: The name of the argument in 'args' that specifies the polling timeout in seconds.
+    :type polling_timeout_arg_name: ``str``
+    :param default_polling_timeout: The default polling timeout in seconds if not specified in 'args'.
+    :type default_polling_timeout: ``int``
+    :return: A list of CommandResults objects containing the human-readable output and context outputs from each
+             successful command execution. If an error occurs, a single CommandResults object with an error entry type is returned.
+    :rtype: ``list[CommandResults]`` or ``CommandResults``
+    :raises DemistoException: If no command result entry is received, or if the polling times out.
+    """
+    polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
+    polling_timeout =  arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
+
+    if using_brand:
+        args["using-brand"] = using_brand
+
+    command_results = []
+    times_ran = 0
+    start_time = time.time()
+
+    demisto.debug("Executing command: {command_name} with polling interval: {polling_interval} and timeout: {polling_timeout}.".format(
+        command_name=command_name, polling_interval=polling_interval, polling_timeout=polling_timeout))
+
+    while time.time() - start_time < polling_timeout:
+        execution_results = demisto.executeCommand(command_name, args)
+        times_ran += 1
+        demisto.debug("Executed {times_ran} command {command_name} with args: {args}. Got results: {execution_results}.".format(
+            command_name=command_name, args=args, times_ran=times_ran, execution_results=execution_results))
+
+        if not execution_results:
+            raise DemistoException("Got no command result entry for command: {command_name} with args: {args}.".format(
+                command_name=command_name, args=args))
+
+        execution_result = execution_results[0]
+        if is_error(execution_result):
+            error_message = get_error(execution_result)
+            demisto.debug("Failed to run command: {command_name} with args: {args}. Error: {error_message}.".format(
+                command_name=command_name, args=args, error_message=error_message))
+            return CommandResults(readable_output=error_message, entry_type=EntryType.ERROR)
+
+        context_output = execution_result.get("EntryContext")
+        human_readable = execution_result.get("HumanReadable", "")
+        if context_output or human_readable:
+            demisto.debug("Appending command results with context: {context_output} and human-readable: {human_readable}.".format(
+                context_output=context_output, human_readable=human_readable))
+            command_results.append(CommandResults(readable_output=human_readable, outputs=context_output))
+
+        metadata = execution_result.get("Metadata", {})
+        demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(command_name=command_name, metadata=metadata))
+        if not metadata.get("polling"):
+            demisto.debug("Finished running command: {command_name} with args: {args}. Returning results to war room.".format(
+                command_name=command_name, args=args))
+            return command_results
+
+        command_name = metadata.get("pollingCommand", command_name)
+        args = metadata.get("pollingArgs", {})
+        if using_brand:
+            args["using-brand"] = using_brand
+
+        demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
+        time.sleep(polling_interval)  # pylint: disable=E9003
+
+    raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
+
+
+from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #

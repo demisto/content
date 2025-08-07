@@ -6,23 +6,9 @@ PROCESS_TREE_RAW = [
         "name": "1: <Pruned Process>",
         "parent": "4: System",
         "children": [
-            {
-                "id": 44,
-                "ptid": 44,
-                "pid": 4236,
-                "name": "4236: mmc.exe",
-                "parent": "1: <Pruned Process>",
-                "children": []
-            },
-            {
-                "id": 45,
-                "ptid": 45,
-                "pid": 4840,
-                "name": "4840: cmd.exe",
-                "parent": "1: <Pruned Process>",
-                "children": []
-            }
-        ]
+            {"id": 44, "ptid": 44, "pid": 4236, "name": "4236: mmc.exe", "parent": "1: <Pruned Process>", "children": []},
+            {"id": 45, "ptid": 45, "pid": 4840, "name": "4840: cmd.exe", "parent": "1: <Pruned Process>", "children": []},
+        ],
     }
 ]
 
@@ -41,17 +27,10 @@ PROCESS_TREE_TWO_GENERATIONS_RAW = [
                 "name": "4236: mmc.exe",
                 "parent": "1: <Pruned Process>",
                 "children": [
-                    {
-                        "id": 420,
-                        "ptid": 44,
-                        "pid": 4236,
-                        "name": "4236: mmc.exe",
-                        "parent": "1: <Pruned Process>",
-                        "children": []
-                    }
-                ]
+                    {"id": 420, "ptid": 44, "pid": 4236, "name": "4236: mmc.exe", "parent": "1: <Pruned Process>", "children": []}
+                ],
             }
-        ]
+        ],
     }
 ]
 
@@ -62,23 +41,9 @@ PROCESS_TREE_ITEM_RES = {
     "Name": "1: <Pruned Process>",
     "Parent": "4: System",
     "Children": [
-        {
-            "ID": 44,
-            "PTID": 44,
-            "PID": 4236,
-            "Name": "4236: mmc.exe",
-            "Parent": "1: <Pruned Process>",
-            "Children": []
-        },
-        {
-            "ID": 45,
-            "PTID": 45,
-            "PID": 4840,
-            "Name": "4840: cmd.exe",
-            "Parent": "1: <Pruned Process>",
-            "Children": []
-        }
-    ]
+        {"ID": 44, "PTID": 44, "PID": 4236, "Name": "4236: mmc.exe", "Parent": "1: <Pruned Process>", "Children": []},
+        {"ID": 45, "PTID": 45, "PID": 4840, "Name": "4840: cmd.exe", "Parent": "1: <Pruned Process>", "Children": []},
+    ],
 }
 
 PROCESS_TREE_ITEM_TWO_GENERATIONS_RES = {
@@ -95,17 +60,10 @@ PROCESS_TREE_ITEM_TWO_GENERATIONS_RES = {
             "Name": "4236: mmc.exe",
             "Parent": "1: <Pruned Process>",
             "Children": [
-                {
-                    "id": 420,
-                    "ptid": 44,
-                    "pid": 4236,
-                    "name": "4236: mmc.exe",
-                    "parent": "1: <Pruned Process>",
-                    "children": []
-                }
-            ]
+                {"id": 420, "ptid": 44, "pid": 4236, "name": "4236: mmc.exe", "parent": "1: <Pruned Process>", "children": []}
+            ],
         }
-    ]
+    ],
 }
 
 PROCESS_TREE_READABLE_RES = {
@@ -115,23 +73,9 @@ PROCESS_TREE_READABLE_RES = {
     "Name": "1: <Pruned Process>",
     "Parent": "4: System",
     "Children": [
-        {
-            "ID": 44,
-            "PTID": 44,
-            "PID": 4236,
-            "Name": "4236: mmc.exe",
-            "Parent": "1: <Pruned Process>",
-            "ChildrenCount": 0
-        },
-        {
-            "ID": 45,
-            "PTID": 45,
-            "PID": 4840,
-            "Name": "4840: cmd.exe",
-            "Parent": "1: <Pruned Process>",
-            "ChildrenCount": 0
-        }
-    ]
+        {"ID": 44, "PTID": 44, "PID": 4236, "Name": "4236: mmc.exe", "Parent": "1: <Pruned Process>", "ChildrenCount": 0},
+        {"ID": 45, "PTID": 45, "PID": 4840, "Name": "4840: cmd.exe", "Parent": "1: <Pruned Process>", "ChildrenCount": 0},
+    ],
 }
 
 PROCESS_TREE_TWO_GENERATIONS_READABLE_RES = {
@@ -141,15 +85,8 @@ PROCESS_TREE_TWO_GENERATIONS_READABLE_RES = {
     "Name": "1: <Pruned Process>",
     "Parent": "4: System",
     "Children": [
-        {
-            "ID": 44,
-            "PTID": 44,
-            "PID": 4236,
-            "Name": "4236: mmc.exe",
-            "Parent": "1: <Pruned Process>",
-            "ChildrenCount": 1
-        }
-    ]
+        {"ID": 44, "PTID": 44, "PID": 4236, "Name": "4236: mmc.exe", "Parent": "1: <Pruned Process>", "ChildrenCount": 1}
+    ],
 }
 
 

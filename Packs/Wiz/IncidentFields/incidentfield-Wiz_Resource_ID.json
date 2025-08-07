@@ -18,7 +18,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Wiz Issue"
+        "Wiz Issue",
+        "WizDefend Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,

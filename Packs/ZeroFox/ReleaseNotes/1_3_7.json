@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Changed ZeroFox authentication to expect an account token instead of password, which may lead to issues for users using passwords."
+}

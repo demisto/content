@@ -3,6 +3,7 @@ It connects to MS Teams, creating an application access policy to a chosen appli
 For more information, see [Microsoft documentation - Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ For more information, see [Microsoft documentation - Allow applications to acces
 | Tags | basescript |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ For more information, see [Microsoft documentation - Allow applications to acces
 | app_id | The relevant app's ID from the app studio. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -30,9 +33,11 @@ For more information, see [Microsoft documentation - Allow applications to acces
 | ConfigureAzureApplicationAccessPolicy.AppID | The relevant app's ID from the app studio. | String |
 
 ## Script Example
+
 ```!ConfigureAzureApplicationAccessPolicy app_id="37b5b9d5" identity="demisto@palo.com" username="admin@palo.com" password="12345"```
 
 ## Context Example
+
 ```json
 {
     "ConfigureAzureApplicationAccessPolicy": {
@@ -44,6 +49,5 @@ For more information, see [Microsoft documentation - Allow applications to acces
 ```
 
 ## Human Readable Output
+>
 >Access policy was given.
-
-

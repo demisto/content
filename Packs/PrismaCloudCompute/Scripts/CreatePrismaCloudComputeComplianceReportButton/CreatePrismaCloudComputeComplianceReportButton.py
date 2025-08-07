@@ -9,7 +9,7 @@ def main():
         res = demisto.executeCommand("ConvertTableToHTML", {"table": args.get("table"), "title": args.get("title")})
 
         if is_error(res):
-            raise DemistoException(f'Failed to create compliance report: {str(get_error(res))}')
+            raise DemistoException(f"Failed to create compliance report: {get_error(res)!s}")
 
         html = res[0]["EntryContext"]["HTMLTable"]
 
@@ -23,20 +23,19 @@ def main():
         - DBot
         """
 
-        res = demisto.executeCommand("send-mail", {"to": args.get("to"), "subject": "IMPORTANT: Prisma Cloud "
-                                                                                    "Compute Compliance", "body": body})
+        res = demisto.executeCommand(
+            "send-mail", {"to": args.get("to"), "subject": "IMPORTANT: Prisma Cloud Compute Compliance", "body": body}
+        )
 
         if is_error(res):
-            raise DemistoException(f'Failed to create compliance report: {str(get_error(res))}')
+            raise DemistoException(f"Failed to create compliance report: {get_error(res)!s}")
 
         demisto.results(res)
-        return_results(CommandResults(
-            readable_output=res[0]['Contents']
-        ))
+        return_results(CommandResults(readable_output=res[0]["Contents"]))
 
     except Exception as e:
         return_error(e)
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

@@ -1,2 +1,4 @@
 [file:Port_Scan_-_Internal_Source_6_0.yml]
 ignore=PB118
+[file:Port_Scan_-_External_Source_6_0.yml]
+ignore=GR107

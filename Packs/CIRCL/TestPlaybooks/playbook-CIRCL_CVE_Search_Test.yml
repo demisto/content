@@ -91,7 +91,7 @@ tasks:
       brand: CIRCL CVE Search
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       limit:
         simple: "2"
@@ -102,51 +102,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 7c2c86da-fb29-4f94-8241-276c6170f7c0
-    type: condition
-    task:
-      id: 7c2c86da-fb29-4f94-8241-276c6170f7c0
-      version: -1
-      name: Check 2 CVEs returned
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CVE
-                accessor: ID
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
         }
       }
     note: false

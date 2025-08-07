@@ -1,5 +1,4 @@
 from AddDomainRiskScoreToContext import main
-
 from CommonServerPython import *
 
 
@@ -181,9 +180,7 @@ def test_add_domain_riskscore_to_context(mocker):
         "ServerType": "",
     }
 
-    mocker.patch.object(
-        demisto, "args", return_value={"domaintools_data": domaintools_data}
-    )
+    mocker.patch.object(demisto, "args", return_value={"domaintools_data": domaintools_data})
     mocker.patch.object(demisto, "results")
     main()
 

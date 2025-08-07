@@ -1,10 +1,12 @@
 """
 Unit testing for CiscoAMP (Advanced Malware Protection)
 """
-import json
+
 import io
+import json
 import os
-from typing import Dict, List, Any
+from typing import Any
+
 import pytest
 from AMPv2 import Client
 from CommonServerPython import DemistoException
@@ -15,7 +17,7 @@ SERVER_URL = "https://api.eu.amp.cisco.com"
 BASE_URL = f"{SERVER_URL}/{Client.API_VERSION}"
 
 
-def assert_output_has_no_links(outputs: List[Dict]):
+def assert_output_has_no_links(outputs: list[dict]):
     """
     Check that there are no 'links' keys in the outputs.
 
@@ -36,7 +38,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     """
     path = os.path.join("test_data", file_name)
 
-    with io.open(path, mode="r", encoding="utf-8") as mock_file:
+    with open(path, encoding="utf-8") as mock_file:
         if os.path.splitext(file_name)[1] == ".json":
             return json.loads(mock_file.read())
 
@@ -220,9 +222,7 @@ def mock_client() -> Client:
                     }
                 ],
                 "policy": {"guid": "data_policy_guid", "name": "data_policy_name"},
-                "groups": [
-                    {"guid": "data_groups[0]_guid", "name": "data_groups[0]_name"}
-                ],
+                "groups": [{"guid": "data_groups[0]_guid", "name": "data_groups[0]_name"}],
                 "last_seen": "data_last_seen",
                 "faults": [],
                 "isolation": {
@@ -267,15 +267,8 @@ def test_computer_list_command(
         assert response.outputs_prefix == "CiscoAMP.Computer"
         assert "links" not in response.outputs
         assert response.indicator.id == response.outputs["connector_guid"]
-        assert (
-            response.indicator.mac_address
-            == response.outputs["network_addresses"][0]["mac"]
-        )
-        assert (
-            response.indicator.status == "Online"
-            if response.outputs["active"]
-            else "Offline"
-        )
+        assert response.indicator.mac_address == response.outputs["network_addresses"][0]["mac"]
+        assert response.indicator.status == "Online" if response.outputs["active"] else "Offline"
         assert response.indicator.vendor == "CiscoAMP Response"
 
     assert response.outputs == expected_output
@@ -302,10 +295,7 @@ def test_computer_list_error_command(requests_mock, mock_client):
     with pytest.raises(ValueError) as ve:
         computer_list_command(mock_client, args)
 
-        assert (
-            str(ve)
-            == "connector_guid must be the only input, when fetching a specific computer."
-        )
+        assert str(ve) == "connector_guid must be the only input, when fetching a specific computer."
 
 
 def test_computer_trajectory_list_command(requests_mock, mock_client):
@@ -325,9 +315,7 @@ def test_computer_trajectory_list_command(requests_mock, mock_client):
     args = {"connector_guid": "1", "page": 2, "page_size": 2}
 
     mock_response = load_mock_response("computer_trajectory_response.json")
-    requests_mock.get(
-        f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory', json=mock_response
-    )
+    requests_mock.get(f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory', json=mock_response)
 
     from AMPv2 import computer_trajectory_list_command
 
@@ -350,9 +338,7 @@ def test_computer_trajectory_list_command(requests_mock, mock_client):
                 "identity": {"sha256": "data_events[2]_file_identity_sha256"},
                 "parent": {
                     "disposition": "data_events[2]_file_parent_disposition",
-                    "identity": {
-                        "sha256": "data_events[2]_file_parent_identity_sha256"
-                    },
+                    "identity": {"sha256": "data_events[2]_file_parent_identity_sha256"},
                 },
             },
             "connector_guid": "data_computer_connector_guid",
@@ -371,9 +357,7 @@ def test_computer_trajectory_list_command(requests_mock, mock_client):
                 "identity": {"sha256": "data_events[3]_file_identity_sha256"},
                 "parent": {
                     "disposition": "data_events[3]_file_parent_disposition",
-                    "identity": {
-                        "sha256": "data_events[3]_file_parent_identity_sha256"
-                    },
+                    "identity": {"sha256": "data_events[3]_file_parent_identity_sha256"},
                 },
             },
             "connector_guid": "data_computer_connector_guid",
@@ -483,21 +467,15 @@ def test_computer_user_trajectory_list_command(requests_mock, mock_client):
                     "application": "data_events[0]_file_attack_details_application",
                     "attacked_module": "data_events[0]_file_attack_details_attacked_module",
                     "base_address": "data_events[0]_file_attack_details_base_address",
-                    "suspicious_files": [
-                        "data_events[0]_file_attack_details_suspicious_files_0"
-                    ],
+                    "suspicious_files": ["data_events[0]_file_attack_details_suspicious_files_0"],
                     "indicators": [
                         {
-                            "tactics": [
-                                "data_events[0]_file_attack_details_indicators[0]_tactics_0"
-                            ],
+                            "tactics": ["data_events[0]_file_attack_details_indicators[0]_tactics_0"],
                             "severity": "data_events[0]_file_attack_details_indicators[0]_severity",
                             "description": "data_events[0]_file_attack_details_indicators[0]_description",
                             "short_description": "data_events[0]_file_attack_details_indicators[0]_short_description",
                             "id": "data_events[0]_file_attack_details_indicators[0]_id",
-                            "techniques": [
-                                "data_events[0]_file_attack_details_indicators[0]_techniques_0"
-                            ],
+                            "techniques": ["data_events[0]_file_attack_details_indicators[0]_techniques_0"],
                         }
                     ],
                 },
@@ -539,9 +517,7 @@ def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
     assert len(response.outputs) == 1
     assert_output_has_no_links(response.outputs)
 
-    for output, mock_output in zip(
-        response.outputs, mock_response["data"]["vulnerabilities"]
-    ):
+    for output, mock_output in zip(response.outputs, mock_response["data"]["vulnerabilities"]):
         assert output["connector_guid"] == mock_response["data"]["connector_guid"]
 
         output.pop("connector_guid", None)
@@ -561,12 +537,10 @@ def test_computer_move_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure a links doesn't exist in outputs.
     """
-    args: Dict[str, Any] = {"connector_guid": 1, "group_guid": 2}
+    args: dict[str, Any] = {"connector_guid": 1, "group_guid": 2}
 
     mock_response = load_mock_response("computer_move_response.json")
-    requests_mock.patch(
-        f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response
-    )
+    requests_mock.patch(f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response)
 
     from AMPv2 import computer_move_command
 
@@ -589,12 +563,10 @@ def test_computer_delete_command(requests_mock, mock_client):
     Then:
     -   Ensure the computer has been deleted.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
 
     mock_response = load_mock_response("computer_delete_response.json")
-    requests_mock.delete(
-        f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response
-    )
+    requests_mock.delete(f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response)
 
     from AMPv2 import computer_delete_command
 
@@ -614,12 +586,10 @@ def test_computer_delete_error_command(requests_mock, mock_client):
     Then:
     -   Ensure a value error has been raised.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
 
     mock_response = load_mock_response("computer_delete_fail_response.json")
-    requests_mock.delete(
-        f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response
-    )
+    requests_mock.delete(f'{BASE_URL}/computers/{args["connector_guid"]}', json=mock_response)
 
     with pytest.raises(DemistoException) as de:
         from AMPv2 import computer_delete_command
@@ -681,9 +651,7 @@ def test_computer_activity_list_error_command(requests_mock, mock_client):
         assert str(ve) == "query_string must be: SHA-256/IPv4/URL/Filename"
 
 
-def test_computer_isolation_feature_availability_get_command(
-    requests_mock, mock_client
-):
+def test_computer_isolation_feature_availability_get_command(requests_mock, mock_client):
     """
     Scenario:
     -   Get available features on a computer.
@@ -692,7 +660,7 @@ def test_computer_isolation_feature_availability_get_command(
     Then:
     -   Ensure readable_output is correct.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
 
     requests_mock.options(
         f'{BASE_URL}/computers/{args["connector_guid"]}/isolation',
@@ -723,12 +691,10 @@ def test_computer_isolation_get_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure comment is set in readable_output.
     """
-    args: Dict[str, Any] = {"connector_guid": 1}
+    args: dict[str, Any] = {"connector_guid": 1}
     mock_response = load_mock_response("isolation_response.json")
 
-    requests_mock.get(
-        f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response
-    )
+    requests_mock.get(f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response)
 
     from AMPv2 import computer_isolation_get_command
 
@@ -751,16 +717,14 @@ def test_computer_isolation_create_command(requests_mock, mock_client):
     Then:
     -   Ensure outputs_prefix is correct.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "connector_guid": "1",
         "comment": "Hello",
         "unlock_code": "Goodbye",
     }
 
     mock_response = load_mock_response("isolation_response.json")
-    requests_mock.put(
-        f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response
-    )
+    requests_mock.put(f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response)
 
     from AMPv2 import computer_isolation_create_command
 
@@ -783,14 +747,12 @@ def test_computer_isolation_delete_command(requests_mock, mock_client):
     Then:
     -   Ensure outputs_prefix is correct.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "connector_guid": "1",
     }
 
     mock_response = load_mock_response("isolation_response.json")
-    requests_mock.delete(
-        f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response
-    )
+    requests_mock.delete(f'{BASE_URL}/computers/{args["connector_guid"]}/isolation', json=mock_response)
 
     from AMPv2 import computer_isolation_delete_command
 
@@ -817,7 +779,7 @@ def test_event_list_command(requests_mock, mock_client):
     mock_response = load_mock_response("event_list_response.json")
     requests_mock.get(f"{BASE_URL}/events", json=mock_response)
 
-    args: Dict[str, Any] = {}
+    args: dict[str, Any] = {}
 
     from AMPv2 import event_list_command
 
@@ -827,10 +789,7 @@ def test_event_list_command(requests_mock, mock_client):
         assert response.outputs_prefix == "CiscoAMP.Event"
 
         if "file" in response.outputs:
-            assert (
-                response.indicator.sha256
-                == response.outputs["file"]["identity"]["sha256"]
-            )
+            assert response.indicator.sha256 == response.outputs["file"]["identity"]["sha256"]
             assert response.indicator.path == response.outputs["file"]["file_path"]
             assert response.indicator.name == response.outputs["file"]["file_name"]
             if "parent" in response.outputs["file"]:
@@ -871,6 +830,41 @@ def test_event_list_command(requests_mock, mock_client):
     )
 
 
+def test_file_command(requests_mock, mock_client):
+    """
+    Given:
+        - a file (sha256)
+    When:
+        - executing file_command function
+    Then:
+        - Ensure raw_response is an empty dict.
+        - Ensure readable_output is correct and contains an informative message.
+    """
+    mock_response = {
+        "version": "version",
+        "metadata": {
+            "links": {"self": "metadata_links_self", "next": "metadata_links_next"},
+            "results": {
+                "total": "metadata_results_total",
+                "current_item_count": "metadata_results_current_item_count",
+                "index": "metadata_results_index",
+                "items_per_page": "metadata_results_items_per_page",
+            },
+        },
+        "data": [],
+    }
+    requests_mock.get(f"{BASE_URL}/events", json=mock_response)
+    file_sha_256 = "e" * 64
+    args: dict[str, Any] = {"file": file_sha_256}
+
+    from AMPv2 import file_command
+
+    response = file_command(mock_client, args)
+
+    assert response[0].readable_output == f"Cisco AMP: {file_sha_256} not found in Cisco AMP v2."
+    assert response[0].raw_response == {}
+
+
 @pytest.mark.parametrize(
     "args, expected_number_of_results, start, end",
     [
@@ -879,9 +873,7 @@ def test_event_list_command(requests_mock, mock_client):
         ({"page": "7", "page_size": "5"}, 5, 30, 35),
     ],
 )
-def test_event_types_list_command(
-    requests_mock, mock_client, args, expected_number_of_results, start, end
-):
+def test_event_types_list_command(requests_mock, mock_client, args, expected_number_of_results, start, end):
     """
     Scenario:
     -   Get list of event types.
@@ -933,9 +925,7 @@ def test_event_types_list_command(
         ),
     ],
 )
-def test_file_list_list_command(
-    requests_mock, mock_client, file, suffix, args, expected_file_list_type
-):
+def test_file_list_list_command(requests_mock, mock_client, file, suffix, args, expected_file_list_type):
     """
     Scenario:
     -   Get a specific file list.
@@ -961,7 +951,7 @@ def test_file_list_list_command(
 
     assert response.outputs_prefix == "CiscoAMP.FileList"
 
-    if not isinstance(response.outputs, List):
+    if not isinstance(response.outputs, list):
         response.outputs = [response.outputs]
 
     if isinstance(mock_response["data"], dict):
@@ -1042,7 +1032,7 @@ def test_file_list_item_create_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
-    args: Dict[str, Any] = {"file_list_guid": "1", "sha256": "1"}
+    args: dict[str, Any] = {"file_list_guid": "1", "sha256": "1"}
 
     mock_response = load_mock_response("file_list_item_create_response.json")
     requests_mock.post(
@@ -1114,8 +1104,7 @@ def test_file_list_item_delete_error_command(requests_mock, mock_client):
         file_list_item_delete_command(mock_client, args)
 
         assert (
-            de.message
-            == f'Failed to delete-\nFile List GUID: "{args["file_list_guid"]}"\nSHA-256: "{args["sha256"]}" not found.'
+            de.message == f'Failed to delete-\nFile List GUID: "{args["file_list_guid"]}"\nSHA-256: "{args["sha256"]}" not found.'
         )
 
 
@@ -1241,12 +1230,10 @@ def test_group_parent_update_command(requests_mock, mock_client, file):
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
-    args: Dict[str, Any] = {"child_guid": "1"}
+    args: dict[str, Any] = {"child_guid": "1"}
 
     mock_response = load_mock_response(file)
-    requests_mock.patch(
-        f'{BASE_URL}/groups/{args["child_guid"]}/parent', json=mock_response
-    )
+    requests_mock.patch(f'{BASE_URL}/groups/{args["child_guid"]}/parent', json=mock_response)
 
     from AMPv2 import group_parent_update_command
 
@@ -1281,7 +1268,7 @@ def test_group_create_command(requests_mock, mock_client):
     -   Ensure outputs_prefix is correct.
     -   Ensure there are no links in the outputs.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "name": "Til",
         "description": "Tamar",
     }
@@ -1321,7 +1308,7 @@ def test_group_delete_command(requests_mock, mock_client):
     Then:
     -   Ensure the deletion succeeded.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "group_guid": "1",
     }
 
@@ -1332,10 +1319,7 @@ def test_group_delete_command(requests_mock, mock_client):
 
     response = groups_delete_command(mock_client, args)
 
-    assert (
-        response.readable_output
-        == f'Group GUID: "{args["group_guid"]}"\nSuccessfully deleted.'
-    )
+    assert response.readable_output == f'Group GUID: "{args["group_guid"]}"\nSuccessfully deleted.'
 
 
 def test_group_delete_error_command(requests_mock, mock_client):
@@ -1349,7 +1333,7 @@ def test_group_delete_error_command(requests_mock, mock_client):
     Then:
     -   Ensure the deletion failed.
     """
-    args: Dict[str, Any] = {
+    args: dict[str, Any] = {
         "group_guid": "1",
     }
 
@@ -1495,7 +1479,7 @@ def test_version_get_command(requests_mock, mock_client):
     Then:
     -   Ensure outputs_prefix is correct.
     """
-    arg: Dict[str, Any] = {}
+    arg: dict[str, Any] = {}
 
     mock_response = load_mock_response("version_get_response.json")
     requests_mock.get(f"{BASE_URL}/version", json=mock_response)
@@ -1514,9 +1498,7 @@ def test_version_get_command(requests_mock, mock_client):
         ("vulnerability_get_response.json", {"sha256": "1"}, "/1/computers", False),
     ],
 )
-def test_vulnerability_list_command(
-    requests_mock, mock_client, file, args, suffix, is_list
-):
+def test_vulnerability_list_command(requests_mock, mock_client, file, args, suffix, is_list):
     """
     Scenario:
     -   Get a vulnerability list.
@@ -1555,25 +1537,14 @@ def test_vulnerability_list_command(
         (
             {
                 "last_fetch": "2022-07-18T00:00:00.000Z",
-                "previous_ids": ["6159258594551267593", "6159258594551267594", "6159258594551267595"]
+                "previous_ids": ["6159258594551267593", "6159258594551267594", "6159258594551267595"],
             },
             3,
-            ["6159258594551267597"]
+            ["6159258594551267597"],
         ),
-        (
-            {},
-            2,
-            ["6159258594551267592", "6159258594551267593"]
-        ),
-        (
-            {
-                "last_fetch": "test",
-                "previous_ids": ["6159258594551267592"]
-            },
-            1,
-            ["6159258594551267592", "6159258594551267593"]
-        )
-    ]
+        ({}, 2, ["6159258594551267592", "6159258594551267593"]),
+        ({"last_fetch": "test", "previous_ids": ["6159258594551267592"]}, 1, ["6159258594551267592", "6159258594551267593"]),
+    ],
 )
 def test_fetch_incidents(
     mock_client,
@@ -1604,11 +1575,13 @@ def test_fetch_incidents(
 
     from AMPv2 import fetch_incidents
 
-    next_run, incidents = fetch_incidents(mock_client,
-                                          last_run=last_run,
-                                          first_fetch_time="2023-11-01T23:17:39.000Z",
-                                          incident_severities=["Low", "Medium", "High", "Critical"],
-                                          max_incidents_to_fetch=limit)
+    next_run, incidents = fetch_incidents(
+        mock_client,
+        last_run=last_run,
+        first_fetch_time="2023-11-01T23:17:39.000Z",
+        incident_severities=["Low", "Medium", "High", "Critical"],
+        max_incidents_to_fetch=limit,
+    )
 
     # Validate response
     for previous_id in expeted_previous_ids:
@@ -1636,14 +1609,13 @@ def test_fetch_incidents_with_no_new_incidents(
 
     from AMPv2 import fetch_incidents
 
-    next_run, incidents = fetch_incidents(mock_client,
-                                          last_run={
-                                              "last_fatch": "2023-11-15T00:00:00.000Z",
-                                              "previous_ids": ["6159258594551267595"]
-                                          },
-                                          first_fetch_time="2023-11-01T23:17:39.000Z",
-                                          incident_severities=["Low", "Medium", "High", "Critical"],
-                                          max_incidents_to_fetch=100)
+    next_run, incidents = fetch_incidents(
+        mock_client,
+        last_run={"last_fatch": "2023-11-15T00:00:00.000Z", "previous_ids": ["6159258594551267595"]},
+        first_fetch_time="2023-11-01T23:17:39.000Z",
+        incident_severities=["Low", "Medium", "High", "Critical"],
+        max_incidents_to_fetch=100,
+    )
 
     # Validate response
     assert "6159258594551267595" in next_run["previous_ids"]
@@ -1668,11 +1640,13 @@ def test_fetch_incidents_for_incident_severities(
 
     from AMPv2 import fetch_incidents
 
-    _, incidents = fetch_incidents(mock_client,
-                                   last_run={},
-                                   first_fetch_time="2023-11-01T23:17:39.000Z",
-                                   incident_severities=["Low", "High", "Critical"],
-                                   max_incidents_to_fetch=100)
+    _, incidents = fetch_incidents(
+        mock_client,
+        last_run={},
+        first_fetch_time="2023-11-01T23:17:39.000Z",
+        incident_severities=["Low", "High", "Critical"],
+        max_incidents_to_fetch=100,
+    )
 
     # Validate response
     assert len(incidents) == 3

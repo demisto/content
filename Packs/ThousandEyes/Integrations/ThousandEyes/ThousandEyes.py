@@ -5,7 +5,6 @@ import json
 import time
 import traceback
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Union
 
 import dateparser
 import urllib3
@@ -15,11 +14,11 @@ from requests import Response
 urllib3.disable_warnings()
 
 
-''' Global Variables '''
-INTEGRATION_NAME = 'ThousandEyes'
-INTEGRATION_COMMAND_NAME = 'thousandeyes'
-INTEGRATION_CONTEXT_NAME = 'ThousandEyes'
-API_VERSION_ENDPOINT = '/v6'
+""" Global Variables """
+INTEGRATION_NAME = "ThousandEyes"
+INTEGRATION_COMMAND_NAME = "thousandeyes"
+INTEGRATION_CONTEXT_NAME = "ThousandEyes"
+API_VERSION_ENDPOINT = "/v6"
 THOUSAND_EYES_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 MAX_INCIDENTS_TO_FETCH = 200
 
@@ -29,13 +28,13 @@ class Client(BaseClient):
         self,
         method: str,
         url_suffix: str,
-        params: Optional[Dict] = None,
-        data: Optional[Dict] = None,
-        json_data: Optional[Dict] = None,
+        params: dict | None = None,
+        data: dict | None = None,
+        json_data: dict | None = None,
         timeout: float = 10,
         resp_type: str = "response",
-        test_module: bool = False
-    ) -> Union[Response, Dict]:
+        test_module: bool = False,
+    ) -> Response | dict:
         """
             Handles the reached rate limit, performs API request to the specified endpoint and reutrns the full Response object
 
@@ -57,11 +56,7 @@ class Client(BaseClient):
         """
 
         if test_module:
-            response = self._http_request(
-                method=method,
-                url_suffix=url_suffix,
-                resp_type=resp_type
-            )
+            response = self._http_request(method=method, url_suffix=url_suffix, resp_type=resp_type)
 
             return response
 
@@ -78,8 +73,8 @@ class Client(BaseClient):
                 )
 
                 response_headers = response.headers
-                org_rate_limit_remaining = response_headers.get('x-organization-rate-limit-remaining')
-                org_rate_limit_reset = response_headers.get('x-organization-rate-limit-reset')
+                org_rate_limit_remaining = response_headers.get("x-organization-rate-limit-remaining")
+                org_rate_limit_reset = response_headers.get("x-organization-rate-limit-reset")
 
                 if response.status_code == 200 and int(org_rate_limit_remaining) > 0:
                     return response
@@ -92,10 +87,7 @@ class Client(BaseClient):
                 else:
                     status_code = response.status_code
                     msg = response.text
-                    err_response = {
-                        "Status Code": status_code,
-                        "Err Message": msg
-                    }
+                    err_response = {"Status Code": status_code, "Err Message": msg}
                     return err_response
 
         except Exception as e:
@@ -116,25 +108,21 @@ def test_module_command(client: Client, *_) -> str:
         DemistoException: If test failed.
     """
 
-    endpoint: str = '/tests.json'
-    method: str = 'GET'
+    endpoint: str = "/tests.json"
+    method: str = "GET"
 
-    response = client.handle_rate_lmiit_and_make_request(
-        method=method,
-        url_suffix=endpoint,
-        test_module=True
-    )
+    response = client.handle_rate_lmiit_and_make_request(method=method, url_suffix=endpoint, test_module=True)
 
     if response.status_code == 200:  # type: ignore
         return "ok"
 
-    raise DemistoException(f'Test module failed, {response.text}')  # type: ignore
+    raise DemistoException(f"Test module failed, {response.text}")  # type: ignore
 
 
-''' Helper Functions '''
+""" Helper Functions """
 
 
-def fetch_all_aids(client: Client) -> Union[List, Dict]:
+def fetch_all_aids(client: Client) -> list | dict:
     """
         Fetches all AIDs configured in ThousandEyes
 
@@ -145,13 +133,10 @@ def fetch_all_aids(client: Client) -> Union[List, Dict]:
         List of Group AIDs
     """
 
-    endpoint = '/account-groups.json'
-    method = 'GET'
+    endpoint = "/account-groups.json"
+    method = "GET"
     # Hits the API in loop case the rate limit is reached.
-    response = client.handle_rate_lmiit_and_make_request(
-        method,
-        endpoint
-    )
+    response = client.handle_rate_lmiit_and_make_request(method, endpoint)
 
     # If Response is an error, return the error
     if isinstance(response, dict):
@@ -162,7 +147,7 @@ def fetch_all_aids(client: Client) -> Union[List, Dict]:
     return group_aid_list
 
 
-def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
+def parse_agent_response_helper(raw_response: dict) -> tuple[list, list]:
     """
         Prepare the context and human readable data for Agents
     Args:
@@ -175,46 +160,42 @@ def parse_agent_response_helper(raw_response: Dict) -> Tuple[List, List]:
     entry_context = []
     human_readable = []
     if raw_response:
-        agents_list: Union[List, None] = raw_response.get("agents")
+        agents_list: list | None = raw_response.get("agents")
 
         if agents_list:
             for items in agents_list:
                 item = assign_params(
                     **{
-                        "Agent ID": items.get('agentId'),
-                        "Agent Name": items.get('agentName'),
-                        "Agent Type": items.get('agentType'),
-                        "Country ID": items.get('countryId'),
-                        "Enabled": items.get('enabled'),
-                        "Keep Browser Cache": items.get('keepBrowserCache'),
-                        "Verify SSL Certificates": items.get('verifySslCertificates'),
-                        "Ip Adresses": items.get('ipAdresses'),
-                        "Last Seen": items.get('lastSeen'),
-                        "Location": items.get('location'),
-                        "Network": items.get('network'),
-                        "Prefix": items.get('prefix'),
-                        "Public IP Addresses": items.get('publicIpAddresses'),
-                        "Target For Tests": items.get('targetForTests'),
-                        "Agent State": items.get('agentState'),
-                        "Utilization": items.get('utilization'),
-                        "IPv6 Policy": items.get('ipv6Policy'),
-                        "Hostname": items.get('hostname'),
-                        "Created Date": items.get('createdDate'),
-                        "Error Details": items.get('errorDetails')
+                        "Agent ID": items.get("agentId"),
+                        "Agent Name": items.get("agentName"),
+                        "Agent Type": items.get("agentType"),
+                        "Country ID": items.get("countryId"),
+                        "Enabled": items.get("enabled"),
+                        "Keep Browser Cache": items.get("keepBrowserCache"),
+                        "Verify SSL Certificates": items.get("verifySslCertificates"),
+                        "Ip Adresses": items.get("ipAdresses"),
+                        "Last Seen": items.get("lastSeen"),
+                        "Location": items.get("location"),
+                        "Network": items.get("network"),
+                        "Prefix": items.get("prefix"),
+                        "Public IP Addresses": items.get("publicIpAddresses"),
+                        "Target For Tests": items.get("targetForTests"),
+                        "Agent State": items.get("agentState"),
+                        "Utilization": items.get("utilization"),
+                        "IPv6 Policy": items.get("ipv6Policy"),
+                        "Hostname": items.get("hostname"),
+                        "Created Date": items.get("createdDate"),
+                        "Error Details": items.get("errorDetails"),
                     }
                 )
 
-                human_readable.append(
-                    item
-                )
+                human_readable.append(item)
 
-                entry_context.append(
-                    item
-                )
+                entry_context.append(item)
     return (entry_context, human_readable)
 
 
-def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool) -> Tuple[Dict, Dict]:
+def get_alerts_helper(alert_info: dict, aid: int | None, human_readable: bool) -> tuple[dict, dict]:
     """
         Prepare the context and human readable data for Alerts
     Args:
@@ -229,41 +210,33 @@ def get_alerts_helper(alert_info: Dict, aid: Optional[int], human_readable: bool
     human_readable_data = {}
     if alert_info:
         prepared_alert_info = {
-            "Active": alert_info.get('active'),
-            "Agents": alert_info.get('agents'),
+            "Active": alert_info.get("active"),
+            "Agents": alert_info.get("agents"),
             "AID": aid,
-            "AlertID": alert_info.get('alertId'),
-            "DateStart": alert_info.get('dateStart'),
-            "ApiLinks": alert_info.get('apiLinks'),
-            "PermaLink": alert_info.get('permalink'),
-            "RuleExpression": alert_info.get('ruleExpression'),
-            "RuleID": alert_info.get('ruleId'),
-            "RuleName": alert_info.get('ruleName'),
-            "TestID": alert_info.get('testId'),
-            "TestName": alert_info.get('testName'),
-            "ViolationCount": alert_info.get('violationCount'),
-            "Type": alert_info.get('type'),
-            "Severity": alert_info.get('severity')
+            "AlertID": alert_info.get("alertId"),
+            "DateStart": alert_info.get("dateStart"),
+            "ApiLinks": alert_info.get("apiLinks"),
+            "PermaLink": alert_info.get("permalink"),
+            "RuleExpression": alert_info.get("ruleExpression"),
+            "RuleID": alert_info.get("ruleId"),
+            "RuleName": alert_info.get("ruleName"),
+            "TestID": alert_info.get("testId"),
+            "TestName": alert_info.get("testName"),
+            "ViolationCount": alert_info.get("violationCount"),
+            "Type": alert_info.get("type"),
+            "Severity": alert_info.get("severity"),
         }
         if human_readable:
-            human_readable_data = assign_params(
-                **prepared_alert_info
-            )
+            human_readable_data = assign_params(**prepared_alert_info)
 
-        entry_context = assign_params(
-            **prepared_alert_info
-        )
+        entry_context = assign_params(**prepared_alert_info)
 
     return (entry_context, human_readable_data)
 
 
 def parse_alerts_response(
-    client: Client,
-    method: str,
-    response: Union[Response, Dict],
-    aid: Optional[int],
-    human_readable: bool = False
-) -> Tuple[bool, List, List, List]:
+    client: Client, method: str, response: Response | dict, aid: int | None, human_readable: bool = False
+) -> tuple[bool, list, list, list]:
     """
         Parses the fetched alerts and looks for information in additional pages (if any)
     Args:
@@ -277,9 +250,9 @@ def parse_alerts_response(
         Tuple of (alerts_found (bool), raw_response (List[Dict]), entry_context (List[Dict]), human_readable_data (List[Dict]))
     """
 
-    raw_response: List[Dict] = []
-    entry_context: List[Dict] = []
-    human_readable_data: List[Dict] = []
+    raw_response: list[dict] = []
+    entry_context: list[dict] = []
+    human_readable_data: list[dict] = []
 
     # Handle parsing results from multiple pages if any
     if isinstance(response, requests.models.Response):
@@ -287,28 +260,20 @@ def parse_alerts_response(
         page_info = result.get("pages")
         next_url = page_info.get("next")
         alerts_list = result.get("alert")
-        alerts_found = True if alerts_list else False
+        alerts_found = bool(alerts_list)
 
         while True:
             if alerts_found:
-
                 for alert in alerts_list:
                     raw_response.append(alert)
-                    entry_context_temp, human_readable_data_temp = get_alerts_helper(
-                        alert,
-                        aid,
-                        human_readable
-                    )
+                    entry_context_temp, human_readable_data_temp = get_alerts_helper(alert, aid, human_readable)
                     entry_context.append(entry_context_temp)
                     human_readable_data.append(human_readable_data_temp)
 
             if not next_url:
                 break
 
-            response = client.handle_rate_lmiit_and_make_request(
-                method,
-                next_url
-            )
+            response = client.handle_rate_lmiit_and_make_request(method, next_url)
 
             # Raise exception if error is returned
             if isinstance(response, dict):
@@ -321,9 +286,9 @@ def parse_alerts_response(
             page_info = result.get("pages")
             next_url = page_info.get("next")
             alerts_list = result.get("alert")
-            alerts_found = True if alerts_list else False
+            alerts_found = bool(alerts_list)
 
-    alerts_found = True if entry_context else False
+    alerts_found = bool(entry_context)
 
     return (alerts_found, raw_response, entry_context, human_readable_data)
 
@@ -344,34 +309,30 @@ def parse_agent_response(response: Response):
         result = response.json()
 
         if result.get("agents"):
-            title: str = f'{INTEGRATION_NAME} - Agents Output'
+            title: str = f"{INTEGRATION_NAME} - Agents Output"
             entry_context, human_readable = parse_agent_response_helper(result)
 
             if entry_context:
                 results = CommandResults(
                     readable_output=tableToMarkdown(title, t=human_readable),
-                    outputs_prefix='ThousandEyes.Agents',
-                    outputs_key_field='AgentId',
+                    outputs_prefix="ThousandEyes.Agents",
+                    outputs_key_field="AgentId",
                     outputs=entry_context,
-                    raw_response=result
+                    raw_response=result,
                 )
                 return results
 
             else:
-                message = f'{INTEGRATION_NAME} - No Agent information found'
-                results = CommandResults(
-                    readable_output=message
-                )
+                message = f"{INTEGRATION_NAME} - No Agent information found"
+                results = CommandResults(readable_output=message)
                 return results
 
-    err_message = f'{INTEGRATION_NAME} - Could not find any results for the given query'
-    results = CommandResults(
-        readable_output=err_message
-    )
+    err_message = f"{INTEGRATION_NAME} - Could not find any results for the given query"
+    results = CommandResults(readable_output=err_message)
     return results
 
 
-def filter_out_alerts_above_minimum_severity(raw_response_list: List, minimum_severity: str) -> List:
+def filter_out_alerts_above_minimum_severity(raw_response_list: list, minimum_severity: str) -> list:
     """
         Filters out alerts which are equal and below the provided minimum severity value
 
@@ -383,35 +344,27 @@ def filter_out_alerts_above_minimum_severity(raw_response_list: List, minimum_se
         List of events/raw responses (meeting the filter criteria) to create
     """
 
-    severity_to_rank_mapping = {
-        "INFO": 1,
-        "MINOR": 2,
-        "MAJOR": 3,
-        "CRITICAL": 4
-    }
+    severity_to_rank_mapping = {"INFO": 1, "MINOR": 2, "MAJOR": 3, "CRITICAL": 4}
 
-    rank_to_severity_mapping = {
-        1: "INFO",
-        2: "MINOR",
-        3: "MAJOR",
-        4: "CRITICAL"
-    }
+    rank_to_severity_mapping = {1: "INFO", 2: "MINOR", 3: "MAJOR", 4: "CRITICAL"}
 
-    minimum_severity_ranking: Optional[int] = severity_to_rank_mapping.get(minimum_severity)
+    minimum_severity_ranking: int | None = severity_to_rank_mapping.get(minimum_severity)
 
     # Can return None in case of Severity classes are modified by Thousand Eyes API
     if not minimum_severity_ranking:
-        raise KeyError("Severity classes are modified by ThousandEyes API, "
-                       "please modify the filter_out_alerts_above_minimum_severity() function accordingly")
+        raise KeyError(
+            "Severity classes are modified by ThousandEyes API, "
+            "please modify the filter_out_alerts_above_minimum_severity() function accordingly"
+        )
 
-    whitelisted_severity_ranks: List = [i for i in rank_to_severity_mapping.keys() if i >= minimum_severity_ranking]
+    whitelisted_severity_ranks: list = [i for i in rank_to_severity_mapping if i >= minimum_severity_ranking]
 
     events_to_create = []
 
     for raw_response in raw_response_list:
         severity_in_response: str = raw_response.get("severity")
 
-        severity_ranking: Optional[int] = severity_to_rank_mapping.get(severity_in_response)
+        severity_ranking: int | None = severity_to_rank_mapping.get(severity_in_response)
 
         if severity_ranking in whitelisted_severity_ranks:
             events_to_create.append(raw_response)
@@ -419,16 +372,12 @@ def filter_out_alerts_above_minimum_severity(raw_response_list: List, minimum_se
     return events_to_create
 
 
-''' Command Functions '''
+""" Command Functions """
 
 
 def fetch_incidents_command(
-    client: Client,
-    max_results: int,
-    last_run: Dict,
-    first_fetch_time: str,
-    minimum_severity: str
-) -> Tuple[Dict, List]:
+    client: Client, max_results: int, last_run: dict, first_fetch_time: str, minimum_severity: str
+) -> tuple[dict, list]:
     """
         Fetches the events and returns the incidents list.
 
@@ -451,18 +400,17 @@ def fetch_incidents_command(
     else:
         last_fetch = dateparser.parse(first_fetch_time).strftime(THOUSAND_EYES_DATE_TIME_FORMAT)  # type: ignore[union-attr]
 
-    incidents_to_create: List = []
+    incidents_to_create: list = []
     incident_created_time: str = ""
-    events_to_create: List = get_alerts_command(client=client, from_date=last_fetch, fetch_for_incident=True)
-    events_to_create: List = filter_out_alerts_above_minimum_severity(events_to_create, minimum_severity)
+    events_to_create: list = get_alerts_command(client=client, from_date=last_fetch, fetch_for_incident=True)
+    events_to_create: list = filter_out_alerts_above_minimum_severity(events_to_create, minimum_severity)
 
     for event in events_to_create:
-
         incident_created_time = datetime.utcnow().strftime(THOUSAND_EYES_DATE_TIME_FORMAT + "Z")
         incident = {
             "name": f"ThousandEyes Incident - {event.get('ruleName')} - {event.get('dateStart')}",
             "occured": incident_created_time,
-            "rawJSON": json.dumps(event)
+            "rawJSON": json.dumps(event),
         }
 
         incidents_to_create.append(incident)
@@ -476,10 +424,10 @@ def fetch_incidents_command(
 
 def get_alerts_command(
     client: Client,
-    aid: Optional[int] = None,
-    from_date: Optional[str] = None,
-    to_date: Optional[str] = None,
-    fetch_for_incident: bool = False
+    aid: int | None = None,
+    from_date: str | None = None,
+    to_date: str | None = None,
+    fetch_for_incident: bool = False,
 ):
     """
         Fetches live alerts
@@ -496,35 +444,24 @@ def get_alerts_command(
 
     """
 
-    endpoint = '/alerts.json'
-    method = 'GET'
-    raw_response_list: List[Dict] = []
-    entry_context: List[Dict] = []
-    human_readable_data: List[Dict] = []
+    endpoint = "/alerts.json"
+    method = "GET"
+    raw_response_list: list[dict] = []
+    entry_context: list[dict] = []
+    human_readable_data: list[dict] = []
 
-    params: Dict = {}
+    params: dict = {}
     if aid and not from_date and not to_date:
-        params = {
-            "aid": aid
-        }
+        params = {"aid": aid}
 
     elif aid and from_date and not to_date:
-        params = {
-            "aid": aid,
-            "from": from_date
-        }
+        params = {"aid": aid, "from": from_date}
 
     elif aid and from_date and to_date:
-        params = {
-            "aid": aid,
-            "from": from_date,
-            "to": to_date
-        }
+        params = {"aid": aid, "from": from_date, "to": to_date}
 
     if fetch_for_incident:
-        params = {
-            "from": from_date
-        }
+        params = {"from": from_date}
         group_aid_list = fetch_all_aids(client)
 
         if isinstance(group_aid_list, dict):
@@ -532,18 +469,10 @@ def get_alerts_command(
             raise Exception(err_msg)
 
         for group_aid in group_aid_list:
-            response = client.handle_rate_lmiit_and_make_request(
-                method,
-                endpoint,
-                params=params
-            )
+            response = client.handle_rate_lmiit_and_make_request(method, endpoint, params=params)
 
             alerts_found, raw_response_temp_list, entry_context_temp, human_readable_data_temp = parse_alerts_response(
-                client=client,
-                method=method,
-                response=response,
-                aid=group_aid,
-                human_readable=False
+                client=client, method=method, response=response, aid=group_aid, human_readable=False
             )
 
             for raw_response_temp in raw_response_temp_list:
@@ -552,18 +481,10 @@ def get_alerts_command(
         return raw_response_list
 
     # Fetch results for non-incident calls made (From Warroom)
-    response = client.handle_rate_lmiit_and_make_request(
-        method,
-        endpoint,
-        params=params
-    )
+    response = client.handle_rate_lmiit_and_make_request(method, endpoint, params=params)
 
     alerts_found, raw_response_temp_list, entry_context_temp, human_readable_data_temp = parse_alerts_response(
-        client=client,
-        method=method,
-        response=response,
-        aid=aid,
-        human_readable=True
+        client=client, method=method, response=response, aid=aid, human_readable=True
     )
 
     raw_response_list = raw_response_temp_list
@@ -574,24 +495,24 @@ def get_alerts_command(
 
     if alerts_found:
         if aid:
-            title = f'{INTEGRATION_NAME} - Active Alerts found for AID: {aid}'
+            title = f"{INTEGRATION_NAME} - Active Alerts found for AID: {aid}"
 
         else:
-            title = f'{INTEGRATION_NAME} - Active Alerts found for AID: Default'
+            title = f"{INTEGRATION_NAME} - Active Alerts found for AID: Default"
 
     else:
         if aid:
-            title = f'{INTEGRATION_NAME} - No Active Alerts Found for AID: {aid}'
+            title = f"{INTEGRATION_NAME} - No Active Alerts Found for AID: {aid}"
 
         else:
-            title = f'{INTEGRATION_NAME} - No Active Alerts found for AID: Default'
+            title = f"{INTEGRATION_NAME} - No Active Alerts found for AID: Default"
 
     results = CommandResults(
         readable_output=tableToMarkdown(title, t=human_readable_data),
-        outputs_prefix='ThousandEyes.Alerts',
-        outputs_key_field='AlertId',
+        outputs_prefix="ThousandEyes.Alerts",
+        outputs_key_field="AlertId",
         outputs=entry_context,
-        raw_response=raw_response_list
+        raw_response=raw_response_list,
     )
 
     return results
@@ -610,13 +531,10 @@ def get_alert_command(client: Client, alert_id: int):
 
     """
 
-    endpoint = f'/alerts/{alert_id}.json'
-    method = 'GET'
+    endpoint = f"/alerts/{alert_id}.json"
+    method = "GET"
 
-    response = client.handle_rate_lmiit_and_make_request(
-        method,
-        endpoint
-    )
+    response = client.handle_rate_lmiit_and_make_request(method, endpoint)
 
     # If Response is an error, return the error
     if isinstance(response, dict):
@@ -636,13 +554,10 @@ def get_agents_command(client: Client):
         Tuple of Context Data and Human Readable Data.
     """
 
-    endpoint = '/agents.json'
-    method = 'GET'
+    endpoint = "/agents.json"
+    method = "GET"
 
-    response = client.handle_rate_lmiit_and_make_request(
-        method,
-        endpoint
-    )
+    response = client.handle_rate_lmiit_and_make_request(method, endpoint)
 
     # If Response is an error, return the error
     if isinstance(response, dict):
@@ -663,13 +578,10 @@ def get_agent_command(client: Client, agent_id: int):
         Tuple of Context Data and Human Readable Data.
     """
 
-    endpoint = f'/agents/{agent_id}.json'
-    method = 'GET'
+    endpoint = f"/agents/{agent_id}.json"
+    method = "GET"
 
-    response = client.handle_rate_lmiit_and_make_request(
-        method,
-        endpoint
-    )
+    response = client.handle_rate_lmiit_and_make_request(method, endpoint)
 
     # If Response is an error, return the error
     if isinstance(response, dict):
@@ -681,31 +593,23 @@ def get_agent_command(client: Client, agent_id: int):
 def main():
     # Fetching required parameters
     params = demisto.params()
-    base_url = params.get('base_url') + API_VERSION_ENDPOINT
-    bearer_token = params.get('credentials').get('password')
-    headers = {
-        'Authorization': f'Bearer {bearer_token}',
-        'Accept': 'application/json'
-    }
-    verify_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy')
+    base_url = params.get("base_url") + API_VERSION_ENDPOINT
+    bearer_token = params.get("credentials").get("password")
+    headers = {"Authorization": f"Bearer {bearer_token}", "Accept": "application/json"}
+    verify_ssl = not params.get("insecure", False)
+    proxy = params.get("proxy")
 
     # Initializing the Client Object with required configuration
-    client = Client(
-        base_url=base_url,
-        verify=verify_ssl,
-        proxy=proxy,
-        headers=headers
-    )
+    client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=headers)
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     commands = {
-        'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-alerts': get_alerts_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-alert': get_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-agents': get_agents_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-agent': get_agent_command
+        "test-module": test_module_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-alerts": get_alerts_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-alert": get_alert_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-agents": get_agents_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-agent": get_agent_command,
     }
 
     try:
@@ -713,7 +617,7 @@ def main():
             results = commands[command](client=client, **demisto.args())  # type: ignore
             return_results(results)
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             max_results = arg_to_number(arg=demisto.params().get("max_fetch"), arg_name="max_fetch", required=False)
             first_fetch_timestamp = params.get("fetch_time", "3 days").strip()
             minimum_severity = params.get("severity")
@@ -726,7 +630,7 @@ def main():
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_timestamp,
-                minimum_severity=minimum_severity
+                minimum_severity=minimum_severity,
             )
 
             demisto.setLastRun(next_run)
@@ -737,9 +641,9 @@ def main():
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -13,7 +13,7 @@ args = demisto.args()
  In this case we set it to be 'incident' as this script is in charge of creating incidents.
 """
 
-BUSINESS_OBJECT_TYPE = 'Incident'
+BUSINESS_OBJECT_TYPE = "Incident"
 
 """
  `FIELDS` contains all the fields you wish to include in your business object.
@@ -31,11 +31,11 @@ BUSINESS_OBJECT_TYPE = 'Incident'
  constant to be `FIELDS = args`
 """
 FIELDS = {
-    'Description': args.get('description'),
-    'Priority': args.get('priority'),
-    'CustomerDisplayName': args.get('customer_display_name'),
-    'OwnedBy': args.get('owned_by'),
-    'Service': args.get('service')
+    "Description": args.get("description"),
+    "Priority": args.get("priority"),
+    "CustomerDisplayName": args.get("customer_display_name"),
+    "OwnedBy": args.get("owned_by"),
+    "Service": args.get("service"),
 }
 
 
@@ -46,17 +46,17 @@ FIELDS = {
 
 def build_arguments():
     arguments = {
-        'type': BUSINESS_OBJECT_TYPE,
-        'id_type': args.get('id_type'),
-        'id_value': args.get('id_value'),
+        "type": BUSINESS_OBJECT_TYPE,
+        "id_type": args.get("id_type"),
+        "id_value": args.get("id_value"),
         # As `owned_by` and `service` arguments are not mandatory we make sure to remove them by using the createContext
         # function with removeNull flag set to true.
         # If all script arguments are mandatory, it would be sufficient to use `json: FIELDS` instead of
         # `createContext(FIELDS, removeNull=True)`
-        'json': createContext(FIELDS, removeNull=True)
+        "json": createContext(FIELDS, removeNull=True),
     }
     return arguments
 
 
-result = demisto.executeCommand('cherwell-update-business-object', build_arguments())
+result = demisto.executeCommand("cherwell-update-business-object", build_arguments())
 demisto.results(result)

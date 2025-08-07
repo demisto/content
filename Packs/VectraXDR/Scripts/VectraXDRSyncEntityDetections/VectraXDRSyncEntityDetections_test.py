@@ -34,11 +34,7 @@ def test_map_and_update_entity_detections():
     - Assert that the readable output of the CommandResults indicates successful synchronization of detections.
     """
     # Define your test data
-    data = {
-        "field1": "value1",
-        "field2": "value2",
-        "Vectra XDR Entity Detection Details": "detection_data"
-    }
+    data = {"field1": "value1", "field2": "value2", "Vectra XDR Entity Detection Details": "detection_data"}
     mapper = "your_mapper"
     mapper_type = "incident_type"
 
@@ -57,21 +53,14 @@ def test_main(mocker):
     - Calling the 'main' function of the VectraXDRSyncEntityDetections script.
     """
     # Mock the demisto.incident() function to return an incident with mocked values.
-    mocker.patch.object(demisto, 'incident', return_value={
-        'CustomFields': {
-            'vectraxdrentityid': '1',
-            'vectraxdrentitytype': 'host'
-        }
-    })
+    mocker.patch.object(
+        demisto, "incident", return_value={"CustomFields": {"vectraxdrentityid": "1", "vectraxdrentitytype": "host"}}
+    )
 
     # Mock the demisto.executeCommand() function to return the command result.
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{
-        'Type': 'command',
-        'Contents': {
-            "results": [{}]
-        },
-        'HumanReadable': ""
-    }])
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"Type": "command", "Contents": {"results": [{}]}, "HumanReadable": ""}]
+    )
 
     # Call the main function
     main()

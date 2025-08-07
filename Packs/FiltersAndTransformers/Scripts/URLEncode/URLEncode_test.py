@@ -1,5 +1,5 @@
-from URLEncode import *
 import demistomock as demisto
+from URLEncode import *
 
 
 def test_URLEncode(mocker):
@@ -13,10 +13,10 @@ def test_URLEncode(mocker):
     Then
     - the url is encoded except for the '/' character.
     """
-    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/'})
-    mocked_return_results = mocker.patch('URLEncode.return_results')
+    mocker.patch.object(demisto, "args", return_value={"value": "https://www.google.com/"})
+    mocked_return_results = mocker.patch("URLEncode.return_results")
     main()
-    mocked_return_results.assert_called_once_with('https%3A//www.google.com/')
+    mocked_return_results.assert_called_once_with("https%3A//www.google.com/")
 
 
 def test_URLEncode_without_safe_character(mocker):
@@ -30,10 +30,10 @@ def test_URLEncode_without_safe_character(mocker):
     Then
     - the entire url is encoded including the default '/' character.
     """
-    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/', 'ignore_safe_character': 'true'})
-    mocked_return_results = mocker.patch('URLEncode.return_results')
+    mocker.patch.object(demisto, "args", return_value={"value": "https://www.google.com/", "ignore_safe_character": "true"})
+    mocked_return_results = mocker.patch("URLEncode.return_results")
     main()
-    mocked_return_results.assert_called_once_with('https%3A%2F%2Fwww.google.com%2F')
+    mocked_return_results.assert_called_once_with("https%3A%2F%2Fwww.google.com%2F")
 
 
 def test_URLEncode_with_safe_character(mocker):
@@ -47,10 +47,10 @@ def test_URLEncode_with_safe_character(mocker):
     Then
     - the url is encoded except for the '@' character.
     """
-    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.@google@com/', 'safe_character': '@'})
-    mocked_return_results = mocker.patch('URLEncode.return_results')
+    mocker.patch.object(demisto, "args", return_value={"value": "https://www.@google@com/", "safe_character": "@"})
+    mocked_return_results = mocker.patch("URLEncode.return_results")
     main()
-    mocked_return_results.assert_called_once_with('https%3A%2F%2Fwww.@google@com%2F')
+    mocked_return_results.assert_called_once_with("https%3A%2F%2Fwww.@google@com%2F")
 
 
 def test_URLEncode_fail(mocker):
@@ -62,8 +62,8 @@ def test_URLEncode_fail(mocker):
     Then
     - return_error function is called with the relevant error message.
     """
-    mocker.patch.object(demisto, 'args', return_value={'value': 'https://www.google.com/'})
-    mocker.patch('URLEncode.return_results', side_effect=Exception("Mocked error"))
-    mocked_return_error = mocker.patch('URLEncode.return_error')
+    mocker.patch.object(demisto, "args", return_value={"value": "https://www.google.com/"})
+    mocker.patch("URLEncode.return_results", side_effect=Exception("Mocked error"))
+    mocked_return_error = mocker.patch("URLEncode.return_error")
     main()
     mocked_return_error.assert_called_once()

@@ -8,7 +8,8 @@ import http
 import ipaddress
 import json
 import re
-from typing import Any, Callable, NamedTuple
+from collections.abc import Callable
+from typing import Any, NamedTuple
 
 import requests
 import urllib3
@@ -176,23 +177,8 @@ class Client(BaseClient):
         Raises:
             DemistoException: Incase the credentials are wrong or too many attempts were made.
         """
-        response: requests.Response = self._http_request(
-            method="POST",
-            full_url=urljoin(self.server, "logincheck"),
-            data={
-                "username": self.username,
-                "secretkey": self.password,
-                "ajax": "1",
-            },
-            resp_type="response",
-            error_handler=Client._error_handler,
-        )
-
-        if response.text == "0":
-            raise DemistoException(AUTHORIZATION_ERROR)
-
-        if response.text == "2":
-            raise DemistoException("Too many login attempts. Please wait and try again.")
+        demisto.debug("Starting login")
+        response = self.login_request()
 
         # Extract the cookie and inject it into the headers, without the header only GET requests available.
         # The X-CSRFTOKEN header is required for POST/PUT/DELETE requests.
@@ -215,6 +201,46 @@ class Client(BaseClient):
             )
 
         Client.IS_ONLINE = True
+
+    def login_request(self) -> requests.Response:
+        """
+        Sends the login request, and retries once if the initial login fails.
+
+        Returns:
+            requests.Response: The final HTTP response from the login attempt.
+
+        Raises:
+            DemistoException: If login fails or too many login attempts were made.
+        """
+
+        def send_login_request() -> requests.Response:
+            return self._http_request(
+                method="POST",
+                full_url=urljoin(self.server, "logincheck"),
+                data={
+                    "username": self.username,
+                    "secretkey": self.password,
+                    "ajax": "1",
+                },
+                resp_type="response",
+                error_handler=Client._error_handler,
+            )
+
+        response = send_login_request()
+        demisto.debug(f"Initial login response: status_code={response.status_code}, text={response.text}")
+
+        if response.text == "0":
+            demisto.debug("Login failed, retrying")
+            response = send_login_request()
+            demisto.debug(f"Retry login response: status_code={response.status_code}, text={response.text}")
+
+            if response.text == "0":
+                raise DemistoException(AUTHORIZATION_ERROR)
+
+        if response.text == "2":
+            raise DemistoException("Too many login attempts. Please wait and try again.")
+
+        return response
 
     def logout(self) -> None:
         """Due to limited amount of simultaneous connections we log out."""
@@ -676,9 +702,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             method="GET",
-            url_suffix=urljoin(self.ADDRESS_IPV4_MULTICAST_ENDPOINT, name)
-            if name
-            else self.ADDRESS_IPV4_MULTICAST_ENDPOINT,
+            url_suffix=urljoin(self.ADDRESS_IPV4_MULTICAST_ENDPOINT, name) if name else self.ADDRESS_IPV4_MULTICAST_ENDPOINT,
             params=remove_empty_elements(
                 {
                     "vdom": vdom,
@@ -840,9 +864,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             method="GET",
-            url_suffix=urljoin(self.ADDRESS_IPV6_MULTICAST_ENDPOINT, name)
-            if name
-            else self.ADDRESS_IPV6_MULTICAST_ENDPOINT,
+            url_suffix=urljoin(self.ADDRESS_IPV6_MULTICAST_ENDPOINT, name) if name else self.ADDRESS_IPV6_MULTICAST_ENDPOINT,
             params=remove_empty_elements(
                 {
                     "vdom": vdom,
@@ -1958,8 +1980,7 @@ def get_address_type(args: dict[str, Any], include_ipv6: bool = False) -> str:
 
     # Count the number of not None arguments for each group
     group_to_arg_counts = {
-        group: sum(1 for arg in arg_names if args.get(arg) is not None)
-        for group, arg_names in group_to_arg_names.items()
+        group: sum(1 for arg in arg_names if args.get(arg) is not None) for group, arg_names in group_to_arg_names.items()
     }
 
     # Special handling for allow_routing argument
@@ -2055,9 +2076,7 @@ def get_service_type(args: dict[str, Any]) -> str:
     # If arguments are from more than one group, raise an error
     if len(mixed_groups) > 1:
         mixed_groups_str = ", ".join(mixed_groups)
-        raise DemistoException(
-            f"Arguments must only come from one protocol type. Mixed protocol types: {mixed_groups_str}"
-        )
+        raise DemistoException(f"Arguments must only come from one protocol type. Mixed protocol types: {mixed_groups_str}")
 
     if args.get("ip_protocol"):
         return IP
@@ -2084,9 +2103,7 @@ def get_service_type(args: dict[str, Any]) -> str:
                 "please provide at least one of: tcpRange, udpRange, sctpRange."
             )
         elif partially_set == f"{ICMP}/{ICMP6}":
-            raise DemistoException(
-                f"Missing arguments for the protocol type {partially_set}, please provide: icmp_version"
-            )
+            raise DemistoException(f"Missing arguments for the protocol type {partially_set}, please provide: icmp_version")
 
     raise DemistoException(
         "No protocol type arguments were fully set. "
@@ -2143,7 +2160,7 @@ def create_addr_string(list_of_addr_data_dicts: list) -> str:
     The address string is a list of address names separated by newlines.
     """
     addr_string = ""
-    for addr_index in range(0, len(list_of_addr_data_dicts)):
+    for addr_index in range(len(list_of_addr_data_dicts)):
         cur_addr_data = list_of_addr_data_dicts[addr_index]
         cur_addr_name = cur_addr_data.get("name")
         if addr_index == len(list_of_addr_data_dicts) - 1:
@@ -2692,9 +2709,7 @@ COUNTRY_MAPPING = Mapping(["country"], ["Country"])
 DIRTY_MAPPING = Mapping(["dirty"], ["Dirty"])
 END_IP_MAPPING = Mapping(["end-ip"], ["EndIP"])
 EXCLUDE_MAPPING = Mapping(["exclude"], ["Exclude"])
-EXCLUDE_MEMBER_MAPPING = Mapping(
-    ["exclude-member"], ["ExcludeMember"], None, functools.partial(extract_key_from_items, "name")
-)
+EXCLUDE_MEMBER_MAPPING = Mapping(["exclude-member"], ["ExcludeMember"], None, functools.partial(extract_key_from_items, "name"))
 FABRIC_OBJECT_MAPPING = Mapping(["fabric-object"], ["FabricObject"])
 FQDN_MAPPING = Mapping(["fqdn"], ["FQDN"])
 FSSO_GROUP_MAPPING = Mapping(["fsso-group"], ["FSSOGroup"])
@@ -2843,9 +2858,11 @@ def test_module(client: Client) -> str:
         str: : 'ok' if test passed, or an error message if the credentials are incorrect.
     """
     try:
+        demisto.debug("Starting test module")
         client.list_system_vdoms()
 
     except DemistoException as exc:
+        demisto.debug(f"Got error: {str(exc)}")
         if exc.res is not None:
             if exc.res.status_code == http.HTTPStatus.FORBIDDEN:
                 return AUTHORIZATION_ERROR
@@ -5101,9 +5118,7 @@ def create_address_group_command(client: Client, args: dict[str, Any]):
             "ContentsFormat": formats["json"],
             "Contents": contents,
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": tableToMarkdown(
-                "FortiGate address group " + group_name + " created successfully", contents
-            ),
+            "HumanReadable": tableToMarkdown("FortiGate address group " + group_name + " created successfully", contents),
             "EntryContext": context,
         }
     )
@@ -5155,9 +5170,7 @@ def update_address_group_command(client: Client, args: dict[str, Any]):
             "ContentsFormat": formats["json"],
             "Contents": contents,
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": tableToMarkdown(
-                "FortiGate address group " + group_name + " updated successfully", contents
-            ),
+            "HumanReadable": tableToMarkdown("FortiGate address group " + group_name + " updated successfully", contents),
             "EntryContext": context,
         }
     )
@@ -5308,9 +5321,7 @@ def update_service_group_command(client: Client, args: dict[str, Any]):
             "ContentsFormat": formats["json"],
             "Contents": contents,
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": tableToMarkdown(
-                "FortiGate service group: " + group_name + " was successfully updated", contents
-            ),
+            "HumanReadable": tableToMarkdown("FortiGate service group: " + group_name + " was successfully updated", contents),
             "EntryContext": context,
         }
     )
@@ -5335,9 +5346,7 @@ def delete_service_group_command(client: Client, args: dict[str, Any]):
             "ContentsFormat": formats["json"],
             "Contents": contents,
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": tableToMarkdown(
-                "FortiGate service group: " + group_name + " was deleted successfully", contents
-            ),
+            "HumanReadable": tableToMarkdown("FortiGate service group: " + group_name + " was deleted successfully", contents),
             "EntryContext": context,
         }
     )
@@ -5556,9 +5565,7 @@ def generate_src_or_dst_request_data(
                 if address not in address_list_for_request:
                     address_list_for_request.append(address)
         else:
-            address_list_for_request = [
-                address for address in existing_adresses_list if address not in address_list_for_request
-            ]
+            address_list_for_request = [address for address in existing_adresses_list if address not in address_list_for_request]
 
     address_data_dicts_for_request = policy_addr_array_from_arg(address_list_for_request, False)
     return address_data_dicts_for_request
@@ -5660,9 +5667,7 @@ def update_policy_command(client: Client, args: dict[str, Any]):
             "ContentsFormat": formats["json"],
             "Contents": contents,
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": tableToMarkdown(
-                "FortiGate policy ID " + policy_id + " has been updated successfully.", contents
-            ),
+            "HumanReadable": tableToMarkdown("FortiGate policy ID " + policy_id + " has been updated successfully.", contents),
             "EntryContext": context,
         }
     )
@@ -5716,9 +5721,7 @@ def delete_policy_command(client: Client, args: dict[str, Any]):
             "ContentsFormat": formats["json"],
             "Contents": contents,
             "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": tableToMarkdown(
-                "FortiGate policy with ID " + policy_id + " deleted successfully", contents
-            ),
+            "HumanReadable": tableToMarkdown("FortiGate policy with ID " + policy_id + " deleted successfully", contents),
             "EntryContext": context,
         }
     )
@@ -5777,9 +5780,7 @@ def main() -> None:
     api_key = dict_safe_get(params, ["api_key", "password"])
 
     if not any([username, password, api_key]):
-        raise DemistoException(
-            "Please provide an authentication method. Either 'API Key' or 'Account username' and 'Password'."
-        )
+        raise DemistoException("Please provide an authentication method. Either 'API Key' or 'Account username' and 'Password'.")
 
     if api_key and (username or password):
         raise DemistoException("Please don't mix 'API Key' with 'Account username' or 'Password'.")

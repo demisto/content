@@ -1,8 +1,13 @@
-_____
+
 ## Jamf Protect Event Collector
-_____
-Use this integration to fetch audit logs, alerts and computer events from Jamf Protect as events in Cortex XSIAM.
-_____
+
+Use this integration to fetch audit logs, alerts events and computer assets from Jamf Protect to Cortex XSIAM.
+
+To fetch computer assets, enable the *Fetch assets and vulnerabilities* option. To retrieve audit logs and alert events, enable the *Fetch events*option.
+
+Computer assets dataset name: **jamf_protect_computers_raw**
+Events dataset name: **jamf_protect_raw**
+
 ## Creating an API Client in Jamf Protect
 Before you configure the integration, retrieve the API Client and Password from your Jamf Protect environment:
 1. In Jamf Protect, click **Administrative** > **API Clients**.

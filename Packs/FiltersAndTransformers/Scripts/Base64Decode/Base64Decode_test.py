@@ -30,8 +30,8 @@ def test_decoding(value, expected_result, expected_human_readable):
 
     result = decode(value)
     to_context = result.to_context()
-    assert to_context.get('EntryContext') == {"Base64": {"originalValue": value, "decoded": expected_result}}
-    assert to_context.get('HumanReadable') == expected_human_readable
+    assert to_context.get("EntryContext") == {"Base64": {"originalValue": value, "decoded": expected_result}}
+    assert to_context.get("HumanReadable") == expected_human_readable
 
 
 @pytest.mark.parametrize(

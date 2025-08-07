@@ -1,0 +1,96 @@
+{
+    "type": "Detection",
+    "id": 106,
+    "attributes": {
+        "headline": "[example-106] Malicious Software (Post-Exploitation Tool)",
+        "confirmed_at": "2025-05-12T11:46:11.264Z",
+        "summary": "Windows PowerShell (`powershell.exe`) executed with an encoded command line and parameters that are indicative of malicious code execution.",
+        "severity": "high",
+        "last_activity_seen_at": "2025-05-12T11:33:04.000Z",
+        "classification": {
+            "superclassification": "Malicious Software",
+            "subclassification": [
+                "Post-Exploitation Tool"
+            ]
+        },
+        "time_of_occurrence": "2025-05-12T11:20:39.000Z",
+        "last_acknowledged_at": "2025-05-12T11:49:36.304Z",
+        "last_acknowledged_by": {
+            "type": "PortalUser",
+            "attributes": {
+                "id": 28366,
+                "email": "name@exanple",
+                "name": "Unknown Unknown",
+                "name_and_email": "Unknown Unknown (name@exanple)"
+            }
+        },
+        "last_remediated_status": {
+            "reason": "authorized_testing",
+            "remediation_state": "not_remediated",
+            "marked_by": {
+                "type": "PortalUser",
+                "attributes": {
+                    "id": 28366,
+                    "email": "name@exanple",
+                    "name": "Unknown Unknown",
+                    "name_and_email": "Unknown Unknown (name@exanple)"
+                }
+            },
+            "marked_at": "2025-05-12T11:49:37.304Z"
+        },
+        "associated_releasable_intelligence_profiles": []
+    },
+    "hostname": "hostname",
+    "username": "username",
+    "relationships": {
+        "affected_endpoint": {
+            "links": {
+                "related": "https://example.my.redcanary.co/openapi/v3/endpoints/100000157601234"
+            },
+            "data": {
+                "type": "endpoint",
+                "id": 100000157602956,
+                "reporting_tags": {
+                    "endpoint_type": "workstation",
+                    "endpoint_platform": "Windows",
+                    "endpoint_sensor_group": "ALL_WORKSTATIONS, BETA_WORKSTATIONS",
+                    "endpoint_operating_system": "Windows 11"
+                },
+                "network_addresses": [
+                    "1.2.3.4",
+                    "1.1.1.1"
+                ]
+            }
+        },
+        "related_endpoint_user": {
+            "links": {
+                "related": "https://example.my.redcanary.co/openapi/v3/endpoint_users/100000360241234"
+            },
+            "data": {
+                "type": "endpoint_user",
+                "id": 100000360241649,
+                "reporting_tags": {
+                    "logon_domain": null,
+                    "local_account": true,
+                    "domain_account": false,
+                    "system_account": true
+                },
+                "endpoints_used": []
+            }
+        }
+    },
+    "links": {
+        "self": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/106"
+        },
+        "activity_timeline": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/106/timeline"
+        },
+        "detectors": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/106/detectors"
+        },
+        "contributing_intel": {
+            "href": "https://example.my.redcanary.co/openapi/v3/detections/106/contributing_intel"
+        }
+    }
+}

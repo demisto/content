@@ -1,11 +1,12 @@
 ## Overview
+
 ---
 
 Deep Instinct
 This integration was integrated and tested with version 2.3.1.17 of Deep Instinct
 
-
 ## Configure Deep Instinct on Cortex XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -18,13 +19,17 @@ This integration was integrated and tested with version 2.3.1.17 of Deep Instinc
     * __Incident type__
     * __First event ID to fetch from__
 4. Click __Test__ to validate the URLs, token, and connection.
+
 ## Fetched Incidents Data
+
 ---
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. deepinstinct-get-device
 2. deepinstinct-get-events
 3. deepinstinct-get-all-groups
@@ -38,54 +43,58 @@ After you successfully execute a command, a DBot message appears in the War Room
 11. deepinstinct-delete-files-remotely
 12. deepinstinct-terminate-processes
 13. deepinstinct-close-events
+
 ### 1. deepinstinct-get-device
+
 ---
 get specific device by ID
+
 ##### Base Command
 
 `deepinstinct-get-device`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| device_id | The device ID | Required | 
-
+| device_id | The device ID | Required |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| DeepInstinct.devices.ID | number | Device ID | 
-| DeepInstinct.devices.os | string | Device OS | 
-| DeepInstinct.devices.osv | string | Device OS version | 
-| DeepInstinct.devices.ip_address | string | Device IP address | 
-| DeepInstinct.devices.mac_address | string | Device mac address | 
-| DeepInstinct.devices.hostname | string | Device hostname | 
-| DeepInstinct.devices.domain | string | Device domain | 
-| DeepInstinct.devices.scanned_files | number | Num of device scanned files | 
-| DeepInstinct.devices.tag | string | Device tag | 
-| DeepInstinct.devices.connectivity_status | string | Device connectivity status | 
-| DeepInstinct.devices.deployment_status | string | Device deployment status | 
-| DeepInstinct.devices.last_registration | string | Device last registration datetime | 
-| DeepInstinct.devices.last_contact | string | Device last contact datetime | 
-| DeepInstinct.devices.distinguished_name | string | Device distinguished name | 
-| DeepInstinct.devices.group_name | string | Device group name | 
-| DeepInstinct.devices.group_id | number | Device group ID | 
-| DeepInstinct.devices.policy_name | string | Device policy name | 
-| DeepInstinct.devices.policy_id | number | Device policy ID | 
-| DeepInstinct.devices.log_status | string | Device log status | 
-| DeepInstinct.devices.agent_version | string | Device agent version | 
-| DeepInstinct.devices.brain_version | string | Device brain version | 
-| DeepInstinct.devices.msp_name | string | Device msp name | 
-| DeepInstinct.devices.msp_id | number | Device msp ID | 
-| DeepInstinct.devices.tenant_name | string | Device tenant name | 
-| DeepInstinct.devices.tenant_id | number | Device tenant ID | 
-
+| DeepInstinct.devices.ID | number | Device ID |
+| DeepInstinct.devices.os | string | Device OS |
+| DeepInstinct.devices.osv | string | Device OS version |
+| DeepInstinct.devices.ip_address | string | Device IP address |
+| DeepInstinct.devices.mac_address | string | Device mac address |
+| DeepInstinct.devices.hostname | string | Device hostname |
+| DeepInstinct.devices.domain | string | Device domain |
+| DeepInstinct.devices.scanned_files | number | Num of device scanned files |
+| DeepInstinct.devices.tag | string | Device tag |
+| DeepInstinct.devices.connectivity_status | string | Device connectivity status |
+| DeepInstinct.devices.deployment_status | string | Device deployment status |
+| DeepInstinct.devices.last_registration | string | Device last registration datetime |
+| DeepInstinct.devices.last_contact | string | Device last contact datetime |
+| DeepInstinct.devices.distinguished_name | string | Device distinguished name |
+| DeepInstinct.devices.group_name | string | Device group name |
+| DeepInstinct.devices.group_id | number | Device group ID |
+| DeepInstinct.devices.policy_name | string | Device policy name |
+| DeepInstinct.devices.policy_id | number | Device policy ID |
+| DeepInstinct.devices.log_status | string | Device log status |
+| DeepInstinct.devices.agent_version | string | Device agent version |
+| DeepInstinct.devices.brain_version | string | Device brain version |
+| DeepInstinct.devices.msp_name | string | Device msp name |
+| DeepInstinct.devices.msp_id | number | Device msp ID |
+| DeepInstinct.devices.tenant_name | string | Device tenant name |
+| DeepInstinct.devices.tenant_id | number | Device tenant ID |
 
 ##### Command Example
+
 ```!deepinstinct-get-device device_id=1```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Devices": {
@@ -119,56 +128,60 @@ get specific device by ID
 ```
 
 ##### Human Readable Output
+
 ### Device
+
 |agent_version|brain_version|connectivity_status|deployment_status|distinguished_name|domain|group_id|group_name|hostname|id|ip_address|last_contact|last_registration|log_status|mac_address|msp_id|msp_name|os|osv|policy_id|policy_name|scanned_files|tag|tenant_id|tenant_name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2.3.1.12 | 115wt | EXPIRED | REGISTERED | OU=Organizations & Sites,DC=bancshares,DC=mib |  | 3 | Windows Default Group | Mock_2020-04-09 17:49:39.408405_1 | 1 | 192.168.88.80 | 2020-04-09T14:49:39.711487Z | 2020-04-09T14:49:39.722292Z | NA | 00:00:00:00:00:00 | 1 | MSP 1 | WINDOWS | Windows | 3 | Windows Default Policy | 0 |  | 1 | Tenant 1 |
 
-
 ### 2. deepinstinct-get-events
+
 ---
 Get all events. Max events in response can be 50, use first_event_id parameter to define first event id to get
+
 ##### Base Command
 
 `deepinstinct-get-events`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| first_event_id | First event id to get as max events in response can be 50 | Optional | 
-
+| first_event_id | First event id to get as max events in response can be 50 | Optional |
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| DeepInstinct.Events.events.ID | number | event ID | 
-| DeepInstinct.Events.events.device_id | number | event device ID | 
-| DeepInstinct.Events.events.file_hash | string | event file hash | 
-| DeepInstinct.Events.events.file_type | string | event file type | 
-| DeepInstinct.Events.events.file_archive_hash | string | event file archive hash | 
-| DeepInstinct.Events.events.path | unknown | event file path | 
-| DeepInstinct.Events.events.file_size | number | event file size | 
-| DeepInstinct.Events.events.threat_severity | string | event threat severity | 
-| DeepInstinct.Events.events.deep_classification | string | Deep Instinct classification | 
-| DeepInstinct.Events.events.file_status | string | event file status | 
-| sandbox_statusDeepInstinct.Events.events. | string | event sandbox status | 
-| DeepInstinct.Events.events.model | string | event model | 
-| DeepInstinct.Events.events.type | string | event type | 
-| DeepInstinct.Events.events.trigger | string | event trigger | 
-| DeepInstinct.Events.events.action | string | event action | 
-| DeepInstinct.Events.events.tenant_id | number | event tenant id | 
-| DeepInstinct.Events.events.msp_id | number | event msp id | 
-| DeepInstinct.Events.events.status | unknown | event status | 
-| DeepInstinct.Events.events.close_trigger | unknown | event close trigger | 
-| DeepInstinct.Events.events.recorded_device_info | unknown | event device info | 
-| DeepInstinct.Events.events.reoccurrence_count | number | event reoccurrence_count | 
-
+| DeepInstinct.Events.events.ID | number | event ID |
+| DeepInstinct.Events.events.device_id | number | event device ID |
+| DeepInstinct.Events.events.file_hash | string | event file hash |
+| DeepInstinct.Events.events.file_type | string | event file type |
+| DeepInstinct.Events.events.file_archive_hash | string | event file archive hash |
+| DeepInstinct.Events.events.path | unknown | event file path |
+| DeepInstinct.Events.events.file_size | number | event file size |
+| DeepInstinct.Events.events.threat_severity | string | event threat severity |
+| DeepInstinct.Events.events.deep_classification | string | Deep Instinct classification |
+| DeepInstinct.Events.events.file_status | string | event file status |
+| sandbox_statusDeepInstinct.Events.events. | string | event sandbox status |
+| DeepInstinct.Events.events.model | string | event model |
+| DeepInstinct.Events.events.type | string | event type |
+| DeepInstinct.Events.events.trigger | string | event trigger |
+| DeepInstinct.Events.events.action | string | event action |
+| DeepInstinct.Events.events.tenant_id | number | event tenant id |
+| DeepInstinct.Events.events.msp_id | number | event msp id |
+| DeepInstinct.Events.events.status | unknown | event status |
+| DeepInstinct.Events.events.close_trigger | unknown | event close trigger |
+| DeepInstinct.Events.events.recorded_device_info | unknown | event device info |
+| DeepInstinct.Events.events.reoccurrence_count | number | event reoccurrence_count |
 
 ##### Command Example
+
 ```!deepinstinct-get-events```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Events": [
@@ -587,7 +600,9 @@ Get all events. Max events in response can be 50, use first_event_id parameter t
 ```
 
 ##### Human Readable Output
+
 ### Events
+
 |action|certificate_thumbprint|certificate_vendor_name|close_timestamp|close_trigger|comment|deep_classification|device_id|file_archive_hash|file_hash|file_size|file_status|file_type|id|insertion_timestamp|last_action|last_reoccurrence|model|msp_id|msp_name|path|recorded_device_info|reoccurrence_count|sandbox_status|status|tenant_id|tenant_name|threat_severity|timestamp|trigger|type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | PREVENTED |  |  | 2020-04-22T10:27:45.391625Z | CLOSED_BY_ADMIN |  |  | 1 | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | d1838b541ff7ffe6489d120d89dfa855665fd2c708491f336c7267069387053f | 18127052 | NOT_UPLOADED | ZIP | 1 | 2020-04-09T14:49:41.170331Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file1.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:39.408405_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:41.154850Z | BRAIN | STATIC_ANALYSIS |
@@ -601,36 +616,38 @@ Get all events. Max events in response can be 50, use first_event_id parameter t
 | DETECTED |  |  | 2020-04-12T10:12:45.428138Z | CLOSED_BY_ADMIN |  |  | 9 | fbf76ae6c929d5b094e376e93ef7486f0527a4060c09f0dd1ebaf073b21dd81d | fbf76ae6c929d5b094e376e93ef7486f0527a4060c09f0dd1ebaf073b21dd81d | 11929486 | NOT_UPLOADED | ZIP | 9 | 2020-04-09T14:49:46.515957Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file8.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:45.906650_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:46.510849Z | BRAIN | STATIC_ANALYSIS |
 | DETECTED |  |  | 2020-04-12T09:41:19.991511Z | CLOSED_BY_ADMIN |  |  | 10 | 0a733f0b309cc330641a1205b928ae80cfd1f129d8c5df2e03f5cde13215b4b2 | 0a733f0b309cc330641a1205b928ae80cfd1f129d8c5df2e03f5cde13215b4b2 | 18723521 | NOT_UPLOADED | ZIP | 10 | 2020-04-09T14:49:47.192314Z |  |  | FileEvent | 1 | MSP 1 | c:\temp\file9.exe | os: WINDOWS mac_address: 00:00:00:00:00:00 hostname: Mock_2020-04-09 17:49:46.533149_1 tag:  group_name: Windows Default Group policy_name: Windows Default Policy tenant_name: Tenant 1 | 0 | NOT_READY_TO_GENERATE | CLOSED | 1 | Tenant 1 | NONE | 2020-04-09T14:49:47.187327Z | BRAIN | STATIC_ANALYSIS |
 
-
 ### 3. deepinstinct-get-all-groups
+
 ---
 get all groups
+
 ##### Base Command
 
 `deepinstinct-get-all-groups`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| DeepInstinct.Groups.ID | number | group id | 
-| DeepInstinct.Groups.os | string | group operation system | 
-| DeepInstinct.Groups.name | string | group name | 
-| DeepInstinct.Groups.policy_id | number | group policy ID | 
-| DeepInstinct.Groups.is_default_group | boolean | True if group is a default group, false otherwise | 
-| DeepInstinct.Groups.msp_name | string | msp name | 
-| DeepInstinct.Groups.msp_id | number | msp ID | 
-
+| DeepInstinct.Groups.ID | number | group id |
+| DeepInstinct.Groups.os | string | group operation system |
+| DeepInstinct.Groups.name | string | group name |
+| DeepInstinct.Groups.policy_id | number | group policy ID |
+| DeepInstinct.Groups.is_default_group | boolean | True if group is a default group, false otherwise |
+| DeepInstinct.Groups.msp_name | string | msp name |
+| DeepInstinct.Groups.msp_id | number | msp ID |
 
 ##### Command Example
+
 ```!deepinstinct-get-all-groups first_event_id=0```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Groups": [
@@ -694,7 +711,9 @@ get all groups
 ```
 
 ##### Human Readable Output
+
 ### Groups
+
 |id|is_default_group|msp_id|msp_name|name|os|policy_id|
 |---|---|---|---|---|---|---|
 | 1 | true | 1 | MSP 1 | Android Default Group | ANDROID | 1 |
@@ -704,35 +723,37 @@ get all groups
 | 5 | true | 1 | MSP 1 | Chrome OS Default Group | CHROME | 5 |
 | 6 | false | 1 | MSP 1 | Test | WINDOWS | 3 |
 
-
 ### 4. deepinstinct-get-all-policies
+
 ---
 get all policies
+
 ##### Base Command
 
 `deepinstinct-get-all-policies`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-
 
 ##### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| DeepInstinct.Policies.ID | number | policy ID | 
-| DeepInstinct.Policies.name | string | policy name | 
-| DeepInstinct.Policies.os | string | policy operating system | 
-| DeepInstinct.Policies.is_default_policy | boolean | True if policy is a default policy, False otherwise | 
-| DeepInstinct.Policies.msp_id | number | msp ID | 
-| DeepInstinct.Policies.msp_name | string | msp name | 
-
+| DeepInstinct.Policies.ID | number | policy ID |
+| DeepInstinct.Policies.name | string | policy name |
+| DeepInstinct.Policies.os | string | policy operating system |
+| DeepInstinct.Policies.is_default_policy | boolean | True if policy is a default policy, False otherwise |
+| DeepInstinct.Policies.msp_id | number | msp ID |
+| DeepInstinct.Policies.msp_name | string | msp name |
 
 ##### Command Example
+
 ```!deepinstinct-get-all-policies```
 
 ##### Context Example
+
 ```
 {
     "DeepInstinct.Policies": [
@@ -789,7 +810,9 @@ get all policies
 ```
 
 ##### Human Readable Output
+
 ### Policies
+
 |id|is_default_policy|msp_id|msp_name|name|os|
 |---|---|---|---|---|---|
 | 2 | true | 1 | MSP 1 | iOS Default Policy | IOS |
@@ -799,218 +822,253 @@ get all policies
 | 6 | false | 1 | MSP 1 | testPolicy | WINDOWS |
 | 1 | true | 1 | MSP 1 | Android Default Policy | ANDROID |
 
-
 ### 5. deepinstinct-add-hash-to-blacklist
+
 ---
 add file hash to block list
+
 ##### Base Command
 
 `deepinstinct-add-hash-to-blacklist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| policy_id | policy ID | Required | 
-| file_hash | file hash | Required | 
-| comment | Optional, add comment to hash field | Optional | 
-
+| policy_id | policy ID | Required |
+| file_hash | file hash | Required |
+| comment | Optional, add comment to hash field | Optional |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-add-hash-to-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00 policy_id=6 comment=mycomment```
 
 ##### Human Readable Output
+
 ok
 
 ### 6. deepinstinct-add-hash-to-whitelist
+
 ---
 add file hash to allow list
+
 ##### Base Command
 
 `deepinstinct-add-hash-to-whitelist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| policy_id | policy ID | Required | 
-| file_hash | file hash | Required | 
-| comment | Optional, add comment to hash field | Optional | 
-
+| policy_id | policy ID | Required |
+| file_hash | file hash | Required |
+| comment | Optional, add comment to hash field | Optional |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-add-hash-to-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww00 policy_id=6 comment=mycomment```
 
 ##### Human Readable Output
+
 ok
 
 ### 7. deepinstinct-remove-hash-from-blacklist
+
 ---
 remove file hash from block list
+
 ##### Base Command
 
 `deepinstinct-remove-hash-from-blacklist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| policy_id | policy ID | Required | 
-| file_hash | file hash | Required | 
-
+| policy_id | policy ID | Required |
+| file_hash | file hash | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-remove-hash-from-blacklist file_hash=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00 policy_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 8. deepinstinct-remove-hash-from-whitelist
+
 ---
 remove file hash from allow list
+
 ##### Base Command
 
 `deepinstinct-remove-hash-from-whitelist`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| policy_id | policy ID | Required | 
-| file_hash | file hash | Required | 
-
+| policy_id | policy ID | Required |
+| file_hash | file hash | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-remove-hash-from-whitelist file_hash=wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww00 policy_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 9. deepinstinct-add-devices-to-group
+
 ---
 add multiple devices to group
+
 ##### Base Command
 
 `deepinstinct-add-devices-to-group`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| group_id | group ID | Required | 
-| device_ids | comma separated devices ids | Required | 
-
+| group_id | group ID | Required |
+| device_ids | comma separated devices ids | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-add-devices-to-group device_ids=1 group_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 10. deepinstinct-remove-devices-from-group
+
 ---
 remove list of devices from group
+
 ##### Base Command
 
 `deepinstinct-remove-devices-from-group`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| group_id | group ID to remove from | Required | 
-| device_ids | comma separeted list of device ids to remove | Required | 
-
+| group_id | group ID to remove from | Required |
+| device_ids | comma separeted list of device ids to remove | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-remove-devices-from-group device_ids=1 group_id=6```
 
 ##### Human Readable Output
+
 ok
 
 ### 11. deepinstinct-delete-files-remotely
+
 ---
 delete multiple files remotely
+
 ##### Base Command
 
 `deepinstinct-delete-files-remotely`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| event_ids | comma separeted list of event ids | Required | 
-
+| event_ids | comma separeted list of event ids | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-delete-files-remotely event_ids=1```
 
 ##### Human Readable Output
+
 ok
 
 ### 12. deepinstinct-terminate-processes
+
 ---
 terminate list of processes
+
 ##### Base Command
 
 `deepinstinct-terminate-processes`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| event_ids | comma separeted list of event ids | Required | 
-
+| event_ids | comma separeted list of event ids | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-terminate-processes event_ids=1,2```
 
 ##### Human Readable Output
+
 ok
 
 ### 13. deepinstinct-close-events
+
 ---
 close list of events
+
 ##### Base Command
 
 `deepinstinct-close-events`
+
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| event_ids | comma separeted list of event ids | Required | 
-
+| event_ids | comma separeted list of event ids | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!deepinstinct-close-events event_ids=1```
 
 ##### Human Readable Output
+
 ok

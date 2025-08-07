@@ -11,7 +11,7 @@
                 },
                 "items": [
                     {
-                        "_id": "60eed3768a037f93418709e4",
+                        "key": "60eed3768a037f93418709e4",
                         "assetBasicInfo": {
                             "domain": "Demo-domain",
                             "name": "XLAN-15",
@@ -39,7 +39,7 @@
                         "url": "https://app.lansweeper.com/api-demo-data-v2/asset/MTUtQXNzZXQtZjg3ZGY4OTEtZDZlZC00MmM4LWE4ZjEtY2QyZjEwZWJhNWRl/summary"
                     },
                     {
-                        "_id": "60eed3968a037f9341883d33",
+                        "key": "60eed3968a037f9341883d33",
                         "assetBasicInfo": {
                             "domain": "Demo-domain",
                             "name": "XLAN-499",

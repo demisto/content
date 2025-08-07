@@ -1,4 +1,4 @@
-var URI_PREFIX = '/services/data/v39.0/';
+var URI_PREFIX = '/services/data/v63.0/';
 var SESSION_DATA = '';
 
 function getNewToken() {

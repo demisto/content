@@ -7,9 +7,9 @@ def main():
     SCHEDULE_TASK_ID_LABAL = "ScheduleTaskID"
 
     dArgs = demisto.args()
-    dArgs['command'] = '!ImpSfRevokeUnaccessedDevices'
+    dArgs["command"] = "!ImpSfRevokeUnaccessedDevices"
 
-    res = demisto.executeCommand('scheduleEntry', dArgs)
+    res = demisto.executeCommand("scheduleEntry", dArgs)
     if isError(res[0]):
         demisto.results(res)
     else:
@@ -19,5 +19,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

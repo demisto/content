@@ -9,7 +9,7 @@ RED_HTML_STYLE = "'color:#b81d1d;font-size:48px;padding: 60px; text-align:center
 
 
 def main():
-    query = demisto.context().get('OverallScore')
+    query = demisto.context().get("OverallScore")
 
     if not query:
         html = f"<div style={GREEN_HTML_STYLE}0/100<br>No suspicious strings found</div>"
@@ -25,11 +25,7 @@ def main():
         query = "100"
         html = f"<div style={RED_HTML_STYLE}{int(query)}/100</div>"
 
-    return_results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
-        'Contents': html
-    })
+    return_results({"ContentsFormat": formats["html"], "Type": entryTypes["note"], "Contents": html})
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

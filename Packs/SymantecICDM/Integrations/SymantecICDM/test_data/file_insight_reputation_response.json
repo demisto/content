@@ -1,0 +1,24 @@
+{
+    "file": "eec3f761f7eabe9ed569f39e896be24c9bbb8861b15dbde1b3d539505cd9dd8d",
+    "firstSeen": "2020-12-01",
+    "lastSeen": "2020-12-01",
+    "reputation": "BAD",
+    "prevalence": "LessThanHundred",
+    "targetOrgs": {
+      "topCountries": [
+        "us,in"
+      ],
+      "topIndustries": [
+        "government,tecnology"
+      ]
+    },
+    "actors": [
+      "Waterbug"
+    ],
+    "associatedReferences": [
+      {
+        "url": "https://threat-landscape-bulletin.broadcom.com/item/48e7388e-caca-417e-907d-b81a5665503d",
+        "description": "New backdoor used in espionage campaigns"
+      }
+    ]
+  }

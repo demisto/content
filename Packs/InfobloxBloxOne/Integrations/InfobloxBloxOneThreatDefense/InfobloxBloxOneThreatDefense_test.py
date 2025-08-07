@@ -1,15 +1,16 @@
-from InfobloxBloxOneThreatDefense import *
-from pathlib import Path
-import pytest
 import json
+from pathlib import Path
+
+import pytest
 from freezegun import freeze_time
+from InfobloxBloxOneThreatDefense import *
 
 TEST_PATH = Path(__file__).parent / "test_data"
 
 
 def load_json_file(file_description):
     file_path = TEST_PATH / f"{file_description}.json"
-    with open(file_path, "r") as f:
+    with open(file_path) as f:
         return f.read()
 
 
@@ -25,21 +26,13 @@ def mock_results(mocker):
 
 @pytest.fixture(autouse=True)
 def mock_demisto_version(mocker):
-    return mocker.patch.object(
-        demisto, "demistoVersion",
-        return_value={
-            'version': '6.5.0',
-            'buildNumber': '12345'
-        }
-    )
+    return mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
 
 
 def patch_command_args_and_params(mocker, command, args):
     mocker.patch.object(demisto, "args", return_value=args)
     mocker.patch.object(demisto, "command", return_value=command)
-    mocker.patch.object(
-        demisto, "params", return_value={"credentials": {"password": ""}}
-    )
+    mocker.patch.object(demisto, "params", return_value={"credentials": {"password": ""}})
 
 
 class TestE2E:
@@ -51,17 +44,12 @@ class TestE2E:
         )
         res_list = ["dns", "geo", "ptr", "whois", "ssl_cert", "urlhaus"]
         main()
-        assert (
-            mock_results.call_args[0][0]["EntryContext"]["BloxOneTD"]["DossierSource"]
-            == res_list
-        )
+        assert mock_results.call_args[0][0]["EntryContext"]["BloxOneTD"]["DossierSource"] == res_list
         assert mock_results.call_args[0][0]["Contents"]["DossierSource"] == res_list
         assert request_call.called_once
 
     def test_lookalike_domain_list_command(self, requests_mock, mocker, mock_results):
-        patch_command_args_and_params(
-            mocker, "bloxone-td-lookalike-domain-list", {"target_domain": "test.com"}
-        )
+        patch_command_args_and_params(mocker, "bloxone-td-lookalike-domain-list", {"target_domain": "test.com"})
         request_call = requests_mock.get(
             "https://csp.infoblox.com/api/tdlad/v1/lookalike_domains",
             text=load_json_file("bloxone-td-lookalike-domain-list"),
@@ -69,19 +57,12 @@ class TestE2E:
 
         main()
         assert request_call.called_once
-        assert (
-            request_call.request_history[0].qs["_filter"][0].startswith("target_domain")
-        )
+        assert request_call.request_history[0].qs["_filter"][0].startswith("target_domain")
         raw = mock_results.call_args[0][0]["Contents"]
         assert raw
-        assert (
-            mock_results.call_args[0][0]["EntryContext"]["BloxOneTD.LookalikeDomain"]
-            == raw
-        )
+        assert mock_results.call_args[0][0]["EntryContext"]["BloxOneTD.LookalikeDomain"] == raw
 
-    def test_lookalike_domain_list_command_with_invalid_args(
-        self, mocker, mock_results
-    ):
+    def test_lookalike_domain_list_command_with_invalid_args(self, mocker, mock_results):
         patch_command_args_and_params(
             mocker,
             "bloxone-td-lookalike-domain-list",
@@ -90,10 +71,7 @@ class TestE2E:
         with pytest.raises(SystemExit):
             main()
         assert mock_results.call_args[0][0]["Type"] == 4
-        assert (
-            "Exactly one of them, more than one is argument is not accepted"
-            in mock_results.call_args[0][0]["Contents"]
-        )
+        assert "Exactly one of them, more than one is argument is not accepted" in mock_results.call_args[0][0]["Contents"]
 
     def test_dossier_lookup_get_command(self, requests_mock, mocker, mock_results):
         job_id = "c924d233-ddeb-8877-1234-fedd6a9bb070"
@@ -133,9 +111,7 @@ class TestE2E:
         assert polling_args["timeout"] == 590
         assert pending_request_mock.call_count == 1
 
-        patch_command_args_and_params(
-            mocker, "bloxone-td-dossier-lookup-get", polling_args
-        )
+        patch_command_args_and_params(mocker, "bloxone-td-dossier-lookup-get", polling_args)
 
         # second time the command is running (second poll)
         main()
@@ -167,17 +143,15 @@ class TestE2E:
             main()
 
         assert mock_results.call_args[0][0]["Type"] == 4
-        assert "authentication error" == mock_results.call_args[0][0]["Contents"]
+        assert mock_results.call_args[0][0]["Contents"] == "authentication error"
 
     def test_command_test_module(self, requests_mock, mocker, mock_results):
         patch_command_args_and_params(mocker, "test-module", {})
-        request_call = requests_mock.get(
-            "https://csp.infoblox.com/tide/api/services/intel/lookup/sources", text="{}"
-        )
+        request_call = requests_mock.get("https://csp.infoblox.com/tide/api/services/intel/lookup/sources", text="{}")
         main()
 
         assert request_call.called_once
-        assert "ok" == mock_results.call_args[0][0]
+        assert mock_results.call_args[0][0] == "ok"
 
     def test_not_implemented_command(self, mocker):
         patch_command_args_and_params(mocker, "not-implemented-command", {})
@@ -207,9 +181,7 @@ class TestBloxOneTDClient:
             text=load_json_file("bloxone-td-lookalike-domain-list"),
         )
         blox_client.lookalike_domain_list(user_filter="test-filter")
-        assert (
-            "test-filter" == lookalike_request_mock.request_history[0].qs["_filter"][0]
-        )
+        assert lookalike_request_mock.request_history[0].qs["_filter"][0] == "test-filter"
 
     def test_lookalike_domain_list_with_target_domain(self, blox_client, requests_mock):
         lookalike_request_mock = requests_mock.get(
@@ -217,10 +189,7 @@ class TestBloxOneTDClient:
             text=load_json_file("bloxone-td-lookalike-domain-list"),
         )
         blox_client.lookalike_domain_list(target_domain="target.domain")
-        assert (
-            'target_domain=="target.domain"'
-            == lookalike_request_mock.request_history[0].qs["_filter"][0]
-        )
+        assert lookalike_request_mock.request_history[0].qs["_filter"][0] == 'target_domain=="target.domain"'
 
     def test_lookalike_domain_list_with_detected_at(self, blox_client, requests_mock):
         lookalike_request_mock = requests_mock.get(
@@ -228,59 +197,39 @@ class TestBloxOneTDClient:
             text=load_json_file("bloxone-td-lookalike-domain-list"),
         )
         blox_client.lookalike_domain_list(detected_at="2023-02-21T00:00:00Z")
-        assert (
-            'detected_at>="2023-02-21T00:00:00Z"'.lower()
-            == lookalike_request_mock.request_history[0].qs["_filter"][0]
-        )
+        assert 'detected_at>="2023-02-21T00:00:00Z"'.lower() == lookalike_request_mock.request_history[0].qs["_filter"][0]
 
     def test_dossier_lookup_get_create(self, blox_client, requests_mock):
         lookup_get_create_request_mock = requests_mock.get(
             "https://csp.infoblox.com/tide/api/services/intel/lookup/indicator/ip",
             text=load_json_file("bloxone-td-dossier-lookup-get_create-job"),
         )
-        job_id = blox_client.dossier_lookup_get_create(
-            indicator_type="ip", value="11.22.33.44"
-        )
-        assert (
-            "11.22.33.44"
-            in lookup_get_create_request_mock.request_history[0].qs["value"]
-        )
+        job_id = blox_client.dossier_lookup_get_create(indicator_type="ip", value="11.22.33.44")
+        assert "11.22.33.44" in lookup_get_create_request_mock.request_history[0].qs["value"]
         assert job_id == "c924d233-ddeb-8877-1234-fedd6a9bb070"
 
-    def test_dossier_lookup_get_is_done_check_when_not_done(
-        self, blox_client, requests_mock
-    ):
+    def test_dossier_lookup_get_is_done_check_when_not_done(self, blox_client, requests_mock):
         requests_mock.get(
             "https://csp.infoblox.com/tide/api/services/intel/lookup/jobs/c924d233-ddeb-8877-1234-fedd6a9bb070/pending",
             text=json.dumps({"state": "created", "status": "pending"}),
         )
-        is_done = blox_client.dossier_lookup_get_is_done(
-            "c924d233-ddeb-8877-1234-fedd6a9bb070"
-        )
+        is_done = blox_client.dossier_lookup_get_is_done("c924d233-ddeb-8877-1234-fedd6a9bb070")
         assert is_done is False
 
-    def test_dossier_lookup_get_is_done_check_when_job_failed(
-        self, blox_client, requests_mock
-    ):
+    def test_dossier_lookup_get_is_done_check_when_job_failed(self, blox_client, requests_mock):
         requests_mock.get(
             "https://csp.infoblox.com/tide/api/services/intel/lookup/jobs/c924d233-ddeb-8877-1234-fedd6a9bb070/pending",
             text=json.dumps({"state": "completed", "status": "error"}),
         )
         with pytest.raises(DemistoException):
-            blox_client.dossier_lookup_get_is_done(
-                "c924d233-ddeb-8877-1234-fedd6a9bb070"
-            )
+            blox_client.dossier_lookup_get_is_done("c924d233-ddeb-8877-1234-fedd6a9bb070")
 
-    def test_dossier_lookup_get_is_done_check_when_done(
-        self, blox_client, requests_mock
-    ):
+    def test_dossier_lookup_get_is_done_check_when_done(self, blox_client, requests_mock):
         requests_mock.get(
             "https://csp.infoblox.com/tide/api/services/intel/lookup/jobs/c924d233-ddeb-8877-1234-fedd6a9bb070/pending",
             text=json.dumps({"state": "completed", "status": "success"}),
         )
-        is_done = blox_client.dossier_lookup_get_is_done(
-            "c924d233-ddeb-8877-1234-fedd6a9bb070"
-        )
+        is_done = blox_client.dossier_lookup_get_is_done("c924d233-ddeb-8877-1234-fedd6a9bb070")
         assert is_done is True
 
     def test_dossier_lookup_get_results(self, blox_client, requests_mock):
@@ -294,9 +243,7 @@ class TestBloxOneTDClient:
 
 class TestUnitTests:
     def test_dossier_lookup_task_output(self):
-        task_data = json.loads(load_json_file("bloxone-td-dossier-lookup-get_results"))[
-            "results"
-        ][0]
+        task_data = json.loads(load_json_file("bloxone-td-dossier-lookup-get_results"))["results"][0]
         expected_outputs = {
             "Source": "urlhaus",
             "Target": "11.22.33.44",
@@ -319,9 +266,7 @@ class TestUnitTests:
         "args",
         data_test_validate_and_format_lookalike_domain_list_args_with_multiple_filters,
     )
-    def test_validate_and_format_lookalike_domain_list_args_with_multiple_filters(
-        self, args
-    ):
+    def test_validate_and_format_lookalike_domain_list_args_with_multiple_filters(self, args):
         with pytest.raises(DemistoException):
             validate_and_format_lookalike_domain_list_args(args)
 
@@ -334,9 +279,7 @@ class TestUnitTests:
         "args",
         data_test_validate_and_format_lookalike_domain_list_args_with_a_single_filter,
     )
-    def test_validate_and_format_lookalike_domain_list_args_with_a_single_filter(
-        self, args
-    ):
+    def test_validate_and_format_lookalike_domain_list_args_with_a_single_filter(self, args):
         assert validate_and_format_lookalike_domain_list_args(args) == args
 
     data_test_validate_and_format_lookalike_domain_list_args_with_detected_at_filter = [
@@ -350,12 +293,8 @@ class TestUnitTests:
         "detected_at, expected",
         data_test_validate_and_format_lookalike_domain_list_args_with_detected_at_filter,
     )
-    def test_validate_and_format_lookalike_domain_list_args_with_detected_at_filter(
-        self, detected_at, expected
-    ):
-        out_args = validate_and_format_lookalike_domain_list_args(
-            {"detected_at": detected_at}
-        )
+    def test_validate_and_format_lookalike_domain_list_args_with_detected_at_filter(self, detected_at, expected):
+        out_args = validate_and_format_lookalike_domain_list_args({"detected_at": detected_at})
         assert out_args["detected_at"] == expected
 
     def test_validate_and_format_lookalike_domain_list_args_with_invalid_detected_at_filter(
@@ -373,9 +312,7 @@ class TestUnitTests:
         assert "\n|Task Id|Type|Target|Source|\n" in command_results.readable_output
 
     def test_dossier_lookup_get_schedule_polling_result_with_first_time_true(self):
-        command_results = dossier_lookup_get_schedule_polling_result(
-            {"job_id": "1"}, first_time=True
-        )
+        command_results = dossier_lookup_get_schedule_polling_result({"job_id": "1"}, first_time=True)
         assert command_results.readable_output
 
     def test_dossier_lookup_get_schedule_polling_result_without_first_time(self):
@@ -385,19 +322,11 @@ class TestUnitTests:
     def test_dossier_lookup_get_schedule_polling_result_polling_args_default(self):
         command_results = dossier_lookup_get_schedule_polling_result({"job_id": "1"})
         assert command_results.scheduled_command._args["timeout"] == 590
-        assert (
-            command_results.scheduled_command._command
-            == "bloxone-td-dossier-lookup-get"
-        )
+        assert command_results.scheduled_command._command == "bloxone-td-dossier-lookup-get"
 
     def test_dossier_lookup_get_schedule_polling_result_polling_args(self):
-        command_results = dossier_lookup_get_schedule_polling_result(
-            {"job_id": "1", "interval_in_seconds": 30, "timeout": 300}
-        )
+        command_results = dossier_lookup_get_schedule_polling_result({"job_id": "1", "interval_in_seconds": 30, "timeout": 300})
         assert command_results.scheduled_command._args["timeout"] == 270
         assert int(command_results.scheduled_command._next_run) == 30
         assert int(command_results.scheduled_command._timeout) == 300
-        assert (
-            command_results.scheduled_command._command
-            == "bloxone-td-dossier-lookup-get"
-        )
+        assert command_results.scheduled_command._command == "bloxone-td-dossier-lookup-get"

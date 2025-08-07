@@ -40,8 +40,8 @@ def calculate_ssim(image_path1, image_path2):
 def main():
     try:
         # Get the input parameters
-        image_path1 = (demisto.getFilePath(demisto.args().get('org_image')))['path']
-        image_path2 = (demisto.getFilePath(demisto.args().get('sec_image')))['path']
+        image_path1 = (demisto.getFilePath(demisto.args().get("org_image")))["path"]
+        image_path2 = (demisto.getFilePath(demisto.args().get("sec_image")))["path"]
 
         # Calculate MSE and SSIM
         mse = calculate_mse(image_path1, image_path2)
@@ -49,18 +49,13 @@ def main():
 
         if mse is not None and ssim is not None:
             # Prepare the results
-            results = {
-                "MSE": mse,
-                "SSIM": ssim
-            }
+            results = {"MSE": mse, "SSIM": ssim}
 
             # Create a human-readable output
             human_readable = f"Image Similarity Comparison Results:\nMSE: {mse}\nSSIM: {ssim}"
 
             # Create a context output
-            context = {
-                "ImageSimilarity": results
-            }
+            context = {"ImageSimilarity": results}
 
             return_outputs(human_readable, context, results)
         else:
@@ -70,5 +65,5 @@ def main():
         return_error(f"An error occurred: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

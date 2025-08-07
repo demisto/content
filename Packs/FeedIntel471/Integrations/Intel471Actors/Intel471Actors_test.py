@@ -3,18 +3,24 @@ import Intel471Actors as feed
 
 BUILD_PARAM_DICT_DATA = [
     (
-        {'credentials': {'identifier': 'username', 'password': 'apikey'}, 'insecure': True,
-         'fetch_time': '10 minutes', 'proxy': False},  # input
-        'https://api.intel471.com/v1/actors?actor=*'  # expected
-
+        {
+            "credentials": {"identifier": "username", "password": "apikey"},
+            "insecure": True,
+            "fetch_time": "10 minutes",
+            "proxy": False,
+        },  # input
+        "https://api.intel471.com/v1/actors?actor=*",  # expected
     ),
     (
-        {'credentials': {'identifier': 'username', 'password': 'apikey'}, 'insecure': True,
-         'fetch_time': '10 minutes', 'proxy': False, 'actor': 'search_word'},  # input
-        'https://api.intel471.com/v1/actors?actor=search_word'  # expected
-
+        {
+            "credentials": {"identifier": "username", "password": "apikey"},
+            "insecure": True,
+            "fetch_time": "10 minutes",
+            "proxy": False,
+            "actor": "search_word",
+        },  # input
+        "https://api.intel471.com/v1/actors?actor=search_word",  # expected
     ),
-
 ]
 
 

@@ -63,8 +63,9 @@ def test_build_argus_priority_from_min_severity():
 
 
 def test_date_time_to_epoch_milliseconds_datetime():
-    from ArgusManagedDefence import date_time_to_epoch_milliseconds
     import datetime
+
+    from ArgusManagedDefence import date_time_to_epoch_milliseconds
 
     date = datetime.datetime(2000, 1, 1, 00, 00, 00)
     timestamp = date.timestamp() * 1000
@@ -72,8 +73,9 @@ def test_date_time_to_epoch_milliseconds_datetime():
 
 
 def test_date_time_to_epoch_milliseconds_str():
-    from ArgusManagedDefence import date_time_to_epoch_milliseconds
     import datetime
+
+    from ArgusManagedDefence import date_time_to_epoch_milliseconds
 
     timestamp = int(datetime.datetime(2000, 1, 1, 00, 00, 00).timestamp() * 1000)
     assert date_time_to_epoch_milliseconds("2000-01-01 00:00:00") == timestamp
@@ -92,8 +94,9 @@ def test_date_time_to_epoch_milliseconds_empty():
 
 
 def test_pretty_print_date_datetime():
-    from ArgusManagedDefence import pretty_print_date, PRETTY_DATE_FORMAT
     import datetime
+
+    from ArgusManagedDefence import PRETTY_DATE_FORMAT, pretty_print_date
 
     date = datetime.datetime(2000, 1, 1, 00, 00, 00)
     assert pretty_print_date(date) == date.strftime(PRETTY_DATE_FORMAT)
@@ -232,10 +235,8 @@ def test_get_remote_data_command(requests_mock):
     }
     result = get_remote_data_command(args)
     assert metadata.get("data").items() <= result.mirrored_object.items()
-    assert "xsoar_mirroring" in result.mirrored_object.keys()
-    assert (
-        xsoar_mirroring.items() == result.mirrored_object.get("xsoar_mirroring").items()
-    )
+    assert "xsoar_mirroring" in result.mirrored_object
+    assert xsoar_mirroring.items() == result.mirrored_object.get("xsoar_mirroring").items()
     assert {"severity": 1} in result.entries
     assert {"arguscasestatus": "pendingCustomer"} in result.entries
 

@@ -6,9 +6,7 @@ cafcresult = incident[0].get("CustomFields", {}).get("cafcresultraw", {})
 if type(cafcresult) is not dict:
     cafcresult = json.loads(cafcresult)
 total = len(cafcresult)
-non_compliant_count = (
-    len([x for x in cafcresult if x["Result"] != "Achieved"]) if cafcresult else None
-)
+non_compliant_count = len([x for x in cafcresult if x["Result"] != "Achieved"]) if cafcresult else None
 medium = int(round(total / 3, 0))
 high = int(round(total / 3 * 2, 0))
 data = {

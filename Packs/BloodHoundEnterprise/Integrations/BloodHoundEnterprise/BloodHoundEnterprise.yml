@@ -62,7 +62,7 @@ script:
       required: false
     description: Gets events from BloodHound Enterprise.
     name: bloodhound-get-events
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: '-'
@@ -70,6 +70,7 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

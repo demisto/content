@@ -16,6 +16,7 @@ configuration:
   type: 9
   required: true
   displaypassword: Client Secret
+  section: Collect
 - defaultvalue: 50000
   section: Collect
   display: Max number of events per fetch
@@ -61,7 +62,7 @@ script:
     description: Gets events from SailPoint IdentityNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding API request limitations.
 
     name: identitynow-get-events
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.3982393
   isfetchevents: true
   runonce: false
   script: '-'
@@ -69,6 +70,13 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+- agentix
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

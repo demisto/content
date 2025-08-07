@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     try:
-        labels = demisto.incident().get('labels', [])
+        labels = demisto.incident().get("labels", [])
         if labels:
             readable = tableToMarkdown("Alert Information", labels)
         else:
@@ -12,8 +12,8 @@ def main():
 
         return_results(CommandResults(readable_output=readable, ignore_auto_extract=True))
     except Exception as ex:
-        return_results(f'Failed to execute BaseScript. Error: {str(ex)}')
+        return_results(f"Failed to execute BaseScript. Error: {ex!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

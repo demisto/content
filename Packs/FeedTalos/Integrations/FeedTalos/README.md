@@ -2,7 +2,6 @@ Use the Talos Feed integration to get indicators from the feed.
 
 ## Configure Talos Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | Fetch indicators | False |
@@ -21,32 +20,35 @@ Use the Talos Feed integration to get indicators from the feed.
 | feed | Fetch indicators | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### talos-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `talos-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 10. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!talos-get-indicators```
 
 #### Human Readable Output
 
-| value	           | type |
+| value            | type |
 | ---------------- | ---  |
-| 60.249.23.235	   |  IP  |
+| 60.249.23.235    |  IP  |

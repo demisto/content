@@ -1,13 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # check if this is a new Incident or not
 incident = demisto.incident().get("id")
 
 # if new Incident, the ID will be empty:
 if not incident:
-
     # get the XSOAR IncidentTypesRBAC XSOAR List
     types_list = demisto.executeCommand("getList", {"listName": "IncidentTypesRBAC"})[0]["Contents"]
 
@@ -34,7 +32,7 @@ if not incident:
             # remove duplicates
             allowedTypes = list(set(allowedTypes))
 
-            demisto.results({'hidden': False, 'options': allowedTypes})
+            demisto.results({"hidden": False, "options": allowedTypes})
         except ValueError:
             pass
         except Exception:
@@ -43,4 +41,4 @@ else:
     # if it's an existing Incident, prevent changing the type from the UI.
     # get the current Incident Type, and only return that type.
     incident_type = demisto.incident().get("type")
-    return_results({'hidden': False, 'options': [incident_type]})
+    return_results({"hidden": False, "options": [incident_type]})

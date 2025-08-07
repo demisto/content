@@ -1227,6 +1227,7 @@ tasks:
       ip:
         simple: ${Core.OriginalAlert.event.actor_remote_ip}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1238,7 +1239,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1472,3 +1473,4 @@ tests:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
+- platform

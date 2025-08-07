@@ -1,8 +1,8 @@
-comment: Uses the ssh integration to grab the host server logs.
+comment: Uses the ssh integration to grab the host server logs. This script is supported only on Cortex XSOAR on-prem (version 6.X).
 commonfields:
   id: ServerLogs_docker
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: ServerLogs_docker
 runas: DBotWeakRole
@@ -14,7 +14,6 @@ tags:
 type: python
 fromversion: 6.0.0
 marketplaces:
-- xsoar
-- marketplacev2
+- xsoar_on_prem
 tests:
 - No tests (auto formatted)

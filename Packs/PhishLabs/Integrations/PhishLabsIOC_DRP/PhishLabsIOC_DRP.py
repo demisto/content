@@ -1,11 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 # Std imports
 from datetime import datetime
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
+from typing import Any, AnyStr
+
 import urllib3
 
 # Local imports
@@ -24,16 +26,16 @@ Attributes:
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
 """
-INTEGRATION_NAME = 'PhishLabs IOC - DRP'
-INTEGRATION_COMMAND_NAME = 'phishlabs-ioc-drp'
-INTEGRATION_CONTEXT_NAME = 'PhishLabsIOC'
+INTEGRATION_NAME = "PhishLabs IOC - DRP"
+INTEGRATION_COMMAND_NAME = "phishlabs-ioc-drp"
+INTEGRATION_CONTEXT_NAME = "PhishLabsIOC"
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -41,8 +43,9 @@ class Client(BaseClient):
         """
         return self.get_cases(max_records=2)
 
-    def travel_to_end_date(self, cases_temp: List, params: Dict, end_date: Optional[str], date_field: str, suffix: str) \
-            -> Tuple[List[Any], Dict[Any, Any], int, Optional[datetime]]:
+    def travel_to_end_date(
+        self, cases_temp: list, params: dict, end_date: str | None, date_field: str, suffix: str
+    ) -> tuple[list[Any], dict[Any, Any], int, datetime | None]:
         """Moving index to starting point, if neccery chage cases_temp (more get request)
 
         Args:
@@ -56,19 +59,17 @@ class Client(BaseClient):
             Tuple of (list of cases temp, modified params, index in cases, datetime object of last run in traveling)
         """
         format_time = "%Y-%m-%dT%H:%M:%SZ"
-        last_time: Optional[datetime] = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field),
-                                                                                      format_time)
+        last_time: datetime | None = None if not cases_temp else datetime.strptime(cases_temp[0].get(date_field), format_time)
         end_date_obj: datetime = datetime.strptime(end_date, format_time) if end_date else datetime.now()
 
         index = 0
         while end_date_obj and last_time:
             if end_date_obj < last_time:
                 if len(cases_temp) == index + 1:
-                    params['offset'] += len(cases_temp)
-                    cases_temp = self._http_request('GET',
-                                                    url_suffix=suffix,
-                                                    params=assign_params(**params),
-                                                    timeout=20).get('data', [])
+                    params["offset"] += len(cases_temp)
+                    cases_temp = self._http_request("GET", url_suffix=suffix, params=assign_params(**params), timeout=20).get(
+                        "data", []
+                    )
                     index = 0
                     if not cases_temp:
                         break
@@ -80,9 +81,17 @@ class Client(BaseClient):
 
         return cases_temp, params, index, last_time
 
-    def travel_to_begin_date(self, cases_temp: List, index: int, params: Dict, begin_date: Optional[str],
-                             last_time: Optional[datetime], date_field: str, max_records: Union[str, int], suffix: str) \
-            -> List[Dict[Any, Any]]:
+    def travel_to_begin_date(
+        self,
+        cases_temp: list,
+        index: int,
+        params: dict,
+        begin_date: str | None,
+        last_time: datetime | None,
+        date_field: str,
+        max_records: str | int,
+        suffix: str,
+    ) -> list[dict[Any, Any]]:
         """
 
         Args:
@@ -100,8 +109,8 @@ class Client(BaseClient):
             List of cases filtered by date
         """
         format_time = "%Y-%m-%dT%H:%M:%SZ"
-        begin_date_obj: Optional[datetime] = datetime.strptime(begin_date, format_time) if begin_date else None
-        cases: List = []
+        begin_date_obj: datetime | None = datetime.strptime(begin_date, format_time) if begin_date else None
+        cases: list = []
 
         while cases_temp and len(cases) < int(max_records) and last_time:
             if begin_date_obj:
@@ -114,12 +123,11 @@ class Client(BaseClient):
 
             if len(cases) == max_records:
                 break
-            elif len(cases_temp) == index + 1:
-                params['offset'] += len(cases_temp)
-                cases_temp = self._http_request('GET',
-                                                url_suffix=suffix,
-                                                params=assign_params(**params),
-                                                timeout=20).get('data', [])
+            if len(cases_temp) == index + 1:
+                params["offset"] += len(cases_temp)
+                cases_temp = self._http_request("GET", url_suffix=suffix, params=assign_params(**params), timeout=20).get(
+                    "data", []
+                )
                 index = 0
                 if not cases_temp:
                     break
@@ -128,10 +136,18 @@ class Client(BaseClient):
             last_time = datetime.strptime(cases_temp[index].get(date_field), format_time)
         return cases
 
-    def get_cases(self, status: Optional[str] = None, case_type: Optional[str] = None,
-                  max_records: Union[str, int] = 20, offset: Union[str, int] = 0,
-                  date_field: str = 'dateModified', begin_date: Optional[str] = None,
-                  end_date: Optional[str] = None, query_type: str = '', period: Optional[str] = None) -> Dict:
+    def get_cases(
+        self,
+        status: str | None = None,
+        case_type: str | None = None,
+        max_records: str | int = 20,
+        offset: str | int = 0,
+        date_field: str = "dateModified",
+        begin_date: str | None = None,
+        end_date: str | None = None,
+        query_type: str = "",
+        period: str | None = None,
+    ) -> dict:
         """
         Query the specified kwargs with default parameters if not defined
 
@@ -150,33 +166,23 @@ class Client(BaseClient):
             Response JSON as dictionary
         """
         if period:
-            begin_date, end_date = parse_date_range(date_range=period,
-                                                    date_format='%Y-%m-%dT%H:%M:%SZ')
-        suffix: str = f'/cases/{query_type}' if query_type else '/cases'
-        params: Dict = {
-            'status': status,
-            'type': case_type,
-            'offset': int(offset),
-            'maxRecords': int(max_records)
-        }
-        raw_response: Dict = self._http_request('GET',
-                                                url_suffix=suffix,
-                                                params=assign_params(**params),
-                                                timeout=20)
-        cases_temp: List = raw_response.get('data', [])
+            begin_date, end_date = parse_date_range(date_range=period, date_format="%Y-%m-%dT%H:%M:%SZ")
+        suffix: str = f"/cases/{query_type}" if query_type else "/cases"
+        params: dict = {"status": status, "type": case_type, "offset": int(offset), "maxRecords": int(max_records)}
+        raw_response: dict = self._http_request("GET", url_suffix=suffix, params=assign_params(**params), timeout=20)
+        cases_temp: list = raw_response.get("data", [])
         # About the drop some mean regex right now disable-secrets-detection-start
         cases_temp, params, index, last_time = self.travel_to_end_date(cases_temp, params, end_date, date_field, suffix)
-        cases = self.travel_to_begin_date(cases_temp, index, params, begin_date, last_time, date_field, max_records,
-                                          suffix)
+        cases = self.travel_to_begin_date(cases_temp, index, params, begin_date, last_time, date_field, max_records, suffix)
         # Drops the mic disable-secrets-detection-end
-        raw_response['header']['returnResult'] = len(cases)
-        raw_response['header']['totalResult'] = len(cases)
-        raw_response['header']['queryParams']['maxRecords'] = len(cases)
-        raw_response['data'] = cases
+        raw_response["header"]["returnResult"] = len(cases)
+        raw_response["header"]["totalResult"] = len(cases)
+        raw_response["header"]["queryParams"]["maxRecords"] = len(cases)
+        raw_response["data"] = cases
 
         return raw_response
 
-    def get_case_by_id(self, case_id: str) -> Dict:
+    def get_case_by_id(self, case_id: str) -> dict:
         """Query incident by ID
 
         Args:
@@ -186,15 +192,14 @@ class Client(BaseClient):
             Response JSON as dictionary
         """
         suffix = f"/cases/{case_id}"
-        return self._http_request('GET',
-                                  url_suffix=suffix)
+        return self._http_request("GET", url_suffix=suffix)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 @logger
-def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
+def indicator_ec(indicator: dict, type_ec: AnyStr) -> dict:
     """indicator convert to ec format
     Get an indicator from raw response and concert to demisto entry context format
 
@@ -205,60 +210,60 @@ def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
     Returns:
          indicator entry context
     """
-    ec: Dict = {}
-    if type_ec == 'AttackSources':
+    ec: dict = {}
+    if type_ec == "AttackSources":
         ec = {
-            'URL': indicator.get('url'),
-            'UrlType': indicator.get('urlType'),
-            'IP': indicator.get('ipAddress'),
-            'ISP': indicator.get('isp'),
-            'Country': indicator.get('country'),
-            'TargetedBrands': indicator.get('targetedBrands'),
-            'FQDN': indicator.get('fqdn'),
-            'Domain': indicator.get('domain'),
-            'IsMaliciousDomain': indicator.get('isMaliciousDomain'),
-            'WhoIs': {
-                'Registrant': indicator.get('whois', {}).get('registrant'),
-                'Registration': {
-                    'Created': indicator.get('whois', {}).get('registration', {}).get('created'),
-                    'Expires': indicator.get('whois', {}).get('registration', {}).get('expires'),
-                    'Updated': indicator.get('whois', {}).get('registration', {}).get('updated'),
-                    'Registrar': indicator.get('whois', {}).get('registration', {}).get('registrar'),
-                    'NameServers': indicator.get('whois', {}).get('name_servers')
+            "URL": indicator.get("url"),
+            "UrlType": indicator.get("urlType"),
+            "IP": indicator.get("ipAddress"),
+            "ISP": indicator.get("isp"),
+            "Country": indicator.get("country"),
+            "TargetedBrands": indicator.get("targetedBrands"),
+            "FQDN": indicator.get("fqdn"),
+            "Domain": indicator.get("domain"),
+            "IsMaliciousDomain": indicator.get("isMaliciousDomain"),
+            "WhoIs": {
+                "Registrant": indicator.get("whois", {}).get("registrant"),
+                "Registration": {
+                    "Created": indicator.get("whois", {}).get("registration", {}).get("created"),
+                    "Expires": indicator.get("whois", {}).get("registration", {}).get("expires"),
+                    "Updated": indicator.get("whois", {}).get("registration", {}).get("updated"),
+                    "Registrar": indicator.get("whois", {}).get("registration", {}).get("registrar"),
+                    "NameServers": indicator.get("whois", {}).get("name_servers"),
                 },
-            }
+            },
         }
-    elif type_ec == 'Attachments':
+    elif type_ec == "Attachments":
         ec = {
-            'ID': indicator.get('id'),
-            'Type': indicator.get('type'),
-            'Description': indicator.get('description'),
-            'DateAdded': indicator.get('dateAdded'),
-            'FileName': indicator.get('fileName'),
-            'FileURL': indicator.get('fileURL')
+            "ID": indicator.get("id"),
+            "Type": indicator.get("type"),
+            "Description": indicator.get("description"),
+            "DateAdded": indicator.get("dateAdded"),
+            "FileName": indicator.get("fileName"),
+            "FileURL": indicator.get("fileURL"),
         }
-    elif type_ec == 'AssociatedURLs':
+    elif type_ec == "AssociatedURLs":
         ec = {
-            'URL': indicator.get('url'),
-            'UrlType': indicator.get('urlType'),
-            'TargetedBrands': indicator.get('targetedBrands'),
-            'WhoIs': {
-                'Registrant': indicator.get(''),
-                'Registration': {
-                    'Created': indicator.get('whois', {}).get('registration', {}).get('created'),
-                    'Expires': indicator.get('whois', {}).get('registration', {}).get('expires'),
-                    'Updated': indicator.get('whois', {}).get('registration', {}).get('updated'),
-                    'Registrar': indicator.get('whois', {}).get('registration', {}).get('registrar'),
-                    'NameServers': indicator.get('whois', {}).get('name_servers')
-                }
-            }
+            "URL": indicator.get("url"),
+            "UrlType": indicator.get("urlType"),
+            "TargetedBrands": indicator.get("targetedBrands"),
+            "WhoIs": {
+                "Registrant": indicator.get(""),
+                "Registration": {
+                    "Created": indicator.get("whois", {}).get("registration", {}).get("created"),
+                    "Expires": indicator.get("whois", {}).get("registration", {}).get("expires"),
+                    "Updated": indicator.get("whois", {}).get("registration", {}).get("updated"),
+                    "Registrar": indicator.get("whois", {}).get("registration", {}).get("registrar"),
+                    "NameServers": indicator.get("whois", {}).get("name_servers"),
+                },
+            },
         }
 
     return assign_params(**ec)
 
 
 @logger
-def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List, List], List]:
+def indicators_to_list_ec(indicators: list, type_ec: AnyStr) -> tuple[list, list] | list:
     """Unpack list of incidents to demisto ec format
     Convert list of incidents from raw response to demisto entry context format lists
 
@@ -268,7 +273,7 @@ def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List
     Returns:
          List of indicators entry context
     """
-    ecs: List = []
+    ecs: list = []
     for indicator in indicators:
         ec = indicator_ec(indicator, type_ec)
         ecs.append(ec)
@@ -276,7 +281,7 @@ def indicators_to_list_ec(indicators: List, type_ec: AnyStr) -> Union[Tuple[List
 
 
 @logger
-def raw_response_to_context(cases: Union[List, Any]) -> List:
+def raw_response_to_context(cases: list | Any) -> list:
     """
     Convert incidents list from raw response to demisto entry context list format
     Args:
@@ -285,52 +290,52 @@ def raw_response_to_context(cases: Union[List, Any]) -> List:
     Returns:
         Entry contexts of phishLabs, emails, files, urls, dbotScores
     """
-    phishlabs_ec: List = []
+    phishlabs_ec: list = []
     for case in cases:
         # PhishLabs entry context
-        phishlabs: Dict = {
-            'CaseID': case.get('caseId'),
-            'Title': case.get('title'),
-            'Description': case.get('description'),
-            'CaseNumber': case.get('caseNumber'),
-            'Resolution': case.get('resolution'),
-            'ResolutionStatus': case.get('resolutionStatus'),
-            'CreatedBy': {
-                'ID': case.get('createdBy', {}).get('id'),
-                'Name': case.get('createdBy', {}).get('name'),
-                'DisplayName': case.get('createdBy', {}).get('displayName')
+        phishlabs: dict = {
+            "CaseID": case.get("caseId"),
+            "Title": case.get("title"),
+            "Description": case.get("description"),
+            "CaseNumber": case.get("caseNumber"),
+            "Resolution": case.get("resolution"),
+            "ResolutionStatus": case.get("resolutionStatus"),
+            "CreatedBy": {
+                "ID": case.get("createdBy", {}).get("id"),
+                "Name": case.get("createdBy", {}).get("name"),
+                "DisplayName": case.get("createdBy", {}).get("displayName"),
             },
-            'Brand': case.get('brand'),
-            'Email': case.get('emailAddress'),
-            'CaseType': case.get('caseType'),
-            'CaseStatus': case.get('caseStatus'),
-            'DateCreated': case.get('dateCreated'),
-            'DateClosed': case.get('dateClosed'),
-            'DateModified': case.get('dateModified'),
-            'Customer': case.get('customer'),
-            'AttackSources': indicators_to_list_ec(indicators=case.get('attackSources', []), type_ec='AttackSources'),
-            'Attachments': indicators_to_list_ec(indicators=case.get('attachments', []), type_ec='Attachments'),
-            'ApplicationName': case.get('applicationName'),
-            'Platform': case.get('platform'),
-            'Severity': case.get('severity'),
-            'Developer': case.get('developer'),
-            'DeveloperWebsite': case.get('developerWebsite'),
-            'ApplicationDescription': case.get('applicationDescripion'),
-            'Language': case.get('language'),
-            'Hardware': case.get('hardware'),
-            'Phone': case.get('phoneNumber'),
-            'AssociatedURLs': indicators_to_list_ec(indicators=case.get('associatedURLs', []), type_ec='AssociatedURLs')
+            "Brand": case.get("brand"),
+            "Email": case.get("emailAddress"),
+            "CaseType": case.get("caseType"),
+            "CaseStatus": case.get("caseStatus"),
+            "DateCreated": case.get("dateCreated"),
+            "DateClosed": case.get("dateClosed"),
+            "DateModified": case.get("dateModified"),
+            "Customer": case.get("customer"),
+            "AttackSources": indicators_to_list_ec(indicators=case.get("attackSources", []), type_ec="AttackSources"),
+            "Attachments": indicators_to_list_ec(indicators=case.get("attachments", []), type_ec="Attachments"),
+            "ApplicationName": case.get("applicationName"),
+            "Platform": case.get("platform"),
+            "Severity": case.get("severity"),
+            "Developer": case.get("developer"),
+            "DeveloperWebsite": case.get("developerWebsite"),
+            "ApplicationDescription": case.get("applicationDescripion"),
+            "Language": case.get("language"),
+            "Hardware": case.get("hardware"),
+            "Phone": case.get("phoneNumber"),
+            "AssociatedURLs": indicators_to_list_ec(indicators=case.get("associatedURLs", []), type_ec="AssociatedURLs"),
         }
         phishlabs_ec.append(assign_params(**phishlabs))
 
     return phishlabs_ec
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 @logger
-def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
+def test_module_command(client: Client, *_) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -344,18 +349,15 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
         DemistoException: If test failed.
     """
     results = client.test_module()
-    if 'data' in results:
-        return None, None, 'ok'
-    raise DemistoException(f'Test module failed, {results}')
+    if "data" in results:
+        return None, None, "ok"
+    raise DemistoException(f"Test module failed, {results}")
 
 
 @logger
 def fetch_incidents_command(
-        client: Client,
-        fetch_time: str,
-        max_records: Union[str, int],
-        date_field: str = 'dateModified',
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+    client: Client, fetch_time: str, max_records: str | int, date_field: str = "dateModified", last_run: str | None = None
+) -> tuple[list[dict[str, Any]], dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -369,31 +371,30 @@ def fetch_incidents_command(
     Returns:
         incidents, new last_run
     """
-    occurred_format = '%Y-%m-%dT%H:%M:%SZ'
+    occurred_format = "%Y-%m-%dT%H:%M:%SZ"
     if not last_run:
-        datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
-                                                    date_format=occurred_format)
+        datetime_new_last_run, _ = parse_date_range(date_range=fetch_time, date_format=occurred_format)
     else:
         datetime_new_last_run = last_run
-    raw_response = client.get_cases(begin_date=datetime_new_last_run,
-                                    date_field=date_field,
-                                    max_records=max_records)
-    cases_raw: List = raw_response.get('data', [])
+    raw_response = client.get_cases(begin_date=datetime_new_last_run, date_field=date_field, max_records=max_records)
+    cases_raw: list = raw_response.get("data", [])
     cases_report = []
     if cases_raw:
         datetime_new_last_run = cases_raw[0].get(date_field)
         for case in cases_raw:
-            cases_report.append({
-                'name': f"{INTEGRATION_NAME}: {case.get('caseId')}",
-                'occurred': case.get(date_field),
-                'rawJSON': json.dumps(case)
-            })
+            cases_report.append(
+                {
+                    "name": f"{INTEGRATION_NAME}: {case.get('caseId')}",
+                    "occurred": case.get(date_field),
+                    "rawJSON": json.dumps(case),
+                }
+            )
 
     return cases_report, datetime_new_last_run
 
 
 @logger
-def get_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all case by filters and return outputs in Demisto's context entry
 
     Args:
@@ -403,29 +404,28 @@ def get_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Uni
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: Dict = client.get_cases(**kwargs)  # type: ignore
+    raw_response: dict = client.get_cases(**kwargs)  # type: ignore
     if raw_response:
-        title = f'{INTEGRATION_NAME} - cases'
-        phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
-            f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
-            f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
-                'DRP': phishlabs_ec
-            }
+        title = f"{INTEGRATION_NAME} - cases"
+        phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
+        context_entry: dict = {
+            f"{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && "
+            f"val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)": {"DRP": phishlabs_ec}
         }
-        human_readable = tableToMarkdown(name=title,
-                                         t=phishlabs_ec,
-                                         headers=['CaseID', 'Title', 'CaseStatus', 'DateCreated', 'Resolution',
-                                                  'ResolutionStatus', 'CreatedBy'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            name=title,
+            t=phishlabs_ec,
+            headers=["CaseID", "Title", "CaseStatus", "DateCreated", "Resolution", "ResolutionStatus", "CreatedBy"],
+            removeNull=True,
+        )
 
         return human_readable, context_entry, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
 
 
 @logger
-def get_case_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_case_by_id_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get case by ID and return outputs in Demisto's context entry
 
     Args:
@@ -435,132 +435,130 @@ def get_case_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    raw_response: Dict = client.get_case_by_id(**kwargs)  # type: ignore
+    raw_response: dict = client.get_case_by_id(**kwargs)  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - case ID {kwargs.get("caseid")}'
-        phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
-            f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
-            f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
-                'DRP': phishlabs_ec
-            }
+        phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
+        context_entry: dict = {
+            f"{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && "
+            f"val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)": {"DRP": phishlabs_ec}
         }
-        human_readable = tableToMarkdown(name=title,
-                                         t=phishlabs_ec,
-                                         headers=['CaseID', 'Title', 'CaseStatus', 'DateCreated', 'Resolution',
-                                                  'ResolutionStatus', 'CreatedBy'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            name=title,
+            t=phishlabs_ec,
+            headers=["CaseID", "Title", "CaseStatus", "DateCreated", "Resolution", "ResolutionStatus", "CreatedBy"],
+            removeNull=True,
+        )
 
         return human_readable, context_entry, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
 
 
 @logger
-def get_open_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_open_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all open case by filters and return outputs in Demisto's context entry
 
-      Args:
-          client: Client object with request
-          kwargs: Usually demisto.args()
+    Args:
+        client: Client object with request
+        kwargs: Usually demisto.args()
 
-      Returns:
-          human readable (markdown format), entry context and raw response
-      """
-    raw_response: Dict = client.get_cases(**kwargs, query_type='open')  # type: ignore
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: dict = client.get_cases(**kwargs, query_type="open")  # type: ignore
     if raw_response:
-        title = f'{INTEGRATION_NAME} - open cases'
-        phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
-            f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
-            f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
-                'DRP': phishlabs_ec
-            }
+        title = f"{INTEGRATION_NAME} - open cases"
+        phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
+        context_entry: dict = {
+            f"{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && "
+            f"val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)": {"DRP": phishlabs_ec}
         }
-        human_readable = tableToMarkdown(name=title,
-                                         t=phishlabs_ec,
-                                         headers=['CaseID', 'Title', 'CaseStatus', 'DateCreated', 'Resolution',
-                                                  'ResolutionStatus', 'CreatedBy'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            name=title,
+            t=phishlabs_ec,
+            headers=["CaseID", "Title", "CaseStatus", "DateCreated", "Resolution", "ResolutionStatus", "CreatedBy"],
+            removeNull=True,
+        )
 
         return human_readable, context_entry, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
 
 
 @logger
-def get_closed_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_closed_cases_command(client: Client, **kwargs: dict) -> tuple[object, dict, list | dict]:
     """Get all closed case by filters and return outputs in Demisto's context entry
 
-      Args:
-          client: Client object with request
-          kwargs: Usually demisto.args()
+    Args:
+        client: Client object with request
+        kwargs: Usually demisto.args()
 
-      Returns:
-          human readable (markdown format), entry context and raw response
-      """
-    raw_response: Dict = client.get_cases(**kwargs, query_type='closed')  # type: ignore
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: dict = client.get_cases(**kwargs, query_type="closed")  # type: ignore
     if raw_response:
-        title = f'{INTEGRATION_NAME} - Closed cases'
-        phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
-        context_entry: Dict = {
-            f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
-            f'val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)': {
-                'DRP': phishlabs_ec
-            }
+        title = f"{INTEGRATION_NAME} - Closed cases"
+        phishlabs_ec = raw_response_to_context(raw_response.get("data", []))
+        context_entry: dict = {
+            f"{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && "
+            f"val.DRP.DateModified && val.DRP.DateModified === obj.DRP.DateModified)": {"DRP": phishlabs_ec}
         }
-        human_readable = tableToMarkdown(name=title,
-                                         t=phishlabs_ec,
-                                         headers=['CaseID', 'Title', 'CaseStatus', 'DateCreated', 'Resolution',
-                                                  'ResolutionStatus', 'CreatedBy'],
-                                         removeNull=True)
+        human_readable = tableToMarkdown(
+            name=title,
+            t=phishlabs_ec,
+            headers=["CaseID", "Title", "CaseStatus", "DateCreated", "Resolution", "ResolutionStatus", "CreatedBy"],
+            removeNull=True,
+        )
 
         return human_readable, context_entry, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        return f"{INTEGRATION_NAME} - Could not find any results for given query", {}, {}
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+""" COMMANDS MANAGER / SWITCH PANEL """
 
 
 def main():
     params = demisto.params()
-    base_url = urljoin(params.get('url'), '/v1/data')
-    verify_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy')
+    base_url = urljoin(params.get("url"), "/v1/data")
+    verify_ssl = not params.get("insecure", False)
+    proxy = params.get("proxy")
     client = Client(
         base_url=base_url,
         verify=verify_ssl,
         proxy=proxy,
-        auth=(params.get('credentials', {}).get('identifier'),
-              params.get('credentials', {}).get('password'))
+        auth=(params.get("credentials", {}).get("identifier"), params.get("credentials", {}).get("password")),
     )
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     commands = {
-        'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-cases': get_cases_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-case-by-id': get_case_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-open-cases': get_open_cases_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-closed-cases': get_closed_cases_command
+        "test-module": test_module_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-cases": get_cases_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-case-by-id": get_case_by_id_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-open-cases": get_open_cases_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-closed-cases": get_closed_cases_command,
     }
     try:
-        if command == 'fetch-incidents':
-            incidents, new_last_run = fetch_incidents_command(client,
-                                                              fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun().get('lastRun'),
-                                                              max_records=params.get('fetchLimit'),
-                                                              date_field=params.get('fetchByDate'))
+        if command == "fetch-incidents":
+            incidents, new_last_run = fetch_incidents_command(
+                client,
+                fetch_time=params.get("fetchTime"),
+                last_run=demisto.getLastRun().get("lastRun"),
+                max_records=params.get("fetchLimit"),
+                date_field=params.get("fetchByDate"),
+            )
             demisto.incidents(incidents)
-            demisto.setLastRun({'lastRun': new_last_run})
+            demisto.setLastRun({"lastRun": new_last_run})
         else:
             readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
             return_outputs(readable_output, outputs, raw_response)
 
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ == "builtins":
     main()

@@ -1,24 +1,25 @@
 id: IP Enrichment - Generic v2 - Test
 version: -1
 fromversion: 5.0.0
+vcShouldKeepItemLegacyProdMachine: false
 name: IP Enrichment - Generic v2 - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 30cd2312-dcc3-4762-8e9d-f76c7c99fb3d
+    taskid: cca8ae58-3fce-4ae4-8951-ebf202a51365
     type: start
     task:
-      id: 30cd2312-dcc3-4762-8e9d-f76c7c99fb3d
+      id: cca8ae58-3fce-4ae4-8951-ebf202a51365
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -29,20 +30,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: aa832f55-5765-4bfc-8e0a-29ed6493ef1b
+    taskid: 577faa8e-12f7-47d5-8316-e1694226fd97
     type: regular
     task:
-      id: aa832f55-5765-4bfc-8e0a-29ed6493ef1b
+      id: 577faa8e-12f7-47d5-8316-e1694226fd97
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary data.
+      description: Deletes the context of the incident to start the test with no unnecessary
+        data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -55,6 +56,7 @@ tasks:
         simple: "yes"
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -65,17 +67,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9a7a5231-2d51-4fda-8c30-ac2498428d17
+    taskid: 910be22d-c9bd-4c12-82e8-5edf154c4654
     type: playbook
     task:
-      id: 9a7a5231-2d51-4fda-8c30-ac2498428d17
+      id: 910be22d-c9bd-4c12-82e8-5edf154c4654
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
@@ -107,6 +108,7 @@ tasks:
         complex:
           root: inputs.ResolveIP
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -122,17 +124,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 77d35c92-d911-4022-859a-b517a156c27f
+    taskid: 58d8f8db-6055-448d-8a05-cd753f5fbc89
     type: regular
     task:
-      id: 77d35c92-d911-4022-859a-b517a156c27f
+      id: 58d8f8db-6055-448d-8a05-cd753f5fbc89
       version: -1
       name: Set IPs in context
       description: |-
@@ -147,6 +148,7 @@ tasks:
       - "2"
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -157,24 +159,23 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0587ed18-343f-4599-83e6-b35fba9b8344
+    taskid: b5590087-0da6-447f-8340-9ce61abfaa4a
     type: title
     task:
-      id: 0587ed18-343f-4599-83e6-b35fba9b8344
+      id: b5590087-0da6-447f-8340-9ce61abfaa4a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -185,20 +186,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 992e62e7-f6a3-4060-8655-a279f32a737c
+    taskid: d3c5f8a5-dcfd-4e06-87b4-b818f2fa3f69
     type: condition
     task:
-      id: 992e62e7-f6a3-4060-8655-a279f32a737c
+      id: d3c5f8a5-dcfd-4e06-87b4-b818f2fa3f69
       version: -1
       name: Was external IP resolved?
-      description: Checks whether one of the external IPs was resolved to the yahoo.com domain.
+      description: Checks whether one of the external IPs was resolved to the yahoo.com
+        domain.
       type: condition
       iscommand: false
       brand: ""
@@ -228,6 +229,7 @@ tasks:
                 accessor: Hostname
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -238,20 +240,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3fa2050e-5238-41b6-8db6-bc10db382ba8
+    taskid: 96f4d0cb-b2d7-4ebd-8a02-5ed273bee699
     type: condition
     task:
-      id: 3fa2050e-5238-41b6-8db6-bc10db382ba8
+      id: 96f4d0cb-b2d7-4ebd-8a02-5ed273bee699
       version: -1
       name: Was internal IP resolved?
-      description: Checks whether the internal IP specified in this test, has been resolved.
+      description: Checks whether the internal IP specified in this test, has been
+        resolved.
       type: condition
       iscommand: false
       brand: ""
@@ -264,33 +266,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: notInList
           left:
             value:
-              complex:
-                root: Endpoint
-                filters:
-                - - operator: notEndWith
-                    left:
-                      value:
-                        simple: Endpoint.Hostname
-                      iscontext: true
-                    right:
-                      value:
-                        simple: yahoo.com
-                    ignorecase: true
-                - - operator: notEndWith
-                    left:
-                      value:
-                        simple: Endpoint.Hostname
-                      iscontext: true
-                    right:
-                      value:
-                        simple: akamaitechnologies.com
-                    ignorecase: true
-                accessor: Hostname
+              simple: 172.16.0.10
+          right:
+            value:
+              simple: Endpoint.IP
             iscontext: true
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -301,17 +286,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6cbfe571-2e22-4564-8ecc-d6fb52900451
+    taskid: 873ae58e-f358-4de0-8413-e289974a8e93
     type: condition
     task:
-      id: 6cbfe571-2e22-4564-8ecc-d6fb52900451
+      id: 873ae58e-f358-4de0-8413-e289974a8e93
       version: -1
       name: Was IP enriched using VirusTotal V3?
       description: Checks whether Yahoo's IP was enriched using VirusTotal (API v3).
@@ -355,6 +339,7 @@ tasks:
                         simple: DBotScore.Indicator
                       iscontext: true
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -365,17 +350,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 850024f3-424b-4247-8174-294f6a44f7d0
+    taskid: d4122859-9622-4e13-87c9-f8ade67494f1
     type: regular
     task:
-      id: 850024f3-424b-4247-8174-294f6a44f7d0
+      id: d4122859-9622-4e13-87c9-f8ade67494f1
       version: -1
       name: Make the test fail
       scriptName: PrintErrorEntry
@@ -387,8 +371,11 @@ tasks:
       - "4"
     scriptarguments:
       message:
-        simple: IP Enrichment has failed. Please check the conditions and see which one was not met, or if another error has occurred during the enrichment process.
+        simple: IP Enrichment has failed. Please check the conditions and see which
+          one was not met, or if another error has occurred during the enrichment
+          process.
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -399,23 +386,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c863ec5f-0a32-44d5-89b2-dc36a2af9691
+    taskid: 1382bd8a-d2fe-4210-858f-f87135adc482
     type: title
     task:
-      id: c863ec5f-0a32-44d5-89b2-dc36a2af9691
+      id: 1382bd8a-d2fe-4210-858f-f87135adc482
       version: -1
       name: Test Empty Inputs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -437,13 +422,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3fedeed7-2bf4-4655-85f1-8c53fc6cc36e
+    taskid: fb8f4b79-6675-44b6-88bf-d46f9eb9c150
     type: regular
     task:
-      id: 3fedeed7-2bf4-4655-85f1-8c53fc6cc36e
+      id: fb8f4b79-6675-44b6-88bf-d46f9eb9c150
       version: -1
       name: Delete Context
-      description: Deletes the context of the incident to start the test with no unnecessary data.
+      description: Deletes the context of the incident to start the test with no unnecessary
+        data.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -470,10 +456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cab43b72-8015-4928-8c0f-38ec374761ea
+    taskid: 52beda08-c10c-44b7-8077-63cd44732fd2
     type: playbook
     task:
-      id: cab43b72-8015-4928-8c0f-38ec374761ea
+      id: 52beda08-c10c-44b7-8077-63cd44732fd2
       version: -1
       name: IP Enrichment - Generic v2
       description: |-
@@ -523,16 +509,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 3ba1f73b-a11c-4fd1-8930-a5466188469b
+    taskid: bcb745f6-e2c9-48c0-87b8-f3fc9765b5ef
     type: title
     task:
-      id: 3ba1f73b-a11c-4fd1-8930-a5466188469b
+      id: bcb745f6-e2c9-48c0-87b8-f3fc9765b5ef
       version: -1
       name: Test Empty Inputs
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -576,7 +561,10 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. You can set this to either True or False.
-  playbookInputQuery:
+  description: Determines whether the IP Enrichment - Generic playbook should convert
+    IP addresses to hostnames using a DNS query. You can set this to either True or
+    False.
+  playbookInputQuery: null
 outputs: []
-description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with different inputs.
+description: IP Enrichment V2 Test playbook check the IP Enrichment V2 playbook with
+  different inputs.

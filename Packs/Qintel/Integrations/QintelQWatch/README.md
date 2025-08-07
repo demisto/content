@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.1.6 of QWatch
 
 ## Configure QintelQWatch in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | QWatch API URL (optional) | False |
@@ -19,35 +18,38 @@ This integration was integrated and tested with version 1.1.6 of QWatch
 | Default Incident Severity | True |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### qintel-qwatch-exposures
+
 ***
 Search QWatch for exposed credentials
-
 
 #### Base Command
 
 `qintel-qwatch-exposures`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | Email to search. | Optional | 
-| domain | Domain to search. | Optional | 
-
+| email | Email to search. | Optional |
+| domain | Domain to search. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qintel.QWatch.Exposures | String | QWatch Exposure Records | 
-
+| Qintel.QWatch.Exposures | String | QWatch Exposure Records |
 
 #### Command Example
+
 ```!qintel-qwatch-exposures email=test@example.local```
 
 #### Context Example
+
 ```json
 {
     "Qintel": {

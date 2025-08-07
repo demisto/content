@@ -1,7 +1,7 @@
 Oracle Cloud Infrastructure Feed (OCI Feed)
 This feed provides information about public IP address ranges for services that are deployed in Oracle Cloud Infrastructure.
-## Configure Oracle Cloud Infrastructure Feed in Cortex
 
+## Configure Oracle Cloud Infrastructure Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,7 +18,6 @@ This feed provides information about public IP address ranges for services that 
 |  |  | False |
 | Tags | Supports CSV values. | False |
 | Create relationships |  | False |
-
 
 ## Commands
 
@@ -38,7 +37,7 @@ Gets indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
+| limit | The maximum number of results to return. Default is 10. | Optional |
 
 #### Context Output
 

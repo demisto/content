@@ -2,14 +2,12 @@ Use Anomali Match to search indicators and enrich domains.
 
 ## Configure Anomali Match in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g., https://www.test.com\) | True |
 | credentials | Username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -21,7 +19,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Initiates a forensic search of the indicators.
 
-
 #### Base Command
 
 `anomali-enterprise-retro-forensic-search`
@@ -30,18 +27,16 @@ Initiates a forensic search of the indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | The time the indicators first appeared, in the format: &lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes. Default is 1 day ago. | Optional | 
-| to | The time the indicators last appeared, in the format: &lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes. Default is now. | Optional | 
-| indicators | A comma-separated list of indicators to search. | Required | 
-
+| from | The time the indicators first appeared, in the format: &lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes. Default is 1 day ago. | Optional |
+| to | The time the indicators last appeared, in the format: &lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes. Default is now. | Optional |
+| indicators | A comma-separated list of indicators to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnomaliEnterprise.ForensicSearch.job_id | String | The job ID of the search. | 
-| AnomaliEnterprise.ForensicSearch.status | String | The status of the search. | 
-
+| AnomaliEnterprise.ForensicSearch.job_id | String | The job ID of the search. |
+| AnomaliEnterprise.ForensicSearch.status | String | The status of the search. |
 
 #### Command Example
 
@@ -62,18 +57,16 @@ Initiates a forensic search of the indicators.
 
 #### Human Readable Output
 
->### Forensic search started:
+>### Forensic search started
 
 >|job_id|status|
 >|---|---|
 >| job1271604409989806 | in progress |
 
-
 ### anomali-enterprise-retro-forensic-search-results
 
 ***
 Retrieves the forensic search results.
-
 
 #### Base Command
 
@@ -83,25 +76,23 @@ Retrieves the forensic search results.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | The forensic search job ID. | Required | 
-| limit | Limit the stream results to return. Default is 20. | Optional | 
-| verbose | Whether to print the stream results to the War Room. Default is "true". | Optional | 
-
+| job_id | The forensic search job ID. | Required |
+| limit | Limit the stream results to return. Default is 20. | Optional |
+| verbose | Whether to print the stream results to the War Room. Default is "true". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnomaliEnterprise.ForensicSearch.job_id | String | The job ID of the search. | 
-| AnomaliEnterprise.ForensicSearch.status | String | The status of the search. | 
-| AnomaliEnterprise.ForensicSearch.scannedEvents | Number | The number of scanned events. | 
-| AnomaliEnterprise.ForensicSearch.processedFiles | Number | The number of processed files. | 
-| AnomaliEnterprise.ForensicSearch.result_file_name | String | The matched file name. | 
-| AnomaliEnterprise.ForensicSearch.totalMatches | Number | The number of total matches. | 
-| AnomaliEnterprise.ForensicSearch.complete | Bool | Whether the search was complete. | 
-| AnomaliEnterprise.ForensicSearch.category | String | The search category. | 
-| AnomaliEnterprise.ForensicSearch.streamResults | Unknown | The stream results for the search. | 
-
+| AnomaliEnterprise.ForensicSearch.job_id | String | The job ID of the search. |
+| AnomaliEnterprise.ForensicSearch.status | String | The status of the search. |
+| AnomaliEnterprise.ForensicSearch.scannedEvents | Number | The number of scanned events. |
+| AnomaliEnterprise.ForensicSearch.processedFiles | Number | The number of processed files. |
+| AnomaliEnterprise.ForensicSearch.result_file_name | String | The matched file name. |
+| AnomaliEnterprise.ForensicSearch.totalMatches | Number | The number of total matches. |
+| AnomaliEnterprise.ForensicSearch.complete | Bool | Whether the search was complete. |
+| AnomaliEnterprise.ForensicSearch.category | String | The search category. |
+| AnomaliEnterprise.ForensicSearch.streamResults | Unknown | The stream results for the search. |
 
 #### Command Example
 
@@ -142,24 +133,22 @@ Retrieves the forensic search results.
 
 #### Human Readable Output
 
->### Forensic search metadata:
+>### Forensic search metadata
 
 >|status|job_id|category|totalFiles|scannedEvents|
 >|---|---|---|---|---|
 >| completed | job1251604409794526 | forensic_api_result | 1 | 361295 |
 
->### Forensic search results:
+>### Forensic search results
 
 >|count|event.dest|event.src|event_time|
 >|---|---|---|---|
 >| 1 | 1.1.1.1 | 1.1.1.1 | 2020-10-14T09:10:00.000+0000 |
 
-
 ### anomali-enterprise-dga-domain-status
 
 ***
 The search domains Domain Generation Algorithm (DGA).
-
 
 #### Base Command
 
@@ -169,17 +158,15 @@ The search domains Domain Generation Algorithm (DGA).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domains | A comma-separated list of domains to search. | Required | 
-
+| domains | A comma-separated list of domains to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnomaliEnterprise.DGA.domain | String | The domain that was checked. | 
-| AnomaliEnterprise.DGA.malware_family | String | The malware family associated with the domain. | 
-| AnomaliEnterprise.DGA.domain | Number | The probability of the domain being malicious. | 
-
+| AnomaliEnterprise.DGA.domain | String | The domain that was checked. |
+| AnomaliEnterprise.DGA.malware_family | String | The malware family associated with the domain. |
+| AnomaliEnterprise.DGA.domain | Number | The probability of the domain being malicious. |
 
 #### Command Example
 
@@ -201,12 +188,11 @@ The search domains Domain Generation Algorithm (DGA).
 
 #### Human Readable Output
 
->### Domains DGA:
+>### Domains DGA
 
 >|domain|probability|
 >|---|---|
 >| amazon.com | 0 |
-
 
 ### domain
 
@@ -226,24 +212,22 @@ else, the reputation is Unknown.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | A comma-separated list of domains to search. | Optional | 
-
+| domain | A comma-separated list of domains to search. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnomaliEnterprise.DGA.domain | String | The domain that was checked. | 
-| AnomaliEnterprise.DGA.malware_family | String | The malware family associated with the domain. | 
-| AnomaliEnterprise.DGA.domain | Number | The probability of the domain being malicious. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| Domain.Name | String | The domain name. For example, "google.com". | 
-| Domain.Malicious.Vendor | String | The vendor that reported that the domain is malicious. | 
-| Domain.Malicious.Description | String | A description of the malicious domain. | 
-
+| AnomaliEnterprise.DGA.domain | String | The domain that was checked. |
+| AnomaliEnterprise.DGA.malware_family | String | The malware family associated with the domain. |
+| AnomaliEnterprise.DGA.domain | Number | The probability of the domain being malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| Domain.Name | String | The domain name. For example, "google.com". |
+| Domain.Malicious.Vendor | String | The vendor that reported that the domain is malicious. |
+| Domain.Malicious.Description | String | A description of the malicious domain. |
 
 #### Command Example
 
@@ -274,7 +258,7 @@ else, the reputation is Unknown.
 
 #### Human Readable Output
 
->### Domains DGA:
+>### Domains DGA
 
 >|domain|probability|
 >|---|---|

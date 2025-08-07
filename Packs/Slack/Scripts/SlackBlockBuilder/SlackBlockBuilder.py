@@ -1,41 +1,49 @@
+import traceback
+import urllib.parse
+from typing import Any
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-from typing import Any
-import traceback
-import urllib.parse
-
-DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
-''' STANDALONE FUNCTION '''
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+""" STANDALONE FUNCTION """
 
 
 class Commands:
-    SEND_NOTIFICATION = 'send-notification'
-    ADD_ENTITLEMENT = 'addEntitlement'
-    GET_LIST = 'getList'
+    SEND_NOTIFICATION = "send-notification"
+    ADD_ENTITLEMENT = "addEntitlement"
+    GET_LIST = "getList"
 
 
 class DefaultValues:
-    RESPONSE = 'Thank you for your reply.'
-    ONE_DAY = '1 day'
+    RESPONSE = "Thank you for your reply."
+    ONE_DAY = "1 day"
 
 
 class ErrorMessages:
-    MALFORMED_LIST = 'The list that was provided is not a dictionary. Please ensure the entire payload has been copied' \
-                     ' from the Block Kit Builder'
-    COMMAND_ERROR = 'An error has occurred while executing the send-notification command'
-    MISSING_DESTINATION = 'Either a user or a channel must be provided.'
-    NOT_FOUND = 'Item not found (8)'
-    MISSING_URL_OR_LIST = 'blocks_url or a list was not specified'
-    INVALID_BLOCKS_URL = 'An error has occurred while parsing the blocks_url argument.'
+    MALFORMED_LIST = (
+        "The list that was provided is not a dictionary. Please ensure the entire payload has been copied"
+        " from the Block Kit Builder"
+    )
+    COMMAND_ERROR = "An error has occurred while executing the send-notification command"
+    MISSING_DESTINATION = "Either a user or a channel must be provided."
+    NOT_FOUND = "Item not found (8)"
+    MISSING_URL_OR_LIST = "blocks_url or a list was not specified"
+    INVALID_BLOCKS_URL = "An error has occurred while parsing the blocks_url argument."
 
 
 class BlockCarrier:
-    def __init__(self, url: str = '', list_name: Optional[str] = None, task: Optional[str] = None,
-                 persistent: Optional[str] = None, reply_entries_tag: Optional[str] = None,
-                 lifetime: str = DefaultValues.ONE_DAY,
-                 reply: Optional[str] = None, default_response: str = DefaultValues.RESPONSE):
+    def __init__(
+        self,
+        url: str = "",
+        list_name: Optional[str] = None,
+        task: Optional[str] = None,
+        persistent: Optional[str] = None,
+        reply_entries_tag: Optional[str] = None,
+        lifetime: str = DefaultValues.ONE_DAY,
+        reply: Optional[str] = None,
+        default_response: str = DefaultValues.RESPONSE,
+    ):
         """Used to format blocks for the send-notification command
 
         BlockCarrier will handle several formatting steps for the Slack blocks.
@@ -59,7 +67,7 @@ class BlockCarrier:
         Raises:
             ValueError: If neither the url nor list_name arg is not provided, will raise an exception.
         """
-        self.entitlement_string = ''
+        self.entitlement_string = ""
         self.default_response = default_response
         self.blocks_ready_for_args: dict[str, Any] = {}
         self.url = url
@@ -68,7 +76,7 @@ class BlockCarrier:
         self.reply_entries_tag = reply_entries_tag
         self.task = task
         self.blocks_dict: list[dict] = list({})
-        self.investigation_id = demisto.investigation().get('id', '00')
+        self.investigation_id = demisto.investigation().get("id", "00")
         self.reply = reply
         self._build_entitlement()
 
@@ -79,8 +87,8 @@ class BlockCarrier:
         else:
             raise ValueError(ErrorMessages.MISSING_URL_OR_LIST)
 
-        parsed_date = dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'})
-        assert parsed_date is not None, f'could not parse in {lifetime}'
+        parsed_date = dateparser.parse("in " + lifetime, settings={"TIMEZONE": "UTC"})
+        assert parsed_date is not None, f"could not parse in {lifetime}"
         self.expiry = datetime.strftime(parsed_date, DATE_FORMAT)
 
     def _build_entitlement(self):
@@ -89,17 +97,15 @@ class BlockCarrier:
         Entitlement strings are essential in order to know which incident the response belongs to. This will get fed to
         the send-notification command and stored into the SlackV3 integration context.
         """
-        res = demisto.executeCommand(command=Commands.ADD_ENTITLEMENT,
-                                     args={
-                                         'persistent': self.persistent,
-                                         'replyEntriesTag': self.reply_entries_tag
-                                     })
+        res = demisto.executeCommand(
+            command=Commands.ADD_ENTITLEMENT, args={"persistent": self.persistent, "replyEntriesTag": self.reply_entries_tag}
+        )
         if isError(res[0]):
             raise DemistoException(message=res)
-        entitlement = demisto.get(obj=res[0], field='Contents')
-        self.entitlement_string = entitlement + '@' + self.investigation_id
+        entitlement = demisto.get(obj=res[0], field="Contents")
+        self.entitlement_string = entitlement + "@" + self.investigation_id
         if self.task:
-            self.entitlement_string += '|' + self.task
+            self.entitlement_string += "|" + self.task
 
     def _add_block_ids(self):
         """Populates block_ids into a given array of blocks
@@ -111,20 +117,20 @@ class BlockCarrier:
         """
         action_id_int: int = 0
         for block in self.blocks_dict:
-            if block.get('type') == 'input':
-                action_id: str = block.get('element', {}).get('type', '')
-                block['block_id'] = action_id + '_' + str(action_id_int)
+            if block.get("type") == "input":
+                action_id: str = block.get("element", {}).get("type", "")
+                block["block_id"] = action_id + "_" + str(action_id_int)
                 action_id_int += 1
-            elif block.get('type') == 'actions':
-                if 'elements' in block:
-                    actions_block_id: str = block.get('elements', [{}])[0].get('type', '')
-                    block['block_id'] = actions_block_id + '_' + str(action_id_int)
+            elif block.get("type") == "actions":
+                if "elements" in block:
+                    actions_block_id: str = block.get("elements", [{}])[0].get("type", "")
+                    block["block_id"] = actions_block_id + "_" + str(action_id_int)
                     action_id_int += 1
-            elif block.get('type') == 'section' and 'accessory' in block:
-                sec_action_id: str = block.get('accessory', {}).get('type', '')
-                if sec_action_id != 'image':
-                    block['block_id'] = sec_action_id + '_' + str(action_id_int)
-                    block['accessory']['action_id'] = sec_action_id + str(action_id_int)
+            elif block.get("type") == "section" and "accessory" in block:
+                sec_action_id: str = block.get("accessory", {}).get("type", "")
+                if sec_action_id != "image":
+                    block["block_id"] = sec_action_id + "_" + str(action_id_int)
+                    block["accessory"]["action_id"] = sec_action_id + str(action_id_int)
                     action_id_int += 1
 
     def _add_submit_button(self):
@@ -133,23 +139,20 @@ class BlockCarrier:
         We need to ensure that there will always be a button with a known action_id. SlackV3 will listen for blocks
         containing this action_id and then pull the state of the inputs.
         """
-        value = json.dumps({
-            'entitlement': self.entitlement_string,
-            'reply': self.reply
-        })
-        self.blocks_dict.append({
-            "type": "actions",
-            "elements": [{
-                'type': 'button',
-                'text': {
-                    'type': 'plain_text',
-                    'text': 'Submit',
-                    'emoji': True
-                },
-                'value': value,
-                'action_id': 'xsoar-button-submit'
-            }]
-        })
+        value = json.dumps({"entitlement": self.entitlement_string, "reply": self.reply})
+        self.blocks_dict.append(
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {"type": "plain_text", "text": "Submit", "emoji": True},
+                        "value": value,
+                        "action_id": "xsoar-button-submit",
+                    }
+                ],
+            }
+        )
 
     def _parse_url_blocks(self):
         """Parses the Slack Block Builder URL
@@ -169,12 +172,12 @@ class BlockCarrier:
                 url_encoded_blocks = match_url_encoded_blocks[1]
                 url_decoded_blocks = urllib.parse.unquote(url_encoded_blocks)
                 parsed_blocks = json.loads(url_decoded_blocks)
-                self.blocks_dict = parsed_blocks.get('blocks', [{}])
+                self.blocks_dict = parsed_blocks.get("blocks", [{}])
                 demisto.debug(f"Parsed blocks: {self.blocks_dict}")
             else:
                 raise DemistoException("No blocks found in URL")
         except Exception as e:
-            demisto.debug(f"Failed to parse blocks from URL, {str(e)}")
+            demisto.debug(f"Failed to parse blocks from URL, {e!s}")
             raise DemistoException(ErrorMessages.INVALID_BLOCKS_URL)
 
     def _retrieve_blocks_from_list(self):
@@ -185,17 +188,19 @@ class BlockCarrier:
         Raises:
             ValueError: If the list was not located, or the list contains an invalid JSON.
         """
-        res = demisto.executeCommand(command=Commands.GET_LIST, args={'listName': self.list_name})
+        res = demisto.executeCommand(command=Commands.GET_LIST, args={"listName": self.list_name})
         if (
-                not isinstance(res, list)
-                or 'Contents' not in res[0]
-                or not isinstance(res[0]['Contents'], str)
-                or res[0]['Contents'] == ErrorMessages.NOT_FOUND
+            not isinstance(res, list)
+            or "Contents" not in res[0]
+            or not isinstance(res[0]["Contents"], str)
+            or res[0]["Contents"] == ErrorMessages.NOT_FOUND
         ):
-            raise ValueError(f'Cannot retrieve list {self.list_name}. Please verify the name is correct. If you have'
-                             f' not created a list before, please refer to https://xsoar.pan.dev/docs/incidents/'
-                             f'incident-lists for more information.')
-        data: str = res[0]['Contents']
+            raise ValueError(
+                f"Cannot retrieve list {self.list_name}. Please verify the name is correct. If you have"
+                f" not created a list before, please refer to https://xsoar.pan.dev/docs/incidents/"
+                f"incident-lists for more information."
+            )
+        data: str = res[0]["Contents"]
         if data and len(data) > 0:
             try:
                 parsed_blocks: Any = json.loads(data)
@@ -203,10 +208,10 @@ class BlockCarrier:
                     assert isinstance(parsed_blocks, dict)
                 except AssertionError:
                     raise DemistoException(ErrorMessages.MALFORMED_LIST)
-                self.blocks_dict = parsed_blocks.get('blocks', [{}])
+                self.blocks_dict = parsed_blocks.get("blocks", [{}])
 
             except json.decoder.JSONDecodeError as e:
-                raise ValueError(f'List does not contain valid JSON data: {e}')
+                raise ValueError(f"List does not contain valid JSON data: {e}")
 
     def _blocks_formatted_for_command(self):
         """Formats the Blocks for the send-notification command.
@@ -215,11 +220,11 @@ class BlockCarrier:
         This handles that process.
         """
         self.blocks_ready_for_args = {
-            'blocks': json.dumps(self.blocks_dict),
-            'entitlement': self.entitlement_string,
-            'reply': self.reply,
-            'expiry': self.expiry,
-            'default_response': self.default_response
+            "blocks": json.dumps(self.blocks_dict),
+            "entitlement": self.entitlement_string,
+            "reply": self.reply,
+            "expiry": self.expiry,
+            "default_response": self.default_response,
         }
 
     def format_blocks(self):
@@ -234,27 +239,34 @@ class BlockCarrier:
 
 
 class SendNotification:
-    def __init__(self, blocks_carrier: BlockCarrier, slack_instance: Optional[str] = None, to: Optional[str] = None,
-                 channel_id: Optional[str] = None, channel: Optional[str] = None, threadID: Optional[str] = None):
+    def __init__(
+        self,
+        blocks_carrier: BlockCarrier,
+        slack_instance: Optional[str] = None,
+        to: Optional[str] = None,
+        channel_id: Optional[str] = None,
+        channel: Optional[str] = None,
+        threadID: Optional[str] = None,
+    ):
         self.blocks_carrier: BlockCarrier = blocks_carrier
         self.send_response: list = []
         self.command_args: dict = {
-            'ignoreAddURL': 'true',
-            'using-brand': 'SlackV3',
-            'blocks': json.dumps(self.blocks_carrier.blocks_ready_for_args)
+            "ignoreAddURL": "true",
+            "using-brand": "SlackV3",
+            "blocks": json.dumps(self.blocks_carrier.blocks_ready_for_args),
         }
         if slack_instance:
-            self.command_args['using'] = slack_instance
+            self.command_args["using"] = slack_instance
         # Set if the thread_id argument was passed in by the end user
         if threadID:
-            self.command_args['threadID'] = threadID
+            self.command_args["threadID"] = threadID
         # Determine Destination, Raise error if not given
         if to:
-            self.command_args['to'] = to
+            self.command_args["to"] = to
         elif channel_id:
-            self.command_args['channel_id'] = channel_id
+            self.command_args["channel_id"] = channel_id
         elif channel:
-            self.command_args['channel'] = channel
+            self.command_args["channel"] = channel
         else:
             raise DemistoException(message=ErrorMessages.MISSING_DESTINATION)
 
@@ -271,7 +283,7 @@ class SendNotification:
             raise DemistoException(message=ErrorMessages.COMMAND_ERROR, exception=e)
 
 
-''' COMMAND FUNCTION '''
+""" COMMAND FUNCTION """
 
 
 def slack_block_builder_command(args: dict[str, Any]):
@@ -283,49 +295,58 @@ def slack_block_builder_command(args: dict[str, Any]):
     Returns:
         CommandResults: Will contain the response from the send-notification command.
     """
-    blocks_url: str = demisto.get(obj=args, field='blocks_url', defaultParam=None)
-    list_name: str = demisto.get(obj=args, field='list_name', defaultParam=None)
-    slack_instance = demisto.get(obj=args, field='slackInstance')
-    lifetime = demisto.get(obj=args, field='lifetime', defaultParam='1 day')
-    reply = demisto.get(obj=args, field='reply')
-    task = demisto.get(obj=args, field='task')
-    persistent = demisto.get(obj=args, field='persistent')
-    reply_entries_tag = demisto.get(obj=args, field='reply_entries_tag')
-    default_response = demisto.get(obj=args, field='defaultResponse')
-    to = demisto.get(obj=args, field='user')
-    channel = demisto.get(obj=args, field='channel')
-    channel_id = demisto.get(obj=args, field='channel_id')
-    thread_id = demisto.get(obj=args, field='thread_id')
+    blocks_url: str = demisto.get(obj=args, field="blocks_url", defaultParam=None)
+    list_name: str = demisto.get(obj=args, field="list_name", defaultParam=None)
+    slack_instance = demisto.get(obj=args, field="slackInstance")
+    lifetime = demisto.get(obj=args, field="lifetime", defaultParam="1 day")
+    reply = demisto.get(obj=args, field="reply")
+    task = demisto.get(obj=args, field="task")
+    persistent = demisto.get(obj=args, field="persistent")
+    reply_entries_tag = demisto.get(obj=args, field="reply_entries_tag")
+    default_response = demisto.get(obj=args, field="defaultResponse")
+    to = demisto.get(obj=args, field="user")
+    channel = demisto.get(obj=args, field="channel")
+    channel_id = demisto.get(obj=args, field="channel_id")
+    thread_id = demisto.get(obj=args, field="thread_id")
 
-    block_carrier = BlockCarrier(url=blocks_url, list_name=list_name, task=task, persistent=persistent,
-                                 reply_entries_tag=reply_entries_tag, lifetime=lifetime,
-                                 reply=reply, default_response=default_response)
+    block_carrier = BlockCarrier(
+        url=blocks_url,
+        list_name=list_name,
+        task=task,
+        persistent=persistent,
+        reply_entries_tag=reply_entries_tag,
+        lifetime=lifetime,
+        reply=reply,
+        default_response=default_response,
+    )
     block_carrier.format_blocks()
-    notification = SendNotification(blocks_carrier=block_carrier, slack_instance=slack_instance, to=to,
-                                    channel_id=channel_id, channel=channel, threadID=thread_id)
+    notification = SendNotification(
+        blocks_carrier=block_carrier,
+        slack_instance=slack_instance,
+        to=to,
+        channel_id=channel_id,
+        channel=channel,
+        threadID=thread_id,
+    )
     notification.send()
     send_response = notification.send_response[0]
-    human_readable = send_response['HumanReadable']
-    if isinstance(send_response.get('Contents'), str):
+    human_readable = send_response["HumanReadable"]
+    if isinstance(send_response.get("Contents"), str):
         raise DemistoException(f"{send_response.get('Contents')}")
 
     # Dict object returned from sending the message; contains Slack metadata
     context_output = {
-        'ThreadID': send_response.get('Contents', {}).get('ts'),
-        'Channel': send_response.get('Contents', {}).get('channel'),
-        'Text': send_response.get('Contents', {}).get('message', {}).get('text'),
-        'BotID': send_response.get('Contents', {}).get('message', {}).get('bot_id'),
-        'Username': send_response.get('Contents', {}).get('message', {}).get('username'),
-        'AppID': send_response.get('Contents', {}).get('message', {}).get('app_id')
+        "ThreadID": send_response.get("Contents", {}).get("ts"),
+        "Channel": send_response.get("Contents", {}).get("channel"),
+        "Text": send_response.get("Contents", {}).get("message", {}).get("text"),
+        "BotID": send_response.get("Contents", {}).get("message", {}).get("bot_id"),
+        "Username": send_response.get("Contents", {}).get("message", {}).get("username"),
+        "AppID": send_response.get("Contents", {}).get("message", {}).get("app_id"),
     }
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='SlackBlockBuilder',
-        outputs=context_output
-    )
+    return CommandResults(readable_output=human_readable, outputs_prefix="SlackBlockBuilder", outputs=context_output)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():  # pragma: no cover
@@ -333,10 +354,10 @@ def main():  # pragma: no cover
         return_results(slack_block_builder_command(demisto.args()))
     except Exception as excep:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute SlackBlockBuilder. Error: {str(excep)}')
+        return_error(f"Failed to execute SlackBlockBuilder. Error: {excep!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()

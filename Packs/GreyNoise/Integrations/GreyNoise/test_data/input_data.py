@@ -1,51 +1,76 @@
 import copy
 
 valid_ip_response = {
-    "ip": "71.6.135.131",  # NOSONAR
-    "seen": True,
-    "riot": False,
-    "classification": "malicious",
-    "first_seen": "2019-04-04",
-    "last_seen": "2019-08-21",
-    "actor": "unknown",
-    "tags": ["MSSQL Bruteforcer", "MSSQL Scanner", "RDP Scanner"],
-    "vpn": True,
-    "vpn_service": "dummy vpn",
-    "bot": True,
+  "ip": "71.6.135.131",
+  "business_service_intelligence": {
+    "found": False,
+    "category": "",
+    "name": "",
+    "description": "",
+    "explanation": "",
+    "last_updated": "",
+    "reference": "",
+    "trust_level": ""
+  },
+  "internet_scanner_intelligence": {
+    "last_seen": "2025-06-26",
+    "found": True,
+    "tags": [
+      {
+        "id": "36c75a5a-d4f8-46b3-b597-e0cbbf1ac3a0",
+        "slug": "adb-check",
+        "name": "ADB Check",
+        "description": "IP addresses with this tag have been observed checking for the existence of the Android Debug Bridge protocol.",
+        "category": "activity",
+        "intention": "suspicious",
+        "references": ["https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-1900-12345"],
+        "cves": ["CVE-1900-12345"],
+        "recommend_block": False,
+        "created": "2021-08-26",
+        "updated_at": "2025-06-24T21:35:56.342633Z"
+      }
+    ],
+    "actor": "Shodan.io",
+    "spoofable": False,
+    "classification": "benign",
+    "bot": False,
+    "vpn": False,
+    "vpn_service": "",
+    "tor": False,
     "metadata": {
-        "country": "China",
-        "country_code": "CN",
-        "city": "Kunshan",
-        "organization": "CHINANET jiangsu province network",
-        "asn": "AS4134",
-        "tor": False,
-        "os": "Windows 7/8",
-        "category": "isp",
+      "asn": "AS10439",
+      "source_country": "United States",
+      "source_country_code": "US",
+      "source_city": "San Diego",
+      "domain": "fiberalley.com",
+      "rdns_parent": "shodan.io",
+      "rdns_validated": False,
+      "organization": "CariNet, Inc.",
+      "category": "hosting",
+      "rdns": "soda.census.shodan.io",
+      "os": "",
+      "region": "California",
+      "mobile": False,
+      "single_destination": False,
+      "destination_countries": [
+        "Brazil"
+      ],
+      "destination_country_codes": [
+        "BR"
+      ]
     },
-    "raw_data": {
-        "scan": [
-            {"port": 1433, "protocol": "TCP"},
-            {"port": 3389, "protocol": "TCP"},
-            {"port": 65529, "protocol": "TCP"},
-        ],
-        "web": {
-            "paths": ["/sitemap.xml", "/.well-known/security.txt", "/favicon.ico", "/robots.txt", "/"],
-            "useragents": ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:80.0) Gecko/20100101 Firefox/80.0", ""],
-        },
-        "ja3": [
-            {"fingerprint": "30017f6f809155387cbcf95be6e7225d", "port": 443},
-            {"fingerprint": "330ed8deb9b34592442c3bb392ee0926", "port": 444},
-        ],
-        "hassh": [
-            {"fingerprint": "30017f6f809155387cbcf95be6e7225d", "port": 443},
-            {"fingerprint": "330ed8deb9b34592442c3bb392ee0926", "port": 444},
-        ],
-    },
+    "last_seen_timestamp": "2025-06-26 12:59:00"
+  }
 }
 
 valid_ip_response_expected = copy.deepcopy(valid_ip_response)
 valid_ip_response_expected["address"] = valid_ip_response["ip"]
 del valid_ip_response_expected["ip"]
+
+valid_ip_response_expected_modified = copy.deepcopy(valid_ip_response_expected["internet_scanner_intelligence"])
+valid_ip_response_expected_modified["seen"] = True
+valid_ip_response_expected_modified["address"] = valid_ip_response["ip"]
+valid_ip_response_expected_modified["ip"] = valid_ip_response["ip"]
 
 # input_data, expected_output
 parse_code_and_body_data = [
@@ -69,42 +94,42 @@ test_module_data = [
 ]
 
 ip_reputation_command_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected),  # NOSONAR
+    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected_modified),
     (
         {"ip": "71.6.135.131"},
         "positive",
-        {"ip": "71.6.135.131", "seen": False, "riot": False},
-        200,  # NOSONAR
-        {"address": "71.6.135.131", "seen": False, "riot": False},
-    ),  # NOSONAR
+        {"ip": "71.6.135.131", "internet_scanner_intelligence": {"found": False}, "business_service_intelligence": {"found": False}},
+        200,
+        {"found": False, "seen": False, "address": "71.6.135.131", "ip": "71.6.135.131", "riot": False},
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "invalid ip response",
-        200,  # NOSONAR
+        200,
         "Invalid response from GreyNoise. Response: invalid ip response",
-    ),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
+    ),
+    ({"ip": "71.6.135.131"}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
+    ({"ip": "71.6.135.131"}, "negative", {}, 429, "Invalid response from GreyNoise. Response: "),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "Dummy message",
-        405,  # NOSONAR
-        "Failed to execute  command.\n Error: Dummy message",
-    ),  # NOSONAR
+        405,
+        "Invalid response from GreyNoise. Response: (405, 'Dummy message')",
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         {},
-        505,  # NOSONAR
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
-    ({"ip": "5844.2204.2191.2471"}, "negative", {}, 200, "Invalid IP address: '5844.2204.2191.2471'"),  # NOSONAR
+        500,
+        "Invalid response from GreyNoise. Response: (500, {})",
+    ),
+    ({"ip": "5844.2204.2191.2471"}, "negative", {"error": "invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, {'error': 'invalid ip submitted'})"),
 ]
 
 get_ip_reputation_score_data = [
-    ("unknown", (2, "Suspicious")),
+    ("unknown", (0, "Unknown")),
     ("", (0, "Unknown")),
     ("benign", (1, "Good")),
     ("malicious", (3, "Bad")),
@@ -113,80 +138,93 @@ get_ip_reputation_score_data = [
 
 valid_quick_response = [
     {
-        "ip": "71.6.135.131",  # NOSONAR
-        "noise": False,
-        "code": "0x01",  # NOSONAR
-        "code_message": "IP has been observed by the GreyNoise sensor network",
+        "ip": "71.5.135.131",
+        "business_service_intelligence": {
+            "found": False,
+            "trust_level": ""
+            },
+        "internet_scanner_intelligence": {
+            "found": True,
+            "classification": "benign"
+        }
     }
 ]
 
 valid_multiple_qc_resp = [
     {
-        "ip": "71.5.135.131",  # NOSONAR
-        "noise": False,
-        "code": "0x00",  # NOSONAR
-        "code_message": "IP has never been observed scanning the Internet",
+        "ip": "71.5.135.131",
+        "business_service_intelligence": {
+            "found": False,
+            "trust_level": ""
+            },
+        "internet_scanner_intelligence": {
+            "found": True,
+            "classification": "benign"
+            }
     },
     {
-        "ip": "8.8.8.8",  # NOSONAR
-        "noise": False,
-        "code": "0x00",  # NOSONAR
-        "code_message": "IP has never been observed scanning the Internet",
+        "ip": "8.8.8.8",
+        "business_service_intelligence": {
+            "found": False,
+            "trust_level": ""
+            },
+        "internet_scanner_intelligence": {
+            "found": True,
+        "classification": "benign"
+            }
     },
 ]
 valid_quick_response_expected = copy.deepcopy(valid_quick_response)
 for resp in valid_quick_response_expected:
     resp["address"] = resp["ip"]
-    resp["code_value"] = resp["code_message"]
-    del resp["ip"], resp["code_message"]
+    del resp["ip"]
 
 valid_multiple_qc_resp_expected = copy.deepcopy(valid_multiple_qc_resp)
 for resp in valid_multiple_qc_resp_expected:
     resp["address"] = resp["ip"]
-    resp["code_value"] = resp["code_message"]
-    del resp["ip"], resp["code_message"]
+    del resp["ip"]
 
 # ip, test_scenario, api_response, status_code, expected_output
 ip_quick_check_command_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_quick_response, 200, valid_quick_response_expected),  # NOSONAR
+    ({"ip": "71.5.135.131"}, "positive", valid_quick_response, 200, valid_quick_response_expected),
     (
-        {"ip": "71.6.135.131,8.8.8.8"},
+        {"ip": "71.5.135.131,8.8.8.8"},
         "positive",
         valid_multiple_qc_resp,
-        200,  # NOSONAR
+        200,
         valid_multiple_qc_resp_expected,
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "custom",
         "invalid ip response",
-        200,  # NOSONAR
+        200,
         "Invalid response from GreyNoise. Response: invalid ip response",
-    ),  # NOSONAR
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "forbidden",
-        401,  # NOSONAR
+        401,
         "Unauthenticated. Check the configured API Key.",
-    ),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", [], 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
+    ),
+    ({"ip": "71.6.135.131"}, "negative", [], 429, "API Rate limit hit. Try after sometime."),
     (
         {"ip": "71.6.135.131"},
         "negative",
         "Dummy message",
-        405,  # NOSONAR
-        "Failed to execute  command.\n Error: Dummy message",
-    ),  # NOSONAR
+        405,
+        "Failed to execute greynoise-ip-quick-check command.\n Error: Dummy message",
+    ),
     (
         {"ip": "71.6.135.131"},
         "negative",
         [],
-        505,  # NOSONAR
+        505,
         "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
-    ({"ip": "5844.2204.2191.2471"}, "negative", [], 200, "Invalid IP address: '5844.2204.2191.2471'"),  # NOSONAR
-    ({"ip": ""}, "negative", [], 200, "Invalid IP address: ''"),  # NOSONAR
+    ),
+    ({"ip": "5844.2204.2191.2471"}, "negative", [], 200, "Invalid IP address: '5844.2204.2191.2471'"),
+    ({"ip": ""}, "negative", [], 200, "Invalid IP address: ''"),
 ]
 
 generate_advanced_query_data = [
@@ -217,49 +255,78 @@ valid_query_response = {
     "count": 1,
     "data": [
         {
-            "ip": "71.6.135.131",  # NOSONAR
-            "seen": True,
-            "classification": "malicious",
-            "first_seen": "2019-04-04",
-            "last_seen": "2019-08-21",
-            "actor": "unknown",
-            "tags": ["mssql bruteforcer", "mssql scanner", "rdp scanner"],
-            "vpn": True,
-            "vpn_service": "dummy vpn",
-            "metadata": {
-                "country": "china",
-                "country_code": "cn",
-                "city": "kunshan",
-                "organization": "chinanet jiangsu province network",
-                "asn": "as4134",
+            "ip": "71.6.135.131",
+            "business_service_intelligence": {
+                "found": False,
+                "category": "",
+                "name": "",
+                "description": "",
+                "explanation": "",
+                "last_updated": "",
+                "reference": "",
+                "trust_level": ""
+            },
+            "internet_scanner_intelligence": {
+                "last_seen": "2025-06-26",
+                "found": True,
+                "tags": [
+                {
+                    "id": "36c75a5a-d4f8-46b3-b597-e0cbbf1ac3a0",
+                    "slug": "adb-check",
+                    "name": "ADB Check",
+                    "description": "IP addresses with this tag have been observed checking for the existence of the Android Debug Bridge protocol.",
+                    "category": "activity",
+                    "intention": "suspicious",
+                    "references": [],
+                    "cves": [],
+                    "recommend_block": False,
+                    "created": "2021-08-26",
+                    "updated_at": "2025-06-24T21:35:56.342633Z"
+                }
+                ],
+                "actor": "Shodan.io",
+                "spoofable": False,
+                "classification": "benign",
+                "bot": False,
+                "vpn": False,
+                "vpn_service": "",
                 "tor": False,
-                "os": "windows 7/8",
-                "category": "isp",
-            },
-            "raw_data": {
-                "scan": [
-                    {"port": 1433, "protocol": "tcp"},
-                    {"port": 3389, "protocol": "tcp"},
-                    {"port": 65529, "protocol": "tcp"},
+                "metadata": {
+                "asn": "AS10439",
+                "source_country": "United States",
+                "source_country_code": "US",
+                "source_city": "San Diego",
+                "domain": "fiberalley.com",
+                "rdns_parent": "shodan.io",
+                "rdns_validated": False,
+                "organization": "CariNet, Inc.",
+                "category": "hosting",
+                "rdns": "soda.census.shodan.io",
+                "os": "",
+                "region": "California",
+                "mobile": False,
+                "single_destination": False,
+                "destination_countries": [
+                    "Brazil"
                 ],
-                "web": {
-                    "paths": ["/sitemap.xml", "/.well-known/security.txt", "/favicon.ico", "/robots.txt", "/"],
-                    "useragents": ["useragent0", "useragent1", "useragent2"],
+                "destination_country_codes": [
+                    "BR"
+                ]
                 },
-                "ja3": [
-                    {"fingerprint": "30017f6f809155387cbcf95be6e7225d", "port": 443},
-                    {"fingerprint": "330ed8deb9b34592442c3bb392ee0926", "port": 444},
-                ],
-                "hassh": [
-                    {"fingerprint": "30017f6f809155387cbcf95be6e7225d", "port": 443},
-                    {"fingerprint": "330ed8deb9b34592442c3bb392ee0926", "port": 444},
-                ],
-            },
-        }
+                "last_seen_timestamp": "2025-06-26 12:59:00"
+            }
+            }
     ],
     "message": "ok",
     "query": "dummy_query",
     "scroll": "dummy_scroll",
+    "request_metadata": {
+        "message": "ok",
+        "count": 1,
+        "complete": False,
+        "adjusted_query": "dummy_query",
+        "scroll": "dummy_scroll"
+    }
 }
 
 valid_query_response_expected = copy.deepcopy(valid_query_response)
@@ -267,26 +334,38 @@ for each in valid_query_response_expected.get("data"):  # type: ignore
     each["address"] = each["ip"]
     del each["ip"]
 
+# Create the expected output structure that matches what the implementation returns
+valid_query_response_expected_output = {
+    "GreyNoise.IP(val.address && val.address == obj.address)": valid_query_response_expected["data"],
+    "GreyNoise.Query(val.query && val.query == obj.query)": {
+        "complete": valid_query_response["request_metadata"]["complete"],
+        "count": valid_query_response["request_metadata"]["count"],
+        "message": valid_query_response["request_metadata"]["message"],
+        "query": valid_query_response["request_metadata"]["adjusted_query"],
+        "scroll": valid_query_response["request_metadata"]["scroll"],
+    }
+}
+
 query_command_data: list = [
-    ({}, "positive", valid_query_response, 200, valid_query_response_expected),  # NOSONAR
-    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),  # NOSONAR
+    ({}, "positive", valid_query_response, 200, valid_query_response_expected_output),
+    ({}, "negative", "dummy message", 400, "Invalid response from GreyNoise. Response: (400, 'dummy message')"),
     (
         {},
         "negative",
-        {"message": "dummy_message"},
-        200,  # NOSONAR
+        {"request_metadata": {"message": "dummy_message"}},
+        200,
         "GreyNoise request failed. Reason: dummy_message",
-    ),  # NOSONAR
-    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),  # NOSONAR
-    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
-    ({}, "negative", "Dummy message", 405, "Failed to execute  command.\n Error: Dummy message"),  # NOSONAR  # NOSONAR
+    ),
+    ({}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
+    ({}, "negative", {}, 429, "Invalid response from GreyNoise. Response: API Limit Reached"),
+    ({}, "negative", "Dummy message", 405, "Invalid response from GreyNoise. Response: (405, 'Dummy message')"),
     (
         {},
         "negative",
         {},
-        505,  # NOSONAR
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
+        505,
+        "Invalid response from GreyNoise. Response: (505, [])",
+    ),
 ]
 
 valid_stats_response = {
@@ -322,67 +401,89 @@ invalid_stats_response = {
 invalid_stats_response_expected = copy.deepcopy(invalid_stats_response)
 valid_stats_response_expected = copy.deepcopy(valid_stats_response)
 stats_command_data: list = [
-    ({}, "positive", valid_stats_response, 200, valid_stats_response_expected),  # NOSONAR
-    ({}, "negative", "dummy message", 200, "Invalid response from GreyNoise. Response: dummy message"),  # NOSONAR
+    ({}, "positive", valid_stats_response, 200, valid_stats_response_expected),
+    ({}, "negative", "dummy message", 400, "Invalid response from GreyNoise. Response: (400, 'dummy message')"),
     (
         {},
         "positive",
         invalid_stats_response,
         200,
         {"count": 0, "query": "classification:sdcsdc spoofable:false"},
-    ),  # NOSONAR
-    ({}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),  # NOSONAR
-    ({}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
-    ({}, "negative", "Dummy message", 405, "Failed to execute  command.\n Error: Dummy message"),  # NOSONAR  # NOSONAR
+    ),
+    ({}, "negative", "forbidden", 401, "Invalid response from GreyNoise. Response: (401, 'forbidden')"),
+    ({}, "negative", {}, 429, "Invalid response from GreyNoise. Response: API Limit Reached"),
+    ({}, "negative", "Dummy message", 405, "Invalid response from GreyNoise. Response: (405, 'Dummy message')"),
     (
         {},
         "negative",
         {},
-        505,  # NOSONAR
-        "The server encountered an internal error for GreyNoise and was unable to complete your request.",
-    ),  # NOSONAR
+        505,
+        "Invalid response from GreyNoise. Response: (505, [])",
+    ),
 ]
 
 valid_ip_context_data = {
-    "ip": "71.6.135.131",  # NOSONAR
-    "seen": True,
-    "classification": "malicious",
-    "first_seen": "2019-04-04",
-    "last_seen": "2019-08-21",
-    "actor": "unknown",
-    "tags": ["mssql bruteforcer", "mssql scanner", "rdp scanner"],
-    "vpn": True,
-    "vpn_service": "dummy vpn",
-    "metadata": {
-        "country": "china",
-        "country_code": "cn",
-        "city": "kunshan",
-        "organization": "chinanet jiangsu province network",
-        "asn": "as4134",
+    "ip": "71.6.135.131",
+    "business_service_intelligence": {
+        "found": False,
+        "category": "",
+        "name": "",
+        "description": "",
+        "explanation": "",
+        "last_updated": "",
+        "reference": "",
+        "trust_level": ""
+    },
+    "internet_scanner_intelligence": {
+        "last_seen": "2025-06-26",
+        "found": True,
+        "tags": [
+        {
+            "id": "36c75a5a-d4f8-46b3-b597-e0cbbf1ac3a0",
+            "slug": "adb-check",
+            "name": "ADB Check",
+            "description": "IP addresses with this tag have been observed checking for the existence of the Android Debug Bridge protocol.",
+            "category": "activity",
+            "intention": "suspicious",
+            "references": [],
+            "cves": [],
+            "recommend_block": False,
+            "created": "2021-08-26",
+            "updated_at": "2025-06-24T21:35:56.342633Z"
+        }
+        ],
+        "actor": "Shodan.io",
+        "spoofable": False,
+        "classification": "benign",
+        "bot": False,
+        "vpn": False,
+        "vpn_service": "",
         "tor": False,
-        "os": "windows 7/8",
-        "category": "isp",
-    },
-    "raw_data": {
-        "scan": [
-            {"port": 1433, "protocol": "tcp"},
-            {"port": 3389, "protocol": "tcp"},
-            {"port": 65529, "protocol": "tcp"},
+        "metadata": {
+        "asn": "AS10439",
+        "source_country": "United States",
+        "source_country_code": "US",
+        "source_city": "San Diego",
+        "domain": "fiberalley.com",
+        "rdns_parent": "shodan.io",
+        "rdns_validated": False,
+        "organization": "CariNet, Inc.",
+        "category": "hosting",
+        "rdns": "soda.census.shodan.io",
+        "os": "",
+        "region": "California",
+        "mobile": False,
+        "single_destination": False,
+        "destination_countries": [
+            "Brazil"
         ],
-        "web": {
-            "paths": ["/sitemap.xml", "/.well-known/security.txt", "/favicon.ico", "/robots.txt", "/"],
-            "useragents": ["useragent0", "useragent1", "useragent2"],
+        "destination_country_codes": [
+            "BR"
+        ]
         },
-        "ja3": [
-            {"fingerprint": "30017f6f809155387cbcf95be6e7225d", "port": 443},
-            {"fingerprint": "330ed8deb9b34592442c3bb392ee0926", "port": 444},
-        ],
-        "hassh": [
-            {"fingerprint": "30017f6f809155387cbcf95be6e7225d", "port": 443},
-            {"fingerprint": "330ed8deb9b34592442c3bb392ee0926", "port": 444},
-        ],
-    },
-}
+        "last_seen_timestamp": "2025-06-26 12:59:00"
+    }
+    }
 
 valid_ip_context_data_response = [
     {
@@ -399,7 +500,7 @@ valid_ip_context_data_response = [
         "VPN": True,
         "VPN Service": "dummy vpn",
         "Tor": False,
-        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",  # NOSONAR
+        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",
         "Seen": True,
         "Classification": "malicious",
         "First Seen": "2019-04-04",
@@ -414,47 +515,66 @@ get_ip_context_data_data = [([valid_ip_context_data], valid_ip_context_data_resp
 valid_riot_response = {
     "output": {
         "ip": "8.8.8.8",
-        "riot": True,
+        "internet_scanner_intelligence": {"found": False},
+        "business_service_intelligence": {
+        "found": True,
         "category": "public_dns",
         "name": "Google Public DNS",
         "description": "Google's global domain name system (DNS) resolution service.",
         "explanation": "Public DNS services are used as alternatives to ISP's name servers. "
-                       "You may see devices on your network communicating with Google Public DNS over port "
-                       "53/TCP or 53/UDP to resolve DNS lookups.",
+        "You may see devices on your network communicating with Google Public DNS over port "
+        "53/TCP or 53/UDP to resolve DNS lookups.",
         "last_updated": "2021-04-12T09:55:37Z",
-        "reference": "https://developers.google.com/speed/public-dns/docs/isp#alternative",
+        "reference": "https://developers.google.com/speed/public-dns/docs/isp#alternative",}
     },
-    "readable": "### IP: 8.8.8.8 found with RIOT Reputation: Unknown\nBelongs to Common Business Service: "
-                "Google Public DNS\n### GreyNoise RIOT IP Lookup\n|IP|Category|Name|Trust Level|Description|Last Updated|\n"
-                "|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | public_dns | Google Public DNS "
-                "|  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n"
+    "readable": "### IP: 8.8.8.8 found with Reputation: Unknown\n#### Belongs to Common Business Service: "
+    "Google Public DNS\n### GreyNoise Business Service Intelligence Lookup\n|IP|Business Service|Category|Name|Trust Level|Description|Last Updated|\n"
+    "|---|---|---|---|---|---|---|\n| [8.8.8.8](https://viz.greynoise.io/ip/8.8.8.8) | true | public_dns | Google Public DNS "
+    "|  | Google's global domain name system (DNS) resolution service. | 2021-04-12T09:55:37Z |\n",
 }
 
-valid_riot_response_2 = {"output": {"ip": "114.119.130.178", "riot": False},
-                         "readable": "### IP: 114.119.130.178 Not Associated with Common Business Service"
-                                     "\n### GreyNoise RIOT IP Lookup\n|IP|RIOT|\n|---|---|\n| 114.119.130.178 | false |\n"}
-invalid_riot_response = {
-    "output": {"message": "IP provided is not a routable IPv4 address"},
-    "error_message": "Invalid IP address: '{}'",
+valid_riot_response_2 = {
+    "output": {"ip": "114.119.130.178", "internet_scanner_intelligence": {"found": False}, "business_service_intelligence": {"found": False}},
+    "readable": "### IP: 114.119.130.178 Not Associated with a Business Service"
+    "\n### GreyNoise Business Service Intelligence Lookup\n|IP|Business Service|\n|---|---|\n| 114.119.130.178 | false |\n",
 }
+
 riot_command_response_data = [
     ("positive", 200, {"ip": "8.8.8.8"}, valid_riot_response),
     ("positive", 200, {"ip": "114.119.130.178"}, valid_riot_response_2),
-    ("negative", 400, {"ip": "123"}, invalid_riot_response),
-    ("negative", 400, {"ip": "abc"}, invalid_riot_response),
+    ("negative", 400, {"ip": "123"}, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
+    ("negative", 400, {"ip": "abc"}, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
 ]
 
+valid_context_response_expected = copy.deepcopy(valid_ip_response_expected["internet_scanner_intelligence"])
+valid_context_response_expected["seen"] = True
+valid_context_response_expected["ip"] = "71.6.135.131"
+valid_context_response_expected["address"] = "71.6.135.131"
+
 context_command_response_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected),  # NOSONAR
+    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_context_response_expected),
     (
         {"ip": "71.6.135.131"},
         "positive",
-        {"ip": "71.6.135.131", "seen": False},
-        200,  # NOSONAR
-        {"address": "71.6.135.131", "seen": False},
-    ),  # NOSONAR
-    ({"ip": "123"}, "negative", "Invalid IP address: '123'", 200, "Invalid IP address: '123'"),  # NOSONAR
-    ({"ip": "abc"}, "negative", "forbidden", 200, "Invalid IP address: 'abc'"),  # NOSONAR
+        {"ip": "71.6.135.131", "business_service_intelligence": {
+            "found": False,
+            "trust_level": ""
+            },
+        "internet_scanner_intelligence": {
+            "found": False,
+            "classification": ""
+            }},
+        200,
+       {
+        "ip": "71.6.135.131",
+        "found": False,
+        "seen": False,
+        "address": "71.6.135.131",
+        "classification": ""
+        },
+    ),
+    ({"ip": "123"}, "negative", {"error":"invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
+    ({"ip": "abc"}, "negative", {"error":"invalid ip submitted"}, 400, "Invalid response from GreyNoise. Response: (400, 'invalid ip submitted')"),
 ]
 
 valid_similar_response = {
@@ -468,7 +588,7 @@ valid_similar_response = {
         "first_seen": "2023-05-29",
         "ip": "121.239.23.85",
         "last_seen": "2023-05-30",
-        "organization": "CHINANET-BACKBONE"
+        "organization": "CHINANET-BACKBONE",
     },
     "similar_ips": [
         {
@@ -478,43 +598,51 @@ valid_similar_response = {
             "classification": "unknown",
             "country": "Australia",
             "country_code": "AU",
-            "features": [
-                "ports",
-                "spoofable_bool"
-            ],
+            "features": ["ports", "spoofable_bool"],
             "first_seen": "2023-05-22",
             "ip": "1.145.159.157",
             "last_seen": "2023-05-23",
             "organization": "Telstra Corporation Ltd",
-            "score": 1
+            "score": 1,
         }
     ],
-    "total": 32368
+    "total": 32368,
 }
 
 valid_similar_response_expected = copy.deepcopy(valid_similar_response)
 
 similar_command_response_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_similar_response, 200, valid_similar_response_expected),  # NOSONAR
-    ({"ip": "45.95.147.229"}, "positive", {
-        "ip": {
-            "actor": "unknown",
-            "asn": "AS49870",
-            "city": "Amsterdam",
-            "classification": "malicious",
-            "country": "Netherlands",
-            "country_code": "NL",
-            "first_seen": "2023-05-11",
-            "ip": "45.95.147.229",
-            "last_seen": "2023-05-30",
-            "organization": "Alsycon B.V."
+    ({"ip": "71.6.135.131"}, "positive", valid_similar_response, 200, valid_similar_response_expected),
+    (
+        {"ip": "45.95.147.229"},
+        "positive",
+        {
+            "ip": {
+                "actor": "unknown",
+                "asn": "AS49870",
+                "city": "Amsterdam",
+                "classification": "malicious",
+                "country": "Netherlands",
+                "country_code": "NL",
+                "first_seen": "2023-05-11",
+                "ip": "45.95.147.229",
+                "last_seen": "2023-05-30",
+                "organization": "Alsycon B.V.",
+            },
+            "similar_ips": [],
+            "total": 0,
         },
-        "similar_ips": [],
-        "total": 0
-    }, 200, valid_similar_response_expected),  # NOSONAR
-    ({"ip": "192.168.1.1"}, "negative", "Non-Routable IP address: '192.168.1.1'", 404, "Non-Routable IP address: "
-                                                                                       "'192.168.1.1'"),  # NOSONAR
-    ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
+        200,
+        valid_similar_response_expected,
+    ),
+    (
+        {"ip": "192.168.1.1"},
+        "negative",
+        "Non-Routable IP address: '192.168.1.1'",
+        404,
+        "Failed to execute greynoise-similar command.\n Error: \"Non-Routable IP address: '192.168.1.1'\"",
+    ),
+    ({"ip": "abc"}, "negative", "forbidden", 404, "Failed to execute greynoise-similar command.\n Error: forbidden"),
 ]
 
 valid_timeline_response = {
@@ -526,20 +654,9 @@ valid_timeline_response = {
             "classification": "unknown",
             "country": "Netherlands",
             "country_code": "NL",
-            "destinations": [
-                {
-                    "country": "Albania",
-                    "country_code": "AL"
-                }
-            ],
+            "destinations": [{"country": "Albania", "country_code": "AL"}],
             "organization": "Alsycon B.V.",
-            "protocols": [
-                {
-                    "app_protocol": "TELNET",
-                    "port": 23,
-                    "transport_protocol": "TCP"
-                }
-            ],
+            "protocols": [{"app_protocol": "TELNET", "port": 23, "transport_protocol": "TCP"}],
             "rdns": "tittle.life",
             "region": "North Holland",
             "spoofable": "true",
@@ -548,13 +665,13 @@ valid_timeline_response = {
                     "category": "tool",
                     "description": "IP addresses with this tag have been observed using the ZMap Internet scanner.",
                     "intention": "unknown",
-                    "name": "ZMap Client"
+                    "name": "ZMap Client",
                 }
             ],
             "timestamp": "2023-05-29T00:00:00Z",
             "tor": "false",
             "vpn": "false",
-            "vpn_service": ""
+            "vpn_service": "",
         }
     ],
     "ip": "45.95.147.229",
@@ -563,28 +680,39 @@ valid_timeline_response = {
         "ip": "45.95.147.229",
         "limit": 50,
         "next_cursor": "",
-        "start_time": "2023-05-29T00:00:00Z"
-    }
+        "start_time": "2023-05-29T00:00:00Z",
+    },
 }
 
 valid_timeline_response_expected = copy.deepcopy(valid_timeline_response)
 
 timeline_command_response_data = [
-    ({"ip": "45.95.147.229"}, "positive", valid_timeline_response, 200, valid_timeline_response_expected),  # NOSONAR
-    ({"ip": "61.30.129.190"}, "positive", {
-        "activity": [],
-        "ip": "61.30.129.190",
-        "metadata": {
-            "end_time": "2023-05-30T18:46:34.662311004Z",
+    ({"ip": "45.95.147.229"}, "positive", valid_timeline_response, 200, valid_timeline_response_expected),
+    (
+        {"ip": "61.30.129.190"},
+        "positive",
+        {
+            "activity": [],
             "ip": "61.30.129.190",
-            "limit": 50,
-            "next_cursor": "",
-            "start_time": "2023-05-29T00:00:00Z"
-        }
-    }, 200, valid_timeline_response_expected),  # NOSONAR
-    ({"ip": "192.168.1.1"}, "negative", "Non-Routable IP address: '192.168.1.1'", 404, "Non-Routable IP address: "
-                                                                                       "'192.168.1.1'"),  # NOSONAR
-    ({"ip": "abc"}, "negative", "forbidden", 404, "Invalid IP address: 'abc'"),  # NOSONAR
+            "metadata": {
+                "end_time": "2023-05-30T18:46:34.662311004Z",
+                "ip": "61.30.129.190",
+                "limit": 50,
+                "next_cursor": "",
+                "start_time": "2023-05-29T00:00:00Z",
+            },
+        },
+        200,
+        valid_timeline_response_expected,
+    ),
+    (
+        {"ip": "192.168.1.1"},
+        "negative",
+        "Non-Routable IP address: '192.168.1.1'",
+        404,
+        "Failed to execute greynoise-timeline command.\n Error: \"Non-Routable IP address: '192.168.1.1'\"",
+    ),
+    ({"ip": "abc"}, "negative", "forbidden", 404, "Failed to execute greynoise-timeline command.\n Error: forbidden"),
 ]
 
 cve_command_response_data = [
@@ -599,24 +727,24 @@ cve_command_response_data = [
                 "cve_cvss_score": 8.6,
                 "product": "Test",
                 "vendor": "test",
-                "published_to_nist_nvd": True
+                "published_to_nist_nvd": True,
             },
             "timeline": {
                 "cve_published_date": "2024-05-28T19:15:10Z",
                 "cve_last_updated_date": "2024-05-31T16:04:09Z",
                 "first_known_published_date": "2024-05-27T00:00:00Z",
-                "cisa_kev_date_added": "2024-05-30T00:00:00Z"
+                "cisa_kev_date_added": "2024-05-30T00:00:00Z",
             },
             "exploitation_details": {
                 "attack_vector": "NETWORK",
                 "exploit_found": True,
                 "exploitation_registered_in_kev": True,
-                "epss_score": 0.94237
+                "epss_score": 0.94237,
             },
             "exploitation_stats": {
                 "number_of_available_exploits": 60,
                 "number_of_threat_actors_exploiting_vulnerability": 1,
-                "number_of_botnets_exploiting_vulnerability": 0
+                "number_of_botnets_exploiting_vulnerability": 0,
             },
             "exploitation_activity": {
                 "activity_seen": True,
@@ -625,8 +753,8 @@ cve_command_response_data = [
                 "benign_ip_count_30d": 0,
                 "threat_ip_count_1d": 4,
                 "threat_ip_count_10d": 10,
-                "threat_ip_count_30d": 18
-            }
+                "threat_ip_count_30d": 18,
+            },
         },
         200,
         {
@@ -637,24 +765,24 @@ cve_command_response_data = [
                 "cve_cvss_score": 8.6,
                 "product": "Test",
                 "vendor": "test",
-                "published_to_nist_nvd": True
+                "published_to_nist_nvd": True,
             },
             "timeline": {
                 "cve_published_date": "2024-05-28T19:15:10Z",
                 "cve_last_updated_date": "2024-05-31T16:04:09Z",
                 "first_known_published_date": "2024-05-27T00:00:00Z",
-                "cisa_kev_date_added": "2024-05-30T00:00:00Z"
+                "cisa_kev_date_added": "2024-05-30T00:00:00Z",
             },
             "exploitation_details": {
                 "attack_vector": "NETWORK",
                 "exploit_found": True,
                 "exploitation_registered_in_kev": True,
-                "epss_score": 0.94237
+                "epss_score": 0.94237,
             },
             "exploitation_stats": {
                 "number_of_available_exploits": 60,
                 "number_of_threat_actors_exploiting_vulnerability": 1,
-                "number_of_botnets_exploiting_vulnerability": 0
+                "number_of_botnets_exploiting_vulnerability": 0,
             },
             "exploitation_activity": {
                 "activity_seen": True,
@@ -663,8 +791,9 @@ cve_command_response_data = [
                 "benign_ip_count_30d": 0,
                 "threat_ip_count_1d": 4,
                 "threat_ip_count_10d": 10,
-                "threat_ip_count_30d": 18
-            }
-        }),
-    ({"cve": "abce"}, "negative", {}, 400, "The provided ID does not match the format: CVE-XXXX-YYYYY")
+                "threat_ip_count_30d": 18,
+            },
+        },
+    ),
+    ({"cve": "abce"}, "negative", {}, 400, "Invalid CVE ID format: 'abce'"),
 ]

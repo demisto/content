@@ -1,0 +1,506 @@
+[
+    {
+      "tag_id": "aa",
+      "name": "Automatic Response",
+      "description": "An email that has been automatically produced as a result of a received email. This may be the result of Out of Office responders or other forms of automatically generated responses.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ac",
+      "name": "Account Confirmation",
+      "description": "The recipient is being requested to access or confirm an external web account",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ah",
+      "name": "Out of Character",
+      "description": "Out of Character emails involve a user exhibiting a significant deviation from their usual behavior. This may indicate that their account has been compromised and is being used to abuse trust with the recipient, getting them to accept a file or click on a link.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ar",
+      "name": "Automated Report",
+      "description": "An email which is produced via an automated system which is typically periodic in nature and for some internal operational purpose",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "at",
+      "name": "Email Account Takeover",
+      "description": "The system believes this is a malicious email which has originated from a legitimate corporate mailbox. This suggests someone has taken over the mailbox and may be using it to deceive internal users.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "bi",
+      "name": "Brand Impersonation",
+      "description": "The email appears to be impersonating a well-known brand.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "bm",
+      "name": "Mailer",
+      "description": "This email was sent by an automated system and uses some industry-standard practices for legitimate automated mail distribution.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ca",
+      "name": "Calendar",
+      "description": "Calendar invites or other scheduling exchanges",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "cc",
+      "name": "Consistent Content",
+      "description": "The content of the email is in keeping with the previous patterns of communication from this source",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ccl",
+      "name": "Cold Call",
+      "description": "Someone at an external organization is trying to start a conversation with a user who has not had any communication with that organization previously. This is likely an opening attempt to sell a product or service.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ch",
+      "name": "Credential Harvesting",
+      "description": "There is evidence that a link within this email is intended to take the recipient to a fake login page which will request a corporate password. Some element of social engineering is typically present to draw the recipients attention to the link.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ci",
+      "name": "Compromise Indicators",
+      "description": "The internal account involved in this transaction is exhibiting behaviour consistent with a compromised account, such as logging in from an unusual location or sending files to many new addresses.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": null
+    },
+    {
+      "tag_id": "cpa",
+      "name": "Cloud Platform Abuse",
+      "description": "Someone appears to be abusing a legitimate cloud platform to share files or other unwanted material with the recipient.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "df",
+      "name": "Document Anomalies",
+      "description": "There is something irregular about the context of the document attached to this email. Documents containing sensitive information have the potential to be used exploitatively - for example, using trust with the recipient to induce a fraudulent payment or further sharing of information.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "dl",
+      "name": "Data Loss",
+      "description": "This email appears to contain content that is not normally sent outside the organization. This may indicate accidental disclosure or deliberate exfiltration of sensitive data.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ec",
+      "name": "Established Correspondent",
+      "description": "The external address involved in this transaction has had significant two-way correspondence with internal users previously.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "History"
+    },
+    {
+      "tag_id": "ed",
+      "name": "Established Domain Relationship",
+      "description": "The external domain involved in this transaction has had significant two-way correspondence with internal users previously.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ex",
+      "name": "Extortion",
+      "description": "Extortion aims to create a sense of panic in the recipient by presenting them with a threatening, often customized message which includes a demand for payment, often in the form of cryptocurrency.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "fa",
+      "name": "Forged Address",
+      "description": "Analysis of the emails source and the sender's neglect of validation suggests the address may be forged for malicious purposes.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Association"
+    },
+    {
+      "tag_id": "faa",
+      "name": "Fake Account Alert",
+      "description": "The email appears to be an alert about one of the recipient's accounts but was not sent by a legitimate system. This is a common social engineering tactic which can trick the recipient into sharing their password or downloading malware onto their device.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "fm",
+      "name": "Freemail",
+      "description": "The external address involved in this transaction is using a free sign-up service",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Association"
+    },
+    {
+      "tag_id": "fsr",
+      "name": "Payment Scare",
+      "description": "The email appears to be warning the recipient about a fake payment issue in order to solicit further engagement.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ftc",
+      "name": "First Time Contact",
+      "description": "This is the first time the internal and external addresses involved in this transaction have had any interaction.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "gm",
+      "name": "Graymail",
+      "description": "A benign email which has no productive value for the organization. This includes newsletters, announcements, and advertisements for products and services.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "hh",
+      "name": "High Mailing History",
+      "description": "The external address in this transaction has an established history of sending into the organization",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "History"
+    },
+    {
+      "tag_id": "ic",
+      "name": "Inconsistent Content",
+      "description": "The content of the email, body, links or attachments show some level of deviation from the normal pattern of life pattern of the sender.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "kc",
+      "name": "Known Correspondent",
+      "description": "The external address involved in this transaction belongs to a human user who has been contacted by internal users previously.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Association"
+    },
+    {
+      "tag_id": "kd",
+      "name": "Known Domain Relationship",
+      "description": "The external domain involved in this transaction has been contacted by internal users previously.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ld",
+      "name": "Lookalike Domain",
+      "description": "The sender domain is very similar to a known contact domain but is not established within the environment. It may have been registered for the purpose of deceiving internal users.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Association"
+    },
+    {
+      "tag_id": "lh",
+      "name": "Low Mailing History",
+      "description": "The external address in this transaction has a low history of sending into the organization",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "History"
+    },
+    {
+      "tag_id": "me",
+      "name": "Misdirected Email",
+      "description": "The system believes this email may have been sent to the wrong person.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "mh",
+      "name": "Moderate Mailing History",
+      "description": "The external address in this transaction has a moderate history of sending into the organization",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "History"
+    },
+    {
+      "tag_id": "mp",
+      "name": "Multistage Payload",
+      "description": "The system believes this malicious email is encouraging the recipient to follow a series of steps before delivering a payload or attempting to harvest sensitive information. Attacks are often structured this way in an attempt to evade detection.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "mr",
+      "name": "Malware or Ransomware",
+      "description": "A file attached to this email has properties consistent with a novel malware or ransomware threat which may infect the recipients device when opened.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "na",
+      "name": "No Association",
+      "description": "Little or no evidence exists that there is any relationship of trust between the external sender and the internal organization.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ncft",
+      "name": "New Correspondent File Transfer",
+      "description": "An attachment is being sent to an external recipient which is new to the environment and whose domain is rare or freemail.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "nd",
+      "name": "Narrow Distribution",
+      "description": "Typifies an automated or bulk mailer which is sent to a small number of individuals in the organization",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Association"
+    },
+    {
+      "tag_id": "no",
+      "name": "Notification",
+      "description": "An email whose purpose is directed towards the recipient, rather than a general audience, and was sent from an automated system.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Content"
+    },
+    {
+      "tag_id": "np",
+      "name": "Non-Productive Mail",
+      "description": "The email has no productive value for the organization. This encompasses phishing, spam and graymail.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "ns",
+      "name": "New Correspondent",
+      "description": "The external address involved in this transaction belongs to a human user who has a low mailing history but some domain association. The address is new but potentially expected.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "History"
+    },
+    {
+      "tag_id": "nsft",
+      "name": "New Sensitive File Transfer",
+      "description": "An internal user is sending out a file with a sensitivity label which appears unexpected based on their previous email activity.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "pa",
+      "name": "Phishing Attachment",
+      "description": "This email contains an attachment which the system considers to be highly unexpected in the context of previous sender and recipient activity. The attachment may be a precursor to further malicious activity - for example, by convincing the recipient to follow harmful instructions or engage in communications via another channel.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "paft",
+      "name": "Personal Account File Transfer",
+      "description": "An internal user appears to be sending an attachment to their own personal account.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "pl",
+      "name": "Phishing Link",
+      "description": "The email contains a link which the system considers to be highly unexpected in the context of previous sender and recipient activity. The linked webpage may be a precursor to further malicious activity - for example, by convincing the recipient to follow harmful instructions or engage in communications via another channel.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "pr",
+      "name": "Personal Address",
+      "description": "A likely personal address of an internal individual",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ps",
+      "name": "User Impersonation",
+      "description": "The display name of this email is very similar to an internal user but was sent from an email address not normally used by the person.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Association"
+    },
+    {
+      "tag_id": "rc",
+      "name": "Active Conversation",
+      "description": "An email which is part of an active communication between the organization and an external address. Communication must be recent and bidirectional.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": "Association"
+    },
+    {
+      "tag_id": "rs",
+      "name": "Response to Solicitation",
+      "description": "This outbound email is a response to an earlier inbound email which had some suspicious properties.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "sa",
+      "name": "Suspicious Attachment",
+      "description": "This email contains an attachment with some suspicious properties. The system will action this attachment as a precaution.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "si",
+      "name": "Internal IT Impersonation",
+      "description": "The email appears to be impersonating an internal notification system. This is a common social engineering tactic which can trick the recipient into sharing their password or downloading malware onto their device.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Association"
+    },
+    {
+      "tag_id": "sl",
+      "name": "Suspicious Link",
+      "description": "This email contains a link with some suspicious properties. The system will action this link as a precaution.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "so",
+      "name": "Solicitation",
+      "description": "The goal of solicitation is to convince a recipient to open a line of communication with the sender which could lead ultimately to the transfer of payments or a backdoor to compromise of the network. Such emails often contain minimal traceable content such as links or attachments.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "sp",
+      "name": "Spam",
+      "description": "Spam represents a lazy attempt to engage the recipient in commercial transactions which are at best unwanted and at worst fraudulent. Such emails are typically distributed in bulk to maximise the chance of recipient engagement.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Content"
+    },
+    {
+      "tag_id": "sr",
+      "name": "Singular Relationship",
+      "description": "There is a direct relationship between the sender and recipient which is not shared by other internal addresses",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ss",
+      "name": "Spoofing Indicators",
+      "description": "Elements of these emails contain some weak indicators which are suggestive of spoofing attempts where an attacker may be masquerading as a known contact or commonly used service.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ubm",
+      "name": "Unknown Bulk Mailer",
+      "description": "A commercial email intended for a wide audience. Like Graymail, this encompasses newsletters, announcements, and advertisements for products and services. In addition, the system can find no evidence of association between internal users and the sending organization. The system will apply a junk action to this email.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "uc",
+      "name": "Unknown Correspondent",
+      "description": "The external address involved in this transaction belongs to a human user who has received no recent emails from internal users.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    },
+    {
+      "tag_id": "ud",
+      "name": "Undeliverable",
+      "description": "Undeliverable mail reports and email bounces",
+      "status": "info",
+      "readable_status": "Info",
+      "category": null
+    },
+    {
+      "tag_id": "un",
+      "name": "Unknown Intent",
+      "description": "The sender is using methods to hide the content of their email, such as via an encryption service. The system was able to determine the email was suspicious by analysis of previous sender and recipient activity.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "vai",
+      "name": "Validation Issues",
+      "description": "The sender has not provided a valid mechanism for confirming the header-From address as authentic. Not enough emails have been sent to determine if the origin is normal for the sender.",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Content"
+    },
+    {
+      "tag_id": "vi",
+      "name": "VIP Impersonation",
+      "description": "The display name of this email is very similar to a high-profile internal user but was sent from an email address not normally used by the person. The system autonomously determines the high-profile users within the organization. These can be viewed and curated on the VIPs list.",
+      "status": "critical",
+      "readable_status": "Critical",
+      "category": "Association"
+    },
+    {
+      "tag_id": "vip",
+      "name": "VIP",
+      "description": "An internal user involved in this thread is on the VIP list.",
+      "status": "info",
+      "readable_status": "Info",
+      "category": null
+    },
+    {
+      "tag_id": "wd",
+      "name": "Wide Distribution",
+      "description": "Typifies an automated or bulk mailer which is sent to a wide number of individuals in the organization",
+      "status": "warn",
+      "readable_status": "Warn",
+      "category": "Association"
+    }
+  ]

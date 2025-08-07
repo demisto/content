@@ -1,22 +1,23 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """Trustwave Fusion Integration for Cortex XSOAR"""
 
 from CommonServerUserPython import *  # noqa
 
 import urllib3
 import traceback
-from typing import Dict, Any
+from typing import Any
 import urllib.parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 # Date format for Fusion searches
-FUSION_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+FUSION_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 # Map Fusion priority to Demisto severity
 SEVERITY_MAP = {
@@ -89,7 +90,7 @@ ASSET_FIELDS = [
     "uri",
 ]
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -98,9 +99,7 @@ class Client(BaseClient):
     """
 
     def search_tickets(self, **kwargs):
-        result = self._http_request(
-            method="GET", url_suffix="/v2/tickets", params=kwargs
-        )
+        result = self._http_request(method="GET", url_suffix="/v2/tickets", params=kwargs)
         tickets = []
         if result:
             tickets = result.get("items", [])
@@ -119,7 +118,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix="/v2/describe")
 
     def get_ticket(self, id):
-        quoted_id = urllib.parse.quote(id, safe='')
+        quoted_id = urllib.parse.quote(id, safe="")
         url_suffix = f"/v2/tickets/{quoted_id}"
         try:
             ticket = self._http_request(method="GET", url_suffix=url_suffix)
@@ -137,7 +136,7 @@ class Client(BaseClient):
         return ticket
 
     def add_ticket_comment(self, id, comment):
-        quoted_id = urllib.parse.quote(id, safe='')
+        quoted_id = urllib.parse.quote(id, safe="")
         url_suffix = f"/v1/tickets/{quoted_id}/comments"
         payload = {
             "comment": comment,
@@ -152,7 +151,7 @@ class Client(BaseClient):
         return result
 
     def close_ticket(self, id, comment):
-        quoted_id = urllib.parse.quote(id, safe='')
+        quoted_id = urllib.parse.quote(id, safe="")
         url_suffix = f"/v1/tickets/{quoted_id}/close"
         payload = {
             "comment": comment,
@@ -166,7 +165,7 @@ class Client(BaseClient):
         )
 
     def get_finding(self, id):
-        quoted_id = urllib.parse.quote(id, safe='')
+        quoted_id = urllib.parse.quote(id, safe="")
         url_suffix = f"/v2/findings/{quoted_id}"
         try:
             finding = self._http_request(method="GET", url_suffix=url_suffix)
@@ -179,7 +178,7 @@ class Client(BaseClient):
         return finding
 
     def get_asset(self, id):
-        quoted_id = urllib.parse.quote(id, safe='')
+        quoted_id = urllib.parse.quote(id, safe="")
         url_suffix = f"/v2/assets/{quoted_id}"
 
         try:
@@ -196,8 +195,7 @@ class Client(BaseClient):
         params = {k: v for k, v in kwargs.items() if v is not None}
 
         url_suffix = "/v2/assets"
-        results = self._http_request(method="GET", url_suffix=url_suffix,
-                                     params=params)
+        results = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
         if "items" not in results:
             return None
@@ -211,8 +209,7 @@ class Client(BaseClient):
         params = {k: v for k, v in kwargs.items() if v is not None}
 
         url_suffix = "/v2/findings"
-        results = self._http_request(method="GET", url_suffix=url_suffix,
-                                     params=params)
+        results = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
         if "items" not in results:
             return None
@@ -222,7 +219,7 @@ class Client(BaseClient):
         return findings
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def arg_to_datestring(arg, arg_name, required=False, format=None):
@@ -280,7 +277,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.replace(tzinfo=timezone.utc).timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -303,7 +300,7 @@ def format_notes(notes, limit=5):
     return "\n".join(results)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -458,9 +455,7 @@ def get_finding_command(client, args):
 
     if finding:
         # TODO: Add readable_output (markdown) for warroom view
-        command_results = CommandResults(
-            outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=finding
-        )
+        command_results = CommandResults(outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=finding)
     else:
         command_results = CommandResults(readable_output=f"Finding {id} not found")
     return command_results
@@ -472,33 +467,22 @@ def get_asset_command(client, args):
 
     if asset:
         # TODO: Add readable_output (markdown) for warroom view
-        command_results = CommandResults(
-            outputs_prefix="Trustwave.Asset", outputs_key_field="id", outputs=asset
-        )
+        command_results = CommandResults(outputs_prefix="Trustwave.Asset", outputs_key_field="id", outputs=asset)
     else:
         command_results = CommandResults(readable_output=f"Asset {id} not found")
     return command_results
 
 
 def get_updated_tickets_command(client, args):
-    updated_since = arg_to_datestring(args.get("since"),
-                                      arg_name="since",
-                                      required=True,
-                                      format=FUSION_DATE_FORMAT)
+    updated_since = arg_to_datestring(args.get("since"), arg_name="since", required=True, format=FUSION_DATE_FORMAT)
     ticket_types = args.get("ticket_types", "INCIDENT")
     max_tickets = args.get("fetch_limit", 100)
 
     demisto.debug(f"Searching since {updated_since}")
-    tickets = client.search_tickets(
-        updatedSince=updated_since,
-        type=ticket_types,
-        pageSize=max_tickets
-    )
+    tickets = client.search_tickets(updatedSince=updated_since, type=ticket_types, pageSize=max_tickets)
 
     if tickets:
-        command_results = CommandResults(
-            outputs_prefix="Trustwave.Ticket", outputs_key_field="number", outputs=tickets
-        )
+        command_results = CommandResults(outputs_prefix="Trustwave.Ticket", outputs_key_field="number", outputs=tickets)
     else:
         command_results = CommandResults(readable_output="No updated tickets found")
     return command_results
@@ -513,15 +497,9 @@ def search_findings_command(client, args):
     detail = args.get("detail")
     severity = args.get("severity")
     priority = args.get("priority")
-    created = arg_to_datestring(args.get("created_since"),
-                                arg_name="created_since",
-                                required=False,
-                                format=FUSION_DATE_FORMAT)
+    created = arg_to_datestring(args.get("created_since"), arg_name="created_since", required=False, format=FUSION_DATE_FORMAT)
     demisto.debug(f"created: {created}")
-    updated = arg_to_datestring(args.get("updated_since"),
-                                arg_name="updated_since",
-                                required=False,
-                                format=FUSION_DATE_FORMAT)
+    updated = arg_to_datestring(args.get("updated_since"), arg_name="updated_since", required=False, format=FUSION_DATE_FORMAT)
     demisto.debug(f"updated: {updated}")
     findings = None
     if finding_id is not None:
@@ -529,21 +507,20 @@ def search_findings_command(client, args):
         if finding:
             findings = [finding]
     else:
-        findings = client.search_findings(pageSize=limit,
-                                          name=name,
-                                          classification=classification,
-                                          summary=summary,
-                                          detail=detail,
-                                          priority=priority,
-                                          severity=severity,
-                                          createdSince=created,
-                                          updatedSince=updated,
-                                          )
+        findings = client.search_findings(
+            pageSize=limit,
+            name=name,
+            classification=classification,
+            summary=summary,
+            detail=detail,
+            priority=priority,
+            severity=severity,
+            createdSince=created,
+            updatedSince=updated,
+        )
 
     if findings:
-        command_results = CommandResults(
-            outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=findings
-        )
+        command_results = CommandResults(outputs_prefix="Trustwave.Finding", outputs_key_field="id", outputs=findings)
     else:
         command_results = CommandResults(readable_output="No matching findings found")
     return command_results
@@ -562,15 +539,9 @@ def search_assets_command(client, args):
     app_proto = args.get("app_protocol")
     transport = args.get("transport")
     asset_type = args.get("type")
-    created = arg_to_datestring(args.get("created_since"),
-                                arg_name="created_since",
-                                required=False,
-                                format=FUSION_DATE_FORMAT)
+    created = arg_to_datestring(args.get("created_since"), arg_name="created_since", required=False, format=FUSION_DATE_FORMAT)
 
-    updated = arg_to_datestring(args.get("updated_since"),
-                                arg_name="updated_since",
-                                required=False,
-                                format=FUSION_DATE_FORMAT)
+    updated = arg_to_datestring(args.get("updated_since"), arg_name="updated_since", required=False, format=FUSION_DATE_FORMAT)
 
     assets = None
     if asset_id is not None:
@@ -578,22 +549,21 @@ def search_assets_command(client, args):
         if asset:
             assets = [asset]
     else:
-        assets = client.search_assets(pageSize=limit,
-                                      name=name,
-                                      ips=ips,
-                                      os=os,
-                                      tags=tags,
-                                      port=port,
-                                      applicationProtocol=app_proto,
-                                      transportProtocol=transport,
-                                      type=asset_type,
-                                      createdSince=created,
-                                      updatedSince=updated,
-                                      )
-    if assets:
-        command_results = CommandResults(
-            outputs_prefix="Trustwave.Asset", outputs_key_field="id", outputs=assets
+        assets = client.search_assets(
+            pageSize=limit,
+            name=name,
+            ips=ips,
+            os=os,
+            tags=tags,
+            port=port,
+            applicationProtocol=app_proto,
+            transportProtocol=transport,
+            type=asset_type,
+            createdSince=created,
+            updatedSince=updated,
         )
+    if assets:
+        command_results = CommandResults(outputs_prefix="Trustwave.Asset", outputs_key_field="id", outputs=assets)
     else:
         command_results = CommandResults(readable_output="No matching assets found")
     return command_results
@@ -609,15 +579,9 @@ def search_tickets_command(client, args):
     priority = args.get("priority")
     impact = args.get("impact")
     urgency = args.get("urgency")
-    created = arg_to_datestring(args.get("created_since"),
-                                arg_name="created_since",
-                                required=False,
-                                format=FUSION_DATE_FORMAT)
+    created = arg_to_datestring(args.get("created_since"), arg_name="created_since", required=False, format=FUSION_DATE_FORMAT)
 
-    updated = arg_to_datestring(args.get("updated_since"),
-                                arg_name="updated_since",
-                                required=False,
-                                format=FUSION_DATE_FORMAT)
+    updated = arg_to_datestring(args.get("updated_since"), arg_name="updated_since", required=False, format=FUSION_DATE_FORMAT)
 
     tickets = None
     if ticket_id is not None:
@@ -625,26 +589,25 @@ def search_tickets_command(client, args):
         if ticket:
             tickets = [ticket]
     else:
-        tickets = client.search_tickets(pageSize=limit,
-                                        type=ticket_type,
-                                        subject=subject,
-                                        status=status,
-                                        priority=priority,
-                                        impact=impact,
-                                        urgency=urgency,
-                                        createdSince=created,
-                                        updatedSince=updated,
-                                        )
-    if tickets:
-        command_results = CommandResults(
-            outputs_prefix="Trustwave.Ticket", outputs_key_field="id", outputs=tickets
+        tickets = client.search_tickets(
+            pageSize=limit,
+            type=ticket_type,
+            subject=subject,
+            status=status,
+            priority=priority,
+            impact=impact,
+            urgency=urgency,
+            createdSince=created,
+            updatedSince=updated,
         )
+    if tickets:
+        command_results = CommandResults(outputs_prefix="Trustwave.Ticket", outputs_key_field="id", outputs=tickets)
     else:
         command_results = CommandResults(readable_output="No matching tickets found")
     return command_results
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -673,14 +636,11 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
-        headers: Dict = {
+        headers: dict = {
             "Authorization": f"Bearer {api_key}",
         }
 
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -711,12 +671,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -13,9 +13,13 @@ def test_in_range(mocker):
     Then:
         - Verify ["Saturn", "Jupiter", "Mars"] is returned
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'value': ['Mars', 'Jupiter', 'Saturn'],
-    })
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "value": ["Mars", "Jupiter", "Saturn"],
+        },
+    )
+    mocker.patch.object(demisto, "results")
     main()
-    demisto.results.assert_called_with(['Saturn', 'Jupiter', 'Mars'])
+    demisto.results.assert_called_with(["Saturn", "Jupiter", "Mars"])

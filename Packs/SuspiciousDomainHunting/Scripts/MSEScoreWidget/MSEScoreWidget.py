@@ -23,17 +23,10 @@ def create_widget_entry(mse_score) -> dict:
                 "description": "The Mean Square Error calculation - 0 means identical",
                 "sign": "%",
                 "signAlignment": "right",
-                "colors": {
-                        "isEnabled": True,
-                        "items": {
-                            color_mse: {
-                                "value": -100
-                            }
-                        }
-                },
-                "type": "below"
-            }
-        }
+                "colors": {"isEnabled": True, "items": {color_mse: {"value": -100}}},
+                "type": "below",
+            },
+        },
     }
 
     return data
@@ -41,7 +34,7 @@ def create_widget_entry(mse_score) -> dict:
 
 def main():
     try:
-        mse_score = demisto.context()['ImageSimilarity']["MSE"]
+        mse_score = demisto.context()["ImageSimilarity"]["MSE"]
 
         mse_score = 100 if not mse_score else float(mse_score)
 
@@ -51,5 +44,5 @@ def main():
         return_results("MSE Score was not found in the context.")
 
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ in ("__builtin__", "builtins", "__main__"):
     main()

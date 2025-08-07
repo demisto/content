@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-TEST_BANK_SCENARIO_TEN_ITEMS = '''oneone,twotwo,threethree, fourfour, fivefive,
-                         sixsix, sevenseven, eighteight, ninenine, tenten'''
-TEST_BANK_SCENARIO_FIVE_ITEMS = '''sixsix, sevenseven, eighteight, ninenine, tenten'''
+TEST_BANK_SCENARIO_TEN_ITEMS = """oneone,twotwo,threethree, fourfour, fivefive,
+                         sixsix, sevenseven, eighteight, ninenine, tenten"""
+TEST_BANK_SCENARIO_FIVE_ITEMS = """sixsix, sevenseven, eighteight, ninenine, tenten"""
 
 
 def scenario_one():
@@ -22,9 +22,7 @@ def scenario_one():
     for url in urls:
         # Every url will pass here
         execution_metrics.success += 1
-        command_results.append(
-            CommandResults(readable_output=f"Item - {url} has been processed")
-        )
+        command_results.append(CommandResults(readable_output=f"Item - {url} has been processed"))
     command_results.append(execution_metrics.metrics)
     return command_results
 
@@ -48,18 +46,16 @@ def scenario_two():
         # First 5 succeed
         if idx < 5:
             execution_metrics.success += 1
-            command_results.append(
-                CommandResults(readable_output=f"Item - {url} has been processed")
-            )
+            command_results.append(CommandResults(readable_output=f"Item - {url} has been processed"))
         # Next 5 fail with QuotaError
         else:
             execution_metrics.quota_error += 1
             items_to_schedule.append(url)
 
     scheduled_command = ScheduledCommand(
-        command='test-scenario-two',
+        command="test-scenario-two",
         next_run_in_seconds=20,
-        args={'polling': True, 'items_to_schedule': items_to_schedule},
+        args={"polling": True, "items_to_schedule": items_to_schedule},
         timeout_in_seconds=40,
         items_remaining=len(items_to_schedule),
     )
@@ -82,15 +78,15 @@ def scenario_three():
 
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
-    for idx, url in enumerate(urls):
+    for _idx, url in enumerate(urls):
         items_to_schedule.append(url)
         # All 5 items fail on retry here, and it's expected that all 5 iterations are previously scheduled
         continue
 
     scheduled_command = ScheduledCommand(
-        command='test-scenario-three',
+        command="test-scenario-three",
         next_run_in_seconds=20,
-        args={'polling': True, 'items_to_schedule': items_to_schedule},
+        args={"polling": True, "items_to_schedule": items_to_schedule},
         timeout_in_seconds=40,
         items_remaining=len(items_to_schedule),
     )
@@ -113,21 +109,19 @@ def scenario_four():
 
     urls = argToList(TEST_BANK_SCENARIO_FIVE_ITEMS)
     items_to_schedule = []
-    if not demisto.args().get('polling'):
+    if not demisto.args().get("polling"):
         for idx, url in enumerate(urls):
             if idx < 2:
                 execution_metrics.success += 1
-                command_results.append(
-                    CommandResults(readable_output=f"Item - {url} has been processed")
-                )
+                command_results.append(CommandResults(readable_output=f"Item - {url} has been processed"))
             else:
                 items_to_schedule.append(url)
                 continue
 
     scheduled_command = ScheduledCommand(
-        command='test-scenario-four',
+        command="test-scenario-four",
         next_run_in_seconds=20,
-        args={'polling': True, 'items_to_schedule': items_to_schedule},
+        args={"polling": True, "items_to_schedule": items_to_schedule},
         timeout_in_seconds=40,
         items_remaining=len(items_to_schedule),
     )
@@ -151,9 +145,7 @@ def scenario_five():
     urls = argToList(TEST_BANK_SCENARIO_TEN_ITEMS)
 
     execution_metrics.success += 1
-    command_results.append(
-        CommandResults(readable_output=f"Item - {urls} have been processed")
-    )
+    command_results.append(CommandResults(readable_output=f"Item - {urls} have been processed"))
     command_results.append(execution_metrics.metrics)
     return command_results
 
@@ -170,9 +162,9 @@ def scenario_six():
     execution_metrics.quota_error += 1
 
     scheduled_command = ScheduledCommand(
-        command='test-scenario-six',
+        command="test-scenario-six",
         next_run_in_seconds=20,
-        args={'polling': True, 'items_to_schedule': TEST_BANK_SCENARIO_TEN_ITEMS},
+        args={"polling": True, "items_to_schedule": TEST_BANK_SCENARIO_TEN_ITEMS},
         timeout_in_seconds=40,
         items_remaining=len(TEST_BANK_SCENARIO_TEN_ITEMS),
     )
@@ -196,9 +188,9 @@ def scenario_seven():
     items_to_schedule = [urls]
 
     scheduled_command = ScheduledCommand(
-        command='test-scenario-seven',
+        command="test-scenario-seven",
         next_run_in_seconds=20,
-        args={'polling': True, 'items_to_schedule': items_to_schedule},
+        args={"polling": True, "items_to_schedule": items_to_schedule},
         timeout_in_seconds=40,
         items_remaining=len(items_to_schedule),
     )
@@ -224,9 +216,9 @@ def scenario_eight():
     items_to_schedule = [urls]
 
     scheduled_command = ScheduledCommand(
-        command='test-scenario-seven',
+        command="test-scenario-seven",
         next_run_in_seconds=20,
-        args={'polling': True, 'items_to_schedule': items_to_schedule},
+        args={"polling": True, "items_to_schedule": items_to_schedule},
         timeout_in_seconds=40,
         items_remaining=1,
     )
@@ -251,9 +243,7 @@ def scenario_nine():
     for url in urls:
         # Every url will pass here
         execution_metrics.quota_error += 1
-        command_results.append(
-            CommandResults(readable_output=f"Item - {url} has been processed")
-        )
+        command_results.append(CommandResults(readable_output=f"Item - {url} has been processed"))
     command_results.append(execution_metrics.metrics)
     return command_results
 
@@ -269,73 +259,70 @@ def scenario_ten():
     execution_metrics = ExecutionMetrics()
     command_results: list = []
     execution_metrics.success += 1
-    command_results.append(
-        CommandResults(readable_output="Item has been processed")
-    )
+    command_results.append(CommandResults(readable_output="Item has been processed"))
     command_results.append(execution_metrics.metrics)
     return command_results
 
 
 def main():
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-    if demisto.args().get('polling') and command != 'test-scenario-four':
+    demisto.debug(f"Command being called is {command}")
+    if demisto.args().get("polling") and command != "test-scenario-four":
         # This is to isolate a scenario where the command is run in polling mode
         sys.exit(0)
     try:
-
-        if command == 'test-scenario-one':
+        if command == "test-scenario-one":
             results = scenario_one()
             return_results(results)
 
-        elif command == 'test-scenario-two':
+        elif command == "test-scenario-two":
             results = scenario_two()
             return_results(results)
 
-        elif command == 'test-scenario-three':
+        elif command == "test-scenario-three":
             results = scenario_three()
             return_results(results)
 
-        elif command == 'test-scenario-four':
+        elif command == "test-scenario-four":
             results = scenario_four()
             return_results(results)
 
-        elif command == 'test-scenario-five':
+        elif command == "test-scenario-five":
             results = scenario_five()
             return_results(results)
 
-        elif command == 'test-scenario-six':
+        elif command == "test-scenario-six":
             results = scenario_six()
             return_results(results)
 
-        elif command == 'test-scenario-seven':
+        elif command == "test-scenario-seven":
             results = scenario_seven()
             return_results(results)
 
-        elif command == 'test-scenario-eight':
+        elif command == "test-scenario-eight":
             results = scenario_eight()
             return_results(results)
 
-        elif command == 'test-scenario-nine':
+        elif command == "test-scenario-nine":
             results = scenario_nine()
             return_results(results)
             return_error("This is an error")
 
-        elif command == 'test-scenario-ten':
+        elif command == "test-scenario-ten":
             results = scenario_ten()
             return_results(results)
 
-        elif command == 'test-module':
-            demisto.results('ok')
+        elif command == "test-module":
+            demisto.results("ok")
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

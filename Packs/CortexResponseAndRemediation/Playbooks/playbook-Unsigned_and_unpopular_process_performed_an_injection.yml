@@ -187,7 +187,7 @@ tasks:
     conditions:
     - label: Blocked
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -213,13 +213,13 @@ tasks:
           ignorecase: true
     - label: Reported
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
                 root: foundIncidents.CustomFields
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: foundIncidents.CustomFields.cid
@@ -230,6 +230,8 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: action
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:
@@ -874,7 +876,7 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 tests:
 - No tests (auto formatted)
 fromversion: 8.0.0

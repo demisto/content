@@ -1,15 +1,15 @@
 from collections import defaultdict
-from typing import Tuple, Dict
 
 from CommonServerPython import *
 
 import urllib3
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-XFORCE_URL = 'https://exchange.xforce.ibmcloud.com'
+XFORCE_URL = "https://exchange.xforce.ibmcloud.com"
 DEFAULT_THRESHOLD = 7
-DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+DBOT_SCORE_KEY = "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)"
 
 
 class Client(BaseClient):
@@ -26,46 +26,53 @@ class Client(BaseClient):
           create_relationships (bool): Whether to create relationships.
     """
 
-    def __init__(self, url: str, api_key: str, password: str, use_ssl: bool, use_proxy: bool,
-                 reliability: str = DBotScoreReliability.C, create_relationships: bool = True):
+    def __init__(
+        self,
+        url: str,
+        api_key: str,
+        password: str,
+        use_ssl: bool,
+        use_proxy: bool,
+        reliability: str = DBotScoreReliability.C,
+        create_relationships: bool = True,
+    ):
         self.reliability = reliability
         self.create_relationships = create_relationships
-        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={'Accept': 'application/json'},
-                         auth=(api_key, password))
+        super().__init__(url, verify=use_ssl, proxy=use_proxy, headers={"Accept": "application/json"}, auth=(api_key, password))
 
     def ip_report(self, ip: str) -> dict:
         if not is_ip_valid(ip):
-            raise DemistoException('The given IP was invalid')
+            raise DemistoException("The given IP was invalid")
 
-        return self._http_request('GET', f'/ipr/{ip}')
+        return self._http_request("GET", f"/ipr/{ip}")
 
     def url_report(self, url: str):
         try:
-            response = self._http_request('GET', f'/url/{url}')
+            response = self._http_request("GET", f"/url/{url}")
         except Exception as e:
             if "Not Found" in str(e):
                 return "Not Found"
             raise
-        return response.get('result')
+        return response.get("result")
 
     def cve_report(self, code: str) -> dict:
-        return self._http_request('GET', f'/vulnerabilities/search/{code}')
+        return self._http_request("GET", f"/vulnerabilities/search/{code}")
 
     def search_cves(self, q: str, start_date: str, end_date: str, bookmark: str) -> dict:
-        params = {'q': q, 'startDate': start_date, 'endDate': end_date, 'bookmark': bookmark}
+        params = {"q": q, "startDate": start_date, "endDate": end_date, "bookmark": bookmark}
         params = {key: value for key, value in params.items() if value}
-        return self._http_request('GET', '/vulnerabilities/fulltext', params=params)
+        return self._http_request("GET", "/vulnerabilities/fulltext", params=params)
 
     def file_report(self, file_hash: str) -> dict:
-        return self._http_request('GET', f'/malware/{file_hash}').get('malware')
+        return self._http_request("GET", f"/malware/{file_hash}").get("malware")
 
     def get_recent_vulnerabilities(self, start_date: str, end_date: str, limit: int) -> dict:
-        params = {'startDate': start_date, 'endDate': end_date, 'limit': limit}
+        params = {"startDate": start_date, "endDate": end_date, "limit": limit}
         params = {key: value for key, value in params.items() if value}
-        return self._http_request('GET', '/vulnerabilities', params=params)
+        return self._http_request("GET", "/vulnerabilities", params=params)
 
     def whois(self, host: str) -> dict:
-        return self._http_request('GET', f'/whois/{host}')
+        return self._http_request("GET", f"/whois/{host}")
 
 
 def calculate_score(score: int, threshold: int) -> int:
@@ -89,7 +96,7 @@ def calculate_score(score: int, threshold: int) -> int:
     return 1
 
 
-def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -> Tuple[str, dict, dict]:
+def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -> tuple[str, dict, dict]:
     """
     Formats CVE report from X-Force Exchange into Demisto's outputs.
 
@@ -105,34 +112,50 @@ def get_cve_results(client: Client, cve_id: str, report: dict, threshold: int) -
         dict: the report from X-Force Exchange (used for debugging).
     """
 
-    outputs = {'ID': cve_id, 'CVSS': report.get('cvss', {}).get('version'),
-               'Published': report.get('reported'),
-               'Description': report.get('description')}
-    dbot_score = {'Indicator': cve_id, 'Type': 'cve', 'Vendor': 'XFE',
-                  'Score': calculate_score(round(report.get('risk_level', 0)), threshold),
-                  'Reliability': client.reliability}
-    additional_headers = ['xfdbid', 'risk_level', 'reported', 'cvss', 'tagname', 'stdcode',
-                          'title', 'description', 'platforms_affected', 'exploitability']
+    outputs = {
+        "ID": cve_id,
+        "CVSS": report.get("cvss", {}).get("version"),
+        "Published": report.get("reported"),
+        "Description": report.get("description"),
+    }
+    dbot_score = {
+        "Indicator": cve_id,
+        "Type": "cve",
+        "Vendor": "XFE",
+        "Score": calculate_score(round(report.get("risk_level", 0)), threshold),
+        "Reliability": client.reliability,
+    }
+    additional_headers = [
+        "xfdbid",
+        "risk_level",
+        "reported",
+        "cvss",
+        "tagname",
+        "stdcode",
+        "title",
+        "description",
+        "platforms_affected",
+        "exploitability",
+    ]
     additional_info = {string_to_context_key(field): report.get(field) for field in additional_headers}
 
-    if dbot_score['Score'] == 3:
-        outputs['Malicious'] = {'Vendor': 'XFE', 'Description': report.get('description')}
+    if dbot_score["Score"] == 3:
+        outputs["Malicious"] = {"Vendor": "XFE", "Description": report.get("description")}
 
-    context = {outputPaths['cve']: outputs,
-               DBOT_SCORE_KEY: dbot_score,
-               f'XFE.{outputPaths["cve"]}': additional_info}
+    context = {outputPaths["cve"]: outputs, DBOT_SCORE_KEY: dbot_score, f'XFE.{outputPaths["cve"]}': additional_info}
 
-    table_headers = ['title', 'description', 'risk_level', 'reported', 'exploitability']
-    table = {'Version': report.get('cvss', {}).get('version'),
-             'Access Vector': report.get('cvss', {}).get('access_vector'),
-             'Complexity': report.get('cvss', {}).get('access_complexity'),
-             'STD Code': '\n'.join(report.get('stdcode', [])),
-             'Affected Platforms': '\n'.join(report.get('platforms_affected', [])),
-             **{string_to_table_header(header): report.get(header) for header in table_headers}
-             }
-    markdown = tableToMarkdown(f'X-Force CVE Reputation for {cve_id}\n'
-                               f'{XFORCE_URL}/vulnerability/search/{cve_id}',
-                               table, removeNull=True)
+    table_headers = ["title", "description", "risk_level", "reported", "exploitability"]
+    table = {
+        "Version": report.get("cvss", {}).get("version"),
+        "Access Vector": report.get("cvss", {}).get("access_vector"),
+        "Complexity": report.get("cvss", {}).get("access_complexity"),
+        "STD Code": "\n".join(report.get("stdcode", [])),
+        "Affected Platforms": "\n".join(report.get("platforms_affected", [])),
+        **{string_to_table_header(header): report.get(header) for header in table_headers},
+    }
+    markdown = tableToMarkdown(
+        f"X-Force CVE Reputation for {cve_id}\n{XFORCE_URL}/vulnerability/search/{cve_id}", table, removeNull=True
+    )
 
     return markdown, context, report
 
@@ -147,10 +170,10 @@ def test_module(client: Client) -> str:
         str: 'ok' if test passed, anything else will fail the test.
     """
 
-    return 'ok' if client.url_report('google.com') else 'Connection failed.'
+    return "ok" if client.url_report("google.com") else "Connection failed."
 
 
-def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def ip_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
     Executes IP enrichment against X-Force Exchange.
 
@@ -163,160 +186,176 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         Any: the raw data from X-Force client (used for debugging).
     """
 
-    threshold = int(args.get('threshold', demisto.params().get('ip_threshold', DEFAULT_THRESHOLD)))
+    threshold = int(args.get("threshold", demisto.params().get("ip_threshold", DEFAULT_THRESHOLD)))
 
-    markdown = ''
+    markdown = ""
     context: dict = defaultdict(list)
     reports = []
 
-    for ip in argToList(args.get('ip')):
+    for ip in argToList(args.get("ip")):
         report = client.ip_report(ip)
-        outputs = {'Address': report['ip'],
-                   'Score': report.get('score'),
-                   'Geo': {'Country': report.get('geo', {}).get('country', '')}}
-        additional_info: dict = {string_to_context_key(field): report.get(field) for field in
-                                 ['reason', 'reasonDescription', 'subnets']}
-        dbot_score = {'Indicator': report['ip'], 'Type': 'ip', 'Vendor': 'XFE',
-                      'Score': calculate_score(report['score'], threshold), 'Reliability': client.reliability}
+        outputs = {
+            "Address": report["ip"],
+            "Score": report.get("score"),
+            "Geo": {"Country": report.get("geo", {}).get("country", "")},
+        }
+        additional_info: dict = {
+            string_to_context_key(field): report.get(field) for field in ["reason", "reasonDescription", "subnets"]
+        }
+        dbot_score = {
+            "Indicator": report["ip"],
+            "Type": "ip",
+            "Vendor": "XFE",
+            "Score": calculate_score(report["score"], threshold),
+            "Reliability": client.reliability,
+        }
 
-        if dbot_score['Score'] == 3:
-            outputs['Malicious'] = {'Vendor': 'XFE', 'Description': additional_info['Reasondescription']}
+        if dbot_score["Score"] == 3:
+            outputs["Malicious"] = {"Vendor": "XFE", "Description": additional_info["Reasondescription"]}
 
-        context[outputPaths['ip']].append(outputs)
+        context[outputPaths["ip"]].append(outputs)
         context[f'XFE.{outputPaths["ip"]}'].append(additional_info)
         context[DBOT_SCORE_KEY].append(dbot_score)
 
-        reason = f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}' \
-            if additional_info["Reason"] else 'Reason not found.'
-        subnets = additional_info.get('Subnets', [])
-        subnets_list = [subnet.get('subnet') for subnet in subnets]
-        table = {'Score': report['score'],
-                 'Reason': reason,
-                 'Subnets': ', '.join(subnets_list)}
-        markdown += tableToMarkdown(f'X-Force IP Reputation for: {report["ip"]}\n'
-                                    f'{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True)
+        reason = (
+            f'{additional_info["Reason"]}:\n{additional_info["Reasondescription"]}'
+            if additional_info["Reason"]
+            else "Reason not found."
+        )
+        subnets = additional_info.get("Subnets", [])
+        subnets_list = [subnet.get("subnet") for subnet in subnets]
+        table = {"Score": report["score"], "Reason": reason, "Subnets": ", ".join(subnets_list)}
+        markdown += tableToMarkdown(
+            f'X-Force IP Reputation for: {report["ip"]}\n{XFORCE_URL}/ip/{report["ip"]}', table, removeNull=True
+        )
         reports.append(report)
 
     return markdown, context, reports
 
 
-def domain_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def domain_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
-     Executes URL enrichment against X-Force Exchange.
+    Executes URL enrichment against X-Force Exchange.
 
-     Args:
-         client (Client): X-Force client.
-         args (Dict[str, str]): the arguments for the command.
-     Returns:
-         str: human readable presentation of the URL report.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from X-Force client (used for debugging).
-     """
+    Args:
+        client (Client): X-Force client.
+        args (Dict[str, str]): the arguments for the command.
+    Returns:
+        str: human readable presentation of the URL report.
+        dict: the results to return into Demisto's context.
+        Any: the raw data from X-Force client (used for debugging).
+    """
 
-    domains = argToList(args.get('domain', ''))
-    threshold = int(args.get('threshold', demisto.params().get('url_threshold', DEFAULT_THRESHOLD)))
+    domains = argToList(args.get("domain", ""))
+    threshold = int(args.get("threshold", demisto.params().get("url_threshold", DEFAULT_THRESHOLD)))
     command_results: List[CommandResults] = []
 
     for domain in domains:
         report = client.url_report(domain)
         if report == "Not Found":
-            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=domain,
-                                                                                  indicator_type=DBotScoreType.DOMAIN,
-                                                                                  reliability=client.reliability))
+            command_results.append(
+                create_indicator_result_with_dbotscore_unknown(
+                    indicator=domain, indicator_type=DBotScoreType.DOMAIN, reliability=client.reliability
+                )
+            )
             continue
 
-        dbot_score = Common.DBotScore(indicator=domain,
-                                      indicator_type=DBotScoreType.DOMAIN,
-                                      integration_name='XFE',
-                                      reliability=client.reliability,
-                                      score=calculate_score(report.get('score', 0), threshold))
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name="XFE",
+            reliability=client.reliability,
+            score=calculate_score(report.get("score", 0), threshold),
+        )
         indicator_ = Common.Domain(domain=domain, dbot_score=dbot_score)
 
-        table = {
-            'Score': report['score'],
-            'Categories': '\n'.join(report['cats'].keys())
-        }
+        table = {"Score": report["score"], "Categories": "\n".join(report["cats"].keys())}
 
-        markdown = tableToMarkdown(f'X-Force Domain Reputation for: {report["url"]}\n'
-                                   f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+        markdown = tableToMarkdown(
+            f'X-Force Domain Reputation for: {report["url"]}\n{XFORCE_URL}/url/{report["url"]}', table, removeNull=True
+        )
 
         command_results.append(CommandResults(readable_output=markdown, raw_response=report, indicator=indicator_))
     return command_results
 
 
-def url_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def url_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
-     Executes URL enrichment against X-Force Exchange.
+    Executes URL enrichment against X-Force Exchange.
 
-     Args:
-         client (Client): X-Force client.
-         args (Dict[str, str]): the arguments for the command.
-     Returns:
-         str: human readable presentation of the URL report.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from X-Force client (used for debugging).
-     """
+    Args:
+        client (Client): X-Force client.
+        args (Dict[str, str]): the arguments for the command.
+    Returns:
+        str: human readable presentation of the URL report.
+        dict: the results to return into Demisto's context.
+        Any: the raw data from X-Force client (used for debugging).
+    """
 
-    urls = argToList(args.get('url', ''))
-    threshold = int(args.get('threshold', demisto.params().get('url_threshold', DEFAULT_THRESHOLD)))
+    urls = argToList(args.get("url", ""))
+    threshold = int(args.get("threshold", demisto.params().get("url_threshold", DEFAULT_THRESHOLD)))
     command_results: List[CommandResults] = []
 
     for url in urls:
         report = client.url_report(url)
         if report == "Not Found":
-            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
-                                                                                  indicator_type=DBotScoreType.URL,
-                                                                                  reliability=client.reliability))
+            command_results.append(
+                create_indicator_result_with_dbotscore_unknown(
+                    indicator=url, indicator_type=DBotScoreType.URL, reliability=client.reliability
+                )
+            )
             continue
 
-        dbot_score = Common.DBotScore(indicator=url,
-                                      indicator_type=DBotScoreType.URL,
-                                      integration_name='XFE',
-                                      score=calculate_score(report['score'], threshold),
-                                      reliability=client.reliability)
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name="XFE",
+            score=calculate_score(report["score"], threshold),
+            reliability=client.reliability,
+        )
 
         indicator_ = Common.URL(url=url, dbot_score=dbot_score)
 
-        table = {'Score': report['score'],
-                 'Categories': '\n'.join(report['cats'].keys())}
+        table = {"Score": report["score"], "Categories": "\n".join(report["cats"].keys())}
 
-        markdown = tableToMarkdown(f'X-Force URL Reputation for: {report["url"]}\n'
-                                   f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+        markdown = tableToMarkdown(
+            f'X-Force URL Reputation for: {report["url"]}\n{XFORCE_URL}/url/{report["url"]}', table, removeNull=True
+        )
 
         command_results.append(CommandResults(readable_output=markdown, raw_response=report, indicator=indicator_))
 
     return command_results
 
 
-def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def cve_search_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
-     Get details about vulnerabilities (latest / search) from X-Force Exchange.
+    Get details about vulnerabilities (latest / search) from X-Force Exchange.
 
-     Args:
-         client (Client): X-Force client.
-         args (Dict[str, str]): the arguments for the command.
-     Returns:
-         str: human readable presentation of the CVEs reports.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from X-Force Exchange client (used for debugging).
+    Args:
+        client (Client): X-Force client.
+        args (Dict[str, str]): the arguments for the command.
+    Returns:
+        str: human readable presentation of the CVEs reports.
+        dict: the results to return into Demisto's context.
+        Any: the raw data from X-Force Exchange client (used for debugging).
     """
 
-    threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
+    threshold = int(demisto.params().get("cve_threshold", DEFAULT_THRESHOLD))
 
-    if 'q' in args:
-        reports = client.search_cves(args['q'], args.get('start_date', ''), args.get('end_date', ''),
-                                     args.get('bookmark', ''))
-        reports, total_rows, bookmark = reports['rows'], reports['total_rows'], reports['bookmark']
+    if "q" in args:
+        reports = client.search_cves(args["q"], args.get("start_date", ""), args.get("end_date", ""), args.get("bookmark", ""))
+        reports, total_rows, bookmark = reports["rows"], reports["total_rows"], reports["bookmark"]
     else:
-        reports = client.get_recent_vulnerabilities(args.get('start_date', ''), args.get('end_date', ''),
-                                                    int(args.get('limit', 0)))
-        total_rows, bookmark = '', ''
+        reports = client.get_recent_vulnerabilities(
+            args.get("start_date", ""), args.get("end_date", ""), int(args.get("limit", 0))
+        )
+        total_rows, bookmark = "", ""
 
-    total_context: Dict[str, Any] = defaultdict(list)
-    total_markdown = ''
+    total_context: dict[str, Any] = defaultdict(list)
+    total_markdown = ""
 
     for report in reports:
-        cve_id = report.get('stdcode', [''])[0]
+        cve_id = report.get("stdcode", [""])[0]
         markdown, context, _ = get_cve_results(client, cve_id, report, threshold)
 
         for key, value in context.items():
@@ -325,36 +364,36 @@ def cve_search_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict,
         total_markdown += markdown
 
     if total_rows and bookmark:
-        total_context['XFE.CVESearch'] = {'TotalRows': total_rows, 'Bookmark': bookmark}
+        total_context["XFE.CVESearch"] = {"TotalRows": total_rows, "Bookmark": bookmark}
 
     return total_markdown, total_context, reports
 
 
-def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def cve_get_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
-     Executes CVE enrichment against X-Force Exchange.
+    Executes CVE enrichment against X-Force Exchange.
 
-     Args:
-         client (Client): X-Force Exchange client.
-         args (Dict[str, str]): the arguments for the command.
+    Args:
+        client (Client): X-Force Exchange client.
+        args (Dict[str, str]): the arguments for the command.
 
-     Returns:
-         str: human readable presentation of the CVE report.
-         dict: the results to return into Demisto's context.
-         Any: the raw data from X-Force client (used for debugging).
-     """
+    Returns:
+        str: human readable presentation of the CVE report.
+        dict: the results to return into Demisto's context.
+        Any: the raw data from X-Force client (used for debugging).
+    """
 
-    threshold = int(demisto.params().get('cve_threshold', DEFAULT_THRESHOLD))
-    markdown = ''
-    context: Dict[str, Any] = defaultdict(list)
+    threshold = int(demisto.params().get("cve_threshold", DEFAULT_THRESHOLD))
+    markdown = ""
+    context: dict[str, Any] = defaultdict(list)
     reports = []
 
-    for cve_id in argToList(args.get('cve_id')):
+    for cve_id in argToList(args.get("cve_id")):
         report = client.cve_report(cve_id)
-        cve_markdown, cve_context, _ = get_cve_results(client, args['cve_id'], report[0], threshold)
+        cve_markdown, cve_context, _ = get_cve_results(client, args["cve_id"], report[0], threshold)
 
         markdown += cve_markdown
-        context[outputPaths['cve']].append(cve_context[outputPaths['cve']])
+        context[outputPaths["cve"]].append(cve_context[outputPaths["cve"]])
         context[DBOT_SCORE_KEY].append(cve_context[DBOT_SCORE_KEY])
         context[f'XFE.{outputPaths["cve"]}'].append(cve_context[f'XFE.{outputPaths["cve"]}'])
 
@@ -363,7 +402,7 @@ def cve_get_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, An
     return markdown, context, reports
 
 
-def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def file_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
     Executes file hash enrichment against X-Force Exchange.
 
@@ -378,70 +417,85 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     relationship: list = []
     command_results: List[CommandResults] = []
 
-    for file_hash in argToList(args.get('file')):
+    for file_hash in argToList(args.get("file")):
         try:
             report = client.file_report(file_hash)
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
-                command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=file_hash,
-                                                                                      indicator_type=DBotScoreType.FILE,
-                                                                                      reliability=client.reliability))
+            if "Error in API call [404] - Not Found" in str(err):
+                command_results.append(
+                    create_indicator_result_with_dbotscore_unknown(
+                        indicator=file_hash, indicator_type=DBotScoreType.FILE, reliability=client.reliability
+                    )
+                )
                 continue
             else:
                 raise ValueError(err)
 
-        scores = {'high': 3, 'medium': 2, 'low': 1}
-        dbot_score = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
-                                      integration_name='XFE', score=scores.get(report['risk'], 0),
-                                      reliability=client.reliability)
+        scores = {"high": 3, "medium": 2, "low": 1}
+        dbot_score = Common.DBotScore(
+            indicator=file_hash,
+            indicator_type=DBotScoreType.FILE,
+            integration_name="XFE",
+            score=scores.get(report["risk"], 0),
+            reliability=client.reliability,
+        )
 
-        report_data = report['origins'].get('external', {})
-        family_value = report_data.get('family')
-        hash_info = {**report['origins'], 'Family': family_value,
-                     'FamilyMembers': report_data.get('familyMembers')}
+        report_data = report["origins"].get("external", {})
+        family_value = report_data.get("family")
+        hash_info = {**report["origins"], "Family": family_value, "FamilyMembers": report_data.get("familyMembers")}
         if client.create_relationships:
-            malware = dict_safe_get(hash_info, ['external', 'family'], [])
+            malware = dict_safe_get(hash_info, ["external", "family"], [])
             if malware and isinstance(malware, list):
                 malware = malware[0]
-                relationship = [EntityRelationship(name=EntityRelationship.Relationships.RELATED_TO,
-                                                   entity_a=file_hash,
-                                                   entity_a_type=FeedIndicatorType.File,
-                                                   entity_b=malware,
-                                                   entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                                       "STIX Malware"),
-                                                   source_reliability=client.reliability,
-                                                   brand='XFE')]
+                relationship = [
+                    EntityRelationship(
+                        name=EntityRelationship.Relationships.RELATED_TO,
+                        entity_a=file_hash,
+                        entity_a_type=FeedIndicatorType.File,
+                        entity_b=malware,
+                        entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Malware"),
+                        source_reliability=client.reliability,
+                        brand="XFE",
+                    )
+                ]
 
         hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
-        if hash_type == 'md5':
+        if hash_type == "md5":
             file = Common.File(md5=file_hash, dbot_score=dbot_score, relationships=relationship)
-        elif hash_type == 'sha1':
+        elif hash_type == "sha1":
             file = Common.File(sha1=file_hash, dbot_score=dbot_score, relationships=relationship)
-        elif hash_type == 'sha256':
+        elif hash_type == "sha256":
             file = Common.File(sha256=file_hash, dbot_score=dbot_score, relationships=relationship)
+        else:
+            file = None
+            demisto.debug(f"{hash_type=} doesn't match any condition. {file=}")
 
         context[f'XFE.{outputPaths["file"]}'] = hash_info
 
-        download_servers = ','.join(server['ip'] for server in hash_info.get('downloadServers', {}).get('rows', []))
-        cnc_servers = ','.join(server['domain'] for server in hash_info.get('CnCServers', {}).get('rows', []))
-        table = {'CnC Servers': cnc_servers, 'Download Servers': download_servers,
-                 'Source': hash_info.get('external', {}).get('source'),
-                 'Created Date': report_data.get('firstSeen'),
-                 'Type': hash_info.get('external', {}).get('malwareType')}
-        markdown = tableToMarkdown(f'X-Force {hash_type} Reputation for {args.get("file")}\n'
-                                   f'{XFORCE_URL}/malware/{args.get("file")}', table, removeNull=True)
+        download_servers = ",".join(server["ip"] for server in hash_info.get("downloadServers", {}).get("rows", []))
+        cnc_servers = ",".join(server["domain"] for server in hash_info.get("CnCServers", {}).get("rows", []))
+        table = {
+            "CnC Servers": cnc_servers,
+            "Download Servers": download_servers,
+            "Source": hash_info.get("external", {}).get("source"),
+            "Created Date": report_data.get("firstSeen"),
+            "Type": hash_info.get("external", {}).get("malwareType"),
+        }
+        markdown = tableToMarkdown(
+            f'X-Force {hash_type} Reputation for {args.get("file")}\n{XFORCE_URL}/malware/{args.get("file")}',
+            table,
+            removeNull=True,
+        )
 
-        command_results.append(CommandResults(
-            readable_output=markdown,
-            outputs=context,
-            indicator=file,
-            raw_response=report,
-            relationships=relationship
-        ))
+        command_results.append(
+            CommandResults(
+                readable_output=markdown, outputs=context, indicator=file, raw_response=report, relationships=relationship
+            )
+        )
     return command_results
 
 
-def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def whois_command(client: Client, args: dict[str, str]) -> tuple[str, dict, Any]:
     """
     Gets information about the given host address.
 
@@ -455,30 +509,40 @@ def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]
          Any: the raw data from X-Force Exchange client (used for debugging).
     """
 
-    result = client.whois(args['host'])
+    result = client.whois(args["host"])
 
-    contact = [{k.title(): v for k, v in contact.items()} for contact in result.get('contact', [])]
-    outputs = {'Host': args['host'], 'RegistrarName': result.get('registrarName'),
-               'Created': result.get('createdDate'), 'Updated': result.get('updatedDate'),
-               'Expires': result.get('expiresDate'), 'Email': result.get('contactEmail'),
-               'Contact': contact}
+    contact = [{k.title(): v for k, v in contact.items()} for contact in result.get("contact", [])]
+    outputs = {
+        "Host": args["host"],
+        "RegistrarName": result.get("registrarName"),
+        "Created": result.get("createdDate"),
+        "Updated": result.get("updatedDate"),
+        "Expires": result.get("expiresDate"),
+        "Email": result.get("contactEmail"),
+        "Contact": contact,
+    }
 
-    domain = {'Name': args['host'], 'CreationDate': outputs['Created'],
-              'ExpirationDate': outputs['Expires'], 'UpdatedDate': outputs['Updated'],
-              'Organization': contact[0]['Organization'] if contact else '',
-              'Registrant': {'Country': contact[0]['Country'] if contact else '',
-                             'Name': contact[0]['Organization'] if contact else ''},
-              'WHOIS': {'Registrar': {'Name': result.get('registrarName'),
-                                      'Email': result.get('contactEmail')
-                                      },
-                        'UpdatedDate': outputs['Updated'], 'ExpirationDate': outputs['Expires'],
-                        'CreationDate': outputs['Created']
-                        }
-              }
+    domain = {
+        "Name": args["host"],
+        "CreationDate": outputs["Created"],
+        "ExpirationDate": outputs["Expires"],
+        "UpdatedDate": outputs["Updated"],
+        "Organization": contact[0]["Organization"] if contact else "",
+        "Registrant": {
+            "Country": contact[0]["Country"] if contact else "",
+            "Name": contact[0]["Organization"] if contact else "",
+        },
+        "WHOIS": {
+            "Registrar": {"Name": result.get("registrarName"), "Email": result.get("contactEmail")},
+            "UpdatedDate": outputs["Updated"],
+            "ExpirationDate": outputs["Expires"],
+            "CreationDate": outputs["Created"],
+        },
+    }
 
-    domain['WHOIS']['Registrant'] = domain['Registrant']  # type: ignore
+    domain["WHOIS"]["Registrant"] = domain["Registrant"]  # type: ignore
 
-    context = {outputPaths['domain']: domain, 'XFE.Whois(obj.Host==val.Host)': outputs}
+    context = {outputPaths["domain"]: domain, "XFE.Whois(obj.Host==val.Host)": outputs}
     markdown = tableToMarkdown(f'X-Force Whois result for {args["host"]}', outputs, removeNull=True)
 
     return markdown, context, result
@@ -486,9 +550,9 @@ def whois_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]
 
 def main():
     params = demisto.params()
-    credentials = params.get('credentials')
+    credentials = params.get("credentials")
 
-    reliability = params.get('integrationReliability')
+    reliability = params.get("integrationReliability")
     reliability = reliability if reliability else DBotScoreReliability.C
 
     if DBotScoreReliability.is_valid_type(reliability):
@@ -496,39 +560,42 @@ def main():
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    client = Client(params.get('url'),
-                    credentials.get('identifier'), credentials.get('password'),
-                    use_ssl=not params.get('insecure', False),
-                    use_proxy=params.get('proxy', False),
-                    reliability=reliability,
-                    create_relationships=argToBoolean(params.get('create_relationships')))
+    client = Client(
+        params.get("url"),
+        credentials.get("identifier"),
+        credentials.get("password"),
+        use_ssl=not params.get("insecure", False),
+        use_proxy=params.get("proxy", False),
+        reliability=reliability,
+        create_relationships=argToBoolean(params.get("create_relationships")),
+    )
 
     commands = {
-        'ip': ip_command,
-        'url': url_command,
-        'domain': domain_command,
-        'cve-latest': cve_search_command,
-        'cve-search': cve_get_command,
-        'file': file_command,
-        'xfe-whois': whois_command,
-        'xfe-search-cves': cve_search_command
+        "ip": ip_command,
+        "url": url_command,
+        "domain": domain_command,
+        "cve-latest": cve_search_command,
+        "cve-search": cve_get_command,
+        "file": file_command,
+        "xfe-whois": whois_command,
+        "xfe-search-cves": cve_search_command,
     }
 
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    LOG(f"Command being called is {command}")
 
     try:
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command in ['file', 'url', 'domain']:
+        elif command in ["file", "url", "domain"]:
             return_results(commands[command](client, demisto.args()))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {e}')
+        return_error(f"Failed to execute {command} command. Error: {e}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

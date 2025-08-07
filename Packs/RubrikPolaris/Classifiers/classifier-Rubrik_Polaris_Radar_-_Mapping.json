@@ -23,6 +23,13 @@
           },
           "simple": ""
         },
+        "Rubrik Polaris Activity Type": {
+          "complex": {
+            "filters": [],
+            "root": "lastActivityType",
+            "transformers": []
+          }
+        },
         "Rubrik Polaris Analysis Pipeline": {
           "complex": null,
           "simple": "message"

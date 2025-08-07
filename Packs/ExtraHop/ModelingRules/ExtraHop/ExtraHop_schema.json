@@ -1,0 +1,100 @@
+{
+    "extrahop_revealx_raw": {
+      "id": {
+        "type": "int",
+        "is_array": false
+      },
+      "end_time": {
+        "type": "int",
+        "is_array": false
+      },
+      "mod_time": {
+        "type": "int",
+        "is_array": false
+      },
+      "risk_score": {
+        "type": "int",
+        "is_array": false
+      },
+      "start_time": {
+        "type": "int",
+        "is_array": false
+      },
+      "create_time": {
+        "type": "int",
+        "is_array": false
+      },
+      "recommended": {
+        "type": "string",
+        "is_array": false
+      },
+      "update_time": {
+        "type": "int",
+        "is_array": false
+      },
+      "appliance_id": {
+        "type": "int",
+        "is_array": false
+      },
+      "is_user_created": {
+        "type": "string",
+        "is_array": false
+      },
+      "url": {
+        "type": "string",
+        "is_array": false
+      },
+      "type": {
+        "type": "string",
+        "is_array": false
+      },
+      "title": {
+        "type": "string",
+        "is_array": false
+      },
+      "status": {
+        "type": "string",
+        "is_array": false
+      },
+      "assignee": {
+        "type": "string",
+        "is_array": false
+      },
+      "ticket_id": {
+        "type": "string",
+        "is_array": false
+      },
+      "categories": {
+        "type": "string",
+        "is_array": false
+      },
+      "properties": {
+        "type": "string",
+        "is_array": false
+      },
+      "resolution": {
+        "type": "string",
+        "is_array": false
+      },
+      "description": {
+        "type": "string",
+        "is_array": false
+      },
+      "participants": {
+        "type": "string",
+        "is_array": false
+      },
+      "mitre_tactics": {
+        "type": "string",
+        "is_array": false
+      },
+      "mitre_techniques": {
+        "type": "string",
+        "is_array": false
+      },
+      "recommended_factors": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

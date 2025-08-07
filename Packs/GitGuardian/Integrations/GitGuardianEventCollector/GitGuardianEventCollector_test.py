@@ -1,6 +1,7 @@
 import json
-from GitGuardianEventCollector import get_events, fetch_events
+
 import pytest
+from GitGuardianEventCollector import fetch_events, get_events
 
 
 def util_load_json(path):
@@ -11,7 +12,7 @@ def util_load_json(path):
 def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {}, retries: int = 3):
     if url_suffix == "/secrets" or full_url.endswith("/secrets"):
         return util_load_json("test_data/incident_response.json")
-    elif full_url == 'next_url':
+    elif full_url == "next_url":
         return util_load_json("test_data/audit_log_response_next_link.json")
     else:
         return util_load_json("test_data/audit_log_response.json")
@@ -51,11 +52,14 @@ def test_extract_event_ids_with_same_to_fetch_time(client):
     Then: Ensure the indicators returned have the same last_occurence_date as the one provided
     """
 
-    incidents = [{"id": 1, "last_occurrence_date": "2024-01-03T21:05:38Z"},
-                 {"id": 2, "last_occurrence_date": "2024-02-03T21:05:38Z"},
-                 {"id": 3, "last_occurrence_date": "2024-01-03T21:05:38Z"}]
+    incidents = [
+        {"id": 1, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+        {"id": 2, "last_occurrence_date": "2024-02-03T21:05:38Z"},
+        {"id": 3, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+    ]
     ids_with_same_occurrence_date = client.extract_event_ids_with_same_to_fetch_time(
-        incidents, '2024-01-03T21:05:38Z', 'incident')
+        incidents, "2024-01-03T21:05:38Z", "incident"
+    )
     assert ids_with_same_occurrence_date == [1, 3]
 
 
@@ -66,13 +70,17 @@ def test_remove_duplicated_incidents(client):
     Then: Ensure the indicators returned without the incidents that were fetched before
     """
 
-    incidents = [{"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
-                 {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
-                 {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
+    incidents = [
+        {"id": 1, "last_occurrence_date": "2024-02-03T21:05:38Z"},
+        {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+        {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"},
+    ]
     last_fetched_ids = [1]
     sorted_incidents = client.remove_duplicated_events(incidents, last_fetched_ids)
-    assert sorted_incidents == [{"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
-                                {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"}]
+    assert sorted_incidents == [
+        {"id": 2, "last_occurrence_date": "2024-01-03T21:05:38Z"},
+        {"id": 3, "last_occurrence_date": "2024-03-03T21:05:38Z"},
+    ]
 
 
 def test_fetch_events_without_nextTrigger(client, mocker):
@@ -84,22 +92,22 @@ def test_fetch_events_without_nextTrigger(client, mocker):
 
     max_events_per_fetch = 2
     last_run = {
-        "incident": {"from_fetch_time": "2024-01-03T21:10:40Z",
-                     "to_fetch_time": "2024-01-03T21:10:40Z",
-                     "last_fetched_event_ids": [],
-                     "next_url_link": ''},
+        "incident": {
+            "from_fetch_time": "2024-01-03T21:10:40Z",
+            "to_fetch_time": "2024-01-03T21:10:40Z",
+            "last_fetched_event_ids": [],
+            "next_url_link": "",
+        },
         "audit_log": {
             "from_fetch_time": "2024-01-03T21:10:40Z",
             "to_fetch_time": "2024-01-03T21:10:40Z",
             "last_fetched_event_ids": [],
-            "next_url_link": ''
-        }
+            "next_url_link": "",
+        },
     }
 
-    mocker.patch('GitGuardianEventCollector.send_events_to_xsiam')
-    next_run, incidents, audit_logs = fetch_events(
-        client, last_run, max_events_per_fetch
-    )
+    mocker.patch("GitGuardianEventCollector.send_events_to_xsiam")
+    next_run, incidents, audit_logs = fetch_events(client, last_run, max_events_per_fetch)
     assert len(incidents) == 2
     assert len(audit_logs) == 2
     assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:40Z"
@@ -116,27 +124,27 @@ def test_fetch_events_with_nextTrigger(client, mocker):
 
     max_events_per_fetch = 1
     last_run = {
-        "incident": {"from_fetch_time": "2024-01-03T21:10:40Z",
-                     "to_fetch_time": "2024-01-03T21:10:42Z",
-                     "last_fetched_event_ids": [],
-                     "next_url_link": ''},
+        "incident": {
+            "from_fetch_time": "2024-01-03T21:10:40Z",
+            "to_fetch_time": "2024-01-03T21:10:42Z",
+            "last_fetched_event_ids": [],
+            "next_url_link": "",
+        },
         "audit_log": {
             "from_fetch_time": "2024-01-03T21:10:40Z",
             "to_fetch_time": "2024-01-03T21:10:42Z",
             "last_fetched_event_ids": [],
-            "next_url_link": ''
-        }
+            "next_url_link": "",
+        },
     }
 
-    mocker.patch('GitGuardianEventCollector.send_events_to_xsiam')
-    next_run, _, _ = fetch_events(
-        client, last_run, max_events_per_fetch
-    )
+    mocker.patch("GitGuardianEventCollector.send_events_to_xsiam")
+    next_run, _, _ = fetch_events(client, last_run, max_events_per_fetch)
     assert "nextTrigger" in next_run  # did not fetch all of the events
     assert next_run["audit_log"].get("next_url_link") == "next_url"
     # Did not update the time window due to next url
     assert next_run["audit_log"].get("from_fetch_time") == "2024-01-03T21:10:40Z"
-    assert next_run['audit_log']['is_pagination_in_progress']
+    assert next_run["audit_log"]["is_pagination_in_progress"]
     assert next_run["incident"].get("next_url_link") == ""
-    assert not next_run['incident']['is_pagination_in_progress']
+    assert not next_run["incident"]["is_pagination_in_progress"]
     assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:42Z"

@@ -1,0 +1,47 @@
+commonfields:
+  id: SearchIndicatorInEvents
+  version: -1
+name: SearchIndicatorInEvents
+script: ''
+type: python
+tags:
+  - Utilities
+comment: Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
+enabled: true
+args:
+  - name: indicator
+    required: true
+    description: The indicator value (e.g., IP address, domain, hash) to search for in the selected dataset logs.
+  - name: time_frame
+    required: true
+    defaultValue: 7 days
+    description: The search timeframe in days (e.g., "7 days" means searching the past 7 days of data).
+  - name: data_set
+    defaultValue: xdr_data
+    description: The dataset for the search. By default, this is "xdr_data".
+  - name: query_name
+    required: true
+    description: The name to use for the query results. Find the query results under this name in the War Room context.
+  - name: query_id
+    hidden: true
+    description: The internal ID for the query. It cannot be set manually.
+  - name: interval_in_seconds
+    defaultValue: '30'
+    description: The interval in seconds for checking query completion.
+  - name: timeout_in_seconds
+    defaultValue: '600'
+    description: The maximum time to wait for the query to finish (in seconds). The command fails if the query takes longer.
+outputs:
+  - contextPath: PaloAltoNetworksXQL
+    description: A list of event records (constructed as dictionaries) where the specified indicator was found.
+    type: List
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.1.0
+tests:
+  - No tests (auto formatted)
+polling: true
+marketplaces:
+  - marketplacev2
+  - platform

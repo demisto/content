@@ -49,4 +49,4 @@ This playbook does not use any scripts.
 ## Playbook Image
 
 ---
-![OpenCTI Create Indicator](https://raw.githubusercontent.com/demisto/content/6658b5fc7c87cd5a5c189a4da8ad77c4a840585a/Packs/OpenCTI/doc_files/OpenCTI_-_Create_Indicator.png)
+![OpenCTI Create Indicator](../doc_files/OpenCTI_-_Create_Indicator.png)

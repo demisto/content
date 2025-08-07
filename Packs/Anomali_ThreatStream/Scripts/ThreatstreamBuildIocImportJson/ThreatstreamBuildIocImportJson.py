@@ -1,11 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
-POPULATE_INDICATOR_FIELDS = ['indicator_type', 'value', 'id']
-INDICATOR_TYPES = ['Domain', 'Email', 'File MD', 'IP', 'IPv6', 'IPv6CIDR', 'URL']
+POPULATE_INDICATOR_FIELDS = ["indicator_type", "value", "id"]
+INDICATOR_TYPES = ["Domain", "Email", "File MD", "IP", "IPv6", "IPv6CIDR", "URL"]
 
-''' STANDALONE FUNCTION '''
+""" STANDALONE FUNCTION """
 
 
 def execute_get_indicators_by_query(query: str, indicators_types: dict) -> list:
@@ -18,15 +19,20 @@ def execute_get_indicators_by_query(query: str, indicators_types: dict) -> list:
         A list of indicators.
     """
     indicator_list = []
-    res = demisto.executeCommand('GetIndicatorsByQuery', args={'populateFields': POPULATE_INDICATOR_FIELDS, 'query': query})
-    indicators = res[0]['Contents']
+    res = demisto.executeCommand("GetIndicatorsByQuery", args={"populateFields": POPULATE_INDICATOR_FIELDS, "query": query})
+    indicators = res[0]["Contents"]
     for indicator in indicators:
-        indicator_type = indicator.get('indicator_type')
-        indicator_value = indicator.get('value')
+        indicator_type = indicator.get("indicator_type")
+        indicator_value = indicator.get("value")
         if indicator_type in INDICATOR_TYPES:
-            indicator_list.append({'value': indicator_value,
-                                   'itype': indicators_types.get('ip') if indicator_type.lower() in {'ip', 'ipv6', 'ipv6cidr'}
-                                   else indicators_types.get(indicator_type.lower())})
+            indicator_list.append(
+                {
+                    "value": indicator_value,
+                    "itype": indicators_types.get("ip")
+                    if indicator_type.lower() in {"ip", "ipv6", "ipv6cidr"}
+                    else indicators_types.get(indicator_type.lower()),
+                }
+            )
     return indicator_list
 
 
@@ -70,17 +76,20 @@ def get_indicators_from_user(args: dict, indicators_types: dict) -> list:
         A list of indicators.
     """
     indicator_list: list[dict] = []
-    indicators = {'email_list': argToList(args.get('email_values', [])),
-                  'md5_list': argToList(args.get('md5_values', [])),
-                  'ip_list': argToList(args.get('ip_values', [])), 'url_list': argToList(args.get('url_values', [])),
-                  'domain_list': argToList(args.get('domain_values', []))}
+    indicators = {
+        "email_list": argToList(args.get("email_values", [])),
+        "md5_list": argToList(args.get("md5_values", [])),
+        "ip_list": argToList(args.get("ip_values", [])),
+        "url_list": argToList(args.get("url_values", [])),
+        "domain_list": argToList(args.get("domain_values", [])),
+    }
     validate_indicators(**indicators)
     for indicator_list_name, indicators_list in indicators.items():
         indicator_type = indicator_list_name.split("_")[0]
         indicator_list.extend(
             {
-                'value': indicator_value,
-                'itype': indicators_types.get(indicator_type),
+                "value": indicator_value,
+                "itype": indicators_types.get(indicator_type),
             }
             for indicator_value in indicators_list
         )
@@ -96,22 +105,26 @@ def get_indicators_and_build_json(args: dict) -> CommandResults:
         A CommandResults object with the relevant JSON.
     """
     list_indicators = []
-    indicators_types = {'email': args.get('email_indicator_type', 'mal_email'),
-                        'md5': args.get('md5_indicator_type', 'mal_md5'),
-                        'ip': args.get('ip_indicator_type', 'mal_ip'),
-                        'url': args.get('url_indicator_type', 'mal_url'),
-                        'domain': args.get('domain_indicator_type', 'mal_domain')}
-    if indicator_query := args.get('indicator_query'):
+    indicators_types = {
+        "email": args.get("email_indicator_type", "mal_email"),
+        "md5": args.get("md5_indicator_type", "mal_md5"),
+        "ip": args.get("ip_indicator_type", "mal_ip"),
+        "url": args.get("url_indicator_type", "mal_url"),
+        "domain": args.get("domain_indicator_type", "mal_domain"),
+    }
+    if indicator_query := args.get("indicator_query"):
         list_indicators = execute_get_indicators_by_query(indicator_query, indicators_types)
     else:
         list_indicators = get_indicators_from_user(args, indicators_types)
-    outputs = str({'objects': list_indicators})
-    return CommandResults(outputs_key_field='ThreatstreamBuildIocImportJson',
-                          outputs={'ThreatstreamBuildIocImportJson': outputs},
-                          readable_output=outputs)
+    outputs = str({"objects": list_indicators})
+    return CommandResults(
+        outputs_key_field="ThreatstreamBuildIocImportJson",
+        outputs={"ThreatstreamBuildIocImportJson": outputs},
+        readable_output=outputs,
+    )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
@@ -119,11 +132,11 @@ def main():
         args = demisto.args()
         return_results(get_indicators_and_build_json(args))
     except Exception as ex:
-        return_error(f'Failed to execute ThreatstreamBuildIocImportJson. Error: {str(ex)}')
+        return_error(f"Failed to execute ThreatstreamBuildIocImportJson. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

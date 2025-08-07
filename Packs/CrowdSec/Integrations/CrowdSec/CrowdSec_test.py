@@ -1,12 +1,11 @@
 """
-    Cortex XSOAR CrowdSec Integration Unit Tests
+Cortex XSOAR CrowdSec Integration Unit Tests
 """
 
-import io
 import json
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
 from CrowdSec import Client
 
 client = Client(
@@ -19,7 +18,7 @@ RELIABILITY = "B - Usually reliable"
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -101,9 +100,7 @@ def test_rate_limit(mocker):
     }
     mocker.patch("CrowdSec.Client._http_request", return_value=mock_response)
 
-    expected_error = (
-        "You have been rate limited by CrowdSec CTI API. Please upgrade to Pro or wait."
-    )
+    expected_error = "You have been rate limited by CrowdSec CTI API. Please upgrade to Pro or wait."
     with pytest.raises(Exception, match=expected_error):
         ip_command(client, RELIABILITY, args)
 

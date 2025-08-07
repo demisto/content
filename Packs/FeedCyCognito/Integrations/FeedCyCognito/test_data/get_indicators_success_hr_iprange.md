@@ -1,4 +1,4 @@
-### Indicator Detail:
+### Indicator Detail: 
  #### Asset type: Iprange
 |Asset ID|Security Grade|Status|Organizations|First Seen|Last Seen|Hosting Type|
 |---|---|---|---|---|---|---|

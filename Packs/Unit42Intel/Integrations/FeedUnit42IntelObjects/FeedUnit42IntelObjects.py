@@ -1,55 +1,48 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import urllib3
-
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_YEAR = datetime(1970, 1, 1)
-AF_TAGS_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+AF_TAGS_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 TAG_CLASS_TO_DEMISTO_TYPE = {
-    'malware_family': ThreatIntel.ObjectsNames.MALWARE,
-    'actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
-    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
-    'malicious_behavior': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malware_family": ThreatIntel.ObjectsNames.MALWARE,
+    "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "malicious_behavior": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
 }
 
 MAP_RELATIONSHIPS = {
-    ThreatIntel.ObjectsNames.MALWARE:
-        {
-            ThreatIntel.ObjectsNames.MALWARE: 'related-to',
-            ThreatIntel.ObjectsNames.THREAT_ACTOR: 'used-by',
-            ThreatIntel.ObjectsNames.CAMPAIGN: 'used-by',
-            ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'
-        },
-    ThreatIntel.ObjectsNames.THREAT_ACTOR:
-        {
-            ThreatIntel.ObjectsNames.MALWARE: 'uses',
-            ThreatIntel.ObjectsNames.THREAT_ACTOR: 'related-to',
-            ThreatIntel.ObjectsNames.CAMPAIGN: 'attributed-by',
-            ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'uses'
-        },
-    ThreatIntel.ObjectsNames.CAMPAIGN:
-        {
-            ThreatIntel.ObjectsNames.MALWARE: 'uses',
-            ThreatIntel.ObjectsNames.THREAT_ACTOR: 'attributed-to',
-            ThreatIntel.ObjectsNames.CAMPAIGN: 'related-to',
-            ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'used-by'
-        },
-    ThreatIntel.ObjectsNames.ATTACK_PATTERN:
-        {
-            ThreatIntel.ObjectsNames.MALWARE: 'uses',
-            ThreatIntel.ObjectsNames.THREAT_ACTOR: 'used-by',
-            ThreatIntel.ObjectsNames.CAMPAIGN: 'uses',
-            ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'related-to'
-        },
-
+    ThreatIntel.ObjectsNames.MALWARE: {
+        ThreatIntel.ObjectsNames.MALWARE: "related-to",
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: "used-by",
+        ThreatIntel.ObjectsNames.CAMPAIGN: "used-by",
+        ThreatIntel.ObjectsNames.ATTACK_PATTERN: "used-by",
+    },
+    ThreatIntel.ObjectsNames.THREAT_ACTOR: {
+        ThreatIntel.ObjectsNames.MALWARE: "uses",
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: "related-to",
+        ThreatIntel.ObjectsNames.CAMPAIGN: "attributed-by",
+        ThreatIntel.ObjectsNames.ATTACK_PATTERN: "uses",
+    },
+    ThreatIntel.ObjectsNames.CAMPAIGN: {
+        ThreatIntel.ObjectsNames.MALWARE: "uses",
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: "attributed-to",
+        ThreatIntel.ObjectsNames.CAMPAIGN: "related-to",
+        ThreatIntel.ObjectsNames.ATTACK_PATTERN: "used-by",
+    },
+    ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
+        ThreatIntel.ObjectsNames.MALWARE: "uses",
+        ThreatIntel.ObjectsNames.THREAT_ACTOR: "used-by",
+        ThreatIntel.ObjectsNames.CAMPAIGN: "uses",
+        ThreatIntel.ObjectsNames.ATTACK_PATTERN: "related-to",
+    },
 }
 
 SCORES_MAP = {
@@ -62,7 +55,7 @@ SCORES_MAP = {
 # The page size in the AutoFocus response (can be 1-200)
 PAGE_SIZE = 50
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -74,28 +67,27 @@ class Client(BaseClient):
 
     def __init__(self, api_key, base_url, verify, proxy):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.headers = {
-            'apiKey': api_key,
-            'Content-Type': 'application/json'
-        }
+        self.headers = {"apiKey": api_key, "Content-Type": "application/json"}
 
         add_sensitive_log_strs(api_key)
 
     def get_tags(self, data: dict[str, Any]):  # pragma: no cover
-        res = self._http_request('POST',
-                                 url_suffix='tags',
-                                 headers=self.headers,
-                                 json_data=data,
-                                 timeout=90,
-                                 )
+        res = self._http_request(
+            "POST",
+            url_suffix="tags",
+            headers=self.headers,
+            json_data=data,
+            timeout=90,
+        )
         return res
 
     def get_tag_details(self, public_tag_name: str):  # pragma: no cover
-        res = self._http_request('POST',
-                                 url_suffix=f'tag/{public_tag_name}',
-                                 headers=self.headers,
-                                 timeout=90,
-                                 )
+        res = self._http_request(
+            "POST",
+            url_suffix=f"tag/{public_tag_name}",
+            headers=self.headers,
+            timeout=90,
+        )
         return res
 
     def build_iterator(self, is_get_command: bool, limit: int = -1) -> list:
@@ -120,15 +112,11 @@ class Client(BaseClient):
             if not integration_context:
                 page_num = 0
                 time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
-                set_integration_context({'time_of_first_fetch': time_of_first_fetch})
+                set_integration_context({"time_of_first_fetch": time_of_first_fetch})
             else:
-                page_num = integration_context.get('page_num', 0)
-        get_tags_response = self.get_tags({
-            'pageNum': page_num,
-            'pageSize': PAGE_SIZE,
-            'sortBy': 'created_at'
-        })
-        tags = get_tags_response.get('tags', [])
+                page_num = integration_context.get("page_num", 0)
+        get_tags_response = self.get_tags({"pageNum": page_num, "pageSize": PAGE_SIZE, "sortBy": "created_at"})
+        tags = get_tags_response.get("tags", [])
         # when finishing the "first level fetch" (getting all the tags from the feed), the next call to the api
         # will be with a page num greater than the total pages, and the api should return an empty tags list.
         if not tags:
@@ -138,18 +126,18 @@ class Client(BaseClient):
         for tag in tags:
             if is_get_command and limit > 0 and len(results) >= limit:
                 return results
-            public_tag_name = tag.get('public_tag_name', '')
+            public_tag_name = tag.get("public_tag_name", "")
             tag_details_response = self.get_tag_details(public_tag_name)
             results.append(tag_details_response)
         if not is_get_command:
             page_num += 1
             context = get_integration_context()
-            context['page_num'] = page_num
+            context["page_num"] = page_num
             set_integration_context(context)
         return results
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def incremental_level_fetch(client: Client) -> list:
@@ -165,35 +153,32 @@ def incremental_level_fetch(client: Client) -> list:
     results: list = []
     integration_context = get_integration_context()
     # This field saves tags that have been updated since the last fetch time and need to be updated in demisto
-    list_of_all_updated_tags = argToList(integration_context.get('tags_need_to_be_fetched', ''))
-    time_from_last_update = integration_context.get('time_of_first_fetch')
+    list_of_all_updated_tags = argToList(integration_context.get("tags_need_to_be_fetched", ""))
+    time_from_last_update = integration_context.get("time_of_first_fetch")
     if time_from_last_update is None:
-        demisto.info("time_from_last_update is None during incremental_level_fetch. "
-                     "Using current time instead.")
+        demisto.info("time_from_last_update is None during incremental_level_fetch. Using current time instead.")
         time_from_last_update = date_to_timestamp(datetime.now(), DATE_FORMAT)
 
     index_to_delete = 0
     for tag in list_of_all_updated_tags:  # pragma: no cover
         # if there are such tags, we first get all of them, so we wont miss any tags
         if len(results) < PAGE_SIZE:
-            results.append(client.get_tag_details(tag.get('public_tag_name', '')))
+            results.append(client.get_tag_details(tag.get("public_tag_name", "")))
             index_to_delete += 1
         else:
             context = get_integration_context()
-            context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
-            context['tags_need_to_be_fetched'] = list_of_all_updated_tags[index_to_delete:]
+            context["time_of_first_fetch"] = date_to_timestamp(datetime.now(), DATE_FORMAT)
+            context["tags_need_to_be_fetched"] = list_of_all_updated_tags[index_to_delete:]
             set_integration_context(context)
             return results
 
-    list_of_all_updated_tags = get_all_updated_tags_since_last_fetch(client,
-                                                                     list_of_all_updated_tags,
-                                                                     time_from_last_update)
+    list_of_all_updated_tags = get_all_updated_tags_since_last_fetch(client, list_of_all_updated_tags, time_from_last_update)
 
     # add only PAGE_SIZE tag_details to results, so we wont make too many calls to the API
     index_to_delete = 0
     for tag in list_of_all_updated_tags:
         if len(results) < PAGE_SIZE:
-            public_tag_name = tag.get('public_tag_name')
+            public_tag_name = tag.get("public_tag_name")
             response = client.get_tag_details(public_tag_name)
             results.append(response)
             index_to_delete += 1
@@ -203,15 +188,15 @@ def incremental_level_fetch(client: Client) -> list:
     list_of_all_updated_tags = list_of_all_updated_tags[index_to_delete:]
     # update integration context
     context = get_integration_context()
-    context['tags_need_to_be_fetched'] = list_of_all_updated_tags
-    context['time_of_first_fetch'] = date_to_timestamp(datetime.now(), DATE_FORMAT)
+    context["tags_need_to_be_fetched"] = list_of_all_updated_tags
+    context["time_of_first_fetch"] = date_to_timestamp(datetime.now(), DATE_FORMAT)
     set_integration_context(context)
     return results
 
 
-def get_all_updated_tags_since_last_fetch(client: Client,
-                                          list_of_all_updated_tags: list,
-                                          time_from_last_update: int) -> list:  # pragma: no cover
+def get_all_updated_tags_since_last_fetch(
+    client: Client, list_of_all_updated_tags: list, time_from_last_update: int
+) -> list:  # pragma: no cover
     """
     This method makes API calls to gat all the tags that has been updated since the last fetch time
     It filters the tags according to the update time (and gets another pages if needed),
@@ -228,22 +213,15 @@ def get_all_updated_tags_since_last_fetch(client: Client,
     page_num = 0
     has_updates = True
     while has_updates:
-        response = client.get_tags({
-            'pageNum': page_num,
-            'pageSize': 200,
-            'sortBy': 'updated_at',
-            'order': 'desc'
-        })
-        tags = response.get('tags', [])
+        response = client.get_tags({"pageNum": page_num, "pageSize": 200, "sortBy": "updated_at", "order": "desc"})
+        tags = response.get("tags", [])
         for tag in tags:
-            update_time = tag.get('updated_at')
-            update_time = datetime.strptime(update_time, AF_TAGS_DATE_FORMAT).strftime(
-                DATE_FORMAT) if update_time else None
+            update_time = tag.get("updated_at")
+            update_time = datetime.strptime(update_time, AF_TAGS_DATE_FORMAT).strftime(DATE_FORMAT) if update_time else None
             update_time = date_to_timestamp(update_time, DATE_FORMAT)
             if update_time >= time_from_last_update:
                 # this means that the tag hase been updated, so it needs to be added to the list of updated tags
-                list_of_all_updated_tags.append(
-                    {'public_tag_name': tag.get('public_tag_name')})
+                list_of_all_updated_tags.append({"public_tag_name": tag.get("public_tag_name")})
             else:
                 has_updates = False
                 break
@@ -265,7 +243,7 @@ def get_tag_class(tag_class: str | None, source: str | None) -> str | None:
     # indicators from type Attack Pattern are only created if its source is unit42
     if not tag_class:
         return None
-    if (tag_class != 'malicious_behavior') or (tag_class == 'malicious_behavior' and source == 'Unit 42'):
+    if (tag_class != "malicious_behavior") or (tag_class == "malicious_behavior" and source == "Unit 42"):
         return TAG_CLASS_TO_DEMISTO_TYPE.get(tag_class)
     return None
 
@@ -283,7 +261,7 @@ def get_tag_groups_names(tag_groups: list) -> list:
     results = []
     if len(tag_groups) > 0:
         for group in tag_groups:
-            tag_group_name = group.get('tag_group_name', '')
+            tag_group_name = group.get("tag_group_name", "")
             if tag_group_name:
                 results.append(tag_group_name)
     return results
@@ -297,9 +275,9 @@ def validate_created_time_from_refs(created_time: str) -> str:
     Returns:
         Formatted timestamp publication object.
     """
-    if parsed_date_time := dateparser.parse(created_time, settings={'RELATIVE_BASE': DEFAULT_YEAR}):
+    if parsed_date_time := dateparser.parse(created_time, settings={"RELATIVE_BASE": DEFAULT_YEAR}):
         return datetime.strftime(parsed_date_time, DATE_FORMAT)
-    return ''
+    return ""
 
 
 def create_publications(refs: list) -> list:
@@ -314,11 +292,11 @@ def create_publications(refs: list) -> list:
     publications: list = []
     if len(refs) > 0:
         for ref in refs:
-            url = ref.get('url', '')
-            source = ref.get('source', '')
-            time_stamp = validate_created_time_from_refs(ref.get('created', ''))
-            title = ref.get('title', '')
-            publications.append({'link': url, 'title': title, 'source': source, 'timestamp': time_stamp})
+            url = ref.get("url", "")
+            source = ref.get("source", "")
+            time_stamp = validate_created_time_from_refs(ref.get("created", ""))
+            title = ref.get("title", "")
+            publications.append({"link": url, "title": title, "source": source, "timestamp": time_stamp})
     return publications
 
 
@@ -332,18 +310,16 @@ def create_indicators_fields(tag_details: dict[str, Any]) -> dict[str, Any]:
     """
 
     fields: dict[str, Any] = {}
-    tag = tag_details.get('tag', {})
-    refs = json.loads(tag.get('refs', '[]'))
-    fields['publications'] = create_publications(refs)
-    fields['aliases'] = tag_details.get('aliases', [])
-    fields['description'] = tag.get('description', '')
-    last_hit = tag.get('lasthit', '')
-    fields['lastseenbysource'] = datetime.strptime(last_hit, AF_TAGS_DATE_FORMAT).strftime(
-        DATE_FORMAT) if last_hit else None
-    updated_at = tag.get('updated_at', '')
-    fields['updateddate'] = datetime.strptime(updated_at, AF_TAGS_DATE_FORMAT).strftime(
-        DATE_FORMAT) if updated_at else None
-    fields['reportedby'] = tag.get('source', '')
+    tag = tag_details.get("tag", {})
+    refs = json.loads(tag.get("refs", "[]"))
+    fields["publications"] = create_publications(refs)
+    fields["aliases"] = tag_details.get("aliases", [])
+    fields["description"] = tag.get("description", "")
+    last_hit = tag.get("lasthit", "")
+    fields["lastseenbysource"] = datetime.strptime(last_hit, AF_TAGS_DATE_FORMAT).strftime(DATE_FORMAT) if last_hit else None
+    updated_at = tag.get("updated_at", "")
+    fields["updateddate"] = datetime.strptime(updated_at, AF_TAGS_DATE_FORMAT).strftime(DATE_FORMAT) if updated_at else None
+    fields["reportedby"] = tag.get("source", "")
     remove_nulls_from_dictionary(fields)
     return fields
 
@@ -358,9 +334,9 @@ def update_integration_context_with_indicator_data(public_tag_name: str, tag_nam
     """
 
     integration_context = get_integration_context()
-    seen_tags = integration_context.get('seen_tags', {})
-    seen_tags[public_tag_name] = {'tag_name': tag_name, 'tag_type': tag_type}
-    integration_context['seen_tags'] = seen_tags
+    seen_tags = integration_context.get("seen_tags", {})
+    seen_tags[public_tag_name] = {"tag_name": tag_name, "tag_type": tag_type}
+    integration_context["seen_tags"] = seen_tags
     set_integration_context(integration_context)
 
 
@@ -378,29 +354,27 @@ def create_relationships_for_tag(client: Client, name: str, tag_type: str, relat
 
     relationships: list = []
     integration_context = get_integration_context()
-    seen_tags = integration_context.get('seen_tags', {})
+    seen_tags = integration_context.get("seen_tags", {})
     for related_tag_public_name in related_tags:
         if related_tag_public_name in seen_tags:
-            related_tag_name = seen_tags.get(related_tag_public_name, {}).get('tag_name', '')
-            related_tag_type = seen_tags.get(related_tag_public_name, {}).get('tag_type', '')
+            related_tag_name = seen_tags.get(related_tag_public_name, {}).get("tag_name", "")
+            related_tag_type = seen_tags.get(related_tag_public_name, {}).get("tag_type", "")
         else:
             try:
                 related_tag_details = client.get_tag_details(related_tag_public_name)
             except DemistoException:
                 demisto.debug(
-                    f'Unit 42 Intel Objects Feed: Could not create relationship for {name} with {related_tag_public_name}.')
+                    f"Unit 42 Intel Objects Feed: Could not create relationship for {name} with {related_tag_public_name}."
+                )
                 continue
-            tag = related_tag_details.get('tag', {})
-            related_tag_name = tag.get('tag_name', '')
-            tag_class = tag.get('tag_class', '')
-            source = tag.get('source', '')
+            tag = related_tag_details.get("tag", {})
+            related_tag_name = tag.get("tag_name", "")
+            tag_class = tag.get("tag_class", "")
+            source = tag.get("source", "")
             related_tag_type = get_tag_class(tag_class, source)
         if related_tag_type:
-            relationships.append(
-                create_relationship(name, tag_type, related_tag_name, related_tag_type).to_indicator())
-            update_integration_context_with_indicator_data(related_tag_public_name,
-                                                           related_tag_name,
-                                                           related_tag_type)
+            relationships.append(create_relationship(name, tag_type, related_tag_name, related_tag_type).to_indicator())
+            update_integration_context_with_indicator_data(related_tag_public_name, related_tag_name, related_tag_type)
     return relationships
 
 
@@ -426,7 +400,7 @@ def create_relationship(tag_name: str, tag_class: str, related_tag_name: str, re
     )
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:  # pragma: no cover
@@ -440,17 +414,18 @@ def test_module(client: Client) -> str:  # pragma: no cover
         Raises exceptions if something goes wrong.
     """
 
-    client.get_tags(data={'pageSize': 1})
-    return 'ok'
+    client.get_tags(data={"pageSize": 1})
+    return "ok"
 
 
-def fetch_indicators(client: Client,
-                     is_get_command: bool,
-                     tlp_color: str | None = None,
-                     feed_tags: list | None = None,
-                     limit: int = -1,
-                     create_relationships: bool = True,
-                     ) -> list[dict]:
+def fetch_indicators(
+    client: Client,
+    is_get_command: bool,
+    tlp_color: str | None = None,
+    feed_tags: list | None = None,
+    limit: int = -1,
+    create_relationships: bool = True,
+) -> list[dict]:
     """
     Retrieves indicators from the feed
     Args:
@@ -467,48 +442,45 @@ def fetch_indicators(client: Client,
     iterator = client.build_iterator(is_get_command, limit)
     indicators = []
     for tag_details in iterator:
-        tag_dict = tag_details.get('tag', {})
-        public_tag_name = tag_dict.get('public_tag_name', '')
-        tag_name = tag_dict.get('tag_name', '')
-        tag_class = tag_dict.get('tag_class', '')
-        source = tag_dict.get('source', '')
+        tag_dict = tag_details.get("tag", {})
+        public_tag_name = tag_dict.get("public_tag_name", "")
+        tag_name = tag_dict.get("tag_name", "")
+        tag_class = tag_dict.get("tag_class", "")
+        source = tag_dict.get("source", "")
         tag_type = get_tag_class(tag_class, source)
         if not tag_type:
             continue
         raw_data = {
-            'value': tag_name,
-            'type': tag_type,
+            "value": tag_name,
+            "type": tag_type,
         }
         update_integration_context_with_indicator_data(public_tag_name, tag_name, tag_type)
         raw_data.update(tag_details)
         indicator_obj = {
-            'value': tag_name,
-            'type': tag_type,
-            'fields': create_indicators_fields(tag_details),
-            'rawJSON': raw_data,
-            'score': SCORES_MAP.get(tag_type)
+            "value": tag_name,
+            "type": tag_type,
+            "fields": create_indicators_fields(tag_details),
+            "rawJSON": raw_data,
+            "score": SCORES_MAP.get(tag_type),
         }
-        related_tags = tag_details.get('related_tags', [])
+        related_tags = tag_details.get("related_tags", [])
         if related_tags and create_relationships:
-            relationships = (create_relationships_for_tag(client, tag_name, tag_type, related_tags))
+            relationships = create_relationships_for_tag(client, tag_name, tag_type, related_tags)
             if relationships:
-                indicator_obj['relationships'] = relationships
-        tag_groups = get_tag_groups_names(tag_details.get('tag_groups', []))
+                indicator_obj["relationships"] = relationships
+        tag_groups = get_tag_groups_names(tag_details.get("tag_groups", []))
         if feed_tags or tag_groups:
             if feed_tags:
                 tag_groups.extend(feed_tags)
-            indicator_obj['fields']['tags'] = tag_groups
+            indicator_obj["fields"]["tags"] = tag_groups
 
         if tlp_color:
-            indicator_obj['fields']['trafficlightprotocol'] = tlp_color
+            indicator_obj["fields"]["trafficlightprotocol"] = tlp_color
         indicators.append(indicator_obj)
     return indicators
 
 
-def get_indicators_command(client: Client,
-                           params: dict[str, str],
-                           args: dict[str, str]
-                           ) -> CommandResults:  # pragma: no cover
+def get_indicators_command(client: Client, params: dict[str, str], args: dict[str, str]) -> CommandResults:  # pragma: no cover
     """
     Wrapper for retrieving indicators from the feed to the war-room.
     Args:
@@ -519,25 +491,26 @@ def get_indicators_command(client: Client,
         CommandResults object containing a human readable output for war-room representation.
     """
 
-    limit = arg_to_number(args.get('limit', '10')) or 10
+    limit = arg_to_number(args.get("limit", "10")) or 10
     if limit > PAGE_SIZE:
-        demisto.debug(f'Unit 42 Intel Objects Feed: limit must be under {PAGE_SIZE}. Setting limit to {PAGE_SIZE}.')
+        demisto.debug(f"Unit 42 Intel Objects Feed: limit must be under {PAGE_SIZE}. Setting limit to {PAGE_SIZE}.")
         limit = PAGE_SIZE
-    tlp_color = params.get('tlp_color')
-    feed_tags = argToList(params.get('feedTags', ''))
-    indicators = fetch_indicators(client=client,
-                                  is_get_command=True,
-                                  tlp_color=tlp_color,
-                                  feed_tags=feed_tags,
-                                  limit=limit,
-                                  create_relationships=False)
-    human_readable = tableToMarkdown('Indicators from Unit42 Intel Objects Feed:', indicators,
-                                     headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
-                                     removeNull=True)
+    tlp_color = params.get("tlp_color")
+    feed_tags = argToList(params.get("feedTags", ""))
+    indicators = fetch_indicators(
+        client=client, is_get_command=True, tlp_color=tlp_color, feed_tags=feed_tags, limit=limit, create_relationships=False
+    )
+    human_readable = tableToMarkdown(
+        "Indicators from Unit42 Intel Objects Feed:",
+        indicators,
+        headers=["value", "type", "fields"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='',
-        outputs_key_field='',
+        outputs_prefix="",
+        outputs_key_field="",
         raw_response=indicators,
         outputs={},
     )
@@ -553,19 +526,20 @@ def fetch_indicators_command(client: Client, params: dict[str, Any]) -> list[dic
         List of indicators from the feed.
     """
 
-    feed_tags = argToList(params.get('feedTags', ''))
-    tlp_color = params.get('tlp_color')
-    create_relationships = params.get('create_relationships', True)
-    indicators = fetch_indicators(client=client,
-                                  is_get_command=False,
-                                  tlp_color=tlp_color,
-                                  feed_tags=feed_tags,
-                                  create_relationships=create_relationships,
-                                  )
+    feed_tags = argToList(params.get("feedTags", ""))
+    tlp_color = params.get("tlp_color")
+    create_relationships = params.get("create_relationships", True)
+    indicators = fetch_indicators(
+        client=client,
+        is_get_command=False,
+        tlp_color=tlp_color,
+        feed_tags=feed_tags,
+        create_relationships=create_relationships,
+    )
     return indicators
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():  # pragma: no cover
@@ -575,22 +549,22 @@ def main():  # pragma: no cover
 
     params = demisto.params()
 
-    insecure = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    api_key = params.get('api_key', {}).get('password', '')
-    base_url = params.get('url')
+    insecure = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    api_key = params.get("api_key", {}).get("password", "")
+    base_url = params.get("url")
     if not api_key:
-        if is_demisto_version_ge('6.5.0'):
-            api_key = demisto.getLicenseCustomField('AutoFocusTagsFeed.api_key')
+        if is_demisto_version_ge("6.5.0"):
+            api_key = demisto.getLicenseCustomField("AutoFocusTagsFeed.api_key")
             if not api_key:
-                raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
+                raise DemistoException("Could not resolve the API key from the license nor the instance configuration.")
         else:
-            raise DemistoException('An API key must be specified in order to use this integration')
+            raise DemistoException("An API key must be specified in order to use this integration")
 
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
         client = Client(
@@ -600,13 +574,13 @@ def main():  # pragma: no cover
             proxy=proxy,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
 
-        elif command == 'unit42intel-objects-feed-get-indicators':
+        elif command == "unit42intel-objects-feed-get-indicators":
             return_results(get_indicators_command(client, params, args))
 
-        elif command == 'fetch-indicators':
+        elif command == "fetch-indicators":
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
             # the data fetched. If the integration instance is configured to fetch indicators, then this is the command
             # that will be executed at the specified feed fetch interval.
@@ -614,11 +588,11 @@ def main():  # pragma: no cover
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

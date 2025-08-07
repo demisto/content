@@ -3,20 +3,20 @@ from CommonServerPython import *  # noqa: F401
 
 
 def unpublish():
-    object_id = demisto.getArg('object.id')
+    object_id = demisto.getArg("object.id")
 
     execute_command(
-        'setThreatIntelReport',
+        "setThreatIntelReport",
         {
-            'id': object_id,
-            'xsoarReadOnlyRoles': '',
-            'reportstatus': 'Draft',
-            'published': '',
+            "id": object_id,
+            "xsoarReadOnlyRoles": "",
+            "reportstatus": "Draft",
+            "published": "",
         },
     )
 
-    demisto.results('ok')
+    demisto.results("ok")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     unpublish()

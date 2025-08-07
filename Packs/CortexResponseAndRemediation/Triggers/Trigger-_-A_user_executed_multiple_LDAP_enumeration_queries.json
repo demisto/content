@@ -1,0 +1,24 @@
+{
+  "trigger_id": "52c5358feb546561b409817ba1f129d2",
+  "playbook_id": "A user executed multiple LDAP enumeration queries",
+  "suggestion_reason": "Recommended for A user executed suspicious LDAP enumeration queries alerts.",
+  "description": "This trigger is responsible for handling alerts where a user executes suspicious LDAP enumeration queries.",
+  "trigger_name": "A user executed multiple LDAP enumeration queries",
+  "fromVersion": "8.8.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "A user executed suspicious LDAP enumeration queries"
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+      ]
+    }
+  }
+}

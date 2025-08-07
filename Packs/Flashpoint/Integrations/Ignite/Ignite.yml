@@ -1,3 +1,6 @@
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Ignite
   version: -1
@@ -10,35 +13,41 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   defaultvalue: 'Flashpoint Compromised Credentials'
+  section: Collect
 - display: Server URL
   additionalinfo: Server URL to connect to Ignite.
   name: url
   defaultvalue: "https://api.flashpoint.io"
   type: 0
   required: true
+  section: Connect
 - displaypassword: API Key
   additionalinfo: API key used for secure communication with the Ignite platform.
   name: credentials
   hiddenusername: true
   required: true
   type: 9
+  section: Connect
 - additionalinfo: The maximum limit is 200 for alerts and compromised credentials.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: 'Date or relative timestamp to start fetching the incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Whether to fetch the Ignite alerts or the compromised credentials. Defaults to "Compromised Credentials" if nothing selected.
   defaultvalue: Compromised Credentials
   display: Fetch Type
@@ -48,6 +57,7 @@ configuration:
   - 'Alerts'
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Set the default severity for the incidents using this instance.
   defaultvalue: Unknown
   display: Severity for Incidents
@@ -61,6 +71,7 @@ configuration:
   - Critical
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Filters the incoming alerts with the provided alert status.
   display: Alert Status
   name: status
@@ -71,6 +82,7 @@ configuration:
   - None
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Filters the incoming alerts with the origin of the alert.
   display: Alert Origin
   name: origin
@@ -79,6 +91,7 @@ configuration:
   - Assets
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Filters the incoming alerts with the source of the alert.
   display: Alert Sources
   name: sources
@@ -91,12 +104,56 @@ configuration:
   - Marketplaces
   type: 16
   required: false
+  section: Collect
 - additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before.
   defaultvalue: 'true'
   display: Fetch fresh compromised credentials alerts
   name: is_fresh_compromised_credentials
   type: 8
   required: false
+  section: Collect
+- additionalinfo: Filters the incoming compromised credentials alerts with passwords having lowercase letters.
+  display: Fetch compromised credentials alerts having lowercase in password
+  name: password_has_lowercase
+  options:
+  - 'False'
+  - 'True'
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Filters the incoming compromised credentials alerts with passwords having uppercase letters.
+  display: Fetch compromised credentials alerts having uppercase in password
+  name: password_has_uppercase
+  options:
+  - 'False'
+  - 'True'
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Filters the incoming compromised credentials alerts with passwords having numbers.
+  display: Fetch compromised credentials alerts having numbers in password
+  name: password_has_number
+  options:
+  - 'False'
+  - 'True'
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Filters the incoming compromised credentials alerts with passwords having symbols.
+  display: Fetch compromised credentials alerts having symbol in password
+  name: password_has_symbol
+  options:
+  - 'False'
+  - 'True'
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Filters the incoming compromised credentials alerts with passwords has minimum length.
+  display: Fetch compromised credentials alerts having minimum length of password
+  name: password_min_length
+  type: 0
+  required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -111,6 +168,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -121,25 +179,32 @@ configuration:
   - suddenDeath
   type: 17
   required: false
+  section: Collect
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
   required: false
+  section: Collect
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   commands:
   - name: flashpoint-ignite-intelligence-report-search
@@ -174,7 +239,7 @@ script:
     arguments:
     - description: |-
         Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.
-        
+
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
       name: start_date
     - description: |-
@@ -507,10 +572,10 @@ script:
     - name: asset_ip
       description: Filter alerts by asset IP.
     - name: asset_ids
-      description: A comma-separated list of alerts filtered by asset IDs. 
+      description: A comma-separated list of alerts filtered by asset IDs.
       isArray: true
     - name: query_ids
-      description: A comma-separated list of alerts filtered by search IDs. 
+      description: A comma-separated list of alerts filtered by search IDs.
       isArray: true
     outputs:
     - contextPath: Ignite.Alert.id
@@ -735,7 +800,7 @@ script:
     - contextPath: Ignite.PageToken.Alert.name
       description: The name of the command.
       type: String
-    description: Retrieves a list of alerts based on the filter values provided in the command arguments. 
+    description: Retrieves a list of alerts based on the filter values provided in the command arguments.
   - name: email
     arguments:
     - name: email
@@ -790,6 +855,7 @@ script:
       description: Name of indicator.
       type: string
     description: Looks up the "Email" type indicator details. The reputation of Email is considered malicious if there's at least one IoC event in the Ignite database matching the Email indicator.
+    deprecated: true
   - name: filename
     arguments:
     - name: filename
@@ -853,6 +919,7 @@ script:
       description: The description of the indicator.
       type: string
     description: Looks up the "Filename" type indicator details. The reputation of Filename is considered malicious if there's at least one IoC event in the Ignite database matching the Filename indicator.
+    deprecated: true
   - name: ip
     arguments:
     - name: ip
@@ -1084,9 +1151,126 @@ script:
       description: ID of the title.
       type: String
     - contextPath: Ignite.IP.type
-      description: Type of the document.
+      description: Type of the indicator.
       type: String
-    description: Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IoC event in the Ignite database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the community's peer IP addresses.
+    - contextPath: Ignite.IP.value
+      description: The value of IP.
+      type: string
+    - contextPath: Ignite.IP.href
+      description: The href of IP.
+      type: string
+    - contextPath: Ignite.IP.entity_type
+      description: The entity type of IP.
+      type: string
+    - contextPath: Ignite.IP.score.value
+      description: The score value of IP.
+      type: string
+    - contextPath: Ignite.IP.score.last_scored_at
+      description: The last scored time of IP.
+      type: string
+    - contextPath: Ignite.IP.score.raw_score
+      description: The raw score of IP.
+      type: number
+    - contextPath: Ignite.IP.modified_at
+      description: Last time when IP was modified.
+      type: string
+    - contextPath: Ignite.IP.created_at
+      description: The creation time of IP.
+      type: string
+    - contextPath: Ignite.IP.last_seen_at
+      description: The last seen time of IP.
+      type: string
+    - contextPath: Ignite.IP.platform_urls.ignite
+      description: The ignite platform url of IP.
+      type: string
+    - contextPath: Ignite.IP.apt_description
+      description: The apt description of IP.
+      type: string
+    - contextPath: Ignite.IP.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.IP.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.IP.hashes.md5
+      description: The md5 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.hashes.sha1
+      description: The sha1 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.hashes.sha256
+      description: The sha256 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.malware_description
+      description: The malware description of IP.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.id
+      description: The mitre attack id of IP.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.IP.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.IP.sightings.source
+      description: The source of IP sighting.
+      type: string
+    - contextPath: Ignite.IP.sightings.sighted_at
+      description: The sighted at time of IP.
+      type: string
+    - contextPath: Ignite.IP.sightings.tags
+      description: The tags of IP sighting.
+      type: array
+    - contextPath: Ignite.IP.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.source
+      description: The source of IP latest sighting.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of IP.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.tags
+      description: The tags of IP latest sighting.
+      type: array
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.IP.total_sightings
+      description: The total sightings of IP.
+      type: integer
+    description: Looks up the "IP" type indicator details. The reputation of the IP address is decided from the indicator score if it is found in the Ignite IOC database. Alternatively, the IP address is considered suspicious if it matches any one of the community's peer IP addresses.
   - name: flashpoint-ignite-common-lookup
     arguments:
     - name: indicator
@@ -1110,7 +1294,1291 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
-    description: Looks up any type of indicator.
+    - contextPath: Ignite.File.id
+      description: The ID of file.
+      type: string
+    - contextPath: Ignite.File.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.File.value
+      description: The value of file.
+      type: string
+    - contextPath: Ignite.File.href
+      description: The href of file.
+      type: string
+    - contextPath: Ignite.File.entity_type
+      description: The entity type of file.
+      type: string
+    - contextPath: Ignite.File.score.value
+      description: The score value of file.
+      type: string
+    - contextPath: Ignite.File.score.last_scored_at
+      description: The last scored time of file.
+      type: string
+    - contextPath: Ignite.File.score.raw_score
+      description: The raw score of file.
+      type: number
+    - contextPath: Ignite.File.modified_at
+      description: Last time when file was modified.
+      type: string
+    - contextPath: Ignite.File.created_at
+      description: The creation time of file.
+      type: string
+    - contextPath: Ignite.File.last_seen_at
+      description: The last seen time of file.
+      type: string
+    - contextPath: Ignite.File.sort_date
+      description: The sort date of file.
+      type: string
+    - contextPath: Ignite.File.platform_urls.ignite
+      description: The ignite platform url of file.
+      type: string
+    - contextPath: Ignite.File.apt_description
+      description: The apt description of file.
+      type: string
+    - contextPath: Ignite.File.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.File.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.File.hashes.md5
+      description: The md5 hash of file.
+      type: string
+    - contextPath: Ignite.File.hashes.sha1
+      description: The sha1 hash of file.
+      type: string
+    - contextPath: Ignite.File.hashes.sha256
+      description: The sha256 hash of file.
+      type: string
+    - contextPath: Ignite.File.malware_description
+      description: The malware description of file.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.id
+      description: The mitre attack id of file.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.File.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.File.sightings.source
+      description: The source of file sighting.
+      type: string
+    - contextPath: Ignite.File.sightings.sighted_at
+      description: The sighted at time of file.
+      type: string
+    - contextPath: Ignite.File.sightings.tags
+      description: The tags of file sighting.
+      type: array
+    - contextPath: Ignite.File.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.source
+      description: The source of file latest sighting.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of file.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.tags
+      description: The tags of file latest sighting.
+      type: array
+    - contextPath: Ignite.File.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.File.total_sightings
+      description: The total sightings of file.
+      type: integer
+    - contextPath: File.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: Vendor of the malicious file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 type file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 type file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 type file.
+      type: string
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Ignite.Domain.id
+      description: The ID of domain.
+      type: string
+    - contextPath: Ignite.Domain.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.Domain.value
+      description: The value of domain.
+      type: string
+    - contextPath: Ignite.Domain.href
+      description: The href of domain.
+      type: string
+    - contextPath: Ignite.Domain.entity_type
+      description: The entity type of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.value
+      description: The score value of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.last_scored_at
+      description: The last scored time of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.raw_score
+      description: The raw score of domain.
+      type: number
+    - contextPath: Ignite.Domain.modified_at
+      description: Last time when domain was modified.
+      type: string
+    - contextPath: Ignite.Domain.created_at
+      description: The creation time of domain.
+      type: string
+    - contextPath: Ignite.Domain.last_seen_at
+      description: The last seen time of domain.
+      type: string
+    - contextPath: Ignite.Domain.sort_date
+      description: The sort date of domain.
+      type: string
+    - contextPath: Ignite.Domain.platform_urls.ignite
+      description: The ignite platform url of domain.
+      type: string
+    - contextPath: Ignite.Domain.apt_description
+      description: The apt description of domain.
+      type: string
+    - contextPath: Ignite.Domain.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.Domain.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.Domain.hashes.md5
+      description: The md5 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.hashes.sha1
+      description: The sha1 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.hashes.sha256
+      description: The sha256 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.malware_description
+      description: The malware description of domain.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.id
+      description: The mitre attack id of domain.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.Domain.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.Domain.sightings.source
+      description: The source of domain sighting.
+      type: string
+    - contextPath: Ignite.Domain.sightings.sighted_at
+      description: The sighted at of domain.
+      type: string
+    - contextPath: Ignite.Domain.sightings.tags
+      description: The tags of domain sighting.
+      type: array
+    - contextPath: Ignite.Domain.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.source
+      description: The source of domain latest sighting.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.sighted_at
+      description: The sighted at of domain latest sighting.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.tags
+      description: The tags of domain latest sighting.
+      type: array
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.total_sightings
+      description: The total sightings of domain.
+      type: integer  
+    - contextPath: Domain.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor of the malicious indicator.
+      type: string
+    - contextPath: Domain.Name
+      description: Name of the domain.
+      type: string
+    - contextPath: Domain.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor of the malicious URL.
+      type: string
+    - contextPath: URL.Data
+      description: The URL.
+      type: string
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: URL.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Ignite.URL.id
+      description: The ID of URL.
+      type: string
+    - contextPath: Ignite.URL.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.URL.value
+      description: The value of URL.
+      type: string
+    - contextPath: Ignite.URL.href
+      description: The href of URL.
+      type: string
+    - contextPath: Ignite.URL.entity_type
+      description: The entity type of URL.
+      type: string
+    - contextPath: Ignite.URL.score.value
+      description: The score value of URL.
+      type: string
+    - contextPath: Ignite.URL.score.last_scored_at
+      description: The last scored time of URL.
+      type: string
+    - contextPath: Ignite.URL.score.raw_score
+      description: The raw score of URL.
+      type: number
+    - contextPath: Ignite.URL.modified_at
+      description: Last time when URL was modified.
+      type: string
+    - contextPath: Ignite.URL.created_at
+      description: The creation time of URL.
+      type: string
+    - contextPath: Ignite.URL.last_seen_at
+      description: The last seen time of URL.
+      type: string
+    - contextPath: Ignite.URL.sort_date
+      description: The sort date of URL.
+      type: string
+    - contextPath: Ignite.URL.platform_urls.ignite
+      description: The ignite platform url of URL.
+      type: string
+    - contextPath: Ignite.URL.apt_description
+      description: The apt description of URL.
+      type: string
+    - contextPath: Ignite.URL.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.URL.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.URL.hashes.md5
+      description: The md5 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.hashes.sha1
+      description: The sha1 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.hashes.sha256
+      description: The sha256 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.malware_description
+      description: The malware description of URL.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.id
+      description: The mitre attack id of URL.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.URL.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.URL.sightings.source
+      description: The source of URL sighting.
+      type: string
+    - contextPath: Ignite.URL.sightings.sighted_at
+      description: The sighted at time of URL.
+      type: string
+    - contextPath: Ignite.URL.sightings.tags
+      description: The tags of URL sighting.
+      type: array
+    - contextPath: Ignite.URL.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.source
+      description: The source of URL latest sighting.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of URL.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.tags
+      description: The tags of URL latest sighting.
+      type: array
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.URL.total_sightings
+      description: The total sightings of URL.
+      type: integer
+    - contextPath: IP.Address
+      description: The IP address.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor used to calculate the severity of the IP address.
+      type: string
+    - contextPath: IP.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Ignite.IP.id
+      description: Unique identifier for the document.
+      type: String
+    - contextPath: Ignite.IP.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.IP.value
+      description: The value of IP.
+      type: string
+    - contextPath: Ignite.IP.href
+      description: The href of IP.
+      type: string
+    - contextPath: Ignite.IP.entity_type
+      description: The entity type of IP.
+      type: string
+    - contextPath: Ignite.IP.score.value
+      description: The score value of IP.
+      type: string
+    - contextPath: Ignite.IP.score.last_scored_at
+      description: The last scored time of IP.
+      type: string
+    - contextPath: Ignite.IP.score.raw_score
+      description: The raw score of IP.
+      type: number
+    - contextPath: Ignite.IP.modified_at
+      description: Last time when IP was modified.
+      type: string
+    - contextPath: Ignite.IP.created_at
+      description: The creation time of IP.
+      type: string
+    - contextPath: Ignite.IP.last_seen_at
+      description: The last seen time of IP.
+      type: string
+    - contextPath: Ignite.IP.platform_urls.ignite
+      description: The ignite platform url of IP.
+      type: string
+    - contextPath: Ignite.IP.apt_description
+      description: The apt description of IP.
+      type: string
+    - contextPath: Ignite.IP.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.IP.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.IP.hashes.md5
+      description: The md5 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.hashes.sha1
+      description: The sha1 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.hashes.sha256
+      description: The sha256 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.malware_description
+      description: The malware description of IP.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.id
+      description: The mitre attack id of IP.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.IP.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.IP.sightings.source
+      description: The source of IP sighting.
+      type: string
+    - contextPath: Ignite.IP.sightings.sighted_at
+      description: The sighted at time of IP.
+      type: string
+    - contextPath: Ignite.IP.sightings.tags
+      description: The tags of IP sighting.
+      type: array
+    - contextPath: Ignite.IP.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.source
+      description: The source of IP latest sighting.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of IP.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.tags
+      description: The tags of IP latest sighting.
+      type: array
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.IP.total_sightings
+      description: The total sightings of IP.
+      type: integer
+    description: 'Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP". The reputation of the indicator is decided from the indicator score if it is found in the Ignite IOC database.'
+  - name: flashpoint-ignite-indicator-get
+    arguments:
+    - name: indicator_id
+      required: true
+      default: true
+      description: ID of the indicator.
+      isArray: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: Ignite.File.id
+      description: The ID of file.
+      type: string
+    - contextPath: Ignite.File.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.File.value
+      description: The value of file.
+      type: string
+    - contextPath: Ignite.File.href
+      description: The href of file.
+      type: string
+    - contextPath: Ignite.File.entity_type
+      description: The entity type of file.
+      type: string
+    - contextPath: Ignite.File.score.value
+      description: The score value of file.
+      type: string
+    - contextPath: Ignite.File.score.last_scored_at
+      description: The last scored time of file.
+      type: string
+    - contextPath: Ignite.File.score.raw_score
+      description: The raw score of file.
+      type: number
+    - contextPath: Ignite.File.modified_at
+      description: Last time when file was modified.
+      type: string
+    - contextPath: Ignite.File.created_at
+      description: The creation time of file.
+      type: string
+    - contextPath: Ignite.File.last_seen_at
+      description: The last seen time of file.
+      type: string
+    - contextPath: Ignite.File.sort_date
+      description: The sort date of file.
+      type: string
+    - contextPath: Ignite.File.platform_urls.ignite
+      description: The ignite platform url of file.
+      type: string
+    - contextPath: Ignite.File.apt_description
+      description: The apt description of file.
+      type: string
+    - contextPath: Ignite.File.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.File.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.File.hashes.md5
+      description: The md5 hash of file.
+      type: string
+    - contextPath: Ignite.File.hashes.sha1
+      description: The sha1 hash of file.
+      type: string
+    - contextPath: Ignite.File.hashes.sha256
+      description: The sha256 hash of file.
+      type: string
+    - contextPath: Ignite.File.malware_description
+      description: The malware description of file.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.id
+      description: The mitre attack id of file.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.File.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.File.sightings.source
+      description: The source of file sighting.
+      type: string
+    - contextPath: Ignite.File.sightings.sighted_at
+      description: The sighted at time of file.
+      type: string
+    - contextPath: Ignite.File.sightings.tags
+      description: The tags of file sighting.
+      type: array
+    - contextPath: Ignite.File.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.source
+      description: The source of file latest sighting.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of file.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.tags
+      description: The tags of file latest sighting.
+      type: array
+    - contextPath: Ignite.File.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.File.total_sightings
+      description: The total sightings of file.
+      type: integer
+    - contextPath: File.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: Vendor of the malicious file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 type file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 type file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 type file.
+      type: string
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Ignite.File.historical_tags
+      description: The tags of File.
+      type: string 
+    - contextPath: Ignite.File.reports.html
+      description: Platform url to access the report of the indicator.
+      type: string 
+    - contextPath: Ignite.File.reports.json
+      description: API url of the report of the indicator.
+      type: string 
+    - contextPath: Ignite.Domain.id
+      description: The ID of domain.
+      type: string
+    - contextPath: Ignite.Domain.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.Domain.value
+      description: The value of domain.
+      type: string
+    - contextPath: Ignite.Domain.href
+      description: The href of domain.
+      type: string
+    - contextPath: Ignite.Domain.entity_type
+      description: The entity type of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.value
+      description: The score value of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.last_scored_at
+      description: The last scored time of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.raw_score
+      description: The raw score of domain.
+      type: number
+    - contextPath: Ignite.Domain.modified_at
+      description: Last time when domain was modified.
+      type: string
+    - contextPath: Ignite.Domain.created_at
+      description: The creation time of domain.
+      type: string
+    - contextPath: Ignite.Domain.last_seen_at
+      description: The last seen time of domain.
+      type: string
+    - contextPath: Ignite.Domain.sort_date
+      description: The sort date of domain.
+      type: string
+    - contextPath: Ignite.Domain.platform_urls.ignite
+      description: The ignite platform url of domain.
+      type: string
+    - contextPath: Ignite.Domain.apt_description
+      description: The apt description of domain.
+      type: string
+    - contextPath: Ignite.Domain.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.Domain.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.Domain.hashes.md5
+      description: The md5 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.hashes.sha1
+      description: The sha1 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.hashes.sha256
+      description: The sha256 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.malware_description
+      description: The malware description of domain.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.id
+      description: The mitre attack id of domain.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.Domain.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.Domain.sightings.source
+      description: The source of domain sighting.
+      type: string
+    - contextPath: Ignite.Domain.sightings.sighted_at
+      description: The sighted at of domain.
+      type: string
+    - contextPath: Ignite.Domain.sightings.tags
+      description: The tags of domain sighting.
+      type: array
+    - contextPath: Ignite.Domain.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.source
+      description: The source of domain latest sighting.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.sighted_at
+      description: The sighted at of domain latest sighting.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.tags
+      description: The tags of domain latest sighting.
+      type: array
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.total_sightings
+      description: The total sightings of domain.
+      type: integer  
+    - contextPath: Domain.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor of the malicious indicator.
+      type: string
+    - contextPath: Domain.Name
+      description: Name of the domain.
+      type: string
+    - contextPath: Domain.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Ignite.Domain.historical_tags
+      description: The tags of Domain.
+      type: string 
+    - contextPath: Ignite.Domain.reports.html
+      description: Platform url to access the report of the indicator.
+      type: string 
+    - contextPath: Ignite.Domain.reports.json
+      description: API url of the report of the indicator.
+      type: string 
+    - contextPath: URL.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor of the malicious URL.
+      type: string
+    - contextPath: URL.Data
+      description: The URL.
+      type: string
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: URL.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: Ignite.URL.id
+      description: The ID of URL.
+      type: string
+    - contextPath: Ignite.URL.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.URL.value
+      description: The value of URL.
+      type: string
+    - contextPath: Ignite.URL.href
+      description: The href of URL.
+      type: string
+    - contextPath: Ignite.URL.entity_type
+      description: The entity type of URL.
+      type: string
+    - contextPath: Ignite.URL.score.value
+      description: The score value of URL.
+      type: string
+    - contextPath: Ignite.URL.score.last_scored_at
+      description: The last scored time of URL.
+      type: string
+    - contextPath: Ignite.URL.score.raw_score
+      description: The raw score of URL.
+      type: number
+    - contextPath: Ignite.URL.modified_at
+      description: Last time when URL was modified.
+      type: string
+    - contextPath: Ignite.URL.created_at
+      description: The creation time of URL.
+      type: string
+    - contextPath: Ignite.URL.last_seen_at
+      description: The last seen time of URL.
+      type: string
+    - contextPath: Ignite.URL.sort_date
+      description: The sort date of URL.
+      type: string
+    - contextPath: Ignite.URL.platform_urls.ignite
+      description: The ignite platform url of URL.
+      type: string
+    - contextPath: Ignite.URL.apt_description
+      description: The apt description of URL.
+      type: string
+    - contextPath: Ignite.URL.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.URL.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.URL.hashes.md5
+      description: The md5 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.hashes.sha1
+      description: The sha1 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.hashes.sha256
+      description: The sha256 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.malware_description
+      description: The malware description of URL.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.id
+      description: The mitre attack id of URL.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.URL.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.URL.sightings.source
+      description: The source of URL sighting.
+      type: string
+    - contextPath: Ignite.URL.sightings.sighted_at
+      description: The sighted at time of URL.
+      type: string
+    - contextPath: Ignite.URL.sightings.tags
+      description: The tags of URL sighting.
+      type: array
+    - contextPath: Ignite.URL.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.source
+      description: The source of URL latest sighting.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of URL.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.tags
+      description: The tags of URL latest sighting.
+      type: array
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.URL.total_sightings
+      description: The total sightings of URL.
+      type: integer
+    - contextPath: Ignite.URL.historical_tags
+      description: The tags of URL.
+      type: string 
+    - contextPath: Ignite.URL.reports.html
+      description: Platform url to access the report of the indicator.
+      type: string 
+    - contextPath: Ignite.URL.reports.json
+      description: API url of the report of the indicator.
+      type: string 
+    - contextPath: IP.Address
+      description: The IP address.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: The description of the malicious indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor used to calculate the severity of the IP address.
+      type: string
+    - contextPath: IP.Description
+      description: The description of the indicator.
+      type: string
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+    - contextPath: Ignite.IP.id
+      description: Unique identifier for the document.
+      type: String
+    - contextPath: Ignite.IP.type
+      description: Type of the indicator.
+      type: String
+    - contextPath: Ignite.IP.value
+      description: The value of IP.
+      type: string
+    - contextPath: Ignite.IP.href
+      description: The href of IP.
+      type: string
+    - contextPath: Ignite.IP.entity_type
+      description: The entity type of IP.
+      type: string
+    - contextPath: Ignite.IP.score.value
+      description: The score value of IP.
+      type: string
+    - contextPath: Ignite.IP.score.last_scored_at
+      description: The last scored time of IP.
+      type: string
+    - contextPath: Ignite.IP.score.raw_score
+      description: The raw score of IP.
+      type: number
+    - contextPath: Ignite.IP.modified_at
+      description: Last time when IP was modified.
+      type: string
+    - contextPath: Ignite.IP.created_at
+      description: The creation time of IP.
+      type: string
+    - contextPath: Ignite.IP.last_seen_at
+      description: The last seen time of IP.
+      type: string
+    - contextPath: Ignite.IP.platform_urls.ignite
+      description: The ignite platform url of IP.
+      type: string
+    - contextPath: Ignite.IP.apt_description
+      description: The apt description of IP.
+      type: string
+    - contextPath: Ignite.IP.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.IP.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.IP.hashes.md5
+      description: The md5 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.hashes.sha1
+      description: The sha1 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.hashes.sha256
+      description: The sha256 hash of IP.
+      type: string
+    - contextPath: Ignite.IP.malware_description
+      description: The malware description of IP.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.id
+      description: The mitre attack id of IP.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.IP.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.IP.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.IP.sightings.source
+      description: The source of IP sighting.
+      type: string
+    - contextPath: Ignite.IP.sightings.sighted_at
+      description: The sighted at time of IP.
+      type: string
+    - contextPath: Ignite.IP.sightings.tags
+      description: The tags of IP sighting.
+      type: array
+    - contextPath: Ignite.IP.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.IP.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.source
+      description: The source of IP latest sighting.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of IP.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.tags
+      description: The tags of IP latest sighting.
+      type: array
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.IP.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.IP.total_sightings
+      description: The total sightings of IP.
+      type: integer
+    - contextPath: Ignite.IP.historical_tags
+      description: The tags of IP.
+      type: string 
+    - contextPath: Ignite.IP.reports.html
+      description: Platform url to access the report of the indicator.
+      type: string 
+    - contextPath: Ignite.IP.reports.json
+      description: API url of the report of the indicator.
+      type: string 
+    description: 'Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" using their ID. The reputation of the indicator is decided from the indicator score if it is found in the Ignite IOC database.'
   - name: url
     arguments:
     - name: url
@@ -1188,7 +2656,133 @@ script:
     - contextPath: URL.Description
       description: The description of the indicator.
       type: string
-    description: Looks up the "URL" type indicator details. The reputation of the URL is considered malicious if there's at least one IoC event in the Ignite database matching the URL indicator.
+    - contextPath: Ignite.URL.id
+      description: The ID of URL.
+      type: string
+    - contextPath: Ignite.URL.type
+      description: Type of the indicator.
+      type: string
+    - contextPath: Ignite.URL.value
+      description: The value of URL.
+      type: string
+    - contextPath: Ignite.URL.href
+      description: The href of URL.
+      type: string
+    - contextPath: Ignite.URL.entity_type
+      description: The entity type of URL.
+      type: string
+    - contextPath: Ignite.URL.score.value
+      description: The score value of URL.
+      type: string
+    - contextPath: Ignite.URL.score.last_scored_at
+      description: The last scored time of URL.
+      type: string
+    - contextPath: Ignite.URL.score.raw_score
+      description: The raw score of URL.
+      type: number
+    - contextPath: Ignite.URL.modified_at
+      description: Last time when URL was modified.
+      type: string
+    - contextPath: Ignite.URL.created_at
+      description: The creation time of URL.
+      type: string
+    - contextPath: Ignite.URL.last_seen_at
+      description: The last seen time of URL.
+      type: string
+    - contextPath: Ignite.URL.sort_date
+      description: The sort date of URL.
+      type: string
+    - contextPath: Ignite.URL.platform_urls.ignite
+      description: The ignite platform url of URL.
+      type: string
+    - contextPath: Ignite.URL.apt_description
+      description: The apt description of URL.
+      type: string
+    - contextPath: Ignite.URL.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.URL.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.URL.hashes.md5
+      description: The md5 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.hashes.sha1
+      description: The sha1 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.hashes.sha256
+      description: The sha256 hash of URL.
+      type: string
+    - contextPath: Ignite.URL.malware_description
+      description: The malware description of URL.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.id
+      description: The mitre attack id of URL.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.URL.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.URL.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.URL.sightings.source
+      description: The source of URL sighting.
+      type: string
+    - contextPath: Ignite.URL.sightings.sighted_at
+      description: The sighted at time of URL.
+      type: string
+    - contextPath: Ignite.URL.sightings.tags
+      description: The tags of URL sighting.
+      type: array
+    - contextPath: Ignite.URL.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.URL.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.source
+      description: The source of URL latest sighting.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of URL.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.tags
+      description: The tags of URL latest sighting.
+      type: array
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.URL.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.URL.total_sightings
+      description: The total sightings of URL.
+      type: integer
+    description: Looks up the "URL" type indicator details. The reputation of the URL is decided from the indicator score if it is found in the Ignite IOC database.
   - name: domain
     arguments:
     - name: domain
@@ -1239,6 +2833,132 @@ script:
     - contextPath: Ignite.Domain.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
+    - contextPath: Ignite.Domain.id
+      description: The ID of domain.
+      type: string
+    - contextPath: Ignite.Domain.type
+      description: Type of the indicator.
+      type: string
+    - contextPath: Ignite.Domain.value
+      description: The value of domain.
+      type: string
+    - contextPath: Ignite.Domain.href
+      description: The href of domain.
+      type: string
+    - contextPath: Ignite.Domain.entity_type
+      description: The entity type of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.value
+      description: The score value of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.last_scored_at
+      description: The last scored time of domain.
+      type: string
+    - contextPath: Ignite.Domain.score.raw_score
+      description: The raw score of domain.
+      type: number
+    - contextPath: Ignite.Domain.modified_at
+      description: Last time when domain was modified.
+      type: string
+    - contextPath: Ignite.Domain.created_at
+      description: The creation time of domain.
+      type: string
+    - contextPath: Ignite.Domain.last_seen_at
+      description: The last seen time of domain.
+      type: string
+    - contextPath: Ignite.Domain.sort_date
+      description: The sort date of domain.
+      type: string
+    - contextPath: Ignite.Domain.platform_urls.ignite
+      description: The ignite platform url of domain.
+      type: string
+    - contextPath: Ignite.Domain.apt_description
+      description: The apt description of domain.
+      type: string
+    - contextPath: Ignite.Domain.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.Domain.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.Domain.hashes.md5
+      description: The md5 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.hashes.sha1
+      description: The sha1 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.hashes.sha256
+      description: The sha256 hash of domain.
+      type: string
+    - contextPath: Ignite.Domain.malware_description
+      description: The malware description of domain.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.id
+      description: The mitre attack id of domain.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.Domain.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.Domain.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.Domain.sightings.source
+      description: The source of domain sighting.
+      type: string
+    - contextPath: Ignite.Domain.sightings.sighted_at
+      description: The sighted at of domain.
+      type: string
+    - contextPath: Ignite.Domain.sightings.tags
+      description: The tags of domain sighting.
+      type: array
+    - contextPath: Ignite.Domain.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.source
+      description: The source of domain latest sighting.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.sighted_at
+      description: The sighted at of domain latest sighting.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.tags
+      description: The tags of domain latest sighting.
+      type: array
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.Domain.total_sightings
+      description: The total sightings of domain.
+      type: integer  
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -1266,7 +2986,7 @@ script:
     - contextPath: Domain.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-    description: Looks up the "Domain" type indicator details. The reputation of Domain is considered malicious if there's at least one IoC event in the Ignite database matching the Domain indicator.
+    description: Looks up the "Domain" type indicator details. The reputation of the domain is decided from the indicator score if it is found in the Ignite IOC database.
   - name: file
     arguments:
     - name: file
@@ -1329,6 +3049,132 @@ script:
     - contextPath: Ignite.File.Event.Comment
       description: The comment that was provided when the indicator was observed.
       type: string
+    - contextPath: Ignite.File.id
+      description: The ID of file.
+      type: string
+    - contextPath: Ignite.File.type
+      description: Type of the indicator.
+      type: string
+    - contextPath: Ignite.File.value
+      description: The value of file.
+      type: string
+    - contextPath: Ignite.File.href
+      description: The href of file.
+      type: string
+    - contextPath: Ignite.File.entity_type
+      description: The entity type of file.
+      type: string
+    - contextPath: Ignite.File.score.value
+      description: The score value of file.
+      type: string
+    - contextPath: Ignite.File.score.last_scored_at
+      description: The last scored time of file.
+      type: string
+    - contextPath: Ignite.File.score.raw_score
+      description: The raw score of file.
+      type: number
+    - contextPath: Ignite.File.modified_at
+      description: Last time when file was modified.
+      type: string
+    - contextPath: Ignite.File.created_at
+      description: The creation time of file.
+      type: string
+    - contextPath: Ignite.File.last_seen_at
+      description: The last seen time of file.
+      type: string
+    - contextPath: Ignite.File.sort_date
+      description: The sort date of file.
+      type: string
+    - contextPath: Ignite.File.platform_urls.ignite
+      description: The ignite platform url of file.
+      type: string
+    - contextPath: Ignite.File.apt_description
+      description: The apt description of file.
+      type: string
+    - contextPath: Ignite.File.external_references.source_name
+      description: The source name of external reference.
+      type: string
+    - contextPath: Ignite.File.external_references.url
+      description: The url of external reference.
+      type: string
+    - contextPath: Ignite.File.hashes.md5
+      description: The md5 hash of file.
+      type: string
+    - contextPath: Ignite.File.hashes.sha1
+      description: The sha1 hash of file.
+      type: string
+    - contextPath: Ignite.File.hashes.sha256
+      description: The sha256 hash of file.
+      type: string
+    - contextPath: Ignite.File.malware_description
+      description: The malware description of file.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.id
+      description: The mitre attack id of file.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.name
+      description: The name of mitre attack id.
+      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
+    - contextPath: Ignite.File.relationships.iocs.id
+      description: The id of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.type
+      description: The type of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.value
+      description: The value of ioc.
+      type: string
+    - contextPath: Ignite.File.relationships.iocs.href
+      description: The href of ioc.
+      type: string
+    - contextPath: Ignite.File.sightings.source
+      description: The source of file sighting.
+      type: string
+    - contextPath: Ignite.File.sightings.sighted_at
+      description: The sighted at time of file.
+      type: string
+    - contextPath: Ignite.File.sightings.tags
+      description: The tags of file sighting.
+      type: array
+    - contextPath: Ignite.File.sightings.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.File.sightings.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.source
+      description: The source of file latest sighting.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.sighted_at
+      description: The sighted at time of latest sighting of file.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.tags
+      description: The tags of file latest sighting.
+      type: array
+    - contextPath: Ignite.File.latest_sighting.related_iocs.id
+      description: The ID of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.type
+      description: The type of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.value
+      description: The value of related IOC.
+      type: string
+    - contextPath: Ignite.File.latest_sighting.related_iocs.href
+      description: The href of related IOC.
+      type: string
+    - contextPath: Ignite.File.total_sightings
+      description: The total sightings of file.
+      type: integer
     - contextPath: File.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -1365,10 +3211,10 @@ script:
     - contextPath: File.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-    description: Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
+    description: Looks up the "File" type indicator details. The reputation of the file is decided from the indicator score if it is found in the Ignite IOC database.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   subtype: python3

@@ -2,18 +2,23 @@ import pytest
 from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
 
 
-@pytest.mark.parametrize('file_path, expected_output', [
-    ('test_data/d1.docx',
-     {'https://xsoar.pan.dev/', 'https://www.paloaltonetworks.com/', 'https://jobs.paloaltonetworks.com/en/'}),
-    ('test_data/d2.docx', set()),
-    ('test_data/d3.docx', {'https://www.paloaltonetworks.com/', 'http://www.google.com'}),
-    ('test_data/e1.Xlsx', {'http://www.google.com', 'http://www.yahoo.de/'}),
-    ('test_data/e2.xlsx', set()),
-    ('test_data/e3.xlsx', {'https://www.paloaltonetworks.com/'}),
-    ('test_data/p1.pptx', {'https://xsoar.pan.dev/', 'https://www.paloaltonetworks.com/'}),
-    ('test_data/p2.pptx', set()),
-    ('test_data/p3.pptx', {'http://www.google.com'})
-])
+@pytest.mark.parametrize(
+    "file_path, expected_output",
+    [
+        (
+            "test_data/d1.docx",
+            {"https://xsoar.pan.dev/", "https://www.paloaltonetworks.com/", "https://jobs.paloaltonetworks.com/en/"},
+        ),
+        ("test_data/d2.docx", set()),
+        ("test_data/d3.docx", {"https://www.paloaltonetworks.com/", "http://www.google.com"}),
+        ("test_data/e1.Xlsx", {"http://www.google.com", "http://www.yahoo.de/"}),
+        ("test_data/e2.xlsx", set()),
+        ("test_data/e3.xlsx", {"https://www.paloaltonetworks.com/"}),
+        ("test_data/p1.pptx", {"https://xsoar.pan.dev/", "https://www.paloaltonetworks.com/"}),
+        ("test_data/p2.pptx", set()),
+        ("test_data/p3.pptx", {"http://www.google.com"}),
+    ],
+)
 def test_basescript_dummy(file_path, expected_output):
     """
     Given:
@@ -53,6 +58,6 @@ def test_invalid_file_type():
     Then:
         Validate that a ValueError is raised with the appropriate message.
     """
-    file_path = 'test_data/unsupported_file.txt'
+    file_path = "test_data/unsupported_file.txt"
     with pytest.raises(ValueError, match="Unsupported file type. Supported types are: 'xlsx, docx, pptx'"):
         extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)

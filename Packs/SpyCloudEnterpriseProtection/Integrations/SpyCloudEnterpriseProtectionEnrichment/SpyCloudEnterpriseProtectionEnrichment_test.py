@@ -1,14 +1,15 @@
-import pytest
 import json
+
+import pytest
+from CommonServerPython import DemistoException
 from SpyCloudEnterpriseProtectionEnrichment import (
     Client,
     command_helper_function,
     get_command_title_string,
-    pagination,
     get_paginated_results,
     lookup_to_markdown_table,
+    pagination,
 )
-from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -23,47 +24,23 @@ def util_readme_load(path):
 
 BREACH_LIST_RESPONSE = util_load_json("test_data/breach_list.json")
 BREACH_DATA_BY_INDICATOR = util_load_json("test_data/breach_data_by_indicator.json")
-BREACH_LIST_README = util_readme_load(
-    "test_data/readable_output/breach_list_readable_output.md"
-)
+BREACH_LIST_README = util_readme_load("test_data/readable_output/breach_list_readable_output.md")
 BREACH_DATA_README = util_readme_load("test_data/readable_output/breach_data_by_id.md")
-BREACH_DOMAIN_README = util_readme_load(
-    "test_data/readable_output/breach_data_by_domain.md"
-)
-BREACH_USERNAME_README = util_readme_load(
-    "test_data/readable_output/breach_data_by_username.md"
-)
-BREACH_IP_README = util_readme_load(
-    "test_data/readable_output/breach_data_by_ip_address.md"
-)
-BREACH_EMAIL_README = util_readme_load(
-    "test_data/readable_output/breach_data_by_email_address.md"
-)
-BREACH_PASSWORD_README = util_readme_load(
-    "test_data/readable_output/breach_data_by_password.md"
-)
-BREACH_WATCHLIST_README = util_readme_load(
-    "test_data/readable_output/watchlist_data.md"
-)
-COMPASS_APPLICATION_README = util_readme_load(
-    "test_data/readable_output/compass_application_data.md"
-)
+BREACH_DOMAIN_README = util_readme_load("test_data/readable_output/breach_data_by_domain.md")
+BREACH_USERNAME_README = util_readme_load("test_data/readable_output/breach_data_by_username.md")
+BREACH_IP_README = util_readme_load("test_data/readable_output/breach_data_by_ip_address.md")
+BREACH_EMAIL_README = util_readme_load("test_data/readable_output/breach_data_by_email_address.md")
+BREACH_PASSWORD_README = util_readme_load("test_data/readable_output/breach_data_by_password.md")
+BREACH_WATCHLIST_README = util_readme_load("test_data/readable_output/watchlist_data.md")
+COMPASS_APPLICATION_README = util_readme_load("test_data/readable_output/compass_application_data.md")
 COMPASS_DATA_README = util_readme_load("test_data/readable_output/compass_data_list.md")
-COMPASS_DEVICE_DATA_README = util_readme_load(
-    "test_data/readable_output/compass_device_data.md"
-)
-COMPASS_DEVICE_LIST_README = util_readme_load(
-    "test_data/readable_output/compass_device_list.md"
-)
-BREACH_LIST_WITH_PAGINATION_README = util_readme_load(
-    "test_data/readable_output/breach_list_with_pagination.md"
-)
+COMPASS_DEVICE_DATA_README = util_readme_load("test_data/readable_output/compass_device_data.md")
+COMPASS_DEVICE_LIST_README = util_readme_load("test_data/readable_output/compass_device_list.md")
+BREACH_LIST_WITH_PAGINATION_README = util_readme_load("test_data/readable_output/breach_list_with_pagination.md")
 
 EMPTY_DATA = {"cursor": "", "hits": 0, "results": []}
 
-client = Client(
-    base_url="http://test.com/", apikey="test_123", proxy=False, verify=False
-)
+client = Client(base_url="http://test.com/", apikey="test_123", proxy=False, verify=False)
 
 
 @pytest.mark.parametrize(
@@ -155,9 +132,7 @@ client = Client(
         ),
     ],
 )
-def test_command_helper_function(
-    mocker, raw_response, expected, readable_output, args, command
-):
+def test_command_helper_function(mocker, raw_response, expected, readable_output, args, command):
     mocker.patch.object(client, "query_spy_cloud_api", side_effect=[raw_response])
 
     result = command_helper_function(client, args, command)
@@ -177,9 +152,7 @@ def test_command_helper_function(
         )
     ],
 )
-def test_command_helper_function_with_pagination(
-    mocker, raw_response, expected, readable_output, args, command
-):
+def test_command_helper_function_with_pagination(mocker, raw_response, expected, readable_output, args, command):
     mocker.patch.object(client, "query_spy_cloud_api", side_effect=[raw_response])
 
     result = command_helper_function(client, args, command)
@@ -191,9 +164,7 @@ def test_command_helper_function_with_pagination(
     "raw_response, expected, args, command",
     [(EMPTY_DATA, EMPTY_DATA, {"limit": 5}, "spycloud-breach-catalog-list")],
 )
-def test_command_helper_function_exception(
-    mocker, raw_response, expected, args, command
-):
+def test_command_helper_function_exception(mocker, raw_response, expected, args, command):
     mocker.patch.object(client, "query_spy_cloud_api", side_effect=[raw_response])
     result = command_helper_function(client, args, command)
     assert result.readable_output == "No data to present.\n"
@@ -210,9 +181,7 @@ def test_command_helper_function_exception(
         )
     ],
 )
-def test_command_helper_function_pagination_exception(
-    mocker, raw_response, expected, args, command
-):
+def test_command_helper_function_pagination_exception(mocker, raw_response, expected, args, command):
     mocker.patch.object(client, "query_spy_cloud_api", side_effect=[raw_response])
     result = command_helper_function(client, args, command)
     assert result.readable_output == "No data available for page 5. Total are 1"
@@ -229,9 +198,7 @@ def test_command_helper_function_pagination_exception(
         )
     ],
 )
-def test_command_helper_function_pagination_all_result(
-    mocker, raw_response, expected, args, command
-):
+def test_command_helper_function_pagination_all_result(mocker, raw_response, expected, args, command):
     mocker.patch.object(client, "query_spy_cloud_api", side_effect=[raw_response])
     result = command_helper_function(client, args, command)
     assert result.to_context()["Contents"] == expected.get("results")
@@ -311,27 +278,17 @@ def test_spy_cloud_error_handler():
         client.spy_cloud_error_handler(response)
 
     # test case for 403 Invalid API Key
-    response = MockResponse(
-        status_code=403, headers={"SpyCloud-Error": "Invalid API key"}
-    )
-    err_msg = (
-        "Authorization Error:"
-        " The provided API Key for SpyCloud is invalid."
-        " Please provide a valid API Key."
-    )
+    response = MockResponse(status_code=403, headers={"SpyCloud-Error": "Invalid API key"})
+    err_msg = "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
     with pytest.raises(DemistoException, match=err_msg):
         client.spy_cloud_error_handler(response)
 
     # test case for other errors
-    response = MockResponse(
-        status_code=500, json_data={"message": "Internal server error"}
-    )
+    response = MockResponse(status_code=500, json_data={"message": "Internal server error"})
     with pytest.raises(DemistoException, match="Internal server error"):
         client.spy_cloud_error_handler(response)
 
 
 def test_lookup_to_markdown_table():
-    results = lookup_to_markdown_table(
-        BREACH_DATA_BY_INDICATOR.get("results"), "Breach List for domain abc.com"
-    )
+    results = lookup_to_markdown_table(BREACH_DATA_BY_INDICATOR.get("results"), "Breach List for domain abc.com")
     assert results == BREACH_DOMAIN_README

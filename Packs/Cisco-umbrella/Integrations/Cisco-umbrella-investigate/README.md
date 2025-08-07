@@ -3,7 +3,6 @@ This integration was integrated and tested with version 2.0.0 of Cisco Umbrella 
 
 ## Configure Cisco Umbrella Investigate in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | API key and Secret | True |
@@ -14,7 +13,6 @@ This integration was integrated and tested with version 2.0.0 of Cisco Umbrella 
 | Base URL | Cisco Umbrella Investigate base URL. | True |
 | DBot Score Suspicious Threshold (-100 to 100) | Make sure the suspicious threshold is greater than the Malicious threshold. | True |
 | Score Malicious Threshold (-100 to 100) | Make sure the Malicious threshold is less than the suspicious threshold. | True |
-
 
 ## Commands
 
@@ -51,8 +49,11 @@ Get the status, security, and content categories for the domain.
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 #### Command example
+
 ```!umbrella-domain-categorization domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -111,7 +112,9 @@ Search for newly seen domains that match a regular expression pattern.
 | Domain.SecurityCategories | Unknown | The list of Umbrella security categories that match the domain. |
 
 #### Command example
+
 ```!umbrella-domain-search regex=exa[a-z]ple.com limit=1```
+
 #### Human Readable Output
 
 >Metrics reported successfully.
@@ -140,8 +143,11 @@ List the co-occurences for the specified domain. A co-occurrence is when two or 
 | Domain.CoOccurrences.Score | Number | The score of the co-occurrence domain. |
 
 #### Command example
+
 ```!umbrella-domain-co-occurrences domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "Domain": {
@@ -188,8 +194,11 @@ List domain names that are frequently requested around the same time (up to 60 s
 | Domain.Related.Score | Number | The number of client IP requests to the site around the same time that the site is looked up. |
 
 #### Command example
+
 ```!umbrella-domain-related domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "Domain": {
@@ -248,8 +257,11 @@ Get multiple scores or security features for a domain. You can use the scores or
 | Domain.Geodiversity.country_code | String | Country code for the score. |
 
 #### Command example
+
 ```!umbrella-domain-security domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "Domain": {
@@ -317,8 +329,11 @@ Get the domain risk score. The Umbrella Investigate Risk Score is based on an an
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 #### Command example
+
 ```!umbrella-get-domain-risk-score domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -399,8 +414,11 @@ List the Resource Record (RR) data for DNS responses, and categorization data, w
 | Umbrella.ResourceRecord.min_ttl | Number | The minimum TTL for the record in seconds. |
 
 #### Command example
+
 ```!umbrella-list-resource-record value=cisco.com type=Name limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -458,8 +476,11 @@ List sub-domains of a given domain.
 | Umbrella.Domain.SubDomain.security_categories | Unknown | The list of security categories that are tagged on this sub-domain. |
 
 #### Command example
+
 ```!umbrella-list-domain-subdomain domain=cisco.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -508,8 +529,11 @@ Get data about ASN and IP relationships, showing how IP addresses are related to
 | Umbrella.BGPInformation.cidr | String | The IP CIDR for the ASN. |
 
 #### Command example
+
 ```!umbrella-get-ip-bgp ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -556,8 +580,11 @@ Get BGP Route Information for ASN. Each hash reference contains two keys: `geo` 
 | Umbrella.BGPInformation.Geo.country_code | String | The country code of the geolocation. |
 
 #### Command example
+
 ```!umbrella-get-asn-bgp asn=3356```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -625,8 +652,11 @@ Get the WHOIS information for the specified domains.
 | Domain.Registrar.Name | String | string |
 
 #### Command example
+
 ```!domain domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -733,8 +763,11 @@ Get the WHOIS information for the specified domains. You can search by multiple 
 | Domain.Registrar.Name | String | The name of the registrar. |
 
 #### Command example
+
 ```!umbrella-get-whois-for-domain domain=cisco.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -932,8 +965,11 @@ Get a WHOIS response record for a single domain with available historical WHOIS 
 | Umbrella.WHOIS.DomainHistory.zone_contact_telephone_ext | String | Telephone extension of the zone contact. |
 
 #### Command example
+
 ```!umbrella-get-domain-whois-history domain=cisco.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1072,8 +1108,11 @@ Get WHOIS information for the nameserver. A nameserver can potentially register 
 | Umbrella.WHOIS.Nameserver.Domain.domain | String | The domain name. |
 
 #### Command example
+
 ```!umbrella-get-nameserver-whois nameserver=nameserver1.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1124,8 +1163,11 @@ Get WHOIS information for the email address. Returns the email address or addres
 | Umbrella.WHOIS.Email.Domain.domain | String | The domain name. |
 
 #### Command example
+
 ```!umbrella-get-email-whois email=test@test.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1251,8 +1293,11 @@ Performs a regular expression (RegEx) search on the WHOIS data (domain, nameserv
 | Umbrella.WHOIS.Regex.has_raw_text | String | Indicates if there is raw text. |
 
 #### Command example
+
 ```!umbrella-get-regex-whois search_field=Email regex=t[a-z]@test.com start="20 days ago"```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1577,8 +1622,11 @@ List the most seen domains in Umbrella. The popularity list contains Cisco Umbre
 | Umbrella.MostSeenDomain.domain | str | A domain name. |
 
 #### Command example
+
 ```!umbrella-get-top-most-seen-domain limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1625,8 +1673,11 @@ List the query volume for a domain over the last 30 days. If there is no informa
 | Umbrella.QueryVolume.QueriesInfo.Queries | Umbrella.QueryVolume.Data.QueriesInfo.Queries | String |
 
 #### Command example
+
 ```!umbrella-get-domain-queryvolume domain=cisco.com```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1680,8 +1731,11 @@ List the historical tagging timeline for a given domain. Each timeline item incl
 | Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
 
 #### Command example
+
 ```!umbrella-get-domain-timeline name=maliciouswebsitetest.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1732,8 +1786,11 @@ List the historical tagging timeline for RL. Each timeline item includes lists o
 | Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
 
 #### Command example
+
 ```!umbrella-get-domain-timeline name=www.maliciouswebsitetest.com limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {
@@ -1784,8 +1841,11 @@ List the historical tagging timeline for a given IP address. Each timeline item 
 | Umbrella.Timeline.Data.Timestamp | Number | The date and time of the tagging of the domain, IP, or URL. |
 
 #### Command example
+
 ```!umbrella-get-ip-timeline name=8.8.8.8 limit=1```
+
 #### Context Example
+
 ```json
 {
     "Umbrella": {

@@ -640,8 +640,8 @@ class SecurityAndComplianceClient {
     }
 
     [psobject]NewSearch([string]$search_name,  [string]$case, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location,
-                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion) {
-
+                        [string[]]$public_folder_location, [string[]]$share_point_location, [string[]]$share_point_location_exclusion, [string]$error_action = $null) {
+                        
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearch")
         # Import and Execute command
@@ -655,6 +655,9 @@ class SecurityAndComplianceClient {
             "PublicFolderLocation" = $public_folder_location
             "SharePointLocation" = $share_point_location
             "SharePointLocationExclusion" = $share_point_location_exclusion
+        }
+        if ($error_action) {
+            $cmd_params.ErrorAction = $error_action
         }
         $response = New-ComplianceSearch @cmd_params
         # Close session to remote
@@ -1037,29 +1040,43 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]GetSearchAction([string]$search_action_name) {
+    [psobject]GetSearchAction(
+        [string]$search_action_name,
+        [string]$error_action = $null
+    ) {
         # Establish session to remote
         $this.CreateDelegatedSession("Get-ComplianceSearchAction")
-
+    
+        # Prepare command parameters
+        $cmd_params = @{
+            Identity = $search_action_name
+        }
+    
+        if ($error_action) {
+            $cmd_params["ErrorAction"] = $error_action
+        }
+    
         # Execute command
-        $response = Get-ComplianceSearchAction -Identity $search_action_name
-
+        $response = Get-ComplianceSearchAction @cmd_params
+    
         # Close session to remote
         $this.DisconnectSession()
         return $response
         <#
             .DESCRIPTION
             Get compliance search action in the Security & Compliance Center.
-
+    
             .PARAMETER search_action_name
             The name of the compliance search action.
-
+            .PARAMETER error_action
+            Optional. PowerShell error action preference (e.g., "Stop").
+    
             .EXAMPLE
-            $client.GetSearchAction("search-name")
-
+            $client.GetSearchAction("search-name", "Stop")
+    
             .OUTPUTS
             psobject - Raw response.
-
+    
             .LINK
             https://docs.microsoft.com/en-us/powershell/module/exchange/get-compliancesearchaction?view=exchange-ps
         #>
@@ -1528,9 +1545,9 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
         $kwargs.search_name = "XSOAR-$(New-Guid)"
     }
-    # Raw response
-    $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # Raw response 
+        $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion, $null)
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
     $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($kwargs.search_name)' created"
@@ -1693,7 +1710,7 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
         return $human_readable, $entry_context, $raw_response
     }
-
+    
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1723,7 +1740,7 @@ function GetSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
     $results = ConvertTo-Boolean $kwargs.results
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
-    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name, $null)
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
@@ -1889,13 +1906,211 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+<#
+.SYNOPSIS
+    Generates a short SHA-256 hash of the input string.
+
+.DESCRIPTION
+    Computes a SHA-256 hash for the input string and returns the first N characters.
+
+.PARAMETER inputString
+    The input string to hash.
+
+.PARAMETER length
+    The number of characters to return from the hash. Default is 12.
+
+.EXAMPLE
+    GetShortHash "example" 8
+#>
+function GetShortHash($inputString, $length = 12) {
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($inputString)
+    $sha256 = [System.Security.Cryptography.SHA256]::Create()
+    $hashBytes = $sha256.ComputeHash($bytes)
+    $hashString = -join ($hashBytes | ForEach-Object { $_.ToString("x2") })
+    return $hashString.Substring(0, $length)
+}
+
+<#
+.SYNOPSIS
+Generate a search name based on internetMessageId and exchange locations, with optional override.
+
+.DESCRIPTION
+Creates a unique search name by cleaning the internetMessageId and appending a short hash of exchange locations unless the overrideName is provided or locations include "All".
+
+.PARAMETER internetMessageId
+The Internet Message ID string to base the search name on.
+
+.PARAMETER exchangeLocation
+An array of exchange locations used to create a hash suffix.
+
+.PARAMETER overrideName
+Optional. If provided, this name will be returned directly without modification.
+
+.EXAMPLE
+MakeSearchName "<1234@example.com>", @("user@example.com", "archive@example.com")
+
+#>
+function MakeSearchName([string]$internetMessageId, [string[]]$exchangeLocation, [string]$overrideName = $null) {
+    if ($overrideName) { return $overrideName }
+    $baseName = $internetMessageId -replace '[<>]', ''
+    if ($exchangeLocation -notcontains "All") {
+        $hash = GetShortHash ($exchangeLocation -join ",")
+        return "${baseName}:${hash}"
+    }
+    return $baseName
+}
+
+<#
+.SYNOPSIS
+Handles the search status and performs actions based on its state.
+
+.DESCRIPTION
+Checks the search status ($search.Status) and takes appropriate actions:
+- Starts the search if not started.
+- Returns status if the search is starting.
+- If completed, checks for results and manages purge actions.
+- Handles different statuses of the purge action.
+
+.PARAMETER client
+The client object performing search and purge operations.
+
+.PARAMETER search_name
+The name of the search.
+
+.PARAMETER search
+The current search object.
+
+.PARAMETER entry_context
+The context data to update.
+
+.PARAMETER polling_args
+Arguments for polling operations.
+
+.PARAMETER polling_first_run
+Flag indicating if this is the first polling run.
+
+.EXAMPLE
+HandleSearchStatus $client $search_name $search $entry_context $polling_args $true
+#>
+function HandleSearchStatus([object]$client, [string]$search_name, [object]$search, [hashtable]$entry_context, [hashtable]$polling_args, [bool]$polling_first_run) {
+    switch ($search.Status) {
+        "NotStarted" {
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search started.", $entry_context, $search, $polling_args
+        }
+        "Starting" {
+            if ($polling_first_run) {
+                return "$script:INTEGRATION_NAME - Search is already starting from a previous run.", $entry_context, $search, $null
+            }
+            return "", $entry_context, $search, $polling_args
+        }
+        "Completed" {
+            $demisto.debug("Search completed, items: $($search.Items)")
+            if ($search.Items -eq 0) {
+                return $polling_first_run ? "$script:INTEGRATION_NAME - Search already completed with no results. Run again with force=true to retry." : "$script:INTEGRATION_NAME - No emails found.", $entry_context, $search
+            }
+
+            $action = $client.GetSearchAction("${search_name}_Purge", "SilentlyContinue")
+            if (-not $action) {
+                $demisto.debug("Purge action missing, creating new")
+                $action = $client.NewSearchAction($search_name, "Purge", "SoftDelete", $null, $null, $null, $null, $null, $null, $null)
+                return "$script:INTEGRATION_NAME - Search completed. Purge action created.", $entry_context, $action, $polling_args
+            }
+
+            $demisto.debug("Purge action status: $($action.Status)")
+            switch ($action.Status) {
+                "InProgress" {
+                    if ($polling_first_run) {
+                        return "$script:INTEGRATION_NAME - Deletion in progress from previous run. Run again with force=true to retry.", $entry_context, $action, $null
+                    }
+                    return "", $entry_context, $action, $polling_args
+                }
+                "Starting" {
+                    if ($polling_first_run) {
+                        return "$script:INTEGRATION_NAME - Deletion starting from previous run. Run again with force=true to retry.", $entry_context, $action, $null
+                    }
+                    return "", $entry_context, $action, $polling_args
+                }
+                "Completed"  { return $polling_first_run ? "$script:INTEGRATION_NAME - Deletion already completed. Run again with force=true to retry." : "$script:INTEGRATION_NAME - Deletion completed.", $entry_context, $action }
+                default      { throw "Unhandled purge action status: $($action.Status)" }
+            }
+        }
+        default { throw "Unhandled search status: $($search.Status)" }
+    }
+}
+
+<#
+.SYNOPSIS
+Performs an email search and delete operation by internetMessageId.
+
+.DESCRIPTION
+Creates a new search or uses an existing one based on internetMessageId and exchange location, starts the search, and manages the search status.
+If `force` is true, creates a new unique search even if one exists.
+Uses `HandleSearchStatus` to handle the search state.
+
+.PARAMETER client
+Client object to perform search operations.
+
+.PARAMETER kwargs
+Command arguments including internetMessageId, exchange_location, force, and more.
+
+.EXAMPLE
+SearchAndDeleteEmailCommand $client @{ internet_message_id = "<1234@example.com>"; exchange_location = @("Research Department"); force = $true }
+#>
+function SearchAndDeleteEmailCommand($client, [hashtable]$kwargs) {
+    $demisto.debug("Received kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+    $description = "Search And Delete Email"
+    $entry_context = @{}
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $polling_first_run = ConvertTo-Boolean $kwargs.polling_first_run
+    $force = ConvertTo-Boolean $kwargs.force
+    $internet_message_id = $kwargs.internet_message_id
+    $kql = "internetMessageId:`"$internet_message_id`""
+    $polling_args = $kwargs
+    $search_name = MakeSearchName $internet_message_id $exchange_location $kwargs.search_name
+    $polling_args.search_name = $search_name
+    $demisto.debug("search_name: $search_name")
+
+    if ($polling_first_run) {
+        $polling_args.polling_first_run = $false
+        $demisto.debug("First run: create search. KQL: $kql")
+        $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), "SilentlyContinue")
+        if ($search) { # $search is set only when the search didn’t exist and was just created.
+            $client.StartSearch($search_name)
+            return "$script:INTEGRATION_NAME - Search created & started.", $entry_context, $search, $polling_args
+        }
+
+        $demisto.debug("Search already exists")
+        if ($force) {
+            $random_suffix = [System.Guid]::NewGuid().ToString("N").Substring(0, 6)
+            $search_name = "$search_name-$random_suffix"
+            $polling_args.search_name = $search_name
+            $demisto.debug("Force is true - creating new search with name: $search_name")
+            $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @(), $null)
+            if ($search) {
+                $client.StartSearch($search_name)
+                return "$script:INTEGRATION_NAME - Forced search created & started.", $entry_context, $search, $polling_args
+            } else {
+                throw "Failed to create forced search with name: $search_name"
+                }
+        }
+    }
+    $search = $client.GetSearch($search_name)
+    $status = $search.Status
+    $demisto.debug("GetSearch status: $status")
+    return HandleSearchStatus $client $search_name $search $entry_context $polling_args $polling_first_run
+}
+
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
-
+    $app_secret = if ($integration_params.credentials_app_secret.password) {$integration_params.credentials_app_secret.password} else {$integration_params.app_secret}
+    $tenant_id = if ($integration_params.credentials_tenant_id.identifier) {$integration_params.credentials_tenant_id.identifier} else {$integration_params.tenant_id}
+    $app_id = if ($integration_params.credentials_app_id.identifier) {$integration_params.credentials_app_id.identifier} else {$integration_params.app_id}
     if ($integration_params.insecure -eq $true) {
         # Bypass SSL verification if insecure is true
         [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
@@ -1906,7 +2121,7 @@ function Main {
 
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false,
-            $integration_params.app_id, $integration_params.app_secret, $integration_params.tenant_id)
+            $app_id, $app_secret, $tenant_id)
 
         # Executing oauth2 commands
         switch ($command) {
@@ -1927,7 +2142,7 @@ function Main {
         $cs_client = [SecurityAndComplianceClient]::new(
             $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
-            $integration_params.tenant_id,
+            $tenant_id,
             $integration_params.connection_uri,
             $integration_params.azure_ad_authorized_endpoint_uri_base
         )
@@ -2003,13 +2218,30 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-email-security-search-and-delete-email-office-365-quick-action" {
+                ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndDeleteEmailCommand $cs_client $command_arguments
+            }
         }
 
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        # $Demisto.results("polling_args: " + (ConvertTo-Json $polling_args -Depth 3))
+        if ($polling_args) {
+            ReturnPollingOutputs `
+                -ReadableOutput $human_readable `
+                -Outputs $entry_context `
+                -RawResponse $raw_response `
+                -CommandName $command `
+                -PollingArgs $polling_args `
+                -RemoveSelfRefs $true `
+                -NextRun "30" `
+                -Timeout "3600" | Out-Null
+        }
+        else {
+            ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        }
         if ($file_entry) {
             $Demisto.results($file_entry)
         }

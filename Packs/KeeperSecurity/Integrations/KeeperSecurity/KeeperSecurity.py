@@ -1,12 +1,13 @@
-import urllib3
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from keepercommander.params import KeeperParams
-from keepercommander.auth.login_steps import LoginStepDeviceApproval, DeviceApprovalChannel, LoginStepPassword
-from keepercommander import utils, crypto, api
-from keepercommander.loginv3 import LoginV3Flow, LoginV3API, InvalidDeviceToken
-from keepercommander.proto import APIRequest_pb2
 from datetime import datetime
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from keepercommander import api, crypto, utils
+from keepercommander.auth.login_steps import DeviceApprovalChannel, LoginStepDeviceApproval, LoginStepPassword
+from keepercommander.loginv3 import InvalidDeviceToken, LoginV3API, LoginV3Flow
+from keepercommander.params import KeeperParams
+from keepercommander.proto import APIRequest_pb2
 
 """ CONSTANTS """
 
@@ -27,9 +28,7 @@ DEVICE_ALREADY_REGISTERED = (
     "Device is already registered, try running the 'keeper-security-register-complete'"
     " command without supplying a code argument."
 )
-SSO_REDIRECT = (
-    "Login was redirected to a cloud SSO. Please disable SSO redirect to continue."
-)
+SSO_REDIRECT = "Login was redirected to a cloud SSO. Please disable SSO redirect to continue."
 LAST_RUN = "Last Run"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -521,7 +520,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

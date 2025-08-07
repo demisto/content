@@ -1,29 +1,30 @@
-import pytest
 import os
 import shutil
-from ExtractIndicatorsFromWordFile import WordParser, main
-import demistomock as demisto
 from unittest.mock import MagicMock
 
-expected_partial_all_data = 'Lorem ipsum dolor sit amet, an quas nostro posidonium mei, pro choro vocent pericula et'
+import demistomock as demisto
+import pytest
+from ExtractIndicatorsFromWordFile import WordParser, main
+
+expected_partial_all_data = "Lorem ipsum dolor sit amet, an quas nostro posidonium mei, pro choro vocent pericula et"
 
 
-@pytest.mark.parametrize('file_name,file_path', [
-    ('docwithindicators.doc', 'test_data/docwithindicators'),
-    ('docxwithindicators.docx', 'test_data/docxwithindicators')
-])
+@pytest.mark.parametrize(
+    "file_name,file_path",
+    [("docwithindicators.doc", "test_data/docwithindicators"), ("docxwithindicators.docx", "test_data/docxwithindicators")],
+)
 def test_parse_word(file_name, file_path, request):
     basename = os.path.basename(file_path)
     shutil.copy(file_path, os.getcwd())
 
-    if os.getcwd().endswith('test_data'):
-        os.chdir('..')
+    if os.getcwd().endswith("test_data"):
+        os.chdir("..")
     parser = WordParser()
     parser.get_file_details = lambda: None
     parser.file_name = file_name
     parser.file_path = basename
     parser.parse_word()
-    assert (expected_partial_all_data in parser.paragraphs)
+    assert expected_partial_all_data in parser.paragraphs
 
 
 def test_getting_file_from_context(mocker):
@@ -42,16 +43,16 @@ def test_getting_file_from_context(mocker):
 
     # prepare
     parser = WordParser()
-    mocker.patch.object(demisto, 'dt')
-    mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(demisto, 'incident', return_value={'id': 1})
-    mocked_method = mocker.patch('ExtractIndicatorsFromWordFile.execute_command', return_value={'context': {}})
+    mocker.patch.object(demisto, "dt")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "incident", return_value={"id": 1})
+    mocked_method = mocker.patch("ExtractIndicatorsFromWordFile.execute_command", return_value={"context": {}})
 
     # run
     parser.get_file_details()
 
     # validate
-    assert mocked_method.call_args[0][0] == 'getContext'
+    assert mocked_method.call_args[0][0] == "getContext"
 
 
 def test_get_hyperlinks():
@@ -64,6 +65,7 @@ def test_get_hyperlinks():
         - Validate the result contains the 3 links.
     """
     from docx.opc.constants import RELATIONSHIP_TYPE as RT
+
     parser = WordParser()
 
     doc = MagicMock()
@@ -72,7 +74,7 @@ def test_get_hyperlinks():
     doc.part.rels = {
         "r1": MagicMock(reltype=RT.HYPERLINK, _target="http://example1.com"),
         "r2": MagicMock(reltype=RT.HYPERLINK, _target="http://example2.com"),
-        "r3": MagicMock(reltype=RT.HYPERLINK, _target="http://example3.com")
+        "r3": MagicMock(reltype=RT.HYPERLINK, _target="http://example3.com"),
     }
 
     result = parser.get_hyperlinks(doc)
@@ -92,9 +94,9 @@ def test_get_paragraphs():
 
     doc = MagicMock()
     mock_paragraphs = [
-        MagicMock(text='This is the first paragraph.'),
-        MagicMock(text='This is the second paragraph.'),
-        MagicMock(text='This is the third paragraph.')
+        MagicMock(text="This is the first paragraph."),
+        MagicMock(text="This is the second paragraph."),
+        MagicMock(text="This is the third paragraph."),
     ]
 
     doc.paragraphs = mock_paragraphs
@@ -146,7 +148,7 @@ def test_main(mocker):
         - validate extractIndicators command executed with the correct arguments.
     """
 
-    expected_hr_output = '''### Properties
+    expected_hr_output = """### Properties
     |author|title|
     |---|---|
     | author | title |
@@ -157,19 +159,19 @@ def test_main(mocker):
     ### Tables
 
     ### Hyperlinks
-    '''
+    """
 
     parser = WordParser()
-    parser.core_properties = {'author': 'author', 'title': 'title'}
-    parser.paragraphs = 'paragraphs'
-    mocker.patch('ExtractIndicatorsFromWordFile.WordParser', return_value=parser)
+    parser.core_properties = {"author": "author", "title": "title"}
+    parser.paragraphs = "paragraphs"
+    mocker.patch("ExtractIndicatorsFromWordFile.WordParser", return_value=parser)
 
-    mocker.patch.object(parser, 'parse_word', return_value={})
-    execute_command_mock = mocker.patch.object(demisto, 'executeCommand', return_value={})
-    return_results_mock = mocker.patch('ExtractIndicatorsFromWordFile.return_results')
+    mocker.patch.object(parser, "parse_word", return_value={})
+    execute_command_mock = mocker.patch.object(demisto, "executeCommand", return_value={})
+    return_results_mock = mocker.patch("ExtractIndicatorsFromWordFile.return_results")
 
     main()
 
-    return_results_mock.call_args[0][0] == expected_hr_output
-    assert execute_command_mock.call_args[0][0] == 'extractIndicators'
-    assert execute_command_mock.call_args[0][1]['text'] == 'paragraphs   author title'
+    return_results_mock.call_args[0][0] == expected_hr_output  # noqa: B015
+    assert execute_command_mock.call_args[0][0] == "extractIndicators"
+    assert execute_command_mock.call_args[0][1]["text"] == "paragraphs   author title"

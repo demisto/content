@@ -54,8 +54,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: CrowdstrikeFalcon
-    results:
-    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -96,10 +94,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: bbc0e932-25e7-48ae-8cdd-eac85b847407
+    taskid: 001136d4-9dc0-495a-816f-9a8c46de0fed
     type: condition
     task:
-      id: bbc0e932-25e7-48ae-8cdd-eac85b847407
+      id: 001136d4-9dc0-495a-816f-9a8c46de0fed
       version: -1
       name: Is there a device ID?
       type: condition
@@ -116,6 +114,11 @@ tasks:
     - label: "yes"
       condition:
       - - operator: isExists
+          left:
+            value:
+              simple: inputs.Endpoint_id
+            iscontext: true
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Endpoint_id
@@ -252,10 +255,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1515,
+        "height": 1545,
         "width": 1120,
         "x": 450,
-        "y": 50
+        "y": 20
       }
     }
   }
@@ -269,3 +272,6 @@ outputs: []
 tests:
 - Test - CrowdStrike Falcon
 fromversion: 5.5.0
+marketplaces:
+- xsoar
+# Should not appear in marketplacev2

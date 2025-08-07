@@ -6,7 +6,7 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 
 """
 
-INTEGRATION = '''
+INTEGRATION = """
 {
     "configurations":[
         {
@@ -85,9 +85,9 @@ INTEGRATION = '''
             "isIntegrationScript": true
         }
     ]
-}'''
+}"""
 
-AUTOMATIONS = '''{
+AUTOMATIONS = """{
     "scripts": [
         {
             "id": "AddDBotScoreToContext",
@@ -245,20 +245,22 @@ AUTOMATIONS = '''{
         "carbon-black"
     ],
     "pythonEnabled": true
-}'''
+}"""
 
 
 def test_api_response_parsing():
     """
-        Tests REST API responses parsing content.
+    Tests REST API responses parsing content.
     """
-    from ListUsedDockerImages import extract_dockers_from_automation_search_result, \
-        extract_dockers_from_integration_search_result, merge_result, format_result_for_markdown
+    from ListUsedDockerImages import (
+        extract_dockers_from_automation_search_result,
+        extract_dockers_from_integration_search_result,
+        format_result_for_markdown,
+        merge_result,
+    )
 
-    integration_response = extract_dockers_from_integration_search_result(
-        INTEGRATION, False, True)
-    automation_response = extract_dockers_from_automation_search_result(
-        AUTOMATIONS)
+    integration_response = extract_dockers_from_integration_search_result(INTEGRATION, False, True)
+    automation_response = extract_dockers_from_automation_search_result(AUTOMATIONS)
 
     assert len(integration_response) == 1 or len(automation_response) == 1
 

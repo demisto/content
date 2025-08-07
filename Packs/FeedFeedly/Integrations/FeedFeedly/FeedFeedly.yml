@@ -130,5 +130,6 @@ description: 'Ingest articles with indicators, entities and relationships from F
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)

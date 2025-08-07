@@ -30,6 +30,19 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Fetch Vulnerabilities Behavior
+  defaultvalue: Fetch by last modified date
+  name: fetch_vulnerabilities_behavior
+  options:
+  - Fetch by last modified date
+  - Fetch by unique QIDs of assets
+  section: Collect
+  advanced: true
+  required: false
+  type: 15
+  hidden:
+  - xsoar
+  - xpanse
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -62,7 +75,7 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-- additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
+- additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
   name: assetsFetchInterval
@@ -2038,6 +2051,12 @@ script:
     - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL
       description: Detection protocol.
       type: String
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS
+      description: Detection score.
+      type: Object
+    - contextPath: Qualys.HostDetections.DETECTION_LIST.DETECTION.QDS_FACTORS
+      description: Factors affecting detection score.
+      type: Object
   - arguments:
     - description: A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field.
       isArray: true
@@ -2838,9 +2857,25 @@ script:
       - 'true'
       - 'false'
       required: true
-    description: Gets assets from Qualys.
+    - description: The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability.
+      name: qid
+    description: Retrieves a list of assets (hosts) affected by a specified Qualys QID. If no QID is provided, all assets with detections will be returned.
     name: qualys-get-assets
-  dockerimage: demisto/python3:3.11.11.1940698
+    outputs:
+      - contextPath: Qualys.Assets
+        description: All Qualys assets associated with the specified QID (Qualys ID).
+        type: unknown
+  - arguments:
+      - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
+        name: cve
+        required: true
+    description: Retrieves one or more Qualys QIDs (Qualys IDs) associated with a specified CVE.
+    name: qualys-get-quid-by-cve
+    outputs:
+    - contextPath: Qualys.QID
+      description: All the Qualys QID (Qualys ID) associated with a specified CVE.
+      type: unknown
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   isfetchassets: true
   runonce: false

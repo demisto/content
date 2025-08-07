@@ -1,5 +1,5 @@
-import demistomock as demisto
 import CommonServerPython
+import demistomock as demisto
 
 
 def test_set_owner(mocker):

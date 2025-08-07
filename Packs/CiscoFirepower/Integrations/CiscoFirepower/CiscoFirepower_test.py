@@ -1,75 +1,68 @@
 """
 Unit testing for Cisco Firepower Management Center.
 """
-import json
+
 import io
+import json
 import os
-from typing import Any, Union
 from http import HTTPStatus
+from typing import Any
 from unittest import mock
+
 import pytest
+from CiscoFirepower import (
+    INTEGRATION_CONTEXT_NAME,
+    INTRUSION_POLICY_CONTEXT,
+    INTRUSION_RULE_CONTEXT,
+    INTRUSION_RULE_GROUP_CONTEXT,
+    INTRUSION_RULE_UPLOAD_CONTEXT,
+    INTRUSION_RULE_UPLOAD_TITLE,
+    NETWORK_ANALYSIS_POLICY_CONTEXT,
+    Client,
+    raw_response_to_context_access_policy,
+    raw_response_to_context_list,
+    raw_response_to_context_network_groups,
+    raw_response_to_context_policy_assignment,
+    raw_response_to_context_rules,
+    switch_list_to_list_counter,
+)
 from CommonServerPython import CommandResults
-from CiscoFirepower import Client, switch_list_to_list_counter, raw_response_to_context_list, \
-    raw_response_to_context_rules, raw_response_to_context_network_groups, raw_response_to_context_policy_assignment, \
-    raw_response_to_context_access_policy, INTEGRATION_CONTEXT_NAME, INTRUSION_POLICY_CONTEXT, INTRUSION_RULE_CONTEXT, \
-    INTRUSION_RULE_GROUP_CONTEXT, NETWORK_ANALYSIS_POLICY_CONTEXT, INTRUSION_RULE_UPLOAD_CONTEXT, \
-    INTRUSION_RULE_UPLOAD_TITLE
 
-
-USERNAME = 'USERNAME'
-PASSWORD = 'PASSWORD'
-BASE_URL = 'https://firepower'
-SUFFIX = 'api/fmc_config/v1/domain/DOMAIN_UUID'
-FILE_ENTRY = {
-    'name': 'intrusion_rule_upload.txt',
-    'path': 'test_data/intrusion_rule_upload.txt'
-}
-FILE_ENTRY_ERROR = {
-    'name': 'intrusion_rule_upload.json',
-    'path': 'test_data/intrusion_rule_upload.json'
-}
+USERNAME = "USERNAME"
+PASSWORD = "PASSWORD"
+BASE_URL = "https://firepower"
+SUFFIX = "api/fmc_config/v1/domain/DOMAIN_UUID"
+FILE_ENTRY = {"name": "intrusion_rule_upload.txt", "path": "test_data/intrusion_rule_upload.txt"}
+FILE_ENTRY_ERROR = {"name": "intrusion_rule_upload.json", "path": "test_data/intrusion_rule_upload.json"}
 
 INPUT_TEST_SWITCH_LIST_TO_LIST_COUNTER = [
-    ({'name': 'n', 'type': 't', 'devices': [1, 2, 3]}, {'name': 'n', 'type': 't', 'devices': 3}),
-    ({'name': 'n', 'type': 't', 'devices': {'new': [1, 2], 'old': [1, 2]}}, {'name': 'n', 'type': 't', 'devices': 4}),
-    ({'name': 'n', 'type': 't', 'devices': {'new': 1, 'old': [1, 2]}}, {'name': 'n', 'type': 't', 'devices': 3}),
-    ({'name': 'n', 'type': 't', 'devices': {'new': 'my new'}}, {'name': 'n', 'type': 't', 'devices': 1})
+    ({"name": "n", "type": "t", "devices": [1, 2, 3]}, {"name": "n", "type": "t", "devices": 3}),
+    ({"name": "n", "type": "t", "devices": {"new": [1, 2], "old": [1, 2]}}, {"name": "n", "type": "t", "devices": 4}),
+    ({"name": "n", "type": "t", "devices": {"new": 1, "old": [1, 2]}}, {"name": "n", "type": "t", "devices": 3}),
+    ({"name": "n", "type": "t", "devices": {"new": "my new"}}, {"name": "n", "type": "t", "devices": 1}),
 ]
 
 INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_LIST = [
     (
         {"id": "123", "metadata": {"domain": {"id": "456"}}, "name": "home", "type": "URLCategory"},
-        ['id', 'name'],
+        ["id", "name"],
         {"ID": "123", "Name": "home"},
     ),
     (
         {
             "id": "121212",
-            "links": {
-                "self": "link"
-            },
+            "links": {"self": "link"},
             "metadata": {
-                "domain": {
-                    "id": "123456",
-                    "name": "Global",
-                    "type": "Domain"
-                },
-                "lastUser": {
-                    "id": "141414",
-                    "name": "admin",
-                    "type": "user"
-                },
-                "readOnly": {
-                    "state": 'false'
-                },
-                "timestamp": '1575996253'
+                "domain": {"id": "123456", "name": "Global", "type": "Domain"},
+                "lastUser": {"id": "141414", "name": "admin", "type": "user"},
+                "readOnly": {"state": "false"},
+                "timestamp": "1575996253",
             },
             "name": "Child Abuse Content",
-            "type": "URLCategory"
+            "type": "URLCategory",
         },
-        ['id', 'name'],
-        {"ID": "121212",
-         "Name": "Child Abuse Content"},
+        ["id", "name"],
+        {"ID": "121212", "Name": "Child Abuse Content"},
     ),
 ]
 
@@ -81,41 +74,23 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_NETWORK_GROUPS = [
             "links": {"self": "link"},
             "literals": [{"type": "Network", "value": "ip"}, {"type": "Host", "value": "::/0"}],
             "metadata": {
-                "domain": {
-                    "id": "123456",
-                    "name": "Global",
-                    "type": "Domain"
-                },
-                "lastUser": {
-                    "name": "admin"
-                },
-                "readOnly": {
-                    "reason": "SYSTEM",
-                    "state": 'true'
-                },
-                "timestamp": '1521658703283'
+                "domain": {"id": "123456", "name": "Global", "type": "Domain"},
+                "lastUser": {"name": "admin"},
+                "readOnly": {"reason": "SYSTEM", "state": "true"},
+                "timestamp": "1521658703283",
             },
             "name": "any",
-            "overridable": 'false',
-            "type": "NetworkGroup"
+            "overridable": "false",
+            "type": "NetworkGroup",
         },
         {
             "Name": "any",
             "ID": "131313",
-            "Overridable": 'false',
+            "Overridable": "false",
             "Description": " ",
             "Objects": [],
-            "Addresses": [
-                {
-                    "Value": "ip",
-                    "Type": "Network"
-                },
-                {
-                    "Value": "::/0",
-                    "Type": "Host"
-                }
-            ]
-        }
+            "Addresses": [{"Value": "ip", "Type": "Network"}, {"Value": "::/0", "Type": "Host"}],
+        },
     )
 ]
 
@@ -125,20 +100,9 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT = [
             "id": "151515",
             "links": {"self": "link"},
             "name": "BPS-Testing",
-            "policy": {
-                "id": "151515",
-                "name": "BPS-Testing",
-                "type": "AccessPolicy"
-            },
-            "targets": [
-                {
-                    "id": "161616",
-                    "keepLocalEvents": 'false',
-                    "name": "FTD_10.8.49.209",
-                    "type": "Device"
-                }
-            ],
-            "type": "PolicyAssignment"
+            "policy": {"id": "151515", "name": "BPS-Testing", "type": "AccessPolicy"},
+            "targets": [{"id": "161616", "keepLocalEvents": "false", "name": "FTD_10.8.49.209", "type": "Device"}],
+            "type": "PolicyAssignment",
         },
         {
             "ID": "151515",
@@ -146,15 +110,8 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT = [
             "PolicyID": "151515",
             "PolicyName": "BPS-Testing",
             "PolicyDescription": "",
-            "Targets": [
-                {
-                    "ID": "161616",
-                    "Name": "FTD_10.8.49.209",
-                    "Type": "Device"
-                }
-            ]
+            "Targets": [{"ID": "161616", "Name": "FTD_10.8.49.209", "Type": "Device"}],
         },
-
     )
 ]
 
@@ -164,43 +121,20 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_ACCESS_POLICY = [
             "defaultAction": {
                 "action": "BLOCK",
                 "id": "171717",
-                "logBegin": 'false',
-                "logEnd": 'false',
-                "sendEventsToFMC": 'false',
-                "type": "AccessPolicyDefaultAction"
+                "logBegin": "false",
+                "logEnd": "false",
+                "sendEventsToFMC": "false",
+                "type": "AccessPolicyDefaultAction",
             },
             "id": "151515",
-            "links": {
-                "self": "linkn/123456/policy"
-            },
-            "metadata": {
-                "domain": {
-                    "id": "123456",
-                    "name": "Global",
-                    "type": "Domain"
-                },
-                "inherit": 'false'
-            },
+            "links": {"self": "linkn/123456/policy"},
+            "metadata": {"domain": {"id": "123456", "name": "Global", "type": "Domain"}, "inherit": "false"},
             "name": "BPS-Testing",
-            "prefilterPolicySetting": {
-                "id": "181818",
-                "name": "Default Prefilter Policy",
-                "type": "PrefilterPolicy"
-            },
-            "rules": {
-                "links": {
-                    "self": "linkn/123456/policy"
-                },
-                "refType": "list",
-                "type": "AccessRule"
-            },
-            "type": "AccessPolicy"
+            "prefilterPolicySetting": {"id": "181818", "name": "Default Prefilter Policy", "type": "PrefilterPolicy"},
+            "rules": {"links": {"self": "linkn/123456/policy"}, "refType": "list", "type": "AccessRule"},
+            "type": "AccessPolicy",
         },
-        {
-            "DefaultActionID": "171717",
-            "ID": "151515",
-            "Name": "BPS-Testing"
-        }
+        {"DefaultActionID": "171717", "ID": "151515", "Name": "BPS-Testing"},
     )
 ]
 
@@ -208,100 +142,53 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS = [
     (
         {
             "action": "BLOCK",
-            "destinationNetworks": {
-                "literals": [
-                    {
-                        "type": "Host",
-                        "value": "ip"
-                    },
-                    {
-                        "type": "Host",
-                        "value": "ip"
-                    }
-                ]
-            },
-            "enableSyslog": 'false',
-            "enabled": 'false',
+            "destinationNetworks": {"literals": [{"type": "Host", "value": "ip"}, {"type": "Host", "value": "ip"}]},
+            "enableSyslog": "false",
+            "enabled": "false",
             "id": "202020",
-            "links": {
-                "self": "linkn/123456/policy"
-            },
-            "logBegin": 'false',
-            "logEnd": 'false',
-            "logFiles": 'false',
+            "links": {"self": "linkn/123456/policy"},
+            "logBegin": "false",
+            "logEnd": "false",
+            "logFiles": "false",
             "metadata": {
-                "accessPolicy": {
-                    "id": "212121",
-                    "name": "Performance Test Policy without AMP",
-                    "type": "AccessPolicy"
-                },
+                "accessPolicy": {"id": "212121", "name": "Performance Test Policy without AMP", "type": "AccessPolicy"},
                 "category": "--Undefined--",
-                "domain": {
-                    "id": "123456",
-                    "name": "Global",
-                    "type": "Domain"
-                },
-                "ruleIndex": '5',
+                "domain": {"id": "123456", "name": "Global", "type": "Domain"},
+                "ruleIndex": "5",
                 "section": "Default",
-                "timestamp": '1582462113800'
+                "timestamp": "1582462113800",
             },
             "name": "newUpdateTest",
-            "sendEventsToFMC": 'false',
-            "sourceNetworks": {
-                "literals": [
-                    {
-                        "type": "Host",
-                        "value": "ip1"
-                    },
-                    {
-                        "type": "Host",
-                        "value": "ip"
-                    }
-                ]
-            },
+            "sendEventsToFMC": "false",
+            "sourceNetworks": {"literals": [{"type": "Host", "value": "ip1"}, {"type": "Host", "value": "ip"}]},
             "type": "AccessRule",
-            "urls": {
-                "literals": [
-                    {
-                        "type": "Url",
-                        "url": "url"
-                    },
-                    {
-                        "type": "Url",
-                        "url": "url"
-                    }
-                ]
-            },
-            "variableSet": {
-                "id": "101010",
-                "name": "Default-Set",
-                "type": "VariableSet"
-            },
-            "vlanTags": {}
+            "urls": {"literals": [{"type": "Url", "url": "url"}, {"type": "Url", "url": "url"}]},
+            "variableSet": {"id": "101010", "name": "Default-Set", "type": "VariableSet"},
+            "vlanTags": {},
         },
         {
-            'Action': 'BLOCK',
-            'Applications': [],
-            'Category': '--Undefined--',
-            'DestinationNetworks': {'Addresses': [{'Type': 'Host', 'Value': 'ip'},
-                                                  {'Type': 'Host', 'Value': 'ip'}], 'Objects': []},
-            'DestinationPorts': {'Addresses': [], 'Objects': []},
-            'DestinationZones': {'Objects': []},
-            'Enabled': 'false',
-            'ID': '202020',
-            'Name': 'newUpdateTest',
-            'RuleIndex': '5',
-            'Section': 'Default',
-            'SendEventsToFMC': 'false',
-            'SourceNetworks': {
-                'Addresses': [{'Type': 'Host', 'Value': 'ip1'}, {'Type': 'Host', 'Value': 'ip'}],
-                'Objects': []},
-            'SourcePorts': {'Addresses': [], 'Objects': []},
-            'SourceSecurityGroupTags': {'Objects': []},
-            'SourceZones': {'Objects': []},
-            'Urls': {'Addresses': [{'URL': 'url'}, {'URL': 'url'}], 'Objects': []},
-            'VlanTags': {'Numbers': [], 'Objects': []}
-        }
+            "Action": "BLOCK",
+            "Applications": [],
+            "Category": "--Undefined--",
+            "DestinationNetworks": {
+                "Addresses": [{"Type": "Host", "Value": "ip"}, {"Type": "Host", "Value": "ip"}],
+                "Objects": [],
+            },
+            "DestinationPorts": {"Addresses": [], "Objects": []},
+            "DestinationZones": {"Objects": []},
+            "Enabled": "false",
+            "ID": "202020",
+            "Name": "newUpdateTest",
+            "RuleIndex": "5",
+            "Section": "Default",
+            "SendEventsToFMC": "false",
+            "SourceNetworks": {"Addresses": [{"Type": "Host", "Value": "ip1"}, {"Type": "Host", "Value": "ip"}], "Objects": []},
+            "SourcePorts": {"Addresses": [], "Objects": []},
+            "SourceSecurityGroupTags": {"Objects": []},
+            "SourceZones": {"Objects": []},
+            "Urls": {"Addresses": [{"URL": "url"}, {"URL": "url"}], "Objects": []},
+            "VlanTags": {"Numbers": [], "Objects": []},
+        },
     )
 ]
 
@@ -309,46 +196,46 @@ INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS = [
 """ TESTS FUNCTION """
 
 
-@pytest.mark.parametrize('list_input, list_output', INPUT_TEST_SWITCH_LIST_TO_LIST_COUNTER)
+@pytest.mark.parametrize("list_input, list_output", INPUT_TEST_SWITCH_LIST_TO_LIST_COUNTER)
 def test_switch_list_to_list_counter(list_input, list_output):
     result = switch_list_to_list_counter(list_input)
     assert list_output == result
 
 
-@pytest.mark.parametrize('list_input, list_to_output, list_output', INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_LIST)
+@pytest.mark.parametrize("list_input, list_to_output, list_output", INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_LIST)
 def test_raw_response_to_context_list(list_to_output, list_input, list_output):
     result = raw_response_to_context_list(list_to_output, list_input)
     assert list_output == result
 
 
-@pytest.mark.parametrize('list_input, list_output', INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_NETWORK_GROUPS)
+@pytest.mark.parametrize("list_input, list_output", INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_NETWORK_GROUPS)
 def test_raw_response_to_context_network_groups(list_input, list_output):
     result = raw_response_to_context_network_groups(list_input)
     assert list_output == result
 
 
-@pytest.mark.parametrize('list_input, list_output', INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT)
+@pytest.mark.parametrize("list_input, list_output", INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_POLICY_ASSIGNMENT)
 def test_raw_response_to_context_policy_assignment(list_input, list_output):
     result = raw_response_to_context_policy_assignment(list_input)
     assert list_output == result
 
 
-@pytest.mark.parametrize('list_input, list_output', INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_ACCESS_POLICY)
+@pytest.mark.parametrize("list_input, list_output", INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_ACCESS_POLICY)
 def test_raw_response_to_context_access_policy(list_input, list_output):
     result = raw_response_to_context_access_policy(list_input)
     assert list_output == result
 
 
-@pytest.mark.parametrize('list_input, list_output', INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS)
+@pytest.mark.parametrize("list_input, list_output", INPUT_TEST_RAW_RESPONSE_TO_CONTEXT_RULS)
 def test_raw_response_to_context_ruls(list_input, list_output):
     result = raw_response_to_context_rules(list_input)
     assert list_output == result
 
 
-''' Helper Functions '''  # pylint: disable=pointless-string-statement
+""" Helper Functions """  # pylint: disable=pointless-string-statement
 
 
-def assert_output_has_no_links(outputs: Union[list[dict[str, Any]], dict[str, Any]]):
+def assert_output_has_no_links(outputs: list[dict[str, Any]] | dict[str, Any]):
     """
     Check that there are no 'links' keys in the outputs.
     Args:
@@ -358,10 +245,10 @@ def assert_output_has_no_links(outputs: Union[list[dict[str, Any]], dict[str, An
         outputs = [outputs]
 
     for output in outputs:
-        assert 'links' not in output
+        assert "links" not in output
 
 
-def assert_command_results(command_results: CommandResults, method: str, expected_output_prefix: str = ''):
+def assert_command_results(command_results: CommandResults, method: str, expected_output_prefix: str = ""):
     """
     Test that the command results outputs has no links in it, if it exists.
     Test the output prefix.
@@ -374,17 +261,17 @@ def assert_command_results(command_results: CommandResults, method: str, expecte
             Defaults to ''.
     """
     message_by_method = {
-        'POST': 'Created',
-        'GET': 'Fetched',
-        'PUT': 'Updated',
-        'DELETE': 'Deleted',
+        "POST": "Created",
+        "GET": "Fetched",
+        "PUT": "Updated",
+        "DELETE": "Deleted",
     }
 
     assert command_results.readable_output
     assert message_by_method[method] in command_results.readable_output
 
-    if method != 'DELETE':
-        context_prefix = '.'.join((INTEGRATION_CONTEXT_NAME, expected_output_prefix))
+    if method != "DELETE":
+        context_prefix = ".".join((INTEGRATION_CONTEXT_NAME, expected_output_prefix))
 
         assert command_results.outputs_prefix == context_prefix
         assert_output_has_no_links(command_results.outputs)  # type: ignore[arg-type] # outputs is Optional[object]
@@ -398,10 +285,10 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     Returns:
         str: Mock file content.
     """
-    path = os.path.join('test_data', file_name)
+    path = os.path.join("test_data", file_name)
 
-    with io.open(path, mode='r', encoding='utf-8') as mock_file:
-        if os.path.splitext(file_name)[1] == '.json':
+    with open(path, encoding="utf-8") as mock_file:
+        if os.path.splitext(file_name)[1] == ".json":
             return json.loads(mock_file.read())
 
         return mock_file
@@ -416,11 +303,8 @@ def mock_client(requests_mock) -> Client:
         Client: Connection to client.
     """
     requests_mock.post(
-        f'{BASE_URL}/api/fmc_platform/v1/auth/generatetoken',
-        headers={
-            'X-auth-access-token': 'X-auth-access-token',
-            'DOMAIN_UUID': 'DOMAIN_UUID'
-        }
+        f"{BASE_URL}/api/fmc_platform/v1/auth/generatetoken",
+        headers={"X-auth-access-token": "X-auth-access-token", "DOMAIN_UUID": "DOMAIN_UUID"},
     )
 
     return Client(
@@ -443,32 +327,28 @@ def test_generate_token_error():
     """
     mock_response = mock.Mock()
     mock_response.headers = {
-        'X-auth-access-token': '123456',
-        'DOMAIN_UUID': 'abcdef',
+        "X-auth-access-token": "123456",
+        "DOMAIN_UUID": "abcdef",
     }
-    mock_response.raise_for_status.side_effect = Exception('HTTP request failed')
+    mock_response.raise_for_status.side_effect = Exception("HTTP request failed")
 
-    @mock.patch.object(Client, '_http_request', return_value=mock_response)
+    @mock.patch.object(Client, "_http_request", return_value=mock_response)
     def test(mock_request):
         client = Client(
             base_url=BASE_URL,
-            username='test',
-            password='test',
+            username="test",
+            password="test",
         )
 
         try:
-            client._http_request(
-                method='POST',
-                url_suffix='api/test',
-                resp_type='response'
-            )
+            client._http_request(method="POST", url_suffix="api/test", resp_type="response")
         except Exception as e:
-            assert str(e) == 'HTTP request failed'
+            assert str(e) == "HTTP request failed"
 
     test()
 
 
-''' Intrusion Policy CRUD '''  # pylint: disable=pointless-string-statement
+""" Intrusion Policy CRUD """  # pylint: disable=pointless-string-statement
 
 
 def test_create_intrusion_policy_command(requests_mock, mock_client):
@@ -485,43 +365,40 @@ def test_create_intrusion_policy_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'name': 'name',
-        'basepolicy_id': 'basepolicy_id',
-        'description': 'description',
+        "name": "name",
+        "basepolicy_id": "basepolicy_id",
+        "description": "description",
     }
 
-    method = 'POST'
-    mock_response = load_mock_response('intrusion_policy_response.json')
+    method = "POST"
+    mock_response = load_mock_response("intrusion_policy_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies',
+        f"{BASE_URL}/{SUFFIX}/policy/intrusionpolicies",
         json=mock_response,
     )
 
     from CiscoFirepower import create_intrusion_policy_command
+
     command_results = create_intrusion_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_POLICY_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
-    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
-    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
+    assert command_results.outputs[0]["basePolicy"] == mock_response["basePolicy"]
+    assert command_results.outputs[0]["metadata"] == mock_response["metadata"]
 
 
 @pytest.mark.parametrize(
-    'args',
+    "args",
     (
         ({}),
-        ({'limit': '6'}),
-        ({'page_size': '3'}),
-    )
+        ({"limit": "6"}),
+        ({"page_size": "3"}),
+    ),
 )
 def test_list_intrusion_policy_command(requests_mock, mock_client, args):
     """
@@ -538,29 +415,26 @@ def test_list_intrusion_policy_command(requests_mock, mock_client, args):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    method = 'GET'
-    mock_response = load_mock_response('intrusion_policy_list_response.json')
+    method = "GET"
+    mock_response = load_mock_response("intrusion_policy_list_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies',
+        f"{BASE_URL}/{SUFFIX}/policy/intrusionpolicies",
         json=mock_response,
     )
 
     from CiscoFirepower import list_intrusion_policy_command
+
     command_results = list_intrusion_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_POLICY_CONTEXT)
 
-    for output, mock_output in zip(command_results.outputs, mock_response['items']):
-        assert output['name'] == mock_output['name']
-        assert output['id'] == mock_output['id']
-        assert output['description'] == mock_output['description']
-        assert output['metadata'] == mock_output['metadata']
+    for output, mock_output in zip(command_results.outputs, mock_response["items"]):
+        assert output["name"] == mock_output["name"]
+        assert output["id"] == mock_output["id"]
+        assert output["description"] == mock_output["description"]
+        assert output["metadata"] == mock_output["metadata"]
 
 
 def test_get_intrusion_policy_command(requests_mock, mock_client):
@@ -576,10 +450,10 @@ def test_get_intrusion_policy_command(requests_mock, mock_client):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    args = {'intrusion_policy_id': 'intrusion_policy_id'}
+    args = {"intrusion_policy_id": "intrusion_policy_id"}
 
-    method = 'GET'
-    mock_response = load_mock_response('intrusion_policy_response.json')
+    method = "GET"
+    mock_response = load_mock_response("intrusion_policy_response.json")
 
     requests_mock.request(
         method,
@@ -588,18 +462,15 @@ def test_get_intrusion_policy_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import list_intrusion_policy_command
+
     command_results = list_intrusion_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_POLICY_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
-    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
+    assert command_results.outputs[0]["metadata"] == mock_response["metadata"]
 
 
 def test_error_get_intrusion_policy_command(mock_client):
@@ -614,15 +485,16 @@ def test_error_get_intrusion_policy_command(mock_client):
     -   Ensure an exception has been raised and it is correct.
     """
     args = {
-        'limit': '5',
-        'intrusion_policy_id': 'intrusion_policy_id',
+        "limit": "5",
+        "intrusion_policy_id": "intrusion_policy_id",
     }
 
     with pytest.raises(ValueError) as ve:
         from CiscoFirepower import list_intrusion_policy_command
+
         list_intrusion_policy_command(mock_client, args)
 
-        assert str(ve) == 'GET and LIST arguments can not be supported simutanlesy.'
+        assert str(ve) == "GET and LIST arguments can not be supported simutanlesy."
 
 
 def test_update_intrusion_policy_command(requests_mock, mock_client):
@@ -639,15 +511,15 @@ def test_update_intrusion_policy_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'intrusion_policy_id': 'intrusion_policy_id',
-        'name': 'name',
-        'basepolicy_id': 'basepolicy_id',
-        'description': 'description',
-        'inspection_mode': 'PREVENTION'
+        "intrusion_policy_id": "intrusion_policy_id",
+        "name": "name",
+        "basepolicy_id": "basepolicy_id",
+        "description": "description",
+        "inspection_mode": "PREVENTION",
     }
 
-    method = 'PUT'
-    mock_response = load_mock_response('intrusion_policy_response.json')
+    method = "PUT"
+    mock_response = load_mock_response("intrusion_policy_response.json")
 
     requests_mock.request(
         method,
@@ -656,19 +528,16 @@ def test_update_intrusion_policy_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import update_intrusion_policy_command
+
     command_results = update_intrusion_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_POLICY_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
-    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
-    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
+    assert command_results.outputs[0]["basePolicy"] == mock_response["basePolicy"]
+    assert command_results.outputs[0]["metadata"] == mock_response["metadata"]
 
 
 def test_delete_intrusion_policy_command(requests_mock, mock_client):
@@ -682,12 +551,10 @@ def test_delete_intrusion_policy_command(requests_mock, mock_client):
     Then:
     -   Ensure the readable_output is correct.
     """
-    args = {
-        'intrusion_policy_id': 'intrusion_policy_id'
-    }
+    args = {"intrusion_policy_id": "intrusion_policy_id"}
 
-    method = 'DELETE'
-    mock_response = load_mock_response('intrusion_policy_response.json')
+    method = "DELETE"
+    mock_response = load_mock_response("intrusion_policy_response.json")
 
     requests_mock.request(
         method,
@@ -696,12 +563,10 @@ def test_delete_intrusion_policy_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import delete_intrusion_policy_command
+
     command_results = delete_intrusion_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method
-    )
+    assert_command_results(command_results=command_results, method=method)
 
 
 def test_delete_intrusion_policy_error_command(requests_mock, mock_client):
@@ -715,12 +580,10 @@ def test_delete_intrusion_policy_error_command(requests_mock, mock_client):
     Then:
     -   Ensure the readable_output is correct.
     """
-    args = {
-        'intrusion_policy_id': 'intrusion_policy_id'
-    }
+    args = {"intrusion_policy_id": "intrusion_policy_id"}
 
-    method = 'DELETE'
-    mock_response = load_mock_response('intrusion_policy_delete_fail.json')
+    method = "DELETE"
+    mock_response = load_mock_response("intrusion_policy_delete_fail.json")
 
     requests_mock.request(
         method,
@@ -730,13 +593,13 @@ def test_delete_intrusion_policy_error_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import delete_intrusion_policy_command
+
     command_results = delete_intrusion_policy_command(mock_client, args)
 
-    assert command_results.readable_output == \
-        f'The Intrusion Policy ID: "{args["intrusion_policy_id"]}" does not exist.'
+    assert command_results.readable_output == f'The Intrusion Policy ID: "{args["intrusion_policy_id"]}" does not exist.'
 
 
-''' Intrusion Rule CRUD '''  # pylint: disable=pointless-string-statement
+""" Intrusion Rule CRUD """  # pylint: disable=pointless-string-statement
 
 
 def test_create_intrusion_rule_command(requests_mock, mock_client):
@@ -753,41 +616,38 @@ def test_create_intrusion_rule_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'rule_data': 'rule_data',
-        'rule_group_ids': 'rule_group_id1,rule_group_id2',
+        "rule_data": "rule_data",
+        "rule_group_ids": "rule_group_id1,rule_group_id2",
     }
 
-    method = 'POST'
-    mock_response = load_mock_response('intrusion_rule_response.json')
+    method = "POST"
+    mock_response = load_mock_response("intrusion_rule_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrules',
+        f"{BASE_URL}/{SUFFIX}/object/intrusionrules",
         json=mock_response,
     )
 
     from CiscoFirepower import create_intrusion_rule_command
+
     command_results = create_intrusion_rule_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['ruleData'] == mock_response['ruleData']
-    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["ruleData"] == mock_response["ruleData"]
+    assert command_results.outputs[0]["ruleGroups"] == mock_response["ruleGroups"]
 
 
 @pytest.mark.parametrize(
-    'args',
+    "args",
     (
-        ({'expanded_response': 'True'}),
-        ({'limit': '6', 'expanded_response': 'False'}),
-        ({'page_size': '3'}),
-    )
+        ({"expanded_response": "True"}),
+        ({"limit": "6", "expanded_response": "False"}),
+        ({"page_size": "3"}),
+    ),
 )
 def test_list_intrusion_rule_command(requests_mock, mock_client, args):
     """
@@ -804,29 +664,26 @@ def test_list_intrusion_rule_command(requests_mock, mock_client, args):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    method = 'GET'
-    mock_response = load_mock_response('intrusion_rule_list_response.json')
+    method = "GET"
+    mock_response = load_mock_response("intrusion_rule_list_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrules',
+        f"{BASE_URL}/{SUFFIX}/object/intrusionrules",
         json=mock_response,
     )
 
     from CiscoFirepower import list_intrusion_rule_command
+
     command_results = list_intrusion_rule_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_CONTEXT)
 
-    for output, mock_output in zip(command_results.outputs, mock_response['items']):
-        assert output['name'] == mock_output['name']
-        assert output['id'] == mock_output['id']
-        assert output['msg'] == mock_output['msg']
-        assert output['ruleAction'] == mock_output['ruleAction']
+    for output, mock_output in zip(command_results.outputs, mock_response["items"]):
+        assert output["name"] == mock_output["name"]
+        assert output["id"] == mock_output["id"]
+        assert output["msg"] == mock_output["msg"]
+        assert output["ruleAction"] == mock_output["ruleAction"]
 
 
 def test_get_intrusion_rule_command(requests_mock, mock_client):
@@ -842,9 +699,9 @@ def test_get_intrusion_rule_command(requests_mock, mock_client):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    args = {'intrusion_rule_id': 'intrusion_rule_id'}
-    method = 'GET'
-    mock_response = load_mock_response('intrusion_rule_response.json')
+    args = {"intrusion_rule_id": "intrusion_rule_id"}
+    method = "GET"
+    mock_response = load_mock_response("intrusion_rule_response.json")
 
     requests_mock.request(
         method,
@@ -853,18 +710,15 @@ def test_get_intrusion_rule_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import list_intrusion_rule_command
+
     command_results = list_intrusion_rule_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['ruleData'] == mock_response['ruleData']
-    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["ruleData"] == mock_response["ruleData"]
+    assert command_results.outputs[0]["ruleGroups"] == mock_response["ruleGroups"]
 
 
 def test_error_get_intrusion_rule_command(mock_client):
@@ -879,34 +733,35 @@ def test_error_get_intrusion_rule_command(mock_client):
     -   Ensure an exception has been raised and it is correct.
     """
     args = {
-        'limit': '5',
-        'intrusion_rule_id': 'intrusion_rule_id',
+        "limit": "5",
+        "intrusion_rule_id": "intrusion_rule_id",
     }
 
     with pytest.raises(ValueError) as ve:
         from CiscoFirepower import list_intrusion_rule_command
+
         list_intrusion_rule_command(mock_client, args)
 
-        assert str(ve) == 'GET and LIST arguments can not be supported simutanlesy.'
+        assert str(ve) == "GET and LIST arguments can not be supported simutanlesy."
 
 
 @pytest.mark.parametrize(
-    'args',
+    "args",
     (
         {
-            'intrusion_rule_id': 'intrusion_rule_id',
-            'rule_data': 'rule_data',
-            'rule_group_ids': 'rule_group_id1,rule_group_id2',
+            "intrusion_rule_id": "intrusion_rule_id",
+            "rule_data": "rule_data",
+            "rule_group_ids": "rule_group_id1,rule_group_id2",
         },
         {
-            'intrusion_rule_id': 'intrusion_rule_id',
-            'rule_group_ids': 'rule_group_id1,rule_group_id2',
+            "intrusion_rule_id": "intrusion_rule_id",
+            "rule_group_ids": "rule_group_id1,rule_group_id2",
         },
         {
-            'intrusion_rule_id': 'intrusion_rule_id',
-            'rule_data': 'rule_data',
+            "intrusion_rule_id": "intrusion_rule_id",
+            "rule_data": "rule_data",
         },
-    )
+    ),
 )
 def test_update_intrusion_rule_command(requests_mock, mock_client, args):
     """
@@ -923,13 +778,13 @@ def test_update_intrusion_rule_command(requests_mock, mock_client, args):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    method = 'PUT'
+    method = "PUT"
     url = f'{BASE_URL}/{SUFFIX}/object/intrusionrules/{args["intrusion_rule_id"]}'
-    mock_response = load_mock_response('intrusion_rule_response.json')
+    mock_response = load_mock_response("intrusion_rule_response.json")
 
-    if 'rule_data' not in args or 'rule_group_ids' not in args:
+    if "rule_data" not in args or "rule_group_ids" not in args:
         requests_mock.request(
-            'GET',
+            "GET",
             url,
             json=mock_response,
         )
@@ -941,32 +796,29 @@ def test_update_intrusion_rule_command(requests_mock, mock_client, args):
     )
 
     from CiscoFirepower import update_intrusion_rule_command
+
     command_results = update_intrusion_rule_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['ruleData'] == mock_response['ruleData']
-    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["ruleData"] == mock_response["ruleData"]
+    assert command_results.outputs[0]["ruleGroups"] == mock_response["ruleGroups"]
 
 
 @pytest.mark.parametrize(
-    'args, expected_output',
+    "args, expected_output",
     (
         (
-            {'intrusion_rule_id': 'intrusion_rule_id'},
-            'At least rule_data or rule_group_ids must be entered, if not both of them.'
+            {"intrusion_rule_id": "intrusion_rule_id"},
+            "At least rule_data or rule_group_ids must be entered, if not both of them.",
         ),
         (
-            {'intrusion_rule_id': 'intrusion_rule_id', 'update_strategy': 'MERGE', 'rule_data': 'rule_data'},
-            'rule_group_ids must be entered when merging.'
+            {"intrusion_rule_id": "intrusion_rule_id", "update_strategy": "MERGE", "rule_data": "rule_data"},
+            "rule_group_ids must be entered when merging.",
         ),
-    )
+    ),
 )
 def test_error_update_intrusion_rule_command(mock_client, args, expected_output):
     """
@@ -982,6 +834,7 @@ def test_error_update_intrusion_rule_command(mock_client, args, expected_output)
     """
     with pytest.raises(ValueError) as ve:
         from CiscoFirepower import update_intrusion_rule_command
+
         update_intrusion_rule_command(mock_client, args)
 
         assert str(ve) == expected_output
@@ -999,11 +852,11 @@ def test_delete_intrusion_rule_command(requests_mock, mock_client):
     -   Ensure the readable_output is correct.
     """
     args = {
-        'intrusion_rule_id': 'intrusion_rule_id',
+        "intrusion_rule_id": "intrusion_rule_id",
     }
 
-    method = 'DELETE'
-    mock_response = load_mock_response('intrusion_rule_response.json')
+    method = "DELETE"
+    mock_response = load_mock_response("intrusion_rule_response.json")
 
     requests_mock.request(
         method,
@@ -1012,6 +865,7 @@ def test_delete_intrusion_rule_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import delete_intrusion_rule_command
+
     command_results = delete_intrusion_rule_command(mock_client, args)
 
     assert_command_results(
@@ -1020,7 +874,7 @@ def test_delete_intrusion_rule_command(requests_mock, mock_client):
     )
 
 
-@mock.patch('CiscoFirepower.demisto.getFilePath', lambda x: FILE_ENTRY)
+@mock.patch("CiscoFirepower.demisto.getFilePath", lambda x: FILE_ENTRY)
 def test_upload_intrusion_file_validation_command(requests_mock, mock_client):
     """
     Scenario:
@@ -1035,24 +889,23 @@ def test_upload_intrusion_file_validation_command(requests_mock, mock_client):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the readable_output is correct.
     """
-    args = {
-        'entry_id': 'entry_id'
-    }
+    args = {"entry_id": "entry_id"}
 
-    mock_response = load_mock_response('intrusion_rule_upload_validation_response.json')
+    mock_response = load_mock_response("intrusion_rule_upload_validation_response.json")
     requests_mock.post(
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrulesupload',
+        f"{BASE_URL}/{SUFFIX}/object/intrusionrulesupload",
         json=mock_response,
     )
 
     from CiscoFirepower import upload_intrusion_rule_file_command
+
     command_results = upload_intrusion_rule_file_command(mock_client, args)
 
     assert f'Validation for Intrusion Rules within: "{FILE_ENTRY["name"]}"' in command_results.readable_output
-    assert mock_response['error']['messages'][0]['description'] in command_results.readable_output
+    assert mock_response["error"]["messages"][0]["description"] in command_results.readable_output
 
 
-@mock.patch('CiscoFirepower.demisto.getFilePath', lambda x: FILE_ENTRY)
+@mock.patch("CiscoFirepower.demisto.getFilePath", lambda x: FILE_ENTRY)
 def test_upload_intrusion_file_import_command(requests_mock, mock_client):
     """
     Scenario:
@@ -1066,57 +919,58 @@ def test_upload_intrusion_file_import_command(requests_mock, mock_client):
     -   Ensure the readable_output is correct.
     """
     args = {
-        'entry_id': 'entry_id',
-        'rule_import_mode': 'MERGE',
-        'rule_group_ids': 'rule_group_id1,rule_group_id2',
+        "entry_id": "entry_id",
+        "rule_import_mode": "MERGE",
+        "rule_group_ids": "rule_group_id1,rule_group_id2",
     }
 
-    mock_response = load_mock_response('intrusion_rule_upload_import_response.json')
+    mock_response = load_mock_response("intrusion_rule_upload_import_response.json")
     requests_mock.post(
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrulesupload',
+        f"{BASE_URL}/{SUFFIX}/object/intrusionrulesupload",
         json=mock_response,
     )
 
     from CiscoFirepower import upload_intrusion_rule_file_command
+
     command_results = upload_intrusion_rule_file_command(mock_client, args)
 
-    assert command_results.outputs_prefix == '.'.join((INTEGRATION_CONTEXT_NAME, INTRUSION_RULE_UPLOAD_CONTEXT))
+    assert command_results.outputs_prefix == ".".join((INTEGRATION_CONTEXT_NAME, INTRUSION_RULE_UPLOAD_CONTEXT))
     assert INTRUSION_RULE_UPLOAD_TITLE in command_results.readable_output
-    assert command_results.outputs[0]['summary'] == mock_response['summary']
-    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
-    assert command_results.outputs[0]['files'] == mock_response['files']
+    assert command_results.outputs[0]["summary"] == mock_response["summary"]
+    assert command_results.outputs[0]["ruleGroups"] == mock_response["ruleGroups"]
+    assert command_results.outputs[0]["files"] == mock_response["files"]
 
 
 @pytest.mark.parametrize(
-    'args, expected_output',
+    "args, expected_output",
     (
         (
             {
-                'entry_id': 'entry_id',
-                'validate_only': 'False',
-                'rule_import_mode': 'MERGE',
+                "entry_id": "entry_id",
+                "validate_only": "False",
+                "rule_import_mode": "MERGE",
             },
-            'rule_import_mode and rule_group_ids must be inserted when validate_only is "False".'
+            'rule_import_mode and rule_group_ids must be inserted when validate_only is "False".',
         ),
         (
             {
-                'entry_id': 'entry_id',
-                'validate_only': 'False',
-                'rule_group_ids': 'rule_group_ids1,rule_group_ids2',
+                "entry_id": "entry_id",
+                "validate_only": "False",
+                "rule_group_ids": "rule_group_ids1,rule_group_ids2",
             },
-            'rule_import_mode and rule_group_ids must be inserted when validate_only is "False".'
+            'rule_import_mode and rule_group_ids must be inserted when validate_only is "False".',
         ),
         (
             {
-                'entry_id': 'entry_id',
-                'rule_import_mode': 'REPLACE',
-                'rule_group_ids': 'rule_group_ids1,rule_group_ids2',
+                "entry_id": "entry_id",
+                "rule_import_mode": "REPLACE",
+                "rule_group_ids": "rule_group_ids1,rule_group_ids2",
             },
-            'Supported file formats are ".txt" and ".rules".'
+            'Supported file formats are ".txt" and ".rules".',
         ),
-    )
+    ),
 )
-@mock.patch('CiscoFirepower.demisto.getFilePath', lambda x: FILE_ENTRY_ERROR)
+@mock.patch("CiscoFirepower.demisto.getFilePath", lambda x: FILE_ENTRY_ERROR)
 def test_error_upload_intrusion_file_command(mock_client, args, expected_output):
     """
     Scenario:
@@ -1132,12 +986,13 @@ def test_error_upload_intrusion_file_command(mock_client, args, expected_output)
     """
     with pytest.raises(ValueError) as ve:
         from CiscoFirepower import upload_intrusion_rule_file_command
+
         upload_intrusion_rule_file_command(mock_client, args)
 
         assert str(ve) == expected_output
 
 
-''' Intrusion Rule Group CRUD '''  # pylint: disable=pointless-string-statement
+""" Intrusion Rule Group CRUD """  # pylint: disable=pointless-string-statement
 
 
 def test_create_intrusion_rule_group_command(requests_mock, mock_client):
@@ -1154,40 +1009,37 @@ def test_create_intrusion_rule_group_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'name': 'name',
-        'description': 'description',
+        "name": "name",
+        "description": "description",
     }
 
-    method = 'POST'
-    mock_response = load_mock_response('intrusion_rule_group_response.json')
+    method = "POST"
+    mock_response = load_mock_response("intrusion_rule_group_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrulegroups',
+        f"{BASE_URL}/{SUFFIX}/object/intrusionrulegroups",
         json=mock_response,
     )
 
     from CiscoFirepower import create_intrusion_rule_group_command
+
     command_results = create_intrusion_rule_group_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
 
 
 @pytest.mark.parametrize(
-    'args',
+    "args",
     (
-        ({'expanded_response': 'True'}),
-        ({'limit': '6', 'expanded_response': 'False'}),
-        ({'page_size': '3'}),
-    )
+        ({"expanded_response": "True"}),
+        ({"limit": "6", "expanded_response": "False"}),
+        ({"page_size": "3"}),
+    ),
 )
 def test_list_intrusion_rule_group_command(requests_mock, mock_client, args):
     """
@@ -1205,29 +1057,26 @@ def test_list_intrusion_rule_group_command(requests_mock, mock_client, args):
     -   Ensure the outputs has no links.
     """
 
-    method = 'GET'
-    mock_response = load_mock_response('intrusion_rule_group_list_response.json')
+    method = "GET"
+    mock_response = load_mock_response("intrusion_rule_group_list_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrulegroups',
+        f"{BASE_URL}/{SUFFIX}/object/intrusionrulegroups",
         json=mock_response,
     )
 
     from CiscoFirepower import list_intrusion_rule_group_command
+
     command_results = list_intrusion_rule_group_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT)
 
-    for output, mock_output in zip(command_results.outputs, mock_response['items']):
-        assert output['name'] == mock_output['name']
-        assert output['id'] == mock_output['id']
-        assert output['description'] == mock_output['description']
-        assert output['childGroups'] == mock_output['childGroups']
+    for output, mock_output in zip(command_results.outputs, mock_response["items"]):
+        assert output["name"] == mock_output["name"]
+        assert output["id"] == mock_output["id"]
+        assert output["description"] == mock_output["description"]
+        assert output["childGroups"] == mock_output["childGroups"]
 
 
 def test_get_intrusion_rule_group_command(requests_mock, mock_client):
@@ -1243,10 +1092,10 @@ def test_get_intrusion_rule_group_command(requests_mock, mock_client):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    args = {'rule_group_id': 'rule_group_id'}
+    args = {"rule_group_id": "rule_group_id"}
 
-    method = 'GET'
-    mock_response = load_mock_response('intrusion_rule_group_response.json')
+    method = "GET"
+    mock_response = load_mock_response("intrusion_rule_group_response.json")
 
     requests_mock.request(
         method,
@@ -1255,17 +1104,14 @@ def test_get_intrusion_rule_group_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import list_intrusion_rule_group_command
+
     command_results = list_intrusion_rule_group_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
 
 
 def test_error_get_intrusion_rule_group_command(mock_client):
@@ -1280,15 +1126,16 @@ def test_error_get_intrusion_rule_group_command(mock_client):
     -   Ensure an exception has been raised and it is correct.
     """
     args = {
-        'limit': '5',
-        'rule_group_id': 'rule_group_id',
+        "limit": "5",
+        "rule_group_id": "rule_group_id",
     }
 
     with pytest.raises(ValueError) as ve:
         from CiscoFirepower import list_intrusion_rule_group_command
+
         list_intrusion_rule_group_command(mock_client, args)
 
-        assert str(ve) == 'GET and LIST arguments can not be supported simutanlesy.'
+        assert str(ve) == "GET and LIST arguments can not be supported simutanlesy."
 
 
 def test_update_intrusion_rule_group_command(requests_mock, mock_client):
@@ -1305,13 +1152,13 @@ def test_update_intrusion_rule_group_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'rule_group_id': 'rule_group_id',
-        'name': 'name',
-        'description': 'description',
+        "rule_group_id": "rule_group_id",
+        "name": "name",
+        "description": "description",
     }
 
-    method = 'PUT'
-    mock_response = load_mock_response('intrusion_rule_group_response.json')
+    method = "PUT"
+    mock_response = load_mock_response("intrusion_rule_group_response.json")
 
     requests_mock.request(
         method,
@@ -1320,17 +1167,14 @@ def test_update_intrusion_rule_group_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import update_intrusion_rule_group_command
+
     command_results = update_intrusion_rule_group_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
 
 
 def test_delete_intrusion_rule_group_command(requests_mock, mock_client):
@@ -1344,12 +1188,10 @@ def test_delete_intrusion_rule_group_command(requests_mock, mock_client):
     Then:
     -   Ensure the readable_output is correct.
     """
-    args = {
-        'rule_group_id': 'rule_group_id'
-    }
+    args = {"rule_group_id": "rule_group_id"}
 
-    method = 'DELETE'
-    mock_response = load_mock_response('intrusion_rule_group_response.json')
+    method = "DELETE"
+    mock_response = load_mock_response("intrusion_rule_group_response.json")
 
     requests_mock.request(
         method,
@@ -1358,6 +1200,7 @@ def test_delete_intrusion_rule_group_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import delete_intrusion_rule_group_command
+
     command_results = delete_intrusion_rule_group_command(mock_client, args)
 
     assert_command_results(
@@ -1366,7 +1209,7 @@ def test_delete_intrusion_rule_group_command(requests_mock, mock_client):
     )
 
 
-''' Network Analysis Policy CRUD '''  # pylint: disable=pointless-string-statement
+""" Network Analysis Policy CRUD """  # pylint: disable=pointless-string-statement
 
 
 def test_create_network_analysis_policy_command(requests_mock, mock_client):
@@ -1383,43 +1226,40 @@ def test_create_network_analysis_policy_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'name': 'name',
-        'basepolicy_id': 'basepolicy_id',
-        'description': 'description',
+        "name": "name",
+        "basepolicy_id": "basepolicy_id",
+        "description": "description",
     }
 
-    method = 'POST'
-    mock_response = load_mock_response('network_analysis_response.json')
+    method = "POST"
+    mock_response = load_mock_response("network_analysis_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies',
+        f"{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies",
         json=mock_response,
     )
 
     from CiscoFirepower import create_network_analysis_policy_command
+
     command_results = create_network_analysis_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
-    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
-    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
+    assert command_results.outputs[0]["basePolicy"] == mock_response["basePolicy"]
+    assert command_results.outputs[0]["metadata"] == mock_response["metadata"]
 
 
 @pytest.mark.parametrize(
-    'args',
+    "args",
     (
-        ({'expanded_response': 'True'}),
-        ({'limit': '6', 'expanded_response': 'False'}),
-        ({'page_size': '3'}),
-    )
+        ({"expanded_response": "True"}),
+        ({"limit": "6", "expanded_response": "False"}),
+        ({"page_size": "3"}),
+    ),
 )
 def test_list_network_analysis_policy_command(requests_mock, mock_client, args):
     """
@@ -1438,29 +1278,26 @@ def test_list_network_analysis_policy_command(requests_mock, mock_client, args):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    method = 'GET'
-    mock_response = load_mock_response('network_analysis_list_response.json')
+    method = "GET"
+    mock_response = load_mock_response("network_analysis_list_response.json")
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies',
+        f"{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies",
         json=mock_response,
     )
 
     from CiscoFirepower import list_network_analysis_policy_command
+
     command_results = list_network_analysis_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT)
 
-    for output, mock_output in zip(command_results.outputs, mock_response['items']):
-        assert output['name'] == mock_output['name']
-        assert output['id'] == mock_output['id']
-        assert output['description'] == mock_output['description']
-        assert output['metadata'] == mock_output['metadata']
+    for output, mock_output in zip(command_results.outputs, mock_response["items"]):
+        assert output["name"] == mock_output["name"]
+        assert output["id"] == mock_output["id"]
+        assert output["description"] == mock_output["description"]
+        assert output["metadata"] == mock_output["metadata"]
 
 
 def test_get_network_analysis_policy_command(requests_mock, mock_client):
@@ -1476,9 +1313,9 @@ def test_get_network_analysis_policy_command(requests_mock, mock_client):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    args = {'network_analysis_policy_id': 'network_analysis_policy_id'}
-    method = 'GET'
-    mock_response = load_mock_response('network_analysis_response.json')
+    args = {"network_analysis_policy_id": "network_analysis_policy_id"}
+    method = "GET"
+    mock_response = load_mock_response("network_analysis_response.json")
 
     requests_mock.request(
         method,
@@ -1487,19 +1324,16 @@ def test_get_network_analysis_policy_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import list_network_analysis_policy_command
+
     command_results = list_network_analysis_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
-    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
-    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
+    assert command_results.outputs[0]["basePolicy"] == mock_response["basePolicy"]
+    assert command_results.outputs[0]["metadata"] == mock_response["metadata"]
 
 
 def test_error_get_network_analysis_policy_command(mock_client):
@@ -1514,15 +1348,16 @@ def test_error_get_network_analysis_policy_command(mock_client):
     -   Ensure an exception has been raised and it is correct.
     """
     args = {
-        'limit': '5',
-        'network_analysis_policy_id': 'network_analysis_policy_id',
+        "limit": "5",
+        "network_analysis_policy_id": "network_analysis_policy_id",
     }
 
     with pytest.raises(ValueError) as ve:
         from CiscoFirepower import list_network_analysis_policy_command
+
         list_network_analysis_policy_command(mock_client, args)
 
-        assert str(ve) == 'GET and LIST arguments can not be supported simutanlesy.'
+        assert str(ve) == "GET and LIST arguments can not be supported simutanlesy."
 
 
 def test_update_network_analysis_policy_command(requests_mock, mock_client):
@@ -1539,16 +1374,16 @@ def test_update_network_analysis_policy_command(requests_mock, mock_client):
     -   Ensure the outputs has no links.
     """
     args = {
-        'network_analysis_policy_id': 'network_analysis_policy_id',
-        'name': 'name',
-        'basepolicy_id': 'basepolicy_id',
-        'description': 'description',
-        'inspection_mode': 'PREVENTION',
-        'replicate_inspection_mode': 'True'
+        "network_analysis_policy_id": "network_analysis_policy_id",
+        "name": "name",
+        "basepolicy_id": "basepolicy_id",
+        "description": "description",
+        "inspection_mode": "PREVENTION",
+        "replicate_inspection_mode": "True",
     }
 
-    method = 'PUT'
-    mock_response = load_mock_response('network_analysis_response.json')
+    method = "PUT"
+    mock_response = load_mock_response("network_analysis_response.json")
 
     requests_mock.request(
         method,
@@ -1557,19 +1392,16 @@ def test_update_network_analysis_policy_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import update_network_analysis_policy_command
+
     command_results = update_network_analysis_policy_command(mock_client, args)
 
-    assert_command_results(
-        command_results=command_results,
-        method=method,
-        expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
-    )
+    assert_command_results(command_results=command_results, method=method, expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT)
 
-    assert command_results.outputs[0]['name'] == mock_response['name']
-    assert command_results.outputs[0]['id'] == mock_response['id']
-    assert command_results.outputs[0]['description'] == mock_response['description']
-    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
-    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+    assert command_results.outputs[0]["name"] == mock_response["name"]
+    assert command_results.outputs[0]["id"] == mock_response["id"]
+    assert command_results.outputs[0]["description"] == mock_response["description"]
+    assert command_results.outputs[0]["basePolicy"] == mock_response["basePolicy"]
+    assert command_results.outputs[0]["metadata"] == mock_response["metadata"]
 
 
 def test_delete_network_analysis_policy_command(requests_mock, mock_client):
@@ -1583,12 +1415,10 @@ def test_delete_network_analysis_policy_command(requests_mock, mock_client):
     Then:
     -   Ensure the readable_output is correct.
     """
-    args = {
-        'network_analysis_policy_id': 'network_analysis_policy_id'
-    }
+    args = {"network_analysis_policy_id": "network_analysis_policy_id"}
 
-    method = 'DELETE'
-    mock_response = load_mock_response('network_analysis_response.json')
+    method = "DELETE"
+    mock_response = load_mock_response("network_analysis_response.json")
 
     requests_mock.request(
         method,
@@ -1597,6 +1427,7 @@ def test_delete_network_analysis_policy_command(requests_mock, mock_client):
     )
 
     from CiscoFirepower import delete_network_analysis_policy_command
+
     command_results = delete_network_analysis_policy_command(mock_client, args)
 
     assert_command_results(

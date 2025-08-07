@@ -1,0 +1,48 @@
+{
+  "trigger_id": "b028aba32791548292993fec8cec5af4",
+  "playbook_id": "silent-Suspicious LDAP search query Test",
+  "suggestion_reason": "Recommended for 'Suspicious LDAP search query executed' and 'Possible LDAP enumeration by unsigned process' alerts",
+  "description": "This trigger is responsible for handling the 'Suspicious LDAP search query executed' and 'Possible LDAP enumeration by unsigned process' alerts via the 'Suspicious LDAP search query' playbook",
+  "trigger_name": "silent-Suspicious LDAP search query Test",
+  "fromVersion": "8.9.0",
+  "issilent": true,
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+                "OR": [
+                  {
+                    "AND": [
+                      {
+                        "SEARCH_FIELD": "alert_name",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Possible LDAP enumeration by unsigned process"
+                      },
+                      {
+                        "SEARCH_FIELD": "severity",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "SEV_030_MEDIUM"
+                      }
+                    ]
+                  },
+                  {
+                    "AND": [
+                      {
+                        "SEARCH_FIELD": "alert_name",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "Suspicious LDAP search query executed"
+                      },
+                      {
+                        "SEARCH_FIELD": "severity",
+                        "SEARCH_TYPE": "EQ",
+                        "SEARCH_VALUE": "SEV_040_HIGH"
+                      }
+                    ]
+                  }
+                ]
+              }
+        ]    
+    }
+  }
+}
+

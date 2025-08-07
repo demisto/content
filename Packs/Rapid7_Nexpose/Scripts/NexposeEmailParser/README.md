@@ -1,6 +1,7 @@
 Parses the Nexpose report into a clear table that contains risk scores and vulnerability counts for each server, and creates a new incident for each server.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Parses the Nexpose report into a clear table that contains risk scores and vulne
 | Script Type | javascript |
 | Tags | nexpose, ingestion |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * nexpose
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,5 +28,6 @@ This script uses the following commands and scripts.
 | defaultNexposeSeverity | The severity to be set on the triggered incidents. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

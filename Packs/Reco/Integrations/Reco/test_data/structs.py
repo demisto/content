@@ -1,6 +1,6 @@
 import json
 from enum import Enum
-from typing import List, Any
+from typing import Any
 from json import JSONEncoder
 
 
@@ -83,17 +83,15 @@ class GetIncidentTableResponse:
         self.getTableResponse = get_table_response
 
     def to_json(self):
-        return json.loads(
-            json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-        )
+        return json.loads(json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4))
 
 
 class TableData:
     """a list of rows"""
 
-    rows: List["RowData"]
+    rows: list["RowData"]
 
-    def __init__(self, rows: List["RowData"]):
+    def __init__(self, rows: list["RowData"]):
         self.rows = rows
 
     def to_json(self):
@@ -103,9 +101,9 @@ class TableData:
 class RowData:
     """a list of cells - which are key value pairs"""
 
-    cells: List["KeyValuePair"]
+    cells: list["KeyValuePair"]
 
-    def __init__(self, cells: List["KeyValuePair"]):
+    def __init__(self, cells: list["KeyValuePair"]):
         self.cells = cells
 
     def to_json(self):

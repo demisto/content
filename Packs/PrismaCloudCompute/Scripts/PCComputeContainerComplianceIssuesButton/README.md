@@ -1,5 +1,6 @@
 This script runs the "prisma-cloud-compute-container-scan-results-list" command for a specific container ID and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues details.
 Returns the following fields for each compliance ID:
+
 - Compliance ID
 - Cause
 - Severity
@@ -20,8 +21,8 @@ Returns the following fields for each compliance ID:
 ---
 This script uses the following commands and scripts.
 
-* PaloAltoNetworks_PrismaCloudCompute
-* prisma-cloud-compute-container-scan-results-list
+- PaloAltoNetworks_PrismaCloudCompute
+- prisma-cloud-compute-container-scan-results-list
 
 ## Inputs
 

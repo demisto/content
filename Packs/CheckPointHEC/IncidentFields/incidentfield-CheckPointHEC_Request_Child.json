@@ -1,0 +1,33 @@
+{
+    "id": "incident_checkpointhecrequestchild",
+    "version": -1,
+    "modified": "2025-04-21T13:21:21.123456Z",
+    "name": "CheckPointHEC Request Child",
+    "ownerOnly": false,
+    "placeholder": "CP Restore Request is Child",
+    "description": "Restore request from multiple recipients email",
+    "cliName": "checkpointhecrequestchild",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CheckPointHEC Restore Request"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

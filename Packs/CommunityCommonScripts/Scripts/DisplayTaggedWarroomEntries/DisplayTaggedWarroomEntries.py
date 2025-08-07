@@ -7,7 +7,7 @@ filter_arg = json.loads(demisto.args().get("filter", json.dumps({"tags": ["repor
 raw_entries = None
 
 if filter_arg:
-    raw_entries = demisto.executeCommand('getEntries', {"id": demisto.incident().get("id"), "filter": filter_arg})
+    raw_entries = demisto.executeCommand("getEntries", {"id": demisto.incident().get("id"), "filter": filter_arg})
 
 if raw_entries:
     entries = []
@@ -21,11 +21,11 @@ else:
 # demisto.results(str(entries))
 
 result = {
-    'Type': entryTypes["note"],
-    'Contents': "\n".join(entries),
-    'ContentsFormat': formats['markdown'],
-    'HumanReadable': "\n".join(entries),
-    'ReadableContentsFormat': formats['markdown']
+    "Type": entryTypes["note"],
+    "Contents": "\n".join(entries),
+    "ContentsFormat": formats["markdown"],
+    "HumanReadable": "\n".join(entries),
+    "ReadableContentsFormat": formats["markdown"],
 }
 
 demisto.results(result)

@@ -1,4 +1,4 @@
-Get the count of custom, OOTB and deprecated playbooks 
+Get the count of custom, OOTB and deprecated playbooks
 
 ## Script Data
 

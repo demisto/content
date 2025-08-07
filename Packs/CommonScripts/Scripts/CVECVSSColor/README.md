@@ -3,7 +3,6 @@
 ---
 This dynamic automation parses the CVSS score of a CVE and presents it in the layout in color according to its score.
 
-
 ### Script Data
 
 ---

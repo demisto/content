@@ -1,6 +1,7 @@
+import json
+
 import demistomock as demisto
 import MakePair
-import json
 
 
 def equals_object(obj1, obj2) -> bool:
@@ -16,7 +17,7 @@ def equals_object(obj1, obj2) -> bool:
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
-        for i1, v1 in enumerate(obj1):
+        for _i1, v1 in enumerate(obj1):
             for i2, v2 in enumerate(list2):
                 if equals_object(v1, v2):
                     list2.pop(i2)
@@ -29,15 +30,13 @@ def equals_object(obj1, obj2) -> bool:
 
 
 def test_1(mocker):
-    with open('./test_data/test-1.json', 'r') as f:
+    with open("./test_data/test-1.json") as f:
         test_list = json.load(f)
 
     for case in test_list:
-        mocker.patch.object(demisto, 'args', return_value={
-            **case['args']
-        })
-        mocker.patch.object(MakePair, 'return_results')
+        mocker.patch.object(demisto, "args", return_value={**case["args"]})
+        mocker.patch.object(MakePair, "return_results")
         MakePair.main()
         assert MakePair.return_results.call_count == 1
         ret = MakePair.return_results.call_args[0][0]
-        assert equals_object(ret, case['result'])
+        assert equals_object(ret, case["result"])

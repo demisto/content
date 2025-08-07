@@ -1,11 +1,11 @@
 [
   {
-    "id": "1",
+    "messageUid": "1",
     "name": "On-demand Freeze message",
     "content": "<html><body>This device has been frozen by company.</body></html>",
     "createdBy": "example1@test.com",
     "changedBy": "example2@test.com",
-    "createdUTC": "2020-11-26T22:29:17.687+00:00",
-    "changedUTC": "2020-12-14T09:14:52.148+00:00"
+    "createdDateTimeUtc": "2020-11-26T22:29:17.687+00:00",
+    "changedDateTimeUtc": "2020-12-14T09:14:52.148+00:00"
   }
 ]

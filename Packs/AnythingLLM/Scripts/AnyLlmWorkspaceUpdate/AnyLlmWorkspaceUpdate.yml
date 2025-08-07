@@ -1,0 +1,27 @@
+args:
+- description: field new value.
+  name: new
+- description: field old value.
+  name: old
+comment: Executes the action taken on a workspace listed in the grid field. "Current" makes the workspace the active workspace and any workspace setting changes are updated in the LLM.
+commonfields:
+  id: AnyLlmWorkspaceUpdate
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.11.10.116949
+enabled: true
+engineinfo: {}
+name: AnyLlmWorkspaceUpdate
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

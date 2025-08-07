@@ -31,7 +31,7 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Office_365_Search_and_Delete](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Office_365_Search_and_Delete.png)
+![Office_365_Search_and_Delete](../doc_files/Office_365_Search_and_Delete.png)
 
 
 ## Known Limitations

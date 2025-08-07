@@ -10,55 +10,60 @@ Allows you to push and pull your external data to and from the KnowBe4 console.
 | Events Fetch Interval | The Fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-    
-
 
 **Important Notes**
 The basic API-Key has a daily limit of calls per seat.
-Therefore, the default and recommended **Events Fetch Interval** value is 5 hours and 
+Therefore, the default and recommended **Events Fetch Interval** value is 5 hours and
 **First fetch time interval** is 1 day.
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### kms-get-events
+
 Manual command to fetch events and display them.
+
 #### Base Command
+
 `kms-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| occurred_date | Filter by the date the event occurred (YYYY-MM-DD). | Optional | 
-| risk_level | Filter by the risk level by  entering a value from -10 (low risk) to 10 (high risk). | Optional | 
-| per_page | The number of results to display per page. The maximum and default is 100. | Optional | 
-| page | The results page to display. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False', the returned events will be lost. Possible values are: True, False. Default is False. | Required | 
+| occurred_date | Filter by the date the event occurred (YYYY-MM-DD). | Optional |
+| risk_level | Filter by the risk level by  entering a value from -10 (low risk) to 10 (high risk). | Optional |
+| per_page | The number of results to display per page. The maximum and default is 100. | Optional |
+| page | The results page to display. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False', the returned events will be lost. Possible values are: True, False. Default is False. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KMSat.Event.id | Number | Event ID. | 
-| KMSat.Event.user.email | String | The target mail for this event. | 
-| KMSat.Event.user.id | Number | The ID of the user the event is targeted to. | 
-| KMSat.Event.user.archived | Boolean | Whether the user is archived or not. | 
-| KMSat.Event.external_id | String | The event's external ID. | 
-| KMSat.Event.source | String | The source of the event. | 
-| KMSat.Event.description | String | The event description. | 
-| KMSat.Event.occurred_date | String | The date the event occurred. | 
-| KMSat.Event.risk.level | Number | The event's risk level. | 
-| KMSat.Event.risk.factor | Number | The event's risk factor. | 
-| KMSat.Event.risk.decay_mode | String | The risk's decay mode. | 
-| KMSat.Event.risk.expire_date | String | The event's expiration date. | 
-| KMSat.Event.event_type.id | Number | The ID of the event type. | 
-| KMSat.Event.event_type.name | String | The name of the event type. | 
+| KMSat.Event.id | Number | Event ID. |
+| KMSat.Event.user.email | String | The target mail for this event. |
+| KMSat.Event.user.id | Number | The ID of the user the event is targeted to. |
+| KMSat.Event.user.archived | Boolean | Whether the user is archived or not. |
+| KMSat.Event.external_id | String | The event's external ID. |
+| KMSat.Event.source | String | The source of the event. |
+| KMSat.Event.description | String | The event description. |
+| KMSat.Event.occurred_date | String | The date the event occurred. |
+| KMSat.Event.risk.level | Number | The event's risk level. |
+| KMSat.Event.risk.factor | Number | The event's risk factor. |
+| KMSat.Event.risk.decay_mode | String | The risk's decay mode. |
+| KMSat.Event.risk.expire_date | String | The event's expiration date. |
+| KMSat.Event.event_type.id | Number | The ID of the event type. |
+| KMSat.Event.event_type.name | String | The name of the event type. |
 
 #### Command example
+
 ```!kms-get-events should_push_events=false```
 
 #### Context Example
+
 ```json
 {
     "KMSat": {
@@ -95,6 +100,7 @@ Manual command to fetch events and display them.
 #### Human Readable Output
 
 >### KnowBe4 KMSAT Logs
+>
 >|AccountId|Description|EventType|Id|OccurredDate|Risk|User|
 >|---|---|---|---|---|---|---|
 >| 52306 | My description lkjhy khl lgf | id: 420899085<br/>name: event_type_55<br/>description: null | 786a515c-1cbd-4a8c-a94a-61ad877c893c | 2022-08-09T10:05:13.890Z | level: 5<br/>decay_mode: 0<br/>expire_date: null | email: maizen@paloaltonetworks.com<br/>id: 38651943<br/>archived: false |

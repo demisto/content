@@ -9,9 +9,7 @@ def create_case_object(cases):
             "description": case_item["description"],
             "status": case_item["status"].capitalize(),
             "priority": case_item["priority"].capitalize(),
-            "related alerts": ", ".join(
-                [alert["short_id"] for alert in case_item["alerts"]]
-            ),
+            "related alerts": ", ".join([alert["short_id"] for alert in case_item["alerts"]]),
         }
         for case_item in cases
     ]
@@ -27,13 +25,9 @@ def get_case_info(alert_uuid: str):
     if cases:
         readable_cases = create_case_object(cases)
         headers = ["title", "description", "status", "priority", "related alerts"]
-        readable_output = tableToMarkdown(
-            "Cases information:", readable_cases, headers=headers
-        )
+        readable_output = tableToMarkdown("Cases information:", readable_cases, headers=headers)
     else:
-        readable_output = (
-            "### {{color:green}}(There is no case information related to this alert.)"
-        )
+        readable_output = "### {{color:green}}(There is no case information related to this alert.)"
 
     return readable_output
 

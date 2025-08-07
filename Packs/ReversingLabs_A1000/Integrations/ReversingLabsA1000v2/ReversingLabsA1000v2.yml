@@ -236,6 +236,9 @@ script:
     - defaultValue: 'False'
       description: Return only local classification data for the sample, without falling back to querying TitaniumCloud.
       name: localOnly
+    - defaultValue: 'True'
+      description: Return AV scanner data from TitaniumCloud.
+      name: avScanners
     description: Retrieve classification report for a sample.
     name: reversinglabs-a1000-get-classification
     outputs:

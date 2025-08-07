@@ -1,0 +1,52 @@
+{
+    "data": {
+        "entity": {
+            "type": "domain",
+            "value": "29102.shop"
+        },
+        "risk": {
+            "malicious_score": 80,
+            "detected_activities": [
+                {
+                    "type": "infecting_url",
+                    "observation_date": "2025-03-05T14:47:23.534044+00:00",
+                    "description": "URL that may infect it’s visitors with malware.",
+                    "confidence": 100,
+                    "occurrences_count": 1
+                },
+                {
+                    "type": "phishing_website",
+                    "observation_date": "2024-09-16T06:26:16+00:00",
+                    "description": "Detected phishing website targeting Allegro.",
+                    "confidence": 20,
+                    "occurrences_count": 1
+                }
+            ],
+            "occurrences_count": 2
+        },
+        "enrichment": {
+            "related_entities": null,
+            "ips": [
+                "15.197.130.221"
+            ],
+            "whois": {
+                "registrant_name": null,
+                "registrant_email": null,
+                "registrant_organization": null,
+                "registrant_country": "POLAND",
+                "registrant_telephone": null,
+                "technical_contact_email": null,
+                "technical_contact_name": null,
+                "technical_contact_organization": null,
+                "registrar_name": "Registrar.eu",
+                "admin_contact_name": null,
+                "admin_contact_organization": null,
+                "admin_contact_email": null,
+                "created_date": "2024-09-10T09:29:58",
+                "updated_date": "2024-10-18T05:44:51",
+                "expiration_date": "2025-09-10T23:59:59"
+            }
+        },
+        "benign": false
+    }
+}

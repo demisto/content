@@ -1,8 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa: F401
-import CreateNewIndicatorsOnly
 from typing import Any
+
+import CreateNewIndicatorsOnly
+import demistomock as demisto
 import pytest
+from CommonServerPython import *  # noqa: F401
 
 
 def equals_object(obj1, obj2) -> bool:
@@ -32,368 +33,321 @@ def equals_object(obj1, obj2) -> bool:
 
 def test_no_values(mocker):
     """
-        Given:
-            No values are given to the 'indicator_values'.
+    Given:
+        No values are given to the 'indicator_values'.
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': [],
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": [],
+        },
+    )
 
     expected_entry_context = {}
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '0 new indicators have been added' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "0 new indicators have been added" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_all_indicators_exist_with_single_value(mocker):
     """
-        Given:
-            A single indicator existing in the threat intel is given to the 'indicator_values'.
+    Given:
+        A single indicator existing in the threat intel is given to the 'indicator_values'.
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
+
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
-            return [{
-                'id': '0',
-                'value': args.get('value'),
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }]
-        elif cmd == 'associateIndicatorToIncident':
-            return 'done'
-        raise ValueError('Unexpected calls')
+        if cmd == "findIndicators":
+            return [{"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}]
+        elif cmd == "associateIndicatorToIncident":
+            return "done"
+        raise ValueError("Unexpected calls")
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': '1.1.1.1',
-        'associate_to_current': 'true',
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": "1.1.1.1",
+            "associate_to_current": "true",
+        },
+    )
 
     expected_entry_context = {
-        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'CreationStatus': 'existing',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '1.1.1.1'
-        }
+        "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": [
+            {"CreationStatus": "existing", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "1.1.1.1"}
         ]
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '0 new indicators have been added' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "0 new indicators have been added" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_all_indicators_exist_with_multiple_value(mocker):
     """
-        Given:
-            All indicators existing in the threat intel are given to the 'indicator_values'.
+    Given:
+        All indicators existing in the threat intel are given to the 'indicator_values'.
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
+
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
-            return [{
-                'id': '0',
-                'value': args.get('value'),
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }]
-        elif cmd == 'associateIndicatorToIncident':
-            return 'done'
-        raise ValueError('Unexpected calls')
+        if cmd == "findIndicators":
+            return [{"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}]
+        elif cmd == "associateIndicatorToIncident":
+            return "done"
+        raise ValueError("Unexpected calls")
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': [
-            '1.1.1.1',
-            '2.2.2.2'
-        ],
-        'associate_to_current': 'true',
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": ["1.1.1.1", "2.2.2.2"],
+            "associate_to_current": "true",
+        },
+    )
 
     expected_entry_context = {
-        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'CreationStatus': 'existing',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '1.1.1.1'
-        }, {
-            'CreationStatus': 'existing',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '2.2.2.2'
-        }
+        "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": [
+            {"CreationStatus": "existing", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "1.1.1.1"},
+            {"CreationStatus": "existing", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "2.2.2.2"},
         ]
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '0 new indicators have been added' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "0 new indicators have been added" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_some_indicators_exist_with_multiple_value(mocker):
     """
-        Given:
-            Some indicators existing in the threat intel are given to the 'indicator_values'.
+    Given:
+        Some indicators existing in the threat intel are given to the 'indicator_values'.
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
+
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
-            value = args.get('value')
-            if value != '1.1.1.1':
+        if cmd == "findIndicators":
+            value = args.get("value")
+            if value != "1.1.1.1":
                 return []
             else:
-                return [{
-                    'id': '0',
-                    'value': args.get('value'),
-                    'score': 0,
-                    'indicator_type': args.get('type', 'Unknown')
-                }]
-        elif cmd == 'createNewIndicator':
-            return {
-                'id': '0',
-                'value': args.get('value'),
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }
-        elif cmd == 'associateIndicatorToIncident':
-            return 'done'
-        raise ValueError('Unexpected calls')
+                return [{"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}]
+        elif cmd == "createNewIndicator":
+            return {"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}
+        elif cmd == "associateIndicatorToIncident":
+            return "done"
+        raise ValueError("Unexpected calls")
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': [
-            '1.1.1.1',
-            '2.2.2.2'
-        ],
-        'associate_to_current': 'true',
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": ["1.1.1.1", "2.2.2.2"],
+            "associate_to_current": "true",
+        },
+    )
 
     expected_entry_context = {
-        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'CreationStatus': 'existing',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '1.1.1.1'
-        }, {
-            'CreationStatus': 'new',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '2.2.2.2'
-        }
+        "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": [
+            {"CreationStatus": "existing", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "1.1.1.1"},
+            {"CreationStatus": "new", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "2.2.2.2"},
         ]
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '1 new indicators have been added' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "1 new indicators have been added" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_some_indicators_are_excluded(mocker):
     """
-        Given:
-            Some indicators given to the 'indicator_values' are in the exclusion list.
+    Given:
+        Some indicators given to the 'indicator_values' are in the exclusion list.
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
+
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
+        if cmd == "findIndicators":
             return []
-        elif cmd == 'createNewIndicator':
-            value = args.get('value')
-            if value == '1.1.1.1':
-                return 'done - Indicator was not created'
+        elif cmd == "createNewIndicator":
+            value = args.get("value")
+            if value == "1.1.1.1":
+                return "done - Indicator was not created"
             else:
-                return {
-                    'id': '0',
-                    'value': args.get('value'),
-                    'score': 0,
-                    'indicator_type': args.get('type', 'Unknown')
-                }
-        elif cmd == 'associateIndicatorToIncident':
-            return 'done'
-        raise ValueError('Unexpected calls')
+                return {"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}
+        elif cmd == "associateIndicatorToIncident":
+            return "done"
+        raise ValueError("Unexpected calls")
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': [
-            '1.1.1.1',
-            '2.2.2.2'
-        ],
-        'associate_to_current': 'true',
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": ["1.1.1.1", "2.2.2.2"],
+            "associate_to_current": "true",
+        },
+    )
 
     expected_entry_context = {
-        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'CreationStatus': 'unavailable',
-            'Type': 'Unknown',
-            'Value': '1.1.1.1'
-        }, {
-            'CreationStatus': 'new',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '2.2.2.2'
-        }
+        "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": [
+            {"CreationStatus": "unavailable", "Type": "Unknown", "Value": "1.1.1.1"},
+            {"CreationStatus": "new", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "2.2.2.2"},
         ]
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '1 new indicators have been added' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "1 new indicators have been added" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_indicator_including_commas(mocker):
     """
-        Given:
-            An indicator given to the 'indicator_values' contains commas
+    Given:
+        An indicator given to the 'indicator_values' contains commas
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
+
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
+        if cmd == "findIndicators":
             return []
-        elif cmd == 'createNewIndicator':
-            return {
-                'id': '0',
-                'value': args.get('value'),
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }
-        elif cmd == 'associateIndicatorToIncident':
-            return 'done'
-        raise ValueError('Unexpected calls')
+        elif cmd == "createNewIndicator":
+            return {"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}
+        elif cmd == "associateIndicatorToIncident":
+            return "done"
+        raise ValueError("Unexpected calls")
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': 'http://www.paloaltonetworks.com/?q=,123',
-        'associate_to_current': 'true',
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": "http://www.paloaltonetworks.com/?q=,123",
+            "associate_to_current": "true",
+        },
+    )
 
     expected_entry_context = {
-        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'CreationStatus': 'new',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': 'http://www.paloaltonetworks.com/?q=,123'
-        }
+        "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": [
+            {
+                "CreationStatus": "new",
+                "ID": "0",
+                "Score": 0,
+                "Type": "Unknown",
+                "Value": "http://www.paloaltonetworks.com/?q=,123",
+            }
         ]
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '1 new indicators have been added' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "1 new indicators have been added" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_print_verbose(mocker):
     """
-        Given:
-            `verbose=true` is given to the argument parameters
+    Given:
+        `verbose=true` is given to the argument parameters
 
-        When:
-            Running the script
+    When:
+        Running the script
 
-        Then:
-            Validate the right response returns.
+    Then:
+        Validate the right response returns.
     """
+
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
+        if cmd == "findIndicators":
             return []
-        elif cmd == 'createNewIndicator':
-            return {
-                'id': '0',
-                'value': args.get('value'),
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }
-        elif cmd == 'associateIndicatorToIncident':
-            return 'done'
-        raise ValueError('Unexpected calls')
+        elif cmd == "createNewIndicator":
+            return {"id": "0", "value": args.get("value"), "score": 0, "indicator_type": args.get("type", "Unknown")}
+        elif cmd == "associateIndicatorToIncident":
+            return "done"
+        raise ValueError("Unexpected calls")
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
-    mocker.patch.object(demisto, 'args', return_value={
-        'indicator_values': '1.1.1.1',
-        'verbose': 'true',
-        'associate_to_current': 'true',
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "indicator_values": "1.1.1.1",
+            "verbose": "true",
+            "associate_to_current": "true",
+        },
+    )
 
     expected_entry_context = {
-        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'CreationStatus': 'new',
-            'ID': '0',
-            'Score': 0,
-            'Type': 'Unknown',
-            'Value': '1.1.1.1'
-        }
+        "CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)": [
+            {"CreationStatus": "new", "ID": "0", "Score": 0, "Type": "Unknown", "Value": "1.1.1.1"}
         ]
     }
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '|ID|Score|CreationStatus|Type|Value' in results.get('HumanReadable')
-    assert equals_object(expected_entry_context, results.get('EntryContext'))
+    assert "|ID|Score|CreationStatus|Type|Value" in results.get("HumanReadable")
+    assert equals_object(expected_entry_context, results.get("EntryContext"))
 
 
 def test_findIndicators_called_with_escaped_quotes(mocker):
@@ -408,32 +362,39 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
         2. The 'add_new_indicator' function should return the expected result as a dictionary.
     """
     from CreateNewIndicatorsOnly import add_new_indicator
-    indicator_value = "(External):Test \"test2 test (unsigned)\""
+
+    indicator_value = '(External):Test "test2 test (unsigned)"'
     expected_value = indicator_value.replace('"', r"\"")
 
     def __execute_command(cmd, args) -> Any:
-        if cmd == 'findIndicators':
-            assert args == {'value': expected_value}
-            return [{
-                'id': '0',
-                'value': '(External):Test "test2 test (unsigned)"',
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }]
-        elif cmd == 'associateIndicatorToIncident':
-            assert args == {'incidentId': '1', 'value': indicator_value}
-            return 'done'
+        if cmd == "findIndicators":
+            assert args == {"value": expected_value}
+            return [
+                {
+                    "id": "0",
+                    "value": '(External):Test "test2 test (unsigned)"',
+                    "score": 0,
+                    "indicator_type": args.get("type", "Unknown"),
+                }
+            ]
+        elif cmd == "associateIndicatorToIncident":
+            assert args == {"incidentId": "1", "value": indicator_value}
+            return "done"
         return None
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+    mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
 
     result = add_new_indicator(indicator_value, {})
-    assert result == {'id': '0', 'value': '(External):Test "test2 test (unsigned)"',
-                      'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'existing'}
+    assert result == {
+        "id": "0",
+        "value": '(External):Test "test2 test (unsigned)"',
+        "score": 0,
+        "indicator_type": "Unknown",
+        "CreationStatus": "existing",
+    }
 
 
 class TestAssociateFailures:
-
     def test_add_new_indicator_associate_failed_once(self, mocker):
         """
         Given:
@@ -444,30 +405,31 @@ class TestAssociateFailures:
             - Assert 'add_new_indicator' returns the indicator.
         """
         import CreateNewIndicatorsOnly
+
         indicator_value = "test"
-        new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
+        new_indicator = {"id": "0", "value": "test", "score": 0, "indicator_type": "Unknown", "CreationStatus": "new"}
         global tries
         tries = 1
 
         def __execute_command(cmd, args) -> Any:
             global tries
-            if cmd == 'findIndicators':
-                assert args == {'value': indicator_value}
+            if cmd == "findIndicators":
+                assert args == {"value": indicator_value}
                 return None
-            if cmd == 'createNewIndicator':
+            if cmd == "createNewIndicator":
                 return new_indicator
-            elif cmd == 'associateIndicatorToIncident':
+            elif cmd == "associateIndicatorToIncident":
                 if tries == 1:
                     tries += 1
                     raise Exception("For associateIndicatorToIncident found no indicatores with value: %s")
                 else:
-                    return 'done'
+                    return "done"
 
             return None
 
-        mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
-        mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
-        mocker.patch.object(time, 'sleep', return_value=None)
+        mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
+        mocker.patch.object(demisto, "incidents", return_value=[{"id": "1"}])
+        mocker.patch.object(time, "sleep", return_value=None)
         CreateNewIndicatorsOnly.SLEEP_TIME = 0
 
         result = CreateNewIndicatorsOnly.add_new_indicator(indicator_value, {}, True)
@@ -483,25 +445,26 @@ class TestAssociateFailures:
             - Assert 'add_new_indicator' returns an error.
         """
         import CreateNewIndicatorsOnly
+
         indicator_value = "test"
-        new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
+        new_indicator = {"id": "0", "value": "test", "score": 0, "indicator_type": "Unknown", "CreationStatus": "new"}
 
         def __execute_command(cmd, args) -> Any:
-            if cmd == 'findIndicators':
-                assert args == {'value': indicator_value}
+            if cmd == "findIndicators":
+                assert args == {"value": indicator_value}
                 return None
-            if cmd == 'createNewIndicator':
+            if cmd == "createNewIndicator":
                 return new_indicator
-            elif cmd == 'associateIndicatorToIncident':
+            elif cmd == "associateIndicatorToIncident":
                 raise Exception("For associateIndicatorToIncident found no indicatores with value: %s")
 
             return None
 
-        mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
-        mocker.patch.object(time, 'sleep', return_value=None)
+        mocker.patch("CreateNewIndicatorsOnly.execute_command", side_effect=__execute_command)
+        mocker.patch.object(time, "sleep", return_value=None)
         CreateNewIndicatorsOnly.MAX_FIND_INDICATOR_RETRIES = 2
         CreateNewIndicatorsOnly.SLEEP_TIME = 0
-        mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
+        mocker.patch.object(demisto, "incidents", return_value=[{"id": "1"}])
 
         with pytest.raises(Exception) as err:
             CreateNewIndicatorsOnly.add_new_indicator(indicator_value, {}, True)

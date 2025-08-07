@@ -1,5 +1,5 @@
-import demistomock as demisto
 import CommonServerPython
+import demistomock as demisto
 
 
 def test_add_new_comment(mocker):
@@ -14,19 +14,13 @@ def test_add_new_comment(mocker):
     mocker.patch.object(demisto, "args", return_value=demisto_args)
     debug_mock = mocker.patch.object(demisto, "info")
     execute_command_mock = mocker.patch.object(CommonServerPython, "execute_command")
-    table_to_markdown_mock = mocker.patch.object(
-        CommonServerPython, "tableToMarkdown", return_value="Markdown Table"
-    )
-    command_results_mock = mocker.patch.object(
-        CommonServerPython, "CommandResults", return_value="Command Results"
-    )
+    table_to_markdown_mock = mocker.patch.object(CommonServerPython, "tableToMarkdown", return_value="Markdown Table")
+    command_results_mock = mocker.patch.object(CommonServerPython, "CommandResults", return_value="Command Results")
 
     from MicrosoftSentinelSubmitNewComment import add_new_comment
 
     result = add_new_comment(context_results)
-    debug_mock.assert_any_call(
-        f"update remote incident with new XSOAR comment: {expected_new_comment}"
-    )
+    debug_mock.assert_any_call(f"update remote incident with new XSOAR comment: {expected_new_comment}")
 
     execute_command_mock.assert_called_once_with(
         "azure-sentinel-incident-add-comment",

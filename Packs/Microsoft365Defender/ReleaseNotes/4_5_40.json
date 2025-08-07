@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The `severity` incident field will now map `Informational` in Microsoft 365 Defender to `Informational` in XSOAR instead of `Unknown`."
+}

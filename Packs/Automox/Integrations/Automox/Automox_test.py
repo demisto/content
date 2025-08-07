@@ -11,6 +11,7 @@ you are implementing with your integration
 """
 
 import json
+
 import demistomock as demisto
 from Automox import Client
 
@@ -18,18 +19,12 @@ TEST_URL = "http://fake-api.com"
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
 def util_mock_client():
-
-    return Client(
-        base_url=TEST_URL,
-        verify=False,
-        headers=None,
-        proxy=False
-    )
+    return Client(base_url=TEST_URL, verify=False, headers=None, proxy=False)
 
 
 def test_remove_keys():
@@ -45,12 +40,12 @@ def test_remove_keys():
             },
             {
                 "remove": True,
-            }
+            },
         ],
         "foo": {
             "bar": True,
             "remove": True,
-        }
+        },
     }
 
     exclude_keys = [
@@ -60,10 +55,10 @@ def test_remove_keys():
 
     sanitized_data = remove_keys(exclude_keys, test_data)
 
-    assert 'remove' in sanitized_data['keep']
-    assert 'remove' not in sanitized_data
-    assert 'remove' not in sanitized_data['foo']
-    assert 'bar' in sanitized_data['foo']
+    assert "remove" in sanitized_data["keep"]
+    assert "remove" not in sanitized_data
+    assert "remove" not in sanitized_data["foo"]
+    assert "bar" in sanitized_data["foo"]
 
 
 def test_remove_key():
@@ -79,17 +74,17 @@ def test_remove_key():
             },
             {
                 "remove": True,
-            }
+            },
         ],
     }
 
-    keys_to_traverse = ['remove', 'remove']
+    keys_to_traverse = ["remove", "remove"]
 
     sanitized_data = remove_key(keys_to_traverse, test_data)
 
-    assert 'remove' not in sanitized_data['remove'][0]
-    assert 'remove' not in sanitized_data['remove'][1]
-    assert 'keep' in sanitized_data
+    assert "remove" not in sanitized_data["remove"][0]
+    assert "remove" not in sanitized_data["remove"][1]
+    assert "keep" in sanitized_data
 
 
 def test_get_default_server_group_id(requests_mock):
@@ -117,22 +112,14 @@ def test_action_on_vulnerability_sync_batch(requests_mock):
 
     client = util_mock_client()
 
-    args = {
-        "org_id": org_id,
-        "batch_id": batch_id,
-        "action": "accept"
-    }
+    args = {"org_id": org_id, "batch_id": batch_id, "action": "accept"}
 
     result = action_on_vulnerability_sync_batch(client, args)
 
     assert "Action: accept" in result.readable_output
     assert "ID: 1" in result.readable_output
 
-    args = {
-        "org_id": org_id,
-        "batch_id": batch_id,
-        "action": "reject"
-    }
+    args = {"org_id": org_id, "batch_id": batch_id, "action": "reject"}
 
     result = action_on_vulnerability_sync_batch(client, args)
 
@@ -149,9 +136,9 @@ def test_action_on_vulnerability_sync_task(requests_mock):
     requests_mock.patch(f"/orgs/{org_id}/tasks/{task_id}", status_code=204)
 
     args = {
-        'org_id': org_id,
-        'task_id': task_id,
-        'action': "execute",
+        "org_id": org_id,
+        "task_id": task_id,
+        "action": "execute",
     }
 
     client = util_mock_client()
@@ -161,9 +148,9 @@ def test_action_on_vulnerability_sync_task(requests_mock):
     assert "ID: 1" in result.readable_output
 
     args = {
-        'org_id': org_id,
-        'task_id': task_id,
-        'action': "cancel",
+        "org_id": org_id,
+        "task_id": task_id,
+        "action": "cancel",
     }
 
     result = action_on_vulnerability_sync_task(client, args)
@@ -181,37 +168,38 @@ def test_create_group(requests_mock):
     requests_mock.post(f"{TEST_URL}/servergroups", json=expected_response)
 
     args = {
-        'color': '#FFFFFF',
-        'name': 'Test Group',
-        'notes': 'My notes',
-        'refresh_interval': 360,
-        'parent_server_group_id': 1,
-        'policy_list': [0],
+        "color": "#FFFFFF",
+        "name": "Test Group",
+        "notes": "My notes",
+        "refresh_interval": 360,
+        "parent_server_group_id": 1,
+        "policy_list": [0],
     }
 
     client = util_mock_client()
     result = create_group(client, args)
     group = result.outputs
 
-    assert group['ui_color'] == args['color']
-    assert group['name'] == args['name']
-    assert group['notes'] == args['notes']
-    assert group['refresh_interval'] == args['refresh_interval']
-    assert group['parent_server_group_id'] == args['parent_server_group_id']
-    assert group['policies'] == args['policy_list']
-    assert group['organization_id'] == org_id
+    assert group["ui_color"] == args["color"]
+    assert group["name"] == args["name"]
+    assert group["notes"] == args["notes"]
+    assert group["refresh_interval"] == args["refresh_interval"]
+    assert group["parent_server_group_id"] == args["parent_server_group_id"]
+    assert group["policies"] == args["policy_list"]
+    assert group["organization_id"] == org_id
 
 
 def test_delete_device(requests_mock):
     from Automox import delete_device
+
     org_id = 1
     device_id = 123
 
     requests_mock.delete(f"{TEST_URL}/servers/{device_id}")
 
     args = {
-        'org_id': org_id,
-        'device_id': device_id,
+        "org_id": org_id,
+        "device_id": device_id,
     }
 
     client = util_mock_client()
@@ -222,14 +210,15 @@ def test_delete_device(requests_mock):
 
 def test_delete_group(requests_mock):
     from Automox import delete_group
+
     org_id = 1
     group_id = 1
 
     requests_mock.delete(f"{TEST_URL}/servergroups/{group_id}")
 
     args = {
-        'org_id': org_id,
-        'group_id': group_id,
+        "org_id": org_id,
+        "group_id": group_id,
     }
 
     client = util_mock_client()
@@ -240,23 +229,21 @@ def test_delete_group(requests_mock):
 
 def test_get_vulnerability_sync_batch(requests_mock):
     from Automox import get_vulnerability_sync_batch
+
     org_id = 1
     batch_id = 1
 
     expected_response = util_load_json("./test_data/automox-vulnerability-sync-batch-get.json")
     requests_mock.get(f"{TEST_URL}/orgs/{org_id}/tasks/batches/{batch_id}", json=expected_response)
 
-    args = {
-        'org_id': org_id,
-        'batch_id': batch_id
-    }
+    args = {"org_id": org_id, "batch_id": batch_id}
 
     client = util_mock_client()
     result = get_vulnerability_sync_batch(client, args)
 
     assert result.outputs_prefix == "Automox.VulnSyncBatch"
-    assert result.outputs['id'] == 1
-    assert result.outputs['organization_id'] == 1
+    assert result.outputs["id"] == 1
+    assert result.outputs["organization_id"] == 1
 
 
 def test_list_devices(requests_mock):
@@ -268,10 +255,10 @@ def test_list_devices(requests_mock):
     client = util_mock_client()
 
     args = {
-        'org_id': 1,
-        'group_id': 10,
-        'limit': 50,
-        'page': 0,
+        "org_id": 1,
+        "group_id": 10,
+        "limit": 50,
+        "page": 0,
     }
 
     result = list_devices(client, args)
@@ -285,15 +272,16 @@ def test_list_devices(requests_mock):
 
 def test_list_groups(requests_mock):
     from Automox import list_groups
+
     org_id = 1
 
     expected_response = util_load_json("./test_data/automox-groups-list.json")
     requests_mock.get(f"{TEST_URL}/servergroups", json=expected_response)
 
     args = {
-        'org_id': org_id,
-        'limit': 50,
-        'page': 0,
+        "org_id": org_id,
+        "limit": 50,
+        "page": 0,
     }
 
     client = util_mock_client()
@@ -301,20 +289,21 @@ def test_list_groups(requests_mock):
 
     assert result.outputs_prefix == "Automox.Groups"
     assert "wsus_config" not in result.outputs[0]
-    assert result.outputs[0]['organization_id'] == org_id
+    assert result.outputs[0]["organization_id"] == org_id
 
 
 def test_list_organization_users(requests_mock):
     from Automox import list_organization_users
+
     org_id = 1
 
     expected_response = util_load_json("./test_data/automox-organization-users-list.json")
     requests_mock.get(f"{TEST_URL}/users", json=expected_response)
 
     args = {
-        'org_id': org_id,
-        'limit': 50,
-        'page': 0,
+        "org_id": org_id,
+        "limit": 50,
+        "page": 0,
     }
 
     client = util_mock_client()
@@ -322,7 +311,7 @@ def test_list_organization_users(requests_mock):
 
     assert result.outputs_prefix == "Automox.Users"
     assert "prefs" not in result.outputs[0]
-    assert result.outputs[0]['orgs'][0]['id'] == org_id
+    assert result.outputs[0]["orgs"][0]["id"] == org_id
 
 
 def test_list_organizations(requests_mock):
@@ -345,6 +334,7 @@ def test_list_organizations(requests_mock):
 
 def test_list_policies(requests_mock):
     from Automox import list_policies
+
     org_id = 1
 
     expected_response = util_load_json("./test_data/automox-policies-list.json")
@@ -360,31 +350,33 @@ def test_list_policies(requests_mock):
     result = list_policies(client, args)
 
     assert result.outputs_prefix == "Automox.Policies"
-    assert result.outputs[0]['organization_id'] == org_id
+    assert result.outputs[0]["organization_id"] == org_id
 
 
 def test_list_vulnerability_sync_batches(requests_mock):
     from Automox import list_vulnerability_sync_batches
+
     org_id = 1
 
     expected_response = util_load_json("./test_data/automox-vulnerability-sync-batches-list.json")
     requests_mock.get(f"{TEST_URL}/orgs/{org_id}/tasks/batches", json=expected_response)
 
     args = {
-        'org_id': org_id,
-        'limit': 50,
-        'page': 0,
+        "org_id": org_id,
+        "limit": 50,
+        "page": 0,
     }
 
     client = util_mock_client()
     result = list_vulnerability_sync_batches(client, args)
 
     assert result.outputs_prefix == "Automox.VulnSyncBatches"
-    assert result.outputs[0]['organization_id'] == org_id
+    assert result.outputs[0]["organization_id"] == org_id
 
 
 def test_list_vulnerability_sync_tasks(requests_mock):
     from Automox import list_vulnerability_sync_tasks
+
     org_id = 10586
     batch_id = 1
 
@@ -392,22 +384,23 @@ def test_list_vulnerability_sync_tasks(requests_mock):
     requests_mock.get(f"{TEST_URL}/orgs/{org_id}/tasks", json=expected_response)
 
     args = {
-        'org_id': org_id,
-        'batch_id': batch_id,
-        'status': None,
-        'limit': 50,
-        'page': 0,
+        "org_id": org_id,
+        "batch_id": batch_id,
+        "status": None,
+        "limit": 50,
+        "page": 0,
     }
 
     client = util_mock_client()
     result = list_vulnerability_sync_tasks(client, args)
 
     assert result.outputs_prefix == "Automox.VulnSyncTasks"
-    assert result.outputs[0]['organization_id'] == org_id
+    assert result.outputs[0]["organization_id"] == org_id
 
 
 def test_run_command(requests_mock):
     from Automox import run_command
+
     org_id = 1
     device_id = 1
     command_type_name = "GetOS"
@@ -416,10 +409,10 @@ def test_run_command(requests_mock):
     requests_mock.post(f"{TEST_URL}/servers/{device_id}/queues", status_code=201, json={})
 
     args = {
-        'org_id': org_id,
-        'device_id': device_id,
-        'command': command_type_name,
-        'args': args,
+        "org_id": org_id,
+        "device_id": device_id,
+        "command": command_type_name,
+        "args": args,
     }
 
     client = util_mock_client()
@@ -431,6 +424,7 @@ def test_run_command(requests_mock):
 
 def test_update_device(requests_mock):
     from Automox import update_device
+
     device_id = 1
 
     expected_response = util_load_json("./test_data/automox-device-get.json")
@@ -438,12 +432,12 @@ def test_update_device(requests_mock):
     requests_mock.put(f"{TEST_URL}/servers/{device_id}", status_code=204)
 
     args = {
-        'device_id': device_id,
-        'server_group_id': 1,
-        'custom_name': "Custom name string",
-        'tags': "tag1,tag2",
-        'ip_addrs': "1.1.1.1",
-        'exception': False,
+        "device_id": device_id,
+        "server_group_id": 1,
+        "custom_name": "Custom name string",
+        "tags": "tag1,tag2",
+        "ip_addrs": "1.1.1.1",
+        "exception": False,
     }
 
     client = util_mock_client()
@@ -454,6 +448,7 @@ def test_update_device(requests_mock):
 
 def test_update_group(requests_mock):
     from Automox import update_group
+
     group_id = 1
     name = "Test Group"
 
@@ -462,13 +457,13 @@ def test_update_group(requests_mock):
     requests_mock.put(f"{TEST_URL}/servergroups/{group_id}", status_code=204, json={})
 
     args = {
-        'group_id': group_id,
-        'color': '#FFFFFF',
-        'name': name,
-        'notes': 'My notes',
-        'refresh_interval': 360,
-        'parent_server_group_id': 1,
-        'policies': "0",
+        "group_id": group_id,
+        "color": "#FFFFFF",
+        "name": name,
+        "notes": "My notes",
+        "refresh_interval": 360,
+        "parent_server_group_id": 1,
+        "policies": "0",
     }
 
     client = util_mock_client()
@@ -479,6 +474,7 @@ def test_update_group(requests_mock):
 
 def test_upload_vulnerability_sync_file(requests_mock, mocker):
     from Automox import upload_vulnerability_sync_file
+
     org_id = 10586
     report_source = "Generic Report"
     entry_id = "123"
@@ -489,22 +485,22 @@ def test_upload_vulnerability_sync_file(requests_mock, mocker):
     requests_mock.post(f"{TEST_URL}/orgs/{org_id}/tasks/{task_type}/batches/upload", json=expected_response)
 
     mock_file = {
-        'id': 'test_id',
-        'path': 'test_data/xsoar_vuln_test.csv',
-        'name': 'xsoar_vuln_test.csv',
+        "id": "test_id",
+        "path": "test_data/xsoar_vuln_test.csv",
+        "name": "xsoar_vuln_test.csv",
     }
-    mocker.patch.object(demisto, 'getFilePath', return_value=mock_file)
+    mocker.patch.object(demisto, "getFilePath", return_value=mock_file)
 
     args = {
-        'org_id': org_id,
-        'reports_source': report_source,
-        'entry_id': entry_id,
-        'csv_file_name': csv_file_name,
-        'task_type': task_type,
+        "org_id": org_id,
+        "reports_source": report_source,
+        "entry_id": entry_id,
+        "csv_file_name": csv_file_name,
+        "task_type": task_type,
     }
 
     client = util_mock_client()
     result = upload_vulnerability_sync_file(client, args)
 
     assert result.outputs_prefix == "Automox.VulnUpload"
-    assert result.outputs['batch_id'] > 0
+    assert result.outputs["batch_id"] > 0

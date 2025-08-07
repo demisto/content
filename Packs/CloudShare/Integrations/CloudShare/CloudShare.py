@@ -1,49 +1,45 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-import urllib3
-
 import cloudshare
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
-''' IMPORTS '''
+""" IMPORTS """
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
-class Client():
+class Client:
     def __init__(self, hostname: str, api_id: str = None, api_key: str = None):
         self.hostname = hostname
         self.apiId = api_id
         self.apiKey = api_key
 
     def send_request(self, method: str, path: str, queryParams: dict = None, content: dict = None):
-        res = cloudshare.req(
+        res = cloudshare.req(  # pylint: disable=E1101
             hostname=self.hostname,
             method=method,
             path=path,
             apiId=self.apiId,
             apiKey=self.apiKey,
             queryParams=queryParams,
-            content=content
+            content=content,
         )
         return res
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def test_module_command(client, args):
-    res = client.send_request(
-        'GET',
-        'ping'
-    )
+    res = client.send_request("GET", "ping")
     if res.status == 200:
-        if "result" in res.content and res.content['result'] == "Pong":
-            return_results('ok')
+        if "result" in res.content and res.content["result"] == "Pong":
+            return_results("ok")
         else:
             return_error(res.content)
     else:
@@ -52,22 +48,18 @@ def test_module_command(client, args):
 
 def get_projects_command(client, args):
     queryParams = {
-        "WhereUserIsProjectManager": True if args.get('WhereUserIsProjectManager', 'false') == 'true' else False,
-        "WhereUserIsProjectMember": True if args.get('WhereUserIsProjectMember', 'false') == 'true' else False,
-        "WhereUserCanCreateClass": True if args.get('WhereUserCanCreateClass', 'false') == 'true' else False
+        "WhereUserIsProjectManager": args.get("WhereUserIsProjectManager", "false") == "true",
+        "WhereUserIsProjectMember": args.get("WhereUserIsProjectMember", "false") == "true",
+        "WhereUserCanCreateClass": args.get("WhereUserCanCreateClass", "false") == "true",
     }
-    res = client.send_request(
-        'GET',
-        'projects',
-        queryParams=queryParams
-    )
+    res = client.send_request("GET", "projects", queryParams=queryParams)
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Projects:', res.content)
+        md = tableToMarkdown("CloudShare Projects:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Projects",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -75,18 +67,15 @@ def get_projects_command(client, args):
 
 
 def get_project_command(client, args):
-    projectId = args.get('projectId')
-    res = client.send_request(
-        'GET',
-        f'projects/{projectId}'
-    )
+    projectId = args.get("projectId")
+    res = client.send_request("GET", f"projects/{projectId}")
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare Project {projectId}:', res.content)
+        md = tableToMarkdown(f"CloudShare Project {projectId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Projects",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -94,22 +83,16 @@ def get_project_command(client, args):
 
 
 def get_project_policies_command(client, args):
-    projectId = args.get('projectId')
-    res = client.send_request(
-        'GET',
-        f'projects/{projectId}/policies'
-    )
+    projectId = args.get("projectId")
+    res = client.send_request("GET", f"projects/{projectId}/policies")
     if res.status == 200:
-        policies = {
-            "id": projectId,
-            "Policies": res.content
-        }
-        md = tableToMarkdown(f'CloudShare Project Policies for {projectId}:', res.content)
+        policies = {"id": projectId, "Policies": res.content}
+        md = tableToMarkdown(f"CloudShare Project Policies for {projectId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Projects",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=policies if policies else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -117,24 +100,17 @@ def get_project_policies_command(client, args):
 
 
 def get_project_blueprints_command(client, args):
-    projectId = args.get('projectId')
-    queryParams = {k: v for k, v in args.items() if k != 'projectId'}
-    res = client.send_request(
-        'GET',
-        f'projects/{projectId}/blueprints',
-        queryParams=queryParams
-    )
+    projectId = args.get("projectId")
+    queryParams = {k: v for k, v in args.items() if k != "projectId"}
+    res = client.send_request("GET", f"projects/{projectId}/blueprints", queryParams=queryParams)
     if res.status == 200:
-        blueprints = {
-            "id": projectId,
-            "Blueprints": res.content if res.content else None
-        }
-        md = tableToMarkdown(f'CloudShare Project Blueprints for {projectId}:', res.content)
+        blueprints = {"id": projectId, "Blueprints": res.content if res.content else None}
+        md = tableToMarkdown(f"CloudShare Project Blueprints for {projectId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Projects",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=blueprints if blueprints else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -142,23 +118,17 @@ def get_project_blueprints_command(client, args):
 
 
 def get_project_blueprint_command(client, args):
-    projectId = args.get('projectId')
-    blueprintId = args.get('blueprintId', None)
-    res = client.send_request(
-        'GET',
-        f'projects/{projectId}/blueprints/{blueprintId}'
-    )
+    projectId = args.get("projectId")
+    blueprintId = args.get("blueprintId", None)
+    res = client.send_request("GET", f"projects/{projectId}/blueprints/{blueprintId}")
     if res.status == 200:
-        blueprints = {
-            "id": projectId,
-            "Blueprints": res.content if res.content else None
-        }
-        md = tableToMarkdown(f'CloudShare Blueprint ID {blueprintId} for Project {projectId}:', res.content)
+        blueprints = {"id": projectId, "Blueprints": res.content if res.content else None}
+        md = tableToMarkdown(f"CloudShare Blueprint ID {blueprintId} for Project {projectId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Projects",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=blueprints if blueprints else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -166,17 +136,14 @@ def get_project_blueprint_command(client, args):
 
 
 def get_classes_command(client, args):
-    res = client.send_request(
-        'GET',
-        'class'
-    )
+    res = client.send_request("GET", "class")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare classes:', res.content)
+        md = tableToMarkdown("CloudShare classes:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -184,18 +151,15 @@ def get_classes_command(client, args):
 
 
 def get_class_command(client, args):
-    classId = args.get('classId')
-    res = client.send_request(
-        'GET',
-        f'class/{classId}'
-    )
+    classId = args.get("classId")
+    res = client.send_request("GET", f"class/{classId}")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare classes:', res.content)
+        md = tableToMarkdown("CloudShare classes:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -203,11 +167,8 @@ def get_class_command(client, args):
 
 
 def delete_class_command(client, args):
-    classId = args.get('classId')
-    res = client.send_request(
-        'DELETE',
-        f'class/{classId}'
-    )
+    classId = args.get("classId")
+    res = client.send_request("DELETE", f"class/{classId}")
     if res.status == 200:
         return_results("Class {classId} deleted successfully")
     else:
@@ -215,24 +176,17 @@ def delete_class_command(client, args):
 
 
 def delete_class_environments_command(client, args):
-    classId = args.get('classId')
-    res = client.send_request(
-        'DELETE',
-        'class/actions/deleteallenvironments',
-        content={"id": classId}
-    )
+    classId = args.get("classId")
+    res = client.send_request("DELETE", "class/actions/deleteallenvironments", content={"id": classId})
     if res.status == 200:
-        results = {
-            "failed": res[0].get('failed', []),
-            "succeed": res[0].get('succeed', [])
-        }
+        results = {"failed": res[0].get("failed", []), "succeed": res[0].get("succeed", [])}
         for k, v in results.items():
-            md = tableToMarkdown(f'CloudShare class {classId} environments deletion ({k}):', v)
+            md = tableToMarkdown(f"CloudShare class {classId} environments deletion ({k}):", v)
             command_results = CommandResults(
                 outputs_prefix="CloudShare.Classes.Actions.Delete.{k}",
-                outputs_key_field='id',
+                outputs_key_field="id",
                 outputs=v if v else None,
-                readable_output=md
+                readable_output=md,
             )
             return_results(command_results)
     else:
@@ -240,18 +194,14 @@ def delete_class_environments_command(client, args):
 
 
 def get_classes_countries_command(client, args):
-    res = client.send_request(
-        'GET',
-        'class/actions/countries',
-        queryParams={"fullCountriesList": True}
-    )
+    res = client.send_request("GET", "class/actions/countries", queryParams={"fullCountriesList": True})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare classes countries:', res.content)
+        md = tableToMarkdown("CloudShare classes countries:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes.Countries",
-            outputs_key_field='code',
+            outputs_key_field="code",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -259,19 +209,15 @@ def get_classes_countries_command(client, args):
 
 
 def get_classes_customfields_command(client, args):
-    projectId = args.get('projectId')
-    res = client.send_request(
-        'GET',
-        'class/actions/customfields',
-        queryParams={"projectId": projectId}
-    )
+    projectId = args.get("projectId")
+    res = client.send_request("GET", "class/actions/customfields", queryParams={"projectId": projectId})
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare project {projectId} classes custom fields:', res.content)
+        md = tableToMarkdown(f"CloudShare project {projectId} classes custom fields:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes.CustomFields",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -279,20 +225,16 @@ def get_classes_customfields_command(client, args):
 
 
 def get_classes_detailed_command(client, args):
-    classId = args.get('classId')
-    res = client.get_classes_detailed(
-        'GET',
-        'class/actions/getdetailed',
-        queryParams={"classId": classId}
-    )
+    classId = args.get("classId")
+    res = client.get_classes_detailed("GET", "class/actions/getdetailed", queryParams={"classId": classId})
     if res.status == 200:
-        res.content['id'] = classId
-        md = tableToMarkdown(f'CloudShare class {classId} details:', res.content)
+        res.content["id"] = classId
+        md = tableToMarkdown(f"CloudShare class {classId} details:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -300,19 +242,15 @@ def get_classes_detailed_command(client, args):
 
 
 def get_classes_instructors_command(client, args):
-    policyId = args.get('policyId')
-    res = client.send_request(
-        'GET',
-        'class/actions/instructors',
-        queryParams={"policyId": policyId}
-    )
+    policyId = args.get("policyId")
+    res = client.send_request("GET", "class/actions/instructors", queryParams={"policyId": policyId})
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare class instructors under policy {policyId}:', res.content)
+        md = tableToMarkdown(f"CloudShare class instructors under policy {policyId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes.Instructors",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -321,18 +259,16 @@ def get_classes_instructors_command(client, args):
 
 def create_class_command(client, args):
     res = client.send_request(
-        'POST',
-        'class',
-        content={k: True if v == 'true' else False if v == 'false' else v for k, v in args.items()}
+        "POST", "class", content={k: True if v == "true" else False if v == "false" else v for k, v in args.items()}
     )
     if res.status == 200:
         res.content.extend(args)
-        md = tableToMarkdown('CloudShare create new class:', res.content)
+        md = tableToMarkdown("CloudShare create new class:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -340,16 +276,13 @@ def create_class_command(client, args):
 
 
 def send_class_invitations_command(client, args):
-    classId = args.get('classId')
-    studentIds = args.get('studentIds').replace(" ", "").split(",")
+    classId = args.get("classId")
+    studentIds = args.get("studentIds").replace(" ", "").split(",")
     res = client.send_request(
-        'POST',
-        'class/actions/sendinvitations',
+        "POST",
+        "class/actions/sendinvitations",
         queryParams={"isMultiple": True},
-        content={
-            "classId": classId,
-            "studentIds": studentIds
-        }
+        content={"classId": classId, "studentIds": studentIds},
     )
     if res.status == 200:
         return_results(f"Invitations sent for class {classId} successfully.")
@@ -358,24 +291,17 @@ def send_class_invitations_command(client, args):
 
 
 def suspend_class_environments_command(client, args):
-    classId = args.get('classId')
-    res = client.send_request(
-        'PUT',
-        'class/actions/suspendallenvironments',
-        content={"id": classId}
-    )
+    classId = args.get("classId")
+    res = client.send_request("PUT", "class/actions/suspendallenvironments", content={"id": classId})
     if res.status == 200:
-        results = {
-            "failed": res[0].get('failed', []),
-            "succeed": res[0].get('succeed', [])
-        }
+        results = {"failed": res[0].get("failed", []), "succeed": res[0].get("succeed", [])}
         for k, v in results.items():
-            md = tableToMarkdown(f'CloudShare class {classId} environments suspension ({k}):', v)
+            md = tableToMarkdown(f"CloudShare class {classId} environments suspension ({k}):", v)
             command_results = CommandResults(
                 outputs_prefix="CloudShare.Classes.Actions.Suspend.{k}",
-                outputs_key_field='id',
+                outputs_key_field="id",
                 outputs=v if v else None,
-                readable_output=md
+                readable_output=md,
             )
             return_results(command_results)
     else:
@@ -383,19 +309,19 @@ def suspend_class_environments_command(client, args):
 
 
 def modify_class_command(client, args):
-    classId = args.get('classId')
+    classId = args.get("classId")
     res = client.send_request(
-        'PUT',
-        f'class/{classId}',
-        content={k: True if v == 'true' else False if v == 'false' else v for k, v in args.items() if k != 'classId'}
+        "PUT",
+        f"class/{classId}",
+        content={k: True if v == "true" else False if v == "false" else v for k, v in args.items() if k != "classId"},
     )
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare modify class {classId}:', res.content)
+        md = tableToMarkdown(f"CloudShare modify class {classId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Classes",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -403,22 +329,16 @@ def modify_class_command(client, args):
 
 
 def get_students_command(client, args):
-    classId = args.get('classId')
+    classId = args.get("classId")
 
-    res = client.send_request(
-        'GET',
-        f'class/{classId}/students',
-        queryParams={
-            "isFull": True if args.get('isFull', 'false') == 'true' else False
-        }
-    )
+    res = client.send_request("GET", f"class/{classId}/students", queryParams={"isFull": args.get("isFull", "false") == "true"})
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare students for class {classId}:', res.content)
+        md = tableToMarkdown(f"CloudShare students for class {classId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Students",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -426,19 +346,16 @@ def get_students_command(client, args):
 
 
 def get_student_command(client, args):
-    classId = args.get('classId')
-    studentId = args.get('studentId')
-    res = client.send_request(
-        'GET',
-        f'class/{classId}/students/{studentId}'
-    )
+    classId = args.get("classId")
+    studentId = args.get("studentId")
+    res = client.send_request("GET", f"class/{classId}/students/{studentId}")
     if res.status == 200:
-        md = tableToMarkdown(f'CloudShare student {studentId} for class {classId}:', res.content)
+        md = tableToMarkdown(f"CloudShare student {studentId} for class {classId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Students",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -446,12 +363,9 @@ def get_student_command(client, args):
 
 
 def delete_student_command(client, args):
-    classId = args.get('classId')
-    studentId = args.get('studentId')
-    res = client.send_request(
-        'DELETE',
-        f'class/{classId}/students/{studentId}'
-    )
+    classId = args.get("classId")
+    studentId = args.get("studentId")
+    res = client.send_request("DELETE", f"class/{classId}/students/{studentId}")
     if res.status == 200:
         return_results("Successfully deleted student {studentId} from class {classId}")
     else:
@@ -459,20 +373,13 @@ def delete_student_command(client, args):
 
 
 def register_student_command(client, args):
-    classId = args.get('classId')
-    res = client.send_request(
-        'POST',
-        f'class/{classId}/students',
-        content={k: v for k, v in args.items() if k != 'classId'}
-    )
+    classId = args.get("classId")
+    res = client.send_request("POST", f"class/{classId}/students", content={k: v for k, v in args.items() if k != "classId"})
     if res.status == 200:
-        results = {"id": v for k, v in res.contents.items() if k == 'studentId'}
-        md = tableToMarkdown(f'CloudShare registered student for class {classId}:', results)
+        results = {"id": v for k, v in res.contents.items() if k == "studentId"}
+        md = tableToMarkdown(f"CloudShare registered student for class {classId}:", results)
         command_results = CommandResults(
-            outputs_prefix="CloudShare.Students",
-            outputs_key_field='id',
-            outputs=results if results else None,
-            readable_output=md
+            outputs_prefix="CloudShare.Students", outputs_key_field="id", outputs=results if results else None, readable_output=md
         )
         return_results(command_results)
     else:
@@ -480,12 +387,12 @@ def register_student_command(client, args):
 
 
 def modify_student_command(client, args):
-    classId = args.get('classId')
-    studentId = args.get('studentId')
+    classId = args.get("classId")
+    studentId = args.get("studentId")
     res = client.send_request(
-        'PUT',
-        f'class/{classId}/students/{studentId}',
-        content={k: v for k, v in args.items() if k != 'classId' and k != 'studentId'}
+        "PUT",
+        f"class/{classId}/students/{studentId}",
+        content={k: v for k, v in args.items() if k != "classId" and k != "studentId"},
     )
     if res.status == 200:
         return_results(f"Student {studentId} modified in class {classId} successfully")
@@ -494,17 +401,14 @@ def modify_student_command(client, args):
 
 
 def get_regions_command(client, args):
-    res = client.send_request(
-        'GET',
-        'regions'
-    )
+    res = client.send_request("GET", "regions")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare regions:', res.content)
+        md = tableToMarkdown("CloudShare regions:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Regions",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -512,17 +416,14 @@ def get_regions_command(client, args):
 
 
 def get_timezones_command(client, args):
-    res = client.send_request(
-        'GET',
-        'timezones'
-    )
+    res = client.send_request("GET", "timezones")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare timezones:', res.content)
+        md = tableToMarkdown("CloudShare timezones:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Timezones",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -530,37 +431,33 @@ def get_timezones_command(client, args):
 
 
 def get_envs_command(client, args):
-    owned = True if args.get('owned', 'false') == 'true' else False
-    visible = True if args.get('visible', 'false') == 'true' else False
-    owner_email = args.get('ownerEmail', None)
-    class_id = args.get('classId', None)
-    brief = args.get('brief', 'false')
-    queryParams = dict()
+    owned = args.get("owned", "false") == "true"
+    visible = args.get("visible", "false") == "true"
+    owner_email = args.get("ownerEmail", None)
+    class_id = args.get("classId", None)
+    brief = args.get("brief", "false")
+    queryParams = {}
     if owned or visible:
-        owned_visible = list()
+        owned_visible = []
         if owned:
-            owned_visible.append('allowned')
+            owned_visible.append("allowned")
         if visible:
-            owned_visible.append('allvisible')
-        queryParams['criteria'] = ','.join(owned_visible) if owned_visible else None
+            owned_visible.append("allvisible")
+        queryParams["criteria"] = ",".join(owned_visible) if owned_visible else None
     if owner_email:
-        queryParams['ownerEmail'] = owner_email
+        queryParams["ownerEmail"] = owner_email
     if class_id:
-        queryParams['classId'] = class_id
+        queryParams["classId"] = class_id
     if brief:
-        queryParams['brief'] = brief
-    res = client.send_request(
-        'GET',
-        'envs',
-        queryParams=queryParams
-    )
+        queryParams["brief"] = brief
+    res = client.send_request("GET", "envs", queryParams=queryParams)
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environments:', res.content)
+        md = tableToMarkdown("CloudShare Environments:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -568,19 +465,15 @@ def get_envs_command(client, args):
 
 
 def get_env_resources_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'GET',
-        'envs/actions/getextended',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("GET", "envs/actions/getextended", queryParams={"envId": envId})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment {envId} Resources:', res.content)
+        md = tableToMarkdown("CloudShare Environment {envId} Resources:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.EnvironmentResources",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -588,19 +481,15 @@ def get_env_resources_command(client, args):
 
 
 def get_env_extended_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'GET',
-        'envs/actions/getenvresources',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("GET", "envs/actions/getenvresources", queryParams={"envId": envId})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment {envId}:', res.content)
+        md = tableToMarkdown("CloudShare Environment {envId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -608,19 +497,15 @@ def get_env_extended_command(client, args):
 
 
 def get_env_extended_vanity_command(client, args):
-    machineVanity = args.get('machineVanity')
-    res = client.send_request(
-        'GET',
-        'envs/actions/getextendedbymachinevanity',
-        queryParams={"machineVanity": machineVanity}
-    )
+    machineVanity = args.get("machineVanity")
+    res = client.send_request("GET", "envs/actions/getextendedbymachinevanity", queryParams={"machineVanity": machineVanity})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment {envId}:', res.content)
+        md = tableToMarkdown("CloudShare Environment {envId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -628,19 +513,15 @@ def get_env_extended_vanity_command(client, args):
 
 
 def get_env_extended_token_command(client, args):
-    sponsoredLoginToken = args.get('sponsoredLoginToken')
-    res = client.send_request(
-        'GET',
-        'envs/actions/getextendedbytoken',
-        queryParams={"sponsoredLoginToken": sponsoredLoginToken}
-    )
+    sponsoredLoginToken = args.get("sponsoredLoginToken")
+    res = client.send_request("GET", "envs/actions/getextendedbytoken", queryParams={"sponsoredLoginToken": sponsoredLoginToken})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment:', res.content)
+        md = tableToMarkdown("CloudShare Environment:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -648,18 +529,14 @@ def get_env_extended_token_command(client, args):
 
 
 def get_env_multiple_resources_command(client, args):
-    res = client.send_request(
-        'GET',
-        'envs/actions/getmultipleenvsresources',
-        queryParams={k: v for k, v in args.items()}
-    )
+    res = client.send_request("GET", "envs/actions/getmultipleenvsresources", queryParams=dict(args.items()))
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment Resources from {args.starttime} to {args.endtime}:', res.content)
+        md = tableToMarkdown("CloudShare Environment Resources from {args.starttime} to {args.endtime}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.EnvironmentResources",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -667,12 +544,8 @@ def get_env_multiple_resources_command(client, args):
 
 
 def extend_env_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'PUT',
-        'envs/actions/extend',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("PUT", "envs/actions/extend", queryParams={"envId": envId})
     if res.status == 200:
         return_results(f"Postpone environment {envId} suspend successful")
     else:
@@ -680,12 +553,8 @@ def extend_env_command(client, args):
 
 
 def postpone_env_suspend_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'PUT',
-        'envs/actions/postponeinactivity',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("PUT", "envs/actions/postponeinactivity", queryParams={"envId": envId})
     if res.status == 200:
         return_results(f"Extend environment {envId} successful")
     else:
@@ -693,12 +562,8 @@ def postpone_env_suspend_command(client, args):
 
 
 def resume_env_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'PUT',
-        'envs/actions/resume',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("PUT", "envs/actions/resume", queryParams={"envId": envId})
     if res.status == 200:
         return_results(f"Environment {envId} resumed successfully")
     else:
@@ -706,13 +571,9 @@ def resume_env_command(client, args):
 
 
 def revert_env_command(client, args):
-    envId = args.get('envId')
-    snapshotId = args.get('snapshotId')
-    res = client.send_request(
-        'PUT',
-        'envs/actions/revert',
-        queryParams={"envId": envId, "snapshotId": snapshotId}
-    )
+    envId = args.get("envId")
+    snapshotId = args.get("snapshotId")
+    res = client.send_request("PUT", "envs/actions/revert", queryParams={"envId": envId, "snapshotId": snapshotId})
     if res.status == 200:
         return_results(f"Environment {envId} reverted to snapshot {snapshotId} successfully")
     else:
@@ -720,12 +581,8 @@ def revert_env_command(client, args):
 
 
 def suspend_env_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'PUT',
-        'envs/actions/suspend',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("PUT", "envs/actions/suspend", queryParams={"envId": envId})
     if res.status == 200:
         return_results(f"Environment {envId} suspended successfully")
     else:
@@ -733,19 +590,15 @@ def suspend_env_command(client, args):
 
 
 def get_env_command(client, args):
-    envID = args.get('envID')
-    res = client.send_request(
-        'GET',
-        f'envs/{envID}',
-        queryParams={k: v for k, v in args.items()}
-    )
+    envID = args.get("envID")
+    res = client.send_request("GET", f"envs/{envID}", queryParams=dict(args.items()))
     if res.status == 200:
-        md = tableToMarkdown('CloudShare Environment {envID}:', res.content)
+        md = tableToMarkdown("CloudShare Environment {envID}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -753,11 +606,8 @@ def get_env_command(client, args):
 
 
 def delete_env_command(client, args):
-    envID = args.get('envID')
-    res = client.send_request(
-        'DELETE',
-        f'envs/{envID}'
-    )
+    envID = args.get("envID")
+    res = client.send_request("DELETE", f"envs/{envID}")
     if res.status == 200:
         return_results(f"CloudShare Environment {envID} deleted successfully")
     else:
@@ -765,19 +615,15 @@ def delete_env_command(client, args):
 
 
 def create_env_command(client, args):
-    res = client.send_request(
-        'POST',
-        'envs',
-        content={k: v for k, v in args.items()}
-    )
+    res = client.send_request("POST", "envs", content=dict(args.items()))
     if res.status == 200:
-        res.content['id'] = res.content.get('environmentId')
-        md = tableToMarkdown('CloudShare Environment Created:', res.content)
+        res.content["id"] = res.content.get("environmentId")
+        md = tableToMarkdown("CloudShare Environment Created:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -785,20 +631,16 @@ def create_env_command(client, args):
 
 
 def modify_env_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'PUT',
-        'envs',
-        content={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("PUT", "envs", content={"envId": envId})
     if res.status == 200:
-        res.content['id'] = res.content.get('environmentId')
-        md = tableToMarkdown('CloudShare Environment {envId} Modified:', res.content)
+        res.content["id"] = res.content.get("environmentId")
+        md = tableToMarkdown("CloudShare Environment {envId} Modified:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Environments",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -806,33 +648,26 @@ def modify_env_command(client, args):
 
 
 def delete_vm_command(client, args):
-    VmID = args.get('VmID')
-    res = client.send_request(
-        'DELETE',
-        f'vms/{VmID}'
-    )
+    VmID = args.get("VmID")
+    res = client.send_request("DELETE", f"vms/{VmID}")
     if res.status == 200:
-        res.content['id'] = res.content.get('environmentId')
+        res.content["id"] = res.content.get("environmentId")
         return_results(f"CloudShare VM {VmID} deleted successfully")
     else:
         return_error(f"Error deleting VM {VmID} - {res.content}")
 
 
 def vm_check_execution_status_command(client, args):
-    vmID = args.get('vmID')
-    executionId = args.get('executionId')
-    res = client.send_request(
-        'GET',
-        'vms/actions/checkexecutionstatus',
-        queryParams={"vmID": vmID, "executionId": executionId}
-    )
+    vmID = args.get("vmID")
+    executionId = args.get("executionId")
+    res = client.send_request("GET", "vms/actions/checkexecutionstatus", queryParams={"vmID": vmID, "executionId": executionId})
     if res.status == 200:
-        md = tableToMarkdown('VM {vmID} execution {executionId} status:', res.content)
+        md = tableToMarkdown("VM {vmID} execution {executionId} status:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.VM.Executions",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -840,20 +675,16 @@ def vm_check_execution_status_command(client, args):
 
 
 def vm_get_remote_command(client, args):
-    VmID = args.get('VmID')
-    res = client.send_request(
-        'GET',
-        'vms/actions/getremoteaccessfile',
-        queryParams={k: v for k, v in args.items()}
-    )
+    VmID = args.get("VmID")
+    res = client.send_request("GET", "vms/actions/getremoteaccessfile", queryParams=dict(args.items()))
     if res.status == 200:
-        res.content['VmID'] = VmID
-        md = tableToMarkdown('VM {VmID} remote file:', res.content)
+        res.content["VmID"] = VmID
+        md = tableToMarkdown("VM {VmID} remote file:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.VM.Remote",
-            outputs_key_field='VmID',
+            outputs_key_field="VmID",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -861,19 +692,15 @@ def vm_get_remote_command(client, args):
 
 
 def vm_execute_command(client, args):
-    vmId = args.get('vmId')
-    res = client.send_request(
-        'POST',
-        'vms/actions/executepath',
-        content={"vmId": vmId}
-    )
+    vmId = args.get("vmId")
+    res = client.send_request("POST", "vms/actions/executepath", content={"vmId": vmId})
     if res.status == 200:
-        md = tableToMarkdown('VM {vmId} execute task:', res.content)
+        md = tableToMarkdown("VM {vmId} execute task:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.VM.Execute",
-            outputs_key_field='executionId',
+            outputs_key_field="executionId",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -881,20 +708,16 @@ def vm_execute_command(client, args):
 
 
 def vm_modify_hardware_command(client, args):
-    vmID = args.get('vmID')
-    res = client.send_request(
-        'PUT',
-        'vms/actions/editvmhardware',
-        content={"vmID": vmID}
-    )
+    vmID = args.get("vmID")
+    res = client.send_request("PUT", "vms/actions/editvmhardware", content={"vmID": vmID})
     if res.status == 200:
-        res.content['id'] = vmID
-        md = tableToMarkdown('Modify VM {vmID} hardware:', res.content)
+        res.content["id"] = vmID
+        md = tableToMarkdown("Modify VM {vmID} hardware:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.VM.Modify",
-            outputs_key_field='vmID',
+            outputs_key_field="vmID",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -902,12 +725,8 @@ def vm_modify_hardware_command(client, args):
 
 
 def reboot_vm_command(client, args):
-    VmID = args.get('VmID')
-    res = client.send_request(
-        'PUT',
-        'vms/actions/reboot',
-        queryParams={"VmID": VmID}
-    )
+    VmID = args.get("VmID")
+    res = client.send_request("PUT", "vms/actions/reboot", queryParams={"VmID": VmID})
     if res.status == 200:
         return_results(f"Revert of VM {VmID} successful")
     else:
@@ -915,12 +734,8 @@ def reboot_vm_command(client, args):
 
 
 def revert_vm_command(client, args):
-    VmID = args.get('VmID')
-    res = client.send_request(
-        'PUT',
-        'vms/actions/revert',
-        queryParams={"VmID": VmID}
-    )
+    VmID = args.get("VmID")
+    res = client.send_request("PUT", "vms/actions/revert", queryParams={"VmID": VmID})
     if res.status == 200:
         return_results(f"Reboot of VM {VmID} successful")
     else:
@@ -928,17 +743,14 @@ def revert_vm_command(client, args):
 
 
 def get_cloud_folders_command(client, args):
-    res = client.send_request(
-        'GET',
-        'cloudfolders/actions/getall'
-    )
+    res = client.send_request("GET", "cloudfolders/actions/getall")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare folders:', res.content)
+        md = tableToMarkdown("CloudShare folders:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Folders",
-            outputs_key_field=['host', 'path'],
+            outputs_key_field=["host", "path"],
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -946,19 +758,15 @@ def get_cloud_folders_command(client, args):
 
 
 def get_env_cloud_folders_command(client, args):
-    EnvId = args.get('EnvId')
-    res = client.send_request(
-        'PUT',
-        'cloudfolders/actions/mount',
-        queryParams={"EnvId": EnvId}
-    )
+    EnvId = args.get("EnvId")
+    res = client.send_request("PUT", "cloudfolders/actions/mount", queryParams={"EnvId": EnvId})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare folders for env {EnvId}:', res.content)
+        md = tableToMarkdown("CloudShare folders for env {EnvId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.EnvFolders",
-            outputs_key_field=['name', 'token'],
+            outputs_key_field=["name", "token"],
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -966,17 +774,14 @@ def get_env_cloud_folders_command(client, args):
 
 
 def generate_password_folder_command(client, args):
-    res = client.send_request(
-        'PUT',
-        'cloudfolders/actions/regeneratecloudfolderspassword'
-    )
+    res = client.send_request("PUT", "cloudfolders/actions/regeneratecloudfolderspassword")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare password for folders:', res.content)
+        md = tableToMarkdown("CloudShare password for folders:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.FoldersPassword",
-            outputs_key_field='newFtpUri',
+            outputs_key_field="newFtpUri",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -984,12 +789,8 @@ def generate_password_folder_command(client, args):
 
 
 def unmount_env_folders_command(client, args):
-    EnvId = args.get('EnvId')
-    res = client.send_request(
-        'PUT',
-        'cloudfolders/actions/unmount',
-        queryParams={"EnvId": EnvId}
-    )
+    EnvId = args.get("EnvId")
+    res = client.send_request("PUT", "cloudfolders/actions/unmount", queryParams={"EnvId": EnvId})
     if res.status == 200:
         return_results(f"Unmounted env {EnvId} folders successfully")
     else:
@@ -997,23 +798,19 @@ def unmount_env_folders_command(client, args):
 
 
 def get_templates_command(client, args):
-    queryParams = {k: v for k, v in args.items()}
+    queryParams = dict(args.items())
     if "skip" in queryParams:
-        queryParams['skip'] = int(queryParams['skip'])
+        queryParams["skip"] = int(queryParams["skip"])
     if "take" in queryParams:
-        queryParams['take'] = int(queryParams['take'])
-    res = client.send_request(
-        'GET',
-        'templates',
-        queryParams=queryParams
-    )
+        queryParams["take"] = int(queryParams["take"])
+    res = client.send_request("GET", "templates", queryParams=queryParams)
     if res.status == 200:
-        md = tableToMarkdown('CloudShare env templates:', res.content)
+        md = tableToMarkdown("CloudShare env templates:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Templates",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -1021,18 +818,15 @@ def get_templates_command(client, args):
 
 
 def get_snapshot_command(client, args):
-    snapshotID = args.get('snapshotID')
-    res = client.send_request(
-        'GET',
-        f'snapshots/{snapshotID}'
-    )
+    snapshotID = args.get("snapshotID")
+    res = client.send_request("GET", f"snapshots/{snapshotID}")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare snapshot {snapshotID}:', res.content)
+        md = tableToMarkdown("CloudShare snapshot {snapshotID}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Snapshots",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -1040,19 +834,15 @@ def get_snapshot_command(client, args):
 
 
 def get_env_snapshots_command(client, args):
-    envId = args.get('envId')
-    res = client.send_request(
-        'GET',
-        'snapshots/actions/getforenv',
-        queryParams={"envId": envId}
-    )
+    envId = args.get("envId")
+    res = client.send_request("GET", "snapshots/actions/getforenv", queryParams={"envId": envId})
     if res.status == 200:
-        md = tableToMarkdown('CloudShare snapshots for env {envId}:', res.content)
+        md = tableToMarkdown("CloudShare snapshots for env {envId}:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Snapshots",
-            outputs_key_field='id',
+            outputs_key_field="id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -1060,12 +850,8 @@ def get_env_snapshots_command(client, args):
 
 
 def mark_default_snapshot_command(client, args):
-    snapshotID = args.get('snapshotID')
-    res = client.send_request(
-        'PUT',
-        'snapshots/actions/markdefault',
-        queryParams={"id": snapshotID}
-    )
+    snapshotID = args.get("snapshotID")
+    res = client.send_request("PUT", "snapshots/actions/markdefault", queryParams={"id": snapshotID})
     if res.status == 200:
         return_results("Snapshot {snapshotID} set as default successfully")
     else:
@@ -1073,13 +859,9 @@ def mark_default_snapshot_command(client, args):
 
 
 def take_snapshot_env_command(client, args):
-    envId = args.get('envId')
-    content = {k: v for k, v in args.items()}
-    res = client.send_request(
-        method='GET',
-        path='snapshots/actions/takesnapshot',
-        content=content
-    )
+    envId = args.get("envId")
+    content = dict(args.items())
+    res = client.send_request(method="GET", path="snapshots/actions/takesnapshot", content=content)
     if res.status == 200:
         return_results("Snapshot of env {envId} taken successfully")
     else:
@@ -1087,17 +869,14 @@ def take_snapshot_env_command(client, args):
 
 
 def get_teams_command(client, args):
-    res = client.send_request(
-        'GET',
-        'teams'
-    )
+    res = client.send_request("GET", "teams")
     if res.status == 200:
-        md = tableToMarkdown('CloudShare teams:', res.content)
+        md = tableToMarkdown("CloudShare teams:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Teams",
-            outputs_key_field='Id',
+            outputs_key_field="Id",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -1105,19 +884,15 @@ def get_teams_command(client, args):
 
 
 def invite_user_poc_command(client, args):
-    content = {k: True if v == 'true' else False if v == 'false' else v for k, v in args.items()}
-    res = client.send_request(
-        method='POST',
-        path='invitations/actions/invitetopoc',
-        content=content
-    )
+    content = {k: True if v == "true" else False if v == "false" else v for k, v in args.items()}
+    res = client.send_request(method="POST", path="invitations/actions/invitetopoc", content=content)
     if res.status == 200:
-        md = tableToMarkdown('CloudShare invite:', res.content)
+        md = tableToMarkdown("CloudShare invite:", res.content)
         command_results = CommandResults(
             outputs_prefix="CloudShare.Invites",
-            outputs_key_field='invitationDetailsUrl',
+            outputs_key_field="invitationDetailsUrl",
             outputs=res.content if res.content else None,
-            readable_output=md
+            readable_output=md,
         )
         return_results(command_results)
     else:
@@ -1125,109 +900,97 @@ def invite_user_poc_command(client, args):
 
 
 def get_poc_invitations_command(client, args):
-    res = client.send_request(
-        method='GET',
-        path='ProofOfConceptInvitations/Rows',
-        queryParams={k: v for k, v in args.items()}
-    )
+    res = client.send_request(method="GET", path="ProofOfConceptInvitations/Rows", queryParams=dict(args.items()))
     if res.status == 200:
-        rows = res.content.get('rows')
-        md = tableToMarkdown('CloudShare POC invites:', rows)
+        rows = res.content.get("rows")
+        md = tableToMarkdown("CloudShare POC invites:", rows)
         command_results = CommandResults(
-            outputs_prefix="CloudShare.POCInvites",
-            outputs_key_field='id',
-            outputs=rows if rows else None,
-            readable_output=md
+            outputs_prefix="CloudShare.POCInvites", outputs_key_field="id", outputs=rows if rows else None, readable_output=md
         )
         return_results(command_results)
     else:
         return_error(f"Error retrieving invitations - {res.content}")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
-    hostname = params.get('hostname')
-    api_id = params.get('api_id')
-    api_key = params.get('api_key')
+    hostname = params.get("hostname")
+    api_id = params.get("api_id")
+    api_key = params.get("api_key")
     handle_proxy()
 
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
 
     try:
         commands = {
-            'cloudshare-get-envs': get_envs_command,
-            'cloudshare-get-projects': get_projects_command,
-            'cloudshare-get-project': get_project_command,
-            'cloudshare-get-project-policies': get_project_policies_command,
-            'cloudshare-get-project-blueprints': get_project_blueprints_command,
-            'cloudshare-get-project-blueprint': get_project_blueprint_command,
-            'cloudshare-get-classes': get_classes_command,
-            'cloudshare-get-class': get_class_command,
-            'cloudshare-delete-class': delete_class_command,
-            'cloudshare-delete-class-environemtns': delete_class_environments_command,  # This is here for maintaining BC
-            'cloudshare-delete-class-environments': delete_class_environments_command,
-            'cloudshare-get-classes-countries': get_classes_countries_command,
-            'cloudshare-get-classes-customfields': get_classes_customfields_command,
-            'cloudshare-get-classes-detailed': get_classes_detailed_command,
-            'cloudshare-get-classes-instructors': get_classes_instructors_command,
-            'cloudshare-create-class': create_class_command,
-            'cloudshare-send-class-invitations': send_class_invitations_command,
-            'cloudshare-suspend-class-environments': suspend_class_environments_command,
-            'cloudshare-modify-class': modify_class_command,
-            'cloudshare-get-students': get_students_command,
-            'cloudshare-get-student': get_student_command,
-            'cloudshare-delete-student': delete_student_command,
-            'cloudshare-register-student': register_student_command,
-            'cloudshare-modify-student': modify_student_command,
-            'cloudshare-get-regions': get_regions_command,
-            'cloudshare-get-timezones': get_timezones_command,
-            'cloudshare-get-env-resource': get_env_resources_command,
-            'cloudshare-get-env-extended': get_env_extended_command,
-            'cloudshare-get-env-extended-vanity': get_env_extended_vanity_command,
-            'cloudshare-get-env-extended-token': get_env_extended_token_command,
-            'cloudshare-get-env-multiple-resources': get_env_multiple_resources_command,
-            'cloudshare-extend-env': extend_env_command,
-            'cloudshare-postpone-env-suspend': postpone_env_suspend_command,
-            'cloudshare-resume-env': resume_env_command,
-            'cloudshare-revert-env': revert_env_command,
-            'cloudshare-suspend-env': suspend_env_command,
-            'cloudshare-get-env': get_env_command,
-            'cloudshare-delete-env': delete_env_command,
-            'cloudshare-create-env': create_env_command,
-            'cloudshare-modify-env': modify_env_command,
-            'cloudshare-delete-vm': delete_vm_command,
-            'cloudshare-check-vm-execution-status': vm_check_execution_status_command,
-            'cloudshare-get-vm-remote-access-file': vm_get_remote_command,
-            'cloudshare-execute-vm-command': vm_execute_command,
-            'cloudshare-modify-vm-hardware': vm_modify_hardware_command,
-            'cloudshare-reboot-vm': reboot_vm_command,
-            'cloudshare-revert-vm': revert_vm_command,
-            'cloudshare-get-cloud-folders': get_cloud_folders_command,
-            'cloudshare-get-env-cloud-folders': get_env_cloud_folders_command,
-            'cloudshare-generate-cloud-folder-password': generate_password_folder_command,
-            'cloudshare-unmount-env-folders': unmount_env_folders_command,
-            'cloudshare-get-templates': get_templates_command,
-            'cloudshare-get-snapshot': get_snapshot_command,
-            'cloudshare-get-env-snapshots': get_env_snapshots_command,
-            'cloudshare-mark-default-snapshot': mark_default_snapshot_command,
-            'cloudshare-take-snapshot-env': take_snapshot_env_command,
-            'cloudshare-get-teams': get_teams_command,
-            'cloudshare-invite-user-poc': invite_user_poc_command,
-            'cloudshare-get-poc-invitations': get_poc_invitations_command
-
+            "cloudshare-get-envs": get_envs_command,
+            "cloudshare-get-projects": get_projects_command,
+            "cloudshare-get-project": get_project_command,
+            "cloudshare-get-project-policies": get_project_policies_command,
+            "cloudshare-get-project-blueprints": get_project_blueprints_command,
+            "cloudshare-get-project-blueprint": get_project_blueprint_command,
+            "cloudshare-get-classes": get_classes_command,
+            "cloudshare-get-class": get_class_command,
+            "cloudshare-delete-class": delete_class_command,
+            "cloudshare-delete-class-environemtns": delete_class_environments_command,  # This is here for maintaining BC
+            "cloudshare-delete-class-environments": delete_class_environments_command,
+            "cloudshare-get-classes-countries": get_classes_countries_command,
+            "cloudshare-get-classes-customfields": get_classes_customfields_command,
+            "cloudshare-get-classes-detailed": get_classes_detailed_command,
+            "cloudshare-get-classes-instructors": get_classes_instructors_command,
+            "cloudshare-create-class": create_class_command,
+            "cloudshare-send-class-invitations": send_class_invitations_command,
+            "cloudshare-suspend-class-environments": suspend_class_environments_command,
+            "cloudshare-modify-class": modify_class_command,
+            "cloudshare-get-students": get_students_command,
+            "cloudshare-get-student": get_student_command,
+            "cloudshare-delete-student": delete_student_command,
+            "cloudshare-register-student": register_student_command,
+            "cloudshare-modify-student": modify_student_command,
+            "cloudshare-get-regions": get_regions_command,
+            "cloudshare-get-timezones": get_timezones_command,
+            "cloudshare-get-env-resource": get_env_resources_command,
+            "cloudshare-get-env-extended": get_env_extended_command,
+            "cloudshare-get-env-extended-vanity": get_env_extended_vanity_command,
+            "cloudshare-get-env-extended-token": get_env_extended_token_command,
+            "cloudshare-get-env-multiple-resources": get_env_multiple_resources_command,
+            "cloudshare-extend-env": extend_env_command,
+            "cloudshare-postpone-env-suspend": postpone_env_suspend_command,
+            "cloudshare-resume-env": resume_env_command,
+            "cloudshare-revert-env": revert_env_command,
+            "cloudshare-suspend-env": suspend_env_command,
+            "cloudshare-get-env": get_env_command,
+            "cloudshare-delete-env": delete_env_command,
+            "cloudshare-create-env": create_env_command,
+            "cloudshare-modify-env": modify_env_command,
+            "cloudshare-delete-vm": delete_vm_command,
+            "cloudshare-check-vm-execution-status": vm_check_execution_status_command,
+            "cloudshare-get-vm-remote-access-file": vm_get_remote_command,
+            "cloudshare-execute-vm-command": vm_execute_command,
+            "cloudshare-modify-vm-hardware": vm_modify_hardware_command,
+            "cloudshare-reboot-vm": reboot_vm_command,
+            "cloudshare-revert-vm": revert_vm_command,
+            "cloudshare-get-cloud-folders": get_cloud_folders_command,
+            "cloudshare-get-env-cloud-folders": get_env_cloud_folders_command,
+            "cloudshare-generate-cloud-folder-password": generate_password_folder_command,
+            "cloudshare-unmount-env-folders": unmount_env_folders_command,
+            "cloudshare-get-templates": get_templates_command,
+            "cloudshare-get-snapshot": get_snapshot_command,
+            "cloudshare-get-env-snapshots": get_env_snapshots_command,
+            "cloudshare-mark-default-snapshot": mark_default_snapshot_command,
+            "cloudshare-take-snapshot-env": take_snapshot_env_command,
+            "cloudshare-get-teams": get_teams_command,
+            "cloudshare-invite-user-poc": invite_user_poc_command,
+            "cloudshare-get-poc-invitations": get_poc_invitations_command,
         }
-        client = Client(
-            hostname,
-            api_id=api_id,
-            api_key=api_key
-        )
+        client = Client(hostname, api_id=api_id, api_key=api_key)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             test_module_command(client, args)
 
@@ -1237,10 +1000,10 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

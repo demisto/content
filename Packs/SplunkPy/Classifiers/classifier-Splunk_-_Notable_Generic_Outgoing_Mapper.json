@@ -66,6 +66,6 @@
     "name": "Splunk - Notable Generic Outgoing Mapper",
     "type": "mapping-outgoing",
     "version": -1,
-    "marketplaces": ["xsoar", "marketplacev2"],
+    "marketplaces": ["xsoar", "marketplacev2", "platform"],
     "fromVersion": "6.2.0"
 }

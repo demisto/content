@@ -22,6 +22,7 @@ def test_format_comment():
     }
 
     from MicrosoftSentinelConvertCommentsToTable import format_comment
+
     result = format_comment(comment)
 
     assert result == expected
@@ -53,6 +54,7 @@ def test_convert_to_table():
         - Validate the table is created correctly
     """
     from MicrosoftSentinelConvertCommentsToTable import convert_to_table
+
     result = convert_to_table(CONTEXT_RESULTS)
 
     assert result.readable_output == EXPECTED_TABLE

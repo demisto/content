@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import collections
 import random
-from typing import Counter
+from collections import Counter
 
 
 def parse_data(instances_category):
@@ -14,16 +14,14 @@ def parse_data(instances_category):
     for instance in top_instances:
         random_number = random.randint(0, 16777215)
         hex_number = str(hex(random_number))  # convert to hexadecimal
-        color = f'#{hex_number[2:].zfill(6)}'  # remove 0x and prepend '#'
+        color = f"#{hex_number[2:].zfill(6)}"  # remove 0x and prepend '#'
 
         instance_widget_data = {
-            "data": [
-                instance[1]
-            ],
+            "data": [instance[1]],
             "groups": None,
             "name": str(instance[0]),
             "label": str(instance[0]),
-            "color": color
+            "color": color,
         }
 
         instances_category_data.append(instance_widget_data)
@@ -31,19 +29,13 @@ def parse_data(instances_category):
     return {
         "Type": 17,
         "ContentsFormat": "pie",
-        "Contents": {
-            "stats":
-                instances_category_data,
-            "params": {
-                "layout": "horizontal"
-            }
-        }
+        "Contents": {"stats": instances_category_data, "params": {"layout": "horizontal"}},
     }
 
 
 def main():
     incident = demisto.incidents()
-    instances_category = incident[0].get('CustomFields', {}).get('integrationsfailedcategories', "0")
+    instances_category = incident[0].get("CustomFields", {}).get("integrationsfailedcategories", "0")
 
     if instances_category:
         data = parse_data(instances_category)
@@ -54,20 +46,10 @@ def main():
             "ContentsFormat": "bar",
             "Contents": {
                 "stats": [
-                    {
-                        "data": [
-                            0
-                        ],
-                        "groups": None,
-                        "name": "N/A",
-                        "label": "N/A",
-                        "color": "rgb(255, 23, 68)"
-                    },
+                    {"data": [0], "groups": None, "name": "N/A", "label": "N/A", "color": "rgb(255, 23, 68)"},
                 ],
-                "params": {
-                    "layout": "horizontal"
-                }
-            }
+                "params": {"layout": "horizontal"},
+            },
         }
 
     return_results(data)

@@ -4,7 +4,7 @@ import unicodedata
 
 
 string = demisto.args()["value"]
-normalized = unicodedata.normalize('NFKD', string)
+normalized = unicodedata.normalize("NFKD", string)
 res = ""
 for character in normalized:
     if not unicodedata.combining(character):

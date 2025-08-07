@@ -1,5 +1,5 @@
-from CommonServerPython import *
 from AssociateIndicatorsToIncident import main
+from CommonServerPython import *
 
 
 def test_associate_existing_indicators_to_incident_already_associated(mocker):
@@ -10,7 +10,7 @@ def test_associate_existing_indicators_to_incident_already_associated(mocker):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['HumanReadable'] == 'Related indicators are already associated.'
+    assert results[0]["HumanReadable"] == "Related indicators are already associated."
 
 
 def test_associate_existing_indicators_to_incident(mocker):
@@ -22,4 +22,4 @@ def test_associate_existing_indicators_to_incident(mocker):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0]['HumanReadable'] == 'Associated 1 Indicators to Incident 1'
+    assert results[0]["HumanReadable"] == "Associated 1 Indicators to Incident 1"

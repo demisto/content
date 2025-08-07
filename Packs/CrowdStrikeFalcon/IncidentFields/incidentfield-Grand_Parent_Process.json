@@ -26,5 +26,8 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

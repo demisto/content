@@ -1,12 +1,15 @@
 from CommonServerPython import *
+
 """ Imports """
-import urllib3  # type: ignore
-import traceback
-import requests
-import re
 import copy
+import re
+import traceback
 from typing import Any
-from greynoise import GreyNoise, exceptions, util  # type: ignore
+
+import requests
+import urllib3  # type: ignore
+from greynoise.api import GreyNoise, APIConfig  # type: ignore
+from greynoise import exceptions, util  # type: ignore
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,7 +22,8 @@ PRETTY_KEY = {
     "ip": "IP",
     "first_seen": "First Seen",
     "last_seen": "Last Seen",
-    "seen": "Seen",
+    "last_seen_timestamp": "Last Seen Timestamp",
+    "seen": "Internet Scanner",
     "tags": "Tags",
     "actor": "Actor",
     "spoofable": "Spoofable",
@@ -49,15 +53,19 @@ PRETTY_KEY = {
     "port": "Port",
     "protocol": "Protocol",
     "web": "Web",
-    "paths": "Paths",
-    "useragents": "User-Agents",
-    "ja3": "ja3",
-    "fingerprint": "fingerprint",
+    "path": "Web Paths",
+    "useragent": "User-Agents",
+    "ja3": "JA3",
+    "fingerprint": "Fingerprint",
     "hassh": "HASSH",
     "bot": "BOT",
+    "ja4": "JA4",
+    "cipher": "Cipher",
+    "md5": "MD5",
 }
 IP_CONTEXT_HEADERS = [
     "IP",
+    "Internet Scanner",
     "Classification",
     "Actor",
     "CVE",
@@ -67,18 +75,9 @@ IP_CONTEXT_HEADERS = [
     "BOT",
     "Tor",
     "First Seen",
-    "Last Seen",
+    "Last Seen Timestamp",
 ]
-SIMILAR_HEADERS = [
-    "IP",
-    "Score",
-    "Classification",
-    "Actor",
-    "Organization",
-    "Source Country",
-    "Last Seen",
-    "Similarity Features"
-]
+SIMILAR_HEADERS = ["IP", "Score", "Classification", "Actor", "Organization", "Source Country", "Last Seen", "Similarity Features"]
 TIMELINE_HEADERS = [
     "Date",
     "Classification",
@@ -90,9 +89,9 @@ TIMELINE_HEADERS = [
     "Web Paths",
     "User Agents",
 ]
-RIOT_HEADERS = ["IP", "Category", "Name", "Trust Level", "Description", "Last Updated"]
+RIOT_HEADERS = ["IP", "Business Service", "Category", "Name", "Trust Level", "Description", "Last Updated"]
 API_SERVER = util.DEFAULT_CONFIG.get("api_server")
-IP_QUICK_CHECK_HEADERS = ["IP", "Noise", "RIOT", "Code", "Code Description"]
+IP_QUICK_CHECK_HEADERS = ["IP", "Internet Scanner", "Classification", "Business Service", "Trust Level"]
 STATS_KEY = {
     "classifications": "Classifications",
     "spoofable": "Spoofable",
@@ -128,7 +127,7 @@ EXCEPTION_MESSAGES = {
     "SERVER_ERROR": "The server encountered an internal error for GreyNoise and was unable to complete your request.",
     "CONNECTION_TIMEOUT": "Connection timed out. Check your network connectivity.",
     "PROXY": "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or check "
-             "the host, authentication details and connection details for the proxy.",
+    "the host, authentication details and connection details for the proxy.",
     "INVALID_RESPONSE": "Invalid response from GreyNoise. Response: {}",
     "QUERY_STATS_RESPONSE": "GreyNoise request failed. Reason: {}",
 }
@@ -143,16 +142,10 @@ class Client(GreyNoise):
         """
         Used to authenticate GreyNoise credentials.
         """
-        current_date = datetime.now()
         try:
-            response = self.test_connection()
-            expiration_date = datetime.strptime(response["expiration"], "%Y-%m-%d")
-            if current_date < expiration_date and response["offering"] != "community":
-                return "ok"
-            else:
-                raise DemistoException(
-                    f"Invalid API Offering ({response['offering']})or Expiration Date ({expiration_date})"
-                )
+            self.test_connection()
+
+            return "ok"
 
         except exceptions.RateLimitError:
             raise DemistoException(EXCEPTION_MESSAGES["API_RATE_LIMIT"])
@@ -247,12 +240,11 @@ def get_ip_context_data(responses: list) -> list:
     for response in responses:
         metadata_list: list = []
         tmp_response: dict = {}
+        tags = get_ip_tag_names(response.get("tags", []))
+        response["tags"] = tags
         for key, value in response.get("metadata", {}).items():
             if value != "":
                 metadata_list.append(f"{PRETTY_KEY.get(key, key)}: {value}")
-            # bring TOR key to top level for table view
-            if key == "tor":
-                tmp_response[PRETTY_KEY.get(key, key)] = value
         tmp_response["MetaData"] = metadata_list
 
         for key, value in response.items():
@@ -276,14 +268,31 @@ def get_ip_reputation_score(classification: str) -> tuple[int, str]:
     :return: tuple of dbot score and it's readable form.
     :rtype: ``tuple``
     """
-    if classification == "unknown":
-        return Common.DBotScore.SUSPICIOUS, "Suspicious"
-    elif classification == "benign":
+    if classification == "benign":
         return Common.DBotScore.GOOD, "Good"
+    elif classification == "suspicious":
+        return Common.DBotScore.SUSPICIOUS, "Suspicious"
     elif classification == "malicious":
         return Common.DBotScore.BAD, "Bad"
     else:
         return Common.DBotScore.NONE, "Unknown"
+
+
+def get_ip_tag_names(tags: list) -> list:
+    """Get tag names from tags list.
+
+    :type tags: ``list``
+    :param tags: list of tags.
+
+    :return: list of tag names.
+    :rtype: ``list``
+    """
+    tag_names = []
+    for tag in tags:
+        tag_name = tag.get("name") + " (" + tag.get("intention") + " - " + tag.get("category") + ")"
+        tag_names.append(tag_name)
+
+    return tag_names
 
 
 def generate_advanced_query(args: dict) -> str:
@@ -373,22 +382,20 @@ def ip_quick_check_command(client: Client, args: dict[str, Any]) -> CommandResul
     for record in response:
         hr_record = {
             "IP": record.get("ip") or record.get("address"),
-            "Noise": record.get("noise"),
-            "RIOT": record.get("riot"),
-            "Code": record.get("code"),
-            "Code Description": record.get("code_message"),
+            "Internet Scanner": record["internet_scanner_intelligence"].get("found"),
+            "Classification": record["internet_scanner_intelligence"].get("classification"),
+            "Business Service": record["business_service_intelligence"].get("found"),
+            "Trust Level": record["business_service_intelligence"].get("trust_level"),
         }
         ip = hr_record["IP"]
         hr_record["IP"] = f"[{ip}](https://viz.greynoise.io/ip/{ip})"
         hr_list.append(hr_record)
 
-    hr = tableToMarkdown(name="IP Quick Check Details", t=hr_list, headers=IP_QUICK_CHECK_HEADERS, removeNull=True)
+    hr = tableToMarkdown(name="GreyNoise Quick IP Lookup Details", t=hr_list, headers=IP_QUICK_CHECK_HEADERS, removeNull=True)
     for resp in response:
         if "ip" in resp:
             resp["address"] = resp["ip"]
             del resp["ip"]
-        resp["code_value"] = resp["code_message"]
-        del resp["code_message"]
 
     return CommandResults(
         outputs_prefix="GreyNoise.IP",
@@ -419,28 +426,38 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
     :type reliability: ``String``
     :param reliability: string
     """
-    ips = argToList(args.get("ip"), ",")
+    ips = argToList(args["ip"])
     command_results = []
     for ip in ips:
+        try:
+            api_response = client.ip(ip)
+        except Exception as e:
+            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-        response = client.ip(ip)
-        riot_response = client.riot(ip)
+        if not isinstance(api_response, dict) or (
+            "internet_scanner_intelligence" not in api_response and "business_service_intelligence" not in api_response
+        ):
+            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(api_response))
 
-        if not isinstance(response, dict) or not isinstance(riot_response, dict):
-            raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
+        if "internet_scanner_intelligence" in api_response:
+            response = api_response["internet_scanner_intelligence"]
+            response["seen"] = response.get("found", False)
+            response["address"] = api_response["ip"]
+            response["ip"] = api_response["ip"]
+            riot_response = api_response["business_service_intelligence"]
+            riot_response["riot"] = riot_response.get("found", False)
+            riot_response["address"] = api_response["ip"]
+            tmp_response = get_ip_context_data([response])
+        else:
+            response = {}
+            riot_response = {}
+            tmp_response = []
 
-        original_response = copy.deepcopy(response)
-        tmp_response = get_ip_context_data([response])
+        original_response = copy.deepcopy(api_response)
+
         response = remove_empty_elements(response)
 
-        response["address"] = response["ip"]
-        del response["ip"]
-
-        riot_original_response = copy.deepcopy(riot_response)
         riot_response = remove_empty_elements(riot_response)
-
-        riot_response["address"] = riot_response["ip"]
-        del riot_response["ip"]
 
         if riot_response["riot"]:
             if riot_response["trust_level"] == "1":
@@ -452,28 +469,28 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             if riot_response.get("logo_url", "") != "":
                 del riot_response["logo_url"]
 
-        try:
-            response_quick: Any = ip_quick_check_command(client, {"ip": ip})
-            malicious_description = response_quick.outputs[0].get("code_value")
-        except Exception:
+        if response["seen"] and response["classification"] == "malicious":
+            malicious_description = "This IP has been observed scanning the internet in a malicious manner."
+        else:
             malicious_description = ""
 
         if response["seen"] and not riot_response["riot"]:
             dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
-            human_readable = f"### IP: {ip} found with Noise Reputation: {dbot_score_string}\n"
+            human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Context IP Lookup", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
+                name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
             )
 
-            riot_tmp_response = {"IP": riot_response.get("address"), "RIOT": riot_response.get("riot")}
+            riot_tmp_response = {"IP": riot_response.get("address"), "Business Service": riot_response.get("riot")}
 
-            human_readable += f"### IP: {ip} Not Associated with Common Business Service\n"
+            human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise RIOT IP Lookup", t=riot_tmp_response, headers=["IP", "RIOT"], removeNull=False
+                name="GreyNoise Business Service Intelligence Lookup",
+                t=riot_tmp_response,
+                headers=["IP", "Business Service"],
+                removeNull=False,
             )
-
-            response["riot"] = False
 
             dbot_score = Common.DBotScore(
                 indicator=response.get("address"),
@@ -481,22 +498,20 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
-                reliability=reliability
+                reliability=reliability,
             )
 
-            city = response.get("metadata", {}).get("city", "")
+            city = response.get("metadata", {}).get("source_city", "")
             region = response.get("metadata", {}).get("region", "")
-            country_code = response.get("metadata", {}).get("country_code", "")
+            country_code = response.get("metadata", {}).get("source_country_code", "")
             geo_description = (
-                f"City: {city}, Region: {region}, Country Code: {country_code}"
-                if (city or region or country_code)
-                else ""
+                f"City: {city}, Region: {region}, Country Code: {country_code}" if (city or region or country_code) else ""
             )
             ip_standard_context = Common.IP(
                 ip=response.get("address"),
                 asn=response.get("metadata", {}).get("asn"),
                 hostname=response.get("actor"),
-                geo_country=response.get("metadata", {}).get("country"),
+                geo_country=response.get("metadata", {}).get("source_country"),
                 geo_description=geo_description,
                 dbot_score=dbot_score,
             )
@@ -515,6 +530,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
         if riot_response["riot"] and not response["seen"]:
             riot_tmp_response = {
                 "IP": f"[{riot_response.get('address')}](https://viz.greynoise.io/ip/{riot_response.get('address')})",
+                "Business Service": riot_response.get("riot"),
                 "Name": riot_response.get("name"),
                 "Category": riot_response.get("category"),
                 "Trust Level": riot_response.get("trust_level"),
@@ -524,19 +540,20 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
 
             dbot_score_int, dbot_score_string = get_ip_reputation_score(riot_response.get("classification"))
 
-            human_readable = f"### IP: {ip} found with RIOT Reputation: {dbot_score_string}\n"
-            human_readable += f'Belongs to Common Business Service: {riot_response["name"]}\n'
+            human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
+            human_readable += f"#### Belongs to Common Business Service: {riot_response.get('name', 'Unknown')}\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise RIOT IP Lookup", t=riot_tmp_response, headers=RIOT_HEADERS, removeNull=False
+                name="GreyNoise Business Service Intelligence Lookup", t=riot_tmp_response, headers=RIOT_HEADERS, removeNull=False
             )
-            tmp_response = [{"IP": response.get("address"), "Seen": response.get("seen")}]
+            tmp_response = [{"IP": response.get("address"), "Internet Scanner": response.get("seen")}]
 
-            human_readable += f"### IP: {ip} No Mass-Internet Scanning Noise Found\n"
+            human_readable += f"### IP: {ip} No Mass-Internet Scanning Observed\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Context IP Lookup", t=tmp_response, headers=["IP", "Seen"], removeNull=False
+                name="GreyNoise Internet Scanner Intelligence Lookup",
+                t=tmp_response,
+                headers=["IP", "Internet Scanner"],
+                removeNull=False,
             )
-
-            riot_response["seen"] = False
 
             dbot_score = Common.DBotScore(
                 indicator=response.get("address"),
@@ -544,7 +561,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
-                reliability=reliability
+                reliability=reliability,
             )
 
             ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
@@ -552,11 +569,11 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             command_results.append(
                 CommandResults(
                     readable_output=human_readable,
-                    outputs_prefix="GreyNoise.Riot",
+                    outputs_prefix="GreyNoise.IP",
                     outputs_key_field="address",
                     outputs=riot_response,
                     indicator=ip_standard_context,
-                    raw_response=riot_original_response,
+                    raw_response=original_response,
                 )
             )
 
@@ -565,9 +582,9 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             combo_response.update(riot_response)
             dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
-            human_readable = f"### IP: {ip} found with Noise Reputation: {dbot_score_string}\n"
+            human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Context IP Lookup", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
+                name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
             )
 
             dbot_score = Common.DBotScore(
@@ -576,28 +593,27 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
-                reliability=reliability
+                reliability=reliability,
             )
 
-            city = response.get("metadata", {}).get("city", "")
+            city = response.get("metadata", {}).get("source_city", "")
             region = response.get("metadata", {}).get("region", "")
-            country_code = response.get("metadata", {}).get("country_code", "")
+            country_code = response.get("metadata", {}).get("source_country_code", "")
             geo_description = (
-                f"City: {city}, Region: {region}, Country Code: {country_code}"
-                if (city or region or country_code)
-                else ""
+                f"City: {city}, Region: {region}, Country Code: {country_code}" if (city or region or country_code) else ""
             )
             ip_standard_context = Common.IP(
                 ip=response.get("address"),
                 asn=response.get("metadata", {}).get("asn"),
                 hostname=response.get("actor"),
-                geo_country=response.get("metadata", {}).get("country"),
+                geo_country=response.get("metadata", {}).get("source_country"),
                 geo_description=geo_description,
                 dbot_score=dbot_score,
             )
 
             riot_tmp_response = {
                 "IP": f"[{riot_response.get('address')}](https://viz.greynoise.io/ip/{riot_response.get('address')})",
+                "Business Service": riot_response.get("riot"),
                 "Name": riot_response.get("name"),
                 "Category": riot_response.get("category"),
                 "Trust Level": riot_response.get("trust_level"),
@@ -605,10 +621,10 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 "Last Updated": riot_response.get("last_updated"),
             }
 
-            human_readable += f"### IP: {ip} found with RIOT Reputation: {dbot_score_string}\n"
-            human_readable += f'Belongs to Common Business Service: {riot_response["name"]}\n'
+            human_readable += f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
+            human_readable += f"#### Belongs to Common Business Service: {riot_response.get('name', 'Unknown')}\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise RIOT IP Lookup", t=riot_tmp_response, headers=RIOT_HEADERS, removeNull=False
+                name="GreyNoise Business Service Intelligence Lookup", t=riot_tmp_response, headers=RIOT_HEADERS, removeNull=False
             )
 
             command_results.append(
@@ -618,7 +634,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                     outputs_key_field="address",
                     outputs=combo_response,
                     indicator=ip_standard_context,
-                    raw_response=combo_response,
+                    raw_response=original_response,
                 )
             )
 
@@ -627,8 +643,8 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             combo_response.update(riot_response)
             combo_tmp_response = {
                 "IP": combo_response.get("address"),
-                "RIOT": combo_response.get("riot"),
-                "Seen": combo_response.get("seen"),
+                "Business Service": combo_response.get("riot"),
+                "Internet Scanner": combo_response.get("seen"),
             }
 
             dbot_score_int, dbot_score_string = get_ip_reputation_score(combo_response.get("classification"))
@@ -639,19 +655,25 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                 score=dbot_score_int,
                 integration_name="GreyNoise",
                 malicious_description=malicious_description,
-                reliability=reliability
+                reliability=reliability,
             )
 
             ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
 
-            human_readable = f"### IP: {ip} No Mass-Internet Scanning Noise Found\n"
+            human_readable = f"### IP: {ip} No Mass-Internet Scanning Observed\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise Context IP Lookup", t=combo_tmp_response, headers=["IP", "Seen"], removeNull=True
+                name="GreyNoise Internet Scanner Intelligence Lookup",
+                t=combo_tmp_response,
+                headers=["IP", "Internet Scanner"],
+                removeNull=True,
             )
 
-            human_readable += f"### IP: {ip} Not Associated with Common Business Service\n"
+            human_readable += f"### IP: {ip} Not Associated with a Business Service\n"
             human_readable += tableToMarkdown(
-                name="GreyNoise RIOT IP Lookup", t=combo_tmp_response, headers=["IP", "RIOT"], removeNull=True
+                name="GreyNoise Business Service Intelligence Lookup",
+                t=combo_tmp_response,
+                headers=["IP", "Business Service"],
+                removeNull=True,
             )
 
             command_results.append(
@@ -661,7 +683,7 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
                     outputs_key_field="address",
                     indicator=ip_standard_context,
                     outputs=combo_response,
-                    raw_response=combo_response,
+                    raw_response=original_response,
                 )
             )
 
@@ -684,33 +706,41 @@ def query_command(client: Client, args: dict) -> CommandResults:
     """
     advanced_query = generate_advanced_query(args)
 
-    query_response = client.query(query=advanced_query, size=args.get("size", "10"), scroll=args.get("next_token"))
-    if not isinstance(query_response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(query_response))
+    try:
+        demisto.debug(f"Querying GreyNoise with query: {advanced_query}")
+        query_response = client.query(query=advanced_query, size=args.get("size", "10"), scroll=args.get("next_token"))
+    except Exception as e:
+        demisto.debug(f"Error in query_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-    if query_response.get("message") not in ["ok", "no results"]:
-        raise DemistoException(EXCEPTION_MESSAGES["QUERY_STATS_RESPONSE"].format(query_response.get("message")))
+    if query_response["request_metadata"].get("message") not in ["ok", "No results. ", ""]:
+        raise DemistoException(
+            EXCEPTION_MESSAGES["QUERY_STATS_RESPONSE"].format(query_response["request_metadata"].get("message"))
+        )
 
     original_response = copy.deepcopy(query_response)
 
-    if query_response["message"] == "ok":
-
+    if query_response["request_metadata"]["message"] == "ok" or query_response["request_metadata"]["message"] == "":
         tmp_response = []
         for each in query_response.get("data", []):
-            tmp_response += get_ip_context_data([each])
-            each["address"] = each["ip"]
-            del each["ip"]
+            scanner_response = each["internet_scanner_intelligence"]
+            scanner_response["seen"] = scanner_response.get("found", False)
+            scanner_response["address"] = each["ip"]
+            scanner_response["ip"] = each["ip"]
+            tmp_response += get_ip_context_data([scanner_response])
 
-        human_readable = f'### Total findings: {query_response.get("count")}\n'
+        human_readable = "### GreyNoise Internet Scanner Intelligence\n"
+        human_readable += f"#### Total findings: {query_response['request_metadata'].get('count')}\n"
+        human_readable += f"#### Query: {query_response['request_metadata'].get('adjusted_query')}\n"
 
         human_readable += tableToMarkdown(
-            name="IP Context", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
+            name="GreyNoise Internet Scanner Intelligence", t=tmp_response, headers=IP_CONTEXT_HEADERS, removeNull=True
         )
 
-        if not query_response.get("complete"):
-            human_readable += f'\n### Next Page Token: \n{query_response.get("scroll")}'
+        if not query_response.get("request_metadata", {}).get("complete"):
+            human_readable += f"\n### Next Page Token: \n{query_response['request_metadata'].get('scroll')}"
 
-        query = query_response.get("query", "").replace(" ", "+")
+        query = query_response.get("request_metadata", {}).get("adjusted_query", "").replace(" ", "+")
         query_link = f"https://viz.greynoise.io/query/?gnql={query}"
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
@@ -719,17 +749,17 @@ def query_command(client: Client, args: dict) -> CommandResults:
         outputs = {
             QUERY_OUTPUT_PREFIX["IP"]: query_response.get("data", []),
             QUERY_OUTPUT_PREFIX["QUERY"]: {
-                "complete": query_response.get("complete"),
-                "count": query_response.get("count"),
-                "message": query_response.get("message"),
-                "query": query_response.get("query"),
-                "scroll": query_response.get("scroll"),
+                "complete": query_response.get("request_metadata", {}).get("complete"),
+                "count": query_response.get("request_metadata", {}).get("count"),
+                "message": query_response.get("request_metadata", {}).get("message"),
+                "query": query_response.get("request_metadata", {}).get("adjusted_query"),
+                "scroll": query_response.get("request_metadata", {}).get("scroll"),
             },
         }
-    elif query_response["message"] == "no results":
+    elif query_response["request_metadata"]["message"] == "No results. ":
         outputs = {}
         human_readable = "### GreyNoise Query returned No Results."
-        query = query_response.get("query", "").replace(" ", "+")
+        query = query_response["request_metadata"].get("adjusted_query", "").replace(" ", "+")
         query_link = f"https://viz.greynoise.io/query/?gnql={query}"
         query_link = query_link.replace("*", "&ast;")
         query_link = query_link.replace('"', "&quot;")
@@ -737,11 +767,11 @@ def query_command(client: Client, args: dict) -> CommandResults:
     else:
         outputs = {}
         human_readable = ""
-        demisto.debug(f'{query_response["message"]=} do not match any condition. {outputs=} , {human_readable=}')
+        demisto.debug(
+            f'{query_response["request_metadata"]["message"]=} does not match any condition. {outputs=} , {human_readable=}'
+        )
 
-    return CommandResults(
-        readable_output=human_readable, outputs=remove_empty_elements(outputs), raw_response=original_response
-    )
+    return CommandResults(readable_output=human_readable, outputs=remove_empty_elements(outputs), raw_response=original_response)
 
 
 @exception_handler
@@ -760,14 +790,18 @@ def stats_command(client: Client, args: dict) -> Any:
            that contains the IP information.
        :rtype: ``CommandResults``
     """
-    advance_query = generate_advanced_query(args)
-    response = client.stats(query=advance_query, count=args.get("size", "10"))
-    if not isinstance(response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
+    advanced_query = generate_advanced_query(args)
+    try:
+        demisto.debug(f"Querying GreyNoise with stats query: {advanced_query}")
+        response = client.stats(query=advanced_query, count=args.get("size", "10"))
+    except Exception as e:
+        demisto.debug(f"Error in stats_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
     if response["count"] > 0:
-
-        human_readable = f'### Stats\n### Query: {advance_query} Count: {response.get("count", "0")}\n'
+        human_readable = "### GreyNoise Internet Scanner Intelligence\n"
+        human_readable += f"#### Stats Query: {response.get('adjusted_query')}\n"
+        human_readable += f"#### Total IP Count: {response.get('count', '0')}\n"
 
         for key, value in response.get("stats", {}).items():
             hr_list: list = []
@@ -782,9 +816,7 @@ def stats_command(client: Client, args: dict) -> Any:
                     hr_rec.update({f"{STATS_H_KEY.get(k)}": f"{v}"})
                     header.append(STATS_H_KEY.get(k))
                 hr_list.append(hr_rec)
-            human_readable += tableToMarkdown(
-                name=f"{STATS_KEY.get(key, key)}", t=hr_list, headers=header, removeNull=True
-            )
+            human_readable += tableToMarkdown(name=f"{STATS_KEY.get(key, key)}", t=hr_list, headers=header, removeNull=True)
     elif response.get("count") == 0:
         human_readable = "### GreyNoise Stats Query returned No Results."
 
@@ -793,6 +825,7 @@ def stats_command(client: Client, args: dict) -> Any:
         outputs_key_field="query",
         outputs=remove_empty_elements(response),
         readable_output=human_readable,
+        raw_response=response,
     )
 
 
@@ -801,15 +834,15 @@ def stats_command(client: Client, args: dict) -> Any:
 def similarity_command(client: Client, args: dict) -> Any:
     """Get similarity information for a specified IP.
 
-       :type client: ``Client``
-       :param client: Client object for interaction with GreyNoise.
+    :type client: ``Client``
+    :param client: Client object for interaction with GreyNoise.
 
-       :type args: ``dict``
-       :param args: All command arguments, usually passed from ``demisto.args()``.
+    :type args: ``dict``
+    :param args: All command arguments, usually passed from ``demisto.args()``.
 
-       :return: A ``CommandResults`` object that is then passed to ``return_results``,
-           that contains the IP information.
-       :rtype: ``CommandResults``
+    :return: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the IP information.
+    :rtype: ``CommandResults``
     """
     ip = args.get("ip", "")
     min_score = args.get("minimum_score", 90)
@@ -839,14 +872,11 @@ def similarity_command(client: Client, args: dict) -> Any:
             tmp_response.append(modified_sim_ip)
 
         human_readable = f"### IP: {ip} - Similar Internet Scanners found in GreyNoise\n"
-        human_readable += f'#### Total Similar IPs with Score above {min_score}%: {response.get("total")}\n'
-        if response.get('total', 0) > limit:
-            human_readable += f'##### Displaying {limit} results below.  To see all results, visit the GreyNoise ' \
-                              f'Visualizer.\n '
+        human_readable += f"#### Total Similar IPs with Score above {min_score}%: {response.get('total')}\n"
+        if response.get("total", 0) > limit:
+            human_readable += f"##### Displaying {limit} results below.  To see all results, visit the GreyNoise Visualizer.\n "
 
-        human_readable += tableToMarkdown(
-            name="GreyNoise Similar IPs", t=tmp_response, headers=SIMILAR_HEADERS, removeNull=True
-        )
+        human_readable += tableToMarkdown(name="GreyNoise Similar IPs", t=tmp_response, headers=SIMILAR_HEADERS, removeNull=True)
 
         similarity_link = f"https://viz.greynoise.io/ip-similarity/{ip}"
         human_readable += f"\n*To view the detailed similarity result please click [here]({similarity_link}).*"
@@ -859,7 +889,9 @@ def similarity_command(client: Client, args: dict) -> Any:
     return CommandResults(
         outputs_prefix="GreyNoise.Similar",
         outputs_key_field="ip",
-        readable_output=human_readable, outputs=remove_empty_elements(response), raw_response=original_response
+        readable_output=human_readable,
+        outputs=remove_empty_elements(response),
+        raw_response=original_response,
     )
 
 
@@ -868,15 +900,15 @@ def similarity_command(client: Client, args: dict) -> Any:
 def timeline_command(client: Client, args: dict) -> Any:
     """Get timeline information for a specified IP.
 
-       :type client: ``Client``
-       :param client: Client object for interaction with GreyNoise.
+    :type client: ``Client``
+    :param client: Client object for interaction with GreyNoise.
 
-       :type args: ``dict``
-       :param args: All command arguments, usually passed from ``demisto.args()``.
+    :type args: ``dict``
+    :param args: All command arguments, usually passed from ``demisto.args()``.
 
-       :return: A ``CommandResults`` object that is then passed to ``return_results``,
-           that contains the IP information.
-       :rtype: ``CommandResults``
+    :return: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the IP information.
+    :rtype: ``CommandResults``
     """
     ip = args.get("ip", "")
     days = args.get("days", 30)
@@ -911,8 +943,10 @@ def timeline_command(client: Client, args: dict) -> Any:
         human_readable = f"### IP: {ip} - GreyNoise IP Timeline\n"
 
         human_readable += tableToMarkdown(
-            name="Internet Scanner Timeline Details - Daily Activity Summary", t=tmp_response, headers=TIMELINE_HEADERS,
-            removeNull=True
+            name="Internet Scanner Timeline Details - Daily Activity Summary",
+            t=tmp_response,
+            headers=TIMELINE_HEADERS,
+            removeNull=True,
         )
 
         timeline_link = f"https://viz.greynoise.io/ip/{ip}?view=timeline"
@@ -926,7 +960,9 @@ def timeline_command(client: Client, args: dict) -> Any:
     return CommandResults(
         outputs_prefix="GreyNoise.Timeline",
         outputs_key_field="ip",
-        readable_output=human_readable, outputs=remove_empty_elements(response), raw_response=original_response
+        readable_output=human_readable,
+        outputs=remove_empty_elements(response),
+        raw_response=original_response,
     )
 
 
@@ -950,24 +986,29 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
     :type reliability: ``String``
     :param reliability: string
     """
-    ip = args.get("ip", "")
-    response = client.riot(ip)
-    original_response = copy.deepcopy(response)
+    ip = args["ip"]
+    try:
+        demisto.debug(f"Querying GreyNoise with ip: {ip}")
+        api_response = client.ip(ip)
+    except Exception as e:
+        demisto.debug(f"Error in riot_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
+
+    response = api_response.get("business_service_intelligence", {})
+    response["ip"] = api_response.get("ip", "")
+    response["riot"] = response.get("found", False)
+    original_response = copy.deepcopy(api_response)
     response = remove_empty_elements(response)
     name = ""
     if response.get("riot") is False or response.get("riot") == "false":
-        name = "GreyNoise RIOT IP Lookup"
+        name = "GreyNoise Business Service Intelligence Lookup"
         hr = {
             "IP": response.get("ip"),
-            "RIOT": response.get("riot"),
+            "Business Service": response.get("riot"),
         }
-        human_readable = f"### IP: {ip} Not Associated with Common Business Service\n"
-        human_readable += tableToMarkdown(
-            name=name, t=hr, headers=["IP", "RIOT"],
-            removeNull=False
-        )
-        dbot_score_int, dbot_score_string = get_ip_reputation_score(
-            response.get("classification"))
+        human_readable = f"### IP: {ip} Not Associated with a Business Service\n"
+        human_readable += tableToMarkdown(name=name, t=hr, headers=["IP", "Business Service"], removeNull=False)
+        dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
     elif response.get("riot") is True or response.get("riot") == "true":
         if response.get("logo_url", "") != "":
             del response["logo_url"]
@@ -977,11 +1018,11 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
         elif response.get("trust_level") == "2":
             response["trust_level"] = "2 - Commonly Seen"
             response["classification"] = "unknown"
-        dbot_score_int, dbot_score_string = get_ip_reputation_score(
-            response.get("classification"))
-        name = "GreyNoise RIOT IP Lookup"
+        dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
+        name = "GreyNoise Business Service Intelligence Lookup"
         hr = {
             "IP": f"[{response.get('ip')}](https://viz.greynoise.io/ip/{response.get('ip')})",
+            "Business Service": response.get("riot"),
             "Name": response.get("name"),
             "Category": response.get("category"),
             "Trust Level": response.get("trust_level"),
@@ -990,36 +1031,26 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
         }
         headers = RIOT_HEADERS
 
-        human_readable = f"### IP: {ip} found with RIOT Reputation: {dbot_score_string}\n"
-        human_readable += f'Belongs to Common Business Service: {response["name"]}\n'
-        human_readable += tableToMarkdown(
-            name=name, t=hr, headers=headers,
-            removeNull=False
-        )
+        human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
+        human_readable += f"#### Belongs to Common Business Service: {response['name']}\n"
+        human_readable += tableToMarkdown(name=name, t=hr, headers=headers, removeNull=False)
     else:
         dbot_score_int = 0
         demisto.debug(f'{response.get("riot")=} -> {dbot_score_int=}')
 
-    try:
-        response_quick: Any = ip_quick_check_command(client, {"ip": ip})
-        malicious_description = response_quick.outputs[0].get("code_value")
-    except Exception:
-        malicious_description = ""
-
     dbot_score = Common.DBotScore(
-        indicator=response.get("address"),
+        indicator=response.get("ip"),
         indicator_type=DBotScoreType.IP,
         score=dbot_score_int,
         integration_name="GreyNoise",
-        malicious_description=malicious_description,
-        reliability=reliability
+        reliability=reliability,
     )
 
-    ip_standard_context = Common.IP(ip=response.get("address"), dbot_score=dbot_score)
+    ip_standard_context = Common.IP(ip=response.get("ip"), dbot_score=dbot_score)
 
     return CommandResults(
-        outputs_prefix="GreyNoise.Riot",
-        outputs_key_field="address",
+        outputs_prefix="GreyNoise.IP",
+        outputs_key_field="ip",
         outputs=response,
         readable_output=human_readable,
         indicator=ip_standard_context,
@@ -1049,56 +1080,64 @@ def context_command(client: Client, args: dict, reliability: str) -> CommandResu
     """
 
     ip = args.get("ip", "")
-    response = client.ip(ip)
+    try:
+        demisto.debug(f"Querying GreyNoise with ip: {ip}")
+        api_response = client.ip(ip)
+    except Exception as e:
+        demisto.debug(f"Error in context_command: {e}")
+        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(e))
 
-    if not isinstance(response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES["INVALID_RESPONSE"].format(response))
+    if "internet_scanner_intelligence" in api_response:
+        response = api_response.get("internet_scanner_intelligence", {})
+        response["seen"] = response.get("found", False)
+        response["address"] = api_response.get("ip", "")
+        response["ip"] = api_response.get("ip", "")
+    else:
+        response = {"found": False, "address": api_response.get("ip", ""), "seen": False, "ip": api_response.get("ip", "")}
 
-    original_response = copy.deepcopy(response)
-    tmp_response = get_ip_context_data([response])
+    original_response = copy.deepcopy(api_response)
+
     response = remove_empty_elements(response)
-
-    response["address"] = response["ip"]
-    del response["ip"]
 
     dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
-    if response["seen"]:
-        human_readable = f"### IP: {ip} found with Noise Reputation: {dbot_score_string}\n"
+    if response["found"]:
+        tmp_response = get_ip_context_data([response])
+        human_readable = f"### IP: {ip} found with Reputation: {dbot_score_string}\n"
         headers = IP_CONTEXT_HEADERS
     else:
-        human_readable = f"### IP: {ip} No Mass-Internet Scanning Noise Found\n"
-        tmp_response = [{"IP": response.get("address"), "Seen": response.get("seen")}]
-        headers = ["IP", "Seen"]
+        human_readable = f"### IP: {ip} No Mass-Internet Scanning Observed\n"
+        tmp_response = [{"IP": response.get("address"), "Internet Scanner": response.get("found")}]
+        headers = ["IP", "Internet Scanner"]
+
     human_readable += tableToMarkdown(
-        name="GreyNoise Context IP Lookup", t=tmp_response, headers=headers, removeNull=True
+        name="GreyNoise Internet Scanner Intelligence Lookup", t=tmp_response, headers=headers, removeNull=True
     )
 
-    try:
-        response_quick: Any = ip_quick_check_command(client, {"ip": ip})
-        malicious_description = response_quick.outputs[0].get("code_value")
-    except Exception:
+    if response["found"] and response["classification"] == "malicious":
+        malicious_description = "This IP has been observed scanning the internet in a malicious manner."
+    else:
         malicious_description = ""
+
     dbot_score = Common.DBotScore(
         indicator=response.get("address"),
         indicator_type=DBotScoreType.IP,
         score=dbot_score_int,
         integration_name="GreyNoise",
         malicious_description=malicious_description,
-        reliability=reliability
+        reliability=reliability,
     )
 
-    city = response.get("metadata", {}).get("city", "")
+    city = response.get("metadata", {}).get("source_city", "")
     region = response.get("metadata", {}).get("region", "")
-    country_code = response.get("metadata", {}).get("country_code", "")
-    geo_description = (
-        f"City: {city}, Region: {region}, Country Code: {country_code}" if (city or region or country_code) else ""
-    )
+    country_code = response.get("metadata", {}).get("source_country_code", "")
+    geo_description = f"City: {city}, Region: {region}, Country Code: {country_code}" if (city or region or country_code) else ""
+
     ip_standard_context = Common.IP(
         ip=response.get("address"),
         asn=response.get("metadata", {}).get("asn"),
         hostname=response.get("actor"),
-        geo_country=response.get("metadata", {}).get("country"),
+        geo_country=response.get("metadata", {}).get("source_country"),
         geo_description=geo_description,
         dbot_score=dbot_score,
     )
@@ -1157,12 +1196,11 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                 "CVSS": cvss,
                 "Vendor": vendor,
                 "Product": product,
-                "Published to NVD": response["details"].get("published_to_nist_nvd", False)
+                "Published to NVD": response["details"].get("published_to_nist_nvd", False),
             }
             human_readable = f"### CVE: {cve_arg} is found\n"
             human_readable += tableToMarkdown(
-                name=name, t=hr, headers=["CVE ID", "CVSS", "Vendor", "Product", "Published to NVD"],
-                removeNull=False
+                name=name, t=hr, headers=["CVE ID", "CVSS", "Vendor", "Product", "Published to NVD"], removeNull=False
             )
             if "timeline" in response:
                 name = "Timeline Details"
@@ -1173,8 +1211,10 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                     "First Published": response["timeline"].get("first_known_published_date", "").split("T")[0],
                 }
                 human_readable += tableToMarkdown(
-                    name=name, t=hr, headers=["Added to Kev", "Last Updated", "CVE Published", "First Published"],
-                    removeNull=False
+                    name=name,
+                    t=hr,
+                    headers=["Added to Kev", "Last Updated", "CVE Published", "First Published"],
+                    removeNull=False,
                 )
             if "exploitation_details" in response:
                 name = "Exploitation Details"
@@ -1185,22 +1225,27 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                     "Exploit Registered in KEV": response["exploitation_details"].get("exploitation_registered_in_kev", ""),
                 }
                 human_readable += tableToMarkdown(
-                    name=name, t=hr, headers=["Attack Vector", "EPSS Base Score", "Exploit Found", "Exploit Registered in KEV"],
-                    removeNull=False
+                    name=name,
+                    t=hr,
+                    headers=["Attack Vector", "EPSS Base Score", "Exploit Found", "Exploit Registered in KEV"],
+                    removeNull=False,
                 )
             if "exploitation_stats" in response:
                 name = "Exploitation Stats"
                 hr = {
                     "# of Available Exploits": response["exploitation_stats"].get("number_of_available_exploits", ""),
-                    "# of Botnets Exploiting": response["exploitation_stats"].get("number_of_botnets_exploiting_vulnerability",
-                                                                                  ""),
+                    "# of Botnets Exploiting": response["exploitation_stats"].get(
+                        "number_of_botnets_exploiting_vulnerability", ""
+                    ),
                     "# of Threat Actors Exploiting": response["exploitation_stats"].get(
-                        "number_of_threat_actors_exploiting_vulnerability", ""),
+                        "number_of_threat_actors_exploiting_vulnerability", ""
+                    ),
                 }
                 human_readable += tableToMarkdown(
-                    name=name, t=hr,
+                    name=name,
+                    t=hr,
                     headers=["# of Available Exploits", "# of Botnets Exploiting", "# of Threat Actors Exploiting"],
-                    removeNull=False
+                    removeNull=False,
                 )
             if "exploitation_activity" in response:
                 name = "Exploitation Activity - GreyNoise Insights"
@@ -1214,16 +1259,18 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                     "# of Threat IPs - Last 30 Days": response["exploitation_activity"].get("threat_ip_count_30d", ""),
                 }
                 human_readable += tableToMarkdown(
-                    name=name, t=hr, headers=[
+                    name=name,
+                    t=hr,
+                    headers=[
                         "GreyNoise Observed Activity",
                         "# of Benign IPs - Last Day",
                         "# of Benign IPs - Last 10 Days",
                         "# of Benign IPs - Last 30 Days",
                         "# of Threat IPs - Last Day",
                         "# of Threat IPs - Last 10 Days",
-                        "# of Threat IPs - Last 30 Days"
+                        "# of Threat IPs - Last 30 Days",
                     ],
-                    removeNull=False
+                    removeNull=False,
                 )
         else:
             name = "GreyNoise CVE IP Lookup"
@@ -1231,17 +1278,14 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
                 "CVE ID": cve_arg,
             }
             human_readable = f"### CVE: {cve_arg} is not found\n"
-            human_readable += tableToMarkdown(
-                name=name, t=hr, headers=["CVE ID"],
-                removeNull=False
-            )
+            human_readable += tableToMarkdown(name=name, t=hr, headers=["CVE ID"], removeNull=False)
 
         dbot_score = Common.DBotScore(
             indicator=cve_arg,
             indicator_type=DBotScoreType.CVE,
             score=Common.DBotScore.NONE,
             integration_name="GreyNoise",
-            reliability=reliability
+            reliability=reliability,
         )
         cve = Common.CVE(
             id=cve_arg,
@@ -1254,11 +1298,11 @@ def cve_command(client: Client, args: dict, reliability: str) -> List[CommandRes
 
         command_results.append(
             CommandResults(
-                outputs_prefix='GreyNoise.CVE',
-                outputs_key_field='id',
+                outputs_prefix="GreyNoise.CVE",
+                outputs_key_field="id",
                 outputs=cve_raw_response,
                 indicator=cve,
-                readable_output=human_readable
+                readable_output=human_readable,
             )
         )
 
@@ -1281,7 +1325,7 @@ def main() -> None:
     else:
         packs = []
 
-    pack_version = "1.4.0"
+    pack_version = "2.0.0"
     if isinstance(packs, list):
         for pack in packs:
             if pack["name"] == "GreyNoise":
@@ -1292,7 +1336,7 @@ def main() -> None:
 
     api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
     if not api_key:
-        return_error('Please provide a valid API token')
+        return_error("Please provide a valid API token")
     proxy = demisto.params().get("proxy", False)
     reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
     reliability = reliability if reliability else DBotScoreReliability.B
@@ -1303,8 +1347,7 @@ def main() -> None:
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-
-        client = Client(
+        api_config = APIConfig(
             api_key=api_key,
             api_server=API_SERVER,
             timeout=TIMEOUT,
@@ -1312,6 +1355,7 @@ def main() -> None:
             use_cache=False,
             integration_name=f"xsoar-integration-v{pack_version}",
         )
+        client = Client(api_config)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -1359,9 +1403,7 @@ def main() -> None:
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), str(err))
-        )
+        return_error(EXCEPTION_MESSAGES["COMMAND_FAIL"].format(demisto.command(), str(err)))
 
 
 """ ENTRY POINT """
