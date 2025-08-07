@@ -38,9 +38,6 @@ script:
       - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
     arguments:
-    - name: project_id
-      description: The project ID for this issue. If not specified, the value from the instance configuration will be used.
-      required: false
     - name: tracker_id
       description: |-
         - A tracker ID (e.g., 1,2,3).
