@@ -75,41 +75,34 @@ def list_agents(args: dict[str, Any]) -> CommandResults | None:
         created_at=args.get("created_at"),
         limit=args.get("limit"),
     )
-    try:
-        demisto.debug(f"Calling sentinelone-list-agents, {command_args=}")
-        command_res = demisto.executeCommand("sentinelone-list-agents", command_args)
-        demisto.debug(f"After calling sentinelone-list-agents, {command_res=}")
-        if command_res and isinstance(command_res, list) and len(command_res) > 0:
-            entry_outputs = command_res[0].get("Contents", [])
-        else:
-            demisto.debug("Invalid response format from sentinelone-list-agents.")
-            raise DemistoException(
-                f"Error occurred while running SentinelOneListAgents, expected a list as response but got:"
-                f" {type(command_res)}. The response is: {command_res}"
-            )
-
-        if ip:
-            return filter_by_agent_ip(ip, entry_outputs)
-
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                "Sentinel One - List of Agents",
-                entry_outputs,
-                headerTransform=pascalToSpace,
-                removeNull=True,
-                metadata="Provides summary information and details for all the agents that matched your search criteria",
-            ),
-            outputs_prefix="SentinelOne.Agents",
-            outputs_key_field="ID",
-            outputs=entry_outputs,
-            raw_response=entry_outputs,
+    demisto.debug(f"Calling sentinelone-list-agents, {command_args=}")
+    command_res = execute_command("sentinelone-list-agents", command_args)
+    demisto.debug(f"After calling sentinelone-list-agents, {command_res=}")
+    if command_res and isinstance(command_res, list) and len(command_res) > 0:
+        entry_outputs = command_res[0].get("Contents", [])
+    else:
+        demisto.debug("Invalid response format from sentinelone-list-agents.")
+        raise DemistoException(
+            f"Error occurred while running SentinelOneListAgents, expected a list as response but got:"
+            f" {type(command_res)}. The response is: {command_res}"
         )
 
-    except Exception as ex1:
-        demisto.info(f"Failed to get list of the agents. {type(ex1)}: {ex1}, Trace:\n{traceback.format_exc()}")
-        return_error(str(ex1))
+    if ip:
+        return filter_by_agent_ip(ip, entry_outputs)
 
-    return None
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - List of Agents",
+            entry_outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata="Provides summary information and details for all the agents that matched your search criteria",
+        ),
+        outputs_prefix="SentinelOne.Agents",
+        outputs_key_field="ID",
+        outputs=entry_outputs,
+        raw_response=entry_outputs,
+    )
 
 
 def main():
