@@ -611,7 +611,7 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
                         f"API response body: {res_body}"
                     )
                 else:
-                    demisto.debug(f"Failed to remove attachment after {max_retries} attempts. API response body: {res_body}")
+                    demisto.debug(f"Failed to remove attachment after {max_retries} attempts.")
 
             if not isinstance(files, list):
                 files = [files]
