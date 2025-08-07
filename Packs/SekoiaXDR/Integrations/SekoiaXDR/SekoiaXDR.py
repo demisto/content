@@ -388,7 +388,7 @@ def exclude_info_events(event_info: dict, exclude_info: str) -> list:
     return headers
 
 
-def undot(json_data: dict) -> str:
+def undot(json_data: dict) -> dict:
     """
     Remove/Replace dots from the key names of a JSON.
     This function transform the name of the JSON keys that contain "dots" to make it easier to reference them in XSOAR.
@@ -416,7 +416,7 @@ def undot(json_data: dict) -> str:
             if new_key != key:
                 item[new_key] = item.pop(key)
     # Convert back to JSON and return it
-    return json.dumps(data)
+    return data
 
 
 def filter_list_by_keys(dicts_list: list, keys_to_keep: list) -> list:

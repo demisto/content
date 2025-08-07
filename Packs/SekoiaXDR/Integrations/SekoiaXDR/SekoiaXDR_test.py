@@ -12,7 +12,7 @@ import json
 MOCK_URL = "https://api.sekoia.io"
 
 
-def util_load_json(path):
+def util_load_json(path) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
@@ -90,8 +90,8 @@ def test_undot():
     upload_test_data = util_load_json("test_data/SekoiaXDR_retrieve_events.json")
     result = SekoiaXDR.undot(upload_test_data)
 
-    assert "agent_id" in result
-    assert "agent.id" not in result
+    assert type(result) is dict
+    assert result["items"][0]["agent_id"]
 
 
 def test_filter_list_by_keys():
