@@ -491,6 +491,7 @@ def test_run_internal_enrichment(mocker: MockerFixture):
     run_internal_enrichment(
         hashes_by_type={"SHA256": [SHA_256_HASH]},
         enabled_brands=enabled_brands,
+        enrichment_brands=[],
         per_command_context={},
         verbose_command_results=[],
     )
@@ -508,6 +509,64 @@ def test_run_internal_enrichment(mocker: MockerFixture):
 
     assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
     assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
+
+
+@pytest.mark.parametrize(
+    "enrichment_brands, expected_results",
+    [
+        # No enrichment brands: only internal enrichment brands should run.
+        pytest.param(
+            [],
+            {"internal_enrichment_should_run": [True, True]},
+            id="No Enrichment Brands"
+        ),
+        # Only WildFire in enrichment brands: only Wildfire should run
+        pytest.param(
+            [Brands.WILDFIRE_V2.value],
+            {"internal_enrichment_should_run": [True, False]},
+            id="Enrichment Brands Include Wildfire"
+        ),
+        # Enrichment brands is not empty and does not include internal: no internal enrichment brands should run.
+        pytest.param(
+            [Brands.TIM.value],
+            {"internal_enrichment_should_run": [False, False]},
+            id="Enrichment Brands Does NotInclude Wildfire"
+        ),
+    ],
+)
+
+
+def test_run_internal_enrichment_with_specified_enrichment_brand(mocker: MockerFixture,
+                                                                 enrichment_brands: list[str],
+                                                                 expected_results: dict):
+    """
+    Given:
+        - A SHA256 file hash and enabled instances of all source brands.
+        - A list of enrichment brands
+        - A list of expected results
+
+    When:
+        - Calling `run_internal_enrichment`.
+
+    Assert:
+        - Ensure that the correct commands run according to the specified enrichment brand
+    """
+    from FileEnrichment import run_internal_enrichment
+
+    enabled_brands = [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value]
+    mock_ir = mocker.patch("FileEnrichment.execute_ir_hash_analytics", return_value=({}, []))
+    mock_wildfire = mocker.patch("FileEnrichment.execute_wildfire_verdict", return_value=({}, []))
+
+    run_internal_enrichment(
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
+        enabled_brands=enabled_brands,
+        enrichment_brands=enrichment_brands,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_wildfire.call_count == int(expected_results["internal_enrichment_should_run"][0])
+    assert mock_ir.call_count == int(expected_results["internal_enrichment_should_run"][1])
 
 
 def test_summarize_command_results_successful_commands(mocker: MockerFixture):
