@@ -751,14 +751,14 @@ Deletes a security group.
 
 There is no context output for this command.
 
-### aws-ec2-security-group-describe
+### aws-ec2-security-groups-describe
 
 ***
 Describes the specified security groups or all of your security groups. Returns detailed information about security groups including their rules, tags, and associated VPC information.
 
 #### Base Command
 
-`aws-ec2-security-group-describe`
+`aws-ec2-security-groups-describe`
 
 #### Input
 

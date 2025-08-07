@@ -1102,7 +1102,7 @@ class EC2:
         return CommandResults(readable_output="")
 
     @staticmethod
-    def describe_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Describes one or more security groups in your account.
         Returns detailed information about security groups including their rules, tags, and associated VPC information.
@@ -1593,7 +1593,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-egress-revoke-quick-action": EC2.revoke_security_group_egress_command,
     "aws-ec2-security-group-create": EC2.create_security_group_command,
     "aws-ec2-security-group-delete": EC2.delete_security_group_command,
-    "aws-ec2-security-group-describe": EC2.describe_security_group_command,
+    "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
     "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
