@@ -49,45 +49,6 @@ There is no context output for this command.
 
 - Please DO NOT consistently use a high "limit" number or flood the API. The account will be automatically throttled.
 - Daily quota: 100,000 API calls (approximately 60 calls per minute maximum).
-### adminbyrequest-request-approve
-
-***
-Approves a request in AdminByRequest.
-
-#### Base Command
-
-`adminbyrequest-request-approve`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| request_id | The ID of the request to approve. | Required | 
-| approved_by | The user who approved the request. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-### adminbyrequest-request-deny
-
-***
-Denies a request in AdminByRequest.
-
-#### Base Command
-
-`adminbyrequest-request-deny`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| request_id | The ID of the request to deny. | Required | 
-| denied_by | The user who denied the request. | Optional | 
-| reason | The reason for denying the request. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
 ### adminbyrequest-list-requests
 
 ***
@@ -130,3 +91,42 @@ Lists requests from AdminByRequest.
 | AdminByRequest.Request.eventText | String | The text of the request. | 
 | AdminByRequest.Request.eventTime | Date | The time the request occurred. | 
 
+### adminbyrequest-request-deny
+
+***
+Denies a request in AdminByRequest.
+
+#### Base Command
+
+`adminbyrequest-request-deny`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to deny. | Required | 
+| denied_by | The user who denied the request. | Optional | 
+| reason | The reason for denying the request. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### adminbyrequest-request-approve
+
+***
+Approves a request in AdminByRequest.
+
+#### Base Command
+
+`adminbyrequest-request-approve`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to approve. | Required | 
+| approved_by | The user who approved the request. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
