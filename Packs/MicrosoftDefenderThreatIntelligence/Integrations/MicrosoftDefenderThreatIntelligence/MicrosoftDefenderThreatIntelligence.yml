@@ -88,9 +88,9 @@ display: Microsoft Defender Threat Intelligence
 name: MicrosoftDefenderThreatIntelligence
 script:
   commands:
-  - description: Starts the authorization process. Follow the instructions in the command results.
+  - description: "Starts the authorization process.\nFollow the instructions in the command results."
     name: msg-defender-threat-intel-auth-start
-  - description: Completes the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command.
+  - description: "Completes the authorization process.\nShould be used after running the msg-defender-threat-intel-auth-start command."
     name: msg-defender-threat-intel-auth-complete
   - description: Reruns the authentication process.
     name: msg-defender-threat-intel-auth-reset
@@ -171,7 +171,7 @@ script:
       description: The unique identifier of the artifact (e.g., IP address, domain, file hash) linked to the indicator.
       type: String
   - arguments:
-    - description: The unique identifier of the host.
+    - description: Hostname or IP address..
       name: host_id
       required: true
     - description: "Use odata query to customize the response."
@@ -189,7 +189,7 @@ script:
       type: String
 
   - arguments:
-    - description: 'Hostname or IP address.\nChoose one of the following arguments: host_id or whois_record_id.'
+    - description: "Hostname or IP address.\nChoose one of the following arguments: host_id or whois_record_id."
       name: host_id
     - description: "The unique identifier of a specific whois record.\nChoose one of the following arguments: host_id or whois_record_id."
       name: whois_record_id

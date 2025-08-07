@@ -119,12 +119,13 @@ class Client:
         Returns:
             list: List of article indicator objects from the 'value' field of the response.
         """
-        odata_query = f"?$top={limit}&"
 
-        if odata:
-            odata_query += odata
+        odata_query = ""
 
         if not article_id:
+            if odata:
+                odata_query += f"?{odata}"
+
             return [
                 self.ms_client.http_request(
                     method="GET",
@@ -132,10 +133,13 @@ class Client:
                 )
             ]
 
+        odata_query = f"?$top={limit}&{odata}"
+
         response = self.ms_client.http_request(
             method="GET",
             url_suffix=f"v1.0/security/threatIntelligence/articles/{article_id}/indicators{odata_query}",
         )
+
         return response.get("value", [])
 
     def profile_list(self, intel_profile_id: str, odata: str, limit: int) -> list:
@@ -153,22 +157,24 @@ class Client:
         Returns:
             list: List of intelligence profile objects from the 'value' field of the response.
         """
-        odata_query = f"?$top={limit}&"
+        odata_query = ""
 
-        if odata:
-            odata_query += odata
+        if intel_profile_id:
+            if odata:
+                odata_query += f"?{odata}"
 
-        if not intel_profile_id:
             response = self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles{odata_query}",
+                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
             )
             return response.get("value", [])
+
+        odata_query = f"?$top={limit}&{odata}"
 
         return [
             self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
+                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles{odata_query}",
             )
         ]
 
@@ -189,9 +195,7 @@ class Client:
             list: A list of intelligence profile indicators, each containing information such as
                     ID, source, first/last seen timestamps, and associated artifacts.
         """
-        odata_query = f"?$top={limit}&"
-        if odata:
-            odata_query += odata
+        odata_query = f"?$top={limit}&{odata}"
 
         if not intel_profile_indicator_id:
             response = self.ms_client.http_request(
@@ -213,7 +217,7 @@ class Client:
         Docs: https://learn.microsoft.com/en-us/graph/api/security-host-get?view=graph-rest-1.0&tabs=http
 
         Args:
-            host_id (str): The ID of the host to retrieve information for.
+            host_id (str): The ID (host name or ip address) of the host to retrieve information for.
             odata (str): OData query parameters for filtering and formatting the response.
 
         Returns:
@@ -232,7 +236,7 @@ class Client:
         Docs: https://learn.microsoft.com/en-us/graph/api/security-whoisrecord-get?view=graph-rest-1.0&tabs=http
 
         Args:
-            host_id (str): The ID of the host to retrieve WHOIS information for.
+            host_id (str): The ID (host name or ip address) of the host to retrieve WHOIS information for.
             whois_record_id (str): The specific WHOIS record ID to retrieve.
             odata (str): OData query parameters for filtering and formatting the response.
 
@@ -244,7 +248,7 @@ class Client:
         if host_id:
             return self.ms_client.http_request(
                 method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/{host_id}/whois{odata}",
+                url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois{odata}",
             )
 
         return self.ms_client.http_request(
@@ -262,7 +266,7 @@ class Client:
         https://learn.microsoft.com/en-us/graph/api/security-whoishistoryrecord-get?view=graph-rest-1.0
 
         Args:
-            host_id (str): The ID of the host to get WHOIS history for.
+            host_id (str): The ID (host name or ip address) of the host to get WHOIS history for.
             whois_record_id (str): The ID of a specific WHOIS record to get history for.
             whois_history_record_id (str): The ID of a specific WHOIS history record.
             odata (str): OData query parameters for filtering and formatting results.
@@ -274,12 +278,9 @@ class Client:
         """
         odata_query = ""
 
-        if not whois_history_record_id:
-            odata_query += f"?$top={limit}&"
-
-        odata_query += f"{odata}"
-
         if host_id:
+            odata_query += f"?$top={limit}&{odata}"
+
             response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/whois/history{odata_query}",
@@ -288,12 +289,16 @@ class Client:
             return response.get("value", [])
 
         elif whois_record_id:
+            odata_query += f"?$top={limit}&{odata}"
+
             response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}",
             )
 
             return response.get("value", [])
+
+        odata_query += f"?{odata}"
 
         return [
             self.ms_client.http_request(
@@ -685,7 +690,7 @@ def main():
                 test_connection(client=client)
                 return_results("ok")
             else:
-                return_results("The test module is not functional, run the msgraph-identity-auth-start command instead.")
+                return_results("The test module is not functional, run the msg-defender-threat-intel-auth-start command instead.")
         elif command == "msg-defender-threat-intel-auth-start":
             return_results(start_auth(client))
         elif command == "msg-defender-threat-intel-auth-complete":
