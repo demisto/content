@@ -91,7 +91,9 @@ dependson:
   - sentinelone-list-agents
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.1.0
 supportedModules:
 - agentix
+tests:
+- No tests (auto formatted)
