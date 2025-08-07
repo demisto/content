@@ -861,8 +861,8 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
     demisto.debug(f"Running Step 2: Internal enrichment commands on {file_hashes} ")
 
-    # Run internal enrichment commands unless "enrichment_brands" exists and
-    # the internal enrichment brands are not included in "enrichment_brands"
+    # Run internal enrichment commands unless:
+    # "enrichment_brands" exists and the internal enrichment brands are not included in "enrichment_brands"
     run_internal_enrichment(
         hashes_by_type=hashes_by_type,
         enabled_brands=enabled_brands,

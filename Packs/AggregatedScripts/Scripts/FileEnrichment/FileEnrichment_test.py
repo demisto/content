@@ -515,30 +515,22 @@ def test_run_internal_enrichment(mocker: MockerFixture):
     "enrichment_brands, expected_results",
     [
         # No enrichment brands: only internal enrichment brands should run.
-        pytest.param(
-            [],
-            {"internal_enrichment_should_run": [True, True]},
-            id="No Enrichment Brands"
-        ),
+        pytest.param([], {"internal_enrichment_should_run": [True, True]}, id="No Enrichment Brands"),
         # Only WildFire in enrichment brands: only Wildfire should run
         pytest.param(
-            [Brands.WILDFIRE_V2.value],
-            {"internal_enrichment_should_run": [True, False]},
-            id="Enrichment Brands Include Wildfire"
+            [Brands.WILDFIRE_V2.value], {"internal_enrichment_should_run": [True, False]}, id="Enrichment Brands Include Wildfire"
         ),
         # Enrichment brands is not empty and does not include internal: no internal enrichment brands should run.
         pytest.param(
             [Brands.TIM.value],
             {"internal_enrichment_should_run": [False, False]},
-            id="Enrichment Brands Does NotInclude Wildfire"
+            id="Enrichment Brands Does NotInclude Wildfire",
         ),
     ],
 )
-
-
-def test_run_internal_enrichment_with_specified_enrichment_brand(mocker: MockerFixture,
-                                                                 enrichment_brands: list[str],
-                                                                 expected_results: dict):
+def test_run_internal_enrichment_with_specified_enrichment_brand(
+    mocker: MockerFixture, enrichment_brands: list[str], expected_results: dict
+):
     """
     Given:
         - A SHA256 file hash and enabled instances of all source brands.
