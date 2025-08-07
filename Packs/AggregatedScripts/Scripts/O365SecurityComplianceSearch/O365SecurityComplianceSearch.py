@@ -26,6 +26,7 @@ CONTEXT_RESULTS_KEY = "Results"
 DEFAULT_POLLING_INTERVAL = 10
 DEFAULT_POLLING_TIMEOUT = 180
 DEFAULT_SEARCH_PATTERN = r"(\w[\w\s]+?):\s*([^,]+)"
+DEFAULT_SEARCH_ACTION_SUFFIX = "_Preview"
 
 
 def parse_args(args: dict) -> dict:
@@ -237,8 +238,11 @@ def main():
         
         # TODO - verify sc-get-search is complete
         
-        # start search action and get preview
+        # start search action
         demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
+        
+        # add search_action_name and get preview
+        args["search_action_name"] = args["search_name"] + DEFAULT_SEARCH_ACTION_SUFFIX
         preview_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH_ACTION, result_key="Results")
         
         # get preview result values
