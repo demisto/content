@@ -1,9 +1,11 @@
+import itertools
+from typing import Any
+
+import urllib3
+from dateutil import parser
+
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
-from typing import Any
-import itertools
-from dateutil import parser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,6 +13,7 @@ urllib3.disable_warnings()
 EVENT_TYPE_ALERTS = "alerts"
 EVENT_TYPE_ACTIVITIES = "activity"
 EVENT_TYPE_DEVICES = "devices"
+MAX_PAGINATION_DURATION_SECONDS = 180
 
 
 class EVENT_TYPE:
@@ -72,7 +75,9 @@ class Client(BaseClient):
         self._api_key = api_key
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         if not access_token or not self.is_valid_access_token(access_token):
+            demisto.debug("debug-log: Invalid access token was used, attempting to get new access token.")
             access_token = self.get_access_token()
+            demisto.debug("debug-log: New access token was successfully generated.")
         self.update_access_token(access_token)
 
     def update_access_token(self, access_token=None):
@@ -89,8 +94,9 @@ class Client(BaseClient):
             )
         except Exception as e:
             if "Invalid access token" in str(e):
-                demisto.debug("debug-log: Invalid access token")
+                demisto.debug("debug-log: Expired or invalid access token, attempting to update access token.")
                 self.update_access_token()
+                demisto.debug("debug-log: Access token successfully updated.")
                 raw_response = self._http_request(
                     url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
                 )
@@ -121,6 +127,7 @@ class Client(BaseClient):
         order_by: str = "time",
         from_param: None | int = None,
         before: Optional[datetime] = None,
+        event_type: str = "",
     ):
         """Fetches events using AQL query.
 
@@ -147,6 +154,7 @@ class Client(BaseClient):
         # perform pagination if needed (until max_fetch limit),  cycle through all pages and add results to results list.
         # The response's 'next' attribute carries the index to start the next request in the
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
+        start_time = datetime.now()
         try:
             while next and (len(results) < max_fetch):
                 if len(results) < max_fetch:
@@ -157,6 +165,16 @@ class Client(BaseClient):
                 current_results = raw_response.get("data", {}).get("results", [])
                 results.extend(current_results)
                 demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+
+                total_seconds = (datetime.now() - start_time).total_seconds()
+                demisto.debug(f"total {total_seconds} seconds so far")
+                if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
+                    demisto.debug(
+                        f"info-log: Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s for {event_type}, "
+                        f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
+                    )
+                    break
+
         except Exception as e:
             demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
@@ -398,6 +416,7 @@ def fetch_by_event_type(
         order_by=event_type.order_by,
         from_param=last_fetch_next,
         before=before_time,
+        event_type=event_type.type,
     )
     new_events: list[dict] = []
     demisto.debug(f"debug-log: fetched {len(response)} {event_type.type} from API")
