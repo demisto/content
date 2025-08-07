@@ -660,6 +660,7 @@ def run_external_enrichment(
 def run_internal_enrichment(
     hashes_by_type: dict[str, list],
     enabled_brands: list[str],
+    enrichment_brands: list[str],
     per_command_context: dict[str, dict],
     verbose_command_results: list,
 ) -> None:
@@ -669,13 +670,10 @@ def run_internal_enrichment(
     Args:
         hashes_by_type (dict[str, list]): Dictionary of file hashes (value) classified by the hash type (key).
         enabled_brands (list[str]) : List of enabled integration brands.
+        enrichment_brands (list[str]): List of brand names to run, as given in the `enrichment_brands` argument.
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
-    # setting `enrichment_brands` to empty list as it's not relevant to internal enrichment,
-    # and is used in function "enrich_with_command".
-    enrichment_brands: list[str] = []
-
     # A. Run Wildfire Verdict command -  only works with SHA256 and MD5 hashes
     if wildfire_hashes := (hashes_by_type.get("SHA256", []) + hashes_by_type.get("MD5", [])):
         wildfire_verdict_command = Command(
@@ -860,10 +858,15 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     demisto.debug("Getting integration brands on tenant.")
     enabled_brands = list({module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"})
     demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
-    demisto.debug(f"Running Step 2: Internal enrichment commands on {file_hashes}.")
+
+    demisto.debug(f"Running Step 2: Internal enrichment commands on {file_hashes} ")
+
+    # Run internal enrichment commands unless "enrichment_brands" exists and
+    # the internal enrichment brands are not included in "enrichment_brands"
     run_internal_enrichment(
         hashes_by_type=hashes_by_type,
         enabled_brands=enabled_brands,
+        enrichment_brands=enrichment_brands,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
     )
