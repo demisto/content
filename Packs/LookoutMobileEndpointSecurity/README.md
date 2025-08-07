@@ -42,7 +42,7 @@ You must create an application key specific to your Lookout Mobile Endpoint Secu
 3. Click **GENERATE KEY**.
 4. Enter a label name and click **Next**.
 5. Copy the key from your clipboard into the configuration for your application.
-*IMPORTANT:* Copy the generated key to your application immediately as you cannot access the key again after this procedure.
+    *IMPORTANT:* Immediately copy the generated key to your application since you cannot access the key again after completing this procedure.
 
 ### Cortex XSIAM Side
 
