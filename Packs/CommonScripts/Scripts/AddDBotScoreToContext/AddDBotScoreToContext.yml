@@ -1,7 +1,4 @@
 args:
-- description: The indicator value (ex 1.1.1.1)
-  name: indicator
-  required: true
 - description: The indicator type (ex ip, url, email, domain)
   name: indicatorType
   required: true
