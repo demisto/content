@@ -1123,9 +1123,7 @@ def test_get_indicator_results(
 @pytest.mark.parametrize(
     "demisto_args",
     [
-        (
-            {"id": "1"}
-        ),
+        ({"id": "1"}),
     ],
 )
 def test_get_warninglist(demisto_args: dict, mocker):
@@ -1152,8 +1150,8 @@ def test_get_warninglist(demisto_args: dict, mocker):
     assert result.readable_output == warninglist_readable_output
     assert result.outputs_prefix == "MISP.Warninglist"
     assert result.outputs == warninglist_outputs
-    
-    
+
+
 def test_get_warninglists(mocker):
     """
     Given:

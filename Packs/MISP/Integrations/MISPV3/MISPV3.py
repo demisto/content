@@ -2003,8 +2003,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     warninglist_default = demisto_args.get("default")
     warninglist_category = demisto_args.get("category")
     warninglist_values = argToList(demisto_args.get("values"))
-    warninglist_types =argToList(demisto_args.get("types"))
-
+    warninglist_types = argToList(demisto_args.get("types"))
 
     data = {}
     if warninglist_name:
@@ -2042,7 +2041,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                 "Default": entity["default"],
                 "Category": entity["category"],
             }
-            warninglist_output["Attributes"]= [f"{t['type']}" for t in (response.get("WarninglistType") or [])]
+            warninglist_output["Attributes"] = [f"{t['type']}" for t in (response.get("WarninglistType") or [])]
             warninglist_output["Entries"] = [
                 {
                     "ID": entry.get("id"),
