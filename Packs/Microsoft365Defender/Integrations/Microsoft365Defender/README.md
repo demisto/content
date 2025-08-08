@@ -65,20 +65,16 @@ Follow these steps for a self-deployed configuration:
    6. To enable mirroring to close a ticket in Cortex XSOAR, check the **Close Mirrored Cortex XSOAR Incidents** checkbox.
    7. To enable mirroring to close an incident in Microsoft 365 Defender, check the **Close Mirrored Microsoft 365 Defender Incidents** checkbox.
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
 | ID or Client ID |  | False |
 | Token or Tenant ID |  | False |
-| Application ID | The API key to use to connect. | False |
 | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-| Tenant ID (for Client Credentials mode) |  | False |
-| Client Secret (for Client Credentials mode) |  | False |
 | Client Secret |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
 | Private Key |  | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -88,15 +84,17 @@ Follow these steps for a self-deployed configuration:
 | Fetch incidents |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Application ID (Deprecated) |  | False |
-| Tenant ID (for Client Credentials mode) (Deprecated) |  | False |
-| Client Secret (for Client Credentials mode) (Deprecated) |  | False |
 | Incidents Fetch Interval |  | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Microsoft 365 Defender to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to  Microsoft 365 Defender\), or Incoming and Outgoing \(from/to Cortex XSOAR and  Microsoft 365 Defender\). | False |
 | Close Mirrored Cortex XSOAR Incidents | Incoming Mirroring - when selected, closing the Microsoft 365 Defender incident is mirrored in Cortex XSOAR. | False |
 | Close Mirrored Microsoft 365 Defender Incidents | Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in Microsoft 365 Defender. | False |
 | Comment Entry Tag To Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment into Microsoft 365 Defender. | False |
 | Comment Entry Tag From Microsoft 365 Defender | Choose a tag to add to an entry to mirror it as a comment from Microsoft 365 Defender. | False |
+| Custom close-reason mapping for XSOAR -&gt; Defender mirrored incidents. Overwrites default close-reason mapping. | Define custom close reason mapping from XSOAR into Defender. Example: Resolved=TruePositive-Malware,False Positive=FalsePositive-NotMalicious | False |
+| Custom close-reason mapping for Defender -&gt; XSOAR mirrored incidents. Overwrites default close-reason mapping. | Define custom close reason mapping from Defender into XSOAR. Example: TruePositive=Resolved,FalsePositive=False Positive,InformationalExpectedActivity=Resolved | False |
+| Enable custom XSOAR -&gt; Defender close-reason mapping. |  | False |
+| Enable custom Defender -&gt; XSOAR close-reason mapping. |  | False |
+
 
 5. Run the !microsoft-365-defender-auth-test command to validate the authentication process.
 
@@ -588,7 +586,7 @@ Returns the list of fields to map in outgoing mirroring. This command is only us
 #### Context Output
 
 There is no context output for this command.
-
+### update-remote-system
 ### update-remote-system
 
 ***
@@ -607,8 +605,6 @@ Updates the remote incident with local incident changes. This method is only use
 
 There is no context output for this command.
 
-### get-remote-data
-
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
 
@@ -620,13 +616,12 @@ Get remote data from a remote incident. This method does not update the current 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote incident ID. | Required |
-| lastUpdate | The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time. Default is 0. | Optional |
+| id | The remote incident ID. | Required | 
+| lastUpdate | The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 ### get-modified-remote-data
 
 ***
@@ -640,7 +635,7 @@ Get the list of incidents that were modified since the last update time. This me
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | Date string representing the local time. The incident is only returned if it was modified after the last update time. | Optional |
+| lastUpdate | Date string representing the local time. The incident is only returned if it was modified after the last update time. | Optional | 
 
 #### Context Output
 
