@@ -4416,39 +4416,70 @@ This command only changes the values supplied through the parameters of this com
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Warninglist.ID | number | The ID of the warninglist to be changed |
-| MISP.Warninglist.Name | string | The updated warninglist name |
-| MISP.Warninglist.Type | string | The updated warninglist type |
-| MISP.Warninglist.Description | string | The updated description of the warninglist |
-| MISP.Warninglist.Version | number | The updated warninglist version number |
-| MISP.Warninglist.Enabled | boolean | True if the warninglist is set enabled, False otherwise. |
+| MISP.Warninglist.ID | number | The ID of the warninglist |
+| MISP.Warninglist.Name | string | The warninglist's name |
+| MISP.Warninglist.Type | string | MISP warninglist type |
+| MISP.Warninglist.Description | string | Description of the warninglist |
+| MISP.Warninglist.Version | number | The warninglist version number |
+| MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
 | MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
-| MISP.Warninglist.Category | string | The updated category of the warninglist |
+| MISP.Warninglist.Category | string | The category of the MISP warninglist |
+| MISP.Warninglist.Entries | unknown | The warninglist entries |
+| MISP.Warninglist.Attributes | unknown | The valid attribute types for this warninglist |
 
 #### Command Example
 
-```!misp-change-warninglist id=1234 name="Changed list name" version=20250708 values="1.2.3.4,5.6.7.8" types="ip-src,ip-dst"```
+```!misp-change-warninglist id=1234 name="Changed list name" values="1.2.3.4,5.6.7.8" types="ip-src,ip-dst"```
+
+```json
+{
+    "MISP": {
+        "Warninglist": [ 
+            {
+                "ID": 1234,
+                "Name": "Changed list name",
+                "Type": "string",
+                "Description": "The entries in this list have been changed",
+                "Version": 42,
+                "Enabled": false,
+                "Default": false,
+                "Category": "false_positive",
+                "Attributes": [
+                    "ip-src",
+                    "ip-dst"
+                ],
+                "Entries": [
+                    {
+                        "Comment": null,
+                        "ID": null,
+                        "Value": "1.2.3.4",
+                        "WarninglistID": null
+                    },
+                    {
+                        "Comment": null,
+                        "ID": null,
+                        "Value": "5.6.7.8",
+                        "WarninglistID": null
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 >
 >### MISP Warninglist
 >
->|ID|Name|Type|Description|Version|Enabled|Default|Category|
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
 >|---|---|---|---|---|---|---|---|
->| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive |
->
+>| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive | ip-src, ip-dst |
 >### Entries in MISP Warninglist
->
 >|Value|
 >|---|
->|1.1.1.1 |
->
->### Valid Attributes in MISP Warninglist
->
->|ID|Type|
->|---|---|
->|987|ip-src|
->|567|ip-dst|
+>| 1.2.3.4 |
+>| 5.6.7.8 |
 
 ### misp-get-warninglist
 
@@ -4478,19 +4509,58 @@ Get a specific warninglist by its ID.
 | MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
 | MISP.Warninglist.Category | string | The category of the MISP warninglist |
 | MISP.Warninglist.Entries | unknown | The warninglist entries |
-| MISP.Warninglist.ValidAttributes| unknown | The valid attribute types for this warninglist |
+| MISP.Warninglist.Attributes | unknown | The valid attribute types for this warninglist |
 
 #### Command Example
 
 ```!misp-get-warninglist id=1234```
 
+#### Context Example
+
+```json
+{
+    "MISP": {
+        "Warninglist": [ 
+            {
+                "ID": 1234,
+                "Name": "Hello XSOAR!",
+                "Type": "string",
+                "Description": "The Quick Brown Fox Jumped Over The Lazy Dog",
+                "Version": 1,
+                "Enabled": false,
+                "Default": false,
+                "Category": "false_positive",
+                "Attributes": [
+                    "attrib1",
+                    "attrib2"
+                ],
+                "Entries": [
+                    {
+                        "ID": 12345,
+                        "Value": "test",
+                        "WarninglistID": 1,
+                        "Comment": null
+                    },
+                    {
+                        "ID": 56789,
+                        "Value": "another-test",
+                        "WarninglistID": 1,
+                        "Comment": null
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
 >### MISP Warninglist
 >
->|ID|Name|Type|Description|Version|Enabled|Default|Category|
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
 >|---|---|---|---|---|---|---|---|
->| 1234 | Example List Name | string | An example of a warninglist in MISP | 1 | true | true | false_positive |
+>| 1234 | Example List Name | string | An example of a warninglist in MISP | 1 | true | true | false_positive | hostname |
 >
 >### Entries in MISP Warninglist
 >
@@ -4498,8 +4568,3 @@ Get a specific warninglist by its ID.
 >|---|---|---|
 >|123| hostname.example.local | An example of a hostname |
 >
->### Valid Attributes in MISP Warninglist
->
->|ID|Type|
->|---|---|
->|987|hostname|
