@@ -54,22 +54,32 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
     if ($raw_response) {
         $entry_context = @{
             $script:MESSAGE_TRACE_ENTRY_CONTEXT = $raw_response | ForEach-Object {
-                @{
+                $entry = @{
                     "MessageId"        = $_.MessageId
                     "MessageTraceId"   = $_.MessageTraceId
-                    "Organization"     = $_.Organization
                     "Received"         = $_.Received
                     "RecipientAddress" = $_.RecipientAddress
                     "SenderAddress"    = $_.SenderAddress
                     "Size"             = $_.Size
-                    "StartDate"        = $_.StartDate
-                    "EndDate"          = $_.EndDate
                     "Status"           = $_.Status
                     "Subject"          = $_.Subject
                     "ToIP"             = $_.ToIP
                     "FromIP"           = $_.FromIP
-                    "Index"            = $_.Index
                 }
+
+                if ($_.EndDate -ne $null) {
+                    $entry["EndDate"] = $_.EndDate
+                }
+                if ($_.StartDate -ne $null) {
+                    $entry["StartDate"] = $_.StartDate
+                }
+                if ($_.Organization -ne $null) {
+                    $entry["Organization"] = $_.Organization
+                }
+                if ($_.Index -ne $null) {
+                    $entry["Index"] = $_.Index
+                }
+                return $entry
             }
         }
     }
