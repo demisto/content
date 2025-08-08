@@ -1182,3 +1182,76 @@ def test_get_warninglists(mocker):
     assert result.readable_output == warninglists_readable_output
     assert result.outputs_prefix == "MISP.Warninglist"
     assert result.outputs == warninglists_outputs
+
+
+@pytest.mark.parametrize(
+    "demisto_args",
+    [
+        ({"id": "1", "values": ["8.8.8.8", "9.9.9.9"]}),
+    ],
+)
+def test_change_warninglist_entries(demisto_args: dict, mocker):
+    """
+    Given:
+    - A changed MISP Warninglist (json).
+
+    When:
+    - Running misp-change-warninglists command.
+
+    Then:
+    - Ensure that the output is valid and was parsed correctly.
+    """
+    mock_misp(mocker)
+    from MISPV3 import change_warninglist_command
+    import pymisp
+
+    # Load the expected outputs and use them as the mock response
+    warninglists_response_data = util_load_json("test_data/change_warninglist_entries_response.json")
+    with open("test_data/change_warninglist_entries_outputs.md", encoding="utf-8") as f:
+        warninglists_readable_output = f.read()
+    warninglists_outputs = util_load_json("test_data/change_warninglist_entries_outputs.json")
+
+    # Mock the PYMISP._prepare_request method to return a Response-like object with a .json() method
+    from requests.models import Response
+
+    class MockResponse(Response):
+        def json(self_inner):
+            return warninglists_response_data
+
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=MockResponse())
+    result = change_warninglist_command(demisto_args)
+    assert result.readable_output == warninglists_readable_output
+    assert result.outputs_prefix == "MISP.Warninglist"
+    assert result.outputs == warninglists_outputs
+
+
+@pytest.mark.parametrize(
+    "demisto_args",
+    [
+        ({"id": "1", "values": ["8.8.8.8", "9.9.9.9"]}),
+    ],
+)
+def test_change_warninglist_details(demisto_args: dict, mocker):
+    mock_misp(mocker)
+    from MISPV3 import change_warninglist_command
+    import pymisp
+
+    # Load the expected outputs and use them as the mock response
+    warninglist_response_data = util_load_json("test_data/change_warninglist_details_response.json")
+    with open("test_data/change_warninglist_details_outputs.md", encoding="utf-8") as f:
+        warninglist_readable_output = f.read()
+    warninglist_outputs = util_load_json("test_data/change_warninglist_details_outputs.json")
+
+    # Mock the PYMISP._prepare_request method to return a Response-like object with a .json() method
+    from requests.models import Response
+
+    class MockResponse(Response):
+        def json(self_inner):
+            return warninglist_response_data
+
+    # Mock the PYMISP.warninglists method to return the expected warninglists response data
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=MockResponse())
+    result = change_warninglist_command(demisto_args)
+    assert result.readable_output == warninglist_readable_output
+    assert result.outputs_prefix == "MISP.Warninglist"
+    assert result.outputs == warninglist_outputs

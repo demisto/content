@@ -1,0 +1,42 @@
+{
+    "Warninglist": {
+        "id": 1,
+        "name": "Hello, this world has changed!",
+        "type": "string",
+        "description": "Changed yet agaaaaaaaaaaaain!",
+        "version": 42,
+        "enabled": true,
+        "default": true,
+        "category": "false_positive",
+        "matching_attributes": [
+            "md5",
+            "sha1",
+            "sha256"
+        ]
+    },
+    "WarninglistEntry": [
+        {
+            "id": 123,
+            "value": "8.8.8.8",
+            "warninglist_id": 1,
+            "comment": null
+        },
+        {
+            "id": 456,
+            "value": "www.example.com",
+            "warninglist_id": 1,
+            "comment": null
+        }
+    ],
+    "WarninglistType": [
+        {
+            "type": "md5"
+        },
+        {
+            "type": "sha1"
+        },
+        {
+            "type": "sha256"
+        }
+    ]
+}
