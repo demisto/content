@@ -1672,9 +1672,9 @@ script:
       name: id
     - description: UUID of the attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from the misp-search commands.
       name: uuid
-    - description: Value of the attribute
+    - description: Value of the attribute.
       name: value
-    - description: Sighting source
+    - description: Sighting source.
       name: source
     description: Add sighting to an attribute.
     name: misp-add-sighting
@@ -2738,7 +2738,7 @@ script:
       description: MISP role name.
       type: string
   - arguments:
-    - description: ID of the warninglist
+    - description: ID of the warninglist.
       name: id
       required: true
     description: Get a specific warninglist by its ID.
@@ -2751,7 +2751,7 @@ script:
       description: The warninglist's name.
       type: string
     - contextPath: MISP.Warninglist.Type
-      description: MISP warninglist type0
+      description: MISP warninglist type.
       type: string
     - contextPath: MISP.Warninglist.Description
       description: Description of the warninglist.
