@@ -2770,8 +2770,10 @@ script:
       type: string
     - contextPath: MISP.Warninglist.Entries
       description: The warninglist entries.
+      type: dict
     - contextPath: MISP.Warninglist.Attributes
       description: The attribute types for this warninglist.
+      type: dict
   - arguments: []
     description: Gets all warninglists from MISP
     name: misp-get-warninglists
@@ -2797,8 +2799,12 @@ script:
     - contextPath: MISP.Warninglist.Default
       description: True if the warninglist is set as default, False otherwise.
       type: boolean
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries.
+      type: dict
     - contextPath: MISP.Warninglist.Attributes
       description: The attribute types for this warninglist.
+      type: dict
   - arguments:
     - name: id
       description: ID of the warninglist to update.
@@ -2848,6 +2854,12 @@ script:
       type: boolean
     - contextPath: MISP.Warninglist.Category
       description: The updated category of the warninglist.
+      type: string
+    - contextPath: MISP.Warninglist.Entries
+      description: The warninglist entries.
+      type: dict
+    - contextPath: MISP.Warninglist.Attributes
+      description: The attribute types for this warninglist.
       type: string
   dockerimage: demisto/pymisp2:2.5.10.3545364
   runonce: false

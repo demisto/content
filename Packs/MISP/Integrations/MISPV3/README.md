@@ -4376,7 +4376,8 @@ Gets all warninglists from MISP
 | MISP.Warninglist.Version | number | The warninglist version number |
 | MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
 | MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
-| MISP.Warninglist.EntryCount | number | The amount of entries (integer) in the warninglist |
+| MISP.Warninglist.Entries | dict | The warninglist entries |
+| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist |
 
 #### Command Example
 
@@ -4386,10 +4387,10 @@ Gets all warninglists from MISP
 
 >### MISP
 >
->|ID|Name|Type|Description|Version|Enabled|Default|Category|EntryCount|ValidAttributes|
+>|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
 >|---|---|---|---|---|---|---|---|---|---|
->| 1 | List | string | An example list | 1 | true | true | false_positive | 2 | hostname |
->| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | 20 | url |
+>| 1 | List | string | An example list | 1 | true | true | false_positive | hostname |
+>| 2 | Another list | cidr | An example of another list | 42 | false | false | false_positive | url |
 
 ### misp-change-warninglist
 
@@ -4424,8 +4425,8 @@ This command only changes the values supplied through the parameters of this com
 | MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
 | MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
 | MISP.Warninglist.Category | string | The category of the MISP warninglist |
-| MISP.Warninglist.Entries | unknown | The warninglist entries |
-| MISP.Warninglist.Attributes | unknown | The valid attribute types for this warninglist |
+| MISP.Warninglist.Entries | dict | The warninglist entries |
+| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist |
 
 #### Command Example
 
@@ -4475,7 +4476,9 @@ This command only changes the values supplied through the parameters of this com
 >|ID|Name|Type|Description|Version|Enabled|Default|Category|Attributes|
 >|---|---|---|---|---|---|---|---|
 >| 1234 | Changed list name | string | An example of an existing description | 1 | true | true | false_positive | ip-src, ip-dst |
+
 >### Entries in MISP Warninglist
+>
 >|Value|
 >|---|
 >| 1.2.3.4 |
