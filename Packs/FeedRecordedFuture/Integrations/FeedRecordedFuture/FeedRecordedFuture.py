@@ -22,6 +22,7 @@ INTEGRATION_NAME = "Recorded Future"
 
 # taken from recorded future docs
 RF_CRITICALITY_LABELS = {"Very_Malicious": 90, "Malicious": 65, "Suspicious": 25, "Unusual": 5}
+RF_CVE_CRITICALITY_LABELS = {"Very Critical": 90, "Critical": 80, "High": 65, "Medium": 25, "Low": 5}
 
 RF_INDICATOR_TYPES = {"ip": "ip", "domain": "domain", "url": "url", "CVE(vulnerability)": "vulnerability", "hash": "hash"}
 
@@ -242,6 +243,7 @@ class Client(BaseClient):
 
     def get_batches_from_file(self, limit):
         demisto.info("RF: Reading from file")
+        csv.field_size_limit(sys.maxsize)
         # we do this try to make sure the file gets deleted at the end
         try:
             file_stream = open("response.txt")
@@ -418,6 +420,22 @@ def calculate_recorded_future_criticality_label(risk_from_feed):
         return "No current evidence of risk"
 
 
+def calculate_recorded_future_cve_criticality_label(risk_from_feed):
+    risk_from_feed = int(risk_from_feed)
+    if risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Very Critical"]:
+        return "Very Critical"
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Critical"]:
+        return "Critical"
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["High"]:
+        return "High"
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Medium"]:
+        return "Medium"
+    elif risk_from_feed >= RF_CVE_CRITICALITY_LABELS["Low"]:
+        return "Low"
+    else:
+        return "No current evidence of risk"
+
+
 def format_risk_string(risk_string):
     """Formats the risk string returned from the feed
     Args:
@@ -475,7 +493,10 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 risk = item.get("Risk")
                 if isinstance(risk, str) and risk.isdigit():
                     raw_json["score"] = score = client.calculate_indicator_score(risk)
-                    raw_json["Criticality Label"] = calculate_recorded_future_criticality_label(risk)
+                    if raw_json["type"] == FeedIndicatorType.CVE:
+                        raw_json["Criticality Label"] = calculate_recorded_future_cve_criticality_label(risk)
+                    else:
+                        raw_json["Criticality Label"] = calculate_recorded_future_criticality_label(risk)
                     # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
                     if not client.check_indicator_risk_score(risk):
                         continue
@@ -499,6 +520,8 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                         "recordedfutureevidencedetails": lower_case_evidence_details_keys,
                         "tags": client.tags,
                         "recordedfutureriskscore": risk,
+                        "fieldrecordedfutureriskrules": raw_json.get("RiskString", ""),
+                        "recordedfuturefeedthreatassessment": raw_json.get("Criticality Label", ""),
                     },
                     "score": score,
                 }
