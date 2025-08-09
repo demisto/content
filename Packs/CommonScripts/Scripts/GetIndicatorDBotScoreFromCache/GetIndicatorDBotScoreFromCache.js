@@ -20,9 +20,7 @@ var uniqueValues = new Set(values.map(v => v.toLowerCase()));
 var uniqueValuesEscapeCharacters = Array.from(uniqueValues, item => escapeSpecialCharacters(item));
 var uniqueValuesString = uniqueValuesEscapeCharacters.join('" "')
 
-var query = `value:(${[...uniqueValuesString]
-    .map(value => `"${value}"`)
-    .join(' ')})`;
+var query = `value:("${uniqueValuesString}")`;
 
 var indicatorsRes = executeCommand('findIndicators', {
     query: query,
