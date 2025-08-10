@@ -438,8 +438,9 @@ class XDRHandler(BrandHandler):
         """
         super().__init__(brand, orchestrator)
         self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
-        self.quarantine_command =  "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
-
+        self.quarantine_command = (
+            "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
+        )
 
     def validate_args(self, args: dict) -> None:
         """
@@ -541,12 +542,14 @@ class XDRHandler(BrandHandler):
             message = (
                 QuarantineResult.Messages.SUCCESS
                 if quarantine_status
-                else QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=quarantine_status_data.get("error_description",""))
+                else QuarantineResult.Messages.FAILED_WITH_REASON.format(
+                    reason=quarantine_status_data.get("error_description", "")
+                )
             )
             status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Final status for {endpoint_id}: {status}")
         else:
-            message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=endpoint_result.get("error_description",""))
+            message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=endpoint_result.get("error_description", ""))
             status = QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Quarantine action failed for {endpoint_id}. Reason: {message}")
 
