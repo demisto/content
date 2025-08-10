@@ -111,8 +111,7 @@ class TestClientFunctions:
 
         mocked_http_request.assert_called_with(**expected_args)
 
-    @freeze_time("2023-01-01T01:00:00")
-    def test_fetch_by_aql_query_pagination_timeout(self, mocker, dummy_client, freezer):
+    def test_fetch_by_aql_query_pagination_timeout(self, mocker, dummy_client):
         """
         Test fetch_by_aql_query function behavior when pagination duration exceeds the limit.
 
@@ -126,37 +125,38 @@ class TestClientFunctions:
             - It should return the results fetched so far.
             - It should return the 'next' pointer for the subsequent fetch.
         """
-        first_response = {
-            "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
-        }
+        with freeze_time("2023-01-01T01:00:00") as frozen_time:
+            first_response = {
+                "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
+            }
 
-        second_response = {
-            "data": {"next": 2, "results": [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}], "total": "Many"}
-        }
+            second_response = {
+                "data": {"next": 2, "results": [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}], "total": "Many"}
+            }
 
-        third_response = {
-            "data": {"next": 3, "results": [{"unique_id": "3", "time": "2023-01-01T01:00:30.123456+00:00"}], "total": "Many"}
-        }
+            third_response = {
+                "data": {"next": 3, "results": [{"unique_id": "3", "time": "2023-01-01T01:00:30.123456+00:00"}], "total": "Many"}
+            }
 
-        call_count = 0
-        responses = [first_response, second_response, third_response]
+            call_count = 0
+            responses = [first_response, second_response, third_response]
 
-        def advance_time_and_return_response(*args, **kwargs):
-            nonlocal call_count
-            response = responses[call_count]
-            call_count += 1
-            freezer.tick(delta=timedelta(seconds=100))
-            return response
+            def advance_time_and_return_response(*args, **kwargs):
+                nonlocal call_count
+                response = responses[call_count]
+                call_count += 1
+                frozen_time.tick(delta=timedelta(seconds=200))
+                return response
 
-        mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=advance_time_and_return_response)
+            mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=advance_time_and_return_response)
 
-        results, next_page = dummy_client.fetch_by_aql_query(
-            aql_query="example_query", max_fetch=10, after=(datetime.now() - timedelta(minutes=1))
-        )
+            results, next_page = dummy_client.fetch_by_aql_query(
+                aql_query="example_query", max_fetch=10, after=(datetime.now() - timedelta(minutes=1))
+            )
 
-        assert mocked_http_request.call_count == 2
-        assert len(results) == 2
-        assert next_page == 2
+            assert mocked_http_request.call_count == 2
+            assert len(results) == 2
+            assert next_page == 2
 
 
 class TestHelperFunction:
