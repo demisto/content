@@ -4312,6 +4312,7 @@ def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
     response = get_alerts_by_filter_command(client, args)
     assert response.outputs[0].get("internal_id", {}) == 33333
 
+
 def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
     """
     Given:
