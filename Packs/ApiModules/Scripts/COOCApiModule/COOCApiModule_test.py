@@ -545,13 +545,13 @@ def test_get_cloud_credentials_dict_response(mocker):
     assert result == credentials
 
 
-def test_return_permission_error_with_valid_dict(mocker):
+def test_return_permissions_error_with_valid_dict(mocker):
     """
     Given: A valid error_entry dictionary with account_id, message, and name.
-    When: return_permission_error is called.
+    When: return_permissions_error is called.
     Then: It logs the error, returns formatted results, and exits.
     """
-    from COOCApiModule import return_permission_error
+    from COOCApiModule import return_permissions_error
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
@@ -559,7 +559,7 @@ def test_return_permission_error_with_valid_dict(mocker):
 
     error_entry = {"account_id": "test-account-123", "message": "Permission denied: permission", "name": "permission"}
 
-    return_permission_error(error_entry)
+    return_permissions_error(error_entry)
 
     demisto.debug.assert_called_once_with(
         "[COOC API] Permission error detected for account test-account-123: " + str(error_entry)
@@ -578,13 +578,13 @@ def test_return_permission_error_with_valid_dict(mocker):
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permission_error_with_missing_account_id(mocker):
+def test_return_permissions_error_with_missing_account_id(mocker):
     """
     Given: An error_entry dictionary without account_id field.
-    When: return_permission_error is called.
+    When: return_permissions_error is called.
     Then: It handles the missing field gracefully and still processes the error.
     """
-    from COOCApiModule import return_permission_error
+    from COOCApiModule import return_permissions_error
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
@@ -592,7 +592,7 @@ def test_return_permission_error_with_missing_account_id(mocker):
 
     error_entry = {"message": "Permission denied: permission", "name": "permission"}
 
-    return_permission_error(error_entry)
+    return_permissions_error(error_entry)
 
     demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: " + str(error_entry))
 
@@ -609,13 +609,13 @@ def test_return_permission_error_with_missing_account_id(mocker):
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permission_error_with_empty_dict(mocker):
+def test_return_permissions_error_with_empty_dict(mocker):
     """
     Given: An empty error_entry dictionary.
-    When: return_permission_error is called.
+    When: return_permissions_error is called.
     Then: It processes the empty dictionary and logs with None account_id.
     """
-    from COOCApiModule import return_permission_error
+    from COOCApiModule import return_permissions_error
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
@@ -623,7 +623,7 @@ def test_return_permission_error_with_empty_dict(mocker):
 
     error_entry = {}
 
-    return_permission_error(error_entry)
+    return_permissions_error(error_entry)
 
     demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: {}")
 
@@ -640,13 +640,13 @@ def test_return_permission_error_with_empty_dict(mocker):
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permission_error_with_invalid_type_string(mocker):
+def test_return_permissions_error_with_invalid_type_string(mocker):
     """
     Given: A string instead of a dictionary for error_entry.
-    When: return_permission_error is called.
+    When: return_permissions_error is called.
     Then: It logs the invalid type error and creates a default error entry.
     """
-    from COOCApiModule import return_permission_error
+    from COOCApiModule import return_permissions_error
 
     mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
@@ -655,7 +655,7 @@ def test_return_permission_error_with_invalid_type_string(mocker):
 
     error_entry = "invalid string input"
 
-    return_permission_error(error_entry)
+    return_permissions_error(error_entry)
 
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'str'>")
 
@@ -675,13 +675,13 @@ def test_return_permission_error_with_invalid_type_string(mocker):
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permission_error_with_invalid_type_list(mocker):
+def test_return_permissions_error_with_invalid_type_list(mocker):
     """
     Given: A list instead of a dictionary for error_entry.
-    When: return_permission_error is called.
+    When: return_permissions_error is called.
     Then: It logs the invalid type error and creates a default error entry.
     """
-    from COOCApiModule import return_permission_error
+    from COOCApiModule import return_permissions_error
 
     mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
@@ -690,7 +690,7 @@ def test_return_permission_error_with_invalid_type_list(mocker):
 
     error_entry = ["item1", "item2"]
 
-    return_permission_error(error_entry)
+    return_permissions_error(error_entry)
 
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'list'>")
 
@@ -710,13 +710,13 @@ def test_return_permission_error_with_invalid_type_list(mocker):
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permission_error_with_none_input(mocker):
+def test_return_permissions_error_with_none_input(mocker):
     """
     Given: None as input for error_entry.
-    When: return_permission_error is called.
+    When: return_permissions_error is called.
     Then: It logs the invalid type error and creates a default error entry.
     """
-    from COOCApiModule import return_permission_error
+    from COOCApiModule import return_permissions_error
 
     mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
@@ -725,7 +725,7 @@ def test_return_permission_error_with_none_input(mocker):
 
     error_entry = None
 
-    return_permission_error(error_entry)
+    return_permissions_error(error_entry)
 
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'NoneType'>")
 

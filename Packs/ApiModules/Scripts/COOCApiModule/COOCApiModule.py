@@ -321,7 +321,7 @@ def get_proxydome_token() -> str:
     return response.text
 
 
-def return_permission_error(error_entry: dict) -> None:
+def return_permissions_error(error_entry: dict) -> None:
     """
     Handles permission error responses and exits the script execution.
 
@@ -338,14 +338,16 @@ def return_permission_error(error_entry: dict) -> None:
     Returns:
         None: This function does not return as it calls sys.exit(0)
     """
-    # Input validation and sanitization
-    if not isinstance(error_entry, dict):
+    # Input validation
+    if not isinstance(error_entry, dict) and ("account_id", "message", "name") not in error_entry:
         demisto.error(f"[COOC API] Invalid error_entry type: {type(error_entry)}")
         error_entry = {"message": "Invalid error data provided", "error_type": "Internal Error"}
 
     # Log the permission error for security audit purposes
     demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
 
+    # Add required keys:
+    error_entry.update({"classification": "WARNING", "error": "Permission Error"})
     # Return formatted error response
     demisto.results(
         {
