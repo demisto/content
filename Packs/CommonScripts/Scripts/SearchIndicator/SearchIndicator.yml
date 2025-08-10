@@ -19,7 +19,6 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 name: SearchIndicator
 outputs:
@@ -36,10 +35,9 @@ outputs:
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
-subtype: python3
 tags:
 - Utility
-type: python
+type: javascript
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
