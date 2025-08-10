@@ -12,8 +12,7 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 import jwt
-from datetime import timezone
-UTC = timezone.utc
+from datetime import datetime, timedelta, UTC
 import uuid
 
 DEFAULT_FETCH_TIME = "10 minutes"
