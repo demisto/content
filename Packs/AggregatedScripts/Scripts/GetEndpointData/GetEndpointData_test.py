@@ -1138,29 +1138,6 @@ def test_get_endpoints_not_found_list_partial_match_by_ip():
     assert result == []
 
 
-def test_filter_duplicated_brands_for_generic_command_removes_specified_brands(mocker):
-    """
-    Given:
-        - A list of modules where BrandA and BrandC are active, and BrandB is inactive.
-        - A list of brands to remove containing only BrandA.
-    When:
-        The filter_duplicated_brands_for_generic_command function is called.
-    Then:
-        It should return only the active brands that are not in the removal list (i.e., BrandC).
-    """
-    mocker.patch(
-        "GetEndpointData.demisto.getModules",
-        return_value={
-            "module1": {"brand": "BrandA", "state": "active"},
-            "module2": {"brand": "BrandB", "state": "inactive"},
-            "module3": {"brand": "BrandC", "state": "active"},
-        },
-    )
-
-    result = filter_duplicated_brands_for_generic_command(["BrandA"])
-    assert sorted(result) == ["BrandC"]
-
-
 def test_get_generic_command_returns_correct_command():
     """
     Given:
@@ -1178,30 +1155,37 @@ def test_get_generic_command_returns_correct_command():
     assert result.brand == "Generic Command"
 
 
-def test_create_using_brand_argument_to_generic_command_all_default(mocker):
+import pytest
+
+@pytest.mark.parametrize(
+    "available_brands, predefined_brands, expected",
+    [
+        (
+            {"BrandA", "BrandD", "BrandE"},  # enabled
+            ["BrandA", "BrandB", "BrandC"],  # predefined
+            {"BrandD", "BrandE"},            # expected
+        )
+    ]
+)
+def test_create_using_brand_argument_to_generic_command_all_default(mocker, available_brands, predefined_brands, expected):
     """
     Given:
-        - A list of all known brands: BrandA, BrandB, BrandC.
-        - Active modules with brands: BrandA, BrandD, and BrandE (BrandB is inactive).
-        - An empty 'using-brand' argument list provided.
+        - Enabled brands: BrandA, BrandD, BrandE (BrandB inactive).
+        - Predefined brands: BrandA, BrandB, BrandC.
+        - Empty 'using-brand' argument list provided.
     When:
-        The create_using_brand_argument_to_generic_command function is called.
+        create_using_brand_argument_to_generic_command is called.
     Then:
-        It should set 'using-brand' to only active brands not in the known brands list, i.e., BrandD and BrandE.
+        'using-brand' should contain only active brands not in the predefined list (BrandD, BrandE).
     """
-    mocker.patch("GetEndpointData.Brands.get_all_values", return_value=["BrandA", "BrandB", "BrandC"])
-    mocker.patch(
-        "GetEndpointData.demisto.getModules",
-        return_value={
-            "m1": {"brand": "BrandA", "state": "active"},
-            "m2": {"brand": "BrandD", "state": "active"},
-            "m3": {"brand": "BrandB", "state": "inactive"},
-            "m4": {"brand": "BrandE", "state": "active"},
-        },
-    )
+    mocker.patch("GetEndpointData.Brands.get_all_values", return_value=predefined_brands)
+    mock_module_manager = mocker.Mock()
+    mock_module_manager.get_enabled_brands.return_value = available_brands
 
     command = Command(brand="Generic Command", name="gc", output_keys=[], args_mapping={}, output_mapping={})
-    create_using_brand_argument_to_generic_command([], command)
-    assert (command.additional_args["using-brand"] == "BrandE,BrandD") or (
-        command.additional_args["using-brand"] == "BrandD,BrandE"
-    )
+
+    create_using_brand_argument_to_generic_command([], command, mock_module_manager)
+
+    actual_set = set(command.additional_args["using-brand"].split(","))
+    assert actual_set == expected
+
