@@ -1155,8 +1155,6 @@ def test_get_generic_command_returns_correct_command():
     assert result.brand == "Generic Command"
 
 
-import pytest
-
 @pytest.mark.parametrize(
     "available_brands, predefined_brands, expected",
     [
