@@ -111,7 +111,8 @@ class TestClientFunctions:
 
         mocked_http_request.assert_called_with(**expected_args)
 
-    def test_fetch_by_aql_query_pagination_timeout(self, mocker, dummy_client):
+    @freeze_time("2023-01-01T01:00:00")
+    def test_fetch_by_aql_query_pagination_timeout(self, mocker, dummy_client, freezer):
         """
         Test fetch_by_aql_query function behavior when pagination duration exceeds the limit.
 
@@ -125,11 +126,6 @@ class TestClientFunctions:
             - It should return the results fetched so far.
             - It should return the 'next' pointer for the subsequent fetch.
         """
-        from freezegun import freeze_time
-
-        freezer = freeze_time("2023-01-01T01:00:00")
-        freezer.start()
-
         first_response = {
             "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
         }
@@ -143,10 +139,10 @@ class TestClientFunctions:
         }
 
         call_count = 0
+        responses = [first_response, second_response, third_response]
 
         def advance_time_and_return_response(*args, **kwargs):
             nonlocal call_count
-            responses = [first_response, second_response, third_response]
             response = responses[call_count]
             call_count += 1
             freezer.tick(delta=timedelta(seconds=100))
@@ -161,8 +157,6 @@ class TestClientFunctions:
         assert mocked_http_request.call_count == 2
         assert len(results) == 2
         assert next_page == 2
-
-        freezer.stop()
 
 
 class TestHelperFunction:
