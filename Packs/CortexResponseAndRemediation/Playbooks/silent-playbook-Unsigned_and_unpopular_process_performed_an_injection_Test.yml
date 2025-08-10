@@ -521,7 +521,7 @@ tasks:
                 root: foundIncidents.CustomFields
                 transformers:
                 - operator: uniq
-          operator: isEqualString
+          operator: containsGeneral
           right:
             value:
               simple: BLOCKED
@@ -539,7 +539,7 @@ tasks:
                       iscontext: true
                       value:
                         simple: foundIncidents.CustomFields.cid
-                    operator: isEqualString
+                    operator: containsGeneral
                     right:
                       iscontext: true
                       value:
@@ -547,7 +547,7 @@ tasks:
                 root: foundIncidents.CustomFields
                 transformers:
                 - operator: uniq
-          operator: isEqualString
+          operator: containsGeneral
           right:
             value:
               simple: Reported

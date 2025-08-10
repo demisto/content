@@ -1,28 +1,33 @@
 args:
-- description: List of agent IDs of the endpoint to retrieve.
-  name: agent_id
+- description: List of endpoint IDs retrieve.
+  name: endpoint_id
   isArray: true
-- description: List of agent IPs of the endpoint to retrieve.
-  name: agent_ip
+- description: List of endpont IPs to retrieve.
+  name: endpoint_ip
   isArray: true
-- description: List of agent hostnames of the endpoint to retrieve.
-  name: agent_hostname
+- description: List of endpoint hostnames retrieve.
+  name: endpoint_hostname
   isArray: true
 - description: |-
-    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Active Directory Query v2, CrowdstrikeFalcon, ExtraHop v2'.
+    A comma-seperated list of brands you wish to run the command for. If not provided, the command will run for all available integrations. Example: 'Active Directory Query v2,FireEyeHX v2'.
+    Supported brands are:
+    - 'Active Directory Query v2'
+    - 'McAfee ePO v2'
+    - 'CrowdstrikeFalcon'
+    - 'Cortex XDR - IR'
+    - 'Cortex Core - IR'
+    - 'FireEyeHX v2'
+    - 'Generic Command'.
   name: brands
-  auto: PREDEFINED
-  predefined:
-  - 'Active Directory Query v2'
-  - 'Cylance Protect v2'
-  - 'McAfee ePO v2'
-  - 'VMware Carbon Black EDR v2'
-  - 'ExtraHop v2'
-  - 'CrowdstrikeFalcon'
-  - 'Cortex XDR - IR'
-  - 'Cortex Core - IR'
+  isArray: true
 - description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
   name: verbose
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: When set to true, retrieves additional fields from every brand beyond standard endpoint data. Default is false.
+  name: additional_fields
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -145,7 +150,7 @@ outputs:
   description: The endpoint's isolation status.
   type: String
 - contextPath: Endpoint.IsIsolated.source
-  description: The vendor from which the isolateation of this endpoint was retrieved.
+  description: The vendor from which the isolation of this endpoint was retrieved.
   type: String
 - contextPath: Endpoint.Status.value
   description: The endpoint's status.
@@ -163,7 +168,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
-fromversion: 5.5.0
+dockerimage: demisto/python3:3.12.11.4417419
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

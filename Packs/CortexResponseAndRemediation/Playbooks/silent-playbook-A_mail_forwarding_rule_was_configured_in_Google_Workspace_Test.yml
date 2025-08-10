@@ -1529,7 +1529,10 @@ tasks:
       - - operator: greaterThanOrEqual
           left:
             value:
-              simple: Evidences
+              complex:
+                root: Evidences
+                transformers:
+                - operator: count
             iscontext: true
           right:
             value:
