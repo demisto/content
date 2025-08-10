@@ -82,7 +82,6 @@ commonfields:
   version: -1
 enabled: true
 name: SearchIssuesAgentix
-isInternal: true
 outputs:
 - contextPath: foundIssues.id
   description: A list of issues IDs returned from the query.
