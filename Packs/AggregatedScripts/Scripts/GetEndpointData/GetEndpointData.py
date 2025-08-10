@@ -529,7 +529,7 @@ def initialize_commands(
         Command(
             brand=Brands.CORTEX_CORE_IR,
             name="core-list-risky-hosts",
-            output_keys=["Endpoint"],
+            output_keys=["Core.RiskyHost"],
             args_mapping={"host_id": "endpoint_id"},
             output_mapping={"id": "ID"},
         ),
