@@ -1,6 +1,6 @@
 This script gathers endpoint data from multiple integrations and returns an endpoint entity with consolidated information to the context.
 
-The following brands are running  by default:
+The following brands are running by default:
 
 - 'Active Directory Query v2'
 - 'McAfee ePO v2'
@@ -9,7 +9,7 @@ The following brands are running  by default:
 - 'Cortex Core - IR'
 - 'FireEyeHX v2'
 
-**Note**: If the brands argument is not provided all mentioned brands will be executed.
+**Note**: If the *brands* argument is not provided to the script, all mentioned brands will be executed.
 Also, the ***!endpoint*** command will run across all available integrations.
 
 If you provide specific brands, only those brands will be executed.
