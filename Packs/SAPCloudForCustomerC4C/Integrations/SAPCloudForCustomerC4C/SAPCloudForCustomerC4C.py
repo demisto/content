@@ -321,7 +321,7 @@ def add_time_to_events(events: list[dict]) -> list[dict]:
     updated_events = []
     for event in events:
         c_timestamp = event.get("CTIMESTAMP")
-        parsed_datetime = dateparser.parse(c_timestamp)  # type: ignore
+        parsed_datetime = dateparser.parse(c_timestamp, settings={"DATE_ORDER": "DMY"})  # type: ignore
         utc_datetime = parsed_datetime.astimezone(timezone.utc)  # type: ignore
         formatted_time = utc_datetime.strftime(DATE_FORMAT)
         new_event = event.copy()
