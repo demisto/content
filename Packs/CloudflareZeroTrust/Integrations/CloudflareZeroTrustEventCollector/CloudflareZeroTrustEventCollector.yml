@@ -12,6 +12,20 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: Account ID
+  name: account_id
+  type: 0
+  required: true
+  section: Connect
+- display: Authorization Type
+  name: auth_type
+  defaultvalue: Global API key (Legacy)
+  options:
+  - API Token
+  - Global API Key (Legacy)
+  required: true
+  type: 15
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -24,6 +38,17 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- display: Event types to fetch
+  name: event_types_to_fetch
+  type: 16
+  defaultvalue: Account Audit Logs, User Audit Logs, Access Authentication Logs
+  section: Collect
+  advanced: true
+  options:
+  - Account Audit Logs
+  - User Audit Logs
+  - Access Authentication Logs
+  required: true
 - name: max_fetch_account_audit_logs
   defaultvalue: 5000
   section: Collect
@@ -45,28 +70,18 @@ configuration:
   advanced: true
   required: false
   type: 0
-- display: API email
+- display: API Email
   section: Connect
-  displaypassword: Global API key
+  displaypassword: Global API Key
   name: credentials
   type: 9
-  required: true
-- display: Account ID
-  name: account_id
-  type: 0
-  required: true
+  required: false  # Only needed if using "Global API key" auth type
+- displaypassword: API Token
+  hiddenusername: true
+  name: token_credentials
+  type: 9
   section: Connect
-- display: Event types to fetch
-  name: event_types_to_fetch
-  type: 16
-  defaultvalue: Account Audit Logs, User Audit Logs, Access Authentication Logs
-  section: Collect
-  advanced: true
-  options:
-  - Account Audit Logs
-  - User Audit Logs
-  - Access Authentication Logs
-  required: true
+  required: false  # Only needed if using "API token" auth type
 description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.
 display: Cloudflare Zero Trust
 name: Cloudflare Zero Trust
@@ -103,6 +118,29 @@ script:
   script: '-'
   subtype: python3
   type: python
+triggers:
+  - conditions:  # TRIGGER 1: If API Token authorization type is selected ...
+      - name: auth_type
+        operator: equals
+        value: API Token
+    effects:  # then hide Global API Key credentials and make API Token credentials required
+      - name: credentials
+        action:
+          hidden: true
+      - name: token_credentials
+        action:
+          required: true
+  - conditions:  # TRIGGER 2: If Global API Key authorization type is selected ...
+      - name: auth_type
+        operator: equals
+        value: Global API Key (Legacy)
+    effects:  # then hide API Token credentials and make Global API Key credentials required
+      - name: token_credentials
+        action:
+          hidden: true
+      - name: credentials
+        action:
+          required: true
 marketplaces:
 - marketplacev2
 - platform

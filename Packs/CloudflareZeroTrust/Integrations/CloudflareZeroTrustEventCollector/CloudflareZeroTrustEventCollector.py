@@ -2,6 +2,7 @@ from typing import Any
 
 import demistomock as demisto
 import urllib3
+from enum import Enum
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -23,6 +24,12 @@ DEFAULT_COMMAND_LIMIT = 10
 ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
 USER_AUDIT_TYPE = "User Audit Logs"
 ACCESS_AUTHENTICATION_TYPE = "Access Authentication Logs"
+
+
+class AuthTypes(Enum):
+    GLOBAL_API_KEY = "Global API Key (Legacy)"
+    API_TOKEN = "API Token"
+
 
 """ CLIENT CLASS """
 
@@ -334,6 +341,42 @@ def add_time_to_events(events: list[dict[str, Any]] | None):
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
+def validate_headers(params: dict) -> dict:
+    """
+    Validates the provided the configuration parameters and returns the authorization headers.
+
+    Args:
+        params (dict): Configuration parameters to validate.
+
+    Raises:
+        DemistoException: If the credentials do not match the selected authorization type.
+
+    Returns:
+        dict: Validated request authorization headers.
+    """
+    auth_type = params.get("auth_type")
+
+    if auth_type == AuthTypes.API_TOKEN.value:
+        token = params.get("token_credentials", {}).get("password")
+
+        if not token:
+            raise DemistoException(f"An API Token is required for the {auth_type} authorization type.")
+
+        return {"Authorization": f"Bearer {token}"}
+
+    elif auth_type == AuthTypes.GLOBAL_API_KEY.value:
+        auth_email = params.get("credentials", {}).get("identifier")
+        auth_key = params.get("credentials", {}).get("password")
+
+        if not (auth_email and auth_key):
+            raise DemistoException(f"An API Email and a Global API Key are required for the {auth_type} authorization type.")
+
+        return {"X-Auth-Email": auth_email, "X-Auth-Key": auth_key}
+
+    else:
+        raise DemistoException(f"Invalid authorization type: {auth_type!r}.")
+
+
 def validate_args(args: dict):
     """
     Validates the provided arguments for fetch events command.
@@ -373,7 +416,6 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
 
-    credentials = params.get("credentials", {})
     max_fetch_account_audit = arg_to_number(params.get("max_fetch_account_audit_logs")) or DEFAULT_MAX_FETCH_ACCOUNT_AUDIT
     max_fetch_user_audit = arg_to_number(params.get("max_fetch_user_audit_logs")) or DEFAULT_MAX_FETCH_USER_AUDIT
     max_fetch_authentication = (
@@ -382,10 +424,7 @@ def main() -> None:  # pragma: no cover
     event_types_to_fetch = argToList(params.get("event_types_to_fetch"))
 
     try:
-        headers = {
-            "X-Auth-Email": credentials.get("identifier"),
-            "X-Auth-Key": credentials.get("password"),
-        }
+        headers = validate_headers(params)
         client = Client(
             base_url=params.get("url", ""),
             verify=not params.get("insecure", False),
