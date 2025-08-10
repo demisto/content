@@ -187,7 +187,6 @@ script:
     - contextPath: MSGDefenderThreatIntel.Host.registrant
       description: The entity (person or organization) that registered the host domain.
       type: String
-
   - arguments:
     - description: "Hostname or IP address.\nChoose one of the following arguments: host_id or whois_record_id."
       name: host_id
@@ -209,7 +208,6 @@ script:
     - contextPath: MSGDefenderThreatIntel.Whois.domainStatus
       description: The current status of the domain (e.g., active, clientHold, expired) as reported in the WHOIS record.
       type: String
-
   - arguments:
     - description: "Hostname or IP address.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: host_id
@@ -232,6 +230,25 @@ script:
       type: String
     - contextPath: MSGDefenderThreatIntel.WhoisHistory.domainStatus
       description: The domain's status at the time of the historical WHOIS record (e.g., clientTransferProhibited, inactive).
+      type: String
+
+  - arguments:
+    - description: Hostname or IP address.
+      name: host_id
+      required: true
+    - description: "Use odata query to customize the response."
+      name: odata
+    description: Retrieves the reputation details, properties, and related information for a specified host.
+    name: msg-defender-threat-intel-host-reputation
+    outputs:
+    - contextPath: MSGDefenderThreatIntel.HostReputation.id
+      description: The unique identifier of the host object in Microsoft Defender Threat Intelligence.
+      type: String
+    - contextPath: MSGDefenderThreatIntel.HostReputation.classification
+      description: The reputation classification of the host (e.g., Malicious, Suspicious, Unknown).
+      type: String
+    - contextPath: MSGDefenderThreatIntel.HostReputation.score
+      description: A numerical score representing the confidence or severity of the host's reputation.
       type: String
   isfetch: false
   script: '-'

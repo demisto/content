@@ -307,6 +307,25 @@ class Client:
             )
         ]
 
+    def host_reputation(self, host_id: str, odata: str) -> dict:
+        """
+        Retrieve host reputation information by host ID.
+        Docs: https://learn.microsoft.com/en-us/graph/api/security-host-get-reputation?view=graph-rest-1.0&tabs=http
+
+        Args:
+            host_id (str): The ID (host name or ip address) of the host to retrieve reputation information for.
+            odata (str): OData query parameters for filtering and formatting the response.
+
+        Returns:
+            dict: A dictionary containing host reputation information including reputation score,
+                    classification, rules, and other reputation-related details.
+        """
+
+        return self.ms_client.http_request(
+            method="GET",
+            url_suffix=f"v1.0//security/threatIntelligence/hosts/{host_id}/reputation{odata}",
+        )
+
 
 """ HELPER FUNCTIONS """
 
@@ -665,6 +684,42 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
+def host_reputation_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves host reputation information from Microsoft Defender Threat Intelligence.
+
+    Args:
+        client (Client): The client instance used for API communication.
+        args (dict[str, Any]): Command arguments containing:
+            - host_id (str, required): Specific host ID to retrieve reputation information for.
+            - odata (str, optional): OData query parameters for filtering.
+
+    Returns:
+        CommandResults: Command results containing the host reputation information with ID, classification, and score details.
+    """
+    host_id = args.get("host_id", "")
+    odata = args.get("odata", "")
+    response = client.host_reputation(host_id, odata)
+    display_data = [
+        {
+            "Host Id": response.get("id"),
+            "Host Classification": response.get("classification"),
+            "Host Score": response.get("score"),
+        }
+    ]
+
+    return CommandResults(
+        "MSGDefenderThreatIntel.HostReputation",
+        "id",
+        outputs=response,
+        readable_output=tableToMarkdown(
+            "Host Reputation:",
+            display_data,
+            removeNull=True,
+        ),
+    )
+
+
 def main():
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -713,6 +768,8 @@ def main():
             return_results(host_whois_command(client, args))
         elif command == "msg-defender-threat-intel-host-whois-history":
             return_results(host_whois_history_command(client, args))
+        elif command == "msg-defender-threat-intel-host-reputation":
+            return_results(host_reputation_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 

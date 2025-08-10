@@ -1328,3 +1328,54 @@ def test_article_list_command_no_articles_returned():
     result = article_list_command(client, args)
 
     assert result.readable_output == "No articles were found."
+
+
+def test_host_reputation_command_with_host_id():
+    """
+    Test host_reputation_command with host_id parameter.
+
+    Given: A client is configured and host_id is provided
+    When: The host_reputation_command is called with host_id
+    Then: The command returns host reputation information for the specified host
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_reputation_command
+
+    mock_response = {"id": "reputation_host_123", "classification": "malicious", "score": 85}
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host_reputation = lambda host_id, odata: mock_response
+
+    args = {"host_id": "reputation_host_123"}
+    result = host_reputation_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.HostReputation"
+    assert result.outputs_key_field == "id"
+    assert "reputation_host_123" in result.readable_output
+    assert "malicious" in result.readable_output
+    assert "85" in result.readable_output
+
+
+def test_host_reputation_with_host_id():
+    """
+    Test host_reputation_command with host_id parameter.
+
+    Given: A client is configured and host_id is provided
+    When: The host_reputation_command is called with host_id
+    Then: The command returns reputation information for the specified host
+    """
+    from MicrosoftDefenderThreatIntelligence import Client, host_reputation_command
+
+    mock_response = util_load_json("test_data/host_reputation.json")
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.host_reputation = lambda host_id, odata: mock_response
+
+    args = {"host_id": "1e3b9ded-abb6-1828-c4ef-a5ca48b287a0"}
+    result = host_reputation_command(client, args)
+
+    assert result.outputs == mock_response
+    assert result.outputs_prefix == "MSGDefenderThreatIntel.HostReputation"
+    assert result.outputs_key_field == "id"
+    assert "malicious" in result.readable_output
+    assert "100" in result.readable_output
