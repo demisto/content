@@ -1161,9 +1161,9 @@ def test_get_generic_command_returns_correct_command():
         (
             {"BrandA", "BrandD", "BrandE"},  # enabled
             ["BrandA", "BrandB", "BrandC"],  # predefined
-            {"BrandD", "BrandE"},            # expected
+            {"BrandD", "BrandE"},  # expected
         )
-    ]
+    ],
 )
 def test_create_using_brand_argument_to_generic_command_all_default(mocker, available_brands, predefined_brands, expected):
     """
@@ -1186,4 +1186,3 @@ def test_create_using_brand_argument_to_generic_command_all_default(mocker, avai
 
     actual_set = set(command.additional_args["using-brand"].split(","))
     assert actual_set == expected
-
