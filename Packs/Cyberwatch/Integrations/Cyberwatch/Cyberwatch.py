@@ -744,7 +744,7 @@ def send_declarative_data_asset_command(client: Client, args: Dict[str, Any]):
     # Pre‑check to avoid creating a new server
     matches = client.get_assets({"hostname": hostname, "per_page": 1, "page": 1})
     if not matches:
-        raise DemistoException(f"Hostname '{hostname}' not found in Cyberwatch. " "Upload cancelled to avoid auto‑creation.")
+        raise DemistoException(f"Hostname '{hostname}' not found in Cyberwatch. Upload cancelled to avoid auto creation.")
     server_id_known: int = matches[0]["id"]
 
     blob = _build_declarative_payload(hostname, data_json)
