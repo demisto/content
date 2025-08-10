@@ -98,6 +98,15 @@ def main():  # pragma: no cover
 
         elif command == "core-get-asset-details":
             return_results(get_asset_details_command(client, args))
+        
+        elif command == "core-get-issues":
+            # replace all dict keys that contain issue with alert
+            for key in list(args.keys()):
+                if 'issue' in key:
+                    alert_key = key.replace('issue', 'alert')
+                    args[alert_key] = args.pop(key)
+            
+            return_results(get_alerts_by_filter_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())

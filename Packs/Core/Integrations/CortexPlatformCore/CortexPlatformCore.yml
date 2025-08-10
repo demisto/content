@@ -22,7 +22,7 @@ script:
   - arguments:
     - description: The unique ID of the issue.
       isArray: true
-      name: alert_id
+      name: issue_id
     - auto: PREDEFINED
       description: The severity of the issue.
       isArray: true
@@ -62,10 +62,10 @@ script:
       name: rule_name
     - description: The issue name.
       isArray: true
-      name: alert_name
+      name: issue_name
     - description: The issue source.
       isArray: true
-      name: alert_source
+      name: issue_source
     - auto: PREDEFINED
       description: Supports relative times or “custom” time option. If you choose the "custom" option, you should use start_time and end_time arguments.
       name: time_frame
@@ -125,7 +125,7 @@ script:
       name: action_remote_ip
     - auto: PREDEFINED
       description: Issue action status.
-      name: alert_action_status
+      name: issue_action_status
       predefined:
       - detected
       - detected (allowed the session)
@@ -206,13 +206,13 @@ script:
       name: mitre_technique_id_and_name
     - description: The category of the issue.
       isArray: true
-      name: alert_category
+      name: issue_category
     - description: The domain of the issue.
       isArray: true
-      name: alert_domain
+      name: issue_domain
     - description: The description of the issue.
       isArray: true
-      name: alert_description
+      name: issue_description
     - description: The SHA256 hash of the OS actor process image.
       isArray: true
       name: os_actor_process_image_sha256
@@ -233,27 +233,30 @@ script:
       - New
       - In Progress
       - Resolved
+    - description: The assets ids related to the issue.
+      isArray: true
+      name: asset_ids
     description: "Returns a list of issues and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
     name: core-get-issues
     outputs:
     - contextPath: Core.Issue.internal_id
       description: The unique ID of the issue.
       type: String
-    - contextPath: Core.Alert.source_insert_ts
+    - contextPath: Core.Issue.source_insert_ts
       description: The detection timestamp.
       type: Number
-    - contextPath: Core.Alert.alert_name
-      description: The name of the alert.
+    - contextPath: Core.Issue.alert_name
+      description: The name of the issue.
       type: String
-    - contextPath: Core.Alert.severity
-      description: The severity of the alert.
+    - contextPath: Core.Issue.severity
+      description: The severity of the issue.
       type: String
-    - contextPath: Core.Alert.alert_category
-      description: The category of the alert.
+    - contextPath: Core.Issue.alert_category
+      description: The category of the issue.
       type: String
-    - contextPath: Core.Alert.alert_action_status
+    - contextPath: Core.Issue.alert_action_status
       description: |-
-        The alert action. Possible values.
+        The issue action. Possible values.
 
         DETECTED: detected
         DETECTED_0: detected (allowed the session)
@@ -261,7 +264,7 @@ script:
         DETECTED_19: detected (forward)
         POST_DETECTED: detected (post detected)
         PROMPT_ALLOW: detected (prompt allow)
-        DETECTED_4: detected (raised an alert)
+        DETECTED_4: detected (raised an issue)
         REPORTED: detected (reported)
         REPORTED_TRIGGER_4: detected (on write)
         SCANNED: detected (scanned)
@@ -294,29 +297,29 @@ script:
         BLOCKED_TRIGGER_4: prevented (on write).
 
       type: String
-    - contextPath: Core.Alert.alert_action_status_readable
-      description: The alert action.
+    - contextPath: Core.Issue.alert_action_status_readable
+      description: The issue action.
       type: String
-    - contextPath: Core.Alert.alert_name
-      description: The alert name.
+    - contextPath: Core.Issue.alert_name
+      description: The issue name.
       type: String
-    - contextPath: Core.Alert.alert_description
-      description: The alert description.
+    - contextPath: Core.Issue.alert_description
+      description: The issue description.
       type: String
-    - contextPath: Core.Alert.agent_ip_addresses
+    - contextPath: Core.Issue.agent_ip_addresses
       description: The host IP address.
       type: String
-    - contextPath: Core.Alert.agent_hostname
+    - contextPath: Core.Issue.agent_hostname
       description: The hostname.
       type: String
-    - contextPath: Core.Alert.mitre_tactic_id_and_name
+    - contextPath: Core.Issue.mitre_tactic_id_and_name
       description: The MITRE attack tactic.
       type: String
-    - contextPath: Core.Alert.mitre_technique_id_and_name
+    - contextPath: Core.Issue.mitre_technique_id_and_name
       description: The MITRE attack technique.
       type: String
-    - contextPath: Core.Alert.starred
-      description: Whether the alert is starred or not.
+    - contextPath: Core.Issue.starred
+      description: Whether the issue is starred or not.
       type: Boolean
   - arguments:
     - description: Asset unique identifier.
