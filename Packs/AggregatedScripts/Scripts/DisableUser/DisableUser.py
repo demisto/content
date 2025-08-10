@@ -6,9 +6,6 @@ from typing import Literal, TypedDict
 from collections.abc import Callable
 
 
-HUMAN_READABLES = []
-
-
 class DisabledUserResult(TypedDict):
     """Represents the result of a user disable operation."""
 
@@ -28,7 +25,7 @@ class UserData(TypedDict):
     Instance: str
 
 
-def execute_command(cmd: str, args: dict) -> list[dict]:
+def execute_command(cmd: str, args: dict) -> tuple[list[dict], str]:
     """Executes a Demisto command and captures human-readable outputs.
 
     Args:
@@ -41,19 +38,23 @@ def execute_command(cmd: str, args: dict) -> list[dict]:
                     in the global HUMAN_READABLES list.
     """
     results = cast(list[dict], demisto.executeCommand(cmd, args))
-    HUMAN_READABLES.extend(
-        CommandResults(readable_output=hr)
+    results = [
+        res for res in results if res.get("Type") in (EntryType.NOTE, EntryType.ERROR)  # filter out log files
+    ]
+    human_readable = '\n\n'.join(
+        f"#### {'Error' if is_error(res) else 'Result'} for name={cmd} args={args} current instance={args.get('using')}\n{msg}"
         for res in results
-        if (hr := res.get("HumanReadable"))
+        if isinstance(
+            (msg := (res.get("HumanReadable") or res.get("Contents"))),
+            str
+        )
     )
-    return [
-        res for res in results if res.get("Type") in (EntryType.NOTE, EntryType.ERROR)
-    ]  # filter out log files
+    return results, human_readable
 
 
 def get_module_command_func(
     module: str,
-) -> Callable[[UserData, str], list[DisabledUserResult]]:
+) -> Callable[[UserData, str], tuple[list[DisabledUserResult], str]]:
     """Returns the corresponding disable function for a given module brand.
 
     Args:
@@ -80,7 +81,7 @@ def get_module_command_func(
 
 def run_active_directory_query_v2(
     user: UserData, using: str
-) -> list[DisabledUserResult]:
+) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in Active Directory using the 'ad-disable-account' command.
 
     Args:
@@ -88,9 +89,9 @@ def run_active_directory_query_v2(
         using (str): The name of the Active Directory integration instance.
 
     Returns:
-        list[DisabledUserResult]: A list containing the result of the disable operation.
+        tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd = execute_command(
+    res_cmd, hr = execute_command(
         "ad-disable-account", {"username": user["Username"], "using": using}
     )
     func_res = []
@@ -103,10 +104,10 @@ def run_active_directory_query_v2(
             if res_msg == f"User {user['Username']} was disabled"
             else DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         )
-    return func_res
+    return func_res, hr
 
 
-def run_microsoft_graph_user(user: UserData, using: str) -> list[DisabledUserResult]:
+def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in Microsoft Graph using the 'msgraph-user-account-disable' command.
 
     Args:
@@ -114,9 +115,9 @@ def run_microsoft_graph_user(user: UserData, using: str) -> list[DisabledUserRes
         using (str): The name of the Microsoft Graph User integration instance.
 
     Returns:
-        list[DisabledUserResult]: A list containing the result of the disable operation.
+        tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd = execute_command(
+    res_cmd, hr = execute_command(
         "msgraph-user-account-disable", {"user": user["Username"], "using": using}
     )
     func_res = []
@@ -132,10 +133,10 @@ def run_microsoft_graph_user(user: UserData, using: str) -> list[DisabledUserRes
                 Disabled=False, Result="Failed", Message=res["Content"]
             )
         )
-    return func_res
+    return func_res, hr
 
 
-def run_okta_v2(user: UserData, using: str) -> list[DisabledUserResult]:
+def run_okta_v2(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in Okta using the 'okta-suspend-user' command.
 
     Args:
@@ -143,9 +144,9 @@ def run_okta_v2(user: UserData, using: str) -> list[DisabledUserResult]:
         using (str): The name of the Okta v2 integration instance.
 
     Returns:
-        list[DisabledUserResult]: A list containing the result of the disable operation.
+        tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd = execute_command(
+    res_cmd, hr = execute_command(
         "okta-suspend-user", {"username": user["Username"], "using": using}
     )
     func_res = []
@@ -162,10 +163,10 @@ def run_okta_v2(user: UserData, using: str) -> list[DisabledUserResult]:
         else:
             dur = DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         func_res.append(dur)
-    return func_res
+    return func_res, hr
 
 
-def run_iam_disable_user(user: UserData, using: str) -> list[DisabledUserResult]:
+def run_iam_disable_user(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user using the 'iam-disable-user' command, which is common
     to several IAM integrations like Okta IAM and AWS-ILM.
 
@@ -174,9 +175,9 @@ def run_iam_disable_user(user: UserData, using: str) -> list[DisabledUserResult]
         using (str): The name of the IAM integration instance.
 
     Returns:
-        list[DisabledUserResult]: A list containing the result of the disable operation.
+        tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd = execute_command(
+    res_cmd, hr = execute_command(
         "iam-disable-user",
         {"user-profile": f'{{"id":"{user["ID"]}"}}', "using": using},
     )
@@ -194,10 +195,10 @@ def run_iam_disable_user(user: UserData, using: str) -> list[DisabledUserResult]
             ),
         )
         for res in res_cmd
-    ]
+    ], hr
 
 
-def run_gsuiteadmin(user: UserData, using: str) -> list[DisabledUserResult]:
+def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in G Suite Admin using the 'gsuite-user-update' command.
 
     Args:
@@ -205,9 +206,9 @@ def run_gsuiteadmin(user: UserData, using: str) -> list[DisabledUserResult]:
         using (str): The name of the GSuiteAdmin integration instance.
 
     Returns:
-        list[DisabledUserResult]: A list containing the result of the disable operation.
+        tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd = execute_command(
+    res_cmd, hr = execute_command(
         "gsuite-user-update",
         {"user_key": user["Email"], "suspended": "true", "using": using},
     )
@@ -226,7 +227,7 @@ def run_gsuiteadmin(user: UserData, using: str) -> list[DisabledUserResult]:
                 Message=str(res.get("Contents") or "Unable to disable user"),
             )
         func_res.append(dur)
-    return func_res
+    return func_res, hr
 
 
 def validate_input(args: dict):
@@ -239,12 +240,12 @@ def validate_input(args: dict):
         DemistoException: If no user identifier (user_id, user_name, or user_email) is found.
     """
     if not (args.get("user_id") or args.get("user_name") or args.get("user_email")):
-        raise DemistoException(
+        raise ValueError(
             "At least one of the following arguments must be specified: user_id, user_name or user_email."
         )
 
 
-def get_users(args: dict) -> list[UserData]:
+def get_users(args: dict) -> tuple[list[UserData], str]:
     """Retrieves user data from available integrations using the 'get-user-data' command.
 
     Args:
@@ -255,13 +256,15 @@ def get_users(args: dict) -> list[UserData]:
                           or the response is unexpected.
 
     Returns:
-        list[UserData]: A list of user data dictionaries.
+        tuple[list[UserData], str]: A list of user data dictionaries.
     """
-    res = execute_command("get-user-data", args)
-    if is_error(res):
-        raise DemistoException(
-            f"Error when calling get-user-data:\n{res[0]['Contents']}"
-        )
+    res, hr = execute_command("get-user-data", args | {"verbose": "true"})
+    if errors := [r for r in res if r["Type"] == EntryType.ERROR]:
+        if err := next((not r["HumanReadable"] for r in errors), None):
+            raise DemistoException(
+                f"Error when calling get-user-data:\n{err['Contents']}"
+            )
+        return_results(errors)
     if any(  # if there are no available modules
         r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res
     ):
@@ -271,12 +274,15 @@ def get_users(args: dict) -> list[UserData]:
     )
     if not res_user:
         raise DemistoException(
-            f"Unexpected response when calling get-user-data:\n{res[0]['Contents']}"
+            f"Unexpected response when calling get-user-data:\n{res}"
         )
-    return cast(list[UserData], res_user["Contents"])
+    return [
+        UserData(**(dict.fromkeys(("ID", "Username", "Email"), "") | res))
+        for res in res_user["Contents"]
+    ], hr
 
 
-def disable_users(users: list[UserData]) -> list[dict]:
+def disable_users(users: list[UserData]) -> tuple[list[dict], str]:
     """Disables a list of users by calling the appropriate integration command for each.
 
     Args:
@@ -286,14 +292,14 @@ def disable_users(users: list[UserData]) -> list[dict]:
         DemistoException: If no users were found with a "found" status.
 
     Returns:
-        list[dict]: A list of results from the disable operations, including user
+        tuple[list[dict], str]: A list of results from the disable operations, including user
                     profile information.
     """
     context = []
     for user in users:
         if user["Status"] == "found":
             command_func = get_module_command_func(user["Brand"])
-            res_cmd = command_func(user, user["Instance"])
+            res_cmd, hr = command_func(user, user["Instance"])
             context += [
                 {
                     "UserProfile": {
@@ -309,19 +315,20 @@ def disable_users(users: list[UserData]) -> list[dict]:
             ]
     if not context:
         raise DemistoException("User(s) not found.")
-    return context
+    return context, hr
 
 
 def main():
     args = demisto.args()
+    verbose_hr = ""
 
     try:
         validate_input(args)
-        users = get_users(args)
-        outputs = disable_users(users)
+        users, hr_get = get_users(args)
+        outputs, hr_disable = disable_users(users)
 
         if argToBoolean(args.get("verbose")):
-            return_results(HUMAN_READABLES)
+            verbose_hr = '\n\n'.join(("", hr_get, hr_disable))
 
         if any(res["Disabled"] for res in outputs):
             return_results(
@@ -329,7 +336,7 @@ def main():
                     outputs_prefix="DisableUser",
                     outputs_key_field="UserProfile.Email",
                     outputs=outputs,
-                    readable_output=tableToMarkdown("Disable User", outputs),
+                    readable_output=tableToMarkdown("Disable User", outputs) + verbose_hr,
                 )
             )
         else:
@@ -339,7 +346,7 @@ def main():
                     content_format=EntryFormat.MARKDOWN,
                     readable_output=tableToMarkdown(
                         "Disable User: All integrations failed.", outputs
-                    ),
+                    ) + verbose_hr,
                 )
             )
 
