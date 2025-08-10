@@ -1160,19 +1160,21 @@ def test_get_generic_command_returns_correct_command():
     [
         (
             [],
-            {"BrandA", "BrandD", "BrandE"},  # enabled
-            ["BrandA", "BrandB", "BrandC"],  # predefined
-            {"BrandD", "BrandE"},  # expected
+            {"BrandA", "BrandD", "BrandE"},
+            ["BrandA", "BrandB", "BrandC"],
+            {"BrandD", "BrandE"},
         ),
         (
             ["BrandD"],
-            {"BrandA", "BrandD", "BrandE"},  # enabled
-            ["BrandA", "BrandB", "BrandC"],  # predefined
-            {"BrandD"},  # expected
-        )
+            {"BrandA", "BrandD", "BrandE"},
+            ["BrandA", "BrandB", "BrandC"],
+            {"BrandD"},
+        ),
     ],
 )
-def test_create_using_brand_argument_to_generic_command_all_default(mocker, brands_to_run, available_brands, predefined_brands, expected):
+def test_create_using_brand_argument_to_generic_command_all_default(
+    mocker, brands_to_run, available_brands, predefined_brands, expected
+):
     """
     Given:
         - Enabled brands: BrandA, BrandD, BrandE (BrandB inactive).
