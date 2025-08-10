@@ -12,7 +12,8 @@ from CommonServerPython import *  # noqa: F401
 urllib3.disable_warnings()
 
 import jwt
-from datetime import datetime, timedelta, UTC
+from datetime import timezone
+UTC = timezone.utc
 import uuid
 
 DEFAULT_FETCH_TIME = "10 minutes"
@@ -3241,7 +3242,7 @@ def modify_closure_delta(delta: dict, state: str, close_code: str = "Resolved by
 
 
 def pre_process_close_incident_args(parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str,
-                                    close_custom_state: str) -> UpdateRemoteSystemArgs:
+                                    close_custom_state: Optional[str]) -> UpdateRemoteSystemArgs:
     """
     Pre-process the parsed arguments to close an incident.
 
