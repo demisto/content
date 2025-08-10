@@ -1,5 +1,5 @@
 import demistomock as demisto
-from CommonServerPython import CommandResults, DemistoException
+from CommonServerPython import CommandResults
 from SentinelOneListAgents import list_agents, filter_by_agent_ip
 
 
