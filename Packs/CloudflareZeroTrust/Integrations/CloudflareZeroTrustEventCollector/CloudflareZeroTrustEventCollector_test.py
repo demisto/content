@@ -1,11 +1,14 @@
 import datetime
+import re
 
 import dateparser
 import pytest
 from CloudflareZeroTrustEventCollector import (
-    DATE_FORMAT,
+    AuthTypes,
     Client,
     calculate_fetch_dates,
+    DATE_FORMAT,
+    DemistoException,
     fetch_events,
     get_events_command,
     handle_duplicates,
@@ -15,7 +18,13 @@ from freezegun import freeze_time
 
 MOCK_BASE_URL = "https://api.cloudflare.com"
 MOCK_ACCOUNT_ID = "mock_account_id"
-MOCK_HEADERS = {"X-Auth-Email": "test@example.com", "X-Auth-Key": "mock_api_key"}
+
+MOCK_API_TOKEN = "test_token_123"
+MOCK_GLOBAL_API_KEY = "mock_api_key"
+MOCK_EMAIL = "test@example.com"
+
+MOCK_API_TOKEN_HEADERS = {"Authorization": f"Bearer {MOCK_API_TOKEN}"}
+MOCK_GLOBAL_API_KEY_HEADERS = {"X-Auth-Email": MOCK_EMAIL, "X-Auth-Key": MOCK_GLOBAL_API_KEY}
 
 MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00.000000Z"
 
@@ -32,7 +41,13 @@ SAMPLE_EVENTS = [
 @pytest.fixture
 def mock_client() -> Client:
     """Fixture to create a mock client for testing."""
-    return Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, headers=MOCK_HEADERS, account_id=MOCK_ACCOUNT_ID)
+    return Client(
+        base_url=MOCK_BASE_URL,
+        verify=False,
+        proxy=False,
+        headers=MOCK_GLOBAL_API_KEY_HEADERS,
+        account_id=MOCK_ACCOUNT_ID,
+    )
 
 
 @freeze_time(MOCK_TIME_UTC_NOW)
@@ -102,7 +117,7 @@ def test_get_events_command(mock_client: Client, mocker):
 @freeze_time(MOCK_TIME_UTC_NOW)
 def test_calculate_fetch_dates_with_last_run():
     """
-    Given: A mock JamfProtect client and last run key.
+    Given: A mock Cloudflare API client and last run key.
     When: Running CalculateFetchDates with last run.
     Then: Ensure the returned start date is the last fetch time, and the end date is the current time.
     """
@@ -116,7 +131,7 @@ def test_calculate_fetch_dates_with_last_run():
 @freeze_time(MOCK_TIME_UTC_NOW)
 def test_calculate_fetch_dates_without_arguments():
     """
-    Given: A mock JamfProtect client.
+    Given: A mock Cloudflare API client.
     When: Running CalculateFetchDates with no arguments.
     Then: Ensure the returned start date is 1 minute before the current time, and the end date is the current time.
     """
@@ -140,3 +155,67 @@ def test_handle_duplicates():
     assert len(filtered_events) == 2  # IDs "2" and "4" remain
     assert filtered_events[0]["id"] == "4"
     assert filtered_events[1]["id"] == "2"
+
+
+@pytest.mark.parametrize(
+    "params, expected_headers",
+    [
+        pytest.param(
+            {
+                "auth_type": AuthTypes.API_TOKEN.value,
+                "token_credentials": {"password": MOCK_API_TOKEN},
+            },
+            MOCK_API_TOKEN_HEADERS,
+            id="API token headers",
+        ),
+        pytest.param(
+            {
+                "auth_type": AuthTypes.GLOBAL_API_KEY.value,
+                "credentials": {"identifier": MOCK_EMAIL, "password": MOCK_GLOBAL_API_KEY},
+            },
+            MOCK_GLOBAL_API_KEY_HEADERS,
+            id="Global API key headers",
+        ),
+    ],
+)
+def test_validate_headers_returns_correct_headers(params: dict, expected_headers: dict):
+    """
+    Given: Valid configuration parameters of an integration instance.
+    When: Calling validate_headers.
+    Then: Ensure the returned authorization headers are as expected.
+    """
+    from CloudflareZeroTrustEventCollector import validate_headers
+
+    assert validate_headers(params) == expected_headers
+
+
+@pytest.mark.parametrize(
+    "params, expected_error_message",
+    [
+        pytest.param(
+            {"auth_type": AuthTypes.API_TOKEN.value, "token_credentials": {}},
+            f"An API Token is required for the {AuthTypes.API_TOKEN.value} authorization type.",
+            id="API Token type chosen with empty token credentials",
+        ),
+        pytest.param(
+            {"auth_type": AuthTypes.GLOBAL_API_KEY.value, "credentials": {"identifier": MOCK_EMAIL}},
+            f"An API Email and a Global API Key are required for the {AuthTypes.GLOBAL_API_KEY.value} authorization type.",
+            id="Global API Key type chosen with partial credentials",
+        ),
+        pytest.param(
+            {"auth_type": "Hello!"},
+            "Invalid authorization type: 'Hello!'.",
+            id="Invalid authorization type",
+        ),
+    ],
+)
+def test_validate_headers_raises_exception(params: dict, expected_error_message: str):
+    """
+    Given: Invalid configuration parameters of an integration instance.
+    When: Calling validate_headers.
+    Then: Ensure the correct exception is raised with the expected error message.
+    """
+    from CloudflareZeroTrustEventCollector import validate_headers
+
+    with pytest.raises(DemistoException, match=re.escape(expected_error_message)):
+        validate_headers(params)
