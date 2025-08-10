@@ -18,7 +18,7 @@ Two API token types are supported:
 
 User tokens are better for ad hoc tasks like scripting, where acting as the user is ideal and durability is less of a concern.
 
-It is recommended to use an **Account token** to set up this event collector.
+It is recommended to use an **account token** to set up this integration.
 
 #### Generate API Token
 
