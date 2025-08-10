@@ -3233,13 +3233,11 @@ def modify_closure_delta(delta: dict, state: str, close_code: str = "Resolved by
     Returns:
         The modified delta dictionary.
     """
-    if "state" not in delta:
-        delta["state"] = state
-    if "close_code" not in delta and close_code is not None:
-        delta["close_code"] = close_code
-    if "close_notes" not in delta and close_notes is not None:
-        delta["close_notes"] = close_notes
+    delta.setdefault("state", state)
+    delta.setdefault("close_code", close_code)
+    delta.setdefault("close_notes", close_notes)
     return delta
+
 
 
 def pre_process_close_incident_args(parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str,
