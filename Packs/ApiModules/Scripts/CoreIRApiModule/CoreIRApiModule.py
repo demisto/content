@@ -1790,24 +1790,21 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         return CommandResults(readable_output=f"Endpoint {endpoint_id} pending isolation.")
     if endpoint_status == "UNINSTALLED":
         raise ValueError(f"Error: Endpoint {endpoint_id}'s Agent is uninstalled and therefore can not be isolated.")
-    if endpoint_status == "DISCONNECTED":
-        if disconnected_should_return_error:
-            raise ValueError(f"Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.")
-        else:
-            return CommandResults(
-                readable_output=f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.",
-                outputs={
-                    f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                    f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
-                },
-            )
+    if endpoint_status == "DISCONNECTED" and disconnected_should_return_error:
+        raise ValueError(f"Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.")
+
     if is_isolated == "AGENT_PENDING_ISOLATION_CANCELLATION":
         raise ValueError(f"Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.")
     try:
         result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+        readable_output = (
+            f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}."
+            if endpoint_status == "DISCONNECTED"
+            else f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n"
+        )
 
         return CommandResults(
-            readable_output=f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n",
+            readable_output=readable_output,
             outputs={
                 f'{args.get("integration_context_brand", "CoreApiModule")}.'
                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id

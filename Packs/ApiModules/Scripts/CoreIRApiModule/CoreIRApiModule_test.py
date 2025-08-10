@@ -4311,3 +4311,32 @@ def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
 
     response = get_alerts_by_filter_command(client, args)
     assert response.outputs[0].get("internal_id", {}) == 33333
+
+
+def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
+    """
+    Given:
+        - An endpoint with status DISCONNECTED
+        - suppress_disconnected_endpoint_error is True
+    When:
+        - Calling isolate_endpoint_command
+    Then:
+        - The client.isolate_endpoint method is called (no error is raised)
+        - A warning message is returned
+    """
+    from CoreIRApiModule import isolate_endpoint_command
+
+    # Mock the get_endpoint API to return a disconnected endpoint
+    mocker.patch.object(
+        test_client,
+        "_http_request",
+        side_effect=[
+            {"reply": {"endpoints": [{"endpoint_id": "1111", "endpoint_status": "DISCONNECTED"}]}},
+            {"reply": {"action_id": "fake_action_id"}},  # mock for isolate_endpoint
+        ],
+    )
+    mocker.patch.object(test_client, "isolate_endpoint", return_value={"action_id": "fake_action_id"})
+
+    args = {"endpoint_id": "1111", "suppress_disconnected_endpoint_error": True}
+    result = isolate_endpoint_command(test_client, args)
+    assert result.readable_output == "Warning: isolation action is pending for the following disconnected endpoint: 1111."
