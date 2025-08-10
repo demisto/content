@@ -266,3 +266,27 @@ Get the history for a whoisRecord, as represented by a collection of whoisHistor
 | MSGDefenderThreatIntel.WhoisHistory.id | unknown | The unique identifier of the historical WHOIS record. |
 | MSGDefenderThreatIntel.WhoisHistory.whoisServer | String | The WHOIS server that provided the historical domain registration data. |
 | MSGDefenderThreatIntel.WhoisHistory.domainStatus | String | The domain's status at the time of the historical WHOIS record \(e.g., clientTransferProhibited, inactive\). |
+
+### msg-defender-threat-intel-host
+
+***
+Read the properties and relationships of a host object.
+
+#### Base Command
+
+`msg-defender-threat-intel-host-reputation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The unique identifier of the host. | Required |
+| odata | Filter incidents using "odata" query. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGDefenderThreatIntel.HostReputation.id | unknown | The unique identifier of the host object in Microsoft Defender Threat Intelligence. |
+| MSGDefenderThreatIntel.Host.classification | String | The reputation classification of the host (e.g., Malicious, Suspicious, Unknown). |
+| MSGDefenderThreatIntel.Host.score | String | TA numerical score representing the confidence or severity of the host's reputation. |
