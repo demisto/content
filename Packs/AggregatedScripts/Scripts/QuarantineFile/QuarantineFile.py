@@ -1074,14 +1074,14 @@ class QuarantineOrchestrator:
         # Build final report
         final_readable_output = tableToMarkdown(
             name=f"Quarantine File Results for: {self.args.get(self.FILE_PATH_ARG)}",
-            headers=["endpoint_id", "status", "message", "brand"],
+            headers=["EndpointID", "Status", "Message", "Brand"],
             t=results_list,
             removeNull=True,
         )
 
         final_command_results = CommandResults(
             outputs_prefix="QuarantineFile",
-            outputs_key_field=["endpoint_id", "file_path", "file_hash"],
+            outputs_key_field=["EndpointID", "FilePath", "FileHash"],
             readable_output=final_readable_output,
             outputs=results_list,
         )
