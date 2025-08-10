@@ -558,15 +558,17 @@ def test_return_permissions_error_with_valid_dict(mocker):
     mocker.patch("sys.exit")
 
     error_entry = {"account_id": "test-account-123", "message": "Permission denied: permission", "name": "permission"}
-
+    error_entry_expected_results = {"account_id": "test-account-123",
+                                    "message": "Permission denied: permission",
+                                    "name": "permission",
+                                    "classification": "WARNING", "error": "Permission Error"}
     return_permissions_error(error_entry)
-
     demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [error_entry.update({"classification": "WARNING", "error": "Permission Error"})],
+        "Contents": [error_entry_expected_results],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -589,7 +591,8 @@ def test_return_permissions_error_with_missing_account_id(mocker):
     mocker.patch("sys.exit")
 
     error_entry = {"message": "Permission denied: permission", "name": "permission"}
-
+    error_entry_expected_results = {"message": "Permission denied: permission", "name": "permission",
+                                    "classification": "WARNING", "error": "Permission Error"}
     return_permissions_error(error_entry)
 
     demisto.debug.assert_called_once()
@@ -597,7 +600,7 @@ def test_return_permissions_error_with_missing_account_id(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [error_entry.update({"classification": "WARNING", "error": "Permission Error"})],
+        "Contents": [error_entry_expected_results],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -622,13 +625,14 @@ def test_return_permissions_error_with_empty_dict(mocker):
     error_entry = {}
 
     return_permissions_error(error_entry)
+    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error"}
 
     demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [{}.update({"classification": "WARNING", "error": "Permission Error"})],
+        "Contents": [error_entry_expected_results],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -657,13 +661,14 @@ def test_return_permissions_error_with_invalid_type_string(mocker):
 
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'str'>")
 
-    default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
+    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error",
+                                    "message": "Invalid error data provided", "error_type": "Internal Error"}
     demisto.debug.assert_called_once()
-    default_error.update({"classification": "WARNING", "error": "Permission Error"})
+    
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error],
+        "Contents": [error_entry_expected_results],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -692,13 +697,13 @@ def test_return_permissions_error_with_invalid_type_list(mocker):
 
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'list'>")
 
-    default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
+    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error",
+                                    "message": "Invalid error data provided", "error_type": "Internal Error"}
     demisto.debug.assert_called_once()
-    default_error.update({"classification": "WARNING", "error": "Permission Error"})
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error],
+        "Contents": [error_entry_expected_results],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -727,13 +732,14 @@ def test_return_permissions_error_with_none_input(mocker):
 
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'NoneType'>")
 
-    default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
+    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error",
+                                    "message": "Invalid error data provided", "error_type": "Internal Error"}
     demisto.debug.assert_called_once()
-    default_error.update({"classification": "WARNING", "error": "Permission Error"})
+
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error],
+        "Contents": [error_entry_expected_results],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
