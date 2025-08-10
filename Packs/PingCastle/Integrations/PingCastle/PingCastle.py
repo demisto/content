@@ -201,9 +201,11 @@ def test_module(params: dict):
         private_key_file.close()
 
         s = socket.socket()
+        # pylint: disable=no-member
         ssl.wrap_socket(  # type: ignore[attr-defined]
             s, keyfile=private_key_path, certfile=certificate_path, server_side=True, ssl_version=ssl.PROTOCOL_TLSv1_2
         )
+        # pylint: enable=no-member
         return "ok"
 
     except ssl.SSLError as e:
