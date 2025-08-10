@@ -504,7 +504,7 @@ tasks:
     task:
       id: 754a3e8f-22db-4f9b-89e1-c54765c37b2d
       version: -1
-      name: Verify endpoint isn't isolated, disconnected, or a server
+      name: Check Endpoint Status
       description: Determine whether to isolate the endpoint based on its status, isolation state, and OS type.
       type: condition
       iscommand: false
@@ -570,7 +570,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "48":
