@@ -568,7 +568,7 @@ def test_return_permissions_error_with_valid_dict(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [error_entry],
+        "Contents": [error_entry.update({"classification": "WARNING", "error": "Permission Error"})],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -599,7 +599,7 @@ def test_return_permissions_error_with_missing_account_id(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [error_entry],
+        "Contents": [error_entry.update({"classification": "WARNING", "error": "Permission Error"})],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -630,7 +630,7 @@ def test_return_permissions_error_with_empty_dict(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [{}],
+        "Contents": [{}.update({"classification": "WARNING", "error": "Permission Error"})],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -665,7 +665,7 @@ def test_return_permissions_error_with_invalid_type_string(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error],
+        "Contents": [default_error.update({"classification": "WARNING", "error": "Permission Error"})],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -700,7 +700,7 @@ def test_return_permissions_error_with_invalid_type_list(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error],
+        "Contents": [default_error.update({"classification": "WARNING", "error": "Permission Error"})],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -735,7 +735,7 @@ def test_return_permissions_error_with_none_input(mocker):
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error],
+        "Contents": [default_error.update({"classification": "WARNING", "error": "Permission Error"})],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
