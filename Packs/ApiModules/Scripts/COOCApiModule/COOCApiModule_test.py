@@ -659,11 +659,11 @@ def test_return_permissions_error_with_invalid_type_string(mocker):
 
     default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
     demisto.debug.assert_called_once()
-
+    default_error.update({"classification": "WARNING", "error": "Permission Error"})
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error.update({"classification": "WARNING", "error": "Permission Error"})],
+        "Contents": [default_error],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -694,11 +694,11 @@ def test_return_permissions_error_with_invalid_type_list(mocker):
 
     default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
     demisto.debug.assert_called_once()
-
+    default_error.update({"classification": "WARNING", "error": "Permission Error"})
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error.update({"classification": "WARNING", "error": "Permission Error"})],
+        "Contents": [default_error],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
@@ -729,11 +729,11 @@ def test_return_permissions_error_with_none_input(mocker):
 
     default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
     demisto.debug.assert_called_once()
-
+    default_error.update({"classification": "WARNING", "error": "Permission Error"})
     expected_results = {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["json"],
-        "Contents": [default_error.update({"classification": "WARNING", "error": "Permission Error"})],
+        "Contents": [default_error],
         "EntryContext": None,
     }
     demisto.results.assert_called_once_with(expected_results)
