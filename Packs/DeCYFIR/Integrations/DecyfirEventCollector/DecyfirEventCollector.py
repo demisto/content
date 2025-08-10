@@ -35,7 +35,7 @@ SOURCE_LOG_TYPES = {
 }
 
 
-def get_timestamp_from_datetime(value: datetime):
+def get_timestamp_from_datetime(value: datetime, event_type: str) -> int:
     """
     Converts a `datetime` object to a Unix timestamp in milliseconds.
 
@@ -46,7 +46,9 @@ def get_timestamp_from_datetime(value: datetime):
         int: The corresponding Unix timestamp in milliseconds.
 
     """
-    return int(value.timestamp() * 1000)
+    if event_type == ACCESS_LOGS:
+        return int(value.timestamp())  # epoch timestamp in seconds #todo: test the resolution - do i need to deduct a second?
+    return int(value.timestamp() * 1000)  # epoch timestamp in milliseconds
 
 
 """ CLIENT CLASS """
@@ -71,7 +73,6 @@ class Client(BaseClient):
         params = assign_params(key=self._api_key, after=after, page=page, size=size)
         raw_response = self._http_request(url_suffix=url_suffix, method="GET", params=params)
         return raw_response
-
 
     def search_events(self, event_type: str, max_events_per_fetch: int, after: Optional[int]) -> list[dict]:
         """
@@ -205,8 +206,8 @@ def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_f
 
     all_events = []
     hr = ""
-    after = get_timestamp_from_datetime(from_date) if from_date else None  # epoch timestamp in milliseconds
     for event_type in event_types_to_fetch:
+        after = get_timestamp_from_datetime(from_date, event_type) if from_date else None
         events = client.search_events(
             event_type=event_type,
             max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
@@ -273,14 +274,22 @@ def increase_datetime_for_next_fetch(
     return next_fetch_time.isoformat()
 
 
+def save_potential_duplicates_for_next_run(next_fetch_time, log_events):
+    pass
+
+
+def remove_duplicate_events(log_events, duplicate_events):
+    pass
+
+
 def fetch_events(client: Client, last_run: dict[str, int],
                  first_fetch_time, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int]
                  ) -> tuple[Dict, List[Dict]]:
-    next_run: dict[str, str] = {}
+    next_run: dict[str, dict] = {}
     events = []
 
     for event_type in event_types_to_fetch:
-        last_time = arg_to_datetime(last_run.get(event_type, None))
+        last_time = arg_to_datetime(last_run.get(event_type, {}).get("next_fetch_time", None))
         last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
         start_date = first_fetch_time if not last_time else last_time
         after = get_timestamp_from_datetime(start_date)
@@ -290,7 +299,13 @@ def fetch_events(client: Client, last_run: dict[str, int],
             max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
             after=after
         )
-        next_run[event_type] = increase_datetime_for_next_fetch(log_events, start_date, next_run.get(event_type), event_type)
+        if event_type == ACCESS_LOGS:
+            log_events = remove_duplicate_events(log_events, next_run.get(ACCESS_LOGS).get("duplicate_events", []))
+        next_fetch_time = increase_datetime_for_next_fetch(log_events, start_date, next_run.get(event_type), event_type)
+        next_run[event_type] = {"next_fetch_time": next_fetch_time}
+        if event_type == ACCESS_LOGS:
+            save_potential_duplicates_for_next_run(next_fetch_time, next_run)
+
         demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
         add_fields_to_events(log_events, event_type)
         events.extend(log_events)
