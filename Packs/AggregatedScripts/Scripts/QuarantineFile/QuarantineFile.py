@@ -33,12 +33,12 @@ class QuarantineException(Exception):
 class QuarantineResult:
     """A structured object to hold the result of a quarantine action for a single endpoint."""
 
-    endpoint_id: str
-    status: str
-    message: str
-    brand: str
-    file_path: str
-    file_hash: str
+    EndpointID: str
+    Status: str
+    Message: str
+    Brand: str
+    FilePath: str
+    FileHash: str
 
     class Statuses(StrEnum):
         SUCCESS = "Success"
@@ -74,12 +74,12 @@ class QuarantineResult:
             QuarantineResult: A new instance of the QuarantineResult class.
         """
         return QuarantineResult(
-            endpoint_id=endpoint_id,
-            status=status,
-            message=message,
-            brand=brand,
-            file_path=script_args.get(QuarantineOrchestrator.FILE_PATH_ARG, ""),
-            file_hash=script_args.get(QuarantineOrchestrator.FILE_HASH_ARG, ""),
+            EndpointID=endpoint_id,
+            Status=status,
+            Message=message,
+            Brand=brand,
+            FilePath=script_args.get(QuarantineOrchestrator.FILE_PATH_ARG, ""),
+            FileHash=script_args.get(QuarantineOrchestrator.FILE_HASH_ARG, ""),
         )
 
     @staticmethod
@@ -553,13 +553,8 @@ class XDRHandler(BrandHandler):
             status = QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Quarantine action failed for {endpoint_id}. Reason: {message}")
 
-        return QuarantineResult(
-            endpoint_id=endpoint_id,
-            status=status,
-            message=message,
-            brand=self.brand,
-            file_path=job_data.get("finalize_args", {}).get("file_path", ""),
-            file_hash=job_data.get("finalize_args", {}).get("file_hash", ""),
+        return QuarantineResult.create(
+            endpoint_id=endpoint_id, status=status, message=message, brand=self.brand, script_args=self.orchestrator.args
         )
 
     def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
@@ -717,13 +712,12 @@ class XDRHandler(BrandHandler):
                     f" {quarantine_endpoint_result.get('endpoint_id')}: {e}"
                 )
                 final_results.append(
-                    QuarantineResult(
+                    QuarantineResult.create(
                         endpoint_id=quarantine_endpoint_result.get("endpoint_id", "Unknown"),
                         status=QuarantineResult.Statuses.FAILED,
                         message=QuarantineResult.Messages.GENERAL_FAILURE,
                         brand=self.brand,
-                        file_path=job.get("finalize_args", {}).get("file_path", ""),
-                        file_hash=job.get("finalize_args", {}).get("file_hash", ""),
+                        script_args=self.orchestrator.args,
                     )
                 )
         return final_results

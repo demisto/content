@@ -51,12 +51,13 @@ class TestCommand:
             {
                 "Type": 1,
                 "EntryContext": {
-                    "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)": [
+                    "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == "
+                    "obj.ID && val.Hostname && val.Hostname == obj.Hostname)": [
                         {
                             "Brand": "Cortex Core - IR",
                             "Hostname": "FT",
                             "ID": "EP1_ID",
-                            "IPAddress": ["172.16.8.116"],
+                            "IPAddress": ["192.0.2.1"],
                             "IsIsolated": "No",
                             "Message": "Command successful",
                             "Status": "Online",
@@ -65,7 +66,7 @@ class TestCommand:
                             "Brand": "Cortex Core - IR",
                             "Hostname": "FT",
                             "ID": "EP2_ID",
-                            "IPAddress": ["172.16.8.47"],
+                            "IPAddress": ["192.0.2.1"],
                             "IsIsolated": "No",
                             "Message": "Command successful",
                             "Status": "Online",
@@ -92,12 +93,13 @@ class TestCommand:
             {
                 "Type": 1,
                 "EntryContext": {
-                    "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)": [
+                    "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == "
+                    "obj.ID && val.Hostname && val.Hostname == obj.Hostname)": [
                         {
                             "Brand": "Cortex Core - IR",
                             "Hostname": "FT",
                             "ID": "EP1_ID",
-                            "IPAddress": ["172.16.8.116"],
+                            "IPAddress": ["192.0.2.1"],
                             "IsIsolated": "No",
                             "Message": "Command successful",
                             "Status": "Online",
@@ -242,22 +244,22 @@ class TestEndpointBrandMapper:
         # Assert Initial Failure Results
         assert len(mapper.initial_results) == 3
 
-        offline_result = next((r for r in mapper.initial_results if r.endpoint_id == "offline-1"), None)
+        offline_result = next((r for r in mapper.initial_results if r.EndpointID == "offline-1"), None)
         assert offline_result is not None
-        assert offline_result.status == QuarantineResult.Statuses.FAILED
-        assert "Endpoint status is 'Offline'" in offline_result.message
+        assert offline_result.Status == QuarantineResult.Statuses.FAILED
+        assert "Endpoint status is 'Offline'" in offline_result.Message
 
-        not_found_result = next((r for r in mapper.initial_results if r.endpoint_id == "not-found-1"), None)
+        not_found_result = next((r for r in mapper.initial_results if r.EndpointID == "not-found-1"), None)
         assert not_found_result is not None
-        assert not_found_result.status == QuarantineResult.Statuses.FAILED
-        assert not_found_result.message == QuarantineResult.Messages.FAILED_WITH_REASON.format(
+        assert not_found_result.Status == QuarantineResult.Statuses.FAILED
+        assert not_found_result.Message == QuarantineResult.Messages.FAILED_WITH_REASON.format(
             reason="Command failed - no endpoint found"
         )
 
-        ep_without_brand_result = next((r for r in mapper.initial_results if r.endpoint_id == "ep-without-brand"), None)
+        ep_without_brand_result = next((r for r in mapper.initial_results if r.EndpointID == "ep-without-brand"), None)
         assert ep_without_brand_result is not None
-        assert ep_without_brand_result.status == QuarantineResult.Statuses.FAILED
-        assert ep_without_brand_result.message == QuarantineResult.Messages.ENDPOINT_NOT_FOUND
+        assert ep_without_brand_result.Status == QuarantineResult.Statuses.FAILED
+        assert ep_without_brand_result.Message == QuarantineResult.Messages.ENDPOINT_NOT_FOUND
 
     def test_all_endpoints_offline_or_not_found_dont_raise_exception(self, mocker):
         """
@@ -481,7 +483,7 @@ class TestXDRHandler:
                     status=QuarantineResult.Statuses.SUCCESS,
                     message=QuarantineResult.Messages.ALREADY_QUARANTINED,
                     brand=Brands.CORTEX_XDR_IR,
-                    script_args={"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"},
+                    script_args={"file_hash": SHA_256_HASH, "file_path": "/path"},
                 )
             ]
 
@@ -523,21 +525,21 @@ class TestXDRHandler:
                     status=QuarantineResult.Statuses.SUCCESS,
                     message=QuarantineResult.Messages.ALREADY_QUARANTINED,
                     brand=Brands.CORTEX_XDR_IR,
-                    script_args={"endpoint_id": "id1", "file_hash": "sha256", "file_path": "/path"},
+                    script_args={"file_hash": "sha256", "file_path": "/path"},
                 ),
                 QuarantineResult.create(
                     endpoint_id="id2",
                     status=QuarantineResult.Statuses.FAILED,
                     message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
                     brand=Brands.CORTEX_XDR_IR,
-                    script_args={"endpoint_id": "id2", "file_hash": "sha256", "file_path": "/path"},
+                    script_args={"file_hash": "sha256", "file_path": "/path"},
                 ),
                 QuarantineResult.create(
                     endpoint_id="id4",
                     status=QuarantineResult.Statuses.FAILED,
                     message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
                     brand=Brands.CORTEX_XDR_IR,
-                    script_args={"endpoint_id": "id3", "file_hash": "sha256", "file_path": "/path"},
+                    script_args={"file_hash": "sha256", "file_path": "/path"},
                 ),
             ]
 
@@ -633,7 +635,7 @@ class TestXDRHandler:
             mocker.patch("QuarantineFile.Command", return_value=mock_command_instance)
 
             assert orchestrator.verbose_results == []
-            assert orchestrator.verbose == True
+            assert orchestrator.verbose
 
             handler.initiate_quarantine(args)
 
@@ -698,12 +700,12 @@ class TestXDRHandler:
             assert handler._execute_quarantine_status_command.call_args[0][1] == "hash123"
             assert handler._execute_quarantine_status_command.call_args[0][2] == "/path/test.txt"
 
-            assert final_result.status == QuarantineResult.Statuses.SUCCESS
-            assert final_result.message == QuarantineResult.Messages.SUCCESS
-            assert final_result.endpoint_id == "ep1"
-            assert final_result.file_hash == "hash123"
-            assert final_result.file_path == "/path/test.txt"
-            assert final_result.brand == Brands.CORTEX_CORE_IR
+            assert final_result.Status == QuarantineResult.Statuses.SUCCESS
+            assert final_result.Message == QuarantineResult.Messages.SUCCESS
+            assert final_result.EndpointID == "ep1"
+            assert final_result.FileHash == "hash123"
+            assert final_result.FilePath == "/path/test.txt"
+            assert final_result.Brand == Brands.CORTEX_CORE_IR
 
         def test_process_final_endpoint_status_receives_unsuccessfully_quarantined(self, setup_finalize, mocker):
             """
@@ -729,12 +731,12 @@ class TestXDRHandler:
             # Assert that _execute_quarantine_status_command was not called
             handler._execute_quarantine_status_command.assert_not_called()
 
-            assert final_result.status == QuarantineResult.Statuses.FAILED
-            assert final_result.message == QuarantineResult.Messages.FAILED_WITH_REASON.format(reason="Error from xdr agent")
-            assert final_result.endpoint_id == "ep1"
-            assert final_result.file_hash == "hash123"
-            assert final_result.file_path == "/path/test.txt"
-            assert final_result.brand == Brands.CORTEX_CORE_IR
+            assert final_result.Status == QuarantineResult.Statuses.FAILED
+            assert final_result.Message == QuarantineResult.Messages.FAILED_WITH_REASON.format(reason="Error from xdr agent")
+            assert final_result.EndpointID == "ep1"
+            assert final_result.FileHash == "hash123"
+            assert final_result.FilePath == "/path/test.txt"
+            assert final_result.Brand == Brands.CORTEX_CORE_IR
 
         def test_finalize_all_eps_success(self, setup_finalize, mocker):
             """
@@ -763,14 +765,14 @@ class TestXDRHandler:
             # Assert
             assert len(final_results) == 2
             result = final_results[0]
-            assert result.status == QuarantineResult.Statuses.SUCCESS
-            assert result.message == QuarantineResult.Messages.SUCCESS
-            assert result.endpoint_id == "ep1"
+            assert result.Status == QuarantineResult.Statuses.SUCCESS
+            assert result.Message == QuarantineResult.Messages.SUCCESS
+            assert result.EndpointID == "ep1"
 
             result = final_results[1]
-            assert result.status == QuarantineResult.Statuses.SUCCESS
-            assert result.message == QuarantineResult.Messages.SUCCESS
-            assert result.endpoint_id == "ep2"
+            assert result.Status == QuarantineResult.Statuses.SUCCESS
+            assert result.Message == QuarantineResult.Messages.SUCCESS
+            assert result.EndpointID == "ep2"
 
         def test_finalize_all_some_eps_failed(self, setup_finalize, mocker):
             """
@@ -799,14 +801,14 @@ class TestXDRHandler:
             # Assert
             assert len(final_results) == 2
             result = final_results[0]
-            assert result.status == QuarantineResult.Statuses.SUCCESS
-            assert result.message == QuarantineResult.Messages.SUCCESS
-            assert result.endpoint_id == "ep1"
+            assert result.Status == QuarantineResult.Statuses.SUCCESS
+            assert result.Message == QuarantineResult.Messages.SUCCESS
+            assert result.EndpointID == "ep1"
 
             result = final_results[1]
-            assert result.status == QuarantineResult.Statuses.FAILED
-            assert result.message == QuarantineResult.Messages.FAILED_WITH_REASON.format(reason="Error from xdr agent")
-            assert result.endpoint_id == "ep2"
+            assert result.Status == QuarantineResult.Statuses.FAILED
+            assert result.Message == QuarantineResult.Messages.FAILED_WITH_REASON.format(reason="Error from xdr agent")
+            assert result.EndpointID == "ep2"
 
         def test_finalize_returns_failed_when_unexpected_exception(self, setup_finalize, mocker):
             """
@@ -833,12 +835,12 @@ class TestXDRHandler:
             # Assert
             assert len(result) == 1
             result = result[0]
-            assert result.status == QuarantineResult.Statuses.FAILED
-            assert result.message == QuarantineResult.Messages.GENERAL_FAILURE
-            assert result.endpoint_id == "ep1"
-            assert result.file_hash == "hash123"
-            assert result.file_path == "/path/test.txt"
-            assert result.brand == Brands.CORTEX_CORE_IR
+            assert result.Status == QuarantineResult.Statuses.FAILED
+            assert result.Message == QuarantineResult.Messages.GENERAL_FAILURE
+            assert result.EndpointID == "ep1"
+            assert result.FileHash == "hash123"
+            assert result.FilePath == "/path/test.txt"
+            assert result.Brand == Brands.CORTEX_CORE_IR
 
 
 class TestQuarantineOrchestrator:
@@ -1060,7 +1062,7 @@ class TestQuarantineOrchestrator:
 
             orchestrator = QuarantineOrchestrator(args)
             assert orchestrator.args == args
-            assert orchestrator.verbose == False
+            assert not orchestrator.verbose
 
         def test_constructor_sets_from_context(self, mocker):
             args = {
@@ -1076,7 +1078,7 @@ class TestQuarantineOrchestrator:
                 status=QuarantineResult.Statuses.FAILED,
                 message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
                 brand=Brands.CORTEX_XDR_IR,
-                script_args={"endpoint_id": "id3", "file_hash": "sha256", "file_path": "/path"},
+                script_args={"file_hash": "sha256", "file_path": "/path"},
             )
 
             mocker.patch.object(
@@ -1090,7 +1092,7 @@ class TestQuarantineOrchestrator:
 
             orchestrator = QuarantineOrchestrator(args)
             assert orchestrator.args == args
-            assert orchestrator.verbose == True
+            assert orchestrator.verbose
             assert orchestrator.pending_jobs == ["pending job"]
             assert orchestrator.completed_results == [completed_result]
 
@@ -1169,9 +1171,9 @@ class TestQuarantineOrchestrator:
             assert len(saved_results) == 2
 
             # Check for the offline result from the mapper
-            assert any(r["endpoint_id"] == "offline-ep" for r in saved_results)
+            assert any(r["EndpointID"] == "offline-ep" for r in saved_results)
             # Check for the already quarantined result from the handler
-            assert any(r["endpoint_id"] == "ep3" for r in saved_results)
+            assert any(r["EndpointID"] == "ep3" for r in saved_results)
 
         def test_run_polling_run_job_still_polling(self, mocker):
             """
@@ -1252,7 +1254,7 @@ class TestQuarantineOrchestrator:
             assert result.continue_to_poll is False
             mock_handler_instance.finalize.assert_called_once_with(pending_job, polling_response)
             assert len(orchestrator.completed_results) == 1
-            assert orchestrator.completed_results[0].endpoint_id == "ep1"
+            assert orchestrator.completed_results[0].EndpointID == "ep1"
             assert not orchestrator.pending_jobs  # The list should now be empty
 
 
