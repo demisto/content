@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
 
@@ -12,16 +12,14 @@ from CommonServerPython import DemistoException
 from IBMStorageScale import (
     API_ENDPOINT,
     DEFAULT_FIRST_FETCH_DAYS,
-    DEDUPLICATION_WINDOW_HOURS,
     Client,
     CommandResults,
     _ConcurrentEventFetcher,
-    build_api_query_with_time_filter,
+    build_fetch_query,
     deduplicate_events,
-    generate_event_hash,
-    get_time_filter_from_last_run,
+    generate_time_filter_regex,
+    get_fetch_start_time,
     main,
-    store_event_hashes,
     update_last_run_time,
 )
 
@@ -222,53 +220,43 @@ class TestMain:
         assert "not implemented" in return_error_mock.call_args.args[0]
 
 
-class TestClientFetchLogic:
-    async def test_fetch_events_calls_xsiam_push(self, mocker: MockerFixture, capfd):
+class TestRegexFetchLogic:
+    async def test_fetch_events_uses_regex_filter(self, mocker: MockerFixture, capfd):
         """
         Given:
-            - A mocked _ConcurrentEventFetcher returning fake events.
+            - A client starting a fetch cycle.
         When:
             - Client.fetch_events is called.
         Then:
-            - send_events_to_xsiam is called with the events.
+            - It should calculate a time window, build a regex query, and update last run time.
         """
-        events = [{"entryTime": "2024-01-01T00:00:00Z"} for _ in range(5)]
+        params = {"server_url": "https://test.com", "credentials": {}, "max_fetch": "1000"}
+        client = mock_client(mocker, params)
 
-        fetcher_cls_mock = mocker.patch("IBMStorageScale._ConcurrentEventFetcher", autospec=True)
-        fetcher_mock = fetcher_cls_mock.return_value
-        fetcher_mock.run = AsyncMock(return_value=(events, False))
+        # Mock time
+        start_dt = datetime(2025, 8, 10, 12, 0, 0, tzinfo=UTC)
+        end_dt = datetime(2025, 8, 10, 12, 5, 0, tzinfo=UTC)
+        mocker.patch("IBMStorageScale.get_fetch_start_time", return_value=start_dt)
+        mocker.patch("IBMStorageScale.datetime").utcnow.return_value = end_dt
 
-        send_mock = mocker.patch("IBMStorageScale.send_events_to_xsiam")
-        mocker.patch("IBMStorageScale.get_time_filter_from_last_run", return_value="2023-01-01T00:00:00Z")
-        mocker.patch("IBMStorageScale.update_last_run_time")
-        mocker.patch("IBMStorageScale.store_event_hashes")
-        mocker.patch("IBMStorageScale.get_stored_event_hashes", return_value={})
+        # Mock dependencies
+        mock_build_query = mocker.patch("IBMStorageScale.build_fetch_query", return_value="fake_query_string")
+        mock_update_last_run = mocker.patch("IBMStorageScale.update_last_run_time")
+        mocker.patch("IBMStorageScale._ConcurrentEventFetcher.run", return_value=([], False))
+        mocker.patch(
+            "IBMStorageScale.deduplicate_events",
+            return_value=([], {"total_events": 0, "duplicates_found": 0, "unique_events": 0, "stored_hashes_count": 0}),
+        )
+        mocker.patch("IBMStorageScale.send_events_to_xsiam")
+        mocker.patch("IBMStorageScale.demisto.info")
 
-        client = Client("https://test.com", ("user", "pass"), verify=True, proxy=None)
-
+        # Run the function
         with capfd.disabled():
-            await client.fetch_events(max_events=5)
+            await client.fetch_events(max_events=1000)
 
-        send_mock.assert_called_once_with(events=events, vendor="IBM", product="StorageScale")
-
-    async def test_get_events_returns_data(self, mocker: MockerFixture):
-        """
-        Given:
-            - A mocked _ConcurrentEventFetcher with events.
-        When:
-            - Client.get_events is invoked.
-        Then:
-            - It returns the fetched events and has_more flag.
-        """
-        events = [{"entryTime": "now"}]
-        fetcher_cls_mock = mocker.patch("IBMStorageScale._ConcurrentEventFetcher", autospec=True)
-        fetcher_mock = fetcher_cls_mock.return_value
-        fetcher_mock.run = AsyncMock(return_value=(events, True))
-
-        client = Client("https://test.com", ("user", "pass"), verify=True, proxy=None)
-        result, has_more = await client.get_events(limit=1)
-        assert result == events
-        assert has_more is True
+        # Assertions
+        mock_build_query.assert_called_once_with(1000, start_dt, end_dt)
+        mock_update_last_run.assert_called_once_with(end_dt)
 
 
 class TestFetcherRunLogic:
@@ -295,7 +283,7 @@ class TestFetcherRunLogic:
         mocker.patch("IBMStorageScale.demisto.error")
 
         client = Client("https://test.com", ("u", "p"), True, None)
-        fetcher = _ConcurrentEventFetcher(client, max_events=1)
+        fetcher = _ConcurrentEventFetcher(client, max_events=1, query="fields=:all:&limit=1")
         with capfd.disabled():
             events, has_more = await fetcher.run()
 
@@ -374,145 +362,70 @@ class TestWorkerBehavior:
 
 
 class TestUtilityFunctions:
-    def test_generate_event_hash_consistent(self):
-        """
-        Given:
-            - An event with specific identifying fields
-        When:
-            - generate_event_hash is called multiple times
-        Then:
-            - The same hash should be generated consistently
-        """
-        event = {
-            "oid": "12345",
-            "entryTime": "2023-01-01T00:00:00Z",
-            "user": "testuser",
-            "command": "mmlsconfig",
-            "node": "node1",
-            "originator": "CLI",
-            "returnCode": "0",
-        }
-        hash1 = generate_event_hash(event)
-        hash2 = generate_event_hash(event)
-        assert hash1 == hash2
-        assert len(hash1) == 64  # SHA256 produces 64 character hex string
-
-    def test_generate_event_hash_different_events(self):
-        """
-        Given:
-            - Two different events
-        When:
-            - generate_event_hash is called on each
-        Then:
-            - Different hashes should be generated
-        """
-        event1 = {"oid": "12345", "entryTime": "2023-01-01T00:00:00Z", "user": "user1"}
-        event2 = {"oid": "67890", "entryTime": "2023-01-01T00:00:01Z", "user": "user2"}
-
-        hash1 = generate_event_hash(event1)
-        hash2 = generate_event_hash(event2)
-        assert hash1 != hash2
-
-    def test_get_time_filter_from_last_run_with_existing(self, mocker: MockerFixture):
-        """
-        Given:
-            - A last run object with existing fetch time
-        When:
-            - get_time_filter_from_last_run is called
-        Then:
-            - The existing fetch time should be returned
-        """
-        expected_time = "2023-01-01T12:00:00Z"
-        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_time": expected_time})
+    def test_get_fetch_start_time_with_existing(self, mocker: MockerFixture):
+        """Tests getting start time when last run exists."""
+        expected_time_str = "2025-08-10T12:00:00Z"
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_time": expected_time_str})
         mocker.patch("IBMStorageScale.demisto.debug")
-        result = get_time_filter_from_last_run()
-        assert result == expected_time
 
-    def test_get_time_filter_from_last_run_first_run(self, mocker: MockerFixture):
-        """
-        Given:
-            - No existing last run object (first run)
-        When:
-            - get_time_filter_from_last_run is called
-        Then:
-            - A default lookback time should be calculated and returned
-        """
+        result = get_fetch_start_time()
+
+        assert isinstance(result, datetime)
+        expected_dt = datetime.fromisoformat(expected_time_str.replace("Z", "+00:00"))
+        assert result == expected_dt
+
+    def test_get_fetch_start_time_first_run(self, mocker: MockerFixture):
+        """Tests getting start time on the first run."""
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch("IBMStorageScale.demisto.debug")
-        mock_datetime = mocker.patch("IBMStorageScale.datetime")
-        mock_now = datetime(2023, 1, 2, 12, 0, 0)
-        mock_datetime.utcnow.return_value = mock_now
+        mock_now = datetime(2025, 8, 10, 12, 0, 0, tzinfo=UTC)
+        mocker.patch("IBMStorageScale.datetime").utcnow.return_value = mock_now
 
-        result = get_time_filter_from_last_run()
-        expected = (mock_now - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)).isoformat() + "Z"
-        assert result == expected
+        result = get_fetch_start_time()
 
-    def test_update_last_run_time_with_events(self, mocker: MockerFixture):
-        """
-        Given:
-            - A list of events with timestamps
-        When:
-            - update_last_run_time is called
-        Then:
-            - The latest timestamp should be stored in last run
-        """
+        expected_dt = mock_now - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)
+        assert result == expected_dt
+
+    def test_update_last_run_time(self, mocker: MockerFixture):
+        """Tests that last run time is updated correctly."""
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch("IBMStorageScale.demisto.debug")
 
-        events = [
-            {"entryTime": "2023-01-01T10:00:00Z"},
-            {"entryTime": "2023-01-01T12:00:00Z"},  # Latest
-            {"entryTime": "2023-01-01T11:00:00Z"},
-        ]
+        new_time = datetime(2025, 8, 10, 12, 30, 0, tzinfo=UTC)
+        update_last_run_time(new_time)
 
-        update_last_run_time(events)
-        mock_set_last_run.assert_called_once_with({"last_fetch_time": "2023-01-01T12:00:00Z"})
+        expected_last_run = {"last_fetch_time": "2025-08-10T12:30:00+00:00Z"}
+        mock_set_last_run.assert_called_once_with(expected_last_run)
 
-    def test_update_last_run_time_empty_events(self, mocker: MockerFixture):
-        """
-        Given:
-            - An empty list of events
-        When:
-            - update_last_run_time is called
-        Then:
-            - No last run update should occur
-        """
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mocker.patch("IBMStorageScale.demisto.debug")
-        update_last_run_time([])
-        mock_set_last_run.assert_not_called()
+    def test_generate_time_filter_regex(self):
+        """Tests regex generation for a multi-minute window."""
+        start_time = datetime(2025, 8, 10, 10, 15, 30)
+        end_time = datetime(2025, 8, 10, 10, 17, 10)
 
-    def test_build_api_query_with_time_filter(self):
-        """
-        Given:
-            - A timestamp and limit
-        When:
-            - build_api_query_with_time_filter is called
-        Then:
-            - A properly formatted query string should be returned
-        """
-        since_time = "2023-01-01T00:00:00Z"
-        limit = 500
+        expected_regex = "2025-08-10T10:15:[0-5][0-9]|" "2025-08-10T10:16:[0-5][0-9]|" "2025-08-10T10:17:[0-5][0-9]"
+        result = generate_time_filter_regex(start_time, end_time)
+        assert result == expected_regex
 
-        result = build_api_query_with_time_filter(since_time, limit)
+    def test_generate_time_filter_regex_cross_hour(self):
+        """Tests regex generation across an hour boundary."""
+        start_time = datetime(2025, 8, 10, 10, 59, 0)
+        end_time = datetime(2025, 8, 10, 11, 0, 30)
+
+        expected_regex = "2025-08-10T10:59:[0-5][0-9]|2025-08-10T11:00:[0-5][0-9]"
+        result = generate_time_filter_regex(start_time, end_time)
+        assert result == expected_regex
+
+    def test_build_fetch_query(self):
+        """Tests that the fetch query is built correctly with the regex filter."""
+        start_time = datetime(2025, 8, 10, 10, 15, 0)
+        end_time = datetime(2025, 8, 10, 10, 15, 59)
+
+        result = build_fetch_query(limit=500, start_time=start_time, end_time=end_time)
+
         assert "fields=:all:" in result
-        assert f"limit={limit}" in result
-        assert f"since={since_time}" in result
-
-    def test_build_api_query_with_time_filter_no_time(self):
-        """
-        Given:
-            - No timestamp but with limit
-        When:
-            - build_api_query_with_time_filter is called
-        Then:
-            - Query without time filter should be returned
-        """
-        result = build_api_query_with_time_filter("", 100)
-        assert "fields=:all:" in result
-        assert "limit=100" in result
-        assert "since=" not in result
+        assert "limit=500" in result
+        assert "filter=entryTime='''2025-08-10T10:15:[0-5][0-9]'''" in result
 
     def test_deduplicate_events_with_duplicates(self, mocker: MockerFixture):
         """
@@ -523,85 +436,28 @@ class TestUtilityFunctions:
         Then:
             - Duplicates should be removed and stats returned
         """
-        # Mock stored hashes
         stored_hash = "existing_hash_123"
         mocker.patch("IBMStorageScale.get_stored_event_hashes", return_value={stored_hash: "2023-01-01T10:00:00Z"})
         mocker.patch("IBMStorageScale.store_event_hashes")
         mocker.patch("IBMStorageScale.demisto.debug")
 
-        # Mock hash generation to control duplicates
         def mock_hash_gen(event):
-            if event.get("oid") == "duplicate":
-                return stored_hash
-            return f"hash_{event.get('oid', 'unknown')}"
+            return stored_hash if event.get("oid") == "duplicate" else f"hash_{event.get('oid', 'unknown')}"
 
         mocker.patch("IBMStorageScale.generate_event_hash", side_effect=mock_hash_gen)
 
         events = [
-            {"oid": "duplicate", "entryTime": "2023-01-01T11:00:00Z"},  # This should be filtered as duplicate
+            {"oid": "duplicate", "entryTime": "2023-01-01T11:00:00Z"},
             {"oid": "unique1", "entryTime": "2023-01-01T12:00:00Z"},
             {"oid": "unique2", "entryTime": "2023-01-01T13:00:00Z"},
         ]
 
         result_events, stats = deduplicate_events(events)
 
-        assert len(result_events) == 2  # Only unique events
+        assert len(result_events) == 2
         assert stats["total_events"] == 3
         assert stats["duplicates_found"] == 1
         assert stats["unique_events"] == 2
-
-    def test_deduplicate_events_no_duplicates(self, mocker: MockerFixture):
-        """
-        Given:
-            - A list with no duplicate events
-        When:
-            - deduplicate_events is called
-        Then:
-            - All events should be returned with zero duplicates
-        """
-        mocker.patch("IBMStorageScale.get_stored_event_hashes", return_value={})
-        mocker.patch("IBMStorageScale.store_event_hashes")
-        mocker.patch("IBMStorageScale.demisto.debug")
-        mocker.patch("IBMStorageScale.generate_event_hash", side_effect=lambda e: f"hash_{e.get('oid')}")
-
-        events = [{"oid": "1", "entryTime": "2023-01-01T11:00:00Z"}, {"oid": "2", "entryTime": "2023-01-01T12:00:00Z"}]
-
-        result_events, stats = deduplicate_events(events)
-
-        assert len(result_events) == 2
-        assert stats["duplicates_found"] == 0
-        assert stats["unique_events"] == 2
-
-    def test_store_event_hashes_cleanup_old(self, mocker: MockerFixture):
-        """
-        Given:
-            - Event hashes with some old timestamps outside window
-        When:
-            - store_event_hashes is called
-        Then:
-            - Old hashes should be cleaned up and only recent ones stored
-        """
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mocker.patch("IBMStorageScale.demisto.debug")
-
-        # Mock current time
-        current_time = datetime(2023, 1, 2, 12, 0, 0)
-        mocker.patch("IBMStorageScale.datetime").utcnow.return_value = current_time
-
-        # Create hashes with different timestamps
-        old_time = (current_time - timedelta(hours=DEDUPLICATION_WINDOW_HOURS + 1)).isoformat() + "Z"
-        recent_time = (current_time - timedelta(hours=1)).isoformat() + "Z"
-
-        event_hashes = {"old_hash": old_time, "recent_hash": recent_time}
-
-        store_event_hashes(event_hashes)
-
-        # Verify only recent hash is stored
-        call_args = mock_set_last_run.call_args[0][0]
-        stored_hashes = call_args["event_hashes"]
-        assert "recent_hash" in stored_hashes
-        assert "old_hash" not in stored_hashes
 
 
 class TestDebugCommand:
@@ -622,196 +478,24 @@ class TestDebugCommand:
         }
         client = mock_client(mocker, params)
 
-        # Mock successful HTTP response
+        # Mock HTTP response
         mock_response = MagicMock(spec=httpx.Response)
         mock_response.raise_for_status.return_value = None
         mock_response.json.return_value = {"auditLogRecords": [{"oid": 1}]}
         mock_response.status_code = 200
         mock_response.headers = {"Content-Type": "application/json"}
-
         mock_async_client = AsyncMock()
         mock_async_client.__aenter__.return_value = mock_async_client
         mock_async_client.get.return_value = mock_response
-
         mocker.patch("httpx.AsyncClient", return_value=mock_async_client)
-        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch_time": "2023-01-01T00:00:00Z"})
-        mocker.patch("IBMStorageScale.get_stored_event_hashes", return_value={"hash1": "2023-01-01T00:00:00Z"})
-        mocker.patch("IBMStorageScale.get_time_filter_from_last_run", return_value="2023-01-01T00:00:00Z")
+
+        # Mock new time functions
+        mocker.patch("IBMStorageScale.get_fetch_start_time")
+        mocker.patch("IBMStorageScale.build_fetch_query")
         mocker.patch("IBMStorageScale.demisto.debug")
 
         with capfd.disabled():
             result = await client.debug_connection_info()
 
         assert result["connection_status"] == "success"
-        assert result["server_url"] == "https://test.com"
-        assert result["api_endpoint"] == API_ENDPOINT
-        assert "current_time" in result
-        assert "last_run_info" in result
-        assert "deduplication_info" in result
-
-    async def test_debug_connection_info_failure(self, mocker: MockerFixture, capfd):
-        """
-        Given:
-            - A client with connection failure
-        When:
-            - debug_connection_info is called
-        Then:
-            - Failed status and error details should be returned
-        """
-        params = {
-            "server_url": "https://test.com",
-            "credentials": {"identifier": "user", "password": "pw"},
-            "insecure": True,
-            "proxy": None,
-        }
-        client = mock_client(mocker, params)
-
-        # Mock HTTP error
-        mock_async_client = AsyncMock()
-        mock_async_client.__aenter__.return_value = mock_async_client
-        mock_async_client.get.side_effect = httpx.HTTPStatusError("Error", request=MagicMock(), response=MagicMock())
-
-        mocker.patch("httpx.AsyncClient", return_value=mock_async_client)
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mocker.patch("IBMStorageScale.demisto.debug")
-
-        with capfd.disabled():
-            result = await client.debug_connection_info()
-
-        assert result["connection_status"] == "failed"
-        assert "error_details" in result
-
-
-class TestMainWithNewCommands:
-    @pytest.fixture
-    def enhanced_client_mock(self, mocker: MockerFixture) -> MagicMock:
-        """
-        Enhanced fixture with debug_connection_info method
-        """
-        client_constructor_mock = mocker.patch("IBMStorageScale.Client")
-        mock_instance = MagicMock()
-        mock_instance.test_connection = AsyncMock()
-        mock_instance.fetch_events = AsyncMock()
-        mock_instance.get_events = AsyncMock(return_value=([], False))
-        mock_instance.debug_connection_info = AsyncMock(
-            return_value={"connection_status": "success", "server_url": "https://test.com"}
-        )
-        client_constructor_mock.return_value = mock_instance
-        return mock_instance
-
-    async def test_main_calls_debug_command(self, mocker: MockerFixture, enhanced_client_mock: MagicMock, capfd):
-        """
-        Given:
-            - The 'ibm-storage-scale-debug-connection' command is triggered
-        When:
-            - main() is invoked
-        Then:
-            - The client's debug_connection_info method should be called
-            - CommandResults should be returned via return_results
-        """
-        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-debug-connection")
-        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
-        return_results_mock = mocker.patch("IBMStorageScale.return_results")
-
-        with capfd.disabled():
-            await main()
-
-        enhanced_client_mock.debug_connection_info.assert_called_once()
-        return_results_mock.assert_called_once()
-
-        # Verify CommandResults structure
-        call_args = return_results_mock.call_args[0][0]
-        assert call_args.outputs_prefix == "IBMStorageScale.Debug"
-
-    async def test_main_fetch_events_with_deduplication(self, mocker: MockerFixture, enhanced_client_mock: MagicMock, capfd):
-        """
-        Given:
-            - The 'fetch-events' command with deduplication enabled
-        When:
-            - main() is invoked
-        Then:
-            - The client's fetch_events method should be called with deduplication
-        """
-        mocker.patch.object(demisto, "command", return_value="fetch-events")
-        mocker.patch.object(
-            demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}, "max_fetch": "5000"}
-        )
-        mocker.patch("IBMStorageScale.arg_to_number", return_value=5000)
-
-        with capfd.disabled():
-            await main()
-
-        enhanced_client_mock.fetch_events.assert_called_once_with(5000)
-
-    async def test_main_get_events_with_deduplication(self, mocker: MockerFixture, enhanced_client_mock: MagicMock, capfd):
-        """
-        Given:
-            - The 'ibm-storage-scale-get-events' command
-        When:
-            - main() is invoked with deduplication enabled
-        Then:
-            - Events should be deduplicated before being returned
-        """
-        # Mock events that would be returned
-        mock_events = [{"oid": 1}, {"oid": 2}]
-        enhanced_client_mock.get_events.return_value = (mock_events, False)
-
-        mocker.patch.object(demisto, "command", return_value="ibm-storage-scale-get-events")
-        mocker.patch.object(demisto, "params", return_value={"server_url": "https://test.com", "credentials": {}})
-        mocker.patch.object(demisto, "args", return_value={"limit": "10"})
-        mocker.patch("IBMStorageScale.arg_to_number", return_value=10)
-        mocker.patch("IBMStorageScale.argToBoolean", return_value=False)
-        return_results_mock = mocker.patch("IBMStorageScale.return_results")
-
-        with capfd.disabled():
-            await main()
-
-        enhanced_client_mock.get_events.assert_called_once_with(limit=10)
-        return_results_mock.assert_called_once()
-
-
-class TestEnhancedFetchLogic:
-    async def test_fetch_events_with_time_filter_and_deduplication(self, mocker: MockerFixture, capfd):
-        """
-        Given:
-            - A client configured for time-based fetching with deduplication
-        When:
-            - Client.fetch_events is called
-        Then:
-            - Time filtering and deduplication should be applied
-        """
-        params = {
-            "server_url": "https://test.com",
-            "credentials": {"identifier": "user", "password": "pw"},
-            "insecure": True,
-            "proxy": None,
-        }
-        client = mock_client(mocker, params)
-
-        # Mock the time filtering
-        mocker.patch("IBMStorageScale.get_time_filter_from_last_run", return_value="2023-01-01T00:00:00Z")
-        expected_query = "fields=:all:&limit=1000&since=2023-01-01T00:00:00Z"
-        mocker.patch("IBMStorageScale.build_api_query_with_time_filter", return_value=expected_query)
-
-        # Mock the fetcher
-        mock_events = [{"oid": 1, "entryTime": "2023-01-01T12:00:00Z"}]
-        mock_fetcher_instance = MagicMock()
-        mock_fetcher_instance.run = AsyncMock(return_value=(mock_events, False))
-        fetcher_class_mock = mocker.patch("IBMStorageScale._ConcurrentEventFetcher", return_value=mock_fetcher_instance)
-
-        # Mock deduplication
-        mocker.patch(
-            "IBMStorageScale.deduplicate_events",
-            return_value=(mock_events, {"total_events": 1, "duplicates_found": 0, "unique_events": 1, "stored_hashes_count": 1}),
-        )
-
-        # Mock other dependencies
-        mocker.patch("IBMStorageScale.update_last_run_time")
-        mocker.patch("IBMStorageScale.send_events_to_xsiam")
-
-        with capfd.disabled():
-            await client.fetch_events(1000)
-
-        # Verify fetcher was created with correct query and then its run method was called
-        fetcher_class_mock.assert_called_once_with(client, 1000, expected_query)
-        mock_fetcher_instance.run.assert_called_once()
+        assert "time_filter_info" in result

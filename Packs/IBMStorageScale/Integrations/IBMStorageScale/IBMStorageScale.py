@@ -1,6 +1,8 @@
 import asyncio
 import hashlib
+import time
 from asyncio import Queue
+from typing import Any
 from urllib.parse import urlparse
 
 import httpx
@@ -122,58 +124,72 @@ def deduplicate_events(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any
     return deduplicated_events, stats
 
 
-def get_time_filter_from_last_run() -> str:
+def get_fetch_start_time() -> datetime:
     """
-    Get time filter parameter from last run object.
-    Returns ISO timestamp string for API filtering.
+    Get the start time for the fetch window from the last run object.
+    Returns a datetime object.
     """
     last_run = demisto.getLastRun()
-    last_fetch_time = last_run.get("last_fetch_time")
+    last_fetch_time_str = last_run.get("last_fetch_time")
 
-    if last_fetch_time:
-        demisto.debug(f"Using last fetch time from last run: {last_fetch_time}")
-        return last_fetch_time
+    if last_fetch_time_str:
+        demisto.debug(f"Using last fetch time from last run: {last_fetch_time_str}")
+        # Parse ISO 8601 format, handling 'Z' for UTC
+        return datetime.fromisoformat(last_fetch_time_str.replace("Z", "+00:00"))
     else:
         # First run - use default lookback period
-        first_fetch_time = (datetime.utcnow() - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)).isoformat() + "Z"
-        demisto.debug(f"First run - using default lookback time: {first_fetch_time}")
-        return first_fetch_time
+        start_time = datetime.utcnow() - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)
+        demisto.debug(f"First run - using default lookback time: {start_time.isoformat()}Z")
+        return start_time
 
 
-def update_last_run_time(events: list[dict[str, Any]]) -> None:
+def update_last_run_time(new_fetch_time: datetime) -> None:
     """
-    Update the last run object with the latest event timestamp.
+    Update the last run object with the given timestamp.
     """
-    if not events:
-        demisto.debug("No events to process for last run update")
-        return
-
-    # Find the latest timestamp from the events
-    latest_time = None
-    for event in events:
-        event_time = event.get("entryTime")
-        if event_time and (not latest_time or event_time > latest_time):
-            latest_time = event_time
-
-    if latest_time:
-        last_run = demisto.getLastRun()
-        last_run["last_fetch_time"] = latest_time
-        demisto.setLastRun(last_run)
-        demisto.debug(f"Updated last run with latest event time: {latest_time}")
-    else:
-        demisto.debug("No valid timestamps found in events")
+    last_run = demisto.getLastRun()
+    # Store in UTC ISO format with 'Z'
+    last_run["last_fetch_time"] = new_fetch_time.isoformat() + "Z"
+    demisto.setLastRun(last_run)
+    demisto.debug(f"Updated last run with fetch time: {last_run['last_fetch_time']}")
 
 
-def build_api_query_with_time_filter(since_time: str, limit: int = DEFAULT_PAGE_SIZE) -> str:
+def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
     """
-    Build API query string with time filtering.
+    Generates a regex for the 'entryTime' field to cover the given time window.
+    The regex will cover full minutes, relying on deduplication to handle overlaps.
     """
-    # Note: This assumes the IBM Storage Scale API supports time filtering.
-    # The actual parameter name may vary - API documentation does not suggest it exists
-    query = f"fields=:all:&limit={limit}"
-    if since_time:
-        query += f"&since={since_time}"
-    return query
+    # Floor the start time to the beginning of the minute
+    current_minute = start_time.replace(second=0, microsecond=0)
+
+    regex_parts = []
+
+    # Iterate minute by minute through the time window
+    while current_minute <= end_time:
+        # Format the minute prefix, e.g., "2025-08-07T14:30"
+        minute_prefix = current_minute.strftime("%Y-%m-%dT%H:%M")
+        # Create a regex for all 60 seconds within that minute
+        regex_parts.append(f"{minute_prefix}:[0-5][0-9]")
+        # Move to the next minute
+        current_minute += timedelta(minutes=1)
+
+    if not regex_parts:
+        minute_prefix = start_time.strftime("%Y-%m-%dT%H:%M")
+        return f"{minute_prefix}:[0-5][0-9]"
+
+    # Join all minute-regexes with an OR operator
+    return "|".join(regex_parts)
+
+
+def build_fetch_query(limit: int, start_time: datetime, end_time: datetime) -> str:
+    """
+    Build API query string with regex filtering for time.
+    """
+    regex_filter = generate_time_filter_regex(start_time, end_time)
+    query_parts = ["fields=:all:", f"limit={limit}"]
+    if regex_filter:
+        query_parts.append(f"filter=entryTime='''{regex_filter}'''")
+    return "&".join(query_parts)
 
 
 class Client:
@@ -226,8 +242,11 @@ class Client:
         demisto.info("Starting fetch-events cycle.")
         start_time = time.monotonic()
 
-        since_time = get_time_filter_from_last_run()
-        query = build_api_query_with_time_filter(since_time, max_events or DEFAULT_PAGE_SIZE)
+        # Define the fetch window using the new regex method
+        fetch_window_end_time = datetime.utcnow()
+        fetch_window_start_time = get_fetch_start_time()
+        demisto.info(f"Fetching events from {fetch_window_start_time.isoformat()}Z to {fetch_window_end_time.isoformat()}Z")
+        query = build_fetch_query(max_events or DEFAULT_PAGE_SIZE, fetch_window_start_time, fetch_window_end_time)
 
         fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE, query)
         events, has_more = await fetcher.run()
@@ -239,7 +258,8 @@ class Client:
             f"{dedup_stats['unique_events']} unique events processed"
         )
 
-        update_last_run_time(deduplicated_events)
+        # Update last run time to the end of the window we just fetched
+        update_last_run_time(fetch_window_end_time)
 
         end_time = time.monotonic()
         duration = end_time - start_time
@@ -315,10 +335,12 @@ class Client:
 
         # Time filter information
         try:
-            since_time = get_time_filter_from_last_run()
-            query = build_api_query_with_time_filter(since_time, 10)
+            start_time = get_fetch_start_time()
+            end_time = datetime.utcnow()
+            query = build_fetch_query(10, start_time, end_time)
             debug_info["time_filter_info"] = {
-                "since_time": since_time,
+                "fetch_window_start": start_time.isoformat() + "Z",
+                "fetch_window_end": end_time.isoformat() + "Z",
                 "constructed_query": query,
                 "full_url": f"{self.base_url}{API_ENDPOINT}?{query}",
             }
@@ -417,7 +439,7 @@ class _ConcurrentEventFetcher:
     async def run(self) -> tuple[list[dict[str, Any]], bool]:
         """Orchestrates the workers to fetch all events."""
         # Seed the queue with the first page
-        initial_url = f"{API_ENDPOINT}?fields=:all:&limit={DEFAULT_PAGE_SIZE}&{self.query}"
+        initial_url = f"{API_ENDPOINT}?{self.query}" if self.query else f"{API_ENDPOINT}?fields=:all:&limit={self.max_events}"
         self.queue.put_nowait(initial_url)
 
         async with httpx.AsyncClient(
