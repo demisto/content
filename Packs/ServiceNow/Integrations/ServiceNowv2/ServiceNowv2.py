@@ -1965,7 +1965,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                                f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -3219,16 +3219,22 @@ def pre_process_parsed_args(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemote
     return parsed_args
 
 
-def modify_closure_delta(delta: dict, state: str, close_code: str = "Resolved by caller",
-                         close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state."):
+def modify_closure_delta(
+    delta: dict,
+    state: str,
+    close_code: str = "Resolved by caller",
+    close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state.",
+):
     """
     Modifies the delta dictionary by adding default values for the state, close_code and close_notes keys if they are missing.
 
     Args:
         delta: The delta dictionary to be modified.
         state: The state to be used if the state key is missing in the delta dictionary.
-        close_code: The close code to be used if the close_code key is missing in the delta dictionary. Defaults to "Resolved by caller".
-        close_notes: The close notes to be used if the close_notes key is missing in the delta dictionary. Defaults to "This is the resolution note required by ServiceNow to move the incident to the Resolved state.".
+        close_code: The close code to be used if the close_code key is missing in the delta dictionary.
+        Defaults to "Resolved by caller".
+        close_notes: The close notes to be used if the close_notes key is missing in the delta dictionary.
+         Defaults to "This is the resolution note required by ServiceNow to move the incident to the Resolved state.".
 
     Returns:
         The modified delta dictionary.
@@ -3239,9 +3245,9 @@ def modify_closure_delta(delta: dict, state: str, close_code: str = "Resolved by
     return delta
 
 
-
-def pre_process_close_incident_args(parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str,
-                                    close_custom_state: Optional[str]) -> UpdateRemoteSystemArgs:
+def pre_process_close_incident_args(
+    parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
+) -> UpdateRemoteSystemArgs:
     """
     Pre-process the parsed arguments to close an incident.
 
@@ -3256,9 +3262,7 @@ def pre_process_close_incident_args(parsed_args: UpdateRemoteSystemArgs, closure
     """
     if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
         demisto.debug("Closing incident by closure case")
-        if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get(
-            "state"
-        ) == "3":
+        if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get("state") == "3":
             parsed_args.delta["state"] = "3"
         # These ticket types are closed by changing their state.
         if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":
@@ -3271,8 +3275,9 @@ def pre_process_close_incident_args(parsed_args: UpdateRemoteSystemArgs, closure
     return parsed_args
 
 
-def update_incident_closure_fields(parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str,
-                                   close_custom_state: Optional[str]) -> dict:
+def update_incident_closure_fields(
+    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, close_custom_state: Optional[str]
+) -> dict:
     """
     Handle closing fields of an incident.
 
@@ -3319,9 +3324,14 @@ def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ti
     return result
 
 
-def update_remote_system_on_incident_change(client: Client, parsed_args: UpdateRemoteSystemArgs, ticket_type: str,
-                                            closure_case: str,
-                                            close_custom_state: Optional[str], ticket_id: str):
+def update_remote_system_on_incident_change(
+    client: Client,
+    parsed_args: UpdateRemoteSystemArgs,
+    ticket_type: str,
+    closure_case: str,
+    close_custom_state: Optional[str],
+    ticket_id: str,
+):
     """
     Update a ServiceNow ticket based on the delta received from XSOAR.
 

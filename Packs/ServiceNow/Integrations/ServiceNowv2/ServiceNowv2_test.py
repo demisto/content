@@ -1618,9 +1618,9 @@ def test_not_authenticated_retry_negative(requests_mock, mocker: MockerFixture):
         client.send_request("")
     assert (
         str(ex.value) == "ServiceNow Error: User Not Authenticated, details: Required to provide Auth information "
-                         'Got status code 401 with url http://server_url with body b\'{"error": {"message": '
-                         '"User Not Authenticated", "detail": "Required to provide Auth information"}, '
-                         '"status": "failure"}\' with response headers {}'
+        'Got status code 401 with url http://server_url with body b\'{"error": {"message": '
+        '"User Not Authenticated", "detail": "Required to provide Auth information"}, '
+        '"status": "failure"}\' with response headers {}'
     )
 
     debug = demisto.debug.call_args_list
@@ -2701,12 +2701,14 @@ def test_modify_closure_delta_sets_defaults():
     Then it sets all defaults.
     """
     from ServiceNowv2 import modify_closure_delta
+
     delta = {}
     result = modify_closure_delta(delta.copy(), "7")
     assert result["state"] == "7"
     assert result["close_code"] == "Resolved by caller"
-    assert result[
-               "close_notes"] == "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+    assert (
+        result["close_notes"] == "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+    )
 
 
 def test_modify_closure_delta_preserves_existing():
@@ -2716,6 +2718,7 @@ def test_modify_closure_delta_preserves_existing():
     Then it does not overwrite existing fields.
     """
     from ServiceNowv2 import modify_closure_delta
+
     delta = {"state": "6", "close_code": "Already closed"}
     result = modify_closure_delta(delta.copy(), "7", close_code="Resolved", close_notes="Closed.")
     assert result["state"] == "6"  # Should not overwrite
@@ -2730,6 +2733,7 @@ def test_modify_closure_delta_custom_values():
     Then it sets the custom values if missing in delta.
     """
     from ServiceNowv2 import modify_closure_delta
+
     delta = {}
     result = modify_closure_delta(delta.copy(), "7", close_code="CustomCode", close_notes="CustomNotes")
     assert result["close_code"] == "CustomCode"
@@ -2743,6 +2747,7 @@ def test_modify_closure_delta_partial():
     Then it only sets missing fields.
     """
     from ServiceNowv2 import modify_closure_delta
+
     delta = {"close_code": "Manual"}
     result = modify_closure_delta(delta.copy(), "7", close_code="CustomCode", close_notes="CustomNotes")
     assert result["state"] == "7"
@@ -3275,7 +3280,7 @@ def test_update_remote_data_upload_file_exception(mocker):
 
     assert (
         demisto_mocker.call_args[0][0] == "An attempt to mirror a file has failed. entry_id=entry-id, "
-                                          "file_name='test'\nERROR!!!"
+        "file_name='test'\nERROR!!!"
     )
     assert res == "1234"
 
