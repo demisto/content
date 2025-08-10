@@ -118,29 +118,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-triggers:
-  - conditions:  # TRIGGER 1: If API Token authorization type is selected ...
-      - name: auth_type
-        operator: equals
-        value: API Token
-    effects:  # then hide Global API Key credentials and make API Token credentials required
-      - name: credentials
-        action:
-          hidden: true
-      - name: token_credentials
-        action:
-          required: true
-  - conditions:  # TRIGGER 2: If Global API Key authorization type is selected ...
-      - name: auth_type
-        operator: equals
-        value: Global API Key (Legacy)
-    effects:  # then hide API Token credentials and make Global API Key credentials required
-      - name: token_credentials
-        action:
-          hidden: true
-      - name: credentials
-        action:
-          required: true
 marketplaces:
 - marketplacev2
 - platform
