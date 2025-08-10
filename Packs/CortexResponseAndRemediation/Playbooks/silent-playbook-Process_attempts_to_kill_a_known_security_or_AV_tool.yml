@@ -188,7 +188,7 @@ tasks:
     task:
       id: ed7584b7-7a5d-4347-8e42-66d1651af01f
       version: -1
-      name: Close Alert
+      name: Close Alert as True Positive
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -278,6 +278,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          ignorecase: true
       - - operator: isEqualString
           left:
             value:
@@ -406,6 +412,19 @@ tasks:
         simple: ${alert.agentid}
       causality_id:
         simple: ${alert.cid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
       timeout_in_seconds:
         simple: "180"
     separatecontext: false
@@ -467,7 +486,7 @@ tasks:
     task:
       id: 3e97f2be-019c-4463-8c5c-274b9cb8cde9
       version: -1
-      name: 'Isolate Endpoint '
+      name: Isolate Endpoint
       description: Isolates the specified endpoint.
       script: '|||core-isolate-endpoint'
       type: regular
@@ -479,6 +498,19 @@ tasks:
     scriptarguments:
       endpoint_id:
         simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
       timeout_in_seconds:
         simple: "180"
     separatecontext: false
@@ -570,7 +602,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "48":
@@ -611,7 +643,7 @@ tasks:
     task:
       id: 3d6fef86-6107-40bb-8eb4-2ad256a121e3
       version: -1
-      name: Close Alert
+      name: Close Alert as True Positive
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -803,7 +835,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Close alers:
+      Close alert:
       - "22"
       Isolate and close alert:
       - "45"
@@ -820,9 +852,9 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Quarantine
+              simple: Isolate endpoint and close the alert
           ignorecase: true
-    - label: Close alers
+    - label: Close alert
       condition:
       - - operator: isEqualString
           left:
@@ -831,7 +863,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Add to Block List
+              simple: Close alert without isolation
           ignorecase: true
     - label: No Action
       condition:
