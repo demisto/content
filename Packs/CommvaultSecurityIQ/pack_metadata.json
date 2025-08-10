@@ -13,7 +13,9 @@
         "Threat Intelligence",
         "Security"
     ],
-    "useCases": [],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
     "keywords": [
         "Commvault",
         "Metallic",

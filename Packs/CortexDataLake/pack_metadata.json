@@ -13,7 +13,9 @@
     "tags": [
         "Palo Alto Networks Products"
     ],
-    "useCases": [],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
     "keywords": [
         "SLS",
         "Strata Logging Service XSOAR Connector"

@@ -12,7 +12,9 @@
     "tags": [
         "Palo Alto Networks Products"
     ],
-    "useCases": [],
+    "useCases": [
+        "Asset Management"
+    ],
     "keywords": [
         "Attack Surface Management",
         "Cortex",

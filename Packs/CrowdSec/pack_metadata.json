@@ -13,7 +13,9 @@
         "Threat Intelligence",
         "Free Enricher"
     ],
-    "useCases": [],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
     "keywords": [
         "ip",
         "enrichment",
