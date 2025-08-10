@@ -10,7 +10,7 @@ def validate_input_function(args):
         raise DemistoException("ip_list is required")
     for ip in ip_list:
         if not is_ip_valid(ip,accept_v6_ips=True):
-            raise DemistoException("Invalid IP address")
+            raise DemistoException(f"Invalid IP address: {ip}")
             
 
 def ip_enrichment_script(
@@ -27,7 +27,7 @@ def ip_enrichment_script(
     }
     ip_indicator = Indicator(type="ip",
                              value_field="Address",
-                             context_path="IP(",
+                             context_path_prefix="IP(",
                              mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=ip_indicator, data=data) for data in ip_list]

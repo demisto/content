@@ -4,7 +4,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from functools import cached_property
-import json
+import traceback
 from typing import Any
 
 from CommonServerPython import *
@@ -24,32 +24,16 @@ DBOT_SCORE_TO_VERDICT = {
 }
 
 # --- Core Enumerations and Data Classes ---
-@dataclass
-class Indicator:
-    """
-    Represents an indicator type and its context mapping rules.
-
-    Attributes:
-        type (str): The indicator type (e.g., 'url', 'ip', 'cve').
-        value_field (str): The field name holding the indicator's value (e.g., 'Data', 'Address').
-        context_path (str): The context path prefix for the indicator (e.g., 'URL(', 'IP(').
-        mapping (Dict[str, str]): Rules to map raw command output to the final context.
-            - Key: Source path in double dot notation (e.g., 'VirusTotal..POSITIVES').
-            - Value: Destination path in double dot notation.
-              Append '[]' in the end to transform the final value to a list.
-    """
-    type: str
-    value_field: str
-    context_path: str
-    mapping: dict[str, str]
-
 class EntryResult:
     """
     Represents an entry result from a command.
 
     Attributes:
-        name (str): The name of the entry.
+        command_name (str): The name of the command.
+        brand (str): The brand of the command.
         args (dict[str, Any]): The arguments associated with the entry.
+        status (str): The status of the command.
+        message (str): The message associated with the entry.
     """
     def __init__(self,
                  command_name: str,
@@ -70,6 +54,26 @@ class EntryResult:
                 "status": self.status,
                 "message": self.message}
     
+    
+@dataclass
+class Indicator:
+    """
+    Represents an indicator type and its context mapping rules.
+
+    Attributes:
+        type (str): The indicator type (e.g., 'url', 'ip', 'cve').
+        value_field (str): The field name holding the indicator's value (e.g., 'Data', 'Address').
+        context_path_prefix (str): The context path prefix for the indicator (e.g., 'URL(', 'IP(').
+        mapping (Dict[str, str]): Rules to map raw command output to the final context.
+            - Key: Source path in double dot notation (e.g., 'VirusTotal..POSITIVES').
+            - Value: Destination path in double dot notation.
+              Append '[]' in the end to transform the final value to a list.
+    """
+    type: str
+    value_field: str
+    context_path_prefix: str
+    mapping: dict[str, str]
+
 
 class CommandType(Enum):
     """
@@ -200,9 +204,9 @@ class AggregatedCommandAPIModule(ABC):
         validate_input_function(args)
     
     @cached_property
-    def enabled_brands(self) -> list[str]:
+    def enabled_brands(self) -> set[str]:
         """
-        Returns a list of enabled brands.
+        Returns a set of enabled brands.
         Caches the result to avoid redundant calculations.
         """
         all_modules = demisto.getModules()
@@ -219,13 +223,6 @@ class AggregatedCommandAPIModule(ABC):
         """
         if not self.brands:
             demisto.debug("No specific brands provided; will run on all available brands.")
-            internal_brands = [command.brand for command in self.commands if command.command_type == CommandType.INTERNAL]
-            # If only internal commands and all disabled raise error
-            if not set(internal_brands) & self.enabled_brands and not self.external_enrichment:
-                raise DemistoException(
-                    "None of the commands correspond to an enabled integration instance. "
-                    "Please ensure relevant brand are enabled."
-                )
             return []
         
         demisto.debug(f"Filtering for user-provided brands: {self.brands}")
@@ -265,7 +262,7 @@ class AggregatedCommandAPIModule(ABC):
             return []
         
         demisto.debug(f"Filtering for user-provided brands: {self.brands}")
-        external_missing_brands = set(set(self.brands) - set([command.brand for command in self.commands if command.command_type == CommandType.INTERNAL]))
+        external_missing_brands = set(set(self.brands) - {command.brand for command in self.commands if command.command_type != CommandType.EXTERNAL})
         demisto.debug(f"External missing brands to run on: {external_missing_brands}")
         return list(external_missing_brands - self.enabled_brands)
     
@@ -327,8 +324,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         # 1. Prepare commands and get TIM results
         demisto.debug("Step 1: querying TIM.")
         tim_context, tim_dbot, tim_entries = self.get_indicators_from_tim()
-        demisto.debug(f"TIM query resulted in {len(tim_dbot)} DBot scores. \n"
-                      f"    and {sum(len(lst) for lst in tim_context.values())} indicators.")
+        demisto.debug(f"TIM query resulted in {len(tim_dbot)} DBot scores, "
+                      f"and {sum(len(lst) for brands_map in tim_context.values() for lst in brands_map.values())} indicators.")
         
         # 2. Execute batch commands
         demisto.debug("Step 2: Executing batch commands.")
@@ -341,8 +338,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug("Step 3: Processing batch results.")
         batch_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(batch_results, commands_to_execute)
         
-        demisto.debug(f"Batch processing resulted in {len(batch_dbot)} DBot scores.\n"
-                      f"    {len(batch_context.get('reputation', {}).values())} indicators.")
+        demisto.debug(f"Batch processing resulted in {len(batch_dbot)} DBot scores, "
+                      f"{sum(len(lst) for brands_map in batch_context.values() for lst in brands_map.values())} indicators.")
         
         # 4. Merge context
         demisto.debug("Step 4: Merging all contexts.")
@@ -414,7 +411,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             demisto.debug(f"TIM search returned {len(iocs)} raw IOCs.")
 
             if not iocs:
-                result_entry.message = "No matching indicators found in TIM."
+                result_entry.message = "No matching indicators found."
             return iocs, result_entry
         except Exception as e:
             demisto.debug(f"Error searching TIM: {e}\n{traceback.format_exc()}")
@@ -465,7 +462,6 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         Returns:
             tuple[ContextResult, DBotScoreList]: The TIM context output and DBot scores list.
         """
-        demisto.debug(f"Processing TIM results. {json.dumps(iocs, indent=4)}")
         demisto.debug(f"Processing {len(iocs)} IOCs from TIM.")
         tim_context: ContextResult = {}
         dbot_scores: DBotScoreList = []
@@ -588,6 +584,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 demisto.debug(f"Mapping indicator for command: {command}")
                 command_context = self.map_command_context(entry_context, command.mapping)
                 
+        if not command_context:
+            demisto.debug(f"No context or DBot scores for command: {command}")
+            result_entry.message = "No matching indicators found."
         return command_context, dbot_scores, hr_output, result_entry
     
     def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
@@ -617,7 +616,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug(f"Starting context mapping with {len(mapping)} rules. for indicator: {is_indicator}")
         for src_path, dst_path in mapping.items():
             value = get_and_remove_dict_value(entry_context, src_path)
-            if value:
+            if value is not None:
                 set_dict_value(mapped_context, dst_path, value)
             
         if self.additional_fields and is_indicator:
@@ -662,7 +661,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         # Prefer provided score, else find the max score from the DBot list.
         effective_score = score or max([dbot.get("Score") for dbot in dbot_list], default=Common.DBotScore.NONE)
         
-        indicator_entries = flatten_list([v for k, v in entry_context.items() if k.startswith(self.indicator.context_path)])
+        indicator_entries = flatten_list([v for k, v in entry_context.items() if k.startswith(self.indicator.context_path_prefix)])
         demisto.debug(f"Extracted {len(indicator_entries)} indicators and {len(dbot_list)} DBot scores from {brand} entry context.")
         
         for indicator_data in indicator_entries:
@@ -797,7 +796,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug(f"Summarizing final results from {len(entries)} command entries.")
         if self.external_missing_brands:
             demisto.debug(f"Missing brands: {self.external_missing_brands}")
-            entries.append(EntryResult(command_name="url",
+            entries.append(EntryResult(command_name=self.indicator.type,
                                        args="",
                                        brand=",".join(self.external_missing_brands),
                                        status="Failure",
@@ -809,12 +808,12 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             demisto.debug("Adding verbose outputs to human readable.")
             human_readable += "\n\n".join(verbose_outputs)
             
-        if all(entry.status == "Failure" for entry in entries):
-            demisto.debug("All commands failed. Returning an error entry.")
-            return CommandResults(readable_output= "Error: All commands failed.\n" + human_readable,
+        if all(entry.status == "Failure" or entry.message == "No matching indicators found." for entry in entries):
+            demisto.debug("All commands failed or no indicators found. Returning an error entry.")
+            return CommandResults(readable_output= "Error: All commands failed or no indicators found.\n" + human_readable,
                                   outputs=final_context,
                                   entry_type=EntryType.ERROR)
-            
+        
         demisto.debug("All commands succeeded. Returning a success entry.")
         return CommandResults(readable_output=human_readable, outputs=final_context)
 
@@ -822,10 +821,12 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
     def raise_non_enabled_brands_error(self,entries: list[EntryResult])-> None:
         """
         Raises an exception if all commands failed due to unsupported brand.
+        If no other commands supplied, raise an exception.
         Args:
             entries (list[EntryResult]): The list of entry results.
         """
-        if all(entry.message.startswith("Unsupported Command") for entry in entries if entry.brand != "TIM"):
+        non_tim_entries = [entry for entry in entries if entry.brand != "TIM"]
+        if non_tim_entries and all(entry.message.startswith("Unsupported Command") for entry in non_tim_entries):
             raise DemistoException(
                 "None of the commands correspond to an enabled integration instance. "
                 "Please ensure relevant brand are enabled."
@@ -833,8 +834,6 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
     
 
 """HELPER FUNCTIONS"""
-
-
 def merge_nested_dicts_in_place(dict1: dict, dict2: dict) -> None:
     """
     Recursively merges dict2 into dict1. If a key exists in both and the
@@ -928,13 +927,13 @@ def get_and_remove_dict_value(d: dict[str, Any], path: str) -> Any:
 
 def is_debug(execute_command_result) -> bool:
     """
-        Check if the given execute_command_result is a debug entry.
+    Check if the given execute_command_result is a debug entry.
 
-        :type execute_command_result: ``dict`` or ``list``
-        :param execute_command_result: Demisto entry (required) or result of demisto.executeCommand()
+    Args:
+        execute_command_result: Demisto entry (required) or result of demisto.executeCommand()
 
-        :return: True if the execute_command_result is a debug entry, false otherwise
-        :rtype: ``bool``
+    Returns:
+        bool: True if the execute_command_result is a debug entry, false otherwise
     """
     if execute_command_result is None:
         return False

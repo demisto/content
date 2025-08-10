@@ -9,7 +9,7 @@ def validate_input_function(args):
         raise DemistoException("cve_list is required")
     for cve in cve_list:
         if auto_detect_indicator_type(cve) != FeedIndicatorType.CVE:
-            raise DemistoException("Invalid CVE ID")
+            raise DemistoException(f"Invalid CVE ID: {cve}")
 
 def cve_enrichment_script(
     cve_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
@@ -25,7 +25,7 @@ def cve_enrichment_script(
     
     cve_indicator = Indicator(type="cve",
                               value_field="ID",
-                              context_path="CVE(",
+                              context_path_prefix="CVE(",
                               mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=cve_indicator, data=data) for data in cve_list]

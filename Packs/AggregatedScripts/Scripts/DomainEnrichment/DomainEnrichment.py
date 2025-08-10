@@ -9,7 +9,7 @@ def validate_input_function(args):
     if not domain_list:
         raise DemistoException("domain_list is required")
     for domain in domain_list:
-        if auto_detect_indicator_type(domain) != FeedIndicatorType.DOMAIN:
+        if auto_detect_indicator_type(domain) != FeedIndicatorType.Domain:
             raise DemistoException("Invalid domain name")
 
 def domain_enrichment_script(
@@ -26,7 +26,7 @@ def domain_enrichment_script(
     
     domain_indicator = Indicator(type="domain",
                                  value_field="Name",
-                                 context_path="Domain(",
+                                 context_path_prefix="Domain(",
                                  mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=domain_indicator, data=data) for data in domain_list]

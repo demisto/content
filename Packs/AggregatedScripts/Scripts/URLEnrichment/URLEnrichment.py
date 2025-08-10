@@ -28,10 +28,10 @@ def url_enrichment_script(
     
     url_indicator = Indicator(type="url",
                               value_field="Data",
-                              context_path="URL(",
+                              context_path_prefix="URL(",
                               mapping=indicator_mapping)
     
-    commands = [ReputationCommand(indicator=url_indicator, data=data) for data in url_list]
+    commands = [ReputationCommand(indicator=url_indicator, data=url) for url in url_list]
     commands.append(
         Command(name="wildfire-get-verdict", args={"url": url_list}, command_type=CommandType.INTERNAL, brand="WildFire-v2", mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})
     )
