@@ -355,6 +355,7 @@ def validate_headers(params: dict) -> dict:
         dict: Validated request authorization headers.
     """
     auth_type = params.get("auth_type")
+    demisto.debug(f"Starting to validate parameters for {auth_type=}.")
 
     if auth_type == AuthTypes.API_TOKEN.value:
         token = params.get("token_credentials", {}).get("password")
@@ -362,6 +363,7 @@ def validate_headers(params: dict) -> dict:
         if not token:
             raise DemistoException(f"An API Token is required for the {auth_type} authorization type.")
 
+        demisto.debug(f"Found API token matching {auth_type=}. Creating request headers.")
         return {"Authorization": f"Bearer {token}"}
 
     elif auth_type == AuthTypes.GLOBAL_API_KEY.value:
@@ -371,6 +373,7 @@ def validate_headers(params: dict) -> dict:
         if not (auth_email and auth_key):
             raise DemistoException(f"An API Email and a Global API Key are required for the {auth_type} authorization type.")
 
+        demisto.debug(f"Found API email and global key matching {auth_type=}. Creating request headers.")
         return {"X-Auth-Email": auth_email, "X-Auth-Key": auth_key}
 
     else:
@@ -421,7 +424,7 @@ def main() -> None:  # pragma: no cover
     max_fetch_authentication = (
         arg_to_number(params.get("max_fetch_access_authentication_logs")) or DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION
     )
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch"))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch"), transform=lambda event_type: event_type.strip())
 
     try:
         headers = validate_headers(params)
