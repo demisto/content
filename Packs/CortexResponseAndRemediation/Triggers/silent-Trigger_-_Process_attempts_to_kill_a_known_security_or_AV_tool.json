@@ -2,7 +2,7 @@
     "trigger_id": "5cadd7cf44ee1ea5683d22489478beb4",
     "playbook_id": "silent-Process attempts to kill a known security or AV tool",
     "suggestion_reason": "Recommended for the 'Process attempts to kill a known security/AV tool' alerts",
-    "description": "This trigger is responsible for handling 'Process attempts to kill a known security/AV tool' alerts",
+    "description": "This trigger is responsible for handling the 'Process attempts to kill a known security/AV tool' alert",
     "trigger_name": "silent-Process attempts to kill a known security or AV tool",
     "fromVersion": "8.9.0",
     "alerts_filter": {

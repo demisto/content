@@ -4,7 +4,7 @@ issilent: true
 contentitemexportablefields:
   contentitemfields: {}
 name: silent-Process attempts to kill a known security or AV tool
-description: "This playbook is designed to handle the 'Process attempts to kill a known security/AV tool' alerts.\n\nThe playbook executes the following stages:\n\nEarly Containment:\n- The playbooks will perform early containment actions by terminating the causality chain processes. \n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks the endpoint's risk level.\n- Searches for related alerts to identify any malicious activity.\n\nRemediation:\n- Remediation actions will be taken if the user’s risk score is high or a related alert is found.\nIn such cases, the playbook will wait for an analyst’s decision before isolating the endpoint\nBy default, endpoint isolation requires analyst approval."
+description: "This playbook is designed to handle the 'Process attempts to kill a known security/AV tool' alert.\n\nThe playbook executes the following stages:\n\nEarly Containment:\n- The playbook will perform early containment actions by terminating the causality chain processes. \n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks the endpoint's risk level.\n- Searches for related alerts to identify any malicious activity.\n\nRemediation:\n- Remediation actions will be taken if the user’s risk score is high or a related alert is found.\nIn such cases, the playbook will wait for an analyst’s decision before isolating the endpoint\nBy default, endpoint isolation requires analyst approval."
 tags:
 - TA0005 - Defense Evasion
 - T1562 - Impair Defenses
@@ -265,7 +265,7 @@ tasks:
         Determines the appropriate remediation action based on the endpoint’s risk level.
 
         If the risk level is high, ask the analyst for approval to isolate the endpoint;
-        else, continue the investigation.
+        otherwise, continue with the investigation.
       type: condition
       iscommand: false
       brand: ""
@@ -339,7 +339,7 @@ tasks:
       version: -1
       name: Searches for related alerts in the case
       description: |
-        This task searches for suspicious alerts related to the incident, with a severity of Medium or higher, to identify any additional indications of malicious activity on the endpoint.
+        This task searches for suspicious alerts related to the incident, with a severity of medium or higher, to identify any additional indicators of malicious activity on the endpoint.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
