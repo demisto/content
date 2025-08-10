@@ -362,10 +362,15 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
 def main():
     try:
         endpoint_args = demisto.args()
-        endpoint_ids = argToList(endpoint_args.get("endpoint_id"))
-        endpoint_ips = argToList(endpoint_args.get("endpoint_ip"))
+        endpoint_ids = argToList(endpoint_args.get("endpoint_id", []))
+        endpoint_ips = argToList(endpoint_args.get("endpoint_ip", []))
         verbose = argToBoolean(endpoint_args.get("verbose", False))
         brands_to_run = argToList(endpoint_args.get("brands", []))
+
+        if not any((endpoint_ids, endpoint_ips)):
+            raise ValueError(
+                "At least one of the following arguments must be specified: endpoint_id or endpoint_ip."
+            )
 
         if not brands_to_run:
             # In case no brands selected, the default is all brands.
@@ -426,16 +431,7 @@ def main():
         return_results(results)
 
     except Exception as e:
-        demisto.debug(f"Failed to execute isolate-endpoint. Error: {str(e)}")
-        return_results(
-            CommandResults(
-                outputs_prefix="IsolateEndpoint",
-                outputs=[],
-                readable_output="The Isolate Action did not succeed."
-                " Please validate your input or check if the machine is already in an Isolate state."
-                " The Device ID/s that were not Isolated",
-            )
-        )
+        return_error(f"Failed to execute isolate-endpoint. Error: {e!s}")
 
 
 """ ENTRY POINT """
