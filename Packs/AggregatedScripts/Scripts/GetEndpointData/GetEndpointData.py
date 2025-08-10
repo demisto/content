@@ -2,6 +2,8 @@ from collections.abc import Callable
 from itertools import zip_longest
 from typing import Any
 from enum import StrEnum
+from copy import deepcopy
+
 
 from CommonServerPython import *
 
@@ -134,7 +136,7 @@ class ModuleManager:
         return False if not self.is_brand_in_brands_to_run(command) else command.brand in self._enabled_brands
 
     def get_enabled_brands(self):
-        return self._enabled_brands
+        return deepcopy(self._enabled_brands)
 
 
 def filter_empty_values(input_dict: dict) -> dict:
@@ -1034,12 +1036,10 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
     """
     predefined_brands = set(Brands.get_all_values())
     available_brands = module_manager.get_enabled_brands()
-    brands_to_run_for_generic_command = []
 
     if brands_to_run:
         brands_to_run_for_generic_command = list(set(brands_to_run) - predefined_brands)
-    if not brands_to_run_for_generic_command or not brands_to_run:
-        # if no brands left from previous section or there are no brands at all,
+    else:
         # we want to run the !endpoint on all brands available
         brands_to_run_for_generic_command = list(available_brands - set(predefined_brands))
 
