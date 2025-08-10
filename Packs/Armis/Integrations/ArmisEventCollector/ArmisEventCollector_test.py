@@ -1,5 +1,5 @@
-from ArmisEventCollector import Client, datetime, timedelta, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
 import pytest
+from ArmisEventCollector import EVENT_TYPE, EVENT_TYPES, Any, Client, DemistoException, arg_to_datetime, datetime, timedelta
 from freezegun import freeze_time
 
 
@@ -110,6 +110,59 @@ class TestClientFunctions:
         assert dummy_client.fetch_by_aql_query("example_query", 3, from_arg) == (expected_result, 0)
 
         mocked_http_request.assert_called_with(**expected_args)
+
+    def test_fetch_by_aql_query_pagination_timeout(self, mocker, dummy_client):
+        """
+        Test fetch_by_aql_query function behavior when pagination duration exceeds the limit.
+
+        Given:
+            - A fetch operation with multiple pages of results.
+            - The time taken to fetch pages exceeds MAX_PAGINATION_DURATION_SECONDS.
+        When:
+            - Fetching events using fetch_by_aql_query.
+        Then:
+            - The fetch operation should break early.
+            - It should return the results fetched so far.
+            - It should return the 'next' pointer for the subsequent fetch.
+        """
+        from freezegun import freeze_time
+
+        freezer = freeze_time("2023-01-01T01:00:00")
+        freezer.start()
+
+        first_response = {
+            "data": {"next": 1, "results": [{"unique_id": "1", "time": "2023-01-01T01:00:10.123456+00:00"}], "total": "Many"}
+        }
+
+        second_response = {
+            "data": {"next": 2, "results": [{"unique_id": "2", "time": "2023-01-01T01:00:20.123456+00:00"}], "total": "Many"}
+        }
+
+        third_response = {
+            "data": {"next": 3, "results": [{"unique_id": "3", "time": "2023-01-01T01:00:30.123456+00:00"}], "total": "Many"}
+        }
+
+        call_count = 0
+
+        def advance_time_and_return_response(*args, **kwargs):
+            nonlocal call_count
+            responses = [first_response, second_response, third_response]
+            response = responses[call_count]
+            call_count += 1
+            freezer.tick(delta=timedelta(seconds=100))
+            return response
+
+        mocked_http_request = mocker.patch.object(Client, "_http_request", side_effect=advance_time_and_return_response)
+
+        results, next_page = dummy_client.fetch_by_aql_query(
+            aql_query="example_query", max_fetch=10, after=(datetime.now() - timedelta(minutes=1))
+        )
+
+        assert mocked_http_request.call_count == 2
+        assert len(results) == 2
+        assert next_page == 2
+
+        freezer.stop()
 
 
 class TestHelperFunction:
@@ -361,7 +414,7 @@ class TestHelperFunction:
         Then:
             - A command result with readable output will be printed to the war-room.
         """
-        from ArmisEventCollector import CommandResults, VENDOR, PRODUCT, events_to_command_results, tableToMarkdown
+        from ArmisEventCollector import PRODUCT, VENDOR, CommandResults, events_to_command_results, tableToMarkdown
 
         events_fetched = {
             "events": [
