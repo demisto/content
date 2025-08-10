@@ -319,3 +319,42 @@ def get_proxydome_token() -> str:
 
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
     return response.text
+
+
+def return_permission_error(error_entry: dict) -> None:
+    """
+    Handles permission error responses and exits the script execution.
+
+    This function logs permission errors, formats them as Demisto error entries,
+    and terminates script execution. It's used when cloud operations fail due to
+    insufficient permissions or authentication issues.
+
+    Args:
+        error_entry (dict): Dictionary containing error details with the following structure:
+            - account_id (str): The cloud account identifier where the error occurred
+            - message (str): The permission error message (including the name of the permission)
+            - name (str): The RAW name of the permission itself that is missing, for example containers.list"
+
+    Returns:
+        None: This function does not return as it calls sys.exit(0)
+    """
+    # Input validation and sanitization
+    if not isinstance(error_entry, dict):
+        demisto.error(f"[COOC API] Invalid error_entry type: {type(error_entry)}")
+        error_entry = {"message": "Invalid error data provided", "error_type": "Internal Error"}
+
+    # Log the permission error for security audit purposes
+    demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
+
+    # Return formatted error response
+    demisto.results(
+        {
+            "Type": entryTypes["error"],
+            "ContentsFormat": formats["json"],
+            "Contents": [error_entry],
+            "EntryContext": None,
+        }
+    )
+
+    # Exit the script execution
+    sys.exit(0)
