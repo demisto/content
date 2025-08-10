@@ -98,7 +98,7 @@ def parse_filter_field(filter_string: str | None):
         list_filters = list_filters[0:50]
         demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
     regex = re.compile(
-        r"^name=((?:description|egress[^,]+|ip-permission[^,]+|group[^,]+|tag:[^,]+|tag-[^,]+|owner-id|vpc-id)),values=([^\;]+)",
+        r"^name=[^\,]+\,values=[^\;]+",
         flags=re.I,
     )
     for filter in list_filters:
@@ -208,7 +208,16 @@ class AWSErrorHandler:
         }
 
         demisto.debug(f"Permission error detected: {error_entry}")
-        return_error([error_entry])
+        demisto.results(
+                {
+                    "Type": entryTypes["error"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": [error_entry],
+                    "EntryContext": None,
+                }
+        )
+        sys.exit(0)
+        # return_error([error_entry])
 
     @classmethod
     def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
