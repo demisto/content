@@ -226,7 +226,7 @@ class AggregatedCommandAPIModule(ABC):
             return []
         
         demisto.debug(f"Filtering for user-provided brands: {self.brands}")
-        brands_to_execute = list(set(self.brands) & self.enabled_brands)
+        brands_to_execute = list(set(self.brands) & set(self.enabled_brands))
         if not brands_to_execute:
             raise DemistoException(
                 "None of the provided brands correspond to an enabled integration instance. "
@@ -260,11 +260,11 @@ class AggregatedCommandAPIModule(ABC):
         if not self.brands:
             demisto.debug("No specific brands provided; will run on all available brands.")
             return []
-        
-        demisto.debug(f"Filtering for user-provided brands: {self.brands}")
-        external_missing_brands = set(set(self.brands) - {command.brand for command in self.commands if command.command_type != CommandType.EXTERNAL})
-        demisto.debug(f"External missing brands to run on: {external_missing_brands}")
-        return list(external_missing_brands - self.enabled_brands)
+        requested = set(self.brands)
+        non_external_brands = {command.brand for command in self.commands if command.command_type != CommandType.EXTERNAL}
+        external_brands = requested - non_external_brands
+        demisto.debug(f"External brands to run on: {external_brands}")
+        return list(external_brands - set(self.enabled_brands))
     
     @abstractmethod
     def process_batch_results(self, execution_results: list[dict[str, Any]]):
@@ -584,9 +584,10 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 demisto.debug(f"Mapping indicator for command: {command}")
                 command_context = self.map_command_context(entry_context, command.mapping)
                 
-        if not command_context:
+        if not command_context and result_entry.status == "Success":
             demisto.debug(f"No context or DBot scores for command: {command}")
             result_entry.message = "No matching indicators found."
+            
         return command_context, dbot_scores, hr_output, result_entry
     
     def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
@@ -610,7 +611,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             return entry_context
         
         if not entry_context:
-            return None
+            return {}
         
         mapped_context = defaultdict()
         demisto.debug(f"Starting context mapping with {len(mapping)} rules. for indicator: {is_indicator}")

@@ -2,6 +2,30 @@ import pytest
 import demistomock as demisto
 from AggregatedCommandApiModule import *
 
+indicator = Indicator(type="indicator", value_field="Value", context_path_prefix="Indicator(", mapping={})
+
+def make_module(additional_fields=False, indicator=indicator):
+    """
+    Helper to construct a ReputationAggregatedCommand with minimal required args.
+    """
+    return ReputationAggregatedCommand(
+        args={},
+        brands=[],
+        indicator=indicator,
+        data=[],
+        final_context_path="ctx",
+        external_enrichment=False,
+        additional_fields=additional_fields,
+        verbose=False,
+        commands=[],
+    )
+
+def make_entry(indicators, dbots):
+    return {
+        "Indicator(val.Data && val.Data == obj.Data)": indicators,
+        "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": dbots,
+    }
+
 entryTypes = {
     'note': 1,
     'downloadAgent': 2,
@@ -334,118 +358,53 @@ def test_external_missing_brands_various(mocker, enabled_brands, brands, command
 
     result = module.external_missing_brands
     assert set(result) == set(expected_external_missing)
-    
-@pytest.mark.parametrize(
-    "brands, ext_flag, expected_names",
-    [
-        # no brands, no external enrichment → only internal
-        ([], False, ["intA", "intB"]),
-        # no brands, external enrichment → both internal & external
-        ([], True, ["intA", "intB", "extC", "extD"]),
-        # only A requested, no external enrichment → internal A + all external (because brands non‐empty)
-        (["A"], False, ["intA", "extC", "extD"]),
-        # brands do not match any internal, no external enrichment → only external
-        (["X"], False, ["extC", "extD"]),
-        # A & B requested, no external enrichment → all commands
-        (["A", "B"], False, ["intA", "intB", "extC", "extD"]),
-    ],
-)
-
-### -------------- Tests for AggregatedCommandAPIModule class --------------
-def test_prepare_commands_various(brands, ext_flag, expected_names):
-    """
-    Given:
-        - A mix of INTERNAL and EXTERNAL commands.
-        - Various user-provided `brands` lists and an `external_enrichment` flag.
-    When:
-        - Calling `prepare_commands(external_enrichment=ext_flag)`.
-    Then:
-        - Returns exactly the commands matching the internal/external policies.
-    """
-    # Define a fixed set of commands
-    cmd_intA = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
-    cmd_intB = Command(name="intB", args={}, brand="B", command_type=CommandType.INTERNAL)
-    cmd_extC = Command(name="extC", args={}, brand="C", command_type=CommandType.EXTERNAL)
-    cmd_extD = Command(name="extD", args={}, brand="D", command_type=CommandType.EXTERNAL)
-    all_commands = [cmd_intA, cmd_intB, cmd_extC, cmd_extD]
-
-    # Instantiate with dummy indicator/data/context (not used by prepare_commands)
-    module = ReputationAggregatedCommand(
-        args={},
-        brands=brands,
-        indicator=None,
-        data=[],
-        final_context_path="ctx",
-        external_enrichment=False,
-        additional_fields=False,
-        verbose=False,
-        commands=all_commands,
-    )
-
-    # Exercise prepare_commands
-    result = module.prepare_commands(external_enrichment=ext_flag)
-    result_names = [cmd.name for cmd in result]
-
-    # Order isn't important—just the exact set
-    assert set(result_names) == set(expected_names)
-
 
 ### -------------- Tests for ReputationAggregatedCommand class --------------
-def test_reputation_aggregated_command():
+@pytest.mark.parametrize(
+    "requested_brands, external_enrichment, expected_names",
+    [
+        ([], False, ["intA", "intB"]),                 # no brands, no external → INTERNAL only
+        ([], True,  ["intA", "intB", "url"]),          # no brands, external → INTERNAL + EXTERNAL
+        (["A"], False, ["intA", "url"]),               # brand A, no external → INTERNAL(A)
+        (["B"], True, ["intB", "url"]),               # brand B, no external → INTERNAL(B)
+        (["X"], False, ["url"]),                       # brand not matching INTERNAL → EXTERNAL only
+        (["A","B"], False, ["intA","intB", "url"]),     # both INTERNAL brands
+    ],
+)
+def test_prepare_commands_various(requested_brands, external_enrichment, expected_names):
     """
     Given:
         - A ReputationAggregatedCommand instance.
+        - A set of requested brands.
+        - A boolean flag indicating whether external enrichment is enabled.
     When:
-        - Calling `execute_command`.
+        - Calling `prepare_commands`.
     Then:
-        - Returns the expected result.
+        - If no brands are requested all internal commands are returned.
+        - If no brands and external_enrichment=true all commands return
+        - If brands are requested, only the requested internal commands are returned + reputation commands.
     """
-    # Define a fixed set of commands
+    indicator = Indicator(type="url", value_field="Data", context_path_prefix="URL(", mapping={})
     cmd_intA = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
     cmd_intB = Command(name="intB", args={}, brand="B", command_type=CommandType.INTERNAL)
-    cmd_extC = Command(name="extC", args={}, brand="C", command_type=CommandType.EXTERNAL)
-    cmd_extD = Command(name="extD", args={}, brand="D", command_type=CommandType.EXTERNAL)
-    all_commands = [cmd_intA, cmd_intB, cmd_extC, cmd_extD]
+    cmd_ext  = ReputationCommand(indicator=indicator, data="example.com")  # name == "url"
+    all_commands = [cmd_intA, cmd_intB, cmd_ext]
 
-    # Instantiate with dummy indicator/data/context (not used by prepare_commands)
     module = ReputationAggregatedCommand(
         args={},
-        brands=[],
-        indicator=None,
+        brands=requested_brands,
+        indicator=indicator,
         data=[],
         final_context_path="ctx",
-        external_enrichment=False,
+        external_enrichment=external_enrichment,   # prepare_commands takes the flag explicitly
         additional_fields=False,
         verbose=False,
         commands=all_commands,
+        validate_input_function=lambda _: None,
     )
 
-    # Exercise prepare_commands
-    result = module.prepare_commands(external_enrichment=False)
-    result_names = {cmd.name for cmd in result}
-
-    # Order isn't important—just the exact set
-    assert result_names == {"intA", "intB"}
-    
-class DummyIndicator:
-    def __init__(self, type_):
-        self.type = type_
-
-def make_module(additional_fields=False):
-    """
-    Helper to construct a ReputationAggregatedCommand with minimal required args.
-    """
-    return ReputationAggregatedCommand(
-        args={},
-        brands=[],
-        indicator=DummyIndicator(type_="T"),
-        data=[],
-        final_context_path="ctx",
-        external_enrichment=False,
-        additional_fields=additional_fields,
-        verbose=False,
-        commands=[],
-    )
+    result = module.prepare_commands(external_enrichment=external_enrichment)
+    assert {c.name for c in result} == set(expected_names)
 
 # --- map_command_context tests -------------------------------------------
 @pytest.mark.parametrize(
@@ -551,31 +510,153 @@ def test_map_command_context_indicator_flag(mapping, entry, is_indicator, additi
     else:
         assert "AdditionalFields" in result
         
-# --- parse_indicator tests -------------------------------------------
-def test_parse_indicator_dbotscore_extraction_only():
+# --- parse_indicator tests ------------------------------------------------------
+# --- parse_indicator_dbot_extraction ------------------------------------------
+@pytest.mark.parametrize(
+    "dbot_list, expected_scores",
+    [
+        (
+            [
+                {"Indicator": "https://a.example/", "Vendor": "VendorA", "Score": 2},
+                {"Indicator": "https://a.example/", "Vendor": "VendorB", "Score": 3},
+            ],
+            [2, 3],
+        ),
+        (
+            [{"Indicator": "https://b.example/", "Vendor": "VendorC", "Score": 0}],
+            [0],
+        ),
+        (
+            [],
+            [],
+        ),
+    ],
+)
+def test_parse_indicator_dbot_extraction(dbot_list, expected_scores):
     """
     Given:
-        - entry_context containing only DBotScore entries and no indicators.
+        - A list of DBotScore entries.
     When:
-        - parse_indicator is called.
+        - Calling parse_indicator_dbot_extraction.
     Then:
-        - dbot_list contains all flattened DBotScore entries.
-        - no indicators are parsed (indicators_context empty).
+        - Returns a list of DBotScore entries with the expected scores.
     """
-    entry_context = {
-        "DBotScore1": [{"Score": 1}, {"Score": 3}],
-        "Indicator": [],
+    mod = make_module()
+    entry = {
+        "URL(val.Data && val.Data == obj.Data)": [],
+        "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": dbot_list,
     }
-    indicator = DummyIndicator(mapping={"Value": "Value"})
-    module = ReputationAggregatedCommand(
-        args={}, brands=[], indicator=indicator, data=[], final_context_path="", 
-        external_enrichment=False, additional_fields=False, verbose=False, commands=[]
+
+    _, dbots = mod.parse_indicator(entry, brand="AnyBrand", score=1)
+
+    assert len(dbots) == len(expected_scores)
+    assert [item["Score"] for item in dbots] == expected_scores
+
+# ---------- score precedence & fallback ----------
+
+@pytest.mark.parametrize(
+    "explicit_score, dbot_scores, expected_score",
+    [
+        (3, [1, 2], 3),        # explicit wins over dbot max
+        (0, [1, 3], 3),        # no explicit -> use dbot max
+        (0, [], 0),            # no explicit & no dbots -> default 0 (Common.DBotScore.NONE)
+    ],
+)
+def test_parse_indicator_score_precedence(explicit_score, dbot_scores, expected_score):
+    """
+    Given:
+        - A list of DBotScore entries.
+        - An explicit score.
+    When:
+        - Calling parse_indicator.
+    Then:
+        - Score is from explicit score if given (non-zero).
+        - If Score is not given, it is from DBotScore max.
+        - If no DBotScore entries, it is from Common.DBotScore.NONE.
+    """
+    # mapping must include "Score" for enrichment to set it
+    indicator = Indicator(type="indicator", value_field="Value", context_path_prefix="Indicator(", mapping={"Value": "Value", "Score": "Score"})
+    mod = make_module(indicator=indicator)
+    entry = make_entry(
+        indicators=[{"Value": "https://example.com","Brand":"BrandX"}],
+        dbots=[{"Score": s} for s in dbot_scores],
     )
-    # Call with score_param=0 (treated as False)
-    ctx_copy = {k: v.copy() for k, v in entry_context.items()}
-    indicators_context, dbot_list = module.parse_indicator(ctx_copy, brand="X", score=0)
+    indicators_ctx, _ = mod.parse_indicator(entry, brand="BrandX", score=explicit_score)
 
-    # dbot_list should include both entries
-    assert dbot_list == [{"Score": 1}, {"Score": 3}]
+    out = indicators_ctx["https://example.com"]["BrandX"][0]
+    assert out["Value"] == "https://example.com"
+    assert out["Score"] == expected_score
 
 
+@pytest.mark.parametrize("verbose, include_hr", [(True, True), (True, False), (False, True), (False, False)])
+def test_parse_result_error_no_entry_context(mocker, verbose, include_hr):
+    """
+    Given:
+        - A command result with an error.
+    When:
+        - Calling parse_result.
+    Then:
+        - Returns an entry result with status "Failure".
+        - Returns an entry result with message "Error Message".
+    """
+    mod = make_module()
+    mod.verbose = verbose
+
+    cmd = ReputationCommand(indicator=indicator, data="example.com")
+    result = {}
+    if include_hr:
+        result["HumanReadable"] = "hr"
+
+    mocker.patch("AggregatedCommandApiModule.is_error", return_value=True)
+    mocker.patch("AggregatedCommandApiModule.get_error", return_value="Error Message")
+    mocker.patch.object(mod, "parse_indicator", return_value=({"indicator":"indicator"}, []))
+
+    _, _, hr, entry = mod.parse_result(result, cmd, "BrandX")
+
+    assert entry.command_name == cmd.name
+    assert entry.brand == "BrandX"
+    assert entry.status == "Failure"
+    assert entry.args == json.dumps(cmd.args)
+    assert entry.message == "Error Message"
+    
+    if verbose:
+        assert "Error Message" in hr
+        if include_hr:
+            assert "hr" in hr
+        else:
+            assert "hr" not in hr
+    else:
+        assert hr == ""
+
+@pytest.mark.parametrize("is_error, command_context",
+                         [(True, {}),
+                          (False, {}),
+                          (True, {"indicator": "indicator"}),
+                          (False, {"indicator": "indicator"})])
+def test_parse_result_no_matching_indicator(mocker, is_error, command_context):
+    """
+    Given:
+        - A command result with no matching indicator.
+    When:
+        - Calling parse_result.
+    Then:
+        - Returns an entry result with status "Success".
+        - Returns an entry result with message "No matching indicator found.".
+    """
+    mod = make_module()
+    cmd = ReputationCommand(indicator=indicator, data="example.com")
+    mocker.patch("AggregatedCommandApiModule.is_error", return_value=is_error)
+    mocker.patch.object(mod, "parse_indicator", return_value=(command_context, []))
+    
+    _, _, hr, entry = mod.parse_result(result, cmd, "BrandX")
+    
+    if is_error:
+        assert entry.status == "Failure"
+        assert entry.message != "No matching indicator found."
+    else:
+        assert entry.status == "Success"
+        if command_context:
+            assert entry.message == "No matching indicator found."
+        else:
+            assert entry.message != "No matching indicator found."
+        
