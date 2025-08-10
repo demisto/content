@@ -1156,16 +1156,23 @@ def test_get_generic_command_returns_correct_command():
 
 
 @pytest.mark.parametrize(
-    "available_brands, predefined_brands, expected",
+    "brands_to_run, available_brands, predefined_brands, expected",
     [
         (
+            [],
             {"BrandA", "BrandD", "BrandE"},  # enabled
             ["BrandA", "BrandB", "BrandC"],  # predefined
             {"BrandD", "BrandE"},  # expected
+        ),
+        (
+            ["BrandD"],
+            {"BrandA", "BrandD", "BrandE"},  # enabled
+            ["BrandA", "BrandB", "BrandC"],  # predefined
+            {"BrandD"},  # expected
         )
     ],
 )
-def test_create_using_brand_argument_to_generic_command_all_default(mocker, available_brands, predefined_brands, expected):
+def test_create_using_brand_argument_to_generic_command_all_default(mocker, brands_to_run, available_brands, predefined_brands, expected):
     """
     Given:
         - Enabled brands: BrandA, BrandD, BrandE (BrandB inactive).
@@ -1182,7 +1189,7 @@ def test_create_using_brand_argument_to_generic_command_all_default(mocker, avai
 
     command = Command(brand="Generic Command", name="gc", output_keys=[], args_mapping={}, output_mapping={})
 
-    create_using_brand_argument_to_generic_command([], command, mock_module_manager)
+    create_using_brand_argument_to_generic_command(brands_to_run, command, mock_module_manager)
 
     actual_set = set(command.additional_args["using-brand"].split(","))
     assert actual_set == expected
