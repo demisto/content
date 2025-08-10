@@ -10,3 +10,17 @@ Two or more Observation Expressions MAY be combined using a complex observation 
 
 ### API Roots and Collections
 Each TAXII server may contain more than one API root with different collections. If the needed API root is not the default one, set the `API Root to Use` parameter with the correct API root title.
+
+Note!
+
+The relationships between the indicators are extracted and matched during the indicator construction process. For each indicator, only one indicator is found in the following order of precedence.
+
+- sha-256
+- file
+- IPv4-addr
+- domain-name
+- url
+- email-addr
+- mutex
+- windows-registry-key
+- all other...
