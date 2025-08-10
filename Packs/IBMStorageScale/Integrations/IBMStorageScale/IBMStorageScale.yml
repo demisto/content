@@ -52,7 +52,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:0.115.12.3243695
+  dockerimage: demisto/fastapi:0.116.1.4266494
   isfetchevents: true
   commands:
   - name: ibm-storage-scale-get-events
