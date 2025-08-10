@@ -59,6 +59,7 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+isInternal: true
 marketplaces:
   - platform
 supportedModules:
