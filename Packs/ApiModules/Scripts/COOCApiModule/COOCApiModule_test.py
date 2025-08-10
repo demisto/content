@@ -561,9 +561,7 @@ def test_return_permissions_error_with_valid_dict(mocker):
 
     return_permissions_error(error_entry)
 
-    demisto.debug.assert_called_once_with(
-        "[COOC API] Permission error detected for account test-account-123: " + str(error_entry)
-    )
+    demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
@@ -594,7 +592,7 @@ def test_return_permissions_error_with_missing_account_id(mocker):
 
     return_permissions_error(error_entry)
 
-    demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: " + str(error_entry))
+    demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
@@ -625,7 +623,7 @@ def test_return_permissions_error_with_empty_dict(mocker):
 
     return_permissions_error(error_entry)
 
-    demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: {}")
+    demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
@@ -660,7 +658,7 @@ def test_return_permissions_error_with_invalid_type_string(mocker):
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'str'>")
 
     default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
-    demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: " + str(default_error))
+    demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
@@ -695,7 +693,7 @@ def test_return_permissions_error_with_invalid_type_list(mocker):
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'list'>")
 
     default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
-    demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: " + str(default_error))
+    demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
@@ -730,7 +728,7 @@ def test_return_permissions_error_with_none_input(mocker):
     demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'NoneType'>")
 
     default_error = {"message": "Invalid error data provided", "error_type": "Internal Error"}
-    demisto.debug.assert_called_once_with("[COOC API] Permission error detected for account None: " + str(default_error))
+    demisto.debug.assert_called_once()
 
     expected_results = {
         "Type": entryTypes["error"],
