@@ -30,19 +30,21 @@ Example:
 
 ### Reblaze WAF side
 
-Configuring Log Export to Cortex XSIAM
+#### Configuring Log Export to Cortex XSIAM (Reblaze versions 2.12 and above)
 
 For customers using Reblaze versions 2.12 and above (excluding version 5), the configuration of SIEM log exporting is managed by the Reblaze support team.  
 To initiate this process, please submit a support request with the following information:
 
 * SIEM Endpoint: The destination IP address or FQDN.
-* Destination Port: The specific port the XSIAM is listening on.
+* Destination Port: The specific port Cortex XSIAM is listening on.
 * Security Certificate: The endpoint's public SSL certificate in PEM format.
 
 Once this information is provided, the support team will finalize the configuration on your behalf.
 
 For more information, please see the official Reblaze documentation available at the following link:  
 [Set Up SIEM Integration](https://waap.docs.link11.com/v2.20.4/using-the-product/how-do-i.../set-up-siem-soc-integration)
+
+#### Configuring Log Export to Cortex XSIAM (Reblaze version 5)
 
 Customers using Reblaze version 5 can stream Reblaze WAF security events to Cortex XSIAM by configuring a new Log Exporter in the Reblaze interface as described in the following steps:
 
@@ -58,17 +60,17 @@ Customers using Reblaze version 5 can stream Reblaze WAF security events to Cort
 
 4. Click Save to activate the exporter.
 
-Note for SIEM Configuration: Reblaze transmits logs using the Syslog (RFC 5424) protocol.  
+**Note:**  
+Reblaze transmits logs using the Syslog (RFC 5424) protocol.  
 The message body contains a detailed, structured JSON object representing the security event.
 
-For more information on how to configure Log Exporter in version 5, please see the official Reblaze documentation available at the following link:  
-[Configure Log Exporter](https://waap.docs.link11.com/console-walkthrough/system/log-exporters)
+For more information on how to configure Log Exporter in version 5, see [Configure Log Exporter](https://waap.docs.link11.com/console-walkthrough/system/log-exporters).
 
 ### Cortex XSIAM side - Broker VM
 
-To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
+To create or configure the Broker VM, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
 
-Follow the below steps to configure the Broker VM to receive Reblaze WAF logs.
+Follow these steps to configure the Broker VM to receive Reblaze WAF logs.
 
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
 2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance.  
