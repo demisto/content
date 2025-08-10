@@ -172,3 +172,11 @@ if (
 
 
 
+if (tasks== undefined){
+	return{
+		Type: entryTypes.note,
+		HumanReadable: `Workplan for incident ${inc_id} has no tasks.`,
+		ReadableContentsFormat: formats.markdown,
+		Contents: {}
+	};
+}
