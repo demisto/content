@@ -821,15 +821,7 @@ def main():  # pragma: no cover
         api_key_id = demisto.params().get("apikey_id")
         url = demisto.params().get("url")
 
-        if not api_key or not api_key_id or not url:
-            headers = {
-                "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-                demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-                "Content-Type": "application/json",
-            }
-            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-            add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
-        else:
+        if api_key and api_key_id and url:
             headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
             add_sensitive_log_strs(api_key)
     else:

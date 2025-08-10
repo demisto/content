@@ -72,17 +72,9 @@ class Client(CoreClient):
 def get_headers(params: dict) -> dict:
     api_key: str = str(params.get("apikey"))
     api_key_id: str = str(params.get("apikey_id"))
-    if not api_key or not api_key_id:
-        headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
-            "Content-Type": "application/json",
-        }
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
-    else:
+    if api_key and api_key_id:
         headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
         add_sensitive_log_strs(api_key)
-
     return headers
 
 
