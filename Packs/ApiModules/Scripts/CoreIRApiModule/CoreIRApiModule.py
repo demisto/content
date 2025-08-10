@@ -9,6 +9,8 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
+from re import Match
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -1882,10 +1884,6 @@ def generate_endpoint_by_contex_standard(endpoints, ip_as_string, integration_na
     standard_endpoints = []
     for single_endpoint in endpoints:
         status, is_isolated, hostname, ip = get_endpoint_properties(single_endpoint)
-        # in the `-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
-        # in the `endpoint` command we use the standard
-        if ip_as_string and ip and isinstance(ip, list):
-            ip = ip[0]
         os_type = convert_os_to_standard(single_endpoint.get("os_type", ""))
         endpoint = Common.Endpoint(
             id=single_endpoint.get("endpoint_id"),
@@ -3633,6 +3631,29 @@ ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    """
+    Get alerts by filter.
+
+    Args:
+        client (CoreClient): The Core client to use for the request.
+        args (Dict): The arguments for the command.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
     # get arguments
     request_data: dict = {"filter_data": {}}
     filter_data = request_data["filter_data"]
@@ -3657,8 +3678,18 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                 raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
+
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
         except Exception as e:
-            raise DemistoException("custom_filter format is not valid.") from e
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
     filter_res = create_filter_from_args(args)
     if custom_filter:  # if exists, add custom filter to the built filter
