@@ -291,7 +291,7 @@ class TestListAgents:
         args = {"agent_ip": "192.168.1.100"}
         mock_response = [
             {"Contents": {"ID": "1", "ExternalIP": "192.168.1.101", "ComputerName": "Agent1"}, "Type": "note"},
-            {"Contents": {"ID": "2", "ExternalIP": "192.168.1.102", "ComputerName": "Agent2"}, "Type": "note"}
+            {"Contents": {"ID": "2", "ExternalIP": "192.168.1.102", "ComputerName": "Agent2"}, "Type": "note"},
         ]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -443,7 +443,6 @@ class TestListAgents:
         # Assert
         assert isinstance(result, CommandResults)
         assert result.readable_output == "No agents found."
-
 
     def test_list_agents_empty_contents_without_ip(self, mocker):
         """Test list_agents when Contents is empty without IP filter"""
