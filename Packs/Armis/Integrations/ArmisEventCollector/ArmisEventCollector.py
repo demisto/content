@@ -144,7 +144,7 @@ class Client(BaseClient):
         aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"  # noqa: E231
         if before:
             aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"  # noqa: E231
-            demisto.info(f"info-log: Fetching events until {before}.")
+            demisto.info(f"Fetching events until {before}.")
         params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": max_fetch, "orderBy": order_by}
         if from_param:
             params["from"] = from_param
@@ -164,19 +164,19 @@ class Client(BaseClient):
                 next = raw_response.get("data", {}).get("next") or 0
                 current_results = raw_response.get("data", {}).get("results", [])
                 results.extend(current_results)
-                demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
+                demisto.info(f"fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
 
                 total_seconds = (datetime.now() - start_time).total_seconds()
                 demisto.debug(f"total {total_seconds} seconds so far")
                 if next and total_seconds >= MAX_PAGINATION_DURATION_SECONDS:
                     demisto.debug(
-                        f"info-log: Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s for {event_type}, "
+                        f"Reached pagination time limit of {MAX_PAGINATION_DURATION_SECONDS}s for {event_type}, "
                         f"breaking early with {next=} to avoid timeout. Pagination will resume in the next fetch cycle."
                     )
                     break
 
         except Exception as e:
-            demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")  # noqa: E231
+            demisto.info(f"caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
 
@@ -269,7 +269,7 @@ def calculate_fetch_start_time(
     # case 1
     if last_fetch_time:
         if isinstance(last_fetch_time, str):
-            demisto.info(f"info-log: calculating_fetch_time for {last_fetch_time=}")
+            demisto.info(f"calculating_fetch_time for {last_fetch_time=}")
             last_fetch_datetime = arg_to_datetime(last_fetch_time)
         else:
             last_fetch_datetime = last_fetch_time
@@ -282,7 +282,7 @@ def calculate_fetch_start_time(
     if after_time:
         after_time = after_time.replace(tzinfo=None)
     if not after_time or after_time >= before_time:
-        demisto.info("info-log: last run time is later than before time, overwriting after time.")
+        demisto.info("last run time is later than before time, overwriting after time.")
         after_time = before_time - timedelta(minutes=1)
     return after_time, before_time
 
