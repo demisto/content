@@ -50,16 +50,18 @@ def test_execute_command_success(mock_demisto):
     """
     mock_demisto.executeCommand.return_value = [
         {"Type": 1, "Contents": "Success", "HumanReadable": "HR1"},
-        {"Type": 4, "Contents": "Error", "HumanReadable": "HR2"},
+        {"Type": 4, "Contents": "Error", "HumanReadable": None},
         {"Type": 14, "Contents": "Log", "HumanReadable": "HR3"},
     ]
     results, hr = execute_command("test-cmd", {})
     assert len(results) == 2
     assert results[0]["Contents"] == "Success"
     assert results[1]["Contents"] == "Error"
-    assert hr == '\n\n'.join(
-        "#### Result for name=test-cmd args={} current instance=N/A\nHR1"
-        "#### Error for name=test-cmd args={} current instance=N/A\nError"
+    assert hr == "\n\n".join(
+        (
+            "#### Result for name=test-cmd args={} current instance=N/A\nHR1",
+            "#### Error for name=test-cmd args={} current instance=N/A\nError",
+        )
     )
 
 
@@ -74,7 +76,7 @@ def test_execute_command_no_human_readable(mock_demisto):
     ]
     results, hr = execute_command("test-cmd", {})
     assert len(results) == 1
-    assert hr == ""
+    assert hr == "#### Result for name=test-cmd args={} current instance=N/A\nSuccess"
 
 
 def test_get_module_command_func_valid_module():
@@ -442,7 +444,7 @@ def test_validate_input_failure_no_args():
     Then: It should raise a DemistoException.
     """
     with pytest.raises(
-        DemistoException,
+        ValueError,
         match="At least one of the following arguments must be specified: user_id, user_name or user_email.",
     ):
         validate_input({})
@@ -483,7 +485,9 @@ def test_get_users_success(mock_execute_command, mock_return_error):
         }
     ]
     assert users == expected_users
-    mock_execute_command.assert_called_with("get-user-data", {"user_name": "testuser"})
+    mock_execute_command.assert_called_with(
+        "get-user-data", {"user_name": "testuser", "verbose": "true"}, label_hr=False
+    )
     mock_return_error.assert_not_called()
 
 
@@ -494,7 +498,12 @@ def test_get_users_failure(mock_execute_command, mock_return_error):
     Then: It should raise an error with the appropriate error message.
     """
     mock_execute_command.return_value = [
-        {"Type": 4, "Contents": "User not found", "HumanReadable": "User not found"}
+        {
+            "Type": 4,
+            "Contents": "User not found",
+            "HumanReadable": "User not found",
+            "EntryContext": None,
+        }
     ], ""
     with pytest.raises(DemistoException, match="User not found"):
         get_users({"user_name": "nonexistent"})
@@ -593,18 +602,20 @@ def test_disable_users_multiple_users_mixed_results(mock_execute_command):
 
     def side_effect(cmd, args):
         if cmd == "ad-disable-account":
-            return [{"Contents": f"User {args['username']} was disabled", "Type": 1}]
+            return [
+                {"Contents": f"User {args['username']} was disabled", "Type": 1}
+            ], ""
         elif cmd == "msgraph-user-account-disable":
             return [
                 {
                     "HumanReadable": f'user: "{args["user"]}" account has been disabled successfully.',
                     "Type": 1,
                 }
-            ]
+            ], ""
         return []
 
     mock_execute_command.side_effect = side_effect
-    results = disable_users(users)
+    results, _ = disable_users(users)
 
     expected_results = [
         {
@@ -649,24 +660,27 @@ def test_main_failure_no_user_disabled(
     mock_demisto.error = MagicMock()
 
     mock_execute_command.side_effect = [
-        [
-            {
-                "Type": 1,
-                "Contents": [
-                    {
-                        "ID": "1",
-                        "Username": "testuser",
-                        "Email": "test@example.com",
-                        "Status": "found",
-                        "Brand": "Active Directory Query v2",
-                        "Instance": "inst1",
-                    }
-                ],
-                "HumanReadable": "User data HR",
-                "EntryContext": [{}],
-            }
-        ],
-        [{"Contents": "Error: User testuser not disabled", "Type": 4}],
+        (
+            [
+                {
+                    "Type": 1,
+                    "Contents": [
+                        {
+                            "ID": "1",
+                            "Username": "testuser",
+                            "Email": "test@example.com",
+                            "Status": "found",
+                            "Brand": "Active Directory Query v2",
+                            "Instance": "inst1",
+                        }
+                    ],
+                    "HumanReadable": "User data HR",
+                    "EntryContext": [{}],
+                }
+            ],
+            "",
+        ),
+        ([{"Contents": "Error: User testuser not disabled", "Type": 4}], ""),
     ]
 
     main()

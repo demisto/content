@@ -25,12 +25,15 @@ class UserData(TypedDict):
     Instance: str
 
 
-def execute_command(cmd: str, args: dict) -> tuple[list[dict], str]:
+def execute_command(
+    cmd: str, args: dict, label_hr: bool = True
+) -> tuple[list[dict], str]:
     """Executes a Demisto command and captures human-readable outputs.
 
     Args:
         cmd (str): The name of the command to execute.
         args (dict): The arguments for the command.
+        label_hr (bool): Whether the human readables should be labeled with the command and args.
 
     Returns:
         list[dict]: A list of command results, filtered to include only
@@ -38,15 +41,18 @@ def execute_command(cmd: str, args: dict) -> tuple[list[dict], str]:
     """
     results = cast(list[dict], demisto.executeCommand(cmd, args))
     results = [
-        res for res in results if res.get("Type") in (EntryType.NOTE, EntryType.ERROR)  # filter out log files
-    ]
-    human_readable = '\n\n'.join(
-        f"#### {'Error' if is_error(res) else 'Result'} for name={cmd} args={args} current instance={args.get('using', 'N/A')}\n{msg}"
+        res
         for res in results
-        if isinstance(
-            (msg := (res.get("HumanReadable") or res.get("Contents"))),
-            str
+        if res.get("Type") in (EntryType.NOTE, EntryType.ERROR)  # filter out log files
+    ]
+    human_readable = "\n\n".join(
+        (
+            f"#### {'Error' if is_error(res) else 'Result'} for name={cmd} args={args} current instance={args.get('using', 'N/A')}\n{msg}"
+            if label_hr
+            else msg
         )
+        for res in results
+        if isinstance((msg := (res.get("HumanReadable") or res.get("Contents"))), str)
     )
     return results, human_readable
 
@@ -106,7 +112,9 @@ def run_active_directory_query_v2(
     return func_res, hr
 
 
-def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
+def run_microsoft_graph_user(
+    user: UserData, using: str
+) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in Microsoft Graph using the 'msgraph-user-account-disable' command.
 
     Args:
@@ -165,7 +173,9 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[DisabledUserResult], s
     return func_res, hr
 
 
-def run_iam_disable_user(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
+def run_iam_disable_user(
+    user: UserData, using: str
+) -> tuple[list[DisabledUserResult], str]:
     """Disables a user using the 'iam-disable-user' command, which is common
     to several IAM integrations like Okta IAM and AWS-ILM.
 
@@ -257,7 +267,9 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     Returns:
         tuple[list[UserData], str]: A list of user data dictionaries.
     """
-    res, hr = execute_command("get-user-data", args | {"verbose": "true"})
+    res, hr = execute_command(
+        "get-user-data", args | {"verbose": "true"}, label_hr=False
+    )
     if errors := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((not r["HumanReadable"] for r in errors), None):
             raise DemistoException(
@@ -327,7 +339,7 @@ def main():
         outputs, hr_disable = disable_users(users)
 
         if argToBoolean(args.get("verbose")):
-            verbose_hr = '\n\n'.join(("", hr_get, hr_disable))
+            verbose_hr = "\n\n".join(("", hr_get, hr_disable))
 
         if any(res["Disabled"] for res in outputs):
             return_results(
@@ -335,7 +347,8 @@ def main():
                     outputs_prefix="DisableUser",
                     outputs_key_field="UserProfile.Email",
                     outputs=outputs,
-                    readable_output=tableToMarkdown("Disable User", outputs) + verbose_hr,
+                    readable_output=tableToMarkdown("Disable User", outputs)
+                    + verbose_hr,
                 )
             )
         else:
@@ -345,7 +358,8 @@ def main():
                     content_format=EntryFormat.MARKDOWN,
                     readable_output=tableToMarkdown(
                         "Disable User: All integrations failed.", outputs
-                    ) + verbose_hr,
+                    )
+                    + verbose_hr,
                 )
             )
 
