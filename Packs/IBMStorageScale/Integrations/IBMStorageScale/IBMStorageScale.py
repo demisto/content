@@ -138,7 +138,7 @@ def get_fetch_start_time() -> datetime:
         return datetime.fromisoformat(last_fetch_time_str.replace("Z", "+00:00"))
     else:
         # First run - use default lookback period
-        start_time = datetime.utcnow() - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)
+        start_time = datetime.utcnow() - timedelta(minutes=1)
         demisto.debug(f"First run - using default lookback time: {start_time.isoformat()}Z")
         return start_time
 
