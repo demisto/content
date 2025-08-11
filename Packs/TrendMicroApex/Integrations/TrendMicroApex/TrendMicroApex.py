@@ -153,21 +153,69 @@ class Client(BaseClient):
         self.suffix = ""
 
     @staticmethod
-    def __create_checksum(http_method, api_path, headers, request_body):
-        string_to_hash = http_method.upper() + "|" + api_path.lower() + "|" + headers + "|" + request_body
-        base64_string = base64.b64encode(hashlib.sha256(str.encode(string_to_hash)).digest()).decode("utf-8")
-        return base64_string
+    def __create_checksum(http_method: str, api_path: str, headers: dict[str, str], request_body) -> str:
+        """Create a checksum for the API request as required by Trend Micro Apex One.
+
+        The checksum is a Base64 encoded SHA-256 hash of a concatenated string composed of:
+        1. HTTP Method (uppercase)
+        2. Raw URL (lowercase path and query)
+        3. Canonical Request Headers (sorted, lowercase, 'api-' prefix)
+        4. Request Body (JSON string without extra whitespace)
+
+        Args:
+            http_method: The HTTP method for the request (e.g., 'POST', 'GET').
+            api_path: The API path and query string.
+            headers: The request headers.
+            request_body: The request body, can be a dict, a JSON string, or None.
+
+        Returns:
+            The Base64 encoded SHA-256 checksum.
+        """
+        # 1. HTTP-Method
+        http_method_str = http_method.upper()
+
+        # 2. Raw-URL
+        parsed_url = urllib.parse.urlparse(api_path.lower())
+        raw_url_str = parsed_url.path
+        if parsed_url.query:
+            raw_url_str += f"?{parsed_url.query}"
+
+        # 3. Canonical-Request-Headers
+        canonical_headers = sorted(
+            f"{name.lower()}:{str(value).strip()}" for name, value in headers.items() if name.lower().startswith("api-")
+        )
+        canonical_headers_str = "&".join(canonical_headers)
+
+        # 4. Request-Body
+        request_body_str = ""
+        if isinstance(request_body, dict):
+            request_body_str = json.dumps(request_body, separators=(",", ":"))
+        elif isinstance(request_body, str):
+            request_body_str = request_body
+
+        # Concatenate, hash, and Base64 encode
+        string_to_hash = f"{http_method_str}{raw_url_str}{canonical_headers_str}{request_body_str}"
+        sha256_hash = hashlib.sha256(string_to_hash.encode("utf-8")).digest()
+        checksum_b64 = base64.b64encode(sha256_hash).decode("utf-8")
+
+        return checksum_b64
 
     def create_jwt_token(
         self,
         http_method,
         api_path,
-        headers,
-        request_body,
-        iat=time.time(),
+        headers: dict = None,
+        request_body=None,
+        iat=None,  # Let's make iat optional and default to current time if not provided
         algorithm="HS256",
-        version="V1",
+        version="V2",
     ):
+        if iat is None:
+            iat = time.time()
+
+        # Ensure headers is a dictionary before passing to checksum creation
+        headers = headers if isinstance(headers, dict) else {}
+
         checksum = self.__create_checksum(http_method, api_path, headers, request_body)
 
         payload = {"appid": self.application_id, "iat": iat, "version": version, "checksum": checksum}
