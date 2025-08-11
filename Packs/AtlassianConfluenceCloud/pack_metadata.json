@@ -10,14 +10,11 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [
-        "confluence",
-        "confluence cloud",
-        "atlassian",
-        "event collector"
+    "tags": [
+        "IT"
     ],
+    "useCases": [],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
