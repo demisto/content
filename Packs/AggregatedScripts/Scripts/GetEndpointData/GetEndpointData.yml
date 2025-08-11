@@ -9,15 +9,17 @@ args:
   name: endpoint_hostname
   isArray: true
 - description: |-
-    A comma-seperated list of brands you wish to run the command for. If not provided, the command will run for all available integrations. Example: 'Active Directory Query v2,FireEyeHX v2'.
-    Supported brands are:
+    A comma-seperated list of brands you want to run get-endpoint-data for. If not provided, the get-endpoint-data script will run for the list of supported default brands. Example: 'Active Directory Query v2,FireEyeHX v2'.
+    Default supported brands are:
     - 'Active Directory Query v2'
     - 'McAfee ePO v2'
     - 'CrowdstrikeFalcon'
     - 'Cortex XDR - IR'
     - 'Cortex Core - IR'
     - 'FireEyeHX v2'
-    - 'Generic Command'.
+    If you provide a list of brands, only those brands will be executed and not the default list.
+    If you include a brand that is not on the default list, the script will run the !endpoint command on it.
+    If you do not provide any brand, the predefined list of default brands and the !endpoint command will automatically run on all brands.
   name: brands
   isArray: true
 - description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
@@ -168,7 +170,7 @@ script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
