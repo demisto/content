@@ -22,7 +22,6 @@ def mock_demisto(mocker):
     """
     This fixture automatically mocks all required demisto functions for each test.
     """
-    mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "error")
 
     mocker.patch.object(
@@ -42,6 +41,11 @@ def _get_orchestrator(args: dict) -> QuarantineOrchestrator:
 
 class TestCommand:
     def test_get_entry_context_only_returns_populated_entries(self):
+        """
+        Given: A raw response from Cortex Core - IR.
+        When:  get_entry_contexts is called.
+        Then:  Ensure only the populated entries are returned.
+        """
         # Arrange
         raw_response = [
             {
@@ -88,6 +92,11 @@ class TestCommand:
         assert entry_contexts[0] == raw_response[1]["EntryContext"]
 
     def test_get_entry_context_doesnt_return_error_entry_context(self):
+        """
+        Given: A raw response from Cortex Core - IR.
+        When:  get_entry_contexts is called with a raw response containing an error entry context.
+        Then:  Ensure only the non-error entries are returned.
+        """
         # Arrange
         raw_response = [
             {
