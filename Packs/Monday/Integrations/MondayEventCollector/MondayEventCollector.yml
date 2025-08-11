@@ -37,6 +37,13 @@ configuration:
   required: false
   type: 0
   section: Connect
+- display: 'Events Fetch Interval'
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
 - display: Maximum number of Activity Logs per fetch
   defaultvalue: 10000
   section: Collect

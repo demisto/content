@@ -4,7 +4,8 @@ import json
 import demistomock as demisto # noqa: F401
 from CommonServerPython import *
 import urllib3
-import pandas as pd
+from dateutil import parser
+
 
 from typing import Any
 
@@ -35,7 +36,7 @@ PROXY = PARAMS.get("proxy", False)
 USE_SSL = not PARAMS.get("insecure", False)
 
 day_ms = 365 * 24 * 60 * 60 * 1000
-FETCH_TIME = 3 * day_ms             # TODO: change it to  (60 * 1000)-one minutes, now its 3 days
+FETCH_TIME = 3 * day_ms             # TODO: change it to  (60 * 1000)-1 minutes, now its 3 days
 
 HEADERS = {
     "Content-Type": "application/json",
@@ -271,7 +272,7 @@ def convert_17_digit_unix_time_to_ISO8601(ts):
     dt = dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     return dt
 
-def remove_duplicate_logs(logs: list, lower_bound_log_id: list, is_id_field_exists: bool) -> list:
+def return_duplicate_logs(logs: list, lower_bound_log_id: list, is_id_field_exists: bool) -> list:
     """
     Remove duplicate logs based on previous fetch.
     
@@ -295,18 +296,20 @@ def remove_duplicate_logs(logs: list, lower_bound_log_id: list, is_id_field_exis
     
     # Remove duplicates logs that already fetched in the previous run.
     # (start from the end of the list to compare the oldest log to the lower bounds ids from the previous run)
-    logs_without_duplicates = logs.copy()
+    # TODO: I think i can improve this logic, save the duplicates id, and at the end of the for, remove them (instead of copy the log list)
+    duplicates = []
     for log in logs[-1::-1]:
         if not is_id_field_exists:
             log_id = generate_log_hash(log)
         else:
             log_id = log.get("id")
+
         if log_id in lower_bound_log_id:
-            demisto.debug(f"{DEBUG_PREFIX}Removing duplicate log: {log_id}")
-            logs_without_duplicates.remove(log)
+            duplicates.append(log)
+        else:
             break
 
-    return logs_without_duplicates
+    return duplicates
 
 
 def is_empty_page(query: str, url: str, headers: dict) -> bool:
@@ -383,7 +386,9 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, li
         end_time = timestamp_to_datestring(now_ms, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
         if last_run.get("last_timestamp"):
-            start_time = last_run.get("last_timestamp")
+            # TODO: check this flow
+            start_time = subtract_epsilon_from_timestamp(last_run.get("last_timestamp"))
+            demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}decrease the epsilon from the start_time to include logs with the exact same timestamp.\noriginal last_timestamp: {last_run.get("last_timestamp")}, after subtract epsilon: {start_time}")
         else:
             start_time = timestamp_to_datestring(now_ms - FETCH_TIME, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
@@ -462,9 +467,13 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, li
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page={page} is the last page, page={next_page} is empty.")
 
             lower_bound_log_id = last_run.get("lower_bound_log_id")
-            fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=True)
-            last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
+            duplicates = return_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=True)
+            for dup in duplicates:
+                total_logs.remove(dup)
+                fetched_logs.remove(dup)
+                demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Removed duplicate log: {dup}")
             
+            last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}set lower_bound_log_id to be upper_bound_log_id: {last_run['lower_bound_log_id']}")
             
             # If it's a continuing fetch, the last_timestamp is already saved from the first fetch run.
@@ -505,6 +514,23 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, li
         
     return total_logs[:limit], last_run
 
+
+def subtract_epsilon_from_timestamp(timestamp_str, epsilon_ms=1):
+    """
+    Generic function to subtract epsilon from any ISO timestamp format
+    """
+    try:
+        # Parse any ISO format automatically
+        dt = parser.isoparse(timestamp_str)
+        # Subtract epsilon
+        dt_with_epsilon = dt - timedelta(milliseconds=epsilon_ms)
+        # Format back to original format (preserve precision)
+        return dt_with_epsilon.isoformat().replace('+00:00', 'Z')
+    except Exception as e:
+        # Fallback to original timestamp if parsing fails
+        return timestamp_str
+    
+    
 
 def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]:
     """
@@ -551,7 +577,9 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
         end_time = timestamp_to_datestring(now_ms, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
         if last_run.get("last_timestamp"):
-            start_time = last_run.get("last_timestamp")
+            # TODO: check this floe
+            start_time = subtract_epsilon_from_timestamp(last_run.get("last_timestamp"))
+            demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}decrease the epsilon from the start_time to include logs with the exact same timestamp.\noriginal last_timestamp: {last_run.get("last_timestamp")}, after subtract epsilon: {start_time}")
         else:
             start_time = timestamp_to_datestring(now_ms - FETCH_TIME, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
@@ -638,9 +666,14 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page={page} is the last page.")
 
             lower_bound_log_id = last_run.get("lower_bound_log_id")
-            fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=False)
+            duplicates = return_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=False)
+            for dup in duplicates:
+                total_logs.remove(dup)
+                fetched_logs.remove(dup)
+                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Removed duplicate log: {dup}")
+    
             last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
-            
+
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}set lower_bound_log_id to be upper_bound_log_id: {last_run['lower_bound_log_id']}")
             
             # If it's a continuing fetch, the last_timestamp is already saved from the first fetch run.
