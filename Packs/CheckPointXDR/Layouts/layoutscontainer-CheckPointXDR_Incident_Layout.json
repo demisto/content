@@ -10,7 +10,6 @@
     "fromVersion": "6.10.0",
 	"description": "Check Point XDR Incident",
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",

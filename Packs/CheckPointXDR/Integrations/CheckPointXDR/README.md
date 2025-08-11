@@ -52,30 +52,6 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 
 ## Commands
 
-### test-module
-
-***
-Tests the connection to Check Point XDR.
-
-#### Base Command
-
-`test-module`
-
-#### Input
-
-None
-
-#### Context Output
-
-There is no context output for this command.
-
-
-#### Human Readable Output
-
-> ✅ Success! Connection to Check Point XDR verified.
-
----
-
 ### fetch-incidents
 
 ***

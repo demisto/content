@@ -7,17 +7,13 @@
     "url": "https://supportcenter.checkpoint.com/",
     "email": "xdr@checkpoint.com",
     "categories": [
-        "Analytics & SIEM",
-        "Endpoint Security"
+        "Analytics & SIEM"
     ],
     "tags": [
-        "Security",
-        "XDR",
-        "Check Point"
+        "Incident Response"
     ],
     "useCases": [
-        "Incident Response",
-        "Threat Detection"
+        "Incident Response"
     ],
     "itemPrefix": "CheckPointXDR",
     "keywords": [

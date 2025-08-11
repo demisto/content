@@ -101,7 +101,7 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  dockerimage: demisto/python3:3.11.10.113941
+  dockerimage: demisto/python3:3.12.11.4417419
 defaultclassifier: CheckpointXDR_classifier
 defaultmapperin: CheckPointXDR_Incoming_Mapper
 defaultmapperout: CheckPointXDR_Out_Mapper
