@@ -1435,7 +1435,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
         demisto.debug("No domain IDs found in outputs for domain name enrichment")
         return {}
 
-    domain_ids_str = ','.join(map(str, domain_ids))
+    domain_ids_str = ",".join(map(str, domain_ids))
     demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
 
     # Retry logic with exponential backoff
@@ -1446,10 +1446,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     for attempt in range(max_retries):
         try:
             demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
-            domains_info = client.domains_list(
-                filter_=f"""id in ({domain_ids_str})""",
-                fields="id,name"
-            )
+            domains_info = client.domains_list(filter_=f"""id in ({domain_ids_str})""", fields="id,name")
 
             if domains_info:
                 domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
@@ -1465,7 +1462,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
 
             if attempt < max_retries - 1:
                 # Calculate delay with exponential backoff
-                delay = base_delay * (2 ** attempt)
+                delay = base_delay * (2**attempt)
                 demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
                 time.sleep(delay)
             else:
