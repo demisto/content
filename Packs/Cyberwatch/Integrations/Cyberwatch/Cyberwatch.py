@@ -1394,7 +1394,7 @@ def list_sysadmin_assets_command(client: Client, args: Dict[str, Any]):
     assets = client.get_sysadmin_assets(args)
 
     if len(assets) == 0:
-        return demisto.results("No Sysadmin assets found.")
+        return_results("No Sysadmin assets found.")
 
     # minimal readable table: id, hostname, last_communication, category
     readable_headers = ["id", "hostname", "last_communication", "category"]
@@ -1428,7 +1428,7 @@ def fetch_sysadmin_asset_command(client: Client, args: Dict[str, Any]):
     asset = client.get_sysadmin_one_asset(args)
 
     if len(asset) == 0:
-        return demisto.results(f"Sysadmin asset with {args.get('id')} not found.")
+        return_results(f"Sysadmin asset with {args.get('id')} not found.")
 
     readable_headers = [
         "id",
@@ -1473,7 +1473,7 @@ def list_compliance_assets_command(client: Client, args: Dict[str, Any]):
     assets = client.get_compliance_assets(args)
 
     if len(assets) == 0:
-        return demisto.results("No Compliance assets found.")
+        return_results("No Compliance assets found.")
 
     readable_headers = ["id", "hostname", "status", "compliance_rules_failed_count", "compliance_rules_succeed_count"]
     readable_assets = [
@@ -1506,7 +1506,7 @@ def fetch_compliance_asset_command(client: Client, args: Dict[str, Any]):
     asset = client.get_compliance_one_asset(args)
 
     if len(asset) == 0:
-        return demisto.results(f"Compliance asset with {args.get('id')} not found.")
+        return_results(f"Compliance asset with {args.get('id')} not found.")
 
     readable_headers = [
         "id",
