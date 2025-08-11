@@ -16,8 +16,6 @@ The **API Token** authorization method requires an access token with the followi
 
 - **Account** - **Account Settings** - **Read**
 - **Account** - **Access: Audit Logs** - **Read**
-- **Zone** - **Logs** - **Read**
-- **Zone** - **Analytics** - **Read**
 
 **Note**: It is recommended to use an **account token** (instead of a user token) to set up this integration.
 

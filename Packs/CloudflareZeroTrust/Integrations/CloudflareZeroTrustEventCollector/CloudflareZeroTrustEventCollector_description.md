@@ -13,8 +13,8 @@ Two authorization types are supported:
 
 Two API token types are supported:
 
-- **Account tokens** - Allow you to set up durable integrations that can act as service principals with their own specific set of permissions.
-- **User tokens** - Act on behalf of a particular user and inherit a subset of that user's permissions.
+- **Account token** - Allows you to set up durable integrations that can act as service principals with their own specific set of permissions.
+- **User token** - Acts on behalf of a particular user and inherits a subset of that user's permissions.
 
 User tokens are better for ad hoc tasks like scripting, where acting as the user is ideal and durability is less of a concern.
 
@@ -23,19 +23,16 @@ It is recommended to use an **account token** to set up this integration.
 #### Generate API Token
 
 1. Go to the [Cloudflare dashboard](https://dash.cloudflare.com).
-   - For Account tokens (recommended), navigate to **Manage Account** > **API Tokens**.
-   - For User tokens, navigate to **My Profile** > **API Tokens**
+   - For account tokens (recommended), navigate to **Manage Account** > **API Tokens**.
+   - For user tokens, navigate to **My Profile** > **API Tokens**
 2. Click **Create Token**.
 3. Scroll to the **Custom token** section and click **Get started**.
 4. Give the token a descriptive name.
-5. Set the token's permissions as follows:
+5. Set the token's permissions, as follows:
     - **Account** - **Account Settings** - **Read**
     - **Account** - **Access: Audit Logs** - **Read**
-    - **Zone** - **Logs** - **Read**
-    - **Zone** - **Analytics** - **Read**
-6. Choose which account resources the token is authorized to access as follows:
+6. For user tokens, choose which account resources the token is authorized to access, as follows:
     - **Include** - **All accounts**
-    - **Include** - **All zones**
 7. [Optional] Restrict how the token is used in the Client IP Address Filtering and TTL (time to live) fields.
 8. Click **Continue to summary** at the bottom of the screen.
 9. Click **Create Token** to generate a new API access token.
