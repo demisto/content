@@ -646,15 +646,11 @@ def test_return_multiple_permissions_error_missing_account_id(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
-    mocker.patch("COOCApiModule.return_error")
-
     error_entries = [{"message": "Permission denied", "name": "permission_1"}]
-
-    return_multiple_permissions_error(error_entries)
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
+    
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
+        assert demisto.results.call_args[0][0]['Contents'] == "Invalid arguments for permission entry"
 
 
 def test_return_multiple_permissions_error_missing_message(mocker):
@@ -665,15 +661,11 @@ def test_return_multiple_permissions_error_missing_message(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
-    mocker.patch("COOCApiModule.return_error")
-
     error_entries = [{"account_id": "test-account", "name": "permission_1"}]
-
-    return_multiple_permissions_error(error_entries)
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
+    
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
+        assert demisto.results.call_args[0][0]['Contents'] == "Invalid arguments for permission entry"
 
 
 def test_return_multiple_permissions_error_missing_name(mocker):
@@ -685,14 +677,13 @@ def test_return_multiple_permissions_error_missing_name(mocker):
     from COOCApiModule import return_multiple_permissions_error
 
     mocker.patch("COOCApiModule.return_error")
-
+    mocker.patch.object(demisto, 'command', return_value='command')
+    mocker.patch.object(demisto, 'results')
     error_entries = [{"account_id": "test-account", "message": "Permission denied"}]
-
-    return_multiple_permissions_error(error_entries)
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
+    
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
+        assert demisto.results.call_args[0][0]['Contents'] == "Invalid arguments for permission entry"
 
 
 def test_return_multiple_permissions_error_extra_fields(mocker):
