@@ -12867,6 +12867,28 @@ class ExecutionTimeout(object):
         demisto.debug("Resetting timed signal")
         signal.alarm(0)  # Cancel SIGALRM if it's scheduled
         return exc_type is SignalTimeoutError  # True if a timeout is reacched, False otherwise
+    
+    @classmethod
+    def limit_time(cls, seconds, default_return_value=None):
+        """
+        Decorator method to limit the execution time of a function.
+
+        :param seconds: The maximum execution time in seconds.
+        :type seconds: int or float
+        :param default_return_value: The value to return if the function times out.
+        :return: Any
+        :rtype: ``any``
+        """
+        def wrapper(func):
+            @wraps(func)
+            def wrapped(*args, **kwargs):
+                return_value = default_return_value
+                with cls(seconds):
+                    return_value = func(*args, **kwargs)
+                    demisto.debug("The function: '{func_name}' finished in time.".format(func_name=func.__name__))
+                return return_value
+            return wrapped
+        return wrapper
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402

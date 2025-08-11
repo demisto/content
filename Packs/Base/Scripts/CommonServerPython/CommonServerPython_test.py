@@ -10571,13 +10571,13 @@ def test_get_pack_version():
         pytest.param(0, True, id="Fast execution"),
     ],
 )
-def test_execution_timeout(sleep_time, expected_is_finished):
+def test_execution_timeout_context_manager(sleep_time, expected_is_finished):
     """
     Given:
         - An execution timeout value of 2 seconds.
 
     When:
-        - When calling `time.sleep` with a simulated "slow" and "fast" executions.
+        - When using `ExecutionTimeout` context manager with a simulated "slow" and "fast" executions.
 
     Assert:
         - Case A (Slow): Ensure `is_finished` is False since `time.sleep` timed out (`sleep_time` > `execution_timeout`).
@@ -10591,3 +10591,33 @@ def test_execution_timeout(sleep_time, expected_is_finished):
         is_finished = True  # Slow: This line will not be reached. Fast: Line reached, variable updated.
 
     assert is_finished == expected_is_finished
+
+
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
+@pytest.mark.parametrize(
+    "sleep_time, expected_return_value",
+    [
+        pytest.param(3, "I TIMED OUT", id="Slow execution"),
+        pytest.param(0, "I AM DONE", id="Fast execution"),
+    ],
+)
+def test_execution_timeout_decorator(sleep_time, expected_return_value):
+    """
+    Given:
+        - An execution timeout value of 2 seconds.
+
+    When:
+        - When using `ExecutionTimeout.limit_time` decorator with a simulated "slow" and "fast" executions.
+
+    Assert:
+        - Case A (Slow): Ensure return value is "I TIMED OUT" since `do_logic` timed out (`sleep_time` > `execution_timeout`).
+        - Case B (Fast): Ensure return value is "I AM DONE" since `do_logic` finished in time (`sleep_time` < `execution_timeout`).
+    """
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+
+    @ExecutionTimeout.limit_time(execution_timeout, default_return_value="I TIMED OUT")
+    def do_logic():
+        time.sleep(sleep_time)
+        return "I AM DONE"
+    
+    assert do_logic() == expected_return_value
