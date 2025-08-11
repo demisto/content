@@ -13,15 +13,9 @@ from DisableUser import (
     get_users,
     disable_users,
     main,
-    HUMAN_READABLES,
     UserData,
     DisabledUserResult,
 )
-
-
-@pytest.fixture(autouse=True)
-def clear_human_readables():
-    HUMAN_READABLES.clear()
 
 
 @pytest.fixture
@@ -52,32 +46,35 @@ def test_execute_command_success(mock_demisto):
     """
     Given: demisto.executeCommand returns results with various types and human-readables.
     When: execute_command is called.
-    Then: It should filter out non-Type 1 or 4 results, and append all human-readables to HUMAN_READABLES.
+    Then: It should filter out non-Type 1 or 4 results.
     """
     mock_demisto.executeCommand.return_value = [
         {"Type": 1, "Contents": "Success", "HumanReadable": "HR1"},
         {"Type": 4, "Contents": "Error", "HumanReadable": "HR2"},
         {"Type": 14, "Contents": "Log", "HumanReadable": "HR3"},
     ]
-    results = execute_command("test-cmd", {})
+    results, hr = execute_command("test-cmd", {})
     assert len(results) == 2
     assert results[0]["Contents"] == "Success"
     assert results[1]["Contents"] == "Error"
-    assert [res.readable_output for res in HUMAN_READABLES] == ["HR1", "HR2", "HR3"]
+    assert hr == '\n\n'.join(
+        "#### Result for name=test-cmd args={} current instance=N/A\nHR1"
+        "#### Error for name=test-cmd args={} current instance=N/A\nError"
+    )
 
 
 def test_execute_command_no_human_readable(mock_demisto):
     """
     Given: demisto.executeCommand returns results without human-readables.
     When: execute_command is called.
-    Then: It should filter results correctly and HUMAN_READABLES should remain empty.
+    Then: It should filter results correctly.
     """
     mock_demisto.executeCommand.return_value = [
         {"Type": 1, "Contents": "Success"},
     ]
-    results = execute_command("test-cmd", {})
+    results, hr = execute_command("test-cmd", {})
     assert len(results) == 1
-    assert HUMAN_READABLES == []
+    assert hr == ""
 
 
 def test_get_module_command_func_valid_module():
@@ -123,8 +120,8 @@ def test_run_active_directory_query_v2_success(mock_execute_command):
         "Brand": "AD",
         "Instance": "inst1",
     }
-    mock_execute_command.return_value = [{"Contents": "User testuser was disabled"}]
-    result = run_active_directory_query_v2(user, "inst1")
+    mock_execute_command.return_value = [{"Contents": "User testuser was disabled"}], ""
+    result, _ = run_active_directory_query_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": True, "Result": "Success", "Message": "User successfully disabled"}
     ]
@@ -148,8 +145,8 @@ def test_run_active_directory_query_v2_failure(mock_execute_command):
         "Brand": "AD",
         "Instance": "inst1",
     }
-    mock_execute_command.return_value = [{"Contents": "Error disabling user"}]
-    result = run_active_directory_query_v2(user, "inst1")
+    mock_execute_command.return_value = [{"Contents": "Error disabling user"}], ""
+    result, _ = run_active_directory_query_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": False, "Result": "Failed", "Message": "Error disabling user"}
     ]
@@ -172,8 +169,8 @@ def test_run_microsoft_graph_user_success(mock_execute_command):
     }
     mock_execute_command.return_value = [
         {"HumanReadable": 'user: "testuser" account has been disabled successfully.'}
-    ]
-    result = run_microsoft_graph_user(user, "inst1")
+    ], ""
+    result, _ = run_microsoft_graph_user(user, "inst1")
     expected: list[DisabledUserResult] = [
         {
             "Disabled": True,
@@ -203,8 +200,8 @@ def test_run_microsoft_graph_user_failure(mock_execute_command):
     }
     mock_execute_command.return_value = [
         {"HumanReadable": "Error disabling user", "Content": "Error details"}
-    ]
-    result = run_microsoft_graph_user(user, "inst1")
+    ], ""
+    result, _ = run_microsoft_graph_user(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": False, "Result": "Failed", "Message": "Error details"}
     ]
@@ -227,8 +224,8 @@ def test_run_okta_v2_success(mock_execute_command):
     }
     mock_execute_command.return_value = [
         {"Contents": "### testuser status is Suspended"}
-    ]
-    result = run_okta_v2(user, "inst1")
+    ], ""
+    result, _ = run_okta_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {
             "Disabled": True,
@@ -258,8 +255,8 @@ def test_run_okta_v2_cannot_suspend_inactive(mock_execute_command):
     }
     mock_execute_command.return_value = [
         {"Contents": "Cannot suspend a user that is not active"}
-    ]
-    result = run_okta_v2(user, "inst1")
+    ], ""
+    result, _ = run_okta_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {
             "Disabled": True,
@@ -284,8 +281,8 @@ def test_run_okta_v2_failure(mock_execute_command):
         "Brand": "Okta v2",
         "Instance": "inst1",
     }
-    mock_execute_command.return_value = [{"Contents": "Unknown Okta error"}]
-    result = run_okta_v2(user, "inst1")
+    mock_execute_command.return_value = [{"Contents": "Unknown Okta error"}], ""
+    result, _ = run_okta_v2(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": False, "Result": "Failed", "Message": "Unknown Okta error"}
     ]
@@ -312,8 +309,8 @@ def test_run_okta_iam_success(mock_execute_command):
             "HumanReadable": "User disabled.",
             "Type": 1,
         }
-    ]
-    result = run_iam_disable_user(user, "inst1")
+    ], ""
+    result, _ = run_iam_disable_user(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": True, "Result": "Success", "Message": "User successfully disabled"}
     ]
@@ -346,9 +343,9 @@ def test_run_okta_iam_failure_error_message(mock_execute_command):
                 "success": False,
                 "errorMessage": "IAM error.",
             },
-        },
-    ]
-    result = run_iam_disable_user(user, "inst1")
+        }
+    ], ""
+    result, _ = run_iam_disable_user(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": False, "Result": "Failed", "Message": "IAM error."}
     ]
@@ -375,8 +372,8 @@ def test_run_gsuiteadmin_success(mock_execute_command):
             "HumanReadable": "User suspended in GSuite.",
             "Type": 1,
         }
-    ]
-    result = run_gsuiteadmin(user, "inst1")
+    ], ""
+    result, _ = run_gsuiteadmin(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": True, "Result": "Success", "Message": "User successfully disabled"}
     ]
@@ -403,8 +400,8 @@ def test_run_gsuiteadmin_failure(mock_execute_command):
     }
     mock_execute_command.return_value = [
         {"Type": 4, "Contents": "Error in GSuite", "HumanReadable": "GSuite error HR."}
-    ]
-    result = run_gsuiteadmin(user, "inst1")
+    ], ""
+    result, _ = run_gsuiteadmin(user, "inst1")
     expected: list[DisabledUserResult] = [
         {"Disabled": False, "Result": "Failed", "Message": "Error in GSuite"}
     ]
@@ -455,7 +452,7 @@ def test_get_users_success(mock_execute_command, mock_return_error):
     """
     Given: A mock execute_command that returns a successful user data lookup.
     When: get_users is called with arguments.
-    Then: It should return the list of user data and append the human-readable to HUMAN_READABLES.
+    Then: It should return the list of user data.
     """
     mock_execute_command.return_value = [
         {
@@ -473,8 +470,8 @@ def test_get_users_success(mock_execute_command, mock_return_error):
             "HumanReadable": "User data HR",
             "EntryContext": [{}],
         }
-    ]
-    users = get_users({"user_name": "testuser"})
+    ], ""
+    users, _ = get_users({"user_name": "testuser"})
     expected_users: list[UserData] = [
         {
             "ID": "1",
@@ -498,7 +495,7 @@ def test_get_users_failure(mock_execute_command, mock_return_error):
     """
     mock_execute_command.return_value = [
         {"Type": 4, "Contents": "User not found", "HumanReadable": "User not found"}
-    ]
+    ], ""
     with pytest.raises(DemistoException, match="User not found"):
         get_users({"user_name": "nonexistent"})
 
@@ -521,8 +518,8 @@ def test_disable_users_single_user_success(mock_execute_command):
     ]
     mock_execute_command.return_value = [
         {"Contents": "User testuser was disabled", "Type": 1}
-    ]
-    results = disable_users(users)
+    ], ""
+    results, _ = disable_users(users)
     expected_results = [
         {
             "UserProfile": {

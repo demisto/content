@@ -34,15 +34,14 @@ def execute_command(cmd: str, args: dict) -> tuple[list[dict], str]:
 
     Returns:
         list[dict]: A list of command results, filtered to include only
-                    notes and errors. Human-readable outputs are stored
-                    in the global HUMAN_READABLES list.
+                    notes and errors.
     """
     results = cast(list[dict], demisto.executeCommand(cmd, args))
     results = [
         res for res in results if res.get("Type") in (EntryType.NOTE, EntryType.ERROR)  # filter out log files
     ]
     human_readable = '\n\n'.join(
-        f"#### {'Error' if is_error(res) else 'Result'} for name={cmd} args={args} current instance={args.get('using')}\n{msg}"
+        f"#### {'Error' if is_error(res) else 'Result'} for name={cmd} args={args} current instance={args.get('using', 'N/A')}\n{msg}"
         for res in results
         if isinstance(
             (msg := (res.get("HumanReadable") or res.get("Contents"))),
