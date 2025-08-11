@@ -21,8 +21,6 @@ PRODUCT = "Monday"
 AUDIT_LOGS_TYPE = "Audit Logs"
 ACTIVITY_LOGS_TYPE = "Activity Logs"
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO 8601 format TODO: check that this is the correct format in anyplace used.
-
 SCOPE = "boards:read"
 REDIRECT_URI = "https://localhost"
 AUTH_URL = "https://auth.monday.com/oauth2/token"
@@ -743,24 +741,35 @@ def fetch_audit_logs(last_run: dict) -> tuple[dict, list]:
     return last_run, audit_logs
 
 
+def remove_decimal_places_from_timestamp(timestamp: str) -> str:
+    """
+    Remove decimal places from timestamp.
+    
+    Args:
+        timestamp (str): ISO timestamp string that may have varying decimal precision
+
+    Returns:
+        str: Normalized timestamp in format "%Y-%m-%dT%H:%M:%SZ" (no decimal places)
+    """
+    if not timestamp or ('.' not in timestamp) or (not timestamp.endswith('Z')):
+        return timestamp
+    
+    base, _ = timestamp.split('.', 1)
+    return base + 'Z'
+
+
 def add_time_field_to_audit_logs(logs: list) -> list:
     for log in logs:
         timestamp_str = log.get("timestamp")
-        if timestamp_str:
-            # Parse the timestamp with milliseconds and reformat without milliseconds
-            dt = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
-            log["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")    # TODO: Verify the format is correct regarding the api response and correct for XSIAM
-        else:
-            log["_time"] = None
+        log["_time"] = remove_decimal_places_from_timestamp(timestamp_str)
     return logs
+
 
 def add_time_field_to_activity_logs(logs: list) -> list:
     for log in logs:
         timestamp_str = log.get("created_at")
-        if timestamp_str:
-            log["_time"] = convert_17_digit_unix_time_to_ISO8601(timestamp_str) # TODO: Verify the format is correct for XSIAM
-        else:
-            log["_time"] = None
+        converted_timestamp = convert_17_digit_unix_time_to_ISO8601(timestamp_str)
+        log["_time"] = remove_decimal_places_from_timestamp(converted_timestamp)
     return logs
 
 
