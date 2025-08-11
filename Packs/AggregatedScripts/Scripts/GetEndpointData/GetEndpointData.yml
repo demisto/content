@@ -77,9 +77,6 @@ outputs:
 - contextPath: EndpointData.ID.value
   description: The endpoint's ID.
   type: String
-- contextPath: EndpointData.ID.value
-  description: The endpoint's ID.
-  type: String
 - contextPath: EndpointData.RiskLevel
   description: The endpoint's risk level.
   type: String
