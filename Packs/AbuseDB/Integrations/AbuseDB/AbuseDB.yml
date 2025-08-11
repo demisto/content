@@ -95,7 +95,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: The time range to return reports (in days). Default is the time that was configured in the parameters configuration.
+    - description: The time range to return reports (in days). Default is the time that was configured in the integration configuration "Maximum reports age (in days)".
       name: days
     - defaultValue: 'true'
       description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
