@@ -93,7 +93,7 @@ class TestCommand:
 
     def test_get_entry_context_doesnt_return_error_entry_context(self):
         """
-        Given: A raw response from Cortex Core - IR.
+        Given: A raw response from a command.
         When:  get_entry_contexts is called with a raw response containing an error entry context.
         Then:  Ensure only the non-error entries are returned.
         """
@@ -130,6 +130,11 @@ class TestCommand:
         assert entry_contexts[0] == raw_response[0]["EntryContext"]
 
     def test_get_entry_context_object_containing_key_returns_first_entry_with_key(self):
+        """
+        Given: A raw response from a command and a key.
+        When:  get_entry_context_object_containing_key is called.
+        Then:  Ensure the first EntryContext object containing the key is returned.
+        """
         # Arrange
         raw_response = [
             {
@@ -159,6 +164,11 @@ class TestCommand:
         assert entry_context == raw_response[0]["EntryContext"]["EndpointData(val.ID && val.ID == obj.ID)"]
 
     def test_get_entry_context_object_containing_key_returns_none_if_no_entry_with_key(self):
+        """
+        Given: A raw response from a command and a key that doesn't exist.
+        When:  get_entry_context_object_containing_key is called.
+        Then:  Ensure None is returned.
+        """
         # Arrange
         raw_response = [
             {
@@ -428,6 +438,11 @@ class TestEndpointBrandMapper:
 
 class TestBrandFactory:
     def test_handler_factory_returns_correct_handler(self):
+        """
+        Given: Brand "Cortex XDR - IR"
+        When: handler_factory is called
+        Then: The XDRBrandHandler is called
+        """
         orchestrator = _get_orchestrator({"endpoint_id": "any-id"})
 
         brand = Brands.CORTEX_XDR_IR
@@ -439,6 +454,11 @@ class TestBrandFactory:
         assert isinstance(handler, XDRHandler)
 
     def test_handler_factory_raises_exception_for_invalid_brand(self):
+        """
+        Given: An unknown brand
+        When: handler_factory is called
+        Then: An exception is raised indicating the brand is unknown.
+        """
         orchestrator = _get_orchestrator({"endpoint_id": "any-id"})
         with pytest.raises(ValueError) as e:
             handler_factory("invalid-brand", orchestrator)
@@ -447,6 +467,11 @@ class TestBrandFactory:
 
 class TestXDRHandler:
     def test_constructor_sets_correct_properties(self):
+        """
+        Given: Demisto args
+        When: XDRHandler constructor is called
+        Then: It properly sets its properties.
+        """
         args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
         orchestrator = _get_orchestrator(args)
 
@@ -460,6 +485,11 @@ class TestXDRHandler:
 
     class TestPreProcessing:
         def test_validate_args_raises_exception_for_missing_file_path(self):
+            """
+            Given: Demisto args missing a file path
+            When: XDRHandler validate_args is called
+            Then: Raises error indicating missing file_path param.
+            """
             args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -469,6 +499,11 @@ class TestXDRHandler:
             assert "The 'file_path' argument is required for brand Cortex XDR - IR." in str(e.value)
 
         def test_run_pre_checks_and_get_initial_results_returns_empty_list_when_no_endpoint_ids_given(self):
+            """
+            Given: args with no endpoint ids
+            When: XDRHandler run_pre_checks_and_get_initial_results is called
+            Then: Returns empty lists
+            """
             args = {"file_hash": SHA_256_HASH, "file_path": "/path"}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -478,6 +513,11 @@ class TestXDRHandler:
             assert completed_results == []
 
         def test_run_pre_checks_and_get_initial_results_returns_no_eps_to_quarantine_when_all_already_quarantined(self, mocker):
+            """
+            Given: args with an endpoint id that is already quarantined
+            When: XDRHandler run_pre_checks_and_get_initial_results is called
+            Then: Returns no eps to quarantine, and a completed result
+            """
             args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -497,6 +537,11 @@ class TestXDRHandler:
             ]
 
         def test_run_pre_checks_and_get_initial_results_returns_eps_to_quarantine(self, mocker):
+            """
+            Given: args with an endpoint id that is not already quarantined
+            When: XDRHandler run_pre_checks_and_get_initial_results is called
+            Then: Returns eps to quarantine and no completed results
+            """
             args = {"endpoint_id": "id1,id2", "file_hash": "sha256", "file_path": "/path"}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -509,6 +554,12 @@ class TestXDRHandler:
             assert completed_results == []
 
         def test_run_pre_checks_and_get_initial_results_fails_ep_when_check_status_raises_unexpected_exception(self, mocker):
+            """
+            Given: args with an endpoint id that is not already quarantined, already quarantined, and one that raises an
+                   unexpected exception
+            When: XDRHandler run_pre_checks_and_get_initial_results is called
+            Then: Returns endpoint to quarantine, and completed results
+            """
             args = {"endpoint_id": "id1,id2,id3,id4", "file_hash": "sha256", "file_path": "/path"}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -556,6 +607,11 @@ class TestXDRHandler:
         """Tests the quarantine kickoff flow of the XDRHandler."""
 
         def test_initiate_quarantine_calls_expected_xdr_command(self, mocker):
+            """
+            Given: args for quarantining multiple endpoints
+            When: XDRHandler initiate_quarantine is called
+            Then: Calls the expected XDR command
+            """
             args = {"endpoint_id": ["id1", "id2"], "file_hash": "sha256", "file_path": "/path"}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -591,6 +647,11 @@ class TestXDRHandler:
             assert job == expected_job
 
         def test_initiate_quarantine_calls_expected_xdr_command_with_timeout(self, mocker):
+            """
+            Given: args for quarantining multiple endpoints with a timeout
+            When: XDRHandler initiate_quarantine is called
+            Then: Calls the expected XDR command with the given timeout
+            """
             args = {"endpoint_id": ["id1", "id2"], "file_hash": SHA_256_HASH, "file_path": "/path", "timeout": 123}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -626,6 +687,11 @@ class TestXDRHandler:
             assert job == expected_job
 
         def test_initiate_quarantine_adds_verbose_results_when_requested(self, mocker):
+            """
+            Given: Args for quarantine with multiple endpoints and verbose enabled
+            When: XDRHandler initiate_quarantine is called
+            Then: Adds verbose results to the orchestrator
+            """
             args = {"endpoint_id": ["id1", "id2"], "file_hash": SHA_256_HASH, "file_path": "/path", "verbose": True}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
@@ -684,7 +750,7 @@ class TestXDRHandler:
             mocker.patch.object(handler, "_execute_quarantine_status_command")
             return handler, job
 
-        def test_process_final_endpoint_status_receives_successfully_quarantined(self, setup_finalize, mocker):
+        def test_process_final_endpoint_status_receives_successfully_quarantined(self, setup_finalize):
             """
             Given:
                 - The polling action completes successfully.
@@ -1061,7 +1127,12 @@ class TestQuarantineOrchestrator:
                 assert True
 
     class TestConstructor:
-        def test_constructor_sets_args(self, mocker):
+        def test_constructor_sets_args(self):
+            """
+            Given: Args for quarantine.
+            When: QuarantineOrchestrator is instantiated.
+            Then: Args are properly set
+            """
             args = {
                 "endpoint_id": "id1",
                 "file_hash": "sha256",
@@ -1074,6 +1145,11 @@ class TestQuarantineOrchestrator:
             assert not orchestrator.verbose
 
         def test_constructor_sets_from_context(self, mocker):
+            """
+            Given: Args for quarantine.
+            When: QuarantineOrchestrator is instantiated and there are pending jobs
+            Then: Args are properly set, load pending jobs and completed results from context
+            """
             args = {
                 "endpoint_id": "id1",
                 "file_hash": "sha256",
