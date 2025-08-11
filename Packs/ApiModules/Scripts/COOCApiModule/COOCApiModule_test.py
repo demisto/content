@@ -726,7 +726,7 @@ def test_return_multiple_permissions_error_extra_fields(mocker):
     assert "timestamp" not in entries[0]
     assert entries[0]["account_id"] == "test-account"
     assert entries[0]["message"] == "Permission denied"
-    assert entries[0]["name"] == "containers.list"
+    assert entries[0]["name"] == "permission_1"
 
 
 def test_return_multiple_permissions_error_debug_logging(mocker):

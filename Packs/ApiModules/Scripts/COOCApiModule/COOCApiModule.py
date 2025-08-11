@@ -352,9 +352,8 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
             "error": "Permission Error",
         }
         entries.append(error_entry)
-
-    # Log the permission error for security audit purposes
-    demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
+        # Log the permission error for security audit purposes
+        demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
 
     # Return formatted error response
     demisto.results(
