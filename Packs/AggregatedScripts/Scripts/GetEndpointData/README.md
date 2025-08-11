@@ -14,7 +14,7 @@ The following brands run by default:
 If the *brands* argument is not provided to the script, all brands will be executed and the ***!endpoint*** command will run across all available brands.
 
 If you provide specific brands, only those brands will be executed.
-If you include additional brands not on the defaultlist, the ***!endpoint*** command will run only for those brands.
+If you include additional brands not on the defaultlist, the predefined list of default brands and the ***!endpoint*** command will run only for those brands.
 
 ### Examples
 

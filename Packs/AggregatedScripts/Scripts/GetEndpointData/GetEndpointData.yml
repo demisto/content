@@ -19,7 +19,7 @@ args:
     - 'FireEyeHX v2'
     If you provide a list of brands, only those brands will be executed and not the default list.
     If you include a brand that is not on the default list, the script will run the !endpoint command on it.
-    If you do not provide any brand, the !endpoint command will automatically run on all brands.
+    If you do not provide any brand, the predefined list of default brands and the !endpoint command will automatically run on all brands.
   name: brands
   isArray: true
 - description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
