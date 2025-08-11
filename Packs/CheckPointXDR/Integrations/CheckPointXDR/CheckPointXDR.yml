@@ -86,7 +86,7 @@ configuration:
   section: Collect
 description: Fetch and manage incidents from Check Point XDR.
 display: 'Check Point XDR'
-name: CheckPointXDR
+name: CheckPointXDR 
 script:
   commands:
   - arguments: []
