@@ -11,7 +11,7 @@ import demistomock as demisto
 from CommonServerPython import DemistoException
 from IBMStorageScale import (
     API_ENDPOINT,
-    DEFAULT_FIRST_FETCH_DAYS,
+    DEFAULT_FIRST_FETCH_MINUTES,
     Client,
     CommandResults,
     _ConcurrentEventFetcher,
@@ -383,7 +383,7 @@ class TestUtilityFunctions:
 
         result = get_fetch_start_time()
 
-        expected_dt = mock_now - timedelta(days=DEFAULT_FIRST_FETCH_DAYS)
+        expected_dt = mock_now - timedelta(days=DEFAULT_FIRST_FETCH_MINUTES)
         assert result == expected_dt
 
     def test_update_last_run_time(self, mocker: MockerFixture):

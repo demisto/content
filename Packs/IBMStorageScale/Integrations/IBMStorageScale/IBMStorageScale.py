@@ -14,10 +14,10 @@ from CommonServerPython import *  # noqa: F401
 API_ENDPOINT = "/scalemgmt/v2/cliauditlog"
 PRODUCT = "StorageScale"
 VENDOR = "IBM"
-DEDUPLICATION_WINDOW_HOURS = 24
+DEDUPLICATION_WINDOW_MINUTES = 1
 MAX_STORED_HASHES = 10000
 DEFAULT_PAGE_SIZE = 1000  # Default page size for IBM Storage Scale API
-DEFAULT_FIRST_FETCH_DAYS = 1  # Default days to look back on first fetch
+DEFAULT_FIRST_FETCH_MINUTES = 1  # Default days to look back on first fetch
 
 
 # --- UTILITY FUNCTIONS ---
@@ -59,7 +59,7 @@ def store_event_hashes(event_hashes: dict[str, str]) -> None:
     """
     # Clean up old hashes outside the deduplication window
     current_time = datetime.utcnow()
-    cutoff_time = (current_time - timedelta(hours=DEDUPLICATION_WINDOW_HOURS)).isoformat() + "Z"
+    cutoff_time = (current_time - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)).isoformat() + "Z"
 
     cleaned_hashes = {}
     for hash_val, timestamp in event_hashes.items():
@@ -138,7 +138,7 @@ def get_fetch_start_time() -> datetime:
         return datetime.fromisoformat(last_fetch_time_str.replace("Z", "+00:00"))
     else:
         # First run - use default lookback period
-        start_time = datetime.utcnow() - timedelta(minutes=1)
+        start_time = datetime.utcnow() - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)
         demisto.debug(f"First run - using default lookback time: {start_time.isoformat()}Z")
         return start_time
 
@@ -171,7 +171,7 @@ def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
         # Create a regex for all 60 seconds within that minute
         regex_parts.append(f"{minute_prefix}:[0-5][0-9]")
         # Move to the next minute
-        current_minute += timedelta(minutes=1)
+        current_minute += timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES)
 
     if not regex_parts:
         minute_prefix = start_time.strftime("%Y-%m-%dT%H:%M")
@@ -350,10 +350,10 @@ class Client:
         # Deduplication information
         try:
             stored_hashes = get_stored_event_hashes()
-            cutoff_time = (datetime.utcnow() - timedelta(hours=DEDUPLICATION_WINDOW_HOURS)).isoformat() + "Z"
+            cutoff_time = (datetime.utcnow() - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)).isoformat() + "Z"
             debug_info["deduplication_info"] = {
                 "stored_hashes_count": len(stored_hashes),
-                "deduplication_window_hours": DEDUPLICATION_WINDOW_HOURS,
+                "deduplication_window_minutes": DEDUPLICATION_WINDOW_MINUTES,
                 "max_stored_hashes": MAX_STORED_HASHES,
                 "cutoff_time": cutoff_time,
                 "sample_hash_timestamps": list(stored_hashes.values())[:5] if stored_hashes else [],
