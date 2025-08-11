@@ -702,38 +702,6 @@ There is no context output for this command.
 >Successfully updated the custom md5 malware feeds
 
 
-### prisma-cloud-compute-custom-feeds-malware-remove
-
-***
-Remove custom md5 malware hashes.
-
-#### Base Command
-
-`prisma-cloud-compute-custom-feeds-malware-remove`
-
-#### Requires Role
-
-operator
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name that will be attached to the md5 records. | Required |
-| md5 | Comma-separated list of md5 hashes to be added. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!prisma-cloud-compute-custom-feeds-malware-remove name=test md5=md5_hash1```
-
-#### Human Readable Output
->
->Successfully updated the custom md5 malware feeds
-
 ### cve
 
 ***
