@@ -1418,6 +1418,50 @@ STATUS_PROGRESS = {'New': "STATUS_010_NEW",
 SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH",
                                          "critical": "SEV_050_CRITICAL"}
 
+ALERT_DOMAIN = {"Security": "DOMAIN_SECURITY", "Health": "DOMAIN_HEALTH", "Hunting": "DOMAIN_HUNTING",
+                "IT": "DOMAIN_IT", "Posture": "DOMAIN_POSTURE"}
+
+DETECTION_METHOD_HR_TO_MACHINE_NAME = {
+    "XDR Agent": "TRAPS",
+    "XDR Analytics": "MAGNIFIER",
+    "XDR Analytics BIOC": "ANALYTICSBIOC",
+    "PAN NGFW": "FIREWALL",
+    "XDR BIOC": "BIOC",
+    "XDR IOC": "IOC",
+    "Threat Intelligence": "TIM",
+    "XDR Managed Threat Hunting": "MTH",
+    "Correlation": "CORRELATION_RULE",
+    "Prisma Cloud": "PRISMA_CLOUD",
+    "Prisma Cloud Compute": "PRISMA_CLOUD_COMPUTE",
+    "ASM": "XPANSE",
+    "IoT Security": "IOT",
+    "Custom Alert": "PUBLIC_API",
+    "Health": "HEALTH",
+    "SaaS Attachments": "EMAIL_ATTACHMENT",
+    "Attack Path": "ATTACK_PATH",
+    "Cloud Network Analyzer": "CLOUD_NETWORK_ANALYZER",
+    "IaC Scanner": "CAS_IAC_SCANNER",
+    "CAS Secret Scanner": "CAS_SECRET_SCANNER",
+    "CI/CD Risks": "CAS_CI_CD_RISK_SCANNER",
+    "CLI Scanner": "CLI_SCANNER",
+    "CIEM Scanner": "CIEM_SCANNER",
+    "API Traffic Monitor": "API_TRAFFIC_MONITOR",
+    "API Posture Scanner": "API_POSTURE_SCANNER",
+    "Agentless Disk Scanner": "AGENTLESS_DISK_SCANNER",
+    "Kubernetes Scanner": "KUBERNETES_SCANNERR",
+    "Compute Policy": "COMPUTE_POLICY",
+    "CSPM Scanner": "CSPM_SCANNER",
+    "CAS CVE Scanner": "CAS_CVE_SCANNER",
+    "CAS License Scanner": "CAS_LICENSE_SCANNER",
+    "Secrets Scanner": "SECRETS_SCANNER",
+    "SAST Scanner": "SAST_SCANNER",
+    "Data Policy": "DATA_POLICY",
+    "Attack Surface Test": "ATTACK_SURFACE_TEST",
+    "Package Operational Risk": "CAS_OPERATIONAL_RISK_SCANNER",
+    "Vulnerability Policy": "VULNERABILITY_POLICY",
+    "AI Security Posture": "AISPM_RULE_ENGINE"
+}
+
 def init_filter_args_options() -> dict[str, AlertFilterArg]:
     array = "array"
     dropdown = "dropdown"
@@ -1445,7 +1489,8 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "rule_id": AlertFilterArg("matching_service_rule_id", EQ, array),
         "rule_name": AlertFilterArg("fw_rule", EQ, array),
         "alert_name": AlertFilterArg("alert_name", CONTAINS, array),
-        "alert_source": AlertFilterArg("alert_source", CONTAINS, array),
+        # TODO: This might be a breaking change - need to ask.
+        "alert_source": AlertFilterArg("alert_source", EQ, array, DETECTION_METHOD_HR_TO_MACHINE_NAME),
         "time_frame": AlertFilterArg("source_insert_ts", "", time_frame),
         "user_name": AlertFilterArg("actor_effective_username", CONTAINS, array),
         "actor_process_image_name": AlertFilterArg("actor_process_image_name", CONTAINS, array),
@@ -1465,7 +1510,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "action_remote_port": AlertFilterArg("action_remote_port", EQ, array),
         "dst_action_external_hostname": AlertFilterArg("dst_action_external_hostname", CONTAINS, array),
         "mitre_technique_id_and_name": AlertFilterArg("mitre_technique_id_and_name", CONTAINS, array),
-        "alert_category": AlertFilterArg("alert_category", CONTAINS, array),
+        "alert_category": AlertFilterArg("alert_category", EQ, array),
         "alert_domain": AlertFilterArg("alert_domain", EQ, array),
         "alert_description": AlertFilterArg("alert_description", CONTAINS, array),
         "os_actor_process_image_sha256": AlertFilterArg("os_actor_process_image_sha256", CONTAINS, array),
@@ -1473,6 +1518,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "status": AlertFilterArg("status.progress", EQ, array, STATUS_PROGRESS),
         "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
         "asset_ids": AlertFilterArg("asset_ids", EQ, array),
+        "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array)
     }
 
 
@@ -1604,7 +1650,6 @@ def create_filter_from_args(args: dict) -> dict:
         raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time arguments')
 
     for arg_name, arg_value in args.items():
-        
         if arg_name not in valid_args:
             raise DemistoException(f"Argument {arg_name} is not valid.")
         
@@ -3681,7 +3726,16 @@ ALERT_STATUS_TYPES = {
 
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
-
+def filter_context_fields(output_keys: list, context: list):
+    """
+    Filters only specific keys from the context dictionary based on provided output_keys.
+    """
+    filtered_context = []
+    for alert in context:
+        filtered_context.append({key: alert.get(key) for key in output_keys})
+    
+    return filtered_context
+    
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     # get arguments
     request_data: dict = {"filter_data": {}}
@@ -3689,11 +3743,15 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     sort_field = args.pop("sort_field", "source_insert_ts")
     sort_order = args.pop("sort_order", "DESC")
     prefix = args.pop("integration_context_brand", "CoreApiModule")
+    output_keys = args.pop('outputs_keys', [])
     args.pop("integration_name", None)
     custom_filter = {}
     filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
     offset = args.pop("offset", 0)
     limit = args.pop("limit", 50)
+    if offset > limit:
+        raise DemistoException('starting offset cannot be greater than limit')
+
     filter_data["paging"] = {"from": int(offset), "to": int(limit)}
     if not args:
         raise DemistoException("Please provide at least one filter argument.")
@@ -3751,6 +3809,9 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         }
         for alert in context
     ]
+    
+    if output_keys:
+        context = filter_context_fields(output_keys, context)
 
     return CommandResults(
         outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",

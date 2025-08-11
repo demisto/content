@@ -100,6 +100,9 @@ def main():  # pragma: no cover
             return_results(get_asset_details_command(client, args))
         
         elif command == "core-get-issues":
+            if not is_platform():
+                raise DemistoException('This command is not supported on XSIAM tenants.')
+
             # replace all dict keys that contain issue with alert
             for key in list(args.keys()):
                 if 'issue' in key:
