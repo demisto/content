@@ -320,7 +320,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "11"
+      - "59"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -352,6 +352,7 @@ tasks:
     nexttasks:
       '#none#':
       - "56"
+      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -359,51 +360,6 @@ tasks:
         "position": {
           "x": 1495,
           "y": 587
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 040383c3-b99d-45cd-8d2b-3766c74015ef
-    type: regular
-    task:
-      id: 040383c3-b99d-45cd-8d2b-3766c74015ef
-      version: -1
-      name: Get User Risky Data
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "59"
-    scriptarguments:
-      user_id:
-        complex:
-          root: InvestigationUsers.Assignee
-          accessor: DomainUsername
-          transformers:
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: InvestigationUsers.Assignor.DomainUsername
-                iscontext: true
-              raw: {}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 549,
-          "y": 1391
         }
       }
     note: false
@@ -427,10 +383,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "31"
-      - "33"
-      - "15"
-      - "9"
+      - "69"
       USER:
       - "57"
     separatecontext: false
@@ -450,8 +403,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1495,
-          "y": 846
+          "x": 1717,
+          "y": 712
         }
       }
     note: false
@@ -735,34 +688,6 @@ tasks:
       - "25"
     separatecontext: false
     conditions:
-    - label: MSGraph Identity and Access
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: MicrosoftGraphIdentityandAccess
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
     - label: Azure Risky Users
       condition:
       - - operator: isNotEmpty
@@ -779,6 +704,34 @@ tasks:
                     right:
                       value:
                         simple: AzureRiskyUsers
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    - label: MSGraph Identity and Access
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: MicrosoftGraphIdentityandAccess
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -1037,6 +990,7 @@ tasks:
     nexttasks:
       '#none#':
       - "39"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1060,60 +1014,20 @@ tasks:
     task:
       id: 374ee39d-6a3a-4f1d-b309-431dc9e258ca
       version: -1
-      name: Check Evidence
+      name: Check Evidence Per Identity
+      description: If at least **three evidence items** are a mix of *global evidence*
+        and either *assignor-related* or *assignee-related* evidence.
       type: condition
       iscommand: false
       brand: ""
-      description: |-
-        - `#1 ->`If **either** the assignor and assignee identities are identical *OR* an application assigned the admin role for the first time from a rare IP, **AND** at least two evidence items were found.
-        - `#2 ->`If at least three evidence items include a mix of *global evidence with assignor-related evidence*, **OR** a mix of *global evidence with assignee-related evidence*.
-        - `ELSE ->`Done with the alert open.
     nexttasks:
-      '#1':
-      - "43"
-      '#2':
-      - "67"
       '#default#':
-      - "45"
+      - "75"
+      True Positive:
+      - "70"
     separatecontext: false
     conditions:
-    - label: '#1'
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Core.OriginalAlert.variation_rule_id
-            iscontext: true
-          right:
-            value:
-              simple: 74c5e63a-e636-4906-a986-5ccf06e81ec6
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: InvestigationUsers.Assignor.UPN
-            iscontext: true
-          right:
-            value:
-              simple: InvestigationUsers.Assignee.UPN
-            iscontext: true
-          ignorecase: true
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: Evidence
-                transformers:
-                - operator: DT
-                  args:
-                    dt:
-                      value:
-                        simple: .=Object.keys(val.AssignorUser||{}).length+Object.keys(val.AssigneeUser||{}).length+Object.keys(val.Global||{}).length
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    - label: '#2'
+    - label: True Positive
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -1121,11 +1035,12 @@ tasks:
               complex:
                 root: Evidence
                 transformers:
-                - operator: DT
+                - operator: jmespath
                   args:
-                    dt:
+                    expression:
                       value:
-                        simple: .=Object.keys(val.AssigneeUser||{}).length+Object.keys(val.Global||{}).length
+                        simple: '{Global: Global, AssigneeUser: AssigneeUser}.*.*'
+                - operator: count
             iscontext: true
           right:
             value:
@@ -1136,11 +1051,12 @@ tasks:
               complex:
                 root: Evidence
                 transformers:
-                - operator: DT
+                - operator: jmespath
                   args:
-                    dt:
+                    expression:
                       value:
-                        simple: .=Object.keys(val.AssignorUser||{}).length+Object.keys(val.Global||{}).length
+                        simple: '{Global: Global, AssignorUser: AssignorUser}.*.*'
+                - operator: count
             iscontext: true
           right:
             value:
@@ -1149,8 +1065,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1023,
-          "y": 1932
+          "x": 804,
+          "y": 1928
         }
       }
     note: false
@@ -1214,8 +1130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1023,
-          "y": 2088
+          "x": 1234.5,
+          "y": 2361
         }
       }
     note: false
@@ -1233,26 +1149,25 @@ tasks:
       id: 91481f03-3ce3-4bef-a17e-84c7f7d5b548
       version: -1
       name: Revoke Assignor User Sessions
-      description: |-
-        Invalidates all the refresh tokens issued to applications for a user.
-        Integration with *Microsoft Graph User* is **required**.
-      script: '|||msgraph-user-session-revoke'
+      description: This script clears user sessions across multiple integrations for
+        a list of usernames.
+      scriptName: clear-user-session
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "48"
+      - "74"
     scriptarguments:
-      user:
+      user_name:
         simple: ${InvestigationUsers.Assignor.UPN}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 814,
-          "y": 2497
+          "x": 1653.5,
+          "y": 2636
         }
       }
     note: false
@@ -1304,8 +1219,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "50"
-      - "49"
+      - "55"
       "yes":
       - "51"
     separatecontext: false
@@ -1341,8 +1255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1023,
-          "y": 2627
+          "x": 1653.5,
+          "y": 2905
         }
       }
     note: false
@@ -1489,8 +1403,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
-      - "50"
+      - "55"
     scriptarguments:
       role_id:
         complex:
@@ -1522,8 +1435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1023,
-          "y": 2776
+          "x": 1653.5,
+          "y": 3064
         }
       }
     note: false
@@ -1659,7 +1572,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "69"
     scriptarguments:
       key:
         simple: InvestigationUsers.Assignee
@@ -1678,7 +1591,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1495,
+          "x": 1272.5,
           "y": 712
         }
       }
@@ -1704,10 +1617,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
-      - "15"
-      - "31"
-      - "33"
+      - "69"
     scriptarguments:
       key:
         simple: InvestigationUsers.Assignor
@@ -1726,8 +1636,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1835,
-          "y": 982
+          "x": 1935,
+          "y": 860
         }
       }
     note: false
@@ -1758,28 +1668,46 @@ tasks:
         simple: Evidence.AssignorUser.CoreRiskyUser
       value:
         complex:
-          root: Core.RiskyUser
+          root: UserData
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Core.RiskyUser.risk_level
+                  simple: UserData.Brand
                 iscontext: true
               right:
                 value:
-                  simple: HIGH
+                  simple: Cortex Core - IR
               ignorecase: true
           - - operator: isEqualString
               left:
                 value:
-                  simple: Core.RiskyUser.id
+                  simple: UserData.Status
+                iscontext: true
+              right:
+                value:
+                  simple: found
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.ID
                 iscontext: true
               right:
                 value:
                   simple: InvestigationUsers.Assignor.DomainUsername
                 iscontext: true
               ignorecase: true
-          accessor: risk_level
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.RiskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
+          accessor: RiskLevel
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1817,28 +1745,45 @@ tasks:
         simple: Evidence.AssigneeUser.CoreRiskyUser
       value:
         complex:
-          root: Core.RiskyUser
+          root: UserData.RiskLevel
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Core.RiskyUser.risk_level
+                  simple: UserData.Brand
                 iscontext: true
               right:
                 value:
-                  simple: HIGH
+                  simple: Cortex Core - IR
               ignorecase: true
           - - operator: isEqualString
               left:
                 value:
-                  simple: Core.RiskyUser.id
+                  simple: UserData.Status
+                iscontext: true
+              right:
+                value:
+                  simple: found
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.ID
                 iscontext: true
               right:
                 value:
                   simple: InvestigationUsers.Assignee.DomainUsername
                 iscontext: true
               ignorecase: true
-          accessor: risk_level
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: UserData.RiskLevel
+                iscontext: true
+              right:
+                value:
+                  simple: HIGH
+              ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2242,8 +2187,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "48"
-      - "44"
+      - "74"
     scriptarguments:
       key:
         simple: Message
@@ -2252,8 +2196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 814,
-          "y": 2361
+          "x": 1234.5,
+          "y": 2636
         }
       }
     note: false
@@ -2278,7 +2222,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "---\n\n### **💻 Admin Role Assignment Info 💻**\n\n- Assignor Identity: `${.=val.InvestigationUsers.Assignor ? val.InvestigationUsers.Assignor.UPN : val.Core.OriginalAlert.event.cloud_best_identity_match}`\n- Assignee Identity: `${InvestigationUsers.Assignee.UPN}`\n- Role Name: `${Core.OriginalAlert.event.azure_ad_role_display_name_new_value}`\n\n---\n\n### **🚥 Evidence 🚥**\n\n${InvestigationUsers=val.Assignor.UPN == val.Assignee.UPN ? \"- **Identical identities for both the assignor and the assignee**\" : null}\n${Core.OriginalAlert=val.variation_rule_id == \"74c5e63a-e636-4906-a986-5ccf06e81ec6\" ? \"- **Application assigned the admin role for the first time from a rare IP**\" : null}\n\n**Global:**\n${Evidence=Object.keys(val.Global||{}).length > 0 ? Object.entries(val.Global).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignor Identity:**\n${Evidence=Object.keys(val.AssignorUser||{}).length > 0 ? Object.entries(val.AssignorUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignee Identity:**\n${Evidence=Object.keys(val.AssigneeUser||{}).length > 0 ? Object.entries(val.AssigneeUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n---\n\nIf a **malicious IP** is detected, consider blocking access from this IP to Azure."
+          simple: "---\n\n### **💻 Admin Role Assignment Info 💻**\n\n- Assignor Identity: `${.=val.InvestigationUsers.Assignor ? val.InvestigationUsers.Assignor.UPN : val.Core.OriginalAlert.event.cloud_best_identity_match}`\n- Assignee Identity: `${InvestigationUsers.Assignee.UPN}`\n- Role Name: `${Core.OriginalAlert.event.azure_ad_role_display_name_new_value}`\n\n---\n\n### **🚥 Evidence 🚥**\n\n${InvestigationUsers=val.Assignor.UPN == val.Assignee.UPN ? \"- **Identical identities for both the assignor and the assignee**\" : null}\n${Core.OriginalAlert=val.severity == \"SEV_030_MEDIUM\" ? \"- **Medium variation alert**\" : null}\n\n**Global:**\n${Evidence=Object.keys(val.Global||{}).length > 0 ? Object.entries(val.Global).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignor Identity:**\n${Evidence=Object.keys(val.AssignorUser||{}).length > 0 ? Object.entries(val.AssignorUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignee Identity:**\n${Evidence=Object.keys(val.AssigneeUser||{}).length > 0 ? Object.entries(val.AssigneeUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n---\n\nIf a **malicious IP** is detected, consider blocking access from this IP to Azure."
         required: true
         gridcolumns: []
         defaultrows: []
@@ -2291,7 +2235,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      - id: "2"
+      - id: "1"
         label: ""
         labelarg:
           complex:
@@ -2373,7 +2317,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      - id: "1"
+      - id: "2"
         label: ""
         labelarg:
           complex:
@@ -2518,6 +2462,7 @@ tasks:
       '#default#':
       - "68"
       USER:
+      - "44"
       - "66"
     separatecontext: false
     conditions:
@@ -2536,8 +2481,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1023,
-          "y": 2204
+          "x": 1234.5,
+          "y": 2481
         }
       }
     note: false
@@ -2561,7 +2506,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "48"
+      - "74"
     scriptarguments:
       key:
         simple: Message
@@ -2570,8 +2515,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1234.5,
-          "y": 2361
+          "x": 814,
+          "y": 2636
         }
       }
     note: false
@@ -2596,7 +2541,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "---\n\n### **💻 Admin Role Assignment Info 💻**\n\n- Assignor Identity: `${.=val.InvestigationUsers.Assignor ? val.InvestigationUsers.Assignor.UPN : val.Core.OriginalAlert.event.cloud_best_identity_match}`\n- Assignee Identity: `${InvestigationUsers.Assignee.UPN}`\n- Role Name: `${Core.OriginalAlert.event.azure_ad_role_display_name_new_value}`\n\n---\n\n### **🚥 Evidence 🚥**\n\n${InvestigationUsers=val.Assignor.UPN == val.Assignee.UPN ? \"- **Identical identities for both the assignor and the assignee**\" : null}\n${Core.OriginalAlert=val.variation_rule_id == \"74c5e63a-e636-4906-a986-5ccf06e81ec6\" ? \"- **Application assigned the admin role for the first time from a rare IP**\" : null}\n\n**Global:**\n${Evidence=Object.keys(val.Global||{}).length > 0 ? Object.entries(val.Global).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignor Identity:**\n${Evidence=Object.keys(val.AssignorUser||{}).length > 0 ? Object.entries(val.AssignorUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignee Identity:**\n${Evidence=Object.keys(val.AssigneeUser||{}).length > 0 ? Object.entries(val.AssigneeUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n---\n\nIf a **malicious IP** is detected, consider blocking access from this IP to Azure."
+          simple: "---\n\n### **💻 Admin Role Assignment Info 💻**\n\n- Assignor Identity: `${.=val.InvestigationUsers.Assignor ? val.InvestigationUsers.Assignor.UPN : val.Core.OriginalAlert.event.cloud_best_identity_match}`\n- Assignee Identity: `${InvestigationUsers.Assignee.UPN}`\n- Role Name: `${Core.OriginalAlert.event.azure_ad_role_display_name_new_value}`\n\n---\n\n### **🚥 Evidence 🚥**\n\n${InvestigationUsers=val.Assignor.UPN == val.Assignee.UPN ? \"- **Identical identities for both the assignor and the assignee**\" : null}\n${Core.OriginalAlert=val.severity == \"SEV_030_MEDIUM\" ? \"- **Medium variation alert**\" : null}\n\n**Global:**\n${Evidence=Object.keys(val.Global||{}).length > 0 ? Object.entries(val.Global).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignor Identity:**\n${Evidence=Object.keys(val.AssignorUser||{}).length > 0 ? Object.entries(val.AssignorUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n**Assignee Identity:**\n${Evidence=Object.keys(val.AssigneeUser||{}).length > 0 ? Object.entries(val.AssigneeUser).map(([k, v]) => '- '+k+': `'+v+'`').join('\\n') : \"- None\"}\n\n---\n\nIf a **malicious IP** is detected, consider blocking access from this IP to Azure."
         required: true
         gridcolumns: []
         defaultrows: []
@@ -2609,7 +2554,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      - id: "2"
+      - id: "1"
         label: ""
         labelarg:
           complex:
@@ -2691,7 +2636,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      - id: "1"
+      - id: "2"
         label: ""
         labelarg:
           complex:
@@ -2785,18 +2730,236 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 88d4f03d-102e-4465-80af-7fa9e1e5d8d5
+    type: regular
+    task:
+      id: 88d4f03d-102e-4465-80af-7fa9e1e5d8d5
+      version: -1
+      name: Get User Data
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "15"
+      - "31"
+      - "33"
+    scriptarguments:
+      user_name:
+        complex:
+          root: InvestigationUsers.Assignee
+          accessor: DomainUsername
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: InvestigationUsers.Assignor.DomainUsername
+                iscontext: true
+              raw: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1495,
+          "y": 982
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 59271791-18dd-4d40-841e-dcecbb9d146c
+    type: regular
+    task:
+      id: 59271791-18dd-4d40-841e-dcecbb9d146c
+      version: -1
+      name: Increase Alert Severity to Medium
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1234.5,
+          "y": 2227
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: de573173-f24d-4306-81b1-13af7568c96c
+    type: condition
+    task:
+      id: de573173-f24d-4306-81b1-13af7568c96c
+      version: -1
+      name: Check Evidence
+      description: 'If at least **two evidence items** are found, **AND** assignor
+        and assignee identities are either identical *or* considered a medium variation
+        alert. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      True Positive:
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Evidence
+                transformers:
+                - operator: jmespath
+                  args:
+                    expression:
+                      value:
+                        simple: '*.*'
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InvestigationUsers.Assignor.UPN
+            iscontext: true
+          right:
+            value:
+              simple: InvestigationUsers.Assignee.UPN
+            iscontext: true
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.OriginalAlert.severity
+            iscontext: true
+          right:
+            value:
+              simple: SEV_030_MEDIUM
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1234.5,
+          "y": 1928
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: f2a18cc1-313f-4cc9-8e2f-ced49afaf273
+    type: title
+    task:
+      id: f2a18cc1-313f-4cc9-8e2f-ced49afaf273
+      version: -1
+      name: Hard Response
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+      - "50"
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1234.5,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 20d6b13f-af1f-4d16-9a31-3dd21684d294
+    type: title
+    task:
+      id: 20d6b13f-af1f-4d16-9a31-3dd21684d294
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2232
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "12_15_#default#": 0.4,
-      "12_31_#default#": 0.22,
-      "12_33_#default#": 0.12,
-      "12_9_#default#": 0.12,
+      "12_69_#default#": 0.34,
       "28_38_#default#": 0.25,
-      "39_43_#1": 0.62,
-      "39_45_#default#": 0.19,
+      "39_70_True Positive": 0.3,
+      "39_75_#default#": 0.54,
+      "48_55_#default#": 0.88,
       "5_38_#default#": 0.21,
-      "5_6_yes": 0.55
+      "5_6_yes": 0.55,
+      "71_70_True Positive": 0.54,
+      "71_75_#default#": 0.22
     },
     "paper": {
       "dimensions": {
