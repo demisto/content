@@ -5859,6 +5859,14 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
+            "playbookID": "QuarantineFile-Test",
+            "timeout": 300
         }
     ],
     "skipped_tests": {

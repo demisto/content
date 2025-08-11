@@ -1,0 +1,980 @@
+id: QuarantineFile-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: QuarantineFile-Test
+description: Test Playbook for the quarantine-file aggregated script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03c36939-9e14-482a-833f-8d2bc5a5b14f
+    type: start
+    task:
+      id: 03c36939-9e14-482a-833f-8d2bc5a5b14f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 522db197-5943-41bc-90d8-97d1f4e42819
+    type: regular
+    task:
+      id: 522db197-5943-41bc-90d8-97d1f4e42819
+      version: -1
+      name: List 1 Core Endpoint
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      limit:
+        simple: "1"
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8ccf0b50-9091-410f-8da4-af78f49066d0
+    type: regular
+    task:
+      id: 8ccf0b50-9091-410f-8da4-af78f49066d0
+      version: -1
+      name: Create file on core endpoints
+      description: Initiate a new endpoint script execution of shell commands.
+      script: Cortex Core - IR|||core-run-script-execute-commands
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "40"
+    scriptarguments:
+      command_type:
+        simple: powershell
+      commands:
+        simple: New-Item -Path "C:\\Users\\Public\\Downloads\\${file_to_quarantine}"
+          -ItemType File
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      is_raw_command:
+        simple: "true"
+      timeout:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b78f1130-5edd-41c0-8f92-b3afd966a6e7
+    type: condition
+    task:
+      id: b78f1130-5edd-41c0-8f92-b3afd966a6e7
+      version: -1
+      name: Check if XDR IR Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "17"
+      - "39"
+    scriptarguments:
+      brandname:
+        simple: '"Cortex XDR - IR"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4713fef1-f390-4315-81ac-0a77d9f71f53
+    type: condition
+    task:
+      id: 4713fef1-f390-4315-81ac-0a77d9f71f53
+      version: -1
+      name: Check if Core IR Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 59d7dda3-9de9-4b5d-ba55-fe343dd8b5b6
+    type: regular
+    task:
+      id: 59d7dda3-9de9-4b5d-ba55-fe343dd8b5b6
+      version: -1
+      name: Sleep for 2 seconds (wait for file creation)
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "21"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2353efce-2e47-40d3-8ea4-d4cd195cbff1
+    type: regular
+    task:
+      id: 2353efce-2e47-40d3-8ea4-d4cd195cbff1
+      version: -1
+      name: QuarantineFile Script
+      description: This script executes the 'quarantine-file' command on a specified
+        file via the appropriate agent. This script is used to isolate files identified
+        as suspicious.
+      scriptName: quarantine-file
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "35"
+    scriptarguments:
+      endpoint_id:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_hash:
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      file_path:
+        simple: C:\Users\Public\Downloads\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5370630d-ef34-4284-8f79-29d660cb07b5
+    type: regular
+    task:
+      id: 5370630d-ef34-4284-8f79-29d660cb07b5
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d8a35973-20be-49cb-821d-25c9a3eecbbb
+    type: regular
+    task:
+      id: d8a35973-20be-49cb-821d-25c9a3eecbbb
+      version: -1
+      name: Set Unique File Name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: file_to_quarantine
+      value:
+        simple: file_to_quarantine_${GeneratedUUID}.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e63e5e41-2ba2-4e32-8807-1b6ef5e22925
+    type: title
+    task:
+      id: e63e5e41-2ba2-4e32-8807-1b6ef5e22925
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 278619a7-b343-41cf-8050-8453cb5308ee
+    type: regular
+    task:
+      id: 278619a7-b343-41cf-8050-8453cb5308ee
+      version: -1
+      name: Core - Execute File Exists Script
+      description: Initiates a new endpoint script execution to check if file exists.
+      script: '|||core-run-script-file-exists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "24"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: d1c6de50-f36d-48c3-8e79-74c7030028ee
+    type: regular
+    task:
+      id: d1c6de50-f36d-48c3-8e79-74c7030028ee
+      version: -1
+      name: Core - Get File Check Status
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "25"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 1910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e48c4568-3686-48bb-b557-23aee5f32b71
+    type: condition
+    task:
+      id: e48c4568-3686-48bb-b557-23aee5f32b71
+      version: -1
+      name: File Successfully Created?
+      description: Check if a given value is true. Will return 'no' otherwise
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Core.ScriptResult.results.command_output
+            iscontext: true
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1472.5,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 495c9816-009d-4261-8905-41dc7b85c2f7
+    type: regular
+    task:
+      id: 495c9816-009d-4261-8905-41dc7b85c2f7
+      version: -1
+      name: Fail
+      description: Prints a raw representation of a string or object, visualising
+        things likes tabs and newlines.  For instance, '\n' will be displayed instead
+        of a newline character, or a Windows CR will be displayed as '\r\n'.  This
+        is useful for debugging issues where things aren't behaving as expected, such
+        as when parsing a string with a regular expression.
+      scriptName: PrintRaw
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      value:
+        simple: Failed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 718e9856-31dd-4fae-8f08-189914842857
+    type: regular
+    task:
+      id: 718e9856-31dd-4fae-8f08-189914842857
+      version: -1
+      name: Pass
+      description: Prints a raw representation of a string or object, visualising
+        things likes tabs and newlines.  For instance, '\n' will be displayed instead
+        of a newline character, or a Windows CR will be displayed as '\r\n'.  This
+        is useful for debugging issues where things aren't behaving as expected, such
+        as when parsing a string with a regular expression.
+      scriptName: PrintRaw
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Passed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2035,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: dc9292d9-cc6e-476b-8ab4-5e1377fef2b7
+    type: regular
+    task:
+      id: dc9292d9-cc6e-476b-8ab4-5e1377fef2b7
+      version: -1
+      name: Core - Execute File Exists Script
+      description: Initiates a new endpoint script execution to check if file exists.
+      script: '|||core-run-script-file-exists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "33"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 8efdd302-61b8-4f61-8eb9-e480d29f6968
+    type: regular
+    task:
+      id: 8efdd302-61b8-4f61-8eb9-e480d29f6968
+      version: -1
+      name: Core - Get File Check Status
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "34"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1922.5,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 6fd12f0a-082c-491d-86ae-8103c21a6897
+    type: condition
+    task:
+      id: 6fd12f0a-082c-491d-86ae-8103c21a6897
+      version: -1
+      name: File Still Exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Core.ScriptResult.results.command_output
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2035,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ad97d8e5-ffec-49a0-8218-e5273a4a5798
+    type: condition
+    task:
+      id: ad97d8e5-ffec-49a0-8218-e5273a4a5798
+      version: -1
+      name: QuarantineFile status is Success?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QuarantineFile.Status
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f955b0a5-f29e-47f0-86e3-9abb37694079
+    type: regular
+    task:
+      id: f955b0a5-f29e-47f0-86e3-9abb37694079
+      version: -1
+      name: Cleanup - Delete File
+      description: Initiates a new endpoint script execution to delete the specified
+        file.
+      script: Cortex Core - IR|||core-run-script-delete-file
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\\Users\\Public\\Downloads\\${file_to_quarantine}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d52dea4b-d48c-4e85-8095-1e0ed76b2cf5
+    type: regular
+    task:
+      id: d52dea4b-d48c-4e85-8095-1e0ed76b2cf5
+      version: -1
+      name: Get UUID for quarantine file txt
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 11898bd3-ec8a-4428-849f-600b7115735e
+    type: condition
+    task:
+      id: 11898bd3-ec8a-4428-849f-600b7115735e
+      version: -1
+      name: Are there any available endpoints?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3a5a29f6-d3fc-459d-8343-eaf61f10bc61
+    type: title
+    task:
+      id: 3a5a29f6-d3fc-459d-8343-eaf61f10bc61
+      version: -1
+      name: TODO same as Core flow but with XDR commands
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: c923d336-6ccc-489f-9418-f3afc63c2dce
+    type: regular
+    task:
+      id: c923d336-6ccc-489f-9418-f3afc63c2dce
+      version: -1
+      name: DeleteContext to clear previous actions
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Core.ScriptRun,Core.GetActionStatus
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 28623f86-111b-42a9-b280-bbaed2ea422b
+    type: regular
+    task:
+      id: 28623f86-111b-42a9-b280-bbaed2ea422b
+      version: -1
+      name: DeleteContext to clear previous actions
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: Core.ScriptRun,Core.GetActionStatus,Core.ScriptResult
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "35_30_#default#": 0.25,
+      "35_41_yes": 0.89,
+      "38_30_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3460,
+        "width": 2365,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
