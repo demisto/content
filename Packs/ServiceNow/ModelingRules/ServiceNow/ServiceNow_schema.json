@@ -124,6 +124,126 @@
         "app_scope": {
         "type": "string",
         "is_array": false
-      }
+      },
+        "state": {
+        "type": "int",
+        "is_array": false
+      },
+        "active": {
+        "type": "int",
+        "is_array": false
+      },
+        "impact": {
+        "type": "int",
+        "is_array": false
+      },
+        "number": {
+        "type": "string",
+        "is_array": false
+      },
+        "urgency": {
+        "type": "int",
+        "is_array": false
+      },
+        "approval": {
+        "type": "string",
+        "is_array": false
+      },
+        "category": {
+        "type": "int",
+        "is_array": false
+      },
+        "made_sla": {
+        "type": "int",
+        "is_array": false
+      },
+        "priority": {
+        "type": "int",
+        "is_array": false
+      },
+        "knowledge": {
+        "type": "int",
+        "is_array": false
+      },
+        "opened_by": {
+        "type": "string",
+        "is_array": false
+      },
+        "escalation": {
+        "type": "int",
+        "is_array": false
+      },
+        "sys_domain": {
+        "type": "string",
+        "is_array": false
+      },
+        "case_report": {
+        "type": "string",
+        "is_array": false
+      },
+        "subcategory": {
+        "type": "int",
+        "is_array": false
+      },
+        "time_worked": {
+        "type": "string",
+        "is_array": false
+      },
+        "upon_reject": {
+        "type": "string",
+        "is_array": false
+      },
+        "contact_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "sys_mod_count": {
+        "type": "int",
+        "is_array": false
+      },
+        "upon_approval": {
+        "type": "string",
+        "is_array": false
+      },
+        "follow_the_sun": {
+        "type": "int",
+        "is_array": false
+      },
+        "sys_class_name": {
+        "type": "string",
+        "is_array": false
+      },
+        "sys_domain_path": {
+        "type": "string",
+        "is_array": false
+      },
+        "short_description": {
+        "type": "string",
+        "is_array": false
+      },
+        "reassignment_count": {
+        "type": "int",
+        "is_array": false
+      },
+        "account": {
+        "type": "string",
+        "is_array": false
+      },
+        "assigned_to": {
+        "type": "string",
+        "is_array": false
+      },
+        "assignment_group": {
+        "type": "string",
+        "is_array": false
+      },
+        "description": {
+        "type": "string",
+        "is_array": false
+      },
+        "resolution_code": {
+        "type": "string",
+        "is_array": false
+      }      
     }
   }
