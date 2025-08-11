@@ -1,0 +1,1253 @@
+id: PAN-OS - Download and Install Dynamic Content Updates_testcopy
+version: 2
+contentitemexportablefields:
+  contentitemfields:
+    packID: PAN-OS
+    packName: PAN-OS by Palo Alto Networks
+    itemVersion: 2.6.3
+    fromServerVersion: 6.10.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+    supportedModules:
+    - agentix
+vcShouldKeepItemLegacyProdMachine: false
+name: PAN-OS - Download and Install Dynamic Content Updates_testcopy
+description: |-
+  This playbook automates the download and installation of the following Dynamic Update types on Palo Alto firewalls:
+    - App/Threat
+    - Anti-Virus
+    - WildFire
+    - GlobalProtect Clientless VPN
+
+  Use the "itemsToUpdate" input to control which update type(s) to download and install.  All types are updated by default.
+
+  NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ae08e3f3-db0a-454b-8f86-d5b01a78e5df
+    type: start
+    task:
+      id: ae08e3f3-db0a-454b-8f86-d5b01a78e5df
+      version: -1
+      name: ""
+      description: Initial task to start dynamic content update playbook.
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3ba18f71-0382-47fe-8b70-81de9506373b
+    type: condition
+    task:
+      id: 3ba18f71-0382-47fe-8b70-81de9506373b
+      version: -1
+      name: Check Dynamic Updates Type
+      description: Determine dynamic update type(s) to install based on playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#default#':
+      - "23"
+      All Types:
+      - "2"
+      Anti-Virus:
+      - "12"
+      App/Threat:
+      - "11"
+      GP:
+      - "14"
+      WildFire:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: All Types
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: itemsToUpdate
+            iscontext: true
+          right:
+            value:
+              simple: all
+          ignorecase: true
+    - label: App/Threat
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: itemsToUpdate
+            iscontext: true
+          right:
+            value:
+              simple: app/threat
+          ignorecase: true
+    - label: Anti-Virus
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: itemsToUpdate
+            iscontext: true
+          right:
+            value:
+              simple: anti-virus
+          ignorecase: true
+    - label: WildFire
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: itemsToUpdate
+            iscontext: true
+          right:
+            value:
+              simple: wildfire
+          ignorecase: true
+    - label: GP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: itemsToUpdate
+            iscontext: true
+          right:
+            value:
+              simple: gp
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 398bcca4-8b0e-41b0-a699-c248b4c72781
+    type: title
+    task:
+      id: 398bcca4-8b0e-41b0-a699-c248b4c72781
+      version: -1
+      name: Update All Types
+      description: Option selected is 'all'. Execute all Download and Install branches.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+      - "7"
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 59fe2ce7-0434-4a61-95b5-2ef74e8a56af
+    type: regular
+    task:
+      id: 59fe2ce7-0434-4a61-95b5-2ef74e8a56af
+      version: -1
+      name: Download Latest App/Threat Update
+      description: Downloads the latest app/threat dynamic update.
+      script: '|||pan-os-download-latest-content-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      polling:
+        simple: "true"
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 12b78d3c-6e7c-40df-8848-a8bf8bfa6e95
+    type: regular
+    task:
+      id: 12b78d3c-6e7c-40df-8848-a8bf8bfa6e95
+      version: -1
+      name: Install Latest App/Threat Update
+      description: Installs the latest app/threat dynamic update.
+      script: '|||pan-os-install-latest-content-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      polling:
+        simple: "true"
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e0715674-719c-4179-b3a7-e5b8e15bb0e9
+    type: regular
+    task:
+      id: e0715674-719c-4179-b3a7-e5b8e15bb0e9
+      version: -1
+      name: Download Latest Anti-Virus Update
+      description: Downloads the latest antivirus dynamic update.
+      script: '|||pan-os-download-latest-antivirus-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b3244c7a-9b57-4fc0-8f7d-205aee1d3d56
+    type: regular
+    task:
+      id: b3244c7a-9b57-4fc0-8f7d-205aee1d3d56
+      version: -1
+      name: Install Latest Anti-Virus Update
+      description: Installs the latest Antivirus update.
+      script: '|||pan-os-install-latest-antivirus-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6f02f605-8d84-4f88-abf2-ca5230bf192c
+    type: regular
+    task:
+      id: 6f02f605-8d84-4f88-abf2-ca5230bf192c
+      version: -1
+      name: Download Latest WildFire Update
+      description: Downloads the latest WildFire dynamic update.
+      script: '|||pan-os-download-latest-wildfire-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 30e46b47-600c-4a84-97d0-2866e651b938
+    type: regular
+    task:
+      id: 30e46b47-600c-4a84-97d0-2866e651b938
+      version: -1
+      name: Install Latest WildFire Update
+      description: Installs the latest WildFire dynamic update.
+      script: '|||pan-os-install-latest-wildfire-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c1eefc32-ce5e-4858-b73c-fb6e3c63455c
+    type: regular
+    task:
+      id: c1eefc32-ce5e-4858-b73c-fb6e3c63455c
+      version: -1
+      name: Download Latest GP Clientless VPN Update
+      description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
+      script: '|||pan-os-download-latest-gp-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a953a1b0-f293-44df-9131-df3a21548d69
+    type: regular
+    task:
+      id: a953a1b0-f293-44df-9131-df3a21548d69
+      version: -1
+      name: Install Latest GP Clientless VPN Update
+      description: Installs the latest GlobalProtect Clientless VPN dynamic update.
+      script: '|||pan-os-install-latest-gp-update'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      target:
+        simple: ${targetDevice}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5232d21f-2ca6-4123-9a11-b74d7852615c
+    type: title
+    task:
+      id: 5232d21f-2ca6-4123-9a11-b74d7852615c
+      version: -1
+      name: App/Threat Only
+      description: Option selected is 'App/Threat'.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 19ba4187-000d-47dd-a69e-bb0ac562dbc1
+    type: title
+    task:
+      id: 19ba4187-000d-47dd-a69e-bb0ac562dbc1
+      version: -1
+      name: Anti-Virus Only
+      description: Option selected is 'Anti-Virus'
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f88cb4f2-ef2e-49d0-9806-9a97f0ac9ab7
+    type: title
+    task:
+      id: f88cb4f2-ef2e-49d0-9806-9a97f0ac9ab7
+      version: -1
+      name: WildFire Only
+      description: Option selected is 'WildFire'.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b4365e9c-3cc3-48f2-b3af-f4017833350d
+    type: title
+    task:
+      id: b4365e9c-3cc3-48f2-b3af-f4017833350d
+      version: -1
+      name: GP Only
+      description: Option selected is 'GlobalProtect'.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 604eacdb-7323-47eb-8cbc-411b3fbc2709
+    type: regular
+    task:
+      id: 604eacdb-7323-47eb-8cbc-411b3fbc2709
+      version: -1
+      name: Store Formatted Details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: AppThreat
+      value:
+        simple: '{"AppThreat":{"DownloadJobID":"${Panorama.Content.Download.JobID}","VersionDownloaded":"${Panorama.Content.Download.Details.details.line.[2]}","InstallJobID":
+          "${Panorama.Content.Install.JobID}"}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4dc031ad-a262-43ae-978f-b4de2abc6eab
+    type: regular
+    task:
+      id: 4dc031ad-a262-43ae-978f-b4de2abc6eab
+      version: -1
+      name: Store Formatted Details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: AntiVirus
+      value:
+        simple: '{"AntiVirus":{"DownloadJobID":"${Panorama.AntiVirus.Download.JobID}","VersionDownloaded":"${Panorama.AntiVirus.Download.Details.details.line.[2]}","InstallJobID":
+          "${Panorama.AntiVirus.Install.JobID}"}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2ae1939f-0d9e-4944-94a8-663d7caf3729
+    type: regular
+    task:
+      id: 2ae1939f-0d9e-4944-94a8-663d7caf3729
+      version: -1
+      name: Store Formatted Details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: WildFire
+      value:
+        simple: '{"WildFire": {"DownloadJobID":"${Panorama.WildFire.Download.JobID}","VersionDownloaded":"${Panorama.WildFire.Download.Details.details.line.[2]}","InstallJobID":
+          "${Panorama.WildFire.Install.JobID}"}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 358fe409-821d-4a9b-b225-01dc055098ae
+    type: regular
+    task:
+      id: 358fe409-821d-4a9b-b225-01dc055098ae
+      version: -1
+      name: Store Formatted Details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: GP
+      value:
+        simple: '{"GP": {"DownloadJobID": "${Panorama.GP.Download.JobID}","VersionDownloaded":"${Panorama.GP.Download.Details.details.line.[2]}","InstallJobID":"${Panorama.GP.Install.JobID}"}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6d86fc0c-be5a-43a5-a012-353c545b00b2
+    type: regular
+    task:
+      id: 6d86fc0c-be5a-43a5-a012-353c545b00b2
+      version: -1
+      name: Combine Update Details
+      description: Combine the results of all download and install tasks into a single
+        context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: DynamicUpdates
+      value:
+        complex:
+          root: AppThreat
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: AntiVirus
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: WildFire
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: GP
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: fa1bf705-f780-4208-9545-72902a308dee
+    type: title
+    task:
+      id: fa1bf705-f780-4208-9545-72902a308dee
+      version: -1
+      name: Completed with Success
+      description: Playbook concluded after successful execution of Download and Install
+        commands.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 91d17bed-5f31-479f-b4c6-2326c1293fbf
+    type: condition
+    task:
+      id: 91d17bed-5f31-479f-b4c6-2326c1293fbf
+      version: -1
+      name: Is the Panorama Integration enabled?
+      description: Check if a Panorama integration instance is active.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: bac2a881-64f0-4b20-b938-5063c7314a0c
+    type: regular
+    task:
+      id: bac2a881-64f0-4b20-b938-5063c7314a0c
+      version: -1
+      name: No active Panorama integration instance found
+      description: Prints an error entry for missing active Panorama integration instance.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      message:
+        simple: Please configure and enable a Panorama integration instance.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2380,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7c9dc2d4-42a6-445b-803e-625cae82fe78
+    type: regular
+    task:
+      id: 7c9dc2d4-42a6-445b-803e-625cae82fe78
+      version: -1
+      name: Invalid option selected
+      description: Prints an error entry when the playbook input for itemsToUpdate
+        did not match any valid options.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      message:
+        simple: |-
+          The input passed did not match any valid options. Please select ONE of the following options:
+          all
+          app/threat
+          anti-virus
+          wildfire
+          gp
+      value:
+        simple: |-
+          The input passed did not match any valid options. Please select ONE of the following options:
+          all
+          app/threat
+          anti-virus
+          wildfire
+          gp
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: cb4bb223-77d3-4444-b315-89fced009866
+    type: regular
+    task:
+      id: cb4bb223-77d3-4444-b315-89fced009866
+      version: -1
+      name: Get System Info
+      description: Gets information from all PAN-OS systems in the topology.
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f1fe9e51-37ad-4c17-9d12-664a4c9b2ae0
+    type: condition
+    task:
+      id: f1fe9e51-37ad-4c17-9d12-664a4c9b2ae0
+      version: -1
+      name: If it is a Panorama instance was target firewall provided?
+      description: Check if a target firewall is specified when running on a Panorama
+        instance.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#default#':
+      - "1"
+      Panorama with no target ID:
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: Panorama with no target ID
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANOS.ShowSystemInfo.Result.model
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PANOS.ShowSystemInfo.Result.model
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: targetDevice
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 31714fce-1632-4096-b192-4936c54ec8ec
+    type: regular
+    task:
+      id: 31714fce-1632-4096-b192-4936c54ec8ec
+      version: -1
+      name: Print message for missing target ID
+      description: Prints an error message for missing target ID.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      message:
+        simple: A target firewall ID is required when running this playbook with a
+          Panorama instance
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: b5b069aa-5249-4ed5-835e-127189fe6c9c
+    type: title
+    task:
+      id: b5b069aa-5249-4ed5-835e-127189fe6c9c
+      version: -1
+      name: Completed with errors
+      description: Playbook concluded without executing the Download and Install commands.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c9e1828c-a369-4fb5-81be-86d3c5534548
+    type: title
+    task:
+      id: c9e1828c-a369-4fb5-81be-86d3c5534548
+      version: -1
+      name: Done
+      description: Marks the playbook as completed.
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_13_WildFire": 0.72,
+      "21_22_#default#": 0.22,
+      "21_24_yes": 0.44,
+      "25_1_#default#": 0.48,
+      "25_27_Panorama with no target ID": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2070,
+        "width": 3560,
+        "x": -800,
+        "y": -540
+      }
+    }
+  }
+inputs:
+- key: targetDevice
+  value: {}
+  required: false
+  description: |
+    The serial number of a specific firewall to target (Required when connected to Panorama) [Optional].
+  playbookInputQuery: null
+- key: itemsToUpdate
+  value:
+    simple: all
+  required: true
+  description: |-
+    Specifies which item types to download and install.  Select ONE of the following options:
+    all
+    app/threat
+    anti-virus
+    wildfire
+    gp
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - targetDevice
+  - itemsToUpdate
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - DynamicUpdates
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: DynamicUpdates
+  description: A dictionary containing details of the Dynamic Update type(s) downloaded
+    and installed, including their version number and associated job IDs.
+  type: unknown
+sourceplaybookid: PAN-OS - Download and Install Dynamic Content Updates
+quiet: true
+adopted: true

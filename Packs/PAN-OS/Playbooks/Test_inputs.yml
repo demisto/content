@@ -1,0 +1,183 @@
+adopted: true
+description: Returns the inputs passed to it as is.
+dirtyInputs: true
+id: 'Test inputs'
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - targetDevice
+  - cve_id
+  name: General (Inputs group)
+inputs:
+- description: ""
+  key: targetDevice
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: ""
+  key: cve_id
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Test inputs
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - cve_id
+  - targetDevice
+outputs:
+- contextPath: cve_id
+  type: unknown
+- contextPath: targetDevice
+  type: unknown
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3ac6dee5-edb7-49ef-8a95-e8df668fca19
+      iscommand: false
+      name: ""
+      playbooktaskmissingcomponent: null
+      version: -1
+    taskid: 3ac6dee5-edb7-49ef-8a95-e8df668fca19
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: cve_id
+      value:
+        simple: ${inputs.cve_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 04d57438-7afc-4238-b3c2-7d5a472dbda8
+      iscommand: false
+      name: Set the cve_id from inputs
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: 04d57438-7afc-4238-b3c2-7d5a472dbda8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: targetDevice
+      value:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 897b5f13-c3c0-4c1a-a37d-8f6b648b901e
+      iscommand: false
+      name: Set targetDevice from inputs
+      playbooktaskmissingcomponent: null
+      script: Set
+      type: regular
+      version: -1
+    taskid: 897b5f13-c3c0-4c1a-a37d-8f6b648b901e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea7f9154-6825-4101-9880-657cf10c59b9
+      iscommand: false
+      name: Done
+      playbooktaskmissingcomponent: null
+      type: title
+      version: -1
+    taskid: ea7f9154-6825-4101-9880-657cf10c59b9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 540,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
