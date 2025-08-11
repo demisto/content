@@ -10,12 +10,8 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-        "Palo Alto Networks Products"
-    ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "SLS",
         "Strata Logging Service XSOAR Connector"

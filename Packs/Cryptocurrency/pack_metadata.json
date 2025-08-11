@@ -16,11 +16,7 @@
         "Plug & Enrich"
     ],
     "useCases": [],
-    "keywords": [
-        "bitcoin",
-        "crypto",
-        "currency"
-    ],
+    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

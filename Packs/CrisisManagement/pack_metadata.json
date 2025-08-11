@@ -16,6 +16,7 @@
         "Use Case"
     ],
     "created": "2020-05-06T08:54:47Z",
+<<<<<<< HEAD
     "useCases": [
         "Case Management",
         "Compliance"
@@ -23,6 +24,10 @@
     "keywords": [
         "crisis"
     ],
+=======
+    "useCases": [],
+    "keywords": [],
+>>>>>>> parent of 9c5bbcd71b (Alignment tags, keywords and categories packs (chunk10))
     "dependencies": {
         "CommonTypes": {
             "mandatory": true,
