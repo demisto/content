@@ -238,6 +238,7 @@ class EndpointCommandRunner:
 
         raw_outputs = self.run_execute_command(command, args)
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
+
         if not entry_context:
             endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
             return readable_errors, endpoints
@@ -491,7 +492,7 @@ def initialize_commands(
             brand=Brands.CORTEX_XDR_IR,
             name="xdr-list-risky-hosts",
             output_keys=["PaloAltoNetworksXDR.RiskyHost"],
-            args_mapping={"host_id": "endpoint_id"},
+            args_mapping={"host_id": "endpoint_hostname"},
             output_mapping={"id": "ID", "risk_level": "RiskLevel"},
             not_found_checker="was not found",
         ),
