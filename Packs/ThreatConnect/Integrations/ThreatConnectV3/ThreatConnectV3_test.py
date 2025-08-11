@@ -557,3 +557,22 @@ def test_tc_add_indicator_command_with_description(mocker):
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
     assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]["data"]
+
+
+def test_tc_add_cidr_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with CIDR indicator type
+    When:
+        - Adding a CIDR indicator
+    Then:
+        - The request contains the Block field with the CIDR value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"tags": [], "indicator": "192.168.0.0/24", "indicatorType": "CIDR"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["Block"] == "192.168.0.0/24"
