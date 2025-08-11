@@ -400,7 +400,7 @@ def sanitize_policies_list(policies_list):
 
 
 def validate_ip(ip):
-    pattern = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
+    pattern = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
     return bool(pattern.match(ip))
 
 
