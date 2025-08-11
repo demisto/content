@@ -1,0 +1,120 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Docusign
+  version: -1
+configuration:
+- defaultvalue: https://account-d.docusign.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Integration Key (Client ID)
+  name: integration_key
+  required: true
+  type: 0
+  section: Connect
+- display: User ID (GUID)
+  name: user_id
+  required: true
+  type: 0
+  section: Connect
+- display: Redirect URL
+  name: redirect_url
+  required: true
+  type: 0
+  section: Connect
+- display: Private Key (Credential)
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Account ID (optional)
+  name: account_id
+  required: false
+  type: 0
+  section: Connect
+- display: Organization ID (optional)
+  name: organization_id
+  required: false
+  type: 0
+  section: Connect
+- display: Fetch events
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
+- display: Event types to fetch
+  name: event_types
+  required: false
+  type: 16
+  options:
+  - Customer events
+  - User data
+  section: Collect
+- defaultvalue: '10000'
+  section: Collect
+  display: Maximum number of customer events per fetch
+  name: max_customer_events_per_fetch
+  required: false
+  type: 0
+- defaultvalue: '1250'
+  section: Collect
+  display: Maximum number of user data events per fetch
+  name: max_user_events_per_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Collect DocuSign Monitor events and Admin audit users using JWT Grant authentication.
+display: DocuSign
+name: Docusign
+script:
+  commands:
+  - name: docusign-generate-consent-url
+    description: Generates the DocuSign admin consent URL based on configured parameters and environment.
+    arguments: []
+    execution: false
+  - name: docusign-get-events
+    description: Gets customer event data from DocuSign Monitor stream.
+    arguments:
+    - name: limit
+      description: Maximum number of records to return in this call (<= 2000). If omitted, uses integration parameter.
+      required: false
+    - name: cursor
+      description: ISO8601 timestamp or cursor string to start from. If omitted, uses stored cursor or 7 days default.
+      required: false
+    execution: false
+  - name: docusign-get-users
+    description: Gets user audit data from DocuSign Admin API with pagination.
+    arguments:
+    - name: last_modified_since
+      description: ISO8601 time to start from. If omitted, uses last run or default 24h lookback.
+      required: false
+    - name: take
+      description: Page size (max 250).
+      required: false
+    execution: false
+  dockerimage: demisto/auth-utils:1.0.0.4165551
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
