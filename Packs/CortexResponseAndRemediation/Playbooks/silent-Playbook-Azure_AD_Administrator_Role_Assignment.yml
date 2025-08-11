@@ -1015,11 +1015,11 @@ tasks:
       id: 374ee39d-6a3a-4f1d-b309-431dc9e258ca
       version: -1
       name: Check Evidence Per Identity
-      description: If at least **three evidence items** are a mix of *global evidence*
-        and either *assignor-related* or *assignee-related* evidence.
       type: condition
       iscommand: false
       brand: ""
+      description: |-
+        If at least **three evidence items** are a mix of *global evidence* and either *assignor-related* or *assignee-related* evidence.
     nexttasks:
       '#default#':
       - "75"
@@ -1027,7 +1027,7 @@ tasks:
       - "70"
     separatecontext: false
     conditions:
-    - label: True Positive
+    - label: 'True Positive'
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -1149,12 +1149,12 @@ tasks:
       id: 91481f03-3ce3-4bef-a17e-84c7f7d5b548
       version: -1
       name: Revoke Assignor User Sessions
-      description: This script clears user sessions across multiple integrations for
-        a list of usernames.
-      scriptName: clear-user-session
+      description: |-
+        This script clears user sessions across multiple integrations for a list of usernames.
       type: regular
       iscommand: false
       brand: ""
+      scriptName: clear-user-session
     nexttasks:
       '#none#':
       - "74"
@@ -2738,8 +2738,7 @@ tasks:
       id: 88d4f03d-102e-4465-80af-7fa9e1e5d8d5
       version: -1
       name: Get User Data
-      description: This script gathers user data from multiple integrations and returns
-        an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
       scriptName: get-user-data
       type: regular
       iscommand: false
@@ -2791,6 +2790,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2821,9 +2821,7 @@ tasks:
       id: de573173-f24d-4306-81b1-13af7568c96c
       version: -1
       name: Check Evidence
-      description: 'If at least **two evidence items** are found, **AND** assignor
-        and assignee identities are either identical *or* considered a medium variation
-        alert. '
+      description: 'If at least **two evidence items** are found, **AND** assignor and assignee identities are either identical *or* considered a medium variation alert. '
       type: condition
       iscommand: false
       brand: ""
@@ -2897,6 +2895,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -2929,6 +2928,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
