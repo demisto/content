@@ -45,10 +45,6 @@ EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new sea
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
 
-# Resiliency for integration context I/O
-CONTEXT_IO_RETRIES = 3
-CONTEXT_IO_BASE_BACKOFF = 1.5  # seconds
-
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     "DOMAIN_ENRCH_FLG",
@@ -1231,70 +1227,23 @@ def deep_merge_context_changes(current_ctx: dict, changes: dict) -> None:
     always_merger.merge(current_ctx, changes)
 
 
-def is_timeout_error(err: Exception) -> bool:
-    """Detects server timeout errors returned by XSOAR engine during context I/O."""
-    msg = str(err).lower()
-    return "timeout while waiting for server to answer" in msg or "deadline exceeded" in msg or "context deadline exceeded" in msg
-
-
-def robust_get_integration_context_with_version(attempts: int = CONTEXT_IO_RETRIES, base_sleep: float = CONTEXT_IO_BASE_BACKOFF):
-    """Get integration context with retries and exponential backoff on engine timeouts."""
-    import time
-    import random
-
-    for i in range(attempts):
-        try:
-            return get_integration_context_with_version()
-        except Exception as e:
-            if i == attempts - 1 or not is_timeout_error(e):
-                raise
-            sleep = base_sleep * (2**i) + random.uniform(0, 0.3)
-            demisto.debug(f"Timeout getting integration context (attempt {i + 1}/{attempts}). Backing off {sleep:.2f}s. Err: {e}")
-            time.sleep(sleep)
-    raise DemistoException("Timeout getting integration context after all retry attempts")
-
-
-def robust_set_integration_context(
-    ctx: dict, *, version: int, attempts: int = CONTEXT_IO_RETRIES, base_sleep: float = CONTEXT_IO_BASE_BACKOFF
-) -> None:
-    """Set integration context with retries and exponential backoff on engine timeouts."""
-    import time
-    import random
-
-    for i in range(attempts):
-        try:
-            set_integration_context(ctx, version=version)
-            return
-        except Exception as e:
-            if i == attempts - 1 or not is_timeout_error(e):
-                raise
-            sleep = base_sleep * (2**i) + random.uniform(0, 0.3)
-            demisto.debug(f"Timeout setting integration context (attempt {i + 1}/{attempts}). Backing off {sleep:.2f}s. Err: {e}")
-            time.sleep(sleep)
-
-
 def safely_update_context_data_partial(changes: dict, attempts=5) -> None:
     """
     Reads the current integration context+version,
     deep-merges `changes` into it, then writes it back.
-    Retries up to `attempts` times if there's a version conflict or engine timeout.
+    Retries up to `attempts` times if there's a version conflict.
     """
-    for i in range(attempts):
-        ctx, version = robust_get_integration_context_with_version()
+    for _ in range(attempts):
+        ctx, version = get_integration_context_with_version()
         merged = copy.deepcopy(ctx)
         deep_merge_context_changes(merged, changes)
 
-        # Avoid no-op writes to reduce load
-        if merged == ctx:
-            demisto.debug("No-op context update skipped (no changes after merge).")
-            return
-
         try:
-            demisto.debug("Merging partial data to context (redacted).")
-            robust_set_integration_context(merged, version=version)
+            demisto.debug(f"Merging partial data to context {merged}")
+            set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
-            demisto.debug(f"Version conflict or error setting context (attempt {i + 1}/{attempts}): {e}. Retrying...")
+            demisto.debug(f"Version conflict or error setting context: {e}. Retrying...")
 
     raise DemistoException(f"Failed updating context after {attempts} attempts.")
 
@@ -1486,7 +1435,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
         demisto.debug("No domain IDs found in outputs for domain name enrichment")
         return {}
 
-    domain_ids_str = ",".join(map(str, domain_ids))
+    domain_ids_str = ','.join(map(str, domain_ids))
     demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
 
     # Retry logic with exponential backoff
@@ -1497,7 +1446,10 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     for attempt in range(max_retries):
         try:
             demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
-            domains_info = client.domains_list(filter_=f"""id in ({domain_ids_str})""", fields="id,name")
+            domains_info = client.domains_list(
+                filter_=f"""id in ({domain_ids_str})""",
+                fields="id,name"
+            )
 
             if domains_info:
                 domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
@@ -1513,7 +1465,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
 
             if attempt < max_retries - 1:
                 # Calculate delay with exponential backoff
-                delay = base_delay * (2**attempt)
+                delay = base_delay * (2 ** attempt)
                 demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
                 time.sleep(delay)
             else:
@@ -5635,28 +5587,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
 
     except Exception as e:
-        # Avoid dumping the entire context which can be huge and slow; print a lightweight summary instead.
-        try:
-            if "print_context_data_stats" in globals():
-                ctx = get_integration_context()
-                print_context_data_stats(ctx, "exception_handler")
-            else:
-                ctx = get_integration_context()
-                if isinstance(ctx, dict):
-                    summary = {
-                        "keys": list(ctx.keys()),
-                        "sizes": {
-                            "mirrored_offenses_queried": len(ctx.get("mirrored_offenses_queried", {})),
-                            "mirrored_offenses_finished": len(ctx.get("mirrored_offenses_finished", {})),
-                            "mirrored_offenses_fetched": len(ctx.get("mirrored_offenses_fetched", {})),
-                            "samples": len(ctx.get("samples", [])),
-                        },
-                    }
-                else:
-                    summary = {"has_ctx": str(bool(ctx))}
-                print_debug_msg(f"Context summary: {summary}")
-        except Exception as e2:
-            demisto.debug(f"Failed to print context summary: {e2}")
+        print_debug_msg(f"The integration context_data is {get_integration_context()}")
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}\nException is: {e!s}")
     finally:
         #  CIAC-10628
