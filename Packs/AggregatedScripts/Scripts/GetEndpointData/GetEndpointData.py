@@ -238,7 +238,6 @@ class EndpointCommandRunner:
 
         raw_outputs = self.run_execute_command(command, args)
         entry_context, human_readable, readable_errors = self.get_command_results(command.name, raw_outputs, args)
-
         if not entry_context:
             endpoints = get_endpoint_not_found(command, readable_errors[0].readable_output or "", [], endpoint_args)
             return readable_errors, endpoints
@@ -530,7 +529,7 @@ def initialize_commands(
             brand=Brands.CORTEX_CORE_IR,
             name="core-list-risky-hosts",
             output_keys=["Core.RiskyHost"],
-            args_mapping={"host_id": "endpoint_id"},
+            args_mapping={"host_id": "endpoint_hostname"},
             output_mapping={"id": "ID", "risk_level": "RiskLevel"},
         ),
         Command(
@@ -632,7 +631,6 @@ def run_list_args_commands(
                 "endpoint_hostname": ",".join(endpoint_hostnames),
             },
         )
-
         if endpoint_output:
             multiple_endpoint_outputs.extend(endpoint_output)
         if verbose:
@@ -920,7 +918,6 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
     endpoint_raw_data = []
     if command.get_endpoint_output:
         endpoint_raw_data = get_raw_endpoints(["Endpoint"], entry_context)
-
     endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand, add_additional_fields, endpoint_raw_data)
     demisto.debug(f"Returning {len(endpoints)} endpoints")
     return endpoints
