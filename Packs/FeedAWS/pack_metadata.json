@@ -13,12 +13,14 @@
     "tags": [
         "Threat Intelligence Management",
         "Getting Started",
-        "Allow List"
+        "Allow List",
+        "Feed"
     ],
     "useCases": [],
     "keywords": [
         "AWS",
-        "Feed"
+        "Feed",
+        "Amazon"
     ],
     "marketplaces": [
         "xsoar",
