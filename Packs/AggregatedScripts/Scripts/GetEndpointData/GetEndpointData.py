@@ -632,6 +632,7 @@ def run_list_args_commands(
                 "endpoint_hostname": ",".join(endpoint_hostnames),
             },
         )
+
         if endpoint_output:
             multiple_endpoint_outputs.extend(endpoint_output)
         if verbose:
@@ -919,6 +920,7 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
     endpoint_raw_data = []
     if command.get_endpoint_output:
         endpoint_raw_data = get_raw_endpoints(["Endpoint"], entry_context)
+
     endpoints = create_endpoints(raw_endpoints, command.output_mapping, command.brand, add_additional_fields, endpoint_raw_data)
     demisto.debug(f"Returning {len(endpoints)} endpoints")
     return endpoints
