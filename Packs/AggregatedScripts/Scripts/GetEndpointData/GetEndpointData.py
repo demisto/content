@@ -493,7 +493,7 @@ def initialize_commands(
             name="xdr-list-risky-hosts",
             output_keys=["PaloAltoNetworksXDR.RiskyHost"],
             args_mapping={"host_id": "endpoint_id"},
-            output_mapping={"id": "ID"},
+            output_mapping={"id": "ID", "risk_level": "RiskLevel"},
             not_found_checker="was not found",
         ),
         Command(
@@ -531,7 +531,7 @@ def initialize_commands(
             name="core-list-risky-hosts",
             output_keys=["Core.RiskyHost"],
             args_mapping={"host_id": "endpoint_id"},
-            output_mapping={"id": "ID"},
+            output_mapping={"id": "ID", "risk_level": "RiskLevel"},
         ),
         Command(
             brand=Brands.CROWDSTRIKE_FALCON,
