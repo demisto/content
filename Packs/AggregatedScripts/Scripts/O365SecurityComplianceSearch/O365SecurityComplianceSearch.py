@@ -211,7 +211,11 @@ def main():
         
         # create and start a new search
         if run_new_search:
-            # TODO - verify input params
+            
+            # validate arguments for new search
+            if not args.get("kql_search", None):
+                return_error("Running a new search requires the argument 'kql_search'.")
+                
             demisto.executeCommand(CMD_NEW_SEARCH, args)
             demisto.executeCommand(CMD_START_SEARCH, args)
             search_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH, result_key="SuccessResults")
