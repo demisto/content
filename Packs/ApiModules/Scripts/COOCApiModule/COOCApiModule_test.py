@@ -554,15 +554,15 @@ def test_return_multiple_permissions_error_valid_entries(mocker):
     from COOCApiModule import return_multiple_permissions_error
 
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "command", return_value="command")
     mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
 
     error_entries = [
         {"account_id": "account-1", "message": "Permission denied for permission_1", "name": "permission_1"},
         {"account_id": "account-2", "message": "Missing permission_2 permission", "name": "permission_2"},
     ]
-
-    return_multiple_permissions_error(error_entries)
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
 
     demisto.debug.assert_called()
     demisto.results.assert_called_once()
@@ -599,11 +599,12 @@ def test_return_multiple_permissions_error_single_entry(mocker):
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
+    mocker.patch.object(demisto, "command", return_value="command")
 
     error_entries = [{"account_id": "account-1", "message": "Access denied for permission_1", "name": "permission_1"}]
 
-    return_multiple_permissions_error(error_entries)
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
 
     results_call = demisto.results.call_args[0][0]
     entries = results_call["Contents"][0]
@@ -623,19 +624,15 @@ def test_return_multiple_permissions_error_empty_list(mocker):
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
+    mocker.patch.object(demisto, "command", return_value="command")
 
     error_entries = []
-
-    return_multiple_permissions_error(error_entries)
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
 
     results_call = demisto.results.call_args[0][0]
     assert results_call["Contents"] == [[]]
     assert results_call["EntryContext"] is None
-
-    import sys
-
-    sys.exit.assert_called_once_with(0)
 
 
 def test_return_multiple_permissions_error_missing_account_id(mocker):
@@ -647,10 +644,10 @@ def test_return_multiple_permissions_error_missing_account_id(mocker):
     from COOCApiModule import return_multiple_permissions_error
 
     error_entries = [{"message": "Permission denied", "name": "permission_1"}]
-    
+
     with pytest.raises(SystemExit):
         return_multiple_permissions_error(error_entries)
-        assert demisto.results.call_args[0][0]['Contents'] == "Invalid arguments for permission entry"
+        assert demisto.results.call_args[0][0]["Contents"] == "Invalid arguments for permission entry"
 
 
 def test_return_multiple_permissions_error_missing_message(mocker):
@@ -662,10 +659,10 @@ def test_return_multiple_permissions_error_missing_message(mocker):
     from COOCApiModule import return_multiple_permissions_error
 
     error_entries = [{"account_id": "test-account", "name": "permission_1"}]
-    
+
     with pytest.raises(SystemExit):
         return_multiple_permissions_error(error_entries)
-        assert demisto.results.call_args[0][0]['Contents'] == "Invalid arguments for permission entry"
+        assert demisto.results.call_args[0][0]["Contents"] == "Invalid arguments for permission entry"
 
 
 def test_return_multiple_permissions_error_missing_name(mocker):
@@ -676,14 +673,14 @@ def test_return_multiple_permissions_error_missing_name(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
-    mocker.patch("COOCApiModule.return_error")
-    mocker.patch.object(demisto, 'command', return_value='command')
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "command", return_value="command")
+    mocker.patch.object(demisto, "results")
+
     error_entries = [{"account_id": "test-account", "message": "Permission denied"}]
-    
+
     with pytest.raises(SystemExit):
         return_multiple_permissions_error(error_entries)
-        assert demisto.results.call_args[0][0]['Contents'] == "Invalid arguments for permission entry"
+        assert demisto.results.call_args[0][0]["Contents"] == "Invalid arguments for permission entry"
 
 
 def test_return_multiple_permissions_error_extra_fields(mocker):
@@ -695,8 +692,8 @@ def test_return_multiple_permissions_error_extra_fields(mocker):
     from COOCApiModule import return_multiple_permissions_error
 
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "command", return_value="command")
     mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
 
     error_entries = [
         {
@@ -707,8 +704,8 @@ def test_return_multiple_permissions_error_extra_fields(mocker):
             "timestamp": "2023-01-01",
         }
     ]
-
-    return_multiple_permissions_error(error_entries)
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
 
     results_call = demisto.results.call_args[0][0]
     entries = results_call["Contents"][0]
@@ -730,15 +727,186 @@ def test_return_multiple_permissions_error_debug_logging(mocker):
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
+    mocker.patch.object(demisto, "command", return_value="command")
 
     error_entries = [
         {"account_id": "account-1", "message": "First error", "name": "permission_1"},
         {"account_id": "account-2", "message": "Second error", "name": "permission_2"},
     ]
-
-    return_multiple_permissions_error(error_entries)
+    with pytest.raises(SystemExit):
+        return_multiple_permissions_error(error_entries)
 
     debug_call = demisto.debug.call_args[0][0]
     assert "account-2" in debug_call
     assert "Permission error detected" in debug_call
+
+
+def test_return_permissions_error_valid_arguments(mocker):
+    """
+    Given: Valid account_id, message, and name parameters.
+    When: return_permissions_error is called.
+    Then: It creates proper error entry and exits with status 0.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    with pytest.raises(SystemExit):
+        return_permissions_error("test-account-id", "Permission denied for permission_x", "permission_x")
+
+    demisto.debug.assert_called_once()
+    debug_call = demisto.debug.call_args[0][0]
+    assert "test-account-id" in debug_call
+    assert "Permission error detected" in debug_call
+
+    demisto.results.assert_called_once()
+    results_call = demisto.results.call_args[0][0]
+    assert results_call["Type"] == entryTypes["error"]
+    assert results_call["ContentsFormat"] == formats["json"]
+    assert results_call["EntryContext"] is None
+
+    contents = results_call["Contents"]
+    assert len(contents) == 1
+    error_entry = contents[0]
+    assert error_entry["account_id"] == "test-account-id"
+    assert error_entry["message"] == "Permission denied for permission_x"
+    assert error_entry["name"] == "permission_x"
+    assert error_entry["classification"] == "WARNING"
+    assert error_entry["error"] == "Permission Error"
+
+
+def test_return_permissions_error_empty_account_id(mocker):
+    """
+    Given: Empty account_id parameter.
+    When: return_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    with pytest.raises(SystemExit):
+        return_permissions_error("", "Permission denied", "test.permission")
+
+
+def test_return_permissions_error_empty_message(mocker):
+    """
+    Given: Empty message parameter.
+    When: return_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    with pytest.raises(SystemExit):
+        return_permissions_error("test-account", "", "test.permission")
+
+
+def test_return_permissions_error_empty_name(mocker):
+    """
+    Given: Empty name parameter.
+    When: return_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    with pytest.raises(SystemExit):
+        return_permissions_error("test-account", "Permission denied", "")
+
+
+def test_return_permissions_error_none_parameters(mocker):
+    """
+    Given: None values for parameters.
+    When: return_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    with pytest.raises(SystemExit):
+        return_permissions_error(None, None, None)
+
+
+def test_return_permissions_error_special_characters(mocker):
+    """
+    Given: Parameters containing special characters.
+    When: return_permissions_error is called.
+    Then: It handles special characters correctly in the error entry.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    account_id = "test-account-id"
+    message = "Permission denied: 'permission_x' required"
+    name = "permission_x"
+
+    with pytest.raises(SystemExit):
+        return_permissions_error(account_id, message, name)
+
+    results_call = demisto.results.call_args[0][0]
+    error_entry = results_call["Contents"][0]
+    assert error_entry["account_id"] == account_id
+    assert error_entry["message"] == message
+    assert error_entry["name"] == name
+
+
+def test_return_permissions_error_entry_structure(mocker):
+    """
+    Given: Valid parameters.
+    When: return_permissions_error is called.
+    Then: It creates error entry with exact required structure and fields.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    with pytest.raises(SystemExit):
+        return_permissions_error("test-account", "test-message", "test-name")
+
+    results_call = demisto.results.call_args[0][0]
+    error_entry = results_call["Contents"][0]
+
+    expected_fields = {"account_id", "message", "name", "classification", "error"}
+    actual_fields = set(error_entry.keys())
+    assert actual_fields == expected_fields
+
+    assert error_entry["classification"] == "WARNING"
+    assert error_entry["error"] == "Permission Error"
+
+
+def test_return_permissions_error_debug_log_format(mocker):
+    """
+    Given: Valid parameters.
+    When: return_permissions_error is called.
+    Then: It logs debug message with correct format including account ID and error details.
+    """
+    from COOCApiModule import return_permissions_error
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "command", return_value="command")
+
+    account_id = "test-account-id"
+    with pytest.raises(SystemExit):
+        return_permissions_error(account_id, "debug-message", "debug-name")
+
+    debug_call = demisto.debug.call_args[0][0]
+    assert "[COOC API]" in debug_call
+    assert "Permission error detected" in debug_call
+    assert f"account {account_id}" in debug_call
+    assert "test-account-id" in debug_call
