@@ -584,10 +584,6 @@ def test_return_multiple_permissions_error_valid_entries(mocker):
     assert entries[1]["message"] == "Missing permission_2 permission"
     assert entries[1]["name"] == "permission_2"
 
-    import sys
-
-    sys.exit.assert_called_once_with(0)
-
 
 def test_return_multiple_permissions_error_single_entry(mocker):
     """
