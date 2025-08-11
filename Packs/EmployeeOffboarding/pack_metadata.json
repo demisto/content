@@ -1,6 +1,6 @@
 {
     "name": "Employee Offboarding",
-    "description": "There’s a multitude of tasks to offboard an employee. So let us help you streamline the process and complete that checklist with this Content Pack.",
+    "description": "There\u2019s a multitude of tasks to offboard an employee. So let us help you streamline the process and complete that checklist with this Content Pack.",
     "support": "xsoar",
     "currentVersion": "1.0.9",
     "author": "Cortex XSOAR",

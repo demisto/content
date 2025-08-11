@@ -17,7 +17,9 @@
     "useCases": [
         "Compliance"
     ],
-    "keywords": [],
+    "keywords": [
+        "Microsoft"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
