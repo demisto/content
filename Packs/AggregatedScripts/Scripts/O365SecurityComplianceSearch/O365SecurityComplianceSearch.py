@@ -266,7 +266,6 @@ def main():
                 f"Search [{search_name}] returned with status [{search_status}]\n" +
                 f"Preview [{preview_name}] returned with status [{preview_status}]")
             )
-    
 
     except Exception as e:
         return_error(f"Failed to execute {SCRIPT_NAME}. Error: {e!s}")
