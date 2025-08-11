@@ -3,7 +3,7 @@ args:
   name: cve_list
   required: true
 - name: external_enrichment
-  description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module (TIM) will be retrieved.
+  description: Set to true to run reputation commands from external sources. If false \(default\), the script only queries internal sources as TIM. Note, providing a value for the brands argument overrides this option.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -20,8 +20,7 @@ args:
   required: false
 - name: brands
   description: |-
-    Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the file reputation command.
-    For multiple values, provide a comma-separated list of integration IDs. For example: "Joe Security,Joe Security". Specifying enrichment_brands will force enable external_enrichment.
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If empty, and external_enrichment is true will run on all external integrations. 
   isArray: true
   required: false
 - name: additional_fields
@@ -38,12 +37,42 @@ commonfields:
 enabled: false
 name: cve-enrichment
 outputs:
-- contextPath: CVEEnrichment
-  description: list of cve enrichments
+- contextPath: CveEnrichment.ID
+  description: the cve it self
+  type: string
+- contextPath: CveEnrichment.Results
+  description: list of all indicators found for the cve
   type: array
-- contextPath: DBotScore
-  description: list of dbot scores
-  type: array
+- contextPath: CveEnrichment.Results.Brand
+  description: the brand of the indicator
+  type: string
+- contextPath: CveEnrichment.Results.CVSS
+  description: the CVSS of the indicator
+  type: number
+- contextPath: CveEnrichment.Results.Description
+  description: the description of the indicator
+  type: string
+- contextPath: CveEnrichment.Results.Published
+  description: the published date of the indicator
+  type: string
+- contextPath: CveEnrichment.Results.additional_fields
+  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  type: Object
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: DBotScore.Reliability
+  description: The reliability of the score.
+  type: string
 script: '-'
 system: false
 tags:

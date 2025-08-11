@@ -47,7 +47,7 @@ def cve_enrichment_script(
 """ MAIN FUNCTION """
 
 
-def main():
+def main(): # pragma: no cover
     args = demisto.args()
     cve_list = argToList(args.get("cve_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

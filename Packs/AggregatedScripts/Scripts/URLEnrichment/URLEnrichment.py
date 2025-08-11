@@ -53,7 +53,7 @@ def url_enrichment_script(
 """ MAIN FUNCTION """
 
 
-def main():
+def main(): # pragma: no cover
     args = demisto.args()
     url_list = argToList(args.get("url_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

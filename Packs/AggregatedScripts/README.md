@@ -2,4 +2,4 @@ The Aggregated Scripts pack contains scripts that execute multiple commands, sig
 
 #### What does this pack do?
 
-- File indicator enrichment using an array file hashes.
+- URL indicator enrichment using an array of URLs.

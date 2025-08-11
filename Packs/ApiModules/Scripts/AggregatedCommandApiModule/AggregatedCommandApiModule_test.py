@@ -908,6 +908,50 @@ def test_merge_indicators_various(module_factory, batch_map, tim_map, expected):
     for ind_val, exp_results in expected.items():
         assert merged_map[ind_val] == exp_results
 
+@pytest.mark.parametrize("batch_dbot, tim_dbot, expected_output", [
+
+    # --- Test Case 1: Complex mix of overriding and new items ---
+    (
+        [{"Indicator": "a.com", "Vendor": "VT", "Score": 3}],
+        [{"Indicator": "a.com", "Vendor": "VT", "Score": 1}, {"Indicator": "b.com", "Vendor": "CS", "Score": 2}],
+        [{"Indicator": "a.com", "Vendor": "VT", "Score": 3}, {"Indicator": "b.com", "Vendor": "CS", "Score": 2}]
+    ),
+    # --- Test Case 2: Handles empty lists correctly ---
+    (
+        [],
+        [{"Indicator": "1.1.1.1", "Vendor": "CrowdStrike", "Score": 2}],
+        [{"Indicator": "1.1.1.1", "Vendor": "CrowdStrike", "Score": 2}]
+    ),
+    
+    (
+        [{"Indicator": "8.8.8.8", "Vendor": "VirusTotal", "Score": 3}],
+        [],
+        [{"Indicator": "8.8.8.8", "Vendor": "VirusTotal", "Score": 3}]
+    ),
+    (
+        [],
+        [],
+        []
+    )
+])
+def test_merge_dbot_list(module_factory, batch_dbot, tim_dbot, expected_output):
+    """
+    Given:
+        - Two lists of DBotScore objects (batch and TIM).
+    When:
+        - merge_dbot_list is called.
+    Then:
+        - It returns a single list where batch items take priority on key conflicts.
+    """
+
+    module = module_factory()
+
+    result = module.merge_dbot_list(batch_dbot, tim_dbot)
+
+    def sort_key(item):
+        return item.get("Indicator"), item.get("Vendor")
+    assert sorted(result, key=sort_key) == sorted(expected_output, key=sort_key)
+
 
 @pytest.mark.parametrize(
     "results, expected_max, expected_verdict",

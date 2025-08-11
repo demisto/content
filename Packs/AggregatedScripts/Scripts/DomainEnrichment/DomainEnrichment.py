@@ -5,6 +5,9 @@ from AggregatedCommandApiModule import *
 
 
 def validate_input_function(args):
+    """
+    Validate the input arguments.
+    """
     domain_list = argToList(args.get("domain_list"))
     if not domain_list:
         raise DemistoException("domain_list is required")
@@ -50,7 +53,7 @@ def domain_enrichment_script(
 """ MAIN FUNCTION """
 
 
-def main():
+def main(): # pragma: no cover
     args = demisto.args()
     domain_list = argToList(args.get("domain_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

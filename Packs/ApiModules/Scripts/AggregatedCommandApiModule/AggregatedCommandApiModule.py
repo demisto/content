@@ -331,9 +331,13 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         # 2. Execute batch commands
         demisto.debug("Step 2: Executing batch commands.")
         commands_to_execute = self.prepare_commands(self.external_enrichment)
-        batch_executor = BatchExecutor(commands_to_execute, self.brands_to_run)
-        batch_results = batch_executor.execute()
-        demisto.debug(f"Batch execution resulted in {len(batch_results)} results.")
+        if commands_to_execute:
+            batch_executor = BatchExecutor(commands_to_execute, self.brands_to_run)
+            batch_results = batch_executor.execute()
+            demisto.debug(f"Batch execution resulted in {len(batch_results)} results.")
+        else:
+            demisto.debug("No commands to execute.")
+            batch_results = []
         
         # 3. Process batch results
         demisto.debug("Step 3: Processing batch results.")
@@ -515,6 +519,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                     demisto.debug("Skipping result with unknown brand")
                     continue
                 cmd_context, cmd_dbot, hr_output, entry = self.parse_result(result, command, brand)
+                
                 if cmd_context:
                     # Reputation commands are grouped under a single key for easier merging.
                     if isinstance(command, ReputationCommand):
@@ -587,7 +592,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         if not command_context and result_entry.status == "Success":
             demisto.debug(f"No context or DBot scores for command: {command}")
             result_entry.message = "No matching indicators found."
-            
+        demisto.debug(f"Current Entry Result: {result_entry.to_entry()}")
+        demisto.debug(f"Current Command result: {json.dumps(result, indent=4)}")
+        
         return command_context, dbot_scores, hr_output, result_entry
     
     def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
@@ -712,7 +719,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 
         final_context = {k: v for k, v in batch_ctx.items() if k != "reputation"}
         final_context[self.final_context_path] = merged_indicators
-        final_context[Common.DBotScore.CONTEXT_PATH] = batch_dbot + tim_dbot
+        final_context[Common.DBotScore.CONTEXT_PATH] = self.merge_dbot_list(batch_dbot, tim_dbot)
         
         return remove_empty_elements(final_context)
     
@@ -773,6 +780,37 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             })
         demisto.debug(f"Finished merging. Created {len(merged_list)} final indicator objects.")
         return merged_list
+
+    def merge_dbot_list(
+        self,
+        batch_dbot: DBotScoreList,
+        tim_dbot: DBotScoreList
+    ) -> DBotScoreList:
+        """
+        Merges two lists of DBotScore, giving priority to items from batch_dbot.
+
+        Uses key of ('indicator', 'vendor').
+        If an item with the same indicator and vendor exists in both lists, the one from
+        batch_dbot will be kept in the final merged list.
+
+        Args:
+            batch_dbot: A list of DBotScore, considered the priority source.
+            tim_dbot: A list of DBotScore.
+
+        Returns:
+            A single merged list of unique DBotScore.
+        """
+        merged_data = {}
+        for item in batch_dbot:
+            key = (item.get("Indicator"), item.get("Vendor"))
+            merged_data[key] = item
+        
+        for item in tim_dbot:
+            key = (item.get("Indicator"), item.get("Vendor"))
+            if key not in merged_data:
+                merged_data[key] = item
+
+        return list(merged_data.values())
             
     def summarize_command_results(self,
                                    entries: list[EntryResult],
