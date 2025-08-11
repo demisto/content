@@ -545,205 +545,209 @@ def test_get_cloud_credentials_dict_response(mocker):
     assert result == credentials
 
 
-def test_return_permissions_error_with_valid_dict(mocker):
+def test_return_multiple_permissions_error_valid_entries(mocker):
     """
-    Given: A valid error_entry dictionary with account_id, message, and name.
-    When: return_permissions_error is called.
-    Then: It logs the error, returns formatted results, and exits.
+    Given: A list of valid permission error entries.
+    When: return_multiple_permissions_error is called.
+    Then: It creates proper error entries and exits with status 0.
     """
-    from COOCApiModule import return_permissions_error
+    from COOCApiModule import return_multiple_permissions_error
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
     mocker.patch("sys.exit")
 
-    error_entry = {"account_id": "test-account-123", "message": "Permission denied: permission", "name": "permission"}
-    error_entry_expected_results = {"account_id": "test-account-123",
-                                    "message": "Permission denied: permission",
-                                    "name": "permission",
-                                    "classification": "WARNING", "error": "Permission Error"}
-    return_permissions_error(error_entry)
-    demisto.debug.assert_called_once()
+    error_entries = [
+        {"account_id": "account-1", "message": "Permission denied for permission_1", "name": "permission_1"},
+        {"account_id": "account-2", "message": "Missing permission_2 permission", "name": "permission_2"},
+    ]
 
-    expected_results = {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["json"],
-        "Contents": [error_entry_expected_results],
-        "EntryContext": None,
-    }
-    demisto.results.assert_called_once_with(expected_results)
+    return_multiple_permissions_error(error_entries)
+
+    demisto.debug.assert_called()
+    demisto.results.assert_called_once()
+
+    results_call = demisto.results.call_args[0][0]
+    assert results_call["Type"] == entryTypes["error"]
+    assert results_call["ContentsFormat"] == formats["json"]
+    assert len(results_call["Contents"]) == 1
+    assert len(results_call["Contents"][0]) == 2
+
+    entries = results_call["Contents"][0]
+    assert entries[0]["account_id"] == "account-1"
+    assert entries[0]["message"] == "Permission denied for permission_1"
+    assert entries[0]["name"] == "permission_1"
+    assert entries[0]["classification"] == "WARNING"
+    assert entries[0]["error"] == "Permission Error"
+
+    assert entries[1]["account_id"] == "account-2"
+    assert entries[1]["message"] == "Missing permission_2 permission"
+    assert entries[1]["name"] == "permission_2"
 
     import sys
 
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permissions_error_with_missing_account_id(mocker):
+def test_return_multiple_permissions_error_single_entry(mocker):
     """
-    Given: An error_entry dictionary without account_id field.
-    When: return_permissions_error is called.
-    Then: It handles the missing field gracefully and still processes the error.
+    Given: A list with a single permission error entry.
+    When: return_multiple_permissions_error is called.
+    Then: It processes the single entry correctly and exits.
     """
-    from COOCApiModule import return_permissions_error
+    from COOCApiModule import return_multiple_permissions_error
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
     mocker.patch("sys.exit")
 
-    error_entry = {"message": "Permission denied: permission", "name": "permission"}
-    error_entry_expected_results = {"message": "Permission denied: permission", "name": "permission",
-                                    "classification": "WARNING", "error": "Permission Error"}
-    return_permissions_error(error_entry)
+    error_entries = [{"account_id": "account-1", "message": "Access denied for permission_1", "name": "permission_1"}]
 
-    demisto.debug.assert_called_once()
+    return_multiple_permissions_error(error_entries)
 
-    expected_results = {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["json"],
-        "Contents": [error_entry_expected_results],
-        "EntryContext": None,
-    }
-    demisto.results.assert_called_once_with(expected_results)
+    results_call = demisto.results.call_args[0][0]
+    entries = results_call["Contents"][0]
+    assert len(entries) == 1
+    assert entries[0]["account_id"] == "account-1"
+    assert entries[0]["message"] == "Access denied for permission_1"
+    assert entries[0]["name"] == "permission_1"
+
+
+def test_return_multiple_permissions_error_empty_list(mocker):
+    """
+    Given: An empty list of error entries.
+    When: return_multiple_permissions_error is called.
+    Then: It creates an empty results list and exits.
+    """
+    from COOCApiModule import return_multiple_permissions_error
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "results")
+    mocker.patch("sys.exit")
+
+    error_entries = []
+
+    return_multiple_permissions_error(error_entries)
+
+    results_call = demisto.results.call_args[0][0]
+    assert results_call["Contents"] == [[]]
+    assert results_call["EntryContext"] is None
 
     import sys
 
     sys.exit.assert_called_once_with(0)
 
 
-def test_return_permissions_error_with_empty_dict(mocker):
+def test_return_multiple_permissions_error_missing_account_id(mocker):
     """
-    Given: An empty error_entry dictionary.
-    When: return_permissions_error is called.
-    Then: It processes the empty dictionary and logs with None account_id.
+    Given: Error entries missing account_id field.
+    When: return_multiple_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
     """
-    from COOCApiModule import return_permissions_error
+    from COOCApiModule import return_multiple_permissions_error
+
+    mocker.patch("COOCApiModule.return_error")
+
+    error_entries = [{"message": "Permission denied", "name": "permission_1"}]
+
+    return_multiple_permissions_error(error_entries)
+
+    from COOCApiModule import return_error
+
+    return_error.assert_called_once_with("Invalid arguments for permission entry")
+
+
+def test_return_multiple_permissions_error_missing_message(mocker):
+    """
+    Given: Error entries missing message field.
+    When: return_multiple_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
+    """
+    from COOCApiModule import return_multiple_permissions_error
+
+    mocker.patch("COOCApiModule.return_error")
+
+    error_entries = [{"account_id": "test-account", "name": "permission_1"}]
+
+    return_multiple_permissions_error(error_entries)
+
+    from COOCApiModule import return_error
+
+    return_error.assert_called_once_with("Invalid arguments for permission entry")
+
+
+def test_return_multiple_permissions_error_missing_name(mocker):
+    """
+    Given: Error entries missing name field.
+    When: return_multiple_permissions_error is called.
+    Then: It calls return_error for invalid arguments.
+    """
+    from COOCApiModule import return_multiple_permissions_error
+
+    mocker.patch("COOCApiModule.return_error")
+
+    error_entries = [{"account_id": "test-account", "message": "Permission denied"}]
+
+    return_multiple_permissions_error(error_entries)
+
+    from COOCApiModule import return_error
+
+    return_error.assert_called_once_with("Invalid arguments for permission entry")
+
+
+def test_return_multiple_permissions_error_extra_fields(mocker):
+    """
+    Given: Error entries with extra fields beyond required ones.
+    When: return_multiple_permissions_error is called.
+    Then: It processes only the required fields and ignores extras.
+    """
+    from COOCApiModule import return_multiple_permissions_error
 
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
     mocker.patch("sys.exit")
 
-    error_entry = {}
+    error_entries = [
+        {
+            "account_id": "test-account",
+            "message": "Permission denied",
+            "name": "permission_1",
+            "extra_field": "should_be_ignored",
+            "timestamp": "2023-01-01",
+        }
+    ]
 
-    return_permissions_error(error_entry)
-    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error"}
+    return_multiple_permissions_error(error_entries)
 
-    demisto.debug.assert_called_once()
-
-    expected_results = {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["json"],
-        "Contents": [error_entry_expected_results],
-        "EntryContext": None,
-    }
-    demisto.results.assert_called_once_with(expected_results)
-
-    import sys
-
-    sys.exit.assert_called_once_with(0)
+    results_call = demisto.results.call_args[0][0]
+    entries = results_call["Contents"][0]
+    assert len(entries) == 1
+    assert "extra_field" not in entries[0]
+    assert "timestamp" not in entries[0]
+    assert entries[0]["account_id"] == "test-account"
+    assert entries[0]["message"] == "Permission denied"
+    assert entries[0]["name"] == "containers.list"
 
 
-def test_return_permissions_error_with_invalid_type_string(mocker):
+def test_return_multiple_permissions_error_debug_logging(mocker):
     """
-    Given: A string instead of a dictionary for error_entry.
-    When: return_permissions_error is called.
-    Then: It logs the invalid type error and creates a default error entry.
+    Given: Valid error entries.
+    When: return_multiple_permissions_error is called.
+    Then: It logs debug information for the last processed entry.
     """
-    from COOCApiModule import return_permissions_error
+    from COOCApiModule import return_multiple_permissions_error
 
-    mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
     mocker.patch("sys.exit")
 
-    error_entry = "invalid string input"
+    error_entries = [
+        {"account_id": "account-1", "message": "First error", "name": "permission_1"},
+        {"account_id": "account-2", "message": "Second error", "name": "permission_2"},
+    ]
 
-    return_permissions_error(error_entry)
+    return_multiple_permissions_error(error_entries)
 
-    demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'str'>")
-
-    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error",
-                                    "message": "Invalid error data provided", "error_type": "Internal Error"}
-    demisto.debug.assert_called_once()
-    
-    expected_results = {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["json"],
-        "Contents": [error_entry_expected_results],
-        "EntryContext": None,
-    }
-    demisto.results.assert_called_once_with(expected_results)
-
-    import sys
-
-    sys.exit.assert_called_once_with(0)
-
-
-def test_return_permissions_error_with_invalid_type_list(mocker):
-    """
-    Given: A list instead of a dictionary for error_entry.
-    When: return_permissions_error is called.
-    Then: It logs the invalid type error and creates a default error entry.
-    """
-    from COOCApiModule import return_permissions_error
-
-    mocker.patch.object(demisto, "error")
-    mocker.patch.object(demisto, "debug")
-    mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
-
-    error_entry = ["item1", "item2"]
-
-    return_permissions_error(error_entry)
-
-    demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'list'>")
-
-    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error",
-                                    "message": "Invalid error data provided", "error_type": "Internal Error"}
-    demisto.debug.assert_called_once()
-    expected_results = {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["json"],
-        "Contents": [error_entry_expected_results],
-        "EntryContext": None,
-    }
-    demisto.results.assert_called_once_with(expected_results)
-
-    import sys
-
-    sys.exit.assert_called_once_with(0)
-
-
-def test_return_permissions_error_with_none_input(mocker):
-    """
-    Given: None as input for error_entry.
-    When: return_permissions_error is called.
-    Then: It logs the invalid type error and creates a default error entry.
-    """
-    from COOCApiModule import return_permissions_error
-
-    mocker.patch.object(demisto, "error")
-    mocker.patch.object(demisto, "debug")
-    mocker.patch.object(demisto, "results")
-    mocker.patch("sys.exit")
-
-    error_entry = None
-
-    return_permissions_error(error_entry)
-
-    demisto.error.assert_called_once_with("[COOC API] Invalid error_entry type: <class 'NoneType'>")
-
-    error_entry_expected_results = {"classification": "WARNING", "error": "Permission Error",
-                                    "message": "Invalid error data provided", "error_type": "Internal Error"}
-    demisto.debug.assert_called_once()
-
-    expected_results = {
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["json"],
-        "Contents": [error_entry_expected_results],
-        "EntryContext": None,
-    }
-    demisto.results.assert_called_once_with(expected_results)
-
-    import sys
-
-    sys.exit.assert_called_once_with(0)
+    debug_call = demisto.debug.call_args[0][0]
+    assert "account-2" in debug_call
+    assert "Permission error detected" in debug_call

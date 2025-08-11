@@ -321,11 +321,59 @@ def get_proxydome_token() -> str:
     return response.text
 
 
-def return_permissions_error(error_entry: dict) -> None:
+def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
+    """
+    Handles permission errors responses and exits the script execution.
+
+    This function logs permission errors, formats them as Demisto error entries,
+    and terminates script execution. It's used when cloud operations fail due to
+    insufficient permissions or authentication issues.
+
+    Args:
+        error_entries (list): List of dictionaries containing error details with the following structure:
+            - account_id (str): The cloud account identifier where the error occurred
+            - message (str): The permission error message (including the name of the permission)
+            - name (str): The RAW name of the permission itself that is missing, for example containers.list"
+
+    Returns:
+        None: This function does not return as it calls sys.exit(0)
+    """
+    # Input validation
+    entries = []
+    for entry in error_entries:
+        if not "account_id" or not "message" or not "name":
+            return_error("Invalid arguments for permission entry")
+        # Create entry
+        error_entry = {
+            "account_id": entry.get("account_id"),
+            "message": entry.get("message"),
+            "name": entry.get("name"),
+            "classification": "WARNING",
+            "error": "Permission Error",
+        }
+        entries.append(error_entry)
+
+    # Log the permission error for security audit purposes
+    demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
+
+    # Return formatted error response
+    demisto.results(
+        {
+            "Type": entryTypes["error"],
+            "ContentsFormat": formats["json"],
+            "Contents": [entries],
+            "EntryContext": None,
+        }
+    )
+    # Exit the script execution
+    sys.exit(0)
+
+
+def return_permissions_error(account_id: str, message: str, name: str) -> None:
     """
     Handles permission error responses and exits the script execution.
 
-    This function logs permission errors, formats them as Demisto error entries,
+    This function logs permission error, formats them as Demisto error entries,
     and terminates script execution. It's used when cloud operations fail due to
     insufficient permissions or authentication issues.
 
@@ -339,15 +387,20 @@ def return_permissions_error(error_entry: dict) -> None:
         None: This function does not return as it calls sys.exit(0)
     """
     # Input validation
-    if not isinstance(error_entry, dict) and ("account_id", "message", "name") not in error_entry:
-        demisto.error(f"[COOC API] Invalid error_entry type: {type(error_entry)}")
-        error_entry = {"message": "Invalid error data provided", "error_type": "Internal Error"}
+    if not "account_id" or not "message" or not "name":
+        return_error("Invalid arguments for permission entry")
 
+    # Create entry
+    error_entry = {
+        "account_id": account_id,
+        "message": message,
+        "name": name,
+        "classification": "WARNING",
+        "error": "Permission Error",
+    }
     # Log the permission error for security audit purposes
     demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
 
-    # Add required keys:
-    error_entry.update({"classification": "WARNING", "error": "Permission Error"})
     # Return formatted error response
     demisto.results(
         {
