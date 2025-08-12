@@ -12,11 +12,11 @@ urllib3.disable_warnings()
 VENDOR = "Bitsight"
 PRODUCT = "Bitsight"
 
-BITSIGHT_DATE_FORMAT = "%Y-%m-%d"  # todo can this be improved?
+BITSIGHT_DATE_FORMAT = "%Y-%m-%d"  # TODO can this be improved?
 DEFAULT_MAX_FETCH = 1000
 # Lookback windows
 FETCH_EVENTS_LOOKBACK_HOURS = 1  # scheduled fetch window
-GET_EVENTS_LOOKBACK_DAYS = 1     # bitsight-get-events window
+GET_EVENTS_LOOKBACK_DAYS = 1     # bitsight-get-events window TODO mantion in the ymk the other command in the integration, for specific date range
 
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
@@ -102,7 +102,7 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
             except Exception:
                 event["_time"] = first_seen
-                # todo: no raise? or log?
+                # TODO: no raise? or log? add logs all over....
         events.append(event)
     return events
 
