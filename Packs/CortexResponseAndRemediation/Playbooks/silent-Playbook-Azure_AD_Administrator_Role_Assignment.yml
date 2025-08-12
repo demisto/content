@@ -1673,24 +1673,6 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: UserData.Brand
-                iscontext: true
-              right:
-                value:
-                  simple: Cortex Core - IR
-              ignorecase: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: UserData.Status
-                iscontext: true
-              right:
-                value:
-                  simple: found
-              ignorecase: true
-          - - operator: isEqualString
-              left:
-                value:
                   simple: UserData.ID
                 iscontext: true
               right:
@@ -1698,7 +1680,7 @@ tasks:
                   simple: InvestigationUsers.Assignor.DomainUsername
                 iscontext: true
               ignorecase: true
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
                   simple: UserData.RiskLevel
@@ -1745,26 +1727,8 @@ tasks:
         simple: Evidence.AssigneeUser.CoreRiskyUser
       value:
         complex:
-          root: UserData.RiskLevel
+          root: UserData
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: UserData.Brand
-                iscontext: true
-              right:
-                value:
-                  simple: Cortex Core - IR
-              ignorecase: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: UserData.Status
-                iscontext: true
-              right:
-                value:
-                  simple: found
-              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -1775,7 +1739,7 @@ tasks:
                   simple: InvestigationUsers.Assignee.DomainUsername
                 iscontext: true
               ignorecase: true
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
                   simple: UserData.RiskLevel
@@ -1784,6 +1748,7 @@ tasks:
                 value:
                   simple: HIGH
               ignorecase: true
+          accessor: RiskLevel
     separatecontext: false
     continueonerrortype: ""
     view: |-
