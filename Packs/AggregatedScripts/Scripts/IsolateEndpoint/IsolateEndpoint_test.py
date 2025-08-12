@@ -419,6 +419,6 @@ def test_run_commands_for_endpoint_executes_command(mock_execute):
     run_commands_for_endpoint(commands=mock_commands, endpoint_args=endpoint_args, endpoint_output=endpoint_output)
 
     mock_execute.assert_called_once()
-    assert endpoint_output['Endpoint'] == 'id1'
-    assert endpoint_output['Result'] == 'Success'
-    assert endpoint_output['Source'] == 'Brand'
+    assert endpoint_output["Endpoint"] == "id1"
+    assert endpoint_output["Result"] == "Success"
+    assert endpoint_output["Source"] == "Brand"
