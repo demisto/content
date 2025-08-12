@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from itertools import zip_longest
 from typing import Any
-from enum import StrEnum
+from enum import Enum
 
 from CommonServerPython import *
 
@@ -10,7 +10,7 @@ COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
 
 
-class Brands(StrEnum):
+class Brands(Enum):
     """
     Enum representing different integration brands.
     """
@@ -58,7 +58,7 @@ class Command:
             not_found_checker (str, optional): A string to check if no entries are found. Defaults to "No entries.".
             prepare_args_mapping (Callable[[dict[str, str]], dict[str, str]], optional):
                 A function to prepare arguments mapping. Defaults to None.
-            post_processing (Callable, optional): A function for post-processing command results. Defaults to None. 
+            post_processing (Callable, optional): A function for post-processing command results. Defaults to None.
             main_key (str, optional): The key to use for merging duplicate endpoints. Defaults to "ID".
         """
         self.brand = brand
@@ -945,33 +945,41 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
 
 
 def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: dict[str, Any], main_key: str):
+    """
+    Adds endpoints to the endpoint mapping.
+    Args:
+        endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
+        endpoint_mapping (dict[str, Any]): A dictionary of endpoint mappings.
+        main_key (str): The main key to use for the endpoint mapping.
+    """
     for endpoint in endpoints:
         if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
             continue
-        if endpoint.get("brand") in endpoint_mapping:
-            if endpoint_mapping["brand"].get(endpoint[main_key]):
-                endpoint_mapping["brand"][endpoint[main_key]].update(endpoint)
+        if (brand := endpoint.get("brand")) in endpoint_mapping:
+            if endpoint_mapping[brand].get(endpoint[main_key]):
+                endpoint_mapping[brand][endpoint[main_key]].update(endpoint)
             else:
-                endpoint_mapping["brand"][endpoint[main_key]] = endpoint
+                endpoint_mapping[brand][endpoint[main_key]] = endpoint
         else:
-            endpoint_mapping["brand"] = {endpoint[main_key]: endpoint}
+            endpoint_mapping[brand] = {endpoint[main_key]: endpoint}
 
 
-def merge_duplicates(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
+def endpoint_mapping_to_list(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
     """
-    Merges duplicate endpoints based on the 'main_key' key.
+    Merges the endpoint mappings into a list of endpoint dictionaries.
 
     Args:
-        endpoints (list of dict): List of endpoint dictionaries with 'main_key' key.
+        mapped_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
 
     Returns:
-        list of dict: List of merged endpoint dictionaries.
+        list[dict[str, Any]]: List of merged endpoint dictionaries.
     """
     merged_endpoints = []
     for brand in mapped_endpoints.values():
         for endpoint in brand.values():
             merged_endpoints.append(endpoint)
     return merged_endpoints
+
 
 def get_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: list[tuple]) -> list[dict[str, str]]:
     """
@@ -1084,7 +1092,7 @@ def main():  # pragma: no cover
                 )
             )
         if endpoint_outputs_list:
-            endpoint_outputs_list = merge_duplicates(endpoint_mapping)
+            endpoint_outputs_list = endpoint_mapping_to_list(endpoint_mapping)
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",

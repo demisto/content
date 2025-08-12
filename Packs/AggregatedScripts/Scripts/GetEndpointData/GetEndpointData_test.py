@@ -355,7 +355,7 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
-
+    endpoint_mapping = {}
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1"), ("id2", "192.168.1.2", "host2")]
     single_args_commands = [
@@ -382,7 +382,11 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
 
     # Call the function
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=zipped_args, single_args_commands=single_args_commands, command_runner=mock_command_runner, verbose=True
+        zipped_args=zipped_args,
+        single_args_commands=single_args_commands,
+        command_runner=mock_command_runner,
+        verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     # Assertions
@@ -410,6 +414,7 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
+    endpoint_mapping = {}
 
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1")]
@@ -425,7 +430,11 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
 
     # Call the function
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=zipped_args, single_args_commands=single_args_commands, command_runner=mock_command_runner, verbose=False
+        zipped_args=zipped_args,
+        single_args_commands=single_args_commands,
+        command_runner=mock_command_runner,
+        verbose=False,
+        endpoint_mapping=endpoint_mapping,
     )
 
     # Assertions
@@ -446,6 +455,7 @@ def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setu
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
+    endpoint_mapping = {}
 
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1")]
@@ -461,7 +471,11 @@ def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setu
 
     # Call the function
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=zipped_args, single_args_commands=single_args_commands, command_runner=mock_command_runner, verbose=True
+        zipped_args=zipped_args,
+        single_args_commands=single_args_commands,
+        command_runner=mock_command_runner,
+        verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     # Assertions
@@ -482,6 +496,7 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
+    endpoint_mapping = {}
 
     # Mock debug function
     mock_debug = mocker.patch("GetEndpointData.demisto.debug")
@@ -494,6 +509,7 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
         ],
         command_runner=mock_command_runner,
         verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     assert endpoint_outputs == []
@@ -507,7 +523,11 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
 
     # Test with empty commands
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=[("id1", "ip1", "host1")], single_args_commands=[], command_runner=mock_command_runner, verbose=True
+        zipped_args=[("id1", "ip1", "host1")],
+        single_args_commands=[],
+        command_runner=mock_command_runner,
+        verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     assert endpoint_outputs == []
@@ -1136,3 +1156,107 @@ def test_get_endpoints_not_found_list_partial_match_by_ip():
     result = get_endpoints_not_found_list(endpoints, zipped_args)
 
     assert result == []
+
+
+def test_add_endpoint_to_mapping_new_brand():
+    """
+    Given:
+        A list of endpoints with a new brand and ID.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should add the new endpoint to the mapping with the new brand and ID.
+    """
+    endpoints = [
+        {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1},
+    ]
+    mapping = {}
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert mapping == {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1}}}
+
+
+def test_add_endpoint_to_mapping_existing_brand():
+    """
+    Given:
+        A list of endpoints with an existing brand and ID.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should add the new endpoint to the existing brand and ID.
+    """
+    endpoints = [
+        {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 2},
+    ]
+    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1}}}
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert 2 in mapping["BrandA"]
+    assert 1 in mapping["BrandA"]
+
+
+def test_add_endpoint_to_mapping_update_existing():
+    """
+    Given:
+        A list of endpoints with an existing brand and ID.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should update the existing endpoint with the new hostname.
+    """
+    endpoints = [
+        {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1, "hostname": "host1"},
+    ]
+    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1}}}
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert mapping["BrandA"][1]["hostname"] == "host1"
+
+
+def test_add_endpoint_to_mapping_skips_unsuccessful():
+    """
+    Given:
+        A list of endpoints with a failed command message.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should skip the endpoint with the failed command message and return an empty mapping.
+    """
+    endpoints = [
+        {"Message": "Some error", "brand": "BrandA", "id": 3},
+    ]
+    mapping = {}
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert mapping == {}
+
+
+def test_endpoint_mapping_to_list_merges_all():
+    """
+    Given:
+        A dictionary of endpoint mappings with multiple brands and IDs.
+    When:
+        The endpoint_mapping_to_list function is called with the endpoint mapping.
+    Then:
+        It should return a list of all endpoints merged from the mapping.
+    """
+    mapped = {
+        "brand": {
+            1: {"id": 1, "brand": "BrandA"},
+            2: {"id": 2, "brand": "BrandA"},
+        },
+        "brand2": {
+            3: {"id": 3, "brand": "BrandB"},
+        },
+    }
+    result = endpoint_mapping_to_list(mapped)
+    ids = {ep["id"] for ep in result}
+    assert ids == {1, 2, 3}
+
+
+def test_endpoint_mapping_to_list_empty():
+    """
+    Given:
+        An empty endpoint mapping.
+    When:
+        The endpoint_mapping_to_list function is called with an empty mapping.
+    Then:
+        It should return an empty list.
+    """
+    assert endpoint_mapping_to_list({}) == []
