@@ -1,6 +1,6 @@
 category: Email
 commonfields:
-  id: MailListener - POP3 Beta
+  id: MailListener - POP3
   version: -1
 configuration:
 - display: Server URL (e.g. example.com)
@@ -46,13 +46,13 @@ configuration:
   required: false
 description: Listen to a mailbox, enable incident triggering via e-mail.
 display: MailListener - POP3
-name: MailListener - POP3 Beta
+name: MailListener - POP3
 script:
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.11.4417419
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0
