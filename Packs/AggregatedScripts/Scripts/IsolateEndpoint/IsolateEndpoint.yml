@@ -22,9 +22,9 @@ args:
   - 'false'
 comment: This script isolates endpoints using multiple integrations and returns a success or failure message.
 commonfields:
-  id: new-isolate-endpoint
+  id: isolate-endpoint
   version: -1
-name: new-isolate-endpoint
+name: isolate-endpoint
 outputs:
 - contextPath: IsolateEndpointResults.Endpoint
   description: The endpoint's hostname.
