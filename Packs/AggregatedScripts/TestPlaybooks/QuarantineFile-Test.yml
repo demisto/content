@@ -978,3 +978,7 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces:
+- platform
+- marketplacev2
+- xsoar
