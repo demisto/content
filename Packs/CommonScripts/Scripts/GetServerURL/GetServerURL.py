@@ -14,8 +14,15 @@ def main():
     scheme = server_url_parts.scheme
 
     server_address = {"Scheme": scheme, "Host": host_name, "Port": port, "URL": server_url}
-
-    return_outputs(server_url, {"ServerURL": server_address}, server_url)
+    return_results(
+        CommandResults(
+            readable_output=server_url,
+            outputs=server_address,
+            raw_response=server_url,
+            outputs_prefix="ServerURL",
+            outputs_key_field="URL",
+        )
+    )
 
 
 if __name__ in ("__builtin__", "builtins"):
