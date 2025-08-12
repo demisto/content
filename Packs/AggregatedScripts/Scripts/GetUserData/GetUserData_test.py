@@ -1209,7 +1209,7 @@ class TestGetUserData:
                 "Username": "name_user",
                 "ID": "user_id",
                 "Instance": None,
-                "AdditionalFields": {"success": True}
+                "AdditionalFields": {"success": True},
             }
         ]
 

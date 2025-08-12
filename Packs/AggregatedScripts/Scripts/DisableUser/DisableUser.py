@@ -25,9 +25,7 @@ class UserData(TypedDict):
     Instance: str
 
 
-def execute_command(
-    cmd: str, args: dict, label_hr: bool = True
-) -> tuple[list[dict], str]:
+def execute_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[dict], str]:
     """Executes a Demisto command and captures human-readable outputs.
 
     Args:
@@ -84,9 +82,7 @@ def get_module_command_func(
         raise DemistoException(f"Unable to find module: {module!r}")
 
 
-def run_active_directory_query_v2(
-    user: UserData, using: str
-) -> tuple[list[DisabledUserResult], str]:
+def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in Active Directory using the 'ad-disable-account' command.
 
     Args:
@@ -96,25 +92,19 @@ def run_active_directory_query_v2(
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command(
-        "ad-disable-account", {"username": user["Username"], "using": using}
-    )
+    res_cmd, hr = execute_command("ad-disable-account", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
         func_res.append(
-            DisabledUserResult(
-                Disabled=True, Result="Success", Message="User successfully disabled"
-            )
+            DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
             if res_msg == f"User {user['Username']} was disabled"
             else DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         )
     return func_res, hr
 
 
-def run_microsoft_graph_user(
-    user: UserData, using: str
-) -> tuple[list[DisabledUserResult], str]:
+def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user in Microsoft Graph using the 'msgraph-user-account-disable' command.
 
     Args:
@@ -124,21 +114,14 @@ def run_microsoft_graph_user(
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command(
-        "msgraph-user-account-disable", {"user": user["Username"], "using": using}
-    )
+    res_cmd, hr = execute_command("msgraph-user-account-disable", {"user": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_hr = res["HumanReadable"]
         func_res.append(
-            DisabledUserResult(
-                Disabled=True, Result="Success", Message="User successfully disabled"
-            )
-            if res_hr
-            == f'user: "{user["Username"]}" account has been disabled successfully.'
-            else DisabledUserResult(
-                Disabled=False, Result="Failed", Message=res["Content"]
-            )
+            DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
+            if res_hr == f'user: "{user["Username"]}" account has been disabled successfully.'
+            else DisabledUserResult(Disabled=False, Result="Failed", Message=res["Content"])
         )
     return func_res, hr
 
@@ -153,29 +136,21 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[DisabledUserResult], s
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command(
-        "okta-suspend-user", {"username": user["Username"], "using": using}
-    )
+    res_cmd, hr = execute_command("okta-suspend-user", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
         if res_msg == f"### {user['Username']} status is Suspended":
-            dur = DisabledUserResult(
-                Disabled=True, Result="Success", Message="User successfully disabled"
-            )
+            dur = DisabledUserResult(Disabled=True, Result="Success", Message="User successfully disabled")
         elif "Cannot suspend a user that is not active" in res_msg:
-            dur = DisabledUserResult(
-                Disabled=True, Result="Failed", Message="User already disabled"
-            )
+            dur = DisabledUserResult(Disabled=True, Result="Failed", Message="User already disabled")
         else:
             dur = DisabledUserResult(Disabled=False, Result="Failed", Message=res_msg)
         func_res.append(dur)
     return func_res, hr
 
 
-def run_iam_disable_user(
-    user: UserData, using: str
-) -> tuple[list[DisabledUserResult], str]:
+def run_iam_disable_user(user: UserData, using: str) -> tuple[list[DisabledUserResult], str]:
     """Disables a user using the 'iam-disable-user' command, which is common
     to several IAM integrations like Okta IAM and AWS-ILM.
 
@@ -193,15 +168,8 @@ def run_iam_disable_user(
     return [
         DisabledUserResult(
             Disabled=(not dict_safe_get(res, ("Contents", "active"))),
-            Result=(
-                "Failed"
-                if is_error(res) or not dict_safe_get(res, ("Contents", "success"))
-                else "Success"
-            ),
-            Message=str(
-                dict_safe_get(res, ("Contents", "errorMessage"))
-                or "User successfully disabled"
-            ),
+            Result=("Failed" if is_error(res) or not dict_safe_get(res, ("Contents", "success")) else "Success"),
+            Message=str(dict_safe_get(res, ("Contents", "errorMessage")) or "User successfully disabled"),
         )
         for res in res_cmd
     ], hr
@@ -249,9 +217,7 @@ def validate_input(args: dict):
         DemistoException: If no user identifier (user_id, user_name, or user_email) is found.
     """
     if not (args.get("user_id") or args.get("user_name") or args.get("user_email")):
-        raise ValueError(
-            "At least one of the following arguments must be specified: user_id, user_name or user_email."
-        )
+        raise ValueError("At least one of the following arguments must be specified: user_id, user_name or user_email.")
 
 
 def get_users(args: dict) -> tuple[list[UserData], str]:
@@ -267,14 +233,10 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     Returns:
         tuple[list[UserData], str]: A list of user data dictionaries.
     """
-    res, hr = execute_command(
-        "get-user-data", args | {"verbose": "true"}, label_hr=False
-    )
+    res, hr = execute_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
     if errors := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((not r["HumanReadable"] for r in errors), None):
-            raise DemistoException(
-                f"Error when calling get-user-data:\n{err['Contents']}"
-            )
+            raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
         return_results(errors)
     if any(  # if there are no available modules
         r["HumanReadable"] == "### User(s) data\n**No entries.**\n" for r in res
@@ -284,13 +246,8 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
         (r for r in res if r["EntryContext"]), None
     )
     if not res_user:
-        raise DemistoException(
-            f"Unexpected response when calling get-user-data:\n{res}"
-        )
-    return [
-        UserData(**(dict.fromkeys(("ID", "Username", "Email"), "") | res))
-        for res in res_user["Contents"]
-    ], hr
+        raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
+    return [UserData(**(dict.fromkeys(("ID", "Username", "Email"), "") | res)) for res in res_user["Contents"]], hr
 
 
 def disable_users(users: list[UserData]) -> tuple[list[dict], str]:
@@ -347,8 +304,7 @@ def main():
                     outputs_prefix="DisableUser",
                     outputs_key_field="UserProfile.Email",
                     outputs=outputs,
-                    readable_output=tableToMarkdown("Disable User", outputs)
-                    + verbose_hr,
+                    readable_output=tableToMarkdown("Disable User", outputs) + verbose_hr,
                 )
             )
         else:
@@ -356,10 +312,7 @@ def main():
                 CommandResults(
                     entry_type=EntryType.ERROR,
                     content_format=EntryFormat.MARKDOWN,
-                    readable_output=tableToMarkdown(
-                        "Disable User: All integrations failed.", outputs
-                    )
-                    + verbose_hr,
+                    readable_output=tableToMarkdown("Disable User: All integrations failed.", outputs) + verbose_hr,
                 )
             )
 
