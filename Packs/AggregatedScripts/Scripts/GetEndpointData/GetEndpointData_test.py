@@ -1260,3 +1260,62 @@ def test_endpoint_mapping_to_list_empty():
         It should return an empty list.
     """
     assert endpoint_mapping_to_list({}) == []
+
+
+def test_get_generic_command_returns_correct_command():
+    """
+    Given:
+        - A list of commands including one with brand 'BrandA' and one with brand 'Generic Command'.
+    When:
+        The get_generic_command function is called with this list.
+    Then:
+        It should return the command with brand 'Generic Command'.
+    """
+    commands = [
+        Command(brand="BrandA", name="commandA", output_keys=[], args_mapping={}, output_mapping={}),
+        Command(brand=Brands.GENERIC_COMMAND, name="commandB", output_keys=[], args_mapping={}, output_mapping={}),
+    ]
+    result = get_generic_command(commands)
+    assert result.brand == "Generic Command"
+
+
+@pytest.mark.parametrize(
+    "brands_to_run, available_brands, predefined_brands, expected",
+    [
+        (
+            [],
+            {"BrandA", "BrandD", "BrandE"},
+            ["BrandA", "BrandB", "BrandC"],
+            {"BrandD", "BrandE"},
+        ),
+        (
+            ["BrandD"],
+            {"BrandA", "BrandD", "BrandE"},
+            ["BrandA", "BrandB", "BrandC"],
+            {"BrandD"},
+        ),
+    ],
+)
+def test_create_using_brand_argument_to_generic_command_all_default(
+    mocker, brands_to_run, available_brands, predefined_brands, expected
+):
+    """
+    Given:
+        - Enabled brands: BrandA, BrandD, BrandE (BrandB inactive).
+        - Predefined brands: BrandA, BrandB, BrandC.
+        - Empty 'using-brand' argument list provided.
+    When:
+        create_using_brand_argument_to_generic_command is called.
+    Then:
+        'using-brand' should contain only active brands not in the predefined list (BrandD, BrandE).
+    """
+    mocker.patch("GetEndpointData.Brands.get_all_values", return_value=predefined_brands)
+    mock_module_manager = mocker.Mock()
+    mock_module_manager.get_enabled_brands.return_value = available_brands
+
+    command = Command(brand="Generic Command", name="gc", output_keys=[], args_mapping={}, output_mapping={})
+
+    create_using_brand_argument_to_generic_command(brands_to_run, command, mock_module_manager)
+
+    actual_set = set(command.additional_args["using-brand"].split(","))
+    assert actual_set == expected
