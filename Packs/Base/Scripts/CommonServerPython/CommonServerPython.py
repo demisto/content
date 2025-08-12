@@ -21,6 +21,7 @@ import types
 import urllib
 import gzip
 import ssl
+import signal
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -43,7 +44,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 46, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -259,6 +260,7 @@ class EntryType(object):
     WARNING = 11
     STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
+    DEBUG_MODE_FILE = 16
     WIDGET = 17
     EXECUTION_METRICS = 19
 
@@ -9265,7 +9267,7 @@ if 'requests' in sys.modules:
 
         # The ciphers string used to replace default cipher string
 
-        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+        CIPHERS_STRING = '@SECLEVEL=0:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                          'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
         class SSLAdapter(HTTPAdapter):
@@ -12717,7 +12719,11 @@ def execute_polling_command(
     default_polling_timeout=600,
 ):
     r"""
-    Continuously executes a specified command until the command indicates polling is done or a
+    ###########################################
+    DO NOT USE THIS UNLESS ABOLUTLY NECESSERY!
+    ###########################################
+    This is intended only for special cases where polling is not supported.
+    Continuously executes a specified command and sleeps until the command indicates polling is done or a
     timeout is reached.
     :param command_name: The name of the initial Demisto command to execute.
     :type command_name: ``str``
@@ -12791,6 +12797,98 @@ def execute_polling_command(
         time.sleep(polling_interval)  # pylint: disable=E9003
 
     raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
+
+
+class SignalTimeoutError(Exception):
+    """
+    Custom exception raised when the execution timeout is reached.
+
+    :return: None
+    :rtype: ``None``
+    """
+    pass
+
+
+class ExecutionTimeout(object):
+    """
+    Context manager to limit the execution time of a code block.
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    def __init__(self, seconds):
+        """
+        Initializes the ExecutionTimeout context manager.
+
+        :param seconds: The maximum execution time in seconds.
+        :type seconds: int or float
+        :return: None
+        :rtype: ``None``
+        """
+        self.seconds = int(seconds)
+
+    def _timeout_handler(self, signum, frame):
+        """
+        Signal handler that raises a `SignalTimeoutError`.
+
+        :param signum: The number of the signal received.
+        :type signum: int
+        :param frame: The current stack frame.
+        :type frame: frame object
+        :return: None
+        :rtype: ``None``
+        """
+        raise SignalTimeoutError
+
+    def __enter__(self):
+        """
+        Enters the context manager by setting up the signal handler for
+        SIGALRM and starting the timer.
+
+        :return: None
+        :rtype: ``None``
+        """
+        demisto.debug("Running with execution timeout: {seconds}.".format(seconds=self.seconds))
+        signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
+        signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Exits the context manager by canceling the SIGALARM and
+        suppressing the `SignalTimeoutError`.
+
+        :param exc_type: The type of the exception that occurred, if any.
+        :param exc_val: The instance of the exception that occurred, if any.
+        :param exc_tb: A traceback object showing where the exception occurred, if any.
+        :return: True if the `SignalTimeoutError` was raised and suppressed, False otherwise.
+        :rtype: bool
+        """
+        demisto.debug("Resetting timed signal")
+        signal.alarm(0)  # Cancel SIGALRM if it's scheduled
+        return exc_type is SignalTimeoutError  # True if a timeout is reacched, False otherwise
+    
+    @classmethod
+    def limit_time(cls, seconds, default_return_value=None):
+        """
+        Decorator method to limit the execution time of a function.
+
+        :param seconds: The maximum execution time in seconds.
+        :type seconds: int or float
+        :param default_return_value: The value to return if the function times out.
+        :return: Any
+        :rtype: ``any``
+        """
+        def wrapper(func):
+            @wraps(func)
+            def wrapped(*args, **kwargs):
+                return_value = default_return_value
+                with cls(seconds):
+                    return_value = func(*args, **kwargs)
+                    demisto.debug("The function: '{func_name}' finished in time.".format(func_name=func.__name__))
+                return return_value
+            return wrapped
+        return wrapper
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
