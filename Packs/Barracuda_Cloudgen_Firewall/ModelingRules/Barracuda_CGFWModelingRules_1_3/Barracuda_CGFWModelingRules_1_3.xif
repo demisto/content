@@ -23,7 +23,7 @@ filter _raw_log ~= "Allow|Detect"
     xdm.source.sent_packets = to_number(arraystring(regextract(_raw_log , "\|sentPackets\=([a-zA-Z0-9ֿֿֿ]+)\|"), "")),
     xdm.source.user.username = arraystring(regextract(_raw_log , "\|user\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
     //bar_protocol = arraystring(regextract(_raw_log , "\|protocol\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
-    //bar_application = arraystring(regextract(_raw_log , "\|application\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
+    xdm.target.application.name = arraystring(regextract(_raw_log , "\|application\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
     //bar_target = arraystring(regextract(_raw_log , "\|target\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
     //bar_content = arraystring(regextract(_raw_log , "\|content\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
     xdm.network.http.url_category = arraystring(regextract(_raw_log , "\|urlcat\=([a-zA-Z0-9ֿֿֿ]+)\|"), "");

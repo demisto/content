@@ -7,11 +7,12 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Network Security"
+        "Network Security",
+        "Cloud Security"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": ["Network"],
+    "useCases": ["Network Security"],
+    "keywords": ["barracuda", "fw", "cg", "firewall", "ng"],
     "marketplaces": [
         "marketplacev2",
         "platform"
