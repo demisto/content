@@ -971,9 +971,11 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: d
     """
     for endpoint in endpoints:
         if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
+            demisto.debug(f"skipping endpoint due to failure: {endpoint}")
             continue
-        if (brand := endpoint.get("Brand").value) in endpoint_mapping:
+        if (brand := endpoint.get("Brand").value) in endpoint_mapping:  # type: ignore[union-attr]
             if endpoint_mapping[brand].get(endpoint[main_key]):
+                demisto.debug(f"found another value for {brand=}, where {main_key} = {endpoint[main_key]}")
                 endpoint_mapping[brand][endpoint[main_key]].update(endpoint)
             else:
                 endpoint_mapping[brand][endpoint[main_key]] = endpoint
@@ -1010,6 +1012,7 @@ def get_extended_hostnames_set(mapped_endpoints: dict[str, Any]) -> set[str]:
     """
     hostnames = set()
     xdr_brands = set(mapped_endpoints.keys()).intersection({Brands.CORTEX_XDR_IR.value, Brands.CORTEX_CORE_IR.value})
+    demisto.debug(f"getting hostnames for brands: {xdr_brands}")
     for brand in xdr_brands:
         for endpoint in mapped_endpoints[brand].values():
             hostnames.add(endpoint["Hostname"])
@@ -1141,7 +1144,7 @@ def main():  # pragma: no cover
 
         endpoint_outputs_list: list[dict[str, Any]] = []
         command_results_list: list[CommandResults] = []
-        endpoint_mapping = {}
+        endpoint_mapping: dict[str, Any] = {}
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
 
@@ -1155,9 +1158,11 @@ def main():  # pragma: no cover
         )
         endpoint_outputs_list.extend(endpoint_outputs_list_commands)
         command_results_list.extend(command_results_list_commands)
-        
+
         if extended_hostnames_set := get_extended_hostnames_set(endpoint_mapping):
+            demisto.debug(f"got extended hostnames set: {extended_hostnames_set}")
             hostnames_to_run = set(endpoint_hostnames).union(extended_hostnames_set)
+            demisto.debug(f"got total of hostnames to run: {hostnames_to_run}")
             zipped_args = list(zip_longest(endpoint_ids, endpoint_ips, hostnames_to_run, fillvalue=""))
 
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
@@ -1176,7 +1181,9 @@ def main():  # pragma: no cover
                 )
             )
         if endpoint_outputs_list:
+            demisto.debug("preparing to convert endpoint mapping to list.")
             endpoint_outputs_list = endpoint_mapping_to_list(endpoint_mapping)
+            demisto.debug(f"endpoint mapping to list prepared, got {len(endpoint_outputs_list)} endpoints.")
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",

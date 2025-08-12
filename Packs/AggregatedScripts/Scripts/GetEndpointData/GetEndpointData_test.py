@@ -1168,11 +1168,11 @@ def test_add_endpoint_to_mapping_new_brand():
         It should add the new endpoint to the mapping with the new brand and ID.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "id": 1},
     ]
     mapping = {}
     add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert mapping == {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1}}}
+    assert mapping == {Brands.CORTEX_XDR_IR.value: {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "id": 1}}}
 
 
 def test_add_endpoint_to_mapping_existing_brand():
@@ -1185,12 +1185,16 @@ def test_add_endpoint_to_mapping_existing_brand():
         It should add the new endpoint to the existing brand and ID.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 2},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 2},
     ]
-    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1}}}
+    mapping = {
+        Brands.ACTIVE_DIRECTORY_QUERY_V2.value: {
+            1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1}
+        }
+    }
     add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert 2 in mapping["BrandA"]
-    assert 1 in mapping["BrandA"]
+    assert 2 in mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value]
+    assert 1 in mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value]
 
 
 def test_add_endpoint_to_mapping_update_existing():
@@ -1203,11 +1207,15 @@ def test_add_endpoint_to_mapping_update_existing():
         It should update the existing endpoint with the new hostname.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1, "hostname": "host1"},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1, "hostname": "host1"},
     ]
-    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1}}}
+    mapping = {
+        Brands.ACTIVE_DIRECTORY_QUERY_V2.value: {
+            1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1}
+        }
+    }
     add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert mapping["BrandA"][1]["hostname"] == "host1"
+    assert mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value][1]["hostname"] == "host1"
 
 
 def test_add_endpoint_to_mapping_skips_unsuccessful():
@@ -1319,3 +1327,54 @@ def test_create_using_brand_argument_to_generic_command_all_default(
 
     actual_set = set(command.additional_args["using-brand"].split(","))
     assert actual_set == expected
+
+
+def test_get_extended_hostnames_set_typical():
+    """
+    Given:
+        A mapping with Cortex XDR brand containing endpoints with hostnames and irrelevant brand.
+    When:
+        get_extended_hostnames_set is called with this mapping.
+    Then:
+        It returns a set of all hostnames from the Cortex XDR brand.
+    """
+    mapped_endpoints = {
+        Brands.CORTEX_XDR_IR.value: {
+            "1": {"Hostname": "host-xdr-1"},
+            "2": {"Hostname": "host-xdr-2"},
+        },
+        "OtherBrand": {
+            "x": {"Hostname": "should-not-appear"},
+        },
+    }
+    result = get_extended_hostnames_set(mapped_endpoints)
+    assert result == {"host-xdr-1", "host-xdr-2"}
+
+
+def test_get_extended_hostnames_set_empty():
+    """
+    Given:
+        An empty mapping.
+    When:
+        get_extended_hostnames_set is called.
+    Then:
+        It returns an empty set.
+    """
+    assert get_extended_hostnames_set({}) == set()
+
+
+def test_get_extended_hostnames_set_irrelevant_brand():
+    """
+    Given:
+        A mapping with only irrelevant brands (not Cortex XDR/Core).
+    When:
+        get_extended_hostnames_set is called.
+    Then:
+        It returns an empty set.
+    """
+    mapped_endpoints = {
+        "OtherBrand": {
+            "x": {"Hostname": "should-not-appear"},
+        }
+    }
+    assert get_extended_hostnames_set(mapped_endpoints) == set()
