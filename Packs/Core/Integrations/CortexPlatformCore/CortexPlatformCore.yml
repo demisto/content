@@ -24,6 +24,8 @@ script:
       name: asset_id
       required: true
     name: core-get-asset-details
+    deprecated:marketplacev2: true
+    deprecated: false
     description: Get asset information.
     outputs:
     - contextPath: Core.CoreAsset
