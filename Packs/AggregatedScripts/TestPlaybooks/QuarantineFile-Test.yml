@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 867.5,
           "y": 50
         }
       }
@@ -64,7 +64,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1297.5,
           "y": 550
         }
       }
@@ -90,7 +90,7 @@ tasks:
       brand: Cortex Core - IR
     nexttasks:
       '#error#':
-      - "30"
+      - "44"
       '#none#':
       - "40"
     scriptarguments:
@@ -111,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1185,
           "y": 1230
         }
       }
@@ -148,7 +148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 652.5,
           "y": 550
         }
       }
@@ -186,7 +186,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 867.5,
           "y": 380
         }
       }
@@ -212,7 +212,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "30"
+      - "43"
       '#none#':
       - "21"
     scriptarguments:
@@ -224,7 +224,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 1072.5,
           "y": 1570
         }
       }
@@ -252,7 +252,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "30"
+      - "46"
       '#none#':
       - "35"
     scriptarguments:
@@ -268,7 +268,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1585,
+          "x": 612.5,
           "y": 2250
         }
       }
@@ -308,7 +308,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 867.5,
           "y": 210
         }
       }
@@ -345,7 +345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1185,
           "y": 1060
         }
       }
@@ -372,7 +372,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 437.5,
           "y": 725
         }
       }
@@ -398,7 +398,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "30"
+      - "43"
       '#none#':
       - "24"
     scriptarguments:
@@ -412,7 +412,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
+          "x": 960,
           "y": 1740
         }
       }
@@ -438,7 +438,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "30"
+      - "43"
       '#none#':
       - "25"
     scriptarguments:
@@ -450,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 735,
           "y": 1910
         }
       }
@@ -474,8 +474,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "30"
+      '#error#':
+      - "44"
       "yes":
       - "14"
     separatecontext: false
@@ -492,47 +492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
+          "x": 622.5,
           "y": 2080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 495c9816-009d-4261-8905-41dc7b85c2f7
-    type: regular
-    task:
-      id: 495c9816-009d-4261-8905-41dc7b85c2f7
-      version: -1
-      name: Fail
-      description: Prints a raw representation of a string or object, visualising
-        things likes tabs and newlines.  For instance, '\n' will be displayed instead
-        of a newline character, or a Windows CR will be displayed as '\r\n'.  This
-        is useful for debugging issues where things aren't behaving as expected, such
-        as when parsing a string with a regular expression.
-      scriptName: PrintRaw
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      value:
-        simple: Failed
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3270
         }
       }
     note: false
@@ -544,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 718e9856-31dd-4fae-8f08-189914842857
-    type: regular
+    taskid: 06893845-311e-4203-ad83-d44944e91547
+    type: title
     task:
-      id: 718e9856-31dd-4fae-8f08-189914842857
+      id: 06893845-311e-4203-ad83-d44944e91547
       version: -1
       name: Pass
       description: Prints a raw representation of a string or object, visualising
@@ -555,20 +516,16 @@ tasks:
         of a newline character, or a Windows CR will be displayed as '\r\n'.  This
         is useful for debugging issues where things aren't behaving as expected, such
         as when parsing a string with a regular expression.
-      scriptName: PrintRaw
-      type: regular
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      value:
-        simple: Passed
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2035,
-          "y": 3270
+          "x": 50,
+          "y": 3275
         }
       }
     note: false
@@ -593,7 +550,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "30"
+      - "43"
       '#none#':
       - "33"
     scriptarguments:
@@ -607,7 +564,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
+          "x": 387.5,
           "y": 2760
         }
       }
@@ -633,7 +590,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "30"
+      - "43"
       '#none#':
       - "34"
     scriptarguments:
@@ -645,7 +602,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1922.5,
+          "x": 275,
           "y": 2930
         }
       }
@@ -671,7 +628,7 @@ tasks:
       '#default#':
       - "31"
       "yes":
-      - "30"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -687,7 +644,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2035,
+          "x": 265,
           "y": 3100
         }
       }
@@ -711,7 +668,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "30"
+      - "43"
       "yes":
       - "41"
     separatecontext: false
@@ -731,7 +688,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1700,
+          "x": 500,
           "y": 2420
         }
       }
@@ -766,7 +723,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 1277.5,
           "y": 3440
         }
       }
@@ -798,7 +755,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1185,
           "y": 890
         }
       }
@@ -822,7 +779,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "30"
+      - "42"
       "yes":
       - "37"
     separatecontext: false
@@ -838,7 +795,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1297.5,
           "y": 720
         }
       }
@@ -865,7 +822,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 867.5,
           "y": 725
         }
       }
@@ -907,7 +864,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 1072.5,
           "y": 1400
         }
       }
@@ -949,8 +906,188 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
+          "x": 387.5,
           "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 78710889-45d5-4c11-bb4b-a0c11943d46b
+    type: regular
+    task:
+      id: 78710889-45d5-4c11-bb4b-a0c11943d46b
+      version: -1
+      name: Fail - No Available EPs
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: No online endpoints found. May be a problem with tenant
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2095,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 93a31154-1541-4def-93f3-fc780eadd4f3
+    type: regular
+    task:
+      id: 93a31154-1541-4def-93f3-fc780eadd4f3
+      version: -1
+      name: Fail - General Error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: Error in playbook execution, see logs
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1277.5,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 880299a8-e564-45ff-bec5-fd6266efd5c0
+    type: regular
+    task:
+      id: 880299a8-e564-45ff-bec5-fd6266efd5c0
+      version: -1
+      name: Fail - Could not create file
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: 'Error in creating file on endpoint: ${Core.GetActionStatus.ErrorReasons.errorDescription}'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1502.5,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 562810ae-5a7a-45ec-a0ff-fb32ddf9f17d
+    type: regular
+    task:
+      id: 562810ae-5a7a-45ec-a0ff-fb32ddf9f17d
+      version: -1
+      name: Fail - Quarantine File error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: 'Error while executing QuarantineFile: ${QuarantineFile.Message}'
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: ebcb3053-479d-4d2a-bf0a-50ac93ed73cd
+    type: regular
+    task:
+      id: ebcb3053-479d-4d2a-bf0a-50ac93ed73cd
+      version: -1
+      name: Fail - File still exists after quarantine
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      message:
+        simple: File still exists after quarantine
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3270
         }
       }
     note: false
@@ -963,14 +1100,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "35_30_#default#": 0.25,
+      "21_43_#error#": 0.9,
+      "24_43_#error#": 0.43,
       "35_41_yes": 0.89,
-      "38_30_#default#": 0.3
+      "35_43_#default#": 0.25
     },
     "paper": {
       "dimensions": {
         "height": 3460,
-        "width": 2365,
+        "width": 2425,
         "x": 50,
         "y": 50
       }
