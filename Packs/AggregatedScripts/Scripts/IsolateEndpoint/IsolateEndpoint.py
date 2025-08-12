@@ -1,5 +1,27 @@
 from CommonServerPython import *
 from itertools import zip_longest
+from enum import StrEnum
+
+
+""" BRANDS ENUM """
+
+
+class Brands(StrEnum):
+    """
+    Enum representing different integration brands.
+    """
+    FIREEYE_HX_V2 = "FireEyeHX v2"
+    CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
+    CORTEX_CORE_IR = "Cortex Core - IR"
+    MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION = "Microsoft Defender Advanced Threat Protection"
+
+    @classmethod
+    def get_all_values(cls) -> list[str]:
+        """
+        Returns a list of all string values defined in the Enum.
+        """
+        return [member.value for member in cls]
+
 
 """ COMMAND CLASS """
 
@@ -48,7 +70,7 @@ def initialize_commands() -> list:
             arg_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},  # command can use agentId or hostName
         ),
         Command(
-            brand="Microsoft Defender Advanced Threat Protection",
+            brand="Microsoft Defender ATP",
             name="microsoft-atp-isolate-machine",
             arg_mapping={"machine_id": "endpoint_id"},
             hard_coded_args={"isolation_type": "Full", "comment": "Isolated endpoint with IsolateEndpoint script."},
@@ -126,6 +148,8 @@ def create_message_to_context_and_hr(
         endpoint_args.get("endpoint_id") or endpoint_args.get("endpoint_ip") or endpoint_args.get("endpoint_hostname")
     )
     brand = endpoint_args.get("endpoint_brand", "")
+    if brand == "Microsoft Defender ATP":  # convert brand
+        brand = Brands.MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION
 
     endpoint_output["Endpoint"] = endpoint_hostname
     endpoint_output["Result"] = result
@@ -266,9 +290,7 @@ def structure_endpoints_data(get_endpoint_data_results: dict | list | None) -> l
     return structured_list
 
 
-def handle_raw_response_results(
-    command: Command, raw_response: dict, endpoint_args: dict, endpoint_output: dict, verbose: bool
-) -> None:
+def handle_raw_response_results(command: Command, raw_response: dict, endpoint_args: dict, endpoint_output: dict) -> None:
     """
     Handles the raw response of a command execution by determining success or failure and updating outputs accordingly.
 
@@ -312,12 +334,13 @@ def find_command_by_brand(commands: list[Command], brand: str) -> Command | None
         Command: The matching Command object.
     """
     for command in commands:
+        print(f"{command.brand=}, {brand=}")
         if command.brand == brand:
             return command
     return None
 
 
-def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict, verbose) -> None:
+def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict) -> None:
     """
     Processes an endpoint by executing isolation commands and updating outputs accordingly.
 
@@ -325,8 +348,6 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
         commands (list): A list of available commands for isolation.
         endpoint_args (dict): The arguments provided for the isolation operation.
         endpoint_output (dict): A dictionary to store structured output results.
-        results (list): A list to collect the final results from command execution.
-        verbose (bool): Flag to control verbosity of debugging information.
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
     command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
@@ -337,9 +358,10 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
             is_isolated=False,
             endpoint_args=endpoint_args,
             result="Fail",
-            message=f"Did not find a matching brand to run on {endpoint_args}.",
+            message=f"Did not find a matching brand to execute.",
             endpoint_output=endpoint_output,
         )
+        return
     missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
     if missing_args:
         demisto.debug(f"Missing the next args {endpoint_args} for command.name")
@@ -356,7 +378,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
     raw_response = demisto.executeCommand(command.name, mapped_args)
     demisto.debug(f"Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}")
-    handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output, verbose)
+    handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output)
 
 
 def main():
@@ -364,7 +386,6 @@ def main():
         endpoint_args = demisto.args()
         endpoint_ids = argToList(endpoint_args.get("endpoint_id", []))
         endpoint_ips = argToList(endpoint_args.get("endpoint_ip", []))
-        verbose = argToBoolean(endpoint_args.get("verbose", False))
         brands_to_run = argToList(endpoint_args.get("brands", []))
 
         if not any((endpoint_ids, endpoint_ips)):
@@ -375,12 +396,7 @@ def main():
         if not brands_to_run:
             # In case no brands selected, the default is all brands.
             # We want to send to get-endpoint-data only the brands this script supports.
-            endpoint_args["brands"] = [
-                "FireEyeHX v2",
-                "CrowdstrikeFalcon",
-                "Cortex Core - IR",
-                "Microsoft Defender Advanced Threat Protection",
-            ]
+            endpoint_args["brands"] = Brands.get_all_values()
 
         commands = initialize_commands()
         zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
@@ -412,7 +428,7 @@ def main():
 
             demisto.debug(f"Continue isolating endpoint {endpoint_args}")
             args_from_endpoint_data.append(endpoint_args)
-            run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output, verbose)
+            run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output)
 
             context_outputs.append(endpoint_context_output)
 

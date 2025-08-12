@@ -3,6 +3,35 @@ import pytest
 from unittest.mock import patch
 
 
+def test_get_all_values_returns_expected_list():
+    """
+    Ensure get_all_values returns all brand values in the correct order.
+    """
+    expected_list = [
+        "FireEyeHX v2",
+        "CrowdstrikeFalcon",
+        "Cortex Core - IR",
+        "Microsoft Defender Advanced Threat Protection"
+    ]
+    assert Brands.get_all_values() == expected_list
+
+
+@pytest.mark.parametrize(
+    "brand_enum, expected_value",
+    [
+        (Brands.FIREEYE_HX_V2, "FireEyeHX v2"),
+        (Brands.CROWDSTRIKE_FALCON, "CrowdstrikeFalcon"),
+        (Brands.CORTEX_CORE_IR, "Cortex Core - IR"),
+        (Brands.MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION, "Microsoft Defender Advanced Threat Protection"),
+    ]
+)
+def test_individual_enum_values(brand_enum, expected_value):
+    """
+    Ensure each enum member returns the correct value (parametrized).
+    """
+    assert brand_enum.value == expected_value
+
+
 @pytest.mark.parametrize(
     "endpoint_data, expected_output",
     [
@@ -55,7 +84,7 @@ def test_structure_endpoints_data():
 
 
 @patch("IsolateEndpoint.create_message_to_context_and_hr")
-def test_check_which_args_missing_in_output(mock_create_message):
+def test_check_missing_executed_args_in_output(mock_create_message):
     """
     Given:
         - Different cases where `zipped_args` contain endpoint details that may or may not be in `valid_args`.
@@ -169,7 +198,7 @@ def test_are_there_missing_args():
     assert are_there_missing_args(base_command, {}) is False
 
 
-def test_is_endpoint_isolatable():
+def test_is_endpoint_already_isolated():
     """
     Given:
         - Various endpoint data scenarios.
@@ -185,52 +214,69 @@ def test_is_endpoint_isolatable():
     assert is_endpoint_already_isolated(endpoint_data, endpoint_args={}, endpoint_output={}) is True
 
 
+@pytest.mark.parametrize(
+    "is_error, get_error_msg, raw_response, expected_is_isolated, expected_result, expected_message",
+    [
+        # Error case
+        (
+            True,
+            "Some error occurred",
+            {"status": "error"},
+            False,
+            "Fail",
+            "Failed to isolate 1234 with command TestCommand.Error:Some error occurred",
+        ),
+        # Success case
+        (
+            False,
+            "",
+            {"status": "ok"},
+            True,
+            "Success",
+            "1234 was isolated successfully with command TestCommand.",
+        ),
+    ],
+)
 @patch("IsolateEndpoint.is_error")
 @patch("IsolateEndpoint.get_error")
 @patch("IsolateEndpoint.create_message_to_context_and_hr")
-def test_handle_raw_response_results(mock_create_message, mock_get_error, mock_is_error):
+def test_handle_raw_response_results(
+    mock_create_message,
+    mock_get_error,
+    mock_is_error,
+    is_error,
+    get_error_msg,
+    raw_response,
+    expected_is_isolated,
+    expected_result,
+    expected_message,
+):
     """
     Given:
-        - Mocked raw response data and arguments.
+        - Different combinations of raw response data and error flags.
+        - Case 1: is_error=True with an error message.
+        - Case 2: is_error=False for a success scenario.
     When:
-        - Running the handle_raw_response_results function.
+        - Calling handle_raw_response_results with a Command object, endpoint args, and mocked helper functions.
     Then:
-        - Ensure the expected functions are called and messages are correct for both error and success scenarios.
+        - create_message_to_context_and_hr should be called exactly once with the expected parameters,
+          including correct isolation status, result, and message.
     """
     command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
     args = {"endpoint_id": "1234"}
     outputs = {}
     verbose = False
 
-    mock_is_error.return_value = True
-    mock_get_error.return_value = "Some error occurred"
+    mock_is_error.return_value = is_error
+    mock_get_error.return_value = get_error_msg
 
-    handle_raw_response_results(command, {"status": "error"}, args, outputs, verbose)
-
-    expected_error_message = "Failed to isolate 1234 with command TestCommand.Error:Some error occurred"
+    handle_raw_response_results(command, raw_response, args, outputs, verbose)
 
     mock_create_message.assert_called_once_with(
-        is_isolated=False,
+        is_isolated=expected_is_isolated,
         endpoint_args=args,
-        result="Fail",
-        message=expected_error_message,
-        endpoint_output=outputs,
-    )
-
-    mock_create_message.reset_mock()
-
-    mock_is_error.return_value = False
-    outputs.clear()
-
-    handle_raw_response_results(command, {"status": "ok"}, args, outputs, verbose)
-
-    expected_success_message = "1234 was isolated successfully with command TestCommand."
-
-    mock_create_message.assert_called_once_with(
-        is_isolated=True,
-        endpoint_args=args,
-        result="Success",
-        message=expected_success_message,
+        result=expected_result,
+        message=expected_message,
         endpoint_output=outputs,
     )
 
@@ -240,21 +286,28 @@ def test_initialize_commands():
     Given:
         - The initialize_commands function is called to initialize a list of command objects.
     When:
-        - Running the test_initialize_commands function to validate the list of command names.
+        - Running the test_initialize_commands function to validate the list of command names and their associated brands.
     Then:
-        - Ensure the actual command names match the expected set of command names and that no commands are missing or unexpected.
+        - Ensure the actual command names match the expected set of command names.
+        - Ensure each command has the correct brand associated with its name.
     """
     commands = initialize_commands()
-    expected_command_names = {
-        "core-isolate-endpoint",
-        "cs-falcon-contain-host",
-        "fireeye-hx-host-containment",
-        "microsoft-atp-isolate-machine",
+
+    expected_commands = {
+        "core-isolate-endpoint": "Cortex Core - IR",
+        "cs-falcon-contain-host": "CrowdstrikeFalcon",
+        "fireeye-hx-host-containment": "FireEyeHX v2",
+        "microsoft-atp-isolate-machine": "Microsoft Defender ATP",
     }
 
+    # Validate names
     actual_command_names = {cmd.name for cmd in commands}
+    assert set(expected_commands.keys()) == actual_command_names
 
-    assert actual_command_names == expected_command_names, f"Missing or unexpected commands: {actual_command_names}"
+    # Validate brands
+    for cmd in commands:
+        expected_brand = expected_commands.get(cmd.name)
+        assert cmd.brand == expected_brand
 
 
 def test_find_command_by_brand():
@@ -274,6 +327,17 @@ def test_find_command_by_brand():
 
 @patch("IsolateEndpoint.create_message_to_context_and_hr")
 def test_check_inputs_for_command_missing_args(mock_create_message):
+    """
+    Given:
+        - A Command object with an argument mapping of {"arg1": "mapped_arg1"}.
+        - Case 1: args contains an empty string for 'mapped_arg1'.
+        - Case 2: args contains a non-empty value for 'mapped_arg1'.
+    When:
+        - Calling check_inputs_for_command with these args.
+    Then:
+        - Case 1: Should return False and call create_message_to_context_and_hr.
+        - Case 2: Should return True and not require any failure message.
+    """
     command = Command(brand="BrandA", name="command", arg_mapping={"arg1": "mapped_arg1"})
     args = {"mapped_arg1": ""}
     result = check_inputs_for_command(command, endpoint_output={}, args=args)
@@ -285,23 +349,54 @@ def test_check_inputs_for_command_missing_args(mock_create_message):
     assert result is True
 
 
-def test_create_message_to_context_and_hr_success_case():
-    endpoint_args = {"endpoint_id": "1234", "endpoint_brand": "SomeBrand"}
+@pytest.mark.parametrize(
+    "endpoint_args,is_isolated,result,message,expected_source,expected_isolated",
+    [
+        (
+            {"endpoint_id": "1234", "endpoint_brand": "SomeBrand"},
+            True,
+            "Success",
+            "Test Message",
+            "SomeBrand",
+            "Yes",
+        ),
+        # Microsoft Defender ATP case
+        (
+            {"endpoint_id": "5678", "endpoint_brand": "Microsoft Defender ATP"},
+            False,
+            "Fail",
+            "Converted Brand Test",
+            Brands.MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION,
+            "No",
+        ),
+    ],
+)
+def test_create_message_to_context_and_hr(endpoint_args, is_isolated, result, message, expected_source, expected_isolated):
+    """
+    Given:
+        - Endpoint arguments with various endpoint_brand values (including 'Microsoft Defender ATP' for conversion).
+    When:
+        - Calling create_message_to_context_and_hr with different is_isolated flags and results.
+    Then:
+        - The endpoint_output should contain the expected Endpoint, Result, Source (converted if needed),
+          Message, and Isolated status.
+    """
     endpoint_output = {}
+
     create_message_to_context_and_hr(
-        is_isolated=True,
+        is_isolated=is_isolated,
         endpoint_args=endpoint_args,
-        result="Success",
-        message="Test Message",
+        result=result,
+        message=message,
         endpoint_output=endpoint_output,
     )
 
     expected = {
-        "Endpoint": "1234",
-        "Result": "Success",
-        "Source": "SomeBrand",
-        "Message": "Test Message",
-        "Isolated": "Yes",
+        "Endpoint": endpoint_args["endpoint_id"],
+        "Result": result,
+        "Source": expected_source,
+        "Message": message,
+        "Isolated": expected_isolated,
     }
     assert endpoint_output == expected
 
@@ -309,6 +404,16 @@ def test_create_message_to_context_and_hr_success_case():
 @patch("IsolateEndpoint.demisto.executeCommand")
 @patch("IsolateEndpoint.handle_raw_response_results")
 def test_run_commands_for_endpoint_executes_command(mock_handle_response, mock_execute):
+    """
+    Given:
+        A list containing a single Command object with a specific brand, name, and argument mapping.
+    When:
+        Calling run_commands_for_endpoint with the mock command, endpoint arguments, and an empty results list.
+    Then:
+        - executeCommand should be called exactly once with the mapped arguments.
+        - handle_raw_response_results should be called exactly once with the execution result.
+        - The processed command result ("CommandResult") should be appended to the results list.
+    """
     command = Command(brand="TestBrand", name="test-command", arg_mapping={"arg1": "arg1"})
     mock_commands = [command]
 
@@ -318,7 +423,7 @@ def test_run_commands_for_endpoint_executes_command(mock_handle_response, mock_e
     endpoint_args = {"arg1": "value", "endpoint_brand": "TestBrand"}
     results = []
 
-    run_commands_for_endpoint(mock_commands, endpoint_args, {}, results, verbose=False)
+    run_commands_for_endpoint(commands=mock_commands, endpoint_args=endpoint_args, endpoint_output={}, verbose=False)
 
     mock_execute.assert_called_once()
     mock_handle_response.assert_called_once()
