@@ -1443,6 +1443,9 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
 
     last_exception = None
+    # NOTE: Retry logic is essential here to prevent silent failures in domain name resolution.
+    # Without retries, API call failures result in empty dict return, causing domain IDs (e.g., "6")
+    # to be displayed instead of domain names (e.g., "ABC") in the "Domain - Offense" field.
     for attempt in range(max_retries):
         try:
             demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
