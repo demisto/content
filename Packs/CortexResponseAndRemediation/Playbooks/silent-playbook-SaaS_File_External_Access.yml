@@ -166,7 +166,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "11"
+      - "101"
       Drive:
       - "10"
       - "4"
@@ -238,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "101"
     scriptarguments:
       key:
         simple: InvestigationUsers
@@ -287,7 +287,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "101"
     scriptarguments:
       key:
         simple: InvestigationUsers.Actor
@@ -509,7 +509,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 449,
           "y": 1139
         }
       }
@@ -791,9 +791,9 @@ tasks:
       '#default#':
       - "37"
       "yes":
-      - "22"
       - "17"
       - "20"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -875,68 +875,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 8ffd4b5f-dd6c-427b-947c-c600f0ba2992
-    type: regular
-    task:
-      id: 8ffd4b5f-dd6c-427b-947c-c600f0ba2992
-      version: -1
-      name: Get User Risky Data
-      description: Retrieve the risk score of investigation users.
-      script: '|||core-list-risky-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      user_id:
-        complex:
-          root: InvestigationUsers.Actor
-          accessor: UPN
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: InvestigationUsers.Owner.UPN
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: InvestigationUsers.Sharer.UPN
-                iscontext: true
-          - operator: RemoveEmpty
-            args:
-              empty_values: {}
-              remove_keys: {}
-          - operator: replaceMatch
-            args:
-              regex:
-                value:
-                  simple: ^(.*?)@([^.]+)\.?.*$
-              replaceWith:
-                value:
-                  simple: $2\$1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1016,
-          "y": 1662
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: cf348daa-c671-4747-928c-16add6f625c4
@@ -958,25 +896,25 @@ tasks:
         simple: Evidence.Low.HighRiskUser
       value:
         complex:
-          root: Core.RiskyUser
+          root: UserData
           filters:
-          - - operator: isEqualString
+          - - operator: containsGeneral
               left:
                 value:
-                  simple: Core.RiskyUser.risk_level
+                  simple: UserData.RiskLevel
                 iscontext: true
               right:
                 value:
                   simple: HIGH
               ignorecase: true
-          accessor: id
+          accessor: ID
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -1016,
-          "y": 1795
+          "y": 1662
         }
       }
     note: false
@@ -3082,7 +3020,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "101"
     scriptarguments:
       key:
         simple: InvestigationUsers.Sharer
@@ -3138,7 +3076,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "101"
     scriptarguments:
       key:
         simple: InvestigationUsers.Owner
@@ -3297,6 +3235,7 @@ tasks:
     nexttasks:
       '#none#':
       - "87"
+      - "101"
     scriptarguments:
       key:
         simple: InvestigationUsers.Sharer
@@ -3762,7 +3701,7 @@ tasks:
       {
         "position": {
           "x": 1089,
-          "y": 1000
+          "y": 1011
         }
       }
     note: false
@@ -4466,6 +4405,72 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 3d5e19c1-53fa-46df-99e8-d273377afd6f
+    type: regular
+    task:
+      id: 3d5e19c1-53fa-46df-99e8-d273377afd6f
+      version: -1
+      name: Get Users Data
+      description: This script gathers user data from multiple integrations and returns
+        an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      user_id:
+        complex:
+          root: InvestigationUsers
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '*.UPN'
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: InvestigationUsers.Sharer.UserID=val.split("/")[1]
+                iscontext: true
+      user_name:
+        complex:
+          root: InvestigationUsers
+          transformers:
+          - operator: jmespath
+            args:
+              expression:
+                value:
+                  simple: '*.UPN'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ^(.*?)@([^.]+)\.?.*$
+              replaceWith:
+                value:
+                  simple: $2\$1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 1026
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -4475,7 +4480,6 @@ view: |-
       "25_37_#default#": 0.1,
       "32_37_#default#": 0.14,
       "38_52_#default#": 0.17,
-      "3_11_#default#": 0.18,
       "40_43_#default#": 0.78,
       "44_53_#default#": 0.9,
       "46_53_#default#": 0.84,
