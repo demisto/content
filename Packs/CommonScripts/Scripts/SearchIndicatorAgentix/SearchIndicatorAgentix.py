@@ -59,7 +59,7 @@ def search_indicators(args):
     return markdown, filtered_indicators
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
     demisto.debug(f"Running SearchIndicatorAgentix with {args=}")
     try:
