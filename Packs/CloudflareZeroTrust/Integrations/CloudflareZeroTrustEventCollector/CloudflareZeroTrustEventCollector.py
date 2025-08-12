@@ -81,7 +81,16 @@ class Client(BaseClient):
             ACCESS_AUTHENTICATION_TYPE: f"/client/v4/accounts/{self.account_id}/access/logs/access_requests",
         }
         params = {"per_page": page_size, "page": page, "since": start_date, "direction": "asc"}
-        return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
+        try:
+            return self._http_request(method="GET", url_suffix=endpoint_urls[event_type], headers=self.headers, params=params)
+        except DemistoException as e:
+            demisto.debug(f"Caught exception when calling the '{endpoint_urls[event_type]}' endpoint: {str(e)}.")
+            is_using_access_token = "Authorization" in self.headers
+            if event_type == ACCESS_AUTHENTICATION_TYPE and is_using_access_token:
+                raise DemistoException(
+                    f"The {event_type!r} event type does not support the {AuthTypes.API_TOKEN.value} authorization type."
+                ) from e
+            raise
 
 
 def test_module(client: Client, event_types: list) -> str:
