@@ -6,16 +6,20 @@ description: |
 
   The playbook executes the following stages:
 
+  Analysis:
+  - Extracts the Indicators from action command line
+  - Checks the IP and the URL reputation.
+
   Investigation:
   During the alert investigation, the playbook will perform the following:
-  - Checks the IP and the URL reputation.
-  - Checks the CGO process signature.
-  - Searches for related XDR agent alerts to determine if the creation of the scheduled task is part of an attack pattern.
+  - Checks if the IP and the URL reputation is malicious.
+  - Checks the CGO process is unsigned.
+  - Searches for related alerts to determine if the creation of the scheduled task is part of an attack pattern.
 
   Remediation:
   - Remediation actions will be taken if the CGO process is unsigned, the IP or URL has a malicious reputation, or a related alert is detected. In these cases, the playbook will disable the scheduled task, block the malicious indicators, and close the alert.
 
-  Requires: To block the malicious URL and IP, configure 'Palo Alto Networks PAN-OS' integration.
+  Requires: To block the malicious URL, configure 'Palo Alto Networks PAN-OS' integration.
 tags:
 - TA0002 - Execution
 - T1053 - Scheduled Task/Job
@@ -34,14 +38,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "32"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 80
+          "y": -455
         }
       }
     note: false
@@ -366,9 +370,9 @@ tasks:
       - "31"
     scriptarguments:
       closeNotes:
-        simple: No Results Found
+        simple: No Results Found - Handled by the playbook "Scheduled task created with HTTP or FTP reference"
       closeReason:
-        simple: Resolved - Handled by the playbook "Scheduled task created with HTTP or FTP reference"
+        simple: Resolved - Other
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -456,9 +460,9 @@ tasks:
       - "26"
     scriptarguments:
       closeNotes:
-        simple: Malicious scheduled task detected
+        simple: Malicious scheduled task detected - Handled by the playbook "Scheduled task created with HTTP or FTP reference"
       closeReason:
-        simple: Resolved - Handled by the playbook "Scheduled task created with HTTP or FTP reference"
+        simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -537,7 +541,7 @@ tasks:
       '#default#':
       - "13"
       "yes":
-      - "20"
+      - "36"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -630,76 +634,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 53d9f3a4-a2b0-488e-8dc1-3ec51aea3c00
-    type: playbook
-    task:
-      id: 53d9f3a4-a2b0-488e-8dc1-3ec51aea3c00
-      version: -1
-      name: PAN-OS - Block IP
-      description: |-
-        This playbook blocks IP addresses with 2 optional actions:
-
-        - Block IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall. The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
-
-
-        - Utilize the Dynamic Address Group (DAG) capability of PAN-OS. DAG enables analysts to create a rule one time, where the group is the source/destination, and adds IP addresses dynamically without the need to commit the configuration every time.
-        The playbook checks if the given tag already exists. If the tag exists, then the IP address is added to the tag.
-        If the tag does not exist, a new address group is created with the given tag and a matching rule, and the configuration is committed.
-      playbookName: PAN-OS - Block IP
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      MaliciousIPs:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 2190
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -897,14 +831,7 @@ tasks:
       id: 635dc7e9-df29-49fe-8218-dbf28d22be32
       version: -1
       name: Set malicious URL's
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -973,7 +900,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2850
+          "y": 2829
         }
       }
     note: false
@@ -1126,12 +1053,297 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5ff75964-c962-427a-a5c6-94bed2f611ad
+    type: title
+    task:
+      id: 5ff75964-c962-427a-a5c6-94bed2f611ad
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -332
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: e26ab817-3b6d-41cd-afb6-cc48b3f79082
+    type: regular
+    task:
+      id: e26ab817-3b6d-41cd-afb6-cc48b3f79082
+      version: -1
+      name: Checks the IP reputation
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      ip:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 78
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 33edae49-df92-42e0-ba3d-087d29b9ff80
+    type: regular
+    task:
+      id: 33edae49-df92-42e0-ba3d-087d29b9ff80
+      version: -1
+      name: Checks the URL reputation
+      description: Gets a URL category from URL filtering.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      url:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 78
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 9e6b35e3-6027-4a9e-b178-e0c4104da529
+    type: regular
+    task:
+      id: 9e6b35e3-6027-4a9e-b178-e0c4104da529
+      version: -1
+      name: Extract Indicators from action command line
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+      - "38"
+    scriptarguments:
+      text:
+        simple: ${alert.targetprocesscmd}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -202
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e899849a-c007-4b3b-9d4e-0cfad98faf1d
+    type: regular
+    task:
+      id: e899849a-c007-4b3b-9d4e-0cfad98faf1d
+      version: -1
+      name: Block malicious external IP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      ip_list:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2013c70e-0435-4d0f-81c1-43af48445fc1
+    type: condition
+    task:
+      id: 2013c70e-0435-4d0f-81c1-43af48445fc1
+      version: -1
+      name: IP address extracted from the command line?
+      description: Verifies whether the IP address was extracted from the command line.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedIndicators.IP
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": -81
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 7c085a4b-e3b8-4e35-926b-abfc991debee
+    type: condition
+    task:
+      id: 7c085a4b-e3b8-4e35-926b-abfc991debee
+      version: -1
+      name: URLs extracted from the command line?
+      description: Verifies whether the URLs were extracted from the command line.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtractedIndicators.URL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -81
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "14_22_#error#": 0.55,
       "17_13_#default#": 0.18,
-      "17_20_yes": 0.43,
+      "17_36_yes": 0.5,
       "18_13_#default#": 0.16,
       "18_25_yes": 0.46,
       "24_13_No": 0.21,
@@ -1139,15 +1351,19 @@ view: |-
       "2_3_yes": 0.28,
       "2_6_#default#": 0.42,
       "30_28_yes": 0.53,
+      "37_1_#default#": 0.52,
+      "37_33_yes": 0.48,
+      "38_1_#default#": 0.51,
+      "38_34_yes": 0.42,
       "8_3_yes": 0.47,
       "8_5_#default#": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 1590,
+        "height": 3344,
+        "width": 1591,
         "x": 0,
-        "y": 80
+        "y": -455
       }
     }
   }
