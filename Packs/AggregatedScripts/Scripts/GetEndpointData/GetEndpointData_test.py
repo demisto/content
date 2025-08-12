@@ -1168,11 +1168,11 @@ def test_add_endpoint_to_mapping_new_brand():
         It should add the new endpoint to the mapping with the new brand and ID.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1},
     ]
     mapping = {}
     add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert mapping == {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1}}}
+    assert mapping == {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1}}}
 
 
 def test_add_endpoint_to_mapping_existing_brand():
@@ -1185,9 +1185,9 @@ def test_add_endpoint_to_mapping_existing_brand():
         It should add the new endpoint to the existing brand and ID.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 2},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 2},
     ]
-    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1}}}
+    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1}}}
     add_endpoint_to_mapping(endpoints, mapping, "id")
     assert 2 in mapping["BrandA"]
     assert 1 in mapping["BrandA"]
@@ -1203,9 +1203,9 @@ def test_add_endpoint_to_mapping_update_existing():
         It should update the existing endpoint with the new hostname.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1, "hostname": "host1"},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1, "hostname": "host1"},
     ]
-    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "brand": "BrandA", "id": 1}}}
+    mapping = {"BrandA": {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": "BrandA", "id": 1}}}
     add_endpoint_to_mapping(endpoints, mapping, "id")
     assert mapping["BrandA"][1]["hostname"] == "host1"
 
@@ -1220,7 +1220,7 @@ def test_add_endpoint_to_mapping_skips_unsuccessful():
         It should skip the endpoint with the failed command message and return an empty mapping.
     """
     endpoints = [
-        {"Message": "Some error", "brand": "BrandA", "id": 3},
+        {"Message": "Some error", "Brand": "BrandA", "id": 3},
     ]
     mapping = {}
     add_endpoint_to_mapping(endpoints, mapping, "id")
@@ -1237,12 +1237,12 @@ def test_endpoint_mapping_to_list_merges_all():
         It should return a list of all endpoints merged from the mapping.
     """
     mapped = {
-        "brand": {
-            1: {"id": 1, "brand": "BrandA"},
-            2: {"id": 2, "brand": "BrandA"},
+        "BrandA": {
+            1: {"id": 1, "Brand": "BrandA"},
+            2: {"id": 2, "Brand": "BrandA"},
         },
         "brand2": {
-            3: {"id": 3, "brand": "BrandB"},
+            3: {"id": 3, "Brand": "BrandB"},
         },
     }
     result = endpoint_mapping_to_list(mapped)
