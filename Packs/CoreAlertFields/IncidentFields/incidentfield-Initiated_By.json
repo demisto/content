@@ -45,5 +45,6 @@
             "type": "shortText",
             "name": "Digital Guardian Process Name"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

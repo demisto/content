@@ -50,5 +50,6 @@
             "type": "shortText",
             "name": "Prisma Cloud Compute Project"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

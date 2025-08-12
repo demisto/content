@@ -35,5 +35,6 @@
             "type": "shortText",
             "name": "Resource ID"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

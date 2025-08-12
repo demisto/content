@@ -40,5 +40,6 @@
             "type": "multiSelect",
             "name": "PID"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

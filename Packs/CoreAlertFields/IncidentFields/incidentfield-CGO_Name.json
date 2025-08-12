@@ -40,5 +40,6 @@
             "type": "shortText",
             "name": "Digital Guardian Parent Process Name"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

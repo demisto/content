@@ -28,5 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "mitre_technique_id_and_name"
+    "x2_fields": "mitre_technique_id_and_name",
+    "toVersion": "8.11.9"
 }

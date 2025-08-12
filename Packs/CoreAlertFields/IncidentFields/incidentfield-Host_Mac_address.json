@@ -60,5 +60,6 @@
             "type": "shortText",
             "name": "Source MAC Address"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

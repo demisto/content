@@ -49,5 +49,6 @@
             "type": "multiSelect",
             "name": "Skyhigh User Agent"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }
