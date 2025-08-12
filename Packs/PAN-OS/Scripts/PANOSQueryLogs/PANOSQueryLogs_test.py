@@ -1,6 +1,7 @@
 from pytest_mock import MockerFixture
 from PANOSQueryLogs import main
 
+
 def test_main(mocker: MockerFixture):
     """
     Given:
@@ -19,6 +20,7 @@ def test_main(mocker: MockerFixture):
 
     assert mock_execute_polling_command.call_count == 1
     assert mock_execute_polling_command.call_args[0] == ("pan-os-query-logs", args)
+
 
 def test_url_log_query(mocker: MockerFixture):
     """
@@ -43,7 +45,7 @@ def test_url_log_query(mocker: MockerFixture):
         args = {"log_type": "url", "url_category": url_category}
         mocker.patch("PANOSQueryLogs.demisto.args", return_value=args)
         mock_execute_polling_command = mocker.patch("PANOSQueryLogs.execute_polling_command", return_value=[])
-    
+
         main()
-    
+
         assert mock_execute_polling_command.call_args[0][1]["query"] == expected_query

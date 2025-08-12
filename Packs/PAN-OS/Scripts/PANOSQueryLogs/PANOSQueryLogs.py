@@ -19,10 +19,10 @@ def main():
         if url_category is not None:
             if url_category.startswith("AI"):
                 # Keep "AI" uppercase, convert rest to lowercase
-                url_category = ("AI" + url_category[2:].lower().replace(" ","-"))
+                url_category = "AI" + url_category[2:].lower().replace(" ", "-")
             else:
                 # Convert entire string to lowercase
-                url_category = url_category.lower().replace(" ","-")
+                url_category = url_category.lower().replace(" ", "-")
             args["query"] = f"url_category_list contains '{url_category}'"
         return_results(execute_polling_command("pan-os-query-logs", args))
     except Exception as e:
