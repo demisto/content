@@ -43,6 +43,7 @@ class Command:
         not_found_checker: str = "No entries.",
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
         post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
+        main_key: str = "ID",
     ):
         """
         Initialize a MappedCommand object.
@@ -57,7 +58,8 @@ class Command:
             not_found_checker (str, optional): A string to check if no entries are found. Defaults to "No entries.".
             prepare_args_mapping (Callable[[dict[str, str]], dict[str, str]], optional):
                 A function to prepare arguments mapping. Defaults to None.
-            post_processing (Callable, optional): A function for post-processing command results. Defaults to None.
+            post_processing (Callable, optional): A function for post-processing command results. Defaults to None. 
+            main_key (str, optional): The key to use for merging duplicate endpoints. Defaults to "ID".
         """
         self.brand = brand
         self.name = name
@@ -68,6 +70,7 @@ class Command:
         self.not_found_checker = not_found_checker
         self.prepare_args_mapping = prepare_args_mapping
         self.post_processing = post_processing
+        self.main_key = main_key
 
     def __repr__(self):
         return f"{{ name: {self.name}, brand: {self.brand} }}"
@@ -454,6 +457,7 @@ def initialize_commands(
                 "IsIsolated": "IsIsolated",
             },
             get_endpoint_output=True,
+            main_key="Hostname",
         ),
         Command(
             brand=Brands.GENERIC_COMMAND,
@@ -469,14 +473,16 @@ def initialize_commands(
                 "Vendor": "Brand",
             },
             post_processing=generic_endpint_post,
+            main_key="ID",
         ),
         Command(
             brand=Brands.ACTIVE_DIRECTORY_QUERY_V2,
             name="ad-get-computer",
             output_keys=["ActiveDirectory.Computers"],
             args_mapping={"name": "endpoint_hostname"},
-            output_mapping={"dn": "ID", "name": "Hostname"},
+            output_mapping={"dn": "ID", "name": "Hostname", "main_key": "dn"},
             post_processing=active_directory_post,
+            main_key="ID",
         ),
         Command(
             brand=Brands.MCAFEE_EPO_V2,
@@ -487,14 +493,16 @@ def initialize_commands(
             output_mapping={"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"},
             get_endpoint_output=True,
             not_found_checker="No systems found",
+            main_key="ID",
         ),
         Command(
             brand=Brands.CORTEX_XDR_IR,
             name="xdr-list-risky-hosts",
             output_keys=["PaloAltoNetworksXDR.RiskyHost"],
             args_mapping={"host_id": "endpoint_hostname"},
-            output_mapping={"id": "ID", "risk_level": "RiskLevel"},
+            output_mapping={"id": "Hostname", "risk_level": "RiskLevel"},
             not_found_checker="was not found",
+            main_key="Hostname",
         ),
         Command(
             brand=Brands.FIREEYE_HX_V2,
@@ -508,6 +516,7 @@ def initialize_commands(
                 "containment_state": "Status",
             },
             not_found_checker="is not correct",
+            main_key="ID",
         ),
     ]
 
@@ -525,13 +534,15 @@ def initialize_commands(
                 "IsIsolated": "IsIsolated",
             },
             get_endpoint_output=True,
+            main_key="Hostname",
         ),
         Command(
             brand=Brands.CORTEX_CORE_IR,
             name="core-list-risky-hosts",
             output_keys=["Core.RiskyHost"],
             args_mapping={"host_id": "endpoint_hostname"},
-            output_mapping={"id": "ID", "risk_level": "RiskLevel"},
+            output_mapping={"id": "Hostname", "risk_level": "RiskLevel"},
+            main_key="Hostname",
         ),
         Command(
             brand=Brands.CROWDSTRIKE_FALCON,
@@ -548,6 +559,7 @@ def initialize_commands(
             },
             get_endpoint_output=True,
             not_found_checker="Could not find any devices.",
+            main_key="ID",
         ),
     ]
 
@@ -559,6 +571,7 @@ def run_single_args_commands(
     single_args_commands,
     command_runner: EndpointCommandRunner,
     verbose: bool,
+    endpoint_mapping: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[CommandResults]]:
     """
     Runs the single-argument commands for each endpoint individually and returns the command results,
@@ -569,6 +582,7 @@ def run_single_args_commands(
         single_args_commands (List[Command]): A list of single-argument commands to run.
         command_runner (EndpointCommandRunner): The EndpointCommandRunner instance to use for running the commands.
         verbose (bool): A flag indicating whether to print verbose output.
+        endpoint_mapping (dict[str, Any]): A dictionary mapping endpoints by main_key and brands.
 
     Returns:
         tuple[list[dict[str, Any]], list[CommandResults]]:
@@ -587,6 +601,7 @@ def run_single_args_commands(
 
             if endpoint_output:
                 endpoint_outputs_list.extend(endpoint_output)
+                add_endpoint_to_mapping(endpoint_output, endpoint_mapping, command.main_key)
             single_endpoint_readable_outputs.extend(readable_outputs)
 
         if verbose:
@@ -603,6 +618,7 @@ def run_list_args_commands(
     endpoint_ips,
     endpoint_hostnames,
     verbose,
+    endpoint_mapping: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], list[CommandResults]]:
     """
     Runs the list-argument commands for multiple endpoints and returns the command results,
@@ -615,6 +631,7 @@ def run_list_args_commands(
         endpoint_ips (List[str]): A list of endpoint IP addresses.
         endpoint_hostnames (List[str]): A list of endpoint hostnames.
         verbose (bool): A flag indicating whether to print verbose output.
+        endpoint_mapping (dict[str, Any]): A dictionary mapping endpoints by main_key and brands.
 
     Returns:
         tuple[list[dict[str, Any]], list[CommandResults]]:
@@ -635,6 +652,7 @@ def run_list_args_commands(
 
         if endpoint_output:
             multiple_endpoint_outputs.extend(endpoint_output)
+            add_endpoint_to_mapping(endpoint_output, endpoint_mapping, command.main_key)
         if verbose:
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
@@ -926,6 +944,35 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
     return endpoints
 
 
+def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: dict[str, Any], main_key: str):
+    for endpoint in endpoints:
+        if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
+            continue
+        if endpoint.get("brand") in endpoint_mapping:
+            if endpoint_mapping["brand"].get(endpoint[main_key]):
+                endpoint_mapping["brand"][endpoint[main_key]].update(endpoint)
+            else:
+                endpoint_mapping["brand"][endpoint[main_key]] = endpoint
+        else:
+            endpoint_mapping["brand"] = {endpoint[main_key]: endpoint}
+
+
+def merge_duplicates(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
+    """
+    Merges duplicate endpoints based on the 'main_key' key.
+
+    Args:
+        endpoints (list of dict): List of endpoint dictionaries with 'main_key' key.
+
+    Returns:
+        list of dict: List of merged endpoint dictionaries.
+    """
+    merged_endpoints = []
+    for brand in mapped_endpoints.values():
+        for endpoint in brand.values():
+            merged_endpoints.append(endpoint)
+    return merged_endpoints
+
 def get_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: list[tuple]) -> list[dict[str, str]]:
     """
     Identify endpoints not found in the provided endpoints.
@@ -1010,18 +1057,19 @@ def main():  # pragma: no cover
 
         endpoint_outputs_list: list[dict[str, Any]] = []
         command_results_list: list[CommandResults] = []
+        endpoint_mapping = {}
 
         command_runner, single_args_commands, list_args_commands = initialize_commands(module_manager, add_additional_fields)
         zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
-            zipped_args, single_args_commands, command_runner, verbose
+            zipped_args, single_args_commands, command_runner, verbose, endpoint_mapping
         )
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
 
         endpoint_outputs_list_commands, command_results_list_commands = run_list_args_commands(
-            list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose
+            list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose, endpoint_mapping
         )
         endpoint_outputs_list.extend(endpoint_outputs_list_commands)
         command_results_list.extend(command_results_list_commands)
@@ -1036,6 +1084,7 @@ def main():  # pragma: no cover
                 )
             )
         if endpoint_outputs_list:
+            endpoint_outputs_list = merge_duplicates(endpoint_mapping)
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",
