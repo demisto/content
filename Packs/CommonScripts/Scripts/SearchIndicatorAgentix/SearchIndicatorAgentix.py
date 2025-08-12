@@ -41,6 +41,7 @@ def prepare_query(args: dict) -> str:
 def search_indicators(args):
     # search for indicators
     query = prepare_query(args)
+    demisto.debug(f"Query for search_indicators: {query}")
     indicators = demisto.executeCommand("findIndicators", {"query": query, "size": args.get("size")})[0]["Contents"]
 
     # return specific information for found indicators
@@ -58,8 +59,9 @@ def search_indicators(args):
     return markdown, filtered_indicators
 
 
-def main():
+def main():  # pragma: no cover
     args = demisto.args()
+    demisto.debug(f"Running SearchIndicatorAgentix with {args=}")
     try:
         readable_output, outputs = search_indicators(args)
         results = CommandResults(
