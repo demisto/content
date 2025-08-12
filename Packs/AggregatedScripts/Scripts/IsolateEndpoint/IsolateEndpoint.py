@@ -381,7 +381,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output)
 
 
-def main():
+def main():  # pragma: no cover
     try:
         endpoint_args = demisto.args()
         endpoint_ids = argToList(endpoint_args.get("endpoint_id", []))
