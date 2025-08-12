@@ -13,6 +13,7 @@ from CloudflareZeroTrustEventCollector import (
     get_events_command,
     handle_duplicates,
     prepare_next_run,
+    SignalTimeoutError,
 )
 from freezegun import freeze_time
 
@@ -62,8 +63,12 @@ def test_test_module(mock_client: Client, mocker):
 
 
 @freeze_time(MOCK_TIME_UTC_NOW)
-def test_fetch_events(mock_client: Client, mocker):
-    """Test the fetch_events function."""
+def test_fetch_events_completes(mock_client: Client, mocker):
+    """
+    Given: Event types to fetch with their `max_fetch` limits.
+    When: Calling `fetch_events` and the `fetch_events_for_type` function completes in time.
+    Then: Ensure the `next_run` has the right `last_fetch` timestamp and the events are returned.
+    """
     mocker.patch(
         "CloudflareZeroTrustEventCollector.Client.get_events",
         return_value={"result": [{"id": "event1", "created_at": "2024-01-01T00:00:00Z"}]},
@@ -88,6 +93,37 @@ def test_fetch_events(mock_client: Client, mocker):
     assert events[0]["id"] == "event1"
     assert events[0].get("SOURCE_LOG_TYPE")
     assert next_run["Account Audit Logs"]["last_fetch"] == "2024-01-01T00:00:00Z"
+
+
+def test_fetch_events_times_out(mock_client: Client, mocker):
+    """
+    Given: Event types to fetch with their `max_fetch` limits.
+    When: Calling `fetch_events` and the `fetch_events_for_type` function times out.
+    Then: Ensure the timeout logic is executed; the `next_run` has the right `max_fetch` value and no events are returned.
+    """
+    from CloudflareZeroTrustEventCollector import ACCOUNT_AUDIT_TYPE
+
+    max_fetch_account_audit = 20
+    max_fetch_user_audit = 5
+    max_fetch_authentication = 5
+    last_run = {ACCOUNT_AUDIT_TYPE: {"last_fetch": "2024-01-01T00:00:00Z"}}
+    event_types_to_fetch = [ACCOUNT_AUDIT_TYPE]
+
+    mocker.patch("CloudflareZeroTrustEventCollector.fetch_events_for_type", side_effect=SignalTimeoutError)
+
+    next_run, events = fetch_events(
+        client=mock_client,
+        last_run=last_run,
+        max_fetch_account_audit=max_fetch_account_audit,
+        max_fetch_user_audit=max_fetch_user_audit,
+        max_fetch_authentication=max_fetch_authentication,
+        event_types_to_fetch=event_types_to_fetch,
+    )
+
+    # Timeout handler should have been called, reducing the limit and triggering immediate next run
+    assert next_run[ACCOUNT_AUDIT_TYPE]["max_fetch"] == max_fetch_account_audit // 2
+    assert next_run["nextTrigger"] == "0"
+    assert events == []  # No events returned on timeout
 
 
 @freeze_time(MOCK_TIME_UTC_NOW)
@@ -212,7 +248,7 @@ def test_validate_headers_returns_correct_headers(params: dict, expected_headers
 def test_validate_headers_raises_exception(params: dict, expected_error_message: str):
     """
     Given: Invalid configuration parameters of an integration instance.
-    When: Calling validate_headers.
+    When: Calling `validate_headers`.
     Then: Ensure the correct exception is raised with the expected error message.
     """
     from CloudflareZeroTrustEventCollector import validate_headers

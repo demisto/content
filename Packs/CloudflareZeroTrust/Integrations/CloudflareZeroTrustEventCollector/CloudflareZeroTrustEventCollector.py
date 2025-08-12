@@ -21,6 +21,8 @@ DEFAULT_MAX_FETCH_USER_AUDIT = 5000
 DEFAULT_MAX_FETCH_ACCESS_AUTHENTICATION = 5000
 DEFAULT_COMMAND_LIMIT = 10
 
+FETCH_EVENTS_TIMEOUT = 180  # allow up to 3 minutes to fetch events of all types
+
 ACCOUNT_AUDIT_TYPE = "Account Audit Logs"
 USER_AUDIT_TYPE = "User Audit Logs"
 ACCESS_AUTHENTICATION_TYPE = "Access Authentication Logs"
@@ -191,35 +193,63 @@ def fetch_events(
             - dict[str, Any]: The updated last run data for all event types.
             - list[dict[str, Any]]: The aggregated list of fetched events.
     """
-    events = []
-    next_run = {}
+    demisto.debug(f"Starting to fetch events. Got {last_run=}.")
+    events: list[dict[str, Any]] = []
+    next_run: dict[str, Any] = {}
 
-    event_type_params = {
+    account_audit_last_run = last_run.get(ACCOUNT_AUDIT_TYPE, {})
+    user_audit_last_run = last_run.get(USER_AUDIT_TYPE, {})
+    access_authentication_last_run = last_run.get(ACCESS_AUTHENTICATION_TYPE, {})
+
+    event_type_kwargs = {
         ACCOUNT_AUDIT_TYPE: {
-            "last_run": last_run.get(ACCOUNT_AUDIT_TYPE, {}),
-            "max_fetch": max_fetch_account_audit,
+            "last_run": account_audit_last_run,
+            "max_fetch": account_audit_last_run.pop("max_fetch", max_fetch_account_audit),
             "event_type": ACCOUNT_AUDIT_TYPE,
             "max_page_size": ACCOUNT_AUDIT_PAGE_SIZE,
         },
         USER_AUDIT_TYPE: {
-            "last_run": last_run.get(USER_AUDIT_TYPE, {}),
-            "max_fetch": max_fetch_user_audit,
+            "last_run": user_audit_last_run,
+            "max_fetch": user_audit_last_run.pop("max_fetch", max_fetch_user_audit),
             "event_type": USER_AUDIT_TYPE,
             "max_page_size": USER_AUDIT_PAGE_SIZE,
         },
         ACCESS_AUTHENTICATION_TYPE: {
-            "last_run": last_run.get(ACCESS_AUTHENTICATION_TYPE, {}),
-            "max_fetch": max_fetch_authentication,
+            "last_run": access_authentication_last_run,
+            "max_fetch": access_authentication_last_run.pop("max_fetch", max_fetch_authentication),
             "event_type": ACCESS_AUTHENTICATION_TYPE,
             "max_page_size": ACCESS_AUTHENTICATION_PAGE_SIZE,
         },
     }
 
     for event_type in event_types_to_fetch:
-        fetched_events, updated_last_run = fetch_events_for_type(client=client, **event_type_params[event_type])
-        next_run[event_type] = updated_last_run
-        events.extend(fetched_events)
+        event_type_is_finished = False
+        event_type_timeout = FETCH_EVENTS_TIMEOUT // len(event_types_to_fetch)
+        event_type_max_fetch = event_type_kwargs[event_type]["max_fetch"]
 
+        with ExecutionTimeout(event_type_timeout):
+            demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
+            fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
+            event_type_is_finished = True
+
+        if event_type_is_finished:
+            demisto.debug(
+                f"Completed fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
+                f"Adding {len(fetched_events)} events to the list of all events."
+            )
+            next_run[event_type] = event_type_next_run
+            events.extend(fetched_events)
+
+        else:
+            demisto.debug(
+                f"Timed out fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
+                f"Setting next run for {event_type=} with reduced limit."
+            )
+            event_type_last_run = event_type_kwargs[event_type]["last_run"]  # Keep last run and reduce limit
+            next_run[event_type] = {**event_type_last_run, "max_fetch": max(event_type_max_fetch // 2, 1)}
+            next_run["nextTrigger"] = "0"
+
+    demisto.debug(f"Finished fetching {len(events)} events. Setting {next_run=}.")
     return next_run, events
 
 
