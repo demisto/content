@@ -12,7 +12,7 @@ COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
 
 
-class Brands(Enum):
+class Brands(StrEnum):
     """
     Enum representing different integration brands.
     """
@@ -494,7 +494,7 @@ def initialize_commands(
             name="ad-get-computer",
             output_keys=["ActiveDirectory.Computers"],
             args_mapping={"name": "endpoint_hostname"},
-            output_mapping={"dn": "ID", "name": "Hostname", "main_key": "dn"},
+            output_mapping={"dn": "ID", "name": "Hostname"},
             post_processing=active_directory_post,
             main_key="ID",
         ),
