@@ -15,7 +15,7 @@ During the alert investigation, the playbook will perform the following:
 Remediation:
 - Remediation actions will be taken if the CGO process is unsigned, the IP or URL has a malicious reputation, or a related alert is detected. In these cases, the playbook will disable the scheduled task, block the malicious indicators, and close the alert.
 
-Requires: To block the malicious URL, configure 'Palo Alto Networks PAN-OS' integration.
+Requires: To block the malicious URL, configure the 'Palo Alto Networks PAN-OS' integration.
 
 
 ## Dependencies
