@@ -9,4 +9,18 @@ In case the TAXII 2 server you're trying to connect to requires a custom authent
 Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR", and "FOLLOWEDBY", e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`. These relationships are not represented in CORTEX XSOAR threat intel management indicators. You can opt to create them while ignoring these relations, or you can opt to ignore these expressions - if you choose to ignore these expressions, then no indicators will be created for complex observations.
 
 ### API Roots and Collections
-Each TAXII server may contain more than one API root with different collections. If the needed API root is not the default one, set the `API Root to Use` parameter with the correct API root title.
+Each TAXII server may contain more than one API root with different collections. If the required API root is not the default one, set the `API Root to Use` parameter to the correct API root.
+
+Note!
+
+The relationships between the indicators are extracted and matched during the indicator construction process. For each indicator, only one indicator is found in the following order of precedence.
+
+- sha-256
+- file
+- IPv4-addr
+- domain-name
+- url
+- email-addr
+- mutex
+- windows-registry-key
+- all other...
