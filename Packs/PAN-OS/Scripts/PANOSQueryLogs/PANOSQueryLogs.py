@@ -17,6 +17,8 @@ def main():
         args["polling"] = True
         url_category = args.get("url_category")
         if url_category is not None:
+            if args["log-type"] != "url":
+                return_error("url_category arg is only valid for querying with log_type url")
             if url_category.startswith("AI"):
                 # Keep "AI" uppercase, convert rest to lowercase
                 url_category = "AI" + url_category[2:].lower().replace(" ", "-")
