@@ -9,6 +9,8 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
+from re import Match
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -1887,24 +1889,21 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         return CommandResults(readable_output=f"Endpoint {endpoint_id} pending isolation.")
     if endpoint_status == "UNINSTALLED":
         raise ValueError(f"Error: Endpoint {endpoint_id}'s Agent is uninstalled and therefore can not be isolated.")
-    if endpoint_status == "DISCONNECTED":
-        if disconnected_should_return_error:
-            raise ValueError(f"Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.")
-        else:
-            return CommandResults(
-                readable_output=f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.",
-                outputs={
-                    f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                    f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
-                },
-            )
+    if endpoint_status == "DISCONNECTED" and disconnected_should_return_error:
+        raise ValueError(f"Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.")
+
     if is_isolated == "AGENT_PENDING_ISOLATION_CANCELLATION":
         raise ValueError(f"Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.")
     try:
         result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+        readable_output = (
+            f"Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}."
+            if endpoint_status == "DISCONNECTED"
+            else f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n"
+        )
 
         return CommandResults(
-            readable_output=f"The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n",
+            readable_output=readable_output,
             outputs={
                 f'{args.get("integration_context_brand", "CoreApiModule")}.'
                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id
@@ -3737,6 +3736,29 @@ def filter_context_fields(output_keys: list, context: list):
     return filtered_context
     
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    """
+    Get alerts by filter.
+
+    Args:
+        client (CoreClient): The Core client to use for the request.
+        args (Dict): The arguments for the command.
+
+    Returns:
+        CommandResults: The results of the command.
+    """
+
+    def fix_array_value(match: Match[str]) -> str:
+        """
+        Fixes malformed array values in the 'agent_id' custom_filter argument.
+        It converts a stringified list (e.g., "[\"a\",\"b\"]") into a proper JSON array.
+        """
+        array_content = match.group(1)
+        elements = [elem.strip().strip('"') for elem in array_content.split(",")]
+        fixed_array = json.dumps(elements)
+        # Return the full match with only SEARCH_VALUE fixed
+        full_match = match.group(0)
+        return full_match.replace(f'"[{array_content}]"', fixed_array)
+
     # get arguments
     request_data: dict = {"filter_data": {}}
     filter_data = request_data["filter_data"]
@@ -3765,8 +3787,18 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                 raise DemistoException('Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
+
+        except json.JSONDecodeError:
+            demisto.debug(
+                "Failed to load custom filter, trying to fix malformed array values in the agent_id custom_filter argument"
+            )  # noqa: E501
+            # Trying to fix malformed array values in the agent_id custom_filter argument
+            pattern = r'"SEARCH_FIELD":\s*"agent_id"[^}]*"SEARCH_VALUE":\s*"\[([^\]]+)\]"'
+            fixed_json_str = re.sub(pattern, fix_array_value, custom_filter_str)
+            custom_filter = json.loads(fixed_json_str)
+
         except Exception as e:
-            raise DemistoException("custom_filter format is not valid.") from e
+            raise DemistoException(f"custom_filter format is not valid. got: {str(e)}")
 
     filter_res = create_filter_from_args(args)
     if custom_filter:  # if exists, add custom filter to the built filter
