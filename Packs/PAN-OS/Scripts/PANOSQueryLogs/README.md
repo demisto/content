@@ -17,7 +17,7 @@ A polling wrapper script; This script searches Palo Alto Networks firewall logs 
 | **Argument Name** | **Description** |
 | --- | --- |
 | log-type | The log type. Options: threat, traffic, wildfire, url, data, corr, system, decryption. |
-| query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. Do not use the query argument in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. |
+| url_category | Use a value from the URL Category list such as Malware, Phishing, AI Conversational Assistant, etc. to query URL logs. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. |
 | time-generated | The time the log was generated from the timestamp and prior to it. For example "2019/08/11 01:10:44, will get logs before the specified date.". |
 | time-generated-after | The time the log was generated from the timestamp and prior to it. For example "2019/08/11 01:10:44", will get logs after the specified date. |
 | addr-src | The source address. |
