@@ -1,40 +1,45 @@
 [MODEL: dataset="barracuda_cgfw_raw"]
 filter _raw_log ~= "Allow|Detect"
 | alter
-    xdm.network.application_protocol = arraystring(regextract(_raw_log, "\|proto\=([a-zA-Z0-9]+)\|"), ""),
-    xdm.event.type = arraystring(regextract(_raw_log , "type\=([a-zA-Z0-9]+)\|"), ""),
-    xdm.source.interface = arraystring(regextract(_raw_log , "\|srcIF\=([a-zA-Z0-9]+)\|"), ""),
-    xdm.source.ipv4 = arraystring(regextract(_raw_log , "\|srcIP\=([a-zA-Z0-9.]+)\|"), ""),
-    xdm.source.port = to_number(arraystring(regextract(_raw_log , "\|srcPort\=([0-9]+)\|"), "")),
-    xdm.source.host.mac_addresses = regextract(_raw_log , "\|srcMAC\=([a-zA-Z0-9:]+)\|"),
-    xdm.target.interface = arraystring(regextract(_raw_log , "\|dstIF\=([a-zA-Z0-9]+)\|"), ""),
-    xdm.target.ipv4 = arraystring(regextract(_raw_log , "\|dstIP\=([a-zA-Z0-9.]+)\|"), ""),
-    xdm.target.port = to_number(arraystring(regextract(_raw_log , "\|dstPort\=([0-9]+)\|"), "")),
-    //dest_service = arraystring(regextract(_raw_log , "\|dstService\=([a-zA-Z0-9]+)\|"), ""),
-    xdm.network.rule = arraystring(regextract(_raw_log , "\|rule\=([a-zA-Z0-9:]+)\|"), ""),
-    xdm.event.description = arraystring(regextract(_raw_log , "\|info\=([a-zA-Z0-9ֿֿֿֿ ]+)\|"), ""),
-    //src_NAT = arraystring(regextract(_raw_log , "\|srcNAT\=([a-zA-Z0-9ֿֿֿֿ.]+)\|"), ""),
-    //dst_NAT = arraystring(regextract(_raw_log , "\|dstNAT\=([a-zA-Z0-9ֿֿֿֿ.]+)\|"), ""),
-    xdm.event.duration = to_number(arraystring(regextract(_raw_log , "\|duration\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
-    //count_bar = arraystring(regextract(_raw_log , "\|count\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), ""),
-    xdm.target.sent_bytes = to_number(arraystring(regextract(_raw_log , "\|receivedBytes\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
-    xdm.source.sent_bytes = to_number(arraystring(regextract(_raw_log , "\|sentBytes\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
-    xdm.target.sent_packets = to_number(arraystring(regextract(_raw_log , "\|receivedPackets\=([a-zA-Z0-9ֿֿֿֿ]+)\|"), "")),
-    xdm.source.sent_packets = to_number(arraystring(regextract(_raw_log , "\|sentPackets\=([a-zA-Z0-9ֿֿֿ]+)\|"), "")),
-    xdm.source.user.username = arraystring(regextract(_raw_log , "\|user\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
-    //bar_protocol = arraystring(regextract(_raw_log , "\|protocol\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
-    xdm.target.application.name = arraystring(regextract(_raw_log , "\|application\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
-    //bar_target = arraystring(regextract(_raw_log , "\|target\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
-    //bar_content = arraystring(regextract(_raw_log , "\|content\=([a-zA-Z0-9ֿֿֿ]+)\|"), ""),
-    xdm.network.http.url_category = arraystring(regextract(_raw_log , "\|urlcat\=([a-zA-Z0-9ֿֿֿ]+)\|"), "");
+    //xdm.event.log_level =
+    //xdm.observer.name =
+    xdm.observer.action = regexcaptureResult -> action,
+    xdm.event.type = regexcaptureResult -> type,
+    //xdm.network.application_protocol =
+    //xdm.network.ip_protocol =
+    xdm.source.interface = regexcaptureResult -> srcIF,
+    xdm.source.ipv4 = if(incidr(regexcaptureResult -> srcIP, "0.0.0.0/0"), regexcaptureResult -> srcIP),
+    xdm.source.ipv6 = arrayindex(regextract(regexcaptureResult -> srcIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.source.port = if(regexcaptureResult -> proto = "ICMP", null, to_number(regexcaptureResult -> srcPort)),
+    xdm.source.host.mac_addresses = arraycreate(regexcaptureResult -> srcMAC),
+    xdm.target.ipv4 = if(incidr(regexcaptureResult -> dstIP, "0.0.0.0/0"), regexcaptureResult -> dstIP),
+    xdm.target.ipv6 = arrayindex(regextract(regexcaptureResult -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.target.port = if(regexcaptureResult -> proto = "ICMP", null, to_number(regexcaptureResult -> dstPort)),
+    //xdm.target.process.name/xdm.target.resource.name
+    xdm.target.interface = regexcaptureResult -> dstIF,
+    xdm.network.rule = regexcaptureResult -> rule,
+    xdm.event.description = regexcaptureResult -> info,
+    xdm.event.duration = to_number(regexcaptureResult -> duration),
+    xdm.target.sent_bytes = to_number(regexcaptureResult -> receivedBytes),
+    xdm.source.sent_bytes = to_number(regexcaptureResult -> sentBytes),
+    xdm.target.sent_packets = to_number(regexcaptureResult -> receivedPackets),
+    xdm.source.sent_packets = to_number(regexcaptureResult -> sentPackets),
+    xdm.source.user.username = regexcaptureResult -> user,
+    xdm.target.application.name = regexcaptureResult -> application,
+    //xdm.network.http.url_category = if()
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
 
 filter _raw_log contains "BYF"
 | alter
-    xdm.source.ipv4 = arraystring(regextract(_raw_log, ".*:(?:\s\S+){2}\s(\S+)"), ""),
-    xdm.target.ipv4 = arraystring(regextract(_raw_log, ".*:(?:\s\S+){3}\s(\S+)"), ""),
-    xdm.network.http.content_type = arraystring(regextract(_raw_log, ".*:(?:\s\S+){4}\s(\S+)"), ""),
-    xdm.network.http.url = arraystring(regextract(_raw_log, ".*:(?:\s\S+){6}\s(\S+)"), ""),
-    xdm.observer.action = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){3}(\S)"), ""), //1 is blocked, 0 is allowed
-    xdm.network.http.url_category = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+(\S)"), ""),
-    xdm.target.host.hostname = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+\S\s\S+\s\S\s(\S+)"), ""),
-    xdm.target.user.username = arraystring(regextract(_raw_log, ".*:(?:\s\S+){11}\s+(?:\S\s){5}\S+\s\S\s+\S\s\S+\s\S\s\S+\s+\[([^\[]+)\]"), "");
+
+    xdm.observer.name = regexcaptureResult -> hostname,
+    xdm.source.ipv4 = if(incidr(regexcaptureResult -> srcIP, "0.0.0.0/0"), regexcaptureResult -> srcIP),
+    xdm.source.ipv6 = arrayindex(regextract(regexcaptureResult -> srcIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.target.ipv4 = if(incidr(regexcaptureResult -> dstIP, "0.0.0.0/0"), regexcaptureResult -> dstIP),
+    xdm.target.ipv6 = arrayindex(regextract(regexcaptureResult -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.network.http.url = regexcaptureResult -> url,
+    xdm.observer.action - regexcaptureResult -> action, //1 is blocked, 0 is allowed
+    xdm.network.http.url_category = regexcaptureResult -> urlCategoryCode,
+    xdm.target.host.hostname = regexcaptureResult -> targetHostname,
+    xdm.target.user.username = regexcaptureResult -> targetUser,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
