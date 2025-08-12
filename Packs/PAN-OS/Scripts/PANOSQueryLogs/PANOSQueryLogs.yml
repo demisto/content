@@ -23,7 +23,7 @@ args:
   - corr
   - system
   - decryption
-- description: "Use a value from the URL Category list such as Malware, Phishing, AI-conversation-assistant, etc. to query URL logs."
+- description: Use a value from the URL Category list such as Malware, Phishing, AI-conversation-assistant, etc. to query URL logs.
   name: url_category
 - description: |-
     The time the log was generated from the timestamp and prior to it.
@@ -63,8 +63,6 @@ args:
   - no
   auto: PREDEFINED
   defaultValue: no
-- description: The name of the integration instance to use for querying logs.
-  name: using
 outputs:
 - contextPath: Panorama.Monitor.JobID
   description: The job ID of the logs query.

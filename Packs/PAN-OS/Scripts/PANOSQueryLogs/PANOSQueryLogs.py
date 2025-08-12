@@ -17,14 +17,13 @@ def main():
         args["polling"] = True
         url_category = args.get("url_category")
         if url_category is not None:
-            url_category.replace(" ","-")
             if url_category.startswith("AI"):
                 # Keep "AI" uppercase, convert rest to lowercase
-                url_category = "AI" + url_category[2:].lower()
+                url_category = ("AI" + url_category[2:].lower().replace(" ","-"))
             else:
                 # Convert entire string to lowercase
-                url_category = url_category.lower()
-            args["query"] = f"url_category_list contains '{args.get('url_category')}'"
+                url_category = url_category.lower().replace(" ","-")
+            args["query"] = f"url_category_list contains '{url_category}'"
         return_results(execute_polling_command("pan-os-query-logs", args))
     except Exception as e:
         return_error(f"Failed to execute script.\nError:\n{e!s}")
