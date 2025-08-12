@@ -15,7 +15,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.access_key = access_key
-        self.token = None
+        self.token: Optional[str] = None
 
     def _login(self) -> None:
         if self._session.cookies:
