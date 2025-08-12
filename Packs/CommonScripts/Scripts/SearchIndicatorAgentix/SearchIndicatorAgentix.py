@@ -61,6 +61,7 @@ def search_indicators(args):
 
 def main():
     args = demisto.args()
+    demisto.debug(f"Running SearchIndicatorAgentix with {args=}")
     try:
         readable_output, outputs = search_indicators(args)
         results = CommandResults(
