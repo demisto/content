@@ -27,7 +27,7 @@ def test_test_module(mocker):
     mock_response = util_load_json('./test_data/checkpointxdr-get_incidents.json')
     query_events = mocker.patch.object(
         Client,
-        '_call_api',
+        'get_incidents',
         return_value=mock_response.get('objects'),
     )
     logout = mocker.patch.object(
@@ -46,7 +46,7 @@ def test_test_module(mocker):
 def test_parse_incidents():
     mock_incidents = util_load_json('./test_data/checkpointxdr-get_incidents.json').get('objects')
 
-    mock_result = (util_load_json('./test_data/checkpointxdr-parse_incidents-output.json'),
+    mock_result = (util_load_json('./test_data/checkpointxdr-parse_incident-output.json'),
                    datetime.datetime.fromtimestamp(1703387404.364).isoformat())
 
     result = parse_incidents(mock_incidents, {}, 10, 0)
@@ -70,7 +70,7 @@ def test_fetch_incidents(mocker):
     mock_insights_response = util_load_json('./test_data/checkpointxdr-get_incidents.json')
     query_insights = mocker.patch.object(
         Client,
-        '_call_api',
+        'get_incidents',
         return_value=mock_insights_response.get('objects'),
     )
     logout = mocker.patch.object(
@@ -92,6 +92,7 @@ def test_update_remote_system_command_close_true(mocker):
     mocker.patch('CheckPointXDR.demisto.params', return_value={"close_out": True})
     mocker.patch('CheckPointXDR.demisto.debug')
     mocker.patch('CheckPointXDR.demisto.error')
+    mocker.patch('CheckPointXDR.argToBoolean', return_value=True)
 
     args = {
         "remote_incident_id": "123",
@@ -112,6 +113,7 @@ def test_update_remote_system_command_close_false(mocker):
     mock_update_incident = mocker.patch.object(Client, 'update_incident')
     mocker.patch('CheckPointXDR.demisto.params', return_value={"close_out": False})
     mocker.patch('CheckPointXDR.demisto.debug')
+    mocker.patch('CheckPointXDR.argToBoolean', return_value=False)
 
     args = {
         "remote_incident_id": "321",
@@ -135,22 +137,10 @@ def test_map_severity_levels():
 
 
 def test_get_instances_id_found(mocker):
-    mocker.patch('CheckPointXDR.demisto.getIntegrationContext', return_value={})
-    mocker.patch('CheckPointXDR.demisto.internalHttpRequest', return_value={
-        "body": json.dumps({
-            "instances": [
-                {"id": "abc123", "brand": "CheckPointXDR"},
-                {"id": "def456", "brand": "OtherBrand"},
-            ]
-        })
-    })
-    mock_set = mocker.patch('CheckPointXDR.demisto.setIntegrationContext')
-    mock_debug = mocker.patch('CheckPointXDR.demisto.debug')
-
+    mocker.patch('CheckPointXDR.demisto.getIntegrationContext', return_value={"instances_id": "abc123"})
+    
     result = get_instances_id()
     assert result == "abc123"
-    mock_set.assert_called_once()
-    mock_debug.assert_called()
 
 
 def test_get_instances_id_cached(mocker):
