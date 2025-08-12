@@ -200,9 +200,9 @@ tasks:
       - "22"
     scriptarguments:
       closeNotes:
-        simple: Suspicious activity detected
+        simple: Suspicious activity detected - Handled by the playbook "User added to local administrator group using a PowerShell command"
       closeReason:
-        simple: Resolved - Handled by the playbook "User added to local administrator group using a PowerShell command"
+        simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -341,9 +341,9 @@ tasks:
       - "22"
     scriptarguments:
       closeNotes:
-        simple: No Results Found
+        simple: No Results Found - Handled by the playbook "User added to local administrator group using a PowerShell command"
       closeReason:
-        simple: Resolved - Handled by the playbook "User added to local administrator group using a PowerShell command"
+        simple: Resolved - Other
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -370,7 +370,7 @@ tasks:
       id: 43d9acfc-9cd7-43f6-8675-484582c3ac4d
       version: -1
       name: Terminate Causality (CGO)
-      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
