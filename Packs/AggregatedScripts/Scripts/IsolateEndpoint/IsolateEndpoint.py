@@ -10,6 +10,7 @@ class Brands(StrEnum):
     """
     Enum representing different integration brands.
     """
+
     FIREEYE_HX_V2 = "FireEyeHX v2"
     CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
     CORTEX_CORE_IR = "Cortex Core - IR"
@@ -334,7 +335,6 @@ def find_command_by_brand(commands: list[Command], brand: str) -> Command | None
         Command: The matching Command object.
     """
     for command in commands:
-        print(f"{command.brand=}, {brand=}")
         if command.brand == brand:
             return command
     return None
@@ -358,7 +358,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
             is_isolated=False,
             endpoint_args=endpoint_args,
             result="Fail",
-            message=f"Did not find a matching brand to execute.",
+            message="Did not find a matching brand to execute.",
             endpoint_output=endpoint_output,
         )
         return
@@ -389,9 +389,7 @@ def main():
         brands_to_run = argToList(endpoint_args.get("brands", []))
 
         if not any((endpoint_ids, endpoint_ips)):
-            raise ValueError(
-                "At least one of the following arguments must be specified: endpoint_id or endpoint_ip."
-            )
+            raise ValueError("At least one of the following arguments must be specified: endpoint_id or endpoint_ip.")
 
         if not brands_to_run:
             # In case no brands selected, the default is all brands.

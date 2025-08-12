@@ -7,12 +7,7 @@ def test_get_all_values_returns_expected_list():
     """
     Ensure get_all_values returns all brand values in the correct order.
     """
-    expected_list = [
-        "FireEyeHX v2",
-        "CrowdstrikeFalcon",
-        "Cortex Core - IR",
-        "Microsoft Defender Advanced Threat Protection"
-    ]
+    expected_list = ["FireEyeHX v2", "CrowdstrikeFalcon", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection"]
     assert Brands.get_all_values() == expected_list
 
 
@@ -23,7 +18,7 @@ def test_get_all_values_returns_expected_list():
         (Brands.CROWDSTRIKE_FALCON, "CrowdstrikeFalcon"),
         (Brands.CORTEX_CORE_IR, "Cortex Core - IR"),
         (Brands.MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION, "Microsoft Defender Advanced Threat Protection"),
-    ]
+    ],
 )
 def test_individual_enum_values(brand_enum, expected_value):
     """
@@ -265,12 +260,11 @@ def test_handle_raw_response_results(
     command = Command(brand="BrandA", name="TestCommand", arg_mapping={})
     args = {"endpoint_id": "1234"}
     outputs = {}
-    verbose = False
 
     mock_is_error.return_value = is_error
     mock_get_error.return_value = get_error_msg
 
-    handle_raw_response_results(command, raw_response, args, outputs, verbose)
+    handle_raw_response_results(command=command, raw_response=raw_response, endpoint_args=args, endpoint_output=outputs)
 
     mock_create_message.assert_called_once_with(
         is_isolated=expected_is_isolated,
@@ -402,8 +396,8 @@ def test_create_message_to_context_and_hr(endpoint_args, is_isolated, result, me
 
 
 @patch("IsolateEndpoint.demisto.executeCommand")
-@patch("IsolateEndpoint.handle_raw_response_results")
-def test_run_commands_for_endpoint_executes_command(mock_handle_response, mock_execute):
+# @patch("IsolateEndpoint.handle_raw_response_results")
+def test_run_commands_for_endpoint_executes_command(mock_execute):
     """
     Given:
         A list containing a single Command object with a specific brand, name, and argument mapping.
@@ -414,17 +408,17 @@ def test_run_commands_for_endpoint_executes_command(mock_handle_response, mock_e
         - handle_raw_response_results should be called exactly once with the execution result.
         - The processed command result ("CommandResult") should be appended to the results list.
     """
-    command = Command(brand="TestBrand", name="test-command", arg_mapping={"arg1": "arg1"})
+    command = Command(brand="Brand", name="test-command", arg_mapping={"endpoint_id": "endpoint_id"})
     mock_commands = [command]
 
     mock_execute.return_value = [{"Type": 1, "Contents": "Done"}]
-    mock_handle_response.return_value = "CommandResult"
 
-    endpoint_args = {"arg1": "value", "endpoint_brand": "TestBrand"}
-    results = []
+    endpoint_args = {"endpoint_id": "id1", "endpoint_brand": "Brand"}
+    endpoint_output = {}
 
-    run_commands_for_endpoint(commands=mock_commands, endpoint_args=endpoint_args, endpoint_output={}, verbose=False)
+    run_commands_for_endpoint(commands=mock_commands, endpoint_args=endpoint_args, endpoint_output=endpoint_output)
 
     mock_execute.assert_called_once()
-    mock_handle_response.assert_called_once()
-    assert "CommandResult" in results
+    assert endpoint_output['Endpoint'] == 'id1'
+    assert endpoint_output['Result'] == 'Success'
+    assert endpoint_output['Source'] == 'Brand'
