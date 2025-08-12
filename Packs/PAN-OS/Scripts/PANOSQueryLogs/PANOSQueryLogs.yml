@@ -23,7 +23,8 @@ args:
   - corr
   - system
   - decryption
-- description: Use a value from the URL Category list such as Malware, Phishing, AI-conversation-assistant, etc. to query URL logs.
+- description: |-
+    Use a value from the URL Category list such as Malware, Phishing, AI Conversational Assistant, etc. to query URL logs. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest.
   name: url_category
 - description: |-
     The time the log was generated from the timestamp and prior to it.
@@ -228,7 +229,7 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.3982393
+dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
