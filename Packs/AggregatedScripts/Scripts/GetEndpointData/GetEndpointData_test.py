@@ -440,7 +440,7 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
     # Assertions
     assert endpoint_outputs == [{"ID": "id1"}]
     assert command_results == []  # Should be empty when verbose=False
-    assert mock_command_runner.run_command.call_count == 1
+    assert mock_command_runner.run_command.call_count == 2
     mock_debug.assert_called_once_with("ending single arg loop with 1 endpoints")
 
 

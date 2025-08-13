@@ -976,7 +976,13 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: d
         if (brand := endpoint.get("Brand").value) in endpoint_mapping:  # type: ignore[union-attr]
             if endpoint_mapping[brand].get(endpoint[main_key]):
                 demisto.debug(f"found another value for {brand=}, where {main_key} = {endpoint[main_key]}")
+                additional_fields = {}
+                if "AdditionalFields" in endpoint_mapping[brand][endpoint[main_key]] and "AdditionalFields" in endpoint:
+                    additional_fields = endpoint_mapping[brand][endpoint[main_key]]["AdditionalFields"]
+                    additional_fields.update(endpoint["AdditionalFields"])
                 endpoint_mapping[brand][endpoint[main_key]].update(endpoint)
+                if additional_fields:
+                    endpoint_mapping[brand][endpoint[main_key]]["AdditionalFields"] = additional_fields
             else:
                 endpoint_mapping[brand][endpoint[main_key]] = endpoint
         else:
