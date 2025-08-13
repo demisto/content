@@ -14,7 +14,6 @@ This is the default integration for this content pack when configured by the Dat
 
 The collector's capacity is at least 150,000 events per minute.
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
