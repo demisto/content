@@ -23,8 +23,8 @@ CONTEXT_STATUS_KEY = "Status"
 CONTEXT_RESULTS_KEY = "Results"
 
 # default values
-DEFAULT_POLLING_INTERVAL = 10
-DEFAULT_POLLING_TIMEOUT = 180
+DEFAULT_POLLING_INTERVAL = 30
+DEFAULT_POLLING_TIMEOUT = 300
 SEARCH_RESULT_PATTERN = r"(\w[\w\s]+?):\s*([^,;]+)"
 SEARCH_ACTION_SUFFIX = "_Preview"
 
@@ -154,6 +154,9 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
     
     interval = args.get("polling_interval", DEFAULT_POLLING_INTERVAL)
     timeout = args.get("polling_timeout", DEFAULT_POLLING_TIMEOUT)
+    
+    # verify the interval is not too small to avoid excessive API calls
+    interval = interval if interval >= DEFAULT_POLLING_INTERVAL else DEFAULT_POLLING_INTERVAL
     
     start_time = time.time()
     while True:
