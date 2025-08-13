@@ -163,20 +163,21 @@ class Client:
             if odata:
                 odata_query += f"?{odata}"
 
-            response = self.ms_client.http_request(
-                method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
-            )
-            return response.get("value", [])
+            return [
+                self.ms_client.http_request(
+                    method="GET",
+                    url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}{odata_query}",
+                )
+            ]
 
         odata_query = f"?$top={limit}&{odata}"
 
-        return [
-            self.ms_client.http_request(
-                method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/intelProfiles{odata_query}",
-            )
-        ]
+        response = self.ms_client.http_request(
+            method="GET",
+            url_suffix=f"v1.0/security/threatIntelligence/intelProfiles{odata_query}",
+        )
+
+        return response.get("value", [])
 
     def profile_indicators_list(self, intel_profile_id: str, intel_profile_indicator_id: str, odata: str, limit: int) -> list:
         """
@@ -195,14 +196,20 @@ class Client:
             list: A list of intelligence profile indicators, each containing information such as
                     ID, source, first/last seen timestamps, and associated artifacts.
         """
-        odata_query = f"?$top={limit}&{odata}"
+
+        odata_query = ""
 
         if not intel_profile_indicator_id:
+            odata_query = f"?$top={limit}&{odata}"
+
             response = self.ms_client.http_request(
                 method="GET",
                 url_suffix=f"v1.0/security/threatIntelligence/intelProfiles/{intel_profile_id}/indicators{odata_query}",
             )
             return response.get("value", [])
+
+        if odata:
+            odata_query += f"?{odata}"
 
         return [
             self.ms_client.http_request(
