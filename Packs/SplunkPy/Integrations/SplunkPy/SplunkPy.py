@@ -3218,14 +3218,31 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         return_results(f"Event was created in Splunk index: {r.name}")
 
 
-def validate_indexes(indexes, service):
-    """Validates that all provided Splunk indexes exist within the Splunk service instance."""
-    real_indexes = service.indexes
-    real_indexes_names_set = set()
-    for real_index in real_indexes:
-        real_indexes_names_set.add(real_index.name)
-    indexes_set = set(indexes)
-    return indexes_set.issubset(real_indexes_names_set)
+def get_invalid_indexes(indexes_to_validate: list[str], service: client.Service) -> set[str] | None:
+    """
+    Finds which of the provided Splunk indexes do not exist in the Splunk service instance.
+
+    Args:
+        indexes_to_validate: A list of index names to validate.
+        service: The Splunk service object.
+
+    Returns:
+        A set of index names that do not exist in the Splunk instance.
+        Returns an empty set if all indexes are valid.
+        In case of an error retrieving indexes from Splunk, it will log the error and return an empty set,
+        as we cannot be sure which indexes are invalid.
+    """
+    try:
+        existing_indexes = {index.name for index in service.indexes}
+    except Exception as e:
+        demisto.error(
+            f"{INTEGRATION_LOG}Could not retrieve the list of indexes from Splunk. Error: {e}. "
+            f"Proceeding without index validation. If you encounter issues, "
+            f"please ensure all target indexes exist and are accessible, or contact Splunk support."
+        )
+        return None
+
+    return {index for index in indexes_to_validate if index not in existing_indexes}
 
 
 def get_events_from_file(entry_id):
@@ -3280,7 +3297,6 @@ def extract_indexes(events: str | dict):
     Returns:
         List[str]: A list of extracted indexes.
         For example: ["index1", "index2"]
-
     """
     events_str = str(events)
     indexes = re.findall(INDEXES_REGEX, events_str)
@@ -3318,10 +3334,25 @@ def splunk_submit_event_hec(
         events = assign_params(
             event=event, host=host, fields=parsed_fields, index=index, sourcetype=source_type, source=source, time=time_
         )
-    indexes = extract_indexes(events)
+    indexes = [index] if index else extract_indexes(events)
 
-    if not validate_indexes(indexes, service):
-        raise DemistoException("Index name does not exist in your splunk instance")
+    invalid_indexes = get_invalid_indexes(indexes, service)
+    if invalid_indexes is None:
+        # An error occurred while trying to get the indexes from Splunk.
+        # A descriptive error is logged within get_invalid_indexes.
+        # We issue a warning and proceed, as the index might exist but not be returned by the API.
+        return_warning(
+            "Could not verify the existence of Splunk indexes due to an API error. "
+            "Proceeding with event submission. Check the logs for more details. "
+            "If submission fails, contact Splunk support."
+        )
+    elif invalid_indexes:
+        # Some indexes were confirmed to be invalid.
+        raise DemistoException(
+            f"The following Splunk indexes do not exist: {', '.join(invalid_indexes)}. "
+            f"Please ensure they are spelled correctly. If you believe an index exists but is not found, "
+            f"it may be due to a Splunk API issue. In that case, please contact Splunk support."
+        )
 
     demisto.debug("All indexes are valid, sending events to Splunk.")
 

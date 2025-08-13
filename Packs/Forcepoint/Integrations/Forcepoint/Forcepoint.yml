@@ -4,9 +4,10 @@ commonfields:
 sectionOrder:
 - Connect
 name: Forcepoint
-display: Forcepoint Web Security
+display: Forcepoint Web Security (Deprecated)
 category: Network Security
-description: Advanced threat protection with added local management controls.
+description: Deprecated. No available replacement.
+deprecated: true
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url

@@ -19,8 +19,15 @@ def test_get_url(mocker):
         "ContentsFormat": formats["text"],
         "Contents": "https://www.eizelulz.com:8443",
         "EntryContext": {
-            "ServerURL": {"Scheme": "https", "Host": "www.eizelulz.com", "Port": 8443, "URL": "https://www.eizelulz.com:8443"}
+            "ServerURL(val.URL && val.URL == obj.URL)": {
+                "Scheme": "https",
+                "Host": "www.eizelulz.com",
+                "Port": 8443,
+                "URL": "https://www.eizelulz.com:8443",
+            }
         },
         "IgnoreAutoExtract": False,
-        "IndicatorTimeline": None,
+        "Note": False,
+        "Relationships": [],
+        "IndicatorTimeline": [],
     }

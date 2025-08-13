@@ -225,12 +225,12 @@ class Client(BaseClient):
     ):
         url_suffix = "/PasswordVault/api/Users"
 
-        body = {
+        params = {
             "filter": filter,
             "search": search,
         }
 
-        return self._http_request("GET", url_suffix, json_data=body)
+        return self._http_request("GET", url_suffix, params=params)
 
     def activate_user(self, user_id: str):
         """

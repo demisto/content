@@ -3944,7 +3944,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 #### Command Example
 
-``` cve cve_id=CVE-2021-2222 ```
+``` cve cve=CVE-2021-2222 ```
 
 #### Human Readable Output
 
