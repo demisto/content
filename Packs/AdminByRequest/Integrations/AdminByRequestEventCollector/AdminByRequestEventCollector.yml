@@ -209,9 +209,8 @@ script:
       description: The ID of the request to approve.
       required: true
     - name: approved_by
-      description: The user who approved the request.
+      description: Has to be an email address that matches a portal user, otherwise it will be ignored.
       required: false
-      additionalinfo: Has to be an email address that matches a portal user, otherwise it will be ignored
   - name: adminbyrequest-request-deny
     description: Denies a request in AdminByRequest.
     arguments:
@@ -219,9 +218,8 @@ script:
       description: The ID of the request to deny.
       required: true
     - name: denied_by
-      description: The user who denied the request.
+      description: Has to be an email address that matches a portal user, otherwise it will be ignored.
       required: false
-      additionalinfo: Has to be an email address that matches a portal user, otherwise it will be ignored
     - name: reason
       description: The reason for denying the request.
       required: false
