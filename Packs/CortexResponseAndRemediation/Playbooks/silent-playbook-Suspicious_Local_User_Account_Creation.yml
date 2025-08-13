@@ -855,21 +855,8 @@ tasks:
       key:
         simple: Evidence.RiskyHost
       value:
-        complex:
-          root: Core.RiskyHost
-          accessor: risk_level
-          transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: '.=val === "HIGH" ? "True" : "False"'
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: "False"
+        simple: '${.=val.Core && val.Core.RiskyHost && val.Core.RiskyHost.risk_level
+          == "HIGH" ? "True" : "False"}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
