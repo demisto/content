@@ -76,12 +76,14 @@ configuration:
   name: credentials
   type: 9
   required: false  # Only needed if using "Global API key" auth type
+  additionalinfo: To use the Global API Key authorization type, provide an API Email and Global Key. These fields should be left blank if the API Token authorization type is selected.
 - displaypassword: API Token
   hiddenusername: true
   name: token_credentials
   type: 9
   section: Connect
   required: false  # Only needed if using "API token" auth type
+  additionalinfo: To use the API Token authorization type, provide an API Token. This field should be left blank if the Global API Key authorization type is selected.
 description: Cloudflare provides network and security products for consumers and businesses, utilizing reverse proxies for web traffic, edge computing, and a content distribution network to provide content across its network of servers.
 display: Cloudflare Zero Trust
 name: Cloudflare Zero Trust

@@ -403,21 +403,26 @@ def validate_headers(params: dict) -> dict:
     auth_type = params.get("auth_type")
     demisto.debug(f"Starting to validate parameters for {auth_type=}.")
 
-    if auth_type == AuthTypes.API_TOKEN.value:
-        token = params.get("token_credentials", {}).get("password")
+    # API Token credentials
+    token = params.get("token_credentials", {}).get("password")
+    # Global API Key credentials
+    auth_email = params.get("credentials", {}).get("identifier")
+    auth_key = params.get("credentials", {}).get("password")
 
+    if auth_type == AuthTypes.API_TOKEN.value:
         if not token:
-            raise DemistoException(f"An API Token is required for the {auth_type} authorization type.")
+            raise DemistoException(f"API Token is required for the {auth_type} authorization type.")
+        if auth_email or auth_key:
+            raise DemistoException(f"API Email and Global API Key should be left blank for the {auth_type} authorization type.")
 
         demisto.debug(f"Found API token matching {auth_type=}. Creating request headers.")
         return {"Authorization": f"Bearer {token}"}
 
     elif auth_type == AuthTypes.GLOBAL_API_KEY.value:
-        auth_email = params.get("credentials", {}).get("identifier")
-        auth_key = params.get("credentials", {}).get("password")
-
         if not (auth_email and auth_key):
-            raise DemistoException(f"An API Email and a Global API Key are required for the {auth_type} authorization type.")
+            raise DemistoException(f"API Email and Global API Key are required for the {auth_type} authorization type.")
+        if token:
+            raise DemistoException(f"API Token should be left blank for the {auth_type} authorization type.")
 
         demisto.debug(f"Found API email and global key matching {auth_type=}. Creating request headers.")
         return {"X-Auth-Email": auth_email, "X-Auth-Key": auth_key}

@@ -229,14 +229,29 @@ def test_validate_headers_returns_correct_headers(params: dict, expected_headers
     "params, expected_error_message",
     [
         pytest.param(
-            {"auth_type": AuthTypes.API_TOKEN.value, "token_credentials": {}},
-            f"An API Token is required for the {AuthTypes.API_TOKEN.value} authorization type.",
+            {
+                "auth_type": AuthTypes.API_TOKEN.value,
+                "token_credentials": {},
+            },
+            f"API Token is required for the {AuthTypes.API_TOKEN.value} authorization type.",
             id="API Token type chosen with empty token credentials",
         ),
         pytest.param(
-            {"auth_type": AuthTypes.GLOBAL_API_KEY.value, "credentials": {"identifier": MOCK_EMAIL}},
-            f"An API Email and a Global API Key are required for the {AuthTypes.GLOBAL_API_KEY.value} authorization type.",
+            {
+                "auth_type": AuthTypes.GLOBAL_API_KEY.value,
+                "credentials": {"identifier": MOCK_EMAIL},
+            },
+            f"API Email and Global API Key are required for the {AuthTypes.GLOBAL_API_KEY.value} authorization type.",
             id="Global API Key type chosen with partial credentials",
+        ),
+        pytest.param(
+            {
+                "auth_type": AuthTypes.GLOBAL_API_KEY.value,
+                "credentials": {"identifier": MOCK_EMAIL, "password": MOCK_GLOBAL_API_KEY},
+                "token_credentials": {"password": MOCK_API_TOKEN},
+            },
+            f"API Token should be left blank for the {AuthTypes.GLOBAL_API_KEY.value} authorization type.",
+            id="Global API Key type chosen with API Token credentials",
         ),
         pytest.param(
             {"auth_type": "Hello!"},
