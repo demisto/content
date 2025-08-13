@@ -112,7 +112,7 @@ def validate_email_address(email: str) -> bool:
         bool: True if the email is valid, False otherwise.
     """
     # Regular expression for validating an Email
-    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\.[A-Z|a-z]{2,}\b"
     return re.fullmatch(regex, email) is not None
 
 
