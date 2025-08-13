@@ -19,7 +19,7 @@ configuration:
   section: Connect
 - display: Authorization Type
   name: auth_type
-  defaultvalue: Global API key (Legacy)
+  defaultvalue: Global API Key (Legacy)
   options:
   - API Token
   - Global API Key (Legacy)

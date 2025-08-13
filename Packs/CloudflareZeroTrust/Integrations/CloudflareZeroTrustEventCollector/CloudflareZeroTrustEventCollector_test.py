@@ -120,9 +120,9 @@ def test_fetch_events_times_out(mock_client: Client, mocker):
         event_types_to_fetch=event_types_to_fetch,
     )
 
-    # Timeout handler should have been called, reducing the limit and triggering immediate next run
-    assert next_run[ACCOUNT_AUDIT_TYPE]["max_fetch"] == max_fetch_account_audit // 2
-    assert next_run["nextTrigger"] == "0"
+    # Timeout handler should have been called,
+    assert next_run[ACCOUNT_AUDIT_TYPE]["max_fetch"] == max_fetch_account_audit // 2  # Reduce max_fetch limit
+    assert "nextTrigger" not in next_run  # Do not set nextTrigger since all event types timed out
     assert events == []  # No events returned on timeout
 
 

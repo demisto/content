@@ -230,18 +230,19 @@ def fetch_events(
             "max_page_size": ACCESS_AUTHENTICATION_PAGE_SIZE,
         },
     }
+    event_type_is_finished: dict[str, bool] = {}
 
     for event_type in event_types_to_fetch:
-        event_type_is_finished = False
+        event_type_is_finished[event_type] = False
         event_type_timeout = FETCH_EVENTS_TIMEOUT // len(event_types_to_fetch)
         event_type_max_fetch = event_type_kwargs[event_type]["max_fetch"]
 
         with ExecutionTimeout(event_type_timeout):
             demisto.debug(f"Starting to fetch {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}.")
             fetched_events, event_type_next_run = fetch_events_for_type(client=client, **event_type_kwargs[event_type])
-            event_type_is_finished = True
+            event_type_is_finished[event_type] = True
 
-        if event_type_is_finished:
+        if event_type_is_finished[event_type]:
             demisto.debug(
                 f"Completed fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
                 f"Adding {len(fetched_events)} events to the list of all events."
@@ -254,9 +255,15 @@ def fetch_events(
                 f"Timed out fetching {event_type=} with {event_type_max_fetch=} and {event_type_timeout=}. "
                 f"Setting next run for {event_type=} with reduced limit."
             )
-            event_type_last_run = event_type_kwargs[event_type]["last_run"]  # Keep last run and reduce limit
+            # If timed out, keep event type last run and reduce its max fetch limit to ensure it completes in the next iteration
+            event_type_last_run = event_type_kwargs[event_type]["last_run"]
             next_run[event_type] = {**event_type_last_run, "max_fetch": max(event_type_max_fetch // 2, 1)}
-            next_run["nextTrigger"] = "0"
+
+    if any(event_type_is_finished.values()):
+        demisto.debug("At least one event type finished in time. Triggering immediate next fetch iteration.")
+        next_run["nextTrigger"] = "0"
+    else:
+        demisto.debug("All event types timed out. Next fetch will be called according to configured fetch interval.")
 
     demisto.debug(f"Finished fetching {len(events)} events. Setting {next_run=}.")
     return next_run, events
