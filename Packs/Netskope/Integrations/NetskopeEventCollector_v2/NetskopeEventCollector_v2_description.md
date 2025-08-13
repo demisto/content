@@ -8,7 +8,7 @@
    - Network
    - Alert
    - Page
-- Note: The collector can handle up to 35K events per minute on average. 
+- Note: The collector's capacity is at least 150,000 events per minute.
 
 ### API Key
 - To generate the API token, in your Netskope UI go to **Settings** > **Tools** > **Rest API v2**

@@ -70,7 +70,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The maximum number of alerts to return (maximum value - 10000).
+    - description: The maximum number of alerts to return.
       name: limit
       defaultValue: 10000
     description: Returns events extracted from SaaS traffic and or logs.

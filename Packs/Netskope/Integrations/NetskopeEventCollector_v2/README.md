@@ -12,7 +12,8 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Fetch Events Limitation
 
-The collector can handle up to 35K events per minute on average.
+The collector's capacity is at least 150,000 events per minute.
+
 
 ## Commands
 
@@ -32,7 +33,7 @@ Returns events extracted from SaaS traffic and or logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts to return (maximum value - 10000). | Optional |
+| limit | The maximum number of alerts to return. | Optional |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional |
 
 #### Context Output
