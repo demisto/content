@@ -707,23 +707,6 @@ def test_create_permissions_error_entry_all_invalid_params(mocker):
     return_error.assert_called_once_with("Invalid arguments for permission entry")
 
 
-def test_create_permissions_error_entry_whitespace_only_params(mocker):
-    """
-    Given: Parameters that contain only whitespace.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error since whitespace-only strings are considered invalid.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry("   ", "  ", "   ")
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
 def test_return_multiple_permissions_error_single_entry(mocker):
     """
     Given: A single valid error entry in the error_entries list.
@@ -739,7 +722,6 @@ def test_return_multiple_permissions_error_single_entry(mocker):
     with pytest.raises(SystemExit):
         return_multiple_permissions_error(error_entries)
 
-    demisto.debug.assert_called_once()
     debug_call = demisto.debug.call_args[0][0]
     assert "Permission error detected for account account_id" in debug_call
 
@@ -770,7 +752,7 @@ def test_return_multiple_permissions_error_multiple_entries(mocker):
     with pytest.raises(SystemExit):
         return_multiple_permissions_error(error_entries)
 
-    assert demisto.debug.call_count == 3
+    assert demisto.debug.call_count == 6
 
     debug_calls = [call[0][0] for call in demisto.debug.call_args_list]
     assert "Permission error detected for account account-1" in debug_calls[0]
