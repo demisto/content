@@ -1,11 +1,11 @@
-comment: This script runs a security and compliance search and retrieves the search results
+comment: Runs a security and compliance search and retrieves the search results.
 name: o365-security-compliance-search
 commonfields:
   id: o365-security-compliance-search
   version: -1
 args:
 - name: search_name
-  description: The name of the compliance search
+  description: The name of the compliance search.
   required: true
 - name: force
   description: Overwrite the existing search if true, or use the existing search without modifying any search parameters if false.
@@ -57,29 +57,29 @@ args:
   defaultValue: '300'
 outputs:
   - contextPath: O365SecurityAndComplianceSearch.Search.Name
-    description: The search name
+    description: The search name.
     type: String
   - contextPath: O365SecurityAndComplianceSearch.Search.Status
-    description: The search status
+    description: The search status.
     type: String
   - contextPath: O365SecurityAndComplianceSearch.Search.Results
-    description: The search results
+    description: The search results.
     type: Array
   - contextPath: O365SecurityAndComplianceSearch.Preview.Name
-    description: The preview name
+    description: The preview name.
     type: String
   - contextPath: O365SecurityAndComplianceSearch.Preview.Status
-    description: The preview status
+    description: The preview status.
     type: String
   - contextPath: O365SecurityAndComplianceSearch.Preview.Results
-    description: The preview results
+    description: The preview results.
     type: Array
 script: '-'
 polling: true
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
