@@ -1,3 +1,4 @@
+from time import sleep
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -8,10 +9,12 @@ def main():
     score = int(demisto.args().get("score"))
     vendor = demisto.args().get("vendor")
     reliability = demisto.args().get("reliability", None)
+    LOG("Got all arguments")
 
     dbotscore = {"Indicator": indicator, "Type": indicatorType, "Vendor": vendor, "Score": score, "Reliability": reliability}
 
     command_results = CommandResults(outputs_prefix="DBotScore", outputs=dbotscore)
+    sleep(10000000)
     return_results(command_results)
 
 
