@@ -8,8 +8,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
-from CommonServerUserPython import *  # noqa
-
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
