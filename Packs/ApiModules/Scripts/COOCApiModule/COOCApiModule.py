@@ -341,7 +341,7 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
     # Input validation
     entries = []
     for entry in error_entries:
-        if not "account_id" or not "message" or not "name":
+        if entry.get("account_id") and entry.get("message") and entry.get("name"):
             return_error("Invalid arguments for permission entry")
         # Create entry
         error_entry = {
@@ -386,7 +386,7 @@ def return_permissions_error(account_id: str, message: str, name: str) -> None:
         None: This function does not return as it calls sys.exit(0)
     """
     # Input validation
-    if not "account_id" or not "message" or not "name":
+    if not account_id or not message or not name:
         return_error("Invalid arguments for permission entry")
 
     # Create entry
