@@ -25,7 +25,7 @@ class UserData(TypedDict):
     Instance: str
 
 
-def execute_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[dict], str]:
+def run_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[dict], str]:
     """Executes a Demisto command and captures human-readable outputs.
 
     Args:
@@ -45,7 +45,10 @@ def execute_command(cmd: str, args: dict, label_hr: bool = True) -> tuple[list[d
     ]
     human_readable = "\n\n".join(
         (
-            f"#### {'Error' if is_error(res) else 'Result'} for name={cmd} args={args} current instance={args.get('using', 'N/A')}\n{msg}"
+            (
+                f"#### {'Error' if is_error(res) else 'Result'} for "
+                f"name={cmd} args={args} current instance={args.get('using', 'N/A')}\n{msg}"
+            )
             if label_hr
             else msg
         )
@@ -92,7 +95,7 @@ def run_active_directory_query_v2(user: UserData, using: str) -> tuple[list[Disa
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command("ad-disable-account", {"username": user["Username"], "using": using})
+    res_cmd, hr = run_command("ad-disable-account", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
@@ -114,7 +117,7 @@ def run_microsoft_graph_user(user: UserData, using: str) -> tuple[list[DisabledU
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command("msgraph-user-account-disable", {"user": user["Username"], "using": using})
+    res_cmd, hr = run_command("msgraph-user-account-disable", {"user": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_hr = res["HumanReadable"]
@@ -136,7 +139,7 @@ def run_okta_v2(user: UserData, using: str) -> tuple[list[DisabledUserResult], s
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command("okta-suspend-user", {"username": user["Username"], "using": using})
+    res_cmd, hr = run_command("okta-suspend-user", {"username": user["Username"], "using": using})
     func_res = []
     for res in res_cmd:
         res_msg = res["Contents"]
@@ -161,7 +164,7 @@ def run_iam_disable_user(user: UserData, using: str) -> tuple[list[DisabledUserR
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command(
+    res_cmd, hr = run_command(
         "iam-disable-user",
         {"user-profile": f'{{"id":"{user["ID"]}"}}', "using": using},
     )
@@ -185,7 +188,7 @@ def run_gsuiteadmin(user: UserData, using: str) -> tuple[list[DisabledUserResult
     Returns:
         tuple[list[DisabledUserResult], str]: A list containing the result of the disable operation.
     """
-    res_cmd, hr = execute_command(
+    res_cmd, hr = run_command(
         "gsuite-user-update",
         {"user_key": user["Email"], "suspended": "true", "using": using},
     )
@@ -233,7 +236,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     Returns:
         tuple[list[UserData], str]: A list of user data dictionaries.
     """
-    res, hr = execute_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
+    res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
     if errors := [r for r in res if r["Type"] == EntryType.ERROR]:
         if err := next((not r["HumanReadable"] for r in errors), None):
             raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
@@ -247,7 +250,10 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     )
     if not res_user:
         raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
-    return [UserData(**(dict.fromkeys(("ID", "Username", "Email"), "") | res)) for res in res_user["Contents"]], hr
+    return (
+        [dict.fromkeys(UserData.__required_keys__, "") | res for res in res_user["Contents"]],
+        hr,
+    )
 
 
 def disable_users(users: list[UserData]) -> tuple[list[dict], str]:
@@ -264,6 +270,7 @@ def disable_users(users: list[UserData]) -> tuple[list[dict], str]:
                     profile information.
     """
     context = []
+    human_readables = []
     for user in users:
         if user["Status"] == "found":
             command_func = get_module_command_func(user["Brand"])
@@ -281,9 +288,10 @@ def disable_users(users: list[UserData]) -> tuple[list[dict], str]:
                 | res
                 for res in res_cmd
             ]
+            human_readables.append(hr)
     if not context:
         raise DemistoException("User(s) not found.")
-    return context, hr
+    return context, "\n\n".join(human_readables)
 
 
 def main():

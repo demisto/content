@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 from CommonServerPython import *
 import pytest
 from DisableUser import (
-    execute_command,
+    run_command,
     get_module_command_func,
     run_active_directory_query_v2,
     run_microsoft_graph_user,
@@ -53,7 +53,7 @@ def test_execute_command_success(mock_demisto):
         {"Type": 4, "Contents": "Error", "HumanReadable": None},
         {"Type": 14, "Contents": "Log", "HumanReadable": "HR3"},
     ]
-    results, hr = execute_command("test-cmd", {})
+    results, hr = run_command("test-cmd", {})
     assert len(results) == 2
     assert results[0]["Contents"] == "Success"
     assert results[1]["Contents"] == "Error"
@@ -74,7 +74,7 @@ def test_execute_command_no_human_readable(mock_demisto):
     mock_demisto.executeCommand.return_value = [
         {"Type": 1, "Contents": "Success"},
     ]
-    results, hr = execute_command("test-cmd", {})
+    results, hr = run_command("test-cmd", {})
     assert len(results) == 1
     assert hr == "#### Result for name=test-cmd args={} current instance=N/A\nSuccess"
 

@@ -777,7 +777,7 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_outputs.append(outputs)
+                    users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
 
             #################################
