@@ -28,8 +28,8 @@ This script executes the 'quarantine-file' command on a specified file via the a
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| QuarantineFile.FilePath. | The path of the quarantined file. | String |
-| QuarantineFile.FileHash. | The hash of the quarantined file. | String |
+| QuarantineFile.FilePath | The path of the quarantined file. | String |
+| QuarantineFile.FileHash | The hash of the quarantined file. | String |
 | QuarantineFile.Status | Whether the command execution was successful or not. | String |
 | QuarantineFile.Message | A success message if the command runs successfully, otherwise a message that contains the error. | String |
 | QuarantineFile.Brand | The integration that executed the command. | String |

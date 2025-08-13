@@ -559,11 +559,7 @@ class XDRHandler(BrandHandler):
 
     def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
         """
-        Runs pre-checks for XDR endpoints to see if files are already quarantined.
-
-        This prevents redundant API calls. For each endpoint, it checks the quarantine
-        status. If already quarantined, a success result is created. Otherwise, the
-        endpoint is added to a list for quarantine action.
+        Runs pre-checks for XDR endpoints.
 
         Args:
             args (dict): The script arguments for this brand's endpoints.
@@ -573,46 +569,11 @@ class XDRHandler(BrandHandler):
                 - A list of endpoint IDs that still need to be quarantined.
                 - A list of QuarantineResult objects for endpoints already processed.
         """
-        demisto.debug(f"[{self.brand} Handler] Running pre-checks.")
-        online_endpoint_ids = argToList(args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG))
-        completed_results = []
-        endpoints_to_quarantine = []
 
-        for e_id in online_endpoint_ids:
-            try:
-                is_quarantined = self._execute_quarantine_status_command(
-                    e_id, args[QuarantineOrchestrator.FILE_HASH_ARG], args[QuarantineOrchestrator.FILE_PATH_ARG]
-                ).get("status")
+        # Note: We should be using the 'get-quarantine-status' command to check if a file is already quarantined,
+        # but this command currently has an issue so we will not be doing pre-checks
 
-                if is_quarantined:
-                    demisto.debug(f"[{self.brand} Handler] File already quarantined on endpoint {e_id}.")
-                    completed_results.append(
-                        QuarantineResult.create(
-                            endpoint_id=e_id,
-                            status=QuarantineResult.Statuses.SUCCESS,
-                            message=QuarantineResult.Messages.ALREADY_QUARANTINED,
-                            brand=self.brand,
-                            script_args=args,
-                        )
-                    )
-                else:
-                    demisto.debug(f"[{self.brand} Handler] File not quarantined. Adding to quarantine list.")
-                    endpoints_to_quarantine.append(e_id)
-
-            except Exception as e:
-                demisto.error(f"[{self.brand} Handler] Failed during pre-check for endpoint {e_id}: {e}")
-                completed_results.append(
-                    QuarantineResult.create(
-                        endpoint_id=e_id,
-                        status=QuarantineResult.Statuses.FAILED,
-                        message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
-                        brand=self.brand,
-                        script_args=args,
-                    )
-                )
-
-        demisto.debug(f"[{self.brand} Handler] Pre-checks complete. {len(endpoints_to_quarantine)} endpoints require action.")
-        return endpoints_to_quarantine, completed_results
+        return argToList(args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG)), []
 
     def initiate_quarantine(self, args: dict) -> dict:
         """
@@ -934,7 +895,26 @@ class QuarantineOrchestrator:
 
         if self._is_first_run():
             demisto.debug("[Orchestrator] Detected first run.")
-            self._sanitize_and_validate_args()
+            try:
+                self._sanitize_and_validate_args()
+            except Exception as e:
+                self.completed_results = []
+
+                for endpoint_id in argToList(self.args.get(self.ENDPOINT_IDS_ARG)):
+                    self.completed_results.append(
+                        QuarantineResult.create(
+                            endpoint_id,
+                            QuarantineResult.Statuses.FAILED,
+                            QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=str(e)),
+                            "Unknown",
+                            {
+                                self.FILE_PATH_ARG: self.args.get(self.FILE_PATH_ARG),
+                                self.FILE_HASH_ARG: self.args.get(self.FILE_HASH_ARG),
+                            },
+                        )
+                    )
+
+                return self._get_final_results()
             self._initiate_jobs()
         else:
             demisto.debug("[Orchestrator] Detected polling run.")
@@ -945,7 +925,7 @@ class QuarantineOrchestrator:
             demisto.debug(f"[Orchestrator] {len(self.pending_jobs)} jobs still pending. Saving state and scheduling next poll.")
             demisto.setContext(self.CONTEXT_PENDING_JOBS, self.pending_jobs)
             demisto.setContext(self.CONTEXT_COMPLETED_RESULTS, QuarantineResult.to_context_entry(self.completed_results))
-            interim_results = CommandResults(readable_output="Quarantine of file on endpoints is still running...")
+            interim_results = CommandResults(readable_output="Quarantine operations are still in progress...")
             return PollResult(
                 response=interim_results, continue_to_poll=True, args_for_next_run=self.args, partial_result=interim_results
             )
@@ -1070,7 +1050,6 @@ class QuarantineOrchestrator:
         demisto.debug("[Orchestrator] Successfully deleted context keys.")
 
         results_list = QuarantineResult.to_context_entry(self.completed_results)
-
         # Build final report
         final_readable_output = tableToMarkdown(
             name=f"Quarantine File Results for: {self.args.get(self.FILE_PATH_ARG)}",
@@ -1081,7 +1060,7 @@ class QuarantineOrchestrator:
 
         final_command_results = CommandResults(
             outputs_prefix="QuarantineFile",
-            outputs_key_field=["EndpointID", "FilePath", "FileHash"],
+            outputs_key_field=["EndpointID", "FilePath", "FileHash"],  # these 3 make a unique key
             readable_output=final_readable_output,
             outputs=results_list,
         )

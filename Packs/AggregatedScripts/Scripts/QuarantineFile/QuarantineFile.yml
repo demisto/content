@@ -30,10 +30,10 @@ args:
 comment: This script executes the 'quarantine-file' command on a specified file via the appropriate agent. This script is used to isolate files identified as suspicious.
 name: quarantine-file
 outputs:
-- contextPath: QuarantineFile.FilePath.
+- contextPath: QuarantineFile.FilePath
   description: The path of the quarantined file.
   type: String
-- contextPath: QuarantineFile.FileHash.
+- contextPath: QuarantineFile.FileHash
   description: The hash of the quarantined file.
   type: String
 - contextPath: QuarantineFile.Status

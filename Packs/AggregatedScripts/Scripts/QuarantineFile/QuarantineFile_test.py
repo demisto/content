@@ -512,97 +512,6 @@ class TestXDRHandler:
             assert endpoints_to_quarantine == []
             assert completed_results == []
 
-        def test_run_pre_checks_and_get_initial_results_returns_no_eps_to_quarantine_when_all_already_quarantined(self, mocker):
-            """
-            Given: args with an endpoint id that is already quarantined
-            When: XDRHandler run_pre_checks_and_get_initial_results is called
-            Then: Returns no eps to quarantine, and a completed result
-            """
-            args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
-            orchestrator = _get_orchestrator(args)
-            handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
-
-            mocker.patch.object(handler, "_execute_quarantine_status_command", return_value={"status": True})
-
-            endpoints_to_quarantine, completed_results = handler.run_pre_checks_and_get_initial_results(args)
-            assert endpoints_to_quarantine == []
-            assert completed_results == [
-                QuarantineResult.create(
-                    endpoint_id="id1",
-                    status=QuarantineResult.Statuses.SUCCESS,
-                    message=QuarantineResult.Messages.ALREADY_QUARANTINED,
-                    brand=Brands.CORTEX_XDR_IR,
-                    script_args={"file_hash": SHA_256_HASH, "file_path": "/path"},
-                )
-            ]
-
-        def test_run_pre_checks_and_get_initial_results_returns_eps_to_quarantine(self, mocker):
-            """
-            Given: args with an endpoint id that is not already quarantined
-            When: XDRHandler run_pre_checks_and_get_initial_results is called
-            Then: Returns eps to quarantine and no completed results
-            """
-            args = {"endpoint_id": "id1,id2", "file_hash": "sha256", "file_path": "/path"}
-            orchestrator = _get_orchestrator(args)
-            handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
-
-            # mock to return true for first endpoint, false for second
-            mocker.patch.object(handler, "_execute_quarantine_status_command", side_effect=[{"status": False}, {"status": False}])
-
-            endpoints_to_quarantine, completed_results = handler.run_pre_checks_and_get_initial_results(args)
-            assert endpoints_to_quarantine == ["id1", "id2"]
-            assert completed_results == []
-
-        def test_run_pre_checks_and_get_initial_results_fails_ep_when_check_status_raises_unexpected_exception(self, mocker):
-            """
-            Given: args with an endpoint id that is not already quarantined, already quarantined, and one that raises an
-                   unexpected exception
-            When: XDRHandler run_pre_checks_and_get_initial_results is called
-            Then: Returns endpoint to quarantine, and completed results
-            """
-            args = {"endpoint_id": "id1,id2,id3,id4", "file_hash": "sha256", "file_path": "/path"}
-            orchestrator = _get_orchestrator(args)
-            handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
-
-            # mock to return true for first endpoint, raises exception for second, false for third, none for fourth
-            def side_effect(endpoint_id, file_hash, file_path):
-                if endpoint_id == "id1":
-                    return {"status": True}
-                elif endpoint_id == "id2":
-                    raise Exception("Unexpected error")
-                elif endpoint_id == "id3":
-                    return {"status": False}
-                else:
-                    return None
-
-            mocker.patch.object(handler, "_execute_quarantine_status_command", side_effect=side_effect)
-
-            endpoints_to_quarantine, completed_results = handler.run_pre_checks_and_get_initial_results(args)
-            assert endpoints_to_quarantine == ["id3"]
-            assert completed_results == [
-                QuarantineResult.create(
-                    endpoint_id="id1",
-                    status=QuarantineResult.Statuses.SUCCESS,
-                    message=QuarantineResult.Messages.ALREADY_QUARANTINED,
-                    brand=Brands.CORTEX_XDR_IR,
-                    script_args={"file_hash": "sha256", "file_path": "/path"},
-                ),
-                QuarantineResult.create(
-                    endpoint_id="id2",
-                    status=QuarantineResult.Statuses.FAILED,
-                    message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
-                    brand=Brands.CORTEX_XDR_IR,
-                    script_args={"file_hash": "sha256", "file_path": "/path"},
-                ),
-                QuarantineResult.create(
-                    endpoint_id="id4",
-                    status=QuarantineResult.Statuses.FAILED,
-                    message=QuarantineResult.Messages.ENDPOINT_OFFLINE,
-                    brand=Brands.CORTEX_XDR_IR,
-                    script_args={"file_hash": "sha256", "file_path": "/path"},
-                ),
-            ]
-
     class TestInitialQuarantine:
         """Tests the quarantine kickoff flow of the XDRHandler."""
 
@@ -1185,7 +1094,7 @@ class TestQuarantineOrchestrator:
         def test_run_first_run_handles_mixed_results_and_schedules_poll(self, mocker):
             """
             Given:
-                - A first run with a mix of endpoints (online, offline, already quarantined).
+                - A first run with a mix of endpoints (online, offline).
             When:
                 - The orchestrator's run() method is called.
             Then:
@@ -1211,19 +1120,13 @@ class TestQuarantineOrchestrator:
             mock_mapper_instance.initial_results = [offline_result]
             mocker.patch("QuarantineFile.EndpointBrandMapper", return_value=mock_mapper_instance)
 
-            # Mock XDRHandler to find some endpoints already quarantined
             mock_handler_instance = mocker.Mock()
-            already_quarantined_result = QuarantineResult.create(
-                "ep3", "Success", "Already quarantined", Brands.CORTEX_CORE_IR, args
-            )
-            mock_handler_instance.run_pre_checks_and_get_initial_results.return_value = (
-                ["ep1", "ep2"],
-                [already_quarantined_result],
-            )
             mock_handler_instance.initiate_quarantine.return_value = {
                 "brand": Brands.CORTEX_CORE_IR,
                 "poll_command": "some-poll-cmd",
             }
+            mock_handler_instance.run_pre_checks_and_get_initial_results.return_value = (["ep1", "ep2", "ep3"], [])
+
             mocker.patch("QuarantineFile.handler_factory", return_value=mock_handler_instance)
 
             orchestrator = _get_orchestrator(args)
@@ -1233,11 +1136,12 @@ class TestQuarantineOrchestrator:
 
             # Assert Polling is Scheduled
             assert result.continue_to_poll is True
+            assert result.args_for_next_run == args
+            assert result.response.readable_output == "Quarantine operations are still in progress..."
 
-            # Assert Context Saving
             assert mock_set_context.call_count == 2
 
-            # 1. Check Pending Jobs was set Context
+            # 1. Check Pending Jobs was set in Context
             pending_jobs_call = next(
                 (c for c in mock_set_context.call_args_list if c[0][0] == QuarantineOrchestrator.CONTEXT_PENDING_JOBS), None
             )
@@ -1253,12 +1157,58 @@ class TestQuarantineOrchestrator:
             )
             assert completed_results_call is not None
             saved_results = completed_results_call[0][1]
-            assert len(saved_results) == 2
+            assert len(saved_results) == 1
 
             # Check for the offline result from the mapper
             assert any(r["EndpointID"] == "offline-ep" for r in saved_results)
-            # Check for the already quarantined result from the handler
-            assert any(r["EndpointID"] == "ep3" for r in saved_results)
+
+        def test_run_first_run_handles_arg_validation_error(self, mocker):
+            """
+            Given:
+                - A first run with a mix of endpoints (online, offline, already quarantined).
+            When:
+                - The orchestrator's run() method is called with invalid arguments.
+            Then:
+                - Ensure get_final_results is called.
+                - Ensure a polling job is not scheduled.
+                - Ensure the correct context data is returned
+            """
+            # Arrange
+            args = {
+                "endpoint_id": "ep1,ep2,ep3,offline-ep",
+                "file_hash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "file_path": "/path",
+            }
+
+            # Mock context to be empty for a first run
+            mocker.patch.object(demisto, "context", return_value={})
+            mocker.patch.object(demisto, "setContext")
+
+            mock_verify_and_get_valid_brands = mocker.patch.object(QuarantineOrchestrator, "_verify_and_get_valid_brands")
+            mock_verify_and_get_valid_brands.side_effect = QuarantineException("Invalid argument")
+            # spy on but dont mock _get_final_results because we need it to actually run
+            mock_get_final_results = mocker.spy(QuarantineOrchestrator, "_get_final_results")
+            mock_initiate_job = mocker.patch.object(QuarantineOrchestrator, "_initiate_jobs")
+
+            # Act
+            orchestrator = _get_orchestrator(args)
+            result = orchestrator.run()
+
+            # Assert get_final_results is called
+            mock_get_final_results.assert_called_once()
+
+            # Assert initiate_job is not called
+            mock_initiate_job.assert_not_called()
+
+            assert len(result.response.outputs) == 4
+            assert result.response.outputs[0]["FilePath"] == "/path"
+            assert result.response.outputs[0]["FileHash"] == "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
+            assert result.response.outputs[0]["Status"] == "Failed"
+            assert result.response.outputs[0]["Message"] == "Failed to quarantine file. Invalid argument"
+            assert result.response.outputs[0]["Brand"] == "Unknown"
+
+            assert len(orchestrator.completed_results) == 4
+            assert not orchestrator.pending_jobs  # The list should now be empty
 
         def test_run_polling_run_job_still_polling(self, mocker):
             """
@@ -1313,7 +1263,7 @@ class TestQuarantineOrchestrator:
                 - Ensure the method returns a final result (continue_to_poll=False).
             """
             # Arrange
-            args = {"file_hash": "hash123", "file_path": "/path"}
+            args = {"endpoint_id": "ep1", "file_hash": "hash123", "file_path": "/path"}
             pending_job = {"brand": Brands.CORTEX_CORE_IR, "poll_command": "some-poll-cmd", "poll_args": {"action_id": "123"}}
 
             # Mock context to contain the pending job
@@ -1337,6 +1287,17 @@ class TestQuarantineOrchestrator:
 
             # Assert
             assert result.continue_to_poll is False
+            assert result.response.outputs_prefix == "QuarantineFile"
+            assert result.response.outputs_key_field == ["EndpointID", "FilePath", "FileHash"]
+
+            assert len(result.response.outputs) == 1
+            assert result.response.outputs[0]["EndpointID"] == "ep1"
+            assert result.response.outputs[0]["FilePath"] == "/path"
+            assert result.response.outputs[0]["FileHash"] == "hash123"
+            assert result.response.outputs[0]["Status"] == "Success"
+            assert result.response.outputs[0]["Message"] == "File quarantined"
+            assert result.response.outputs[0]["Brand"] == Brands.CORTEX_CORE_IR
+
             mock_handler_instance.finalize.assert_called_once_with(pending_job, polling_response)
             assert len(orchestrator.completed_results) == 1
             assert orchestrator.completed_results[0].EndpointID == "ep1"
