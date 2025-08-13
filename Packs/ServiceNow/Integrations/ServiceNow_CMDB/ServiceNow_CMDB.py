@@ -40,6 +40,7 @@ class Client:
         url: str = "",
         verify: bool = False,
         proxy: bool = False,
+        jwt_params: dict = None,
     ):
         """
         Args:
@@ -64,6 +65,7 @@ class Client:
             verify=verify,
             proxy=proxy,
             headers=headers,
+            jwt_params=jwt_params,
         )
 
     def records_list(self, class_name, params=None):
@@ -547,10 +549,30 @@ def main() -> None:
     client_id = client_secret = ""
     credentials = params.get("credentials", {})
     use_oauth = params.get("use_oauth", False)
+    use_jwt = params.get("use_jwt", False)
+    jwt_params = {}
+
+    # use jwt only with OAuth
+    if use_jwt and use_oauth:
+        raise ValueError("Please choose only one authentication method (OAuth or JWT).")
+
+    elif use_jwt:
+        use_oauth = True
 
     if use_oauth:
         client_id = credentials.get("identifier")
         client_secret = credentials.get("password")
+
+    if use_jwt:
+        if not params.get("private_key") or not params.get("kid") or not params.get("sub"):
+            raise Exception("When using JWT, fill private key, kid and sub fields")
+        jwt_params = {
+            "private_key": params.get("private_key", {}).get("password"),
+            "kid": params.get("kid"),
+            "sub": params.get("sub"),
+            "iss": params.get("iss", client_id),
+            "aud": client_id
+        }
 
     client = Client(
         credentials=credentials,
@@ -560,6 +582,7 @@ def main() -> None:
         url=url,
         verify=verify,
         proxy=proxy,
+        jwt_params=jwt_params
     )
 
     commands = {
