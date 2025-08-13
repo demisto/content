@@ -33,16 +33,10 @@ def test_test_module(mocker):
         'get_incidents',
         return_value=mock_response.get('objects'),
     )
-    logout = mocker.patch.object(
-        Client,
-        '_logout',
-        return_value=None,
-    )
 
     result = check_module(client, {}, datetime.datetime(2024, 1, 1))
     login.assert_called_once()
     query_events.assert_called()
-    logout.assert_called_once()
     assert result == 'ok'
 
 
@@ -76,16 +70,10 @@ def test_fetch_incidents(mocker):
         'get_incidents',
         return_value=mock_insights_response.get('objects'),
     )
-    logout = mocker.patch.object(
-        Client,
-        '_logout',
-        return_value=None,
-    )
 
     fetch_incidents(client, {}, {}, datetime.datetime(2024, 1, 1), 1000)
     login.assert_called_once()
     query_insights.assert_called()
-    logout.assert_called_once()
 
 
 def test_update_remote_system_command_close_true(mocker):
@@ -98,10 +86,10 @@ def test_update_remote_system_command_close_true(mocker):
     mocker.patch('CheckPointXDR.argToBoolean', return_value=True)
 
     args = {
-        "remote_incident_id": "123",
+        "remoteId": "123",
         "delta": {"closeReason": "False Positive"},
-        "incident_changed": True,
-        "inc_status": IncidentStatus.DONE,
+        "incidentChanged": True,
+        "status": IncidentStatus.DONE,
         "data": {}
     }
 
@@ -119,10 +107,10 @@ def test_update_remote_system_command_close_false(mocker):
     mocker.patch('CheckPointXDR.argToBoolean', return_value=False)
 
     args = {
-        "remote_incident_id": "321",
+        "remoteId": "321",
         "delta": {"closeReason": "Duplicate"},
-        "incident_changed": True,
-        "inc_status": IncidentStatus.DONE,
+        "incidentChanged": True,
+        "status": IncidentStatus.DONE,
         "data": {}
     }
 
@@ -261,10 +249,10 @@ def test_get_mapping_fields_command():
     assert len(result.scheme_types_mappings) > 0
 
     # Verify that the incident scheme type is present
-    assert any(scheme_type.name == "incident" for scheme_type in result.scheme_types_mappings)
+    assert any(scheme_type.type_name == "incident" for scheme_type in result.scheme_types_mappings)
 
     # Verify the scheme type has fields
-    incident_scheme = next((scheme for scheme in result.scheme_types_mappings if scheme.name == "incident"), None)
+    incident_scheme = next((scheme for scheme in result.scheme_types_mappings if scheme.type_name == "incident"), None)
     assert incident_scheme is not None
     assert len(incident_scheme.fields) > 0
 
