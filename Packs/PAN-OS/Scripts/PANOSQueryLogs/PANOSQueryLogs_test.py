@@ -1,6 +1,7 @@
 from pytest_mock import MockerFixture
 from PANOSQueryLogs import main
 
+
 def test_main(mocker: MockerFixture):
     """
     Given:
@@ -38,6 +39,7 @@ def test_url_log_query(mocker: MockerFixture):
 
     assert mock_execute_polling_command.call_args[0][1]["query"] == "url_category_list contains 'command-and-control'"
 
+
 def test_invalid_input_url_log_query(mocker: MockerFixture):
     """
     Given:
@@ -47,20 +49,20 @@ def test_invalid_input_url_log_query(mocker: MockerFixture):
     Assert:
         Ensure ValueError is raised for incorrect URL category
     """
-    invalid_test_cases = [
-        ("Invalid Category", "url"),
-        ("Artificial Intelligence", "traffic")
-    ]
+    invalid_test_cases = [("Invalid Category", "url"), ("Artificial Intelligence", "traffic")]
 
     for url_category, log_type in invalid_test_cases:
         args = {"log_type": log_type, "url_category": url_category}
         mocker.patch("PANOSQueryLogs.demisto.args", return_value=args)
         mocker.patch("PANOSQueryLogs.execute_polling_command", return_value=[])
         mock_return_error = mocker.patch("PANOSQueryLogs.return_error")
-        
+
         main()
-        
+
         # Check that return_error was called with the expected message
         assert mock_return_error.called
         error_message = mock_return_error.call_args[0][0]
-        assert "Invalid URL category" in error_message or "url_category arg is only valid for querying with log_type url" in error_message
+        assert (
+            "Invalid URL category" in error_message
+            or "url_category arg is only valid for querying with log_type url" in error_message
+        )
