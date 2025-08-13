@@ -1426,18 +1426,18 @@ ALERT_DOMAIN = {"Security": "DOMAIN_SECURITY", "Health": "DOMAIN_HEALTH", "Hunti
 DETECTION_METHOD_HR_TO_MACHINE_NAME = {
     "XDR Agent": "TRAPS",
     "XDR Analytics": "MAGNIFIER",
-    "XDR Analytics BIOC": "ANALYTICSBIOC",
-    "PAN NGFW": "FIREWALL",
+    "XDR Analytics BIOC": "ANALYTICS_BIOC",
+    "PAN NGFW": "FW",
     "XDR BIOC": "BIOC",
     "XDR IOC": "IOC",
-    "Threat Intelligence": "TIM",
+    "Threat Intelligence": "THREAT_INTELLIGENCE",
     "XDR Managed Threat Hunting": "MTH",
-    "Correlation": "CORRELATION_RULE",
+    "Correlation": "CORRELATION",
     "Prisma Cloud": "PRISMA_CLOUD",
     "Prisma Cloud Compute": "PRISMA_CLOUD_COMPUTE",
     "ASM": "XPANSE",
     "IoT Security": "IOT",
-    "Custom Alert": "PUBLIC_API",
+    "Custom Alert": "CREATE_ALERT_PUBLIC_API",
     "Health": "HEALTH",
     "SaaS Attachments": "EMAIL_ATTACHMENT",
     "Attack Path": "ATTACK_PATH",
@@ -1450,13 +1450,13 @@ DETECTION_METHOD_HR_TO_MACHINE_NAME = {
     "API Traffic Monitor": "API_TRAFFIC_MONITOR",
     "API Posture Scanner": "API_POSTURE_SCANNER",
     "Agentless Disk Scanner": "AGENTLESS_DISK_SCANNER",
-    "Kubernetes Scanner": "KUBERNETES_SCANNERR",
+    "Kubernetes Scanner": "KUBERNETES_SCANNER",
     "Compute Policy": "COMPUTE_POLICY",
     "CSPM Scanner": "CSPM_SCANNER",
     "CAS CVE Scanner": "CAS_CVE_SCANNER",
     "CAS License Scanner": "CAS_LICENSE_SCANNER",
     "Secrets Scanner": "SECRETS_SCANNER",
-    "SAST Scanner": "SAST_SCANNER",
+    "SAST Scanner": "CAS_SAST_SCANNER",
     "Data Policy": "DATA_POLICY",
     "Attack Surface Test": "ATTACK_SURFACE_TEST",
     "Package Operational Risk": "CAS_OPERATIONAL_RISK_SCANNER",
@@ -1472,7 +1472,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
     return {
         "alert_id": AlertFilterArg("internal_id", EQ, array),
         "severity": AlertFilterArg(
-            "severity", EQ, dropdown, SEVERITY_STATUSES
+            "severity", EQ, array, SEVERITY_STATUSES
         ),
         
         "starred": AlertFilterArg(
@@ -1491,7 +1491,6 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "rule_id": AlertFilterArg("matching_service_rule_id", EQ, array),
         "rule_name": AlertFilterArg("fw_rule", EQ, array),
         "alert_name": AlertFilterArg("alert_name", CONTAINS, array),
-        # TODO: This might be a breaking change - need to ask.
         "alert_source": AlertFilterArg("alert_source", EQ, array, DETECTION_METHOD_HR_TO_MACHINE_NAME),
         "time_frame": AlertFilterArg("source_insert_ts", "", time_frame),
         "user_name": AlertFilterArg("actor_effective_username", CONTAINS, array),
@@ -3765,7 +3764,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     sort_field = args.pop("sort_field", "source_insert_ts")
     sort_order = args.pop("sort_order", "DESC")
     prefix = args.pop("integration_context_brand", "CoreApiModule")
-    output_keys = args.pop('outputs_keys', [])
+    output_keys = argToList(args.pop('output_keys', []))
     args.pop("integration_name", None)
     custom_filter = {}
     filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]

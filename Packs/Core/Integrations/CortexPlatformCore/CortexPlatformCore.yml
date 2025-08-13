@@ -67,45 +67,46 @@ script:
     - description: The issue source.
       isArray: true
       name: issue_source
+      auto: PREDEFINED
       predefined:
-        - XDR Agent
-        - XDR Analytics
-        - XDR Analytics BIOC
-        - PAN NGFW
-        - XDR BIOC
-        - XDR IOC
-        - Threat Intelligence
-        - XDR Managed Threat Hunting
-        - Correlation
-        - Prisma Cloud
-        - Prisma Cloud Compute
-        - ASM
-        - IoT Security
-        - Custom Alert
-        - Health
-        - SaaS Attachments
-        - Attack Path
-        - Cloud Network Analyzer
-        - IaC Scanner
-        - CAS Secret Scanner
-        - CI/CD Risks
-        - CLI Scanner
-        - CIEM Scanner
-        - API Traffic Monitor
-        - API Posture Scanner
-        - Agentless Disk Scanner
-        - Kubernetes Scanner
-        - Compute Policy
-        - CSPM Scanner
-        - CAS CVE Scanner
-        - CAS License Scanner
-        - Secrets Scanner
-        - SAST Scanner
-        - Data Policy
-        - Attack Surface Test
-        - Package Operational Risk
-        - Vulnerability Policy
-        - AI Security Posture
+      - XDR Agent
+      - XDR Analytics
+      - XDR Analytics BIOC
+      - PAN NGFW
+      - XDR BIOC
+      - XDR IOC
+      - Threat Intelligence
+      - XDR Managed Threat Hunting
+      - Correlation
+      - Prisma Cloud
+      - Prisma Cloud Compute
+      - ASM
+      - IoT Security
+      - Custom Alert
+      - Health
+      - SaaS Attachments
+      - Attack Path
+      - Cloud Network Analyzer
+      - IaC Scanner
+      - CAS Secret Scanner
+      - CI/CD Risks
+      - CLI Scanner
+      - CIEM Scanner
+      - API Traffic Monitor
+      - API Posture Scanner
+      - Agentless Disk Scanner
+      - Kubernetes Scanner
+      - Compute Policy
+      - CSPM Scanner
+      - CAS CVE Scanner
+      - CAS License Scanner
+      - Secrets Scanner
+      - SAST Scanner
+      - Data Policy
+      - Attack Surface Test
+      - Package Operational Risk
+      - Vulnerability Policy
+      - AI Security Posture
     - auto: PREDEFINED
       description: Supports relative times or “custom” time option. If you choose the "custom" option, you should use start_time and end_time arguments.
       name: time_frame
@@ -251,11 +252,11 @@ script:
       isArray: true
       name: issue_domain
       predefined:
-        - Health
-        - Hunting
-        - IT
-        - Posture
-        - Security
+      - Health
+      - Hunting
+      - IT
+      - Posture
+      - Security
     - description: The description of the issue.
       isArray: true
       name: issue_description
@@ -269,9 +270,10 @@ script:
       isArray: true
       name: status
       predefined:
-        - New
-        - In Progress
-        - Resolved
+      - New
+      - In Progress
+      - Resolved
+      auto: PREDEFINED
     - description: Not status progress.
       isArray: true
       name: not_status
@@ -279,6 +281,7 @@ script:
       - New
       - In Progress
       - Resolved
+      auto: PREDEFINED
     - description: The assets ids related to the issue.
       isArray: true
       name: asset_ids

@@ -19,23 +19,33 @@ OUTPUT_KEYS = ['alert_id',
                 'asset_ids',
                 'assigned_to_pretty'
                 ]
+
+def remove_empty_string_values(args):
+    """Remove empty string values from the args dictionary."""
+    return {key: value for key, value in args.items() if value != ''}
+    
 def main():  # pragma: no cover
     try:
-        args: Dict = demisto.args()
+        args: dict = demisto.args()
+        
         if args.get('end_time') and not args.get("start_time"):
             raise DemistoException('When end time is provided start_time must be provided as well.')
         
         if args.get('start_time') and not args.get('end_time'):
             args['end_time'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
             
-        if args['start_time'] and args['end_time']:
+        if args.get('start_time') and args.get('end_time'):
             # When working with start time and end time need to specify time_frame custom.
             args['time_frame'] = 'custom'
 
         # Return only specific fields to the context.
         args['output_keys'] = ', '.join(OUTPUT_KEYS)
+        args = remove_empty_string_values(args)
 
-        execute_command('core-get-issues', args)
+        success, response = execute_command('core-get-issues', args)
+        if not success:
+            demisto.debug(f"Failed to execute findIndicators command: {get_error(response)}")
+        
     except DemistoException as error:
         return_error(str(error), error)
 
