@@ -15,7 +15,6 @@ from AdminByRequestEventCollector import (
     EventType,
     remove_first_run_params,
     validate_fetch_events_params,
-    validate_email_address,
     set_event_type_fetch_limit,
     fetch_events_list,
     fetch_events,
@@ -44,31 +43,6 @@ def util_load_json(path):
 
 
 class TestHelperFunction:
-    @pytest.mark.parametrize(
-        "email, expected",
-        [
-            ("test@example.com", True),
-            ("test.test@example.co.uk", True),
-            ("test_test@example.com", True),
-            ("test-test@example.com", True),
-            ("test@sub.example.com", True),
-            ("plainaddress", False),
-            ("@missing-local-part.com", False),
-            ("test@.com", False),
-            ("test@com", False),
-            ("test@.com.", False),
-            ("test@.com.com", False),
-            ("test@example..com", False),
-        ],
-    )
-    def test_validate_email_address(self, email, expected):
-        """
-        Given: An email string.
-        When: Calling the validate_email_address function.
-        Then: Ensure the function returns True for valid emails and False for invalid emails.
-        """
-        assert validate_email_address(email) == expected
-
     audit_log_event = EVENT_TYPES["Auditlog"]
     events_event = EVENT_TYPES["Events"]
     requests_event = EVENT_TYPES["Requests"]

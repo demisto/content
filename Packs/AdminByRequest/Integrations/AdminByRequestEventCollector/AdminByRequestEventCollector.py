@@ -111,9 +111,7 @@ def validate_email_address(email: str) -> bool:
     Returns:
         bool: True if the email is valid, False otherwise.
     """
-    # Regular expression for validating an Email
-    regex = r"^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$"
-    return re.fullmatch(regex, email) is not None
+    return re.fullmatch(emailRegex, email) is not None
 
 
 def remove_first_run_params(params: dict[str, Any]) -> None:
@@ -272,10 +270,10 @@ def prepare_list_output(records: List[dict[str, Any]]) -> str:
             "ID": rec.get("id"),
             "Type": rec.get("type"),
             "Settings Name": rec.get("settingsName"),
-            "Application Name": rec.get("application", {}).get("name"),
-            "Application Scan Result": rec.get("application", {}).get("scanResult"),
+            "Application Name": demisto.get(rec, "application.name"),
+            "Application Scan Result": demisto.get(rec, "application.scanResult"),
             "User": rec.get("user", {}),
-            "Computer name": rec.get("computer", {}).get("name"),
+            "Computer name": demisto.get(rec, "computer.name"),
             "Status": rec.get("status"),
             "Reason": rec.get("reason"),
             "Approved By": rec.get("approvedBy"),
