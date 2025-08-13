@@ -1063,7 +1063,7 @@ class TestGetUserData:
         """
         command = Command("Microsoft Graph User", "msgraph-user-get-manager", {"user": "graph_user"})
         mock_outputs = {"Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}}
-        expected_account = [{"manager_display_name": "Graph Manager", "manager_email": "manager@example.com"}]
+        expected_account = {"manager_display_name": "Graph Manager", "manager_email": "manager@example.com"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1075,6 +1075,7 @@ class TestGetUserData:
 
         result = msgraph_user_get_manager(command, additional_fields=True)
 
+        assert isinstance(result, dict)
         assert result == expected_account
 
     def test_xdr_list_risky_users(self, mocker: MockerFixture):

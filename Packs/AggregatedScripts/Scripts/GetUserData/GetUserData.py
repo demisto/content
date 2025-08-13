@@ -426,24 +426,20 @@ def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[Co
     return readable_outputs_list, user_outputs
 
 
-def msgraph_user_get_manager(command: Command) -> list[dict[str, Any]]:
+def msgraph_user_get_manager(command: Command, additional_fields: bool) -> dict[str, Any]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    manager_outputs = []
-    for output in entry_context:
-        output_key = get_output_key("MSGraphUserManager", output)
-        outputs = get_outputs(output_key, output)
-        manager_outputs.append(
-            {
-                "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
-                "manager_email": outputs.get("Manager", {}).get("Mail"),
-            }
-        )
+    output_key = get_output_key("MSGraphUserManager", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
+    manager_output = {
+        "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
+        "manager_email": outputs.get("Manager", {}).get("Mail"),
+    }
 
-    return manager_outputs
+    return manager_output
 
 
 def iam_get_user(
