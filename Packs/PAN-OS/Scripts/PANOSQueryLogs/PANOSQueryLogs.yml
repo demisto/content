@@ -24,7 +24,24 @@ args:
   - system
   - decryption
 - description: |-
-    Use a value from the URL Category list such as Malware, Phishing, AI Conversational Assistant, etc. to query URL logs. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest.
+    Use a value from the URL Category list to query URL logs. Optional values are 
+      1. Malware
+      2. Phishing
+      3. Command and Control
+      4. Dynamic DNS
+      5. Parked
+      6. Questionable
+      7. Unknown
+      8. Newly Registered Domains
+      9. Adult
+      10. Copyright Infringement
+      11. Extremism
+      12. Gambling
+      13. Games
+      14. Social Networking
+      15. Streaming Media
+      16. Artificial Intelligence 
+    Additionally supports security-risk categories such as high-risk, medium-risk, low-risk, as well as malware, phishing, and command-and-control threat categories. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored.
   name: url_category
 - description: |-
     The time the log was generated from the timestamp and prior to it.
