@@ -1119,3 +1119,26 @@ def test_get_events_with_arguments(mocker: MockerFixture):
 
     assert actual_events == mocked_response["results"]
     mocked_search.assert_called_once_with(limit=int(DEFAULT_GET_EVENTS_LIMIT), start_date="1670000000", end_date="1680000000")
+
+
+def test_confluence_cloud_content_get_command_when_resource_not_found(mocker: MockerFixture):
+    """
+    To test confluence_cloud_content_get command when no resource has been found.
+    Given:
+        - command arguments for get content command
+    When:
+        - Calling `confluence-cloud-content-get` command
+    Then:
+        - Returns the response data which consists of an error message
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_content_get_command, HTTP_ERROR
+
+    error_message = HTTP_ERROR.get(404)
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.http_request.side_effect = Exception(error_message)
+
+    args = {"content_id": "65639"}
+    response = confluence_cloud_content_get_command(mock_client, args)
+
+    assert response.outputs == {"Error": error_message}

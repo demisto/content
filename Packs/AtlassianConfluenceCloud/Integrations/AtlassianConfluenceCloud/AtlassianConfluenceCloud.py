@@ -965,19 +965,6 @@ def validate_update_content_args(args: dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("version"))
 
 
-def validate_get_content_args(args: dict[str, str]):
-    """
-    Validate arguments for confluence-cloud-content-get command, raise ValueError on invalid arguments.
-
-    :type args: ``Dict[str, str]``
-    :param args: The command arguments provided by the user.
-
-    :return: None
-    """
-    content_id = args["content_id"]
-    if not content_id:
-        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
-
 """ COMMAND FUNCTIONS """
 
 
@@ -1377,7 +1364,8 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
         outputs_prefix=OUTPUT_PREFIX["EVENT"],
         readable_output=tableToMarkdown("Events", t=events, removeNull=True),
     )
-    
+
+
 def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Execute the confluence-cloud-content-get command. Fetches content details from Confluence Cloud by content ID.
@@ -1391,21 +1379,21 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
     :return: ``CommandResults`` containing the content details.
     :rtype: ``CommandResults``
     """
-    validate_get_content_args(args)
 
-    content_id = args["content_id"]
-    params = {"body-format":"raw"}
-    request_url = URL_SUFFIX["CONTENT"] + f"/{content_id}"
-    params = {"expand":"body.storage"}
-
-    response = client.http_request(method="GET", url_suffix=request_url, params=params)
-    response_json = response.json()
-
-    context = remove_empty_elements_for_context(response_json)
-    readable_hr = prepare_hr_for_content_create(response_json, "Content")
+    content_id = args.get("content_id")
+    params = {"expand": "body.storage"}
+    request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
+    try:
+        response = client.http_request(method="GET", url_suffix=request_url, params=params)
+        response_json = response.json()
+        context = remove_empty_elements(response_json)
+        readable_hr = prepare_hr_for_content_create(response_json, "Content")
+    except Exception as e:
+        context = response_json = {"Error": str(e)}
+        readable_hr = f"**Error**: {str(e)}"
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX["CONTENT"],
+        outputs_prefix=OUTPUT_PREFIX.get("CONTENT"),
         outputs_key_field="id",
         outputs=context,
         readable_output=readable_hr,
