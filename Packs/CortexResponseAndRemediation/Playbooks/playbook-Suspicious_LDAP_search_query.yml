@@ -86,7 +86,7 @@ tasks:
       - "11"
     scriptarguments:
       closeNotes:
-        simple: Malicious activity detected. Resolved - Handled by the playbook "Suspicious LDAP search query"
+        simple: Malicious activity detected. Resolved - Handled by the playbook "Suspicious LDAP search query".
       closeReason:
         simple: Resolved - True Positive
       id:
@@ -214,7 +214,7 @@ tasks:
     task:
       id: 9430b6c0-244a-4052-86cc-acf6704a6f14
       version: -1
-      name: Any risky asset involved with a non-prevalent process?
+      name: Are any risky assets involved in a non-prevalent process?
       description: "#### Determines if the LDAP operation was suspicious by the following conditions:\n\nActor Process name is not Prevalent *OR*\nActor Process Command Line is not Prevalent \n\n*AND*\n\nThe Host Risk Score is Medium or High or the User Risk Score is High."
       type: condition
       iscommand: false
@@ -237,28 +237,61 @@ tasks:
             value:
               simple: "False"
           ignorecase: true
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
-              simple: Core.RiskyHost.risk_level
+              complex:
+                root: Core.RiskyHost
+                accessor: risk_level
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: "false"
+                    remove_keys:
+                      value:
+                        simple: "true"
             iscontext: true
           right:
             value:
               simple: High
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
-              simple: Core.RiskyHost.risk_level
+              complex:
+                root: Core.RiskyHost
+                accessor: risk_level
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: "false"
+                    remove_keys:
+                      value:
+                        simple: "true"
             iscontext: true
           right:
             value:
-              simple: Medium
+              simple: Med
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
-              simple: Core.RiskyUser.risk_level
+              complex:
+                root: Core.RiskyUser
+                accessor: risk_level
+                transformers:
+                - operator: RemoveEmpty
+                  args:
+                    empty_values:
+                      value:
+                        simple: "false"
+                    remove_keys:
+                      value:
+                        simple: "true"
             iscontext: true
           right:
             value:
@@ -394,7 +427,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: foundIncidents
+              simple: foundIncidents.name
             iscontext: true
           right:
             value: {}
@@ -802,7 +835,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2524,
-        "width": 1231,
+        "width": 1230,
         "x": 300,
         "y": -94
       }
@@ -816,4 +849,4 @@ fromversion: 8.8.0
 marketplaces:
 - marketplacev2
 - platform
-
+system: true
