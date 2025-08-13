@@ -62,7 +62,7 @@ Lists requests from AdminByRequest.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | request_id | The ID of a specific request to retrieve. | Optional |
-| status | Filters requests by status. Possible values are: Pending, Approved, Denied, Expired. | Optional |
+| status | Filters requests by status. Possible values are: Pending, Open, Approved, Denied, Quarantined. | Optional |
 | want_scan_details | Set to true to include scan details in the response. Possible values are: true, false. | Optional |
 | limit | The maximum number of requests to return. Default is 50. | Optional |
 | all_results | Set to true to fetch all available results, overriding the limit. Possible values are: true, false. | Optional |

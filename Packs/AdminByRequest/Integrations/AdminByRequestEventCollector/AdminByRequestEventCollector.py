@@ -4,6 +4,8 @@ Event Collector Source file for AdminByRequest API.
 
 from typing import Any
 
+import re
+
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -97,6 +99,21 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def validate_email_address(email: str) -> bool:
+    """
+    Validate an email address.
+
+    Args:
+        email (str): The email address to validate.
+
+    Returns:
+        bool: True if the email is valid, False otherwise.
+    """
+    # Regular expression for validating an Email
+    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+    return re.fullmatch(regex, email) is not None
 
 
 def remove_first_run_params(params: dict[str, Any]) -> None:
@@ -439,6 +456,8 @@ def approve_request_command(client: Client, args: dict) -> CommandResults:
 
     headers = {}
     if approved_by:
+        if not validate_email_address(approved_by):
+            raise ValueError("approved_by must be a valid email address.")
         headers["approvedby"] = approved_by
 
     url_suffix = f"requests/{request_id}"
@@ -469,6 +488,9 @@ def deny_request_command(client: Client, args: dict) -> CommandResults:
         raise ValueError("request_id is required.")
 
     denied_by = args.get("denied_by")
+    if denied_by and not validate_email_address(denied_by):
+        raise ValueError("denied_by must be a valid email address.")
+
     reason = args.get("reason")
 
     headers = {}

@@ -126,9 +126,10 @@ script:
       auto: PREDEFINED
       predefined:
       - "Pending"
+      - "Open"
       - "Approved"
       - "Denied"
-      - "Expired"
+      - "Quarantined"
     - name: want_scan_details
       description: Set to true to include scan details in the response.
       required: false
@@ -210,6 +211,7 @@ script:
     - name: approved_by
       description: The user who approved the request.
       required: false
+      additionalinfo: Has to be an email address that matches a portal user, otherwise it will be ignored
   - name: adminbyrequest-request-deny
     description: Denies a request in AdminByRequest.
     arguments:
@@ -219,6 +221,7 @@ script:
     - name: denied_by
       description: The user who denied the request.
       required: false
+      additionalinfo: Has to be an email address that matches a portal user, otherwise it will be ignored
     - name: reason
       description: The reason for denying the request.
       required: false
