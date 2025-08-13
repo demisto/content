@@ -17,8 +17,10 @@ URL_CATEGORY_LIST = [
     "Games",
     "Social Networking",
     "Streaming Media",
-    "Artificial Intelligence"
+    "Artificial Intelligence",
+    "High Risk",
 ]
+
 
 def main():
     args = demisto.args()
