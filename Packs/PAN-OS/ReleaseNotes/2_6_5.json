@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The query argument has been removed to reduce complexity of usage of this script. Please use the url_category to specifically query URL Filtering logs filtered by URL Categories."
-}

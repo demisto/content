@@ -17,7 +17,7 @@ A polling wrapper script; This script searches Palo Alto Networks firewall logs 
 | **Argument Name** | **Description** |
 | --- | --- |
 | log_type | The log type. Options: threat, traffic, wildfire, url, data, corr, system, decryption. |
-| url_category | Use a value from the URL Category list such as Malware, Phishing, AI Conversational Assistant, etc. to query URL logs. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. |
+| url_category | Use a value from the URL Category list to query URL logs. Optional values are: Malware, Phishing, Command and Control, Dynamic DNS, Parked, Questionable, Unknown, Newly Registered Domains, Adult, Copyright Infringement, Extremism, Gambling, Games, Social Networking, Streaming Media, Artificial Intelligence. Additionally supports security-risk categories such as high-risk, medium-risk, low-risk, as well as malware, phishing, and command-and-control threat categories. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored. |
 | time_generated | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44, will get logs before the specified date.". |
 | time_generated_after | The time the log was generated from the timestamp and prior to it.<br/>For example "2019/08/11 01:10:44", will get logs after the specified date. |
 | addr_src | The source address. |

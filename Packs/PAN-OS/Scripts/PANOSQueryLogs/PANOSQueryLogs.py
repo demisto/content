@@ -1,6 +1,24 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+URL_CATEGORY_LIST = [
+    "Malware",
+    "Phishing",
+    "Command and Control",
+    "Dynamic DNS",
+    "Parked",
+    "Questionable",
+    "Unknown",
+    "Newly Registered Domains",
+    "Adult",
+    "Copyright Infringement",
+    "Extremism",
+    "Gambling",
+    "Games",
+    "Social Networking",
+    "Streaming Media",
+    "Artificial Intelligence"
+]
 
 def main():
     args = demisto.args()
@@ -18,12 +36,11 @@ def main():
         url_category = args.get("url_category")
         if url_category is not None:
             if args["log-type"] != "url":
-                return_error("url_category arg is only valid for querying with log_type url")
-            if url_category.startswith("AI"):
-                # Keep "AI" uppercase, convert rest to lowercase
-                url_category = "AI" + url_category[2:].lower().replace(" ", "-")
+                raise ValueError("url_category arg is only valid for querying with log_type url")
+            elif url_category not in URL_CATEGORY_LIST:
+                raise ValueError(f"Invalid URL category. Must be one of: {', '.join(URL_CATEGORY_LIST)}")
             else:
-                # Convert entire string to lowercase
+                # Convert entire string to lowercase and replace spaces with -
                 url_category = url_category.lower().replace(" ", "-")
             args["query"] = f"url_category_list contains '{url_category}'"
         return_results(execute_polling_command("pan-os-query-logs", args))
