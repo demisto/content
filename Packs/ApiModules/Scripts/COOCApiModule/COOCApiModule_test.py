@@ -756,8 +756,8 @@ def test_return_multiple_permissions_error_multiple_entries(mocker):
 
     debug_calls = [call[0][0] for call in demisto.debug.call_args_list]
     assert "Permission error detected for account account-1" in debug_calls[0]
-    assert "Permission error detected for account account-2" in debug_calls[1]
-    assert "Permission error detected for account account-3" in debug_calls[2]
+    assert "Permission error detected for account account-2" in debug_calls[2]
+    assert "Permission error detected for account account-3" in debug_calls[4]
 
     demisto.results.assert_called_once()
     results_call = demisto.results.call_args[0][0]
