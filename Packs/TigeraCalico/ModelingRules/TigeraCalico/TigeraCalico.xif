@@ -1,0 +1,23 @@
+[MODEL: dataset= "tigera_calico_raw"] 
+alter 
+     tigera_secure = arrayindex(regextract(_raw_log ,"({.*})"), 0) 
+| alter
+    xdm.source.ipv4 = tigera_secure -> source_ip,
+    xdm.source.host.hostname = tigera_secure -> source_name,
+    xdm.source.host.fqdn = tigera_secure -> source_namespace,
+    xdm.source.port = tigera_secure -> source_port,
+    xdm.source.host.device_category = tigera_secure -> source_type,
+    xdm.source.cloud.source_type = arraystring(json_extract_scalar_array(tigera_secure , "$.source_labels.labels"), ", "),
+    xdm.target.ipv4 = tigera_secure -> dest_ip,
+    xdm.target.host.hostname = tigera_secure -> dest_name,
+    xdm.target.resource.value = tigera_secure -> dest_namespace,
+    xdm.target.port = tigera_secure -> dest_port,
+    xdm.target.host.device_category = tigera_secure -> dest_type,
+    xdm.target.cloud.source_type = arraystring(json_extract_scalar_array(tigera_secure , "$.dest_labels.labels"), ", "),
+    xdm.network.ip_protocol = tigera_secure -> proto,
+    xdm.event.outcome_reason = tigera_secure -> action,
+    xdm.event.outcome = if(action = "allow", XDM_CONST.OUTCOME_SUCCESS , action in ("block","deny"), XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN)
+    xdm.observer.type = arraystring(json_extract_scalar_array(tigera_secure , "$.policies.all_policies"), ", "),
+    xdm.target.sent_bytes = tigera_secure -> bytes_in,
+    xdm.source.sent_bytes = tigera_secure -> bytes_out,
+    xdm.observer.name = tigera_secure -> host;

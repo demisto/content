@@ -1,0 +1,6 @@
+[INGEST:vendor="tigera", product="calico", target_dataset="tigera_calico_raw", no_hit = keep]
+alter
+    tmp_time_without_year = arrayindex(regextract(_raw_log, "<\d+>(\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2})"), 0)
+| alter
+    _time = parse_timestamp("%Y %b %e %H:%M:%S", concat(format_timestamp("%Y", _insert_time), " ", tmp_time_without_year))
+| fields - tmp_time_without_year;
