@@ -351,7 +351,7 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     When:
         The run_single_args_commands function is called with verbose mode enabled.
     Then:
-        It should return the aggregated endpoint outputs and command results from all commands.
+        It should return the aggregated endpoint outputs, command results from all commands and endpoint mapping.
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
@@ -371,10 +371,19 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
 
     # Mock command runner responses
     mock_command_runner.run_command.side_effect = [
-        (["Readable output 1"], [{"ID": "id1", "Hostname": "host1"}]),  # First command, first endpoint
+        (
+            ["Readable output 1"],
+            [{"ID": "id1", "Hostname": "host1", "Message": "Command successful", "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2}],
+        ),  # First command, first endpoint
         (["Readable output 2"], []),  # Second command, first endpoint (no results)
-        (["Readable output 3"], [{"ID": "id2", "Hostname": "host2"}]),  # First command, second endpoint
-        (["Readable output 4"], [{"ID": "id2", "Status": "Active"}]),  # Second command, second endpoint
+        (
+            ["Readable output 3"],
+            [{"ID": "id2", "Hostname": "host2", "Message": "Command successful", "Brand": Brands.CORTEX_CORE_IR}],
+        ),  # First command, second endpoint
+        (
+            ["Readable output 4"],
+            [{"ID": "id2", "Status": "Active", "Message": "Command successful", "Brand": Brands.FIREEYE_HX_V2}],
+        ),  # Second command, second endpoint
     ]
 
     # Mock debug function
@@ -391,16 +400,59 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
 
     # Assertions
     expected_endpoint_outputs = [
-        {"ID": "id1", "Hostname": "host1"},
-        {"ID": "id2", "Hostname": "host2"},
-        {"ID": "id2", "Status": "Active"},
+        {
+            "ID": "id1",
+            "Hostname": "host1",
+            "Message": "Command successful",
+            "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2,
+        },
+        {
+            "ID": "id2",
+            "Hostname": "host2",
+            "Message": "Command successful",
+            "Brand": Brands.CORTEX_CORE_IR,
+        },
+        {
+            "ID": "id2",
+            "Status": "Active",
+            "Message": "Command successful",
+            "Brand": Brands.FIREEYE_HX_V2,
+        },
     ]
     expected_command_results = ["Readable output 1", "Readable output 2", "Readable output 3", "Readable output 4"]
 
+    expected_endpoint_mapping = {
+        "Active Directory Query v2": {
+            "id1": {
+                "ID": "id1",
+                "Hostname": "host1",
+                "Message": "Command successful",
+                "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2,
+            }
+        },
+        "Cortex Core - IR": {
+            "id2": {
+                "ID": "id2",
+                "Hostname": "host2",
+                "Message": "Command successful",
+                "Brand": Brands.CORTEX_CORE_IR,
+            }
+        },
+        "FireEyeHX v2": {
+            "id2": {
+                "ID": "id2",
+                "Status": "Active",
+                "Message": "Command successful",
+                "Brand": Brands.FIREEYE_HX_V2,
+            }
+        },
+    }
+
+    assert endpoint_mapping == expected_endpoint_mapping
     assert endpoint_outputs == expected_endpoint_outputs
     assert command_results == expected_command_results
     assert mock_command_runner.run_command.call_count == 4
-    mock_debug.assert_called_once_with("ending single arg loop with 3 endpoints")
+    mock_debug.assert_called_with("ending single arg loop with 3 endpoints")
 
 
 def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_command_runner):
@@ -440,8 +492,8 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
     # Assertions
     assert endpoint_outputs == [{"ID": "id1"}]
     assert command_results == []  # Should be empty when verbose=False
-    assert mock_command_runner.run_command.call_count == 2
-    mock_debug.assert_called_once_with("ending single arg loop with 1 endpoints")
+    assert mock_command_runner.run_command.call_count == 1
+    mock_debug.assert_called_with("ending single arg loop with 1 endpoints")
 
 
 def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setup_command_runner):
