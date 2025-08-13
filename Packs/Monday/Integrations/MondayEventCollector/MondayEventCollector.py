@@ -29,6 +29,10 @@ AUTH_URL = "https://auth.monday.com/oauth2/token"
 MAX_AUDIT_LOGS_PER_PAGE = 1000
 MAX_ACTIVITY_LOGS_PER_PAGE = 10000
 
+# Integration limit
+MAX_AUDIT_LOGS_PER_FETCH = 5000
+MAX_ACTIVITY_LOGS_PER_FETCH = 10000
+
 PARAMS = demisto.params()
 PROXY = PARAMS.get("proxy", False)
 USE_SSL = not PARAMS.get("insecure", False)
@@ -41,10 +45,10 @@ HEADERS = {
     "Accept": "application/json"
 }
 
-AUDIT_LOGS_LIMIT = int(PARAMS.get("max_audit_logs_per_fetch", 5000))
+AUDIT_LOGS_LIMIT = min(MAX_AUDIT_LOGS_PER_FETCH, int(PARAMS.get("max_audit_logs_per_fetch", 5000)))
 AUDIT_LOGS_PER_PAGE = min(MAX_AUDIT_LOGS_PER_PAGE, AUDIT_LOGS_LIMIT) # must stay the same during all the fetch audit logs runs.
 
-ACTIVITY_LOGS_LIMIT = int(PARAMS.get("max_activity_logs_per_fetch", 10000))
+ACTIVITY_LOGS_LIMIT = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(PARAMS.get("max_activity_logs_per_fetch", 10000)))
 ACTIVITY_LOGS_PER_PAGE = min(MAX_ACTIVITY_LOGS_PER_PAGE, ACTIVITY_LOGS_LIMIT) # must stay the same during all the fetch activity logs runs.
 
 # Debug prefixes - used for logging
@@ -54,45 +58,11 @@ DEBUG_PREFIX = "MondayEventCollector Debug Message:\n"
 
 
 """ CLIENT CLASS """
-# TODO: add function comments
-
-# def test_module(client: BaseClient, params: dict[str, Any], first_fetch_time: str) -> str:
-#     """
-#     Tests API connectivity and authentication
-#     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-#     successful.
-#     Raises exceptions if something goes wrong.
-
-#     Args:
-#         client (Client): HelloWorld client to use.
-#         params (Dict): Integration parameters.
-#         first_fetch_time(str): The first fetch time as configured in the integration params.
-
-#     Returns:
-#         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
-#     """
-
-#     try:
-#         alert_status = params.get("alert_status", None)
-
-#         fetch_events(
-#             client=client,
-#             last_run={},
-#             first_fetch_time=first_fetch_time,
-#             alert_status=alert_status,
-#             max_events_per_fetch=1,
-#         )
-
-#     except Exception as e:
-#         if "Forbidden" in str(e):
-#             return "Authorization Error: make sure API Key is correctly set"
-#         else:
-#             raise e
-
-#     return "ok"
 
 
-def generate_login_url(client_id: str) -> CommandResults:
+def generate_login_url() -> CommandResults:
+    params = demisto.params()
+    client_id = params.get("client_id", "")
     if not client_id:
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Client ID parameter is missing.")
         raise DemistoException("Please provide Client ID in the integration parameters before running monday-generate-login-url.")
@@ -163,6 +133,14 @@ def test_connection() -> CommandResults:
     """
     Test connectivity in the Authorization Code flow mode for activity logs.
     """
+    params = demisto.params()
+    client_id = params.get("client_id", "")
+    secret = params.get("secret", "")
+    auth_code = params.get("auth_code", "")
+    
+    if not client_id or not secret or not auth_code:
+        return CommandResults(readable_output="Please provide Client ID, Secret and Authorization Code in the integration parameters before running monday-auth-test.")
+    
     get_access_token() # exception on failure
     return CommandResults(readable_output='✅ Success!')
 
@@ -349,8 +327,8 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, li
     """
     
     demisto_params = demisto.params()
-    activity_logs_url = demisto_params.get("activity_logs_url", "")
-    board_ids = demisto_params.get("board_ids", "") # TODO: ask about it, how to fetch from multiple boards in one request with limit of logs to fetch??? (the current logic is to fetch from one board at a time)
+    activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
+    board_id = demisto_params.get("board_id", "") # TODO: ask about it, how to fetch from multiple boards in one request with limit of logs to fetch??? (the current logic is to fetch from one board at a time)
     
     access_token = get_access_token()
     
@@ -358,9 +336,9 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, li
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}activity logs url is missing.")
         raise DemistoException("Please provide Activity logs Server URL in the integration parameters before starting to fetch activity logs.")
     
-    if not board_ids:
-        demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ids is missing.")
-        raise DemistoException("Please provide board ids in the integration parameters before starting to fetch activity logs.")
+    if not board_id:
+        demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ID is missing.")
+        raise DemistoException("Please provide board ID in the integration parameters before starting to fetch activity logs.")
     
     remaining_logs = 0
     fetched_logs = []
@@ -407,18 +385,24 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, li
     while len(total_logs) < limit:
         
         # Create parameterized GraphQL query for activity logs
-        query = f'''
+        query = f"""
         query {{
-        boards (ids: {board_ids}) {{
-            activity_logs (from: "{start_time}", to: "{end_time}", limit: {ACTIVITY_LOGS_PER_PAGE}, page: {page}) {{
-                created_at,
-                data,
-                id,
-                event
+            boards (ids: {board_id}) {{
+                activity_logs (
+                    from: "{start_time}",
+                    to: "{end_time}",
+                    limit: {ACTIVITY_LOGS_PER_PAGE},
+                    page: {page}
+                ) {{
+                    created_at
+                    data
+                    id
+                    event
+                }}
             }}
         }}
-        }}
-        '''
+        """
+
         
         remaining_logs = limit - len(total_logs)
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Starting to fetch new page of activity logs.\nRemaining logs to fetch: {remaining_logs}")
@@ -848,20 +832,15 @@ def main() -> None:  # pragma: no cover
     
     params = demisto.params()
     command = demisto.command()
-            
-    client_id = params.get("client_id", "")
-    secret = params.get("secret",  "")
-    auth_code = params.get("auth_code", "")
     proxy = bool(params.get("proxy", False))
 
     demisto.debug(f"{DEBUG_PREFIX}Command being called is {command}")
     try:
         # TODO: Ask what the test module command should test
         if command == "test-module":
-            # result = test_module(params, first_fetch_time)
-            return_results(result)
+            return_results('The test module is not functional, run the monday-auth-test command instead.')
         elif command == "monday-generate-login-url":
-            return_results(generate_login_url(client_id))
+            return_results(generate_login_url())
         elif command == "monday-auth-test":
             return_results(test_connection())
         elif command == "fetch-events":

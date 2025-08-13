@@ -27,13 +27,9 @@ configuration:
   type: 4
   section: Connect
   required: false
-- display: Access token
-  name: access_token
-  type: 4
-  section: Connect
-  required: false
-- display: Board IDs
-  name: board_ids
+  additionalinfo: "The code received from the redirect URL after running monday-generate-login-url command. (needed for Activity Logs only)"
+- display: Board ID
+  name: board_id
   required: false
   type: 0
   section: Connect
