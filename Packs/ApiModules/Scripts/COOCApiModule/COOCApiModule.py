@@ -341,16 +341,7 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
     # Input validation
     entries = []
     for entry in error_entries:
-        if entry.get("account_id") and entry.get("message") and entry.get("name"):
-            return_error("Invalid arguments for permission entry")
-        # Create entry
-        error_entry = {
-            "account_id": entry.get("account_id"),
-            "message": entry.get("message"),
-            "name": entry.get("name"),
-            "classification": "WARNING",
-            "error": "Permission Error",
-        }
+        error_entry = create_permissions_error_entry(entry.get("account_id"), entry.get("message"), entry.get("name"))
         entries.append(error_entry)
         # Log the permission error for security audit purposes
         demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
@@ -368,7 +359,7 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
     sys.exit(0)
 
 
-def return_permissions_error(account_id: str, message: str, name: str) -> None:
+def create_permissions_error_entry(account_id: Optional[str], message: Optional[str], name: Optional[str]) -> dict:
     """
     Handles permission error responses and exits the script execution.
 
@@ -377,13 +368,12 @@ def return_permissions_error(account_id: str, message: str, name: str) -> None:
     insufficient permissions or authentication issues.
 
     Args:
-        error_entry (dict): Dictionary containing error details with the following structure:
-            - account_id (str): The cloud account identifier where the error occurred
-            - message (str): The permission error message (including the name of the permission)
-            - name (str): The RAW name of the permission itself that is missing, for example containers.list"
+        - account_id (str): The cloud account identifier where the error occurred
+        - message (str): The permission error message (including the name of the permission)
+        - name (str): The RAW name of the permission itself that is missing, for example containers.list"
 
     Returns:
-        None: This function does not return as it calls sys.exit(0)
+        dict: Error entry.
     """
     # Input validation
     if not account_id or not message or not name:
@@ -401,14 +391,4 @@ def return_permissions_error(account_id: str, message: str, name: str) -> None:
     demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
 
     # Return formatted error response
-    demisto.results(
-        {
-            "Type": entryTypes["error"],
-            "ContentsFormat": formats["json"],
-            "Contents": [error_entry],
-            "EntryContext": None,
-        }
-    )
-
-    # Exit the script execution
-    sys.exit(0)
+    return error_entry
