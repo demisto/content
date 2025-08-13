@@ -5,21 +5,22 @@ Calico Open Source is a networking and security solution for containers, virtual
 
 Whether you opt to use Calico’s eBPF data plane, Linux’s standard networking pipeline, or the Windows data plane, Calico delivers blazing-fast performance with true cloud-native scalability. Calico provides developers and cluster operators with a consistent experience and set of capabilities whether running in public cloud or on-premises, or on a single node or across a multi-thousand node cluster.
  
-## This pack includes:
+## What does this pack do?
  
-Data normalization capabilities:
+Provides data normalization capabilities:
 • Rules for parsing and modeling Tigera Calico Secure logs that are ingested via the Broker VM into Cortex XSIAM
 • The ingested Tigera Calico Secure logs can be queried in XQL Search using the tigera_calico_raw dataset  
  
 ## Supported log categories
-Mapping of Tigera Calico Events, Audit, Traffic
+Mapping of Tigera Calico Events, Audit and Traffic.
  
-### Supported timestamp formats:
+### Supported timestamp formats
 Timestamp parsing is available for the MMM dd HH:MM:SS format.
  
 ***
  
-## Data Collection
+## Data collection
+Perform the following steps on the Tigera Calico side and then the Cortex XSIAM side to set up the collection of data using the content pack's modeling and parsing rules.
  
 ### Tigera Calico side
 1.  Update the LogCollector resource named tigera-secure to include a Syslog section with your syslog information.
@@ -78,16 +79,15 @@ To create or configure the Broker VM, use the information described [here](https
 Follow the below steps to configure the Broker VM to receive Tigera Calico logs.
  
 1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
-2. Go to the **APPS** column under the **Brokers** tab and add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
+2. In the **APPS** column under the **Brokers** tab, add the **Syslog** app for the relevant broker instance. If the **Syslog** app already exists, hover over it and click **Configure**.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following parameters:
  
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|                 
-    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Tigera Calico).                 |
+    | `Protocol`   | Select **UDP** for default forwarding, **TCP** or **Secure TCP** (depending on the protocol you configured in Tigera Calico).                   |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Tigera Calico.                   |
-    | `Format`     | Enter Format.             
-|
+    | `Format`     | Enter <Format>.                                                                                                                                 |
     | `Vendor`     | Enter Tigera.                                                                                                                                   |
     | `Product`    | Enter Calico.                                                                                                                                   |
     
