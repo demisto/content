@@ -163,7 +163,7 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
         # timeout reached
         passed_time = time.time() - start_time
         if passed_time > timeout:
-            return_error(f"Polling timed out after {int(passed_time)} seconds")
+            raise DemistoException(f"Polling timed out after {int(passed_time)} seconds")
 
         # get search status and results
         results = demisto.executeCommand(cmd, args)
@@ -174,7 +174,7 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
         if (search_status == "Completed") and (len(search_results) > 2):
             return results  # type: ignore
 
-        time.sleep(interval)
+        time.sleep(interval)  # pylint: disable=E9003
 
 
 def main():
@@ -182,7 +182,7 @@ def main():
         # init variables
         args = parse_args(demisto.args())
         modules = demisto.getModules()
-        context = {CONTEXT_SEARCH_KEY: {}, CONTEXT_PREV_KEY: {}}
+        context: dict = {CONTEXT_SEARCH_KEY: {}, CONTEXT_PREV_KEY: {}}
 
         # check if relevant integrations are enabled
         module_enabled = False
@@ -192,7 +192,7 @@ def main():
                 break
 
         if not module_enabled:
-            return_error("Security and Compliance module is not enabled")
+            raise DemistoException("Security and Compliance module is not enabled")
 
         # check if search exists
         search_cmd_results = demisto.executeCommand(CMD_GET_SEARCH, args)
@@ -213,7 +213,7 @@ def main():
         if run_new_search:
             # validate arguments for new search
             if not args.get("kql_search", None):
-                return_error("Running a new search requires the argument 'kql_search'.")
+                raise DemistoException("Running a new search requires the argument 'kql_search'.")
 
             demisto.executeCommand(CMD_NEW_SEARCH, args)
             demisto.executeCommand(CMD_START_SEARCH, args)
