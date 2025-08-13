@@ -51,10 +51,10 @@ args:
   isArray: true
 - name: polling_interval
   description: Compliance search polling interval.
-  defaultValue: '10'
+  defaultValue: '30'
 - name: polling_timeout
   description: Compliance search polling timeout.
-  defaultValue: '180'
+  defaultValue: '300'
 outputs:
   - contextPath: O365SecurityAndComplianceSearch.Search.Name
     description: The search name
