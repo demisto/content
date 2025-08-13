@@ -39,8 +39,10 @@ class Client(CoreClient):
         url = "/api/webapp/"
         if not FORWARD_USER_RUN_RBAC:
             url = params.get("url", "")
-            if not url:
-                url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"  # type: ignore
+            if not all((url, params.get("apikey"), params.get("apikey_id"))):
+                raise DemistoException(
+                    "Native API calls are not available. "
+                    "Please provide the following parameters: Server URL, API Key, API Key ID")
         self._base_url: str = urljoin(url, "/public_api/v1/indicators/")
         self._verify_cert: bool = not params.get("insecure", False)
         self._params = params
@@ -70,11 +72,10 @@ class Client(CoreClient):
 
 
 def get_headers(params: dict) -> dict:
-    api_key: str = str(params.get("apikey"))
-    api_key_id: str = str(params.get("apikey_id"))
-    if api_key and api_key_id:
-        headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
-        add_sensitive_log_strs(api_key)
+    api_key = str(params.get("apikey"))
+    api_key_id = str(params.get("apikey_id"))
+    headers = {"Content-Type": "application/json", "x-xdr-auth-id": api_key_id, "Authorization": api_key}
+    add_sensitive_log_strs(api_key)
     return headers
 
 
@@ -393,7 +394,7 @@ def set_sync_time(time: str):
             "iocs_to_keep_time": create_iocs_to_keep_time(),
         }
     )
-    return_results(f"set sync time to {time} seccedded.")
+    return_results(f"Successfully set sync time to {time}.")
 
 
 def get_sync_file():
