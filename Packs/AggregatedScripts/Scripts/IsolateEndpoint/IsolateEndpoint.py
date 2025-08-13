@@ -390,7 +390,6 @@ def main():  # pragma: no cover
         if not any((endpoint_ids, endpoint_ips)):
             raise ValueError("At least one of the following arguments must be specified: endpoint_id or endpoint_ip.")
 
-        print(Brands.get_all_values())
         if not brands_to_run:
             # In case no brands selected, the default is all brands.
             # We want to send to get-endpoint-data only the brands this script supports.
@@ -400,7 +399,7 @@ def main():  # pragma: no cover
         zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
 
         executed_command = execute_command(command="get-endpoint-data", args=endpoint_args)
-        print(f"Got executed command from get-endpoint-data: {executed_command=}")
+        demisto.debug(f"Got executed command from get-endpoint-data: {executed_command=}")
 
         endpoint_data_results = structure_endpoints_data(executed_command)
         demisto.debug(f"These are the structured data from structure_endpoints_data {endpoint_data_results}")
