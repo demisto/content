@@ -41,6 +41,7 @@ args:
       14. Social Networking
       15. Streaming Media
       16. Artificial Intelligence 
+      17. High Risk
     Additionally supports security-risk categories such as high-risk, medium-risk, low-risk, as well as malware, phishing, and command-and-control threat categories. This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored.
   name: url_category
 - description: |-

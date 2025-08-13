@@ -18,6 +18,7 @@ URL_CATEGORY_LIST = [
     "Social Networking",
     "Streaming Media",
     "Artificial Intelligence",
+    "High Risk",
 ]
 
 
