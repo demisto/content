@@ -457,7 +457,7 @@ def approve_request_command(client: Client, args: dict) -> CommandResults:
     headers = {}
     if approved_by:
         if not validate_email_address(approved_by):
-            raise ValueError("approved_by must be a valid email address.")
+            raise DemistoException("approved_by must be a valid email address.")
         headers["approvedby"] = approved_by
 
     url_suffix = f"requests/{request_id}"
