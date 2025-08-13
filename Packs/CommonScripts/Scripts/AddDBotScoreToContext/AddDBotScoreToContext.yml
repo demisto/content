@@ -8,6 +8,9 @@ args:
 - description: The vendor to assign to this DBotScoreEntry
   name: vendor
   required: true
+- description: The vendor nick name
+  name: vendorNickName
+  required: true
 - auto: PREDEFINED
   description: The reputation reliability
   name: reliability
