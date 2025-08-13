@@ -48,9 +48,6 @@ commonfields:
   version: -1
 name: get-user-data
 outputs:
-- contextPath: UserData.Source
-  description: Deprecated. Use "UserData.Brand" instead.
-  type: String
 - contextPath: UserData.Brand
   description: The brand (integration) used to disable the user.
   type: String

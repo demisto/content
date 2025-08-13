@@ -426,7 +426,7 @@ def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[Co
     return readable_outputs_list, user_outputs
 
 
-def msgraph_user_get_manager(command: Command, additional_fields: bool) -> list[dict[str, Any]]:
+def msgraph_user_get_manager(command: Command) -> list[dict[str, Any]]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -700,17 +700,16 @@ def main():
                     additional_fields=additional_fields,
                 )
                 if readable_output and outputs:
-                    users_readables.extend(readable_output)
-                    for output in outputs:
-                        if output.get("id") and additional_fields:
-                            msgraph_user_get_manager_command = Command(
-                                brand="Microsoft Graph User",
-                                name="msgraph-user-get-manager",
-                                args={"user": user_name},
-                            )
-                            manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
-                            output["AdditionalFields"].extend(manager_output)
+                    if outputs.get("id") and additional_fields:
+                        msgraph_user_get_manager_command = Command(
+                            brand="Microsoft Graph User",
+                            name="msgraph-user-get-manager",
+                            args={"user": user_name},
+                        )
+                        manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
+                        outputs["AdditionalFields"].extend(manager_output)
                     users_outputs.extend(outputs)
+                    users_readables.extend(readable_output)
 
                 #################################
                 ### Running for Prismacloud v2 ###
@@ -847,16 +846,15 @@ def main():
                 additional_fields=additional_fields,
             )
             if readable_output and outputs:
+                if outputs.get("id") and additional_fields:
+                    msgraph_user_get_manager_command = Command(
+                        brand="Microsoft Graph User",
+                        name="msgraph-user-get-manager",
+                        args={"user": user_id},
+                    )
+                    manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
+                    outputs["AdditionalFields"].extend(manager_output)
                 users_readables.extend(readable_output)
-                for output in outputs:
-                    if output.get("id") and additional_fields:
-                        msgraph_user_get_manager_command = Command(
-                            brand="Microsoft Graph User",
-                            name="msgraph-user-get-manager",
-                            args={"user": user_id},
-                        )
-                        manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
-                        output["AdditionalFields"].extend(manager_output)
                 users_outputs.extend(outputs)
 
             #################################

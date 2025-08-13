@@ -40,7 +40,6 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| UserData.Source | Deprecated. Use "UserData.Brand" instead. | String |
 | UserData.Brand | The brand \(integration\) used to disable the user. | String |
 | UserData.Instance | The integration instance used to disable the user. | String |
 | UserData.ID | The user ID. | String |
