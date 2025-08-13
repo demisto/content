@@ -1,26 +1,42 @@
-### Activity log
+# Monday Event Collector
 
-can be accessed using the OAuth [method](https://developer.monday.com/apps/docs/choosing-auth#method-2-using-oauth-to-issue-access-tokens).
+Monday.com is a work operating system that powers teams to run projects and workflows with confidence. Use this pack to fetch Activity and Audit logs from Monday.com for threat detection and compliance monitoring in Cortex XSIAM.
 
-Create your Monday app [guidelines](https://developer.monday.com/apps/docs/create-an-app#creating-an-app-in-the-developer-center) and make sure the needed permissions are granted for the app registration:
-Required scope - boards:read 
-The Redirect URI - https://localhost.
+## What does this pack do?
 
-Enter your Client ID and Client Secret in the instance parameter fields.
+The Monday Event Collector integration provides comprehensive event collection capabilities for Monday.com:
 
-Run the ***!monday-generate-login-url*** command - command in the War Room and follow the instructions:
+- **Activity Logs Collection**: Monitor user activities, board interactions, and workspace changes using OAuth 2.0 authentication
+- **Audit Logs Collection**: Track administrative actions, security events, and compliance-related activities using API token authentication
+- **Real-time Event Streaming**
+- **Flexible Configuration**
 
-Click on the login URL to sign in and grant Cortex XSOAR the permissions.You will be automatically redirected to a link with the following structure:
-REDIRECT_URI?code=AUTH_CODE&region=REGION&scope=boards%3Aread&state=
+## Pack Contents
 
-Copy the AUTH_CODE (without the code= prefix) and paste it in your instance configuration under the Authorization code parameter.
+- `MondayEventCollector` integration - integrates with Monday.com API to fetch logs.
 
-Save the instance.
-Run the !monday-auth-test command. A 'Success' message should be printed to the War Room.
+## Supported Event Types
 
-### Audit log
+### Activity Logs
+Activity logs capture user interactions and operational activities within Monday.com workspaces:
+- Board creation, updates, and deletions
+- Item and column modifications
+- User login and authentication events
+- Workspace and team changes
+- File uploads and sharing activities
 
-Generating the API token
-To generate the audit log API token, access the admin section of your account, click into the "Security" section and then the "Audit" tab. From there, select on the "Monitor by API" button and copy it.
+### Audit Logs
+Audit logs provide detailed security and administrative event tracking:
+- Administrative actions and configuration changes
+- User permission modifications
+- Security policy updates
+- Account management activities
+- Compliance and governance events
 
-Audit log is an advanced security feature and available on the Enterprise plan and can only be accessed by the account admin. [docs](https://support.monday.com/hc/en-us/articles/4406042650002-Audit-Log-API)
+## Additional Resources
+
+- [Monday.com API Documentation](https://developer.monday.com/api-reference/docs)
+- [OAuth 2.0 Authentication Guide](https://developer.monday.com/apps/docs/choosing-auth#method-2-using-oauth-to-issue-access-tokens)
+- [Audit Log API Documentation](https://support.monday.com/hc/en-us/articles/4406042650002-Audit-Log-API)
+- [Audit Log API Documentation](https://developer.monday.com/api-reference/reference/activity-logs)
+- [Monday.com App Creation Guide](https://developer.monday.com/apps/docs/create-an-app#creating-an-app-in-the-developer-center)
