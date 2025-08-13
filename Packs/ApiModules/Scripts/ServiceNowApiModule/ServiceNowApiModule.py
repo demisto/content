@@ -1,3 +1,8 @@
+import uuid
+from datetime import UTC
+
+import jwt
+
 from CommonServerPython import *
 
 from CommonServerUserPython import *
@@ -16,6 +21,7 @@ class ServiceNowClient(BaseClient):
         verify: bool = False,
         proxy: bool = False,
         headers: dict = None,
+        jwt_params: dict = None
     ):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
@@ -29,13 +35,15 @@ class ServiceNowClient(BaseClient):
             - proxy: Whether to run the integration using the system proxy.
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+            - jwt_params: a dict containing the JWT parameters
         """
         self.auth = None
         self.use_oauth = use_oauth
-        self.jwt: Optional[str] = None
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
+        if jwt_params:
+            self.jwt = self.create_jwt(jwt_params)
         else:
             self.username = credentials.get("identifier")
             self.password = credentials.get("password")
@@ -49,8 +57,6 @@ class ServiceNowClient(BaseClient):
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
 
-    def set_jwt(self, jwt: str):
-        self.jwt = jwt
 
     def http_request(
         self,
@@ -146,6 +152,61 @@ class ServiceNowClient(BaseClient):
                 f"Login failed. Please check the instance configuration and the given username and password.\n{e.args[0]}"
             )
 
+    @staticmethod
+    def _validate_and_format_private_key(private_key: str) -> str:
+        """Validate the private key format and reformat it to a valid PEM format.
+        Args:
+            private_key (str): The user Private key.
+        Raises:
+            ValueError: : If the private key format (PEM) is incorrect, a ValueError will be raised.
+        Returns:
+            str: key without whitespaces and invalid characters
+        """
+        # Define the start and end markers
+        start_marker = "-----BEGIN PRIVATE KEY-----"
+        end_marker = "-----END PRIVATE KEY-----"
+
+
+
+        if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
+            raise ValueError("Invalid private key format.")
+        # Remove the markers and replace whitespaces with '\n'
+        key_content = (
+            private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
+        )
+        # Reattach the markers
+        processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
+        return processed_key
+
+    def create_jwt(self, jwt_params : dict) -> str:
+        """
+        Create JWT token
+        Returns:
+            JWT token
+        """
+        private_key = self._validate_and_format_private_key(jwt_params.get("private_key" , ""))
+
+        header = {
+            "alg": "RS256",  # Signing algorithm
+            "typ": "JWT",  # Token type
+            "kid": jwt_params.get("kid"),
+        }
+        now = datetime.now(UTC)
+        payload = {
+            "sub": jwt_params.get("sub"),
+            "aud": jwt_params.get("aud"),
+            "iss": jwt_params.get("iss"),
+            "iat": now,
+            "exp": now + timedelta(hours=1),
+            "jti": str(uuid.uuid4()),  # Unique JWT ID
+        }
+        try:
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        except Exception:
+            # Regenerate if failed
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        return jwt_token
+
     def get_access_token(self):
         """
         Get an access token that was previously created if it is still valid, else, generate a new access token from
@@ -202,3 +263,5 @@ class ServiceNowClient(BaseClient):
                 return_error(
                     f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
                 )
+
+
