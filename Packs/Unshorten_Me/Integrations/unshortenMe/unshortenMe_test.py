@@ -94,16 +94,16 @@ def test_test_module_command(client, mocker):
     assert result == 'ok'
 
     
-def test_module_test_command_failure(client, mocker):
+def test_test_module_failure(client, mocker):
     """
     GIVEN:
         - The client is configured to throw an error.
     WHEN:
-        - The module_test_command is called.
+        - The test_module is called.
     THEN:
         - Ensure it catches the exception and returns an error message.
     """
-    # Arrange: Mock the unshorten_request method to raise an exception
+    # Arrange
     mocker.patch.object(
         client,
         'unshorten_request',
@@ -111,9 +111,9 @@ def test_module_test_command_failure(client, mocker):
     )
 
     # Act: Call the command
-    result = module_test_command(client)
+    result = test_module(client)
 
-    # Assert: Check that the error message is correctly returned
+    # Assert
     assert 'Error: API call failed' in result
 
 
