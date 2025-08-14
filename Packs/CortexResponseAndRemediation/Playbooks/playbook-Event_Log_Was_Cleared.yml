@@ -197,9 +197,10 @@ tasks:
       - "22"
     scriptarguments:
       closeNotes:
-        simple: Suspicious activity detected
+        simple: Resolved - Handled by the playbook "Event Log was cleared". Malicious
+          activity detected.
       closeReason:
-        simple: Resolved - Handled by the playbook "Event Log was cleared".
+        simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -338,9 +339,10 @@ tasks:
       - "22"
     scriptarguments:
       closeNotes:
-        simple: No Results Found
+        simple: Resolved as False Positive - Handled by the playbook "Event Log was
+          cleared". No Malicious activity detected.
       closeReason:
-        simple: Resolved - Handled by the playbook "Event Log was cleared"
+        simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -366,7 +368,7 @@ tasks:
     task:
       id: 11e37dbd-4664-442a-8b48-737b5e95ad75
       version: -1
-      name: Get prevalence for the processes in the causality
+      name: Get causality's processes prevalence
       description: Get the prevalence of a process, identified by process name.
       script: '|||core-get-process-analytics-prevalence'
       type: regular
