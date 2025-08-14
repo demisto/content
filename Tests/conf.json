@@ -5861,6 +5861,10 @@
             "playbookID": "CybelAngel Test Playbook"
         },
         {
+            "integrations": [
+                "Cortex XDR - IR",
+                "Cortex Core - IR"
+            ],
             "playbookID": "QuarantineFile-Test",
             "timeout": 300,
             "fromversion": "6.10.0"
