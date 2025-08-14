@@ -5,8 +5,8 @@ sectionOrder:
 commonfields:
   id: IBM Storage Scale
   version: -1
-name: IBM Storage Scale
-display: IBM Storage Scale
+name: IBM Storage Scale - Beta
+display: IBM Storage Scale - Beta
 description: |
   Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
 detaileddescription: ''
@@ -121,5 +121,6 @@ script:
     - contextPath: IBMStorageScale.Debug.error_details
       description: Error details if connection failed.
       type: String
+beta: true
 tests:
 - No tests (auto formatted)
