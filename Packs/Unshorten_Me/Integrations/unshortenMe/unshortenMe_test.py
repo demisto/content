@@ -58,7 +58,7 @@ def test_unshorten_url_command_api_failure(client, mocker):
 
     # Act / Assert
     with pytest.raises(DemistoException, match='`unshorten.me` API error: URL is not valid'):
-        unshorten_url_command(client, 'invalid-url')
+        unshorten_url_command(client, 'https://example.com/some-bad-link')
 
 
 def test_unshorten_url_command_invalid_input(client):
