@@ -89,6 +89,10 @@ DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_TIMEOUT = 30
 LEGACY_VERSION = PARAMS.get("legacy_version", False)
 
+DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST = 60
+TOTAL_RETRIES_ON_ENRICHMENT = 0
+TIMEOUT_ON_ENRICHMENT = 15
+
 """ KEY DICTIONARY """
 
 LEGACY_DETECTIONS_BASE_KEY_MAP = {
@@ -584,8 +588,13 @@ def http_request(
         demisto.debug(f"In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes")
 
     headers["User-Agent"] = "PANW-XSOAR"
-    int_timeout = int(timeout) if timeout else 60  # 60 is the default in generic_http_request
-
+    
+    if is_time_sensitive():
+        retries = TOTAL_RETRIES_ON_ENRICHMENT
+        request_timeout = TIMEOUT_ON_ENRICHMENT
+    else:
+        request_timeout = int(timeout) if timeout else DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST
+    
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
         # To cover the condition when status_code is a list of status codes
@@ -608,7 +617,7 @@ def http_request(
             verify=USE_SSL,
             error_handler=error_handler,
             json_data=json,
-            timeout=int_timeout,
+            timeout=request_timeout,
             ok_codes=valid_status_codes,
             retries=retries,
             status_list_to_retry=status_list_to_retry,
@@ -628,7 +637,7 @@ def http_request(
                 demisto.debug(f"Try to create a new token because {res.status_code=}")
                 token = get_token(new_token=True)
                 headers["Authorization"] = f"Bearer {token}"
-                demisto.debug("calling generic_http_request with retries=5 and status_list_to_retry=[429]")
+                demisto.debug(f"calling generic_http_request with retries={retries} and status_list_to_retry=[429]")  # noqa: E501
                 res = generic_http_request(
                     method=method,
                     server_url=SERVER,
@@ -643,7 +652,7 @@ def http_request(
                     resp_type="response",
                     error_handler=error_handler,
                     json_data=json,
-                    timeout=int_timeout,
+                    timeout=request_timeout,
                     ok_codes=valid_status_codes,
                 )
                 demisto.debug(f"In http_request after the second call to generic_http_request {res=} {res.status_code=}")
