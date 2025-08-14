@@ -298,9 +298,9 @@ tasks:
       - "46"
     scriptarguments:
       closeNotes:
-        simple: False Positive
+        simple: Resolved as False Positive - Handled by the playbook "Office process creates a scheduled task via file access"
       closeReason:
-        simple: Resolved - Handled by the playbook "Office process creates a scheduled task via file access"
+        simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -337,9 +337,9 @@ tasks:
       - "26"
     scriptarguments:
       closeNotes:
-        simple: Malicious scheduled task detected
+        simple: Malicious scheduled task detected - Handled by the playbook "Office process creates a scheduled task via file access"
       closeReason:
-        simple: Resolved - Handled by the playbook "Office process creates a scheduled task via file access"
+        simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -484,11 +484,10 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "73"
-      - "74"
       - "92"
-      - "108"
       - "96"
+      - "109"
+      - "74"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -690,42 +689,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "73":
-    id: "73"
-    taskid: c3b19911-3945-4632-8ff9-5078275fe0e4
-    type: regular
-    task:
-      id: c3b19911-3945-4632-8ff9-5078275fe0e4
-      version: -1
-      name: Check the initiator process reputation
-      description: Retrieve results for a file hash using WildFire.
-      script: '|||file'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "108"
-    scriptarguments:
-      file:
-        simple: ${alert.initiatorsha256}
-    separatecontext: false
-    continueonerrortype: ""
-    continueonerror: true
-    view: |-
-      {
-        "position": {
-          "x": 200,
-          "y": -860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1500,8 +1463,7 @@ tasks:
       id: d56e6c57-7020-4d2f-834e-0b7c0372569e
       version: -1
       name: Set Office file hash
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1606,6 +1568,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 8d25aa63-033c-4abc-b3fb-3f7a5590b2b0
+    type: regular
+    task:
+      id: 8d25aa63-033c-4abc-b3fb-3f7a5590b2b0
+      version: -1
+      name: Check the initiator process reputation
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      file_hash:
+        simple: ${alert.initiatorsha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 214,
+          "y": -860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1619,13 +1620,14 @@ view: |-
       "70_67_yes": 0.52,
       "8_3_yes": 0.3,
       "91_3_yes": 0.22,
+      "96_108_#error#": 0.31,
       "99_101_Quarantine": 0.45,
       "99_104_No Quarantine": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 3925,
-        "width": 2390,
+        "height": 3920,
+        "width": 2391,
         "x": -450,
         "y": -1140
       }
