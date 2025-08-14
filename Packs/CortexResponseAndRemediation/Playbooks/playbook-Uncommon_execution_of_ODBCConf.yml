@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -190
+          "y": -220
         }
       }
     note: false
@@ -94,8 +94,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": -52
+          "x": 230,
+          "y": -82
         }
       }
     note: false
@@ -156,7 +156,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 70
+          "y": 80
         }
       }
     note: false
@@ -439,8 +439,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 671,
-          "y": -52
+          "x": 662,
+          "y": -82
         }
       }
     note: false
@@ -480,8 +480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 240
+          "x": 1062,
+          "y": 250
         }
       }
     note: false
@@ -550,8 +550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 420
+          "x": 790,
+          "y": 410
         }
       }
     note: false
@@ -592,8 +592,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 610
+          "x": 1062,
+          "y": 620
         }
       }
     note: false
@@ -701,8 +701,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 791
+          "x": 1062,
+          "y": 781
         }
       }
     note: false
@@ -783,10 +783,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2120,
-        "width": 1286,
+        "height": 2150,
+        "width": 1285,
         "x": 157,
-        "y": -190
+        "y": -220
       }
     }
   }
