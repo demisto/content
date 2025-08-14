@@ -238,7 +238,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     """
     res, hr = run_command("get-user-data", args | {"verbose": "true"}, label_hr=False)
     if errors := [r for r in res if r["Type"] == EntryType.ERROR]:
-        if err := next((not r["HumanReadable"] for r in errors), None):
+        if err := next((r for r in errors if not r["HumanReadable"]), None):
             raise DemistoException(f"Error when calling get-user-data:\n{err['Contents']}")
         return_results(errors)
     if any(  # if there are no available modules
@@ -251,7 +251,7 @@ def get_users(args: dict) -> tuple[list[UserData], str]:
     if not res_user:
         raise DemistoException(f"Unexpected response when calling get-user-data:\n{res}")
     return (
-        [dict.fromkeys(UserData.__required_keys__, "") | res for res in res_user["Contents"]],
+        [dict.fromkeys(UserData.__required_keys__, "") | res for res in res_user["Contents"]],  # pylint: disable=E1101
         hr,
     )
 
