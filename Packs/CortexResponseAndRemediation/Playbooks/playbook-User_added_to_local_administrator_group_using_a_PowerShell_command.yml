@@ -211,7 +211,7 @@ tasks:
       {
         "position": {
           "x": 420,
-          "y": 2145
+          "y": 2283
         }
       }
     note: false
@@ -239,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 420,
-          "y": 2315
+          "y": 2427
         }
       }
     note: false
@@ -352,7 +352,7 @@ tasks:
       {
         "position": {
           "x": 1130,
-          "y": 1120
+          "y": 1110
         }
       }
     note: false
@@ -572,8 +572,8 @@ tasks:
       id: 4861afe9-34c3-4415-8e53-ac6b0e3fbbba
       version: -1
       name: Remove user from local Administrator group
-      description: Initiate a new endpoint script execution of shell commands.
-      script: '|||core-run-script-execute-commands'
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
       type: regular
       iscommand: true
       brand: ""
@@ -581,15 +581,15 @@ tasks:
       '#error#':
       - "83"
       '#none#':
-      - "21"
+      - "84"
     scriptarguments:
-      commands:
+      command:
         simple: powershell.exe Remove-LocalGroupMember -Group "Administrators" -Member ${ExtractedUsername}
       endpoint_ids:
         simple: ${alert.agentid}
-      timeout:
+      polling_timeout_in_seconds:
         simple: "180"
-      timeout_in_seconds:
+      timeout:
         simple: "180"
     separatecontext: false
     continueonerror: true
@@ -679,8 +679,51 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 1970
+          "x": -120,
+          "y": 2132
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 1e0e88d0-1bdd-439d-af9f-d71475b671ee
+    type: condition
+    task:
+      id: 1e0e88d0-1bdd-439d-af9f-d71475b671ee
+      version: -1
+      name: Was the user successfully removed from the administrators group?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "83"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Core.ScriptResult.results.executed_command.standard_output
+            iscontext: true
+          right:
+            value:
+              simple: Exception
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1936
         }
       }
     note: false
@@ -697,15 +740,15 @@ view: |-
       "6_7_yes": 0.35,
       "80_21_No": 0.48,
       "80_81_Yes": 0.57,
-      "81_83_#error#": 0.5,
+      "81_83_#error#": 0.6,
       "82_80_yes": 0.39,
       "82_83_#default#": 0.66
     },
     "paper": {
       "dimensions": {
-        "height": 2220,
-        "width": 1550,
-        "x": -40,
+        "height": 2327,
+        "width": 1631,
+        "x": -120,
         "y": 160
       }
     }
