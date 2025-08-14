@@ -1,0 +1,40 @@
+{
+  "objects": [
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000001",
+      "type": "indicator",
+      "name": "example.com",
+      "pattern": "[domain-name:value = 'example.com']",
+      "created": "2020-01-01T00:00:00.000Z",
+      "modified": "2020-01-01T00:00:00.000Z",
+      "labels": ["malicious-activity"]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000002",
+      "type": "indicator",
+      "name": "192.168.1.1",
+      "pattern": "[ipv4-addr:value = '192.168.1.1']",
+      "created": "2020-01-01T00:00:00.000Z",
+      "modified": "2020-01-01T00:00:00.000Z",
+      "labels": ["malicious-activity"]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000003",
+      "type": "indicator",
+      "name": "http://example.com/malware",
+      "pattern": "[url:value = 'http://example.com/malware']",
+      "created": "2020-01-01T00:00:00.000Z",
+      "modified": "2020-01-01T00:00:00.000Z",
+      "labels": ["malicious-activity"]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000004",
+      "type": "indicator",
+      "name": "44d88612fea8a8f36de82e1278abb02f",
+      "pattern": "[file:hashes.'MD5' = '44d88612fea8a8f36de82e1278abb02f']",
+      "created": "2020-01-01T00:00:00.000Z",
+      "modified": "2020-01-01T00:00:00.000Z",
+      "labels": ["malicious-activity"]
+    }
+  ]
+}
