@@ -51,6 +51,7 @@ from datadog_api_client.v2.model.incident_update_attributes import (
 from datadog_api_client.v2.model.incident_update_data import IncidentUpdateData
 from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRequest
 from datadog_api_client.v2.api.security_monitoring_api import SecurityMonitoringApi
+from datadog_api_client.v2.api.logs_api import LogsApi
 from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_attributes import (
     SecurityMonitoringSignalAssigneeUpdateAttributes,
 )
@@ -81,6 +82,10 @@ from datadog_api_client.v2.model.security_monitoring_signal_list_request_page im
 from datadog_api_client.v2.model.security_monitoring_signals_sort import (
     SecurityMonitoringSignalsSort,
 )
+from datadog_api_client.v2.model.logs_list_request import LogsListRequest
+from datadog_api_client.v2.model.logs_list_request_page import LogsListRequestPage
+from datadog_api_client.v2.model.logs_query_filter import LogsQueryFilter
+from datadog_api_client.v2.model.logs_sort import LogsSort
 import dateparser
 from dateparser import parse
 from urllib3 import disable_warnings
@@ -280,6 +285,61 @@ def signal_for_lookup(signal: dict) -> dict:
         "Host": str(attributes.get("host", "")),
         "Assignee": str(attributes.get("assignee", "")),
     }
+
+
+def log_for_lookup(log: dict) -> dict:
+    """
+    Returns a dictionary with selected log information.
+
+    Args:
+        log (Dict): A dictionary representing a log entry.
+
+    Returns:
+        Dict: A dictionary containing the following keys.
+    """
+    attributes = log.get("attributes", {})
+    return {
+        "ID": str(log.get("id")),
+        "Message": str(attributes.get("message", "")),
+        "Timestamp": datetime.fromisoformat(attributes.get("timestamp", "")).strftime(UI_DATE_FORMAT)
+        if attributes.get("timestamp", "")
+        else "",
+        "Service": str(attributes.get("service", "")),
+        "Host": str(attributes.get("host", "")),
+        "Source": str(attributes.get("source", "")),
+        "Status": str(attributes.get("status", "")),
+        "Tags": ",".join(tag for tag in attributes.get("tags", [])) if attributes.get("tags") else None,
+    }
+
+
+def logs_search_query(args: dict) -> str:
+    """
+    Build a search query for logs based on provided arguments.
+
+    Args:
+        args (dict): Dictionary containing search parameters
+
+    Returns:
+        str: The constructed search query
+    """
+    query = args.get("query", "*")
+    service = args.get("service")
+    host = args.get("host")
+    source = args.get("source")
+    status = args.get("status")
+    
+    query_parts = [query] if query != "*" else []
+    
+    if service:
+        query_parts.append(f"service:{service}")
+    if host:
+        query_parts.append(f"host:{host}")
+    if source:
+        query_parts.append(f"source:{source}")
+    if status:
+        query_parts.append(f"status:{status}")
+    
+    return " AND ".join(query_parts) if query_parts else "*"
 
 
 def pagination(limit: int | None, page: int | None, page_size: int | None) -> tuple[int, int]:
@@ -1321,6 +1381,75 @@ def security_signals_search_query(args: dict) -> str:
     return query
 
 
+def logs_search_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    """
+    Search for logs in Datadog.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (Dict[str, Any]): A dictionary of arguments for searching logs.
+                              - query (str): The search query
+                              - service (str): Filter by service name
+                              - host (str): Filter by host name
+                              - source (str): Filter by source
+                              - status (str): Filter by status
+                              - from_date (str): Start date for search
+                              - to_date (str): End date for search
+                              - limit (int): Number of logs to return
+                              - page (int): Page number
+                              - page_size (int): Page size
+                              - sort (str): Sort order (asc/desc)
+
+    Returns:
+        CommandResults: The object containing the command results.
+    """
+    try:
+        with ApiClient(configuration) as api_client:
+            api_instance = LogsApi(api_client)
+            
+            # Pagination
+            sort = args.get("sort", "desc")
+            sort_data = {"asc": LogsSort.TIMESTAMP_ASCENDING, "desc": LogsSort.TIMESTAMP_DESCENDING}
+            page = arg_to_number(args.get("page"), arg_name="page")
+            page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+            limit = arg_to_number(args.get("limit"), arg_name="limit")
+            limit, offset = pagination(limit, page, page_size)
+
+            # Build search query
+            search_query = logs_search_query(args)
+
+            # Date range - convert to ISO strings
+            from_date = parse(args.get("from_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"})
+            to_date = parse(args.get("to_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"})
+            
+            from_date_str = from_date.isoformat() if from_date else None
+            to_date_str = to_date.isoformat() if to_date else None
+
+            # Execute the search using direct parameters instead of body
+            response = api_instance.list_logs(
+                filter_query=search_query,
+                filter_from=from_date_str,
+                filter_to=to_date_str,
+                sort=sort_data[sort],
+                page_cursor="",
+                page_limit=limit,
+            )
+            results = response.to_dict()
+            data = results.get("data", [])
+            data = [convert_datetime_to_str(log) for log in data]
+            lookup_data = [log_for_lookup(obj) for obj in data]
+            readable_output = lookup_to_markdown(lookup_data, table_header("Logs List", page, page_size))
+
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Log",
+                outputs_key_field="id",
+                outputs=data,
+            )
+    except Exception as e:
+        return DemistoException(f"Failed to search logs: {str(e)}")
+
+
 def query_timeseries_points_command(configuration: Configuration, args: dict[str, Any]):
     query = str(args.get("query"))
     from_time = parse(args.get("from", ""), settings={"TIMEZONE": "UTC"})
@@ -1545,6 +1674,7 @@ def main() -> None:
             "datadog-security-signal-assignee-update": update_security_signal_assignee_command,
             "datadog-security-signal-state-update": update_security_signal_state_command,
             "datadog-security-signals-list": get_security_signals_command,
+            "datadog-logs-search": logs_search_command,
             "datadog-time-series-point-query": query_timeseries_points_command,
         }
         if command == "test-module":
