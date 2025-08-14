@@ -92,3 +92,51 @@ def test_test_module_command(client, mocker):
 
     # Assert
     assert result == 'ok'
+
+    
+def test_module_test_command_failure(client, mocker):
+    """
+    GIVEN:
+        - The client is configured to throw an error.
+    WHEN:
+        - The module_test_command is called.
+    THEN:
+        - Ensure it catches the exception and returns an error message.
+    """
+    # Arrange: Mock the unshorten_request method to raise an exception
+    mocker.patch.object(
+        client,
+        'unshorten_request',
+        side_effect=DemistoException("API call failed")
+    )
+
+    # Act: Call the command
+    result = module_test_command(client)
+
+    # Assert: Check that the error message is correctly returned
+    assert 'Error: API call failed' in result
+
+
+def test_main_unknown_command(mocker):
+    """
+    GIVEN:
+        - An unknown command is provided.
+    WHEN:
+        - The main function is called.
+    THEN:
+        - Ensure the NotImplementedError is caught and return_error is called.
+    """
+    # Arrange: Mock the demisto object to simulate an unknown command
+    mocker.patch('unshortenMe.demisto.command', return_value='some-unknown-command')
+    mocker.patch('unshortenMe.demisto.params', return_value={'credentials': {'password': 'test'}})
+    mocker.patch('unshortenMe.demisto.args', return_value={})
+    return_error_mock = mocker.patch('unshortenMe.return_error')
+
+    # Act: Call the main function
+    from unshortenMe import main
+    main()
+
+    # Assert: Ensure return_error was called with the correct message
+    return_error_mock.assert_called_once()
+    call_args, _ = return_error_mock.call_args
+    assert 'Command some-unknown-command is not implemented' in call_args[0]
