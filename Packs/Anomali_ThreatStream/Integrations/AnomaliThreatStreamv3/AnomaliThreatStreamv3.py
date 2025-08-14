@@ -2494,24 +2494,15 @@ def update_model(
     return get_iocs_by_model(client, model, model_id, limit="50")
 
 
-def get_supported_platforms(client: Client, sandbox_type="default", limit=None, all_results=None):
+def get_supported_platforms(client: Client, sandbox="Anomali"):
     """
     Returns list of supported platforms for premium sandbox or default sandbox.
     """
     platform_data = client.http_request("GET", "v1/submit/parameters/")
-    result_key = "platform_choices" if sandbox_type == "default" else "premium_platform_choices"
-    available_platforms = platform_data.get(result_key, [])
-    if not available_platforms:
-        return f"No supported platforms found for {sandbox_type} sandbox"
-    if limit and isinstance(available_platforms, list) and all_results == "false":
-        output = camelize(available_platforms[: int(limit)])
-    else:
-        output = camelize(available_platforms)
-    outputs_prefix = "DefaultPlatforms" if sandbox_type == "default" else "PremiumPlatforms"
     return CommandResults(
-        outputs_prefix=f"{THREAT_STREAM}.{outputs_prefix}",
-        outputs=output,
-        readable_output=tableToMarkdown(f"Supported platforms for {sandbox_type} sandbox", output),
+        outputs_prefix=f"{THREAT_STREAM}.Platforms",
+        outputs=platform_data,
+        readable_output=tableToMarkdown(f"Supported platforms for {sandbox} sandbox", platform_data),
         raw_response=platform_data,
     )
 
@@ -2554,7 +2545,6 @@ def file_name_to_valid_string(file_name):
         return emoji.demojize(file_name)  # type: ignore
     return file_name
 
-
 def submit_report(
     client: Client,
     submission_type,
@@ -2562,17 +2552,19 @@ def submit_report(
     import_indicators=True,
     submission_classification="private",
     report_platform="WINDOWS7",
-    premium_sandbox="false",
+    sandbox="Anomali",
     detail=None,
 ):
     """
     Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
     import_indicators = argToBoolean(import_indicators)
+    use_sandbox = f"use_{sandbox.lower()}_sandbox"
+
     data = {
         "report_radio-classification": submission_classification,
         "report_radio-platform": report_platform,
-        "use_premium_sandbox": premium_sandbox,
+        use_sandbox: True,
         "import_indicators": import_indicators,
     }
     if detail:
@@ -2829,6 +2821,7 @@ def main():
     api_key = params.get("credentials", {}).get("password")
     server_url = params.get("url", "").strip("/")
     reliability = params.get("integrationReliability", DBotScoreReliability.B)
+
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
