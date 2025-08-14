@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: override_corepacks_add_posture_cloud
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: override_corepacks_add_posture_cloud
     project: "${CI_PROJECT_NAMESPACE}/infra"
