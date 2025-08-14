@@ -45,5 +45,6 @@
             "type": "shortText",
             "name": "fwserials"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

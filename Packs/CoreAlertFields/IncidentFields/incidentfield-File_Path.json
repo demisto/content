@@ -35,5 +35,6 @@
             "type": "multiSelect",
             "name": "File Paths"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

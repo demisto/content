@@ -40,5 +40,6 @@
             "type": "multiSelect",
             "name": "CMD line"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }
