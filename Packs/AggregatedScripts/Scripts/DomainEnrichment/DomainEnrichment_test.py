@@ -22,13 +22,11 @@ def test_validate_input_function_success(mocker):
     Then:
         - The function completes without raising an exception.
     """
-    # Mock auto_detect_indicator_type to always return 'Domain'
-    mocker.patch("DomainEnrichment.auto_detect_indicator_type", return_value=FeedIndicatorType.Domain)
     args = {"domain_list": "google.com,example.com"}
     try:
         validate_input_function(args)
-    except DemistoException:
-        pytest.fail("validate_input_function raised DemistoException unexpectedly.")
+    except ValueError:
+        pytest.fail("validate_input_function raised ValueError unexpectedly.")
 
 
 def test_validate_input_function_no_domains():
@@ -38,9 +36,9 @@ def test_validate_input_function_no_domains():
     When:
         - The validate_input_function is called.
     Then:
-        - A DemistoException is raised with the correct message.
+        - A ValueError is raised with the correct message.
     """
-    with pytest.raises(DemistoException, match="domain_list is required"):
+    with pytest.raises(ValueError, match="domain_list is required"):
         validate_input_function({"domain_list": ""})
 
 
@@ -51,12 +49,10 @@ def test_validate_input_function_invalid_domain(mocker):
     When:
         - The validate_input_function is called.
     Then:
-        - A DemistoException is raised with the correct message.
+        - A ValueError is raised with the correct message.
     """
-    # Mock auto_detect to return something other than Domain for the invalid entry
-    mocker.patch("DomainEnrichment.auto_detect_indicator_type", return_value=FeedIndicatorType.IP)
     args = {"domain_list": "8.8.8.8"}
-    with pytest.raises(DemistoException, match="Invalid domain name"):
+    with pytest.raises(ValueError, match="Invalid domain name"):
         validate_input_function(args)
 
 

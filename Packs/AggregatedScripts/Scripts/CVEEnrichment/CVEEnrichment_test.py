@@ -22,12 +22,11 @@ def test_validate_input_function_success(mocker):
     Then:
         - The function runs without raising an exception.
     """
-    mocker.patch("CVEEnrichment.auto_detect_indicator_type", return_value=FeedIndicatorType.CVE)
     args = {"cve_list": "CVE-2021-44228"}
     try:
         validate_input_function(args)
-    except DemistoException:
-        pytest.fail("validate_input_function raised an unexpected DemistoException.")
+    except ValueError:
+        pytest.fail("validate_input_function raised an unexpected ValueError.")
 
 
 def test_validate_input_function_raises_error_on_empty_list():
@@ -37,9 +36,9 @@ def test_validate_input_function_raises_error_on_empty_list():
     When:
         - The validate_input_function is called.
     Then:
-        - A DemistoException is raised with the correct message.
+        - A ValueError is raised with the correct message.
     """
-    with pytest.raises(DemistoException, match="cve_list is required"):
+    with pytest.raises(ValueError, match="cve_list is required"):
         validate_input_function({"cve_list": ""})
 
 
@@ -50,10 +49,9 @@ def test_validate_input_function_raises_error_on_invalid_cve(mocker):
     When:
         - The validate_input_function is called.
     Then:
-        - A DemistoException is raised with the correct message.
+        - A ValueError is raised with the correct message.
     """
-    mocker.patch("CVEEnrichment.auto_detect_indicator_type", return_value=FeedIndicatorType.URL)
-    with pytest.raises(DemistoException, match=r"Invalid CVE ID: not-a-cve"):
+    with pytest.raises(ValueError, match=r"Invalid CVE ID: not-a-cve"):
         validate_input_function({"cve_list": "not-a-cve"})
 
 # -------------------------------------------------------------------------------------------------

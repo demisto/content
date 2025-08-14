@@ -19,7 +19,7 @@ This script gathers url reputation data from multiple integrations and returns a
 | url_list | A comma-separated list of URLs to enrich. |
 | external_enrichment | Set to true to run reputation commands from external sources. If false (default), the script only queries internal sources as TIM and wildfire-get-verdict. Note, providing a value for the brands argument overrides this option. |
 | verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands. |
-| brands | A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If empty, runs against all internal integrations and if external_enrichment is true will run on all external integrations. |
+| brands | A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If empty, runs against all enabled integrations according to the 'external_enrichment' flag. Run !ProvidesCommand command=url to see available integrations. Add WildfFire-v2 in order to run wildfire-get-verdict. |
 | additional_fields | Whether to return unmapped \(secondary\) fields to the context output under the "URLEnrichment.results.AdditionalFields" path. |
 
 ## Outputs

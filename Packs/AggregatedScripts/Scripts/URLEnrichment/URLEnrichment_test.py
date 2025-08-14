@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from CommonServerPython import DemistoException, FeedIndicatorType, Common
+from CommonServerPython import Common
 from URLEnrichment import validate_input_function, url_enrichment_script
 import json
 
@@ -16,45 +16,43 @@ def util_load_json(path):
 
 def test_validate_input_function_success(mocker):
     """
-    GIVEN:
+    Given:
         - An args dictionary with a list of valid URLs.
-    WHEN:
+    When:
         - The validate_input_function is called.
-    THEN:
+    Then:
         - The function completes successfully without raising an exception.
     """
-    mocker.patch("URLEnrichment.auto_detect_indicator_type", return_value=FeedIndicatorType.URL)
     args = {"url_list": "https://google.com,https://example.com"}
     try:
         validate_input_function(args)
-    except DemistoException:
-        pytest.fail("validate_input_function raised an unexpected DemistoException.")
+    except ValueError:
+        pytest.fail("validate_input_function raised an unexpected ValueError.")
 
 
 def test_validate_input_function_raises_error_on_missing_list():
     """
-    GIVEN:
+    Given:
         - An args dictionary where 'url_list' is missing.
-    WHEN:
+    When:
         - The validate_input_function is called.
-    THEN:
-        - A DemistoException is raised with the correct error message.
+    Then:
+        - A ValueError is raised with the correct error message.
     """
-    with pytest.raises(DemistoException, match="url_list is required"):
+    with pytest.raises(ValueError, match="url_list is required"):
         validate_input_function({"url_list": ""})
 
 
 def test_validate_input_function_raises_error_on_invalid_url(mocker):
     """
-    GIVEN:
+    Given:
         - An args dictionary containing an item that is not a valid URL.
-    WHEN:
+    When:
         - The validate_input_function is called.
-    THEN:
-        - A DemistoException is raised with the correct error message.
+    Then:
+        - A ValueError is raised with the correct error message.
     """
-    mocker.patch("URLEnrichment.auto_detect_indicator_type", return_value=FeedIndicatorType.IP)
-    with pytest.raises(DemistoException, match=r"URL '8.8.8.8' is invalid"):
+    with pytest.raises(ValueError, match=r"URL '8.8.8.8' is invalid"):
         validate_input_function({"url_list": "8.8.8.8"})
 
 
@@ -76,7 +74,9 @@ def test_url_enrichment_script_end_to_end(mocker):
         - Scores and verdicts should be calculated correctly.
     """
     # --- Arrange ---
+    # Load tim results - 2 indicators
     mock_tim_results = util_load_json("test_data/mock_tim_results.json")
+    # Load batch results - 1 new indicator + 1 overlapping indicator + wildfire results
     mock_batch_results = util_load_json("test_data/mock_batch_results.json")
     
     url_list = ["https://example.com", "https://example2.com"]
@@ -102,7 +102,7 @@ def test_url_enrichment_script_end_to_end(mocker):
 
     # --- Assert ---
     # Convert the list of results to a dictionary for easier access
-    enrichment_map = {item['Data']: item for item in outputs.get("URLEnrichment(val.Data && val.Data == obj.Data)", [])}
+    enrichment_map = {item["Data"]: item for item in outputs.get("URLEnrichment(val.Data && val.Data == obj.Data)", [])}
     assert len(enrichment_map) == 2  # We should have results for both URLs
 
     # 1. Verify the results for example.com (the one with overlapping data)
@@ -129,5 +129,5 @@ def test_url_enrichment_script_end_to_end(mocker):
 
     # 3. Verify that DBotScore context was populated from all sources
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
-    assert len(dbot_scores) == 3 # 2 from TIM, 2 from Batch, 1 is the same so 3
+    assert len(dbot_scores) == 3 # 2 from TIM, 2 from Batch, 1 overlapping so 3
     assert {s['Vendor'] for s in dbot_scores} == {"brand1", "brand2","brand3"}

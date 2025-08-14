@@ -6,6 +6,13 @@ from AggregatedCommandApiModule import *
 ENDPOINT_PATH = "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"
 
 def validate_input_function(args):
+    """
+    Validates the input arguments.
+    Args:
+        args (dict[str, Any]): The arguments from `demisto.args()`.
+    Raises:
+        ValueError: If the input is invalid.
+    """
     ip_list = argToList(args.get("ip_list"))
     if not ip_list:
         raise ValueError("ip_list is required")

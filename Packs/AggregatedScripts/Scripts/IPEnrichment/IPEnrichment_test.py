@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from CommonServerPython import DemistoException, FeedIndicatorType, Common
+from CommonServerPython import Common
 from IPEnrichment import ENDPOINT_PATH, validate_input_function, ip_enrichment_script
 import json
 
@@ -22,7 +22,6 @@ def test_validate_input_function_success(mocker):
     Then:
         - The function completes successfully without raising an exception.
     """
-    mocker.patch("IPEnrichment.is_ip_valid", return_value=True)
     args = {"ip_list": "8.8.8.8,2001:db8::"}
     try:
         validate_input_function(args)
@@ -52,7 +51,6 @@ def test_validate_input_function_raises_error_on_invalid_ip(mocker):
     Then:
         - A ValueError is raised with the correct error message.
     """
-    mocker.patch("IPEnrichment.is_ip_valid", return_value=False)
     with pytest.raises(ValueError, match=r"Invalid IP address: not-an-ip"):
         validate_input_function({"ip_list": "not-an-ip"})
     

@@ -56,7 +56,7 @@ class EntryResult:
         return {"command name": self.command_name,
                 "args": self.args,
                 "brand": self.brand,
-                "status": self.status,
+                "status": self.status.value,
                 "message": self.message}
     
     
@@ -852,6 +852,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
             return CommandResults(readable_output="Error: All commands failed or no indicators found.\n" + human_readable,
                                 outputs=final_context,
+                                
                                 entry_type=EntryType.ERROR)
         
         demisto.debug("All commands succeeded. Returning a success entry.")
