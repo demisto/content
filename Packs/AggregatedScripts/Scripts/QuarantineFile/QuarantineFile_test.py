@@ -498,20 +498,6 @@ class TestXDRHandler:
                 handler.validate_args(args)
             assert "The 'file_path' argument is required for brand Cortex XDR - IR." in str(e.value)
 
-        def test_run_pre_checks_and_get_initial_results_returns_empty_list_when_no_endpoint_ids_given(self):
-            """
-            Given: args with no endpoint ids
-            When: XDRHandler run_pre_checks_and_get_initial_results is called
-            Then: Returns empty lists
-            """
-            args = {"file_hash": SHA_256_HASH, "file_path": "/path"}
-            orchestrator = _get_orchestrator(args)
-            handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
-
-            endpoints_to_quarantine, completed_results = handler.run_pre_checks_and_get_initial_results(args)
-            assert endpoints_to_quarantine == []
-            assert completed_results == []
-
     class TestInitialQuarantine:
         """Tests the quarantine kickoff flow of the XDRHandler."""
 
@@ -1125,7 +1111,7 @@ class TestQuarantineOrchestrator:
                 "brand": Brands.CORTEX_CORE_IR,
                 "poll_command": "some-poll-cmd",
             }
-            mock_handler_instance.run_pre_checks_and_get_initial_results.return_value = (["ep1", "ep2", "ep3"], [])
+
 
             mocker.patch("QuarantineFile.handler_factory", return_value=mock_handler_instance)
 

@@ -560,20 +560,9 @@ class XDRHandler(BrandHandler):
     def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
         """
         Runs pre-checks for XDR endpoints.
-
-        Args:
-            args (dict): The script arguments for this brand's endpoints.
-
-        Returns:
-            tuple[list, list[QuarantineResult]]: A tuple containing:
-                - A list of endpoint IDs that still need to be quarantined.
-                - A list of QuarantineResult objects for endpoints already processed.
         """
 
-        # Note: We should be using the 'get-quarantine-status' command to check if a file is already quarantined,
-        # but this command currently has an issue so we will not be doing pre-checks
-
-        return argToList(args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG)), []
+        pass
 
     def initiate_quarantine(self, args: dict) -> dict:
         """
@@ -970,12 +959,11 @@ class QuarantineOrchestrator:
             brand_args = self.args.copy()
             brand_args[self.ENDPOINT_IDS_ARG] = endpoint_ids
             handler.validate_args(brand_args)
-            endpoints_to_poll, initial_results = handler.run_pre_checks_and_get_initial_results(brand_args)
-            self.completed_results.extend(initial_results)
-            if endpoints_to_poll:
-                demisto.debug(f"[Orchestrator] {len(endpoints_to_poll)} endpoints for '{brand}' need quarantine action.")
+
+            if endpoint_ids:
+                demisto.debug(f"[Orchestrator] {len(endpoint_ids)} endpoints for '{brand}' need quarantine action.")
                 initiate_args = self.args.copy()
-                initiate_args[self.ENDPOINT_IDS_ARG] = endpoints_to_poll
+                initiate_args[self.ENDPOINT_IDS_ARG] = endpoint_ids
                 new_job = handler.initiate_quarantine(initiate_args)
                 self.pending_jobs.append(new_job)
             return
