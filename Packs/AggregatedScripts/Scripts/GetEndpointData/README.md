@@ -95,3 +95,18 @@ If you include additional brands not on the defaultlist, the predefined list of 
 | EndpointData.Status.source | The vendor from which the status of this endpoint was retrieved. | String |
 | EndpointData.Vendor.value | The integration name of the endpoint vendor. | String |
 | EndpointData.Vendor.source | The vendor from which the Vendor of this endpoint was retrieved. | String |
+
+## Using commands
+
+The script is using all brands that contains the !endpoint command and also the following:
+
+| **Brand** | **Command** |
+| --- | --- |
+| Active Directory Query v2 | !ad-get-computer |
+| McAfee ePO v2 | !epo-find-system |
+| CrowdstrikeFalcon | !cs-falcon-search-device |
+| Cortex XDR - IR | !xdr-get-endpoints |
+| Cortex XDR - IR | !xdr-list-risky-hosts |
+| Cortex Core - IR | !core-get-endpoints |
+| Cortex Core - IR | !core-list-risky-hosts |
+| FireEyeHX v2 | !fireeye-hx-get-host-information |

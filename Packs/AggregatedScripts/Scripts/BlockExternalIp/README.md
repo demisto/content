@@ -34,3 +34,33 @@ The script blocks a list of IP addresses in supported integrations.
 | BlockExternalIPResults.Result | The result of the action Success or Failed. | String |
 | BlockExternalIPResults.Brand | The name of the brand that was executed. | String |
 | BlockExternalIPResults.IP | The IP that was blocked. | String |
+
+## Using commands
+
+| **Brand** | **Command** |
+| --- | --- |
+| Zscaler | !zscaler-blacklist-ip |
+| Cisco ASA | !cisco-asa-create-rule |
+| F5Silverline | !f5-silverline-ip-object-add |
+| FortiGate | !fortigate-ban-ip |
+| Palo Alto Networks - Prisma SASE | prisma-sase-address-object-list |
+| Palo Alto Networks - Prisma SASE | prisma-sase-address-object-create |
+| Palo Alto Networks - Prisma SASE | prisma-sase-address-group-list |
+| Palo Alto Networks - Prisma SASE | prisma-sase-address-group-create |
+| Palo Alto Networks - Prisma SASE | prisma-sase-address-group-update |
+| Palo Alto Networks - Prisma SASE | prisma-sase-candidate-config-push |
+| Palo Alto Networks - Prisma SASE | prisma-sase-security-rule-list |
+| Palo Alto Networks - Prisma SASE | prisma-sase-security-rule-create |
+| Palo Alto Networks - Prisma SASE | prisma-sase-security-rule-update |
+| Palo Alto Networks PAN-OS | pan-os-register-ip-tag |
+| Palo Alto Networks PAN-OS | pan-os-edit-address-group |
+| Palo Alto Networks PAN-OS | pan-os-create-address-group |
+| Palo Alto Networks PAN-OS | pan-os-edit-rule |
+| Palo Alto Networks PAN-OS | pan-os-create-rule |
+| Palo Alto Networks PAN-OS | pan-os-move-rule |
+| Palo Alto Networks PAN-OS | pan-os-list-address-groups |
+| Palo Alto Networks PAN-OS | pan-os-list-rules |
+| Palo Alto Networks PAN-OS | pan-os-push-to-device-group |
+| Palo Alto Networks PAN-OS | pan-os-push-status |
+| Palo Alto Networks PAN-OS | pan-os-commit |
+| Palo Alto Networks PAN-OS | pan-os-commit-status |

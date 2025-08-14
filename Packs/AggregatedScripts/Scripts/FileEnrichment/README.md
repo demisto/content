@@ -84,3 +84,12 @@ This script gathers file reputation data from multiple integrations and returns 
 | FileEnrichment.GlobalPrevalence | The global prevalence of the file hash. | Number |
 | FileEnrichment.LocalPrevalence | The local prevalence of the file hash. | Number |
 | FileEnrichment.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | Object |
+
+## Using commands
+
+The script is using all brands that contains the !file command and also the following:
+
+| **Brand** | **Command** |
+| --- | --- |
+| WildFire-v2 | !wildfire-get-verdict |
+| Cortex Core - IR | !core-get-hash-analytics-prevalence |
