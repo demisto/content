@@ -14,12 +14,6 @@ args:
   - 'CrowdstrikeFalcon'
   - 'FireEyeHX v2'
   - 'Microsoft Defender Advanced Threat Protection'
-- description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
-  name: verbose
-  auto: PREDEFINED
-  predefined:
-  - 'true'
-  - 'false'
 comment: This script isolates endpoints using multiple integrations and returns a success or failure message.
 commonfields:
   id: isolate-endpoint
