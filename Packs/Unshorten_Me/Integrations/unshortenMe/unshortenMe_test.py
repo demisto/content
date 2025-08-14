@@ -2,7 +2,7 @@ import io
 import json
 import pytest
 from unshortenMe import Client, unshorten_url_command, test_module
-from CommonSeverPython import DemistoException
+from CommonServerPython import DemistoException
 
 SERVER_URL = 'https://unshorten.me/api/v2'
 
@@ -35,12 +35,12 @@ def test_unshorten_url_command_success(client, mocker):
     # Act: Call the command function
     result = unshorten_url_command(client, 'https://bit.ly/3DKWm5t')
 
-    # Assert: Check the outputs
+    # Assert: Check the outputs (accessing the first item in the list)
     assert result.outputs_prefix == 'unshortenMe'
-    assert result.outputs['success'] is True
-    assert result.outputs['unshortened_url'] == 'https://www.example.com/'
-    assert 'Unshortened URL' in result.readable_output
-
+    assert result.outputs[0]['success'] is True
+    assert result.outputs[0]['unshortened_url'] == 'https://www.example.com/'
+    assert 'unshorten.me results' in result.readable_output # Check for table title
+    
 
 def test_unshorten_url_command_api_failure(client, mocker):
     """
