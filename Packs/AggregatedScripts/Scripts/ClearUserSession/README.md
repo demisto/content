@@ -29,3 +29,10 @@ This script clears user sessions across multiple integrations for a list of user
 | SessionClearResults.Result | The result of the session clearing process for the user (*Success* or *Failed*). | String |
 | SessionClearResults.Brand | The integration (e.g., *Microsoft Graph*, *Okta v2*) where the session clearing succeeded. | String |
 | SessionClearResults.UserName | The username for which the session clearing process was executed. | String |
+
+## Using commands
+
+| **Brand** | **Command** |
+| --- | --- |
+| Okta v2 | !okta-clear-user-session |
+| Microsoft Graph User | !msgraph-user-session-revoke |

@@ -42,3 +42,16 @@ This script uses the following commands and scripts.
 | DisableUser.UserProfile.Username | The username of the user. | String |
 | DisableUser.UserProfile.ID | The ID of the user. | String |
 | DisableUser.UserProfile.Email | The Email address of the user. | String |
+
+## Using commands
+
+The script is using all brands that contains the !disable-user command and also the following:
+
+| **Brand** | **Command** |
+| --- | --- |
+| Active Directory Query v2 | !ad-disable-account |
+| Microsoft Graph User | !msgraph-user-account-disable |
+| Okta v2 | !okta-suspend-user |
+| Okta IAM | !iam-disable-user |
+| AWS-ILM | !iam-disable-user |
+| GSuiteAdmin | !gsuite-user-update |

@@ -48,3 +48,20 @@ This script is used in the following playbooks and scripts.
 | UserData.RiskLevel | The risk level of the user. | String |
 | UserData.AdditionalFields | All the other outputs returned. | String |
 | UserData.Status | Status of the results returned from the command. | String |
+
+## Using commands
+
+| **Brand** | **Command** |
+| --- | --- |
+| Active Directory Query v2 | !ad-get-user |
+| Okta v2 | !okta-get-user |
+| Okta IAM | !iam-get-user |
+| AWS - IAM | !aws-iam-get-user |
+| AWS-ILM | !iam-get-user |
+| Microsoft Graph User | !msgraph-user-get |
+| Microsoft Graph User | !msgraph-user-get-manager |
+| PrismaCloud v2 | !prisma-cloud-users-list |
+| Cortex XDR - IR | !xdr-list-risky-users |
+| Cortex Core - IR | !core-list-risky-users |
+| AzureRiskyUsers | !azure-risky-user-get |
+| GSuiteAdmin | !gsuite-user-get |
