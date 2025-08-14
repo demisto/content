@@ -141,7 +141,7 @@ script:
       description: The maximum number of requests to return. Default is 50.
       required: false
     - name: all_results
-      description: Set to true to fetch all available results, overriding the limit.
+      description: Set to true to fetch all available results, up to 100,000, overriding the limit.
       required: false
       auto: PREDEFINED
       predefined:
