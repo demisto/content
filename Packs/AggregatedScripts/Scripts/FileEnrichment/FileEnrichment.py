@@ -183,7 +183,7 @@ class Command:
         Returns:
             tuple[list[dict], list[CommandResults]]: A tuple of entry context dictionaries and human-readable CommandResults.
         """
-        demisto.debug(f"Stating to execute command: {self}.")
+        demisto.debug(f"Starting to execute command: {self}.")
         execution_results = demisto.executeCommand(self.name, self.args)
 
         if not execution_results:
