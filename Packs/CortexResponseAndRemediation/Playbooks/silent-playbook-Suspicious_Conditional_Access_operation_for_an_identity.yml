@@ -91,8 +91,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
-      - "8"
+      - "95"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -106,80 +105,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: b74c1def-9483-4db5-838d-328838a1ad30
-    type: regular
-    task:
-      id: b74c1def-9483-4db5-838d-328838a1ad30
-      version: -1
-      name: Get user risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      user_id:
-        simple: ${Core.OriginalAlert.event.identity_name}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 650,
-          "y": 1860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 1454580e-4f0b-45a8-8f6d-5d3a4d907508
-    type: regular
-    task:
-      id: 1454580e-4f0b-45a8-8f6d-5d3a4d907508
-      version: -1
-      name: Get user Azure risk score
-      description: Returns a list of all risky users and their properties.
-      script: '|||azure-risky-users-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      risk_level:
-        simple: high
-      updated_after:
-        simple: 5 hours
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1080,
-          "y": 1860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -309,58 +234,21 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: containsGeneral
           left:
             value:
-              complex:
-                root: AzureRiskyUsers.RiskyUser
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: AzureRiskyUsers.RiskyUser.userPrincipalName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert.event.identity_name
-                      iscontext: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: AzureRiskyUsers.RiskyUser.riskState
-                      iscontext: true
-                    right:
-                      value:
-                        simple: atRisk
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: AzureRiskyUsers.RiskyUser
-                      iscontext: true
-                    right:
-                      value:
-                        simple: confirmedCompromised
-                    ignorecase: true
-                accessor: userPrincipalName
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              simple: Core.RiskyUser.risk_leve
+              simple: UserData.RiskLevel
             iscontext: true
           right:
             value:
-              simple: LOW
+              simple: HIGH
           ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 650,
-          "y": 2030
+          "y": 2028
         }
       }
     note: false
@@ -490,9 +378,9 @@ tasks:
       - "37"
     scriptarguments:
       closeNotes:
-        simple: ' Handled by the playbook "MFA was disabled by an Azure identity"'
+        simple: ' Handled by the playbook "Suspicious Conditional Access operation for an identity"'
       closeReason:
-        simple: Resolved as TRUE_POSITIVE
+        simple: Resolved - True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -545,26 +433,17 @@ tasks:
       id: cf552f80-8be3-478e-828f-260d66d101a1
       version: -1
       name: Clear user session
-      description: "Revoke a user session by invalidating all refresh tokens issued to applications for a user. \nThis command requires an administrator role.\nPermission required: Directory.AccessAsUser.All (Delegated)."
-      script: '|||msgraph-user-session-revoke'
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "56"
     scriptarguments:
-      user:
-        complex:
-          root: Core.OriginalAlert.event
-          accessor: identity_name
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Core.OriginalAlert.event.referenced_resource_name
-                iscontext: true
+      user_name:
+        simple: ${Core.OriginalAlert.event.identity_name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -588,7 +467,7 @@ tasks:
     task:
       id: 9f3a2374-591c-45a1-8fc3-0e13a81236c9
       version: -1
-      name: Set risky user
+      name: Set admin risky user
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR On-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1916,6 +1795,50 @@ tasks:
         "position": {
           "x": -209,
           "y": 2118
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 35d025da-0891-480c-bec5-d21b9300c07e
+    type: regular
+    task:
+      id: 35d025da-0891-480c-bec5-d21b9300c07e
+      version: -1
+      name: Get user risk levels
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      user_name:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: identity_name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.username
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1860
         }
       }
     note: false
