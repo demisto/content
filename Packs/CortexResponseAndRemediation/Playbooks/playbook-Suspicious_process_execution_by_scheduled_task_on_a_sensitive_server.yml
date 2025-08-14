@@ -332,9 +332,9 @@ tasks:
       - "42"
     scriptarguments:
       closeNotes:
-        simple: False Positive
+        simple: Resolved as False Positive - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
+        simple: Resolved - False Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -371,9 +371,9 @@ tasks:
       - "19"
     scriptarguments:
       closeNotes:
-        simple: Malicious scheduled task detected
+        simple: Malicious scheduled task detected - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
       closeReason:
-        simple: Resolved - Handled by the playbook "Suspicious process execution by scheduled task on a sensitive server"
+        simple: Resolved - True Positive
       id:
         simple: ${alert.id}
     separatecontext: false
@@ -640,16 +640,20 @@ tasks:
       id: 1e47b57c-e541-4f30-8de2-d17a7d4d22ed
       version: -1
       name: Check the process reputation
-      description: Checks the file reputation of the specified hash.
-      script: '|||file'
+      description: This script gathers file reputation data from multiple integrations and returns a "FileEnrichment" object with consolidated information to the context output.
+      scriptName: file-enrichment
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "1"
     scriptarguments:
-      file:
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      file_hash:
         simple: ${alert.targetprocesssha256}
     separatecontext: false
     continueonerror: true
@@ -878,8 +882,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 1560,
+        "height": 2830,
+        "width": 1561,
         "x": 20,
         "y": -220
       }
