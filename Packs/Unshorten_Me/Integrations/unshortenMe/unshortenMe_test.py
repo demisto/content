@@ -131,6 +131,7 @@ def test_main_unknown_command(mocker):
     mocker.patch('unshortenMe.demisto.params', return_value={'credentials': {'password': 'test'}})
     mocker.patch('unshortenMe.demisto.args', return_value={})
     return_error_mock = mocker.patch('unshortenMe.return_error')
+    mocker.patch('unshortenMe.demisto.error') # <-- ADD THIS LINE
 
     # Act: Call the main function
     from unshortenMe import main
@@ -140,3 +141,4 @@ def test_main_unknown_command(mocker):
     return_error_mock.assert_called_once()
     call_args, _ = return_error_mock.call_args
     assert 'Command some-unknown-command is not implemented' in call_args[0]
+    
