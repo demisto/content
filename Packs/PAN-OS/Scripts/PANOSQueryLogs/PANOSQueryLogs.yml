@@ -25,24 +25,24 @@ args:
   - decryption
 - description: |-
     Filters logs by a specific URL category. Optional values are: 
-        1. Malware
-        2. Phishing
-        3. Command and Control
-        4. Dynamic DNS
-        5. Encrypted DNS
-        6. Parked
-        7. Unknown
-        8. Newly Registered Domains
-        9. Grayware
-        10. Hacking
-        11. Proxy Avoidance And Anonymizers
-        12. Ransomware
-        13. Scanning Activity
-        14. Artificial Intelligence
-        15. High Risk
-        16. Compromised Website
+    1. Malware
+    2. Phishing
+    3. Command and Control
+    4. Dynamic DNS
+    5. Encrypted DNS
+    6. Parked
+    7. Unknown
+    8. Newly Registered Domains
+    9. Grayware
+    10. Hacking
+    11. Proxy Avoidance And Anonymizers
+    12. Ransomware
+    13. Scanning Activity
+    14. Artificial Intelligence
+    15. High Risk
+    16. Compromised Website
 
-      This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored.
+    This argument cannot be used in combination with the following arguments: time-generated, time-generated-after, addr-src, addr-dst, zone-src, zone-dst, action, port-dst, rule, url, filedigest. It can only be used with log_type set to "url". For all other log_type values, this argument is ignored.
   name: url_category
 - description: |-
     The time the log was generated from the timestamp and prior to it.
