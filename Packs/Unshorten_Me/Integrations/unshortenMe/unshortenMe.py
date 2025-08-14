@@ -1,7 +1,7 @@
-demisto.debug('pack name = unshortenMe, packversion = 1.0.0')
-
 import re
 import urllib3
+import demistomock as demisto
+from CommonServerPython import *
 
 
 # Disable insecure connection warnings
@@ -140,7 +140,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    token = params.get("token")
+    token = params.get('credentials', {}).get('password')
     base_url = "https://unshorten.me/api/v2/"
     proxy = params.get("proxy", False)
     verify_certificate = not params.get("insecure", False)

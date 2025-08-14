@@ -4,10 +4,11 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: The token assigned to your unshortenMe profile.
-  display: ' Token'
-  name: token
+  displaypassword: Token
+  name: credentials
   required: true
-  type: 4
+  hiddenusername: true
+  type: 9
 description: Unshorten.me is a free service to Un-Shorten the URLs created by URL shortening services. Unshorten.me can un-shorten URLs created by different services like goo.gl (Google), fb.me (Facebook), t.co (Twitter), bit.ly, TinyURL, ow.ly among others
 display: unshortenMe
 name: unshortenMe

@@ -2,7 +2,7 @@ import io
 import json
 import pytest
 from unshortenMe import Client, unshorten_url_command, test_module
-from CommonServerPython import DemistoException
+from CommonSeverPython import DemistoException
 
 SERVER_URL = 'https://unshorten.me/api/v2'
 
