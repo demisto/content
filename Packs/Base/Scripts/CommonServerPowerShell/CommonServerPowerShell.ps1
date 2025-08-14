@@ -11,6 +11,7 @@ enum ServerLogLevel {
     error
 }
 
+
 enum EntryTypes {
     note = 1
     downloadAgent = 2
