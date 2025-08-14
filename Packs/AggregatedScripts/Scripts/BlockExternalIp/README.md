@@ -52,5 +52,15 @@ The script blocks a list of IP addresses in supported integrations.
 | Palo Alto Networks - Prisma SASE | prisma-sase-security-rule-list |
 | Palo Alto Networks - Prisma SASE | prisma-sase-security-rule-create |
 | Palo Alto Networks - Prisma SASE | prisma-sase-security-rule-update |
-
-| Panorama | !panorama-block-external-ip |
+| Palo Alto Networks PAN-OS | pan-os-register-ip-tag |
+| Palo Alto Networks PAN-OS | pan-os-edit-address-group |
+| Palo Alto Networks PAN-OS | pan-os-create-address-group |
+| Palo Alto Networks PAN-OS | pan-os-edit-rule |
+| Palo Alto Networks PAN-OS | pan-os-create-rule |
+| Palo Alto Networks PAN-OS | pan-os-move-rule |
+| Palo Alto Networks PAN-OS | pan-os-list-address-groups |
+| Palo Alto Networks PAN-OS | pan-os-list-rules |
+| Palo Alto Networks PAN-OS | pan-os-push-to-device-group |
+| Palo Alto Networks PAN-OS | pan-os-push-status |
+| Palo Alto Networks PAN-OS | pan-os-commit |
+| Palo Alto Networks PAN-OS | pan-os-commit-status |
