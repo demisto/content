@@ -454,7 +454,8 @@ def fetch_indicators_command(client: Client) -> list[dict]:
         if raw_cves and command != "nvd-get-indicators":
             temp_cves = build_indicators(client, raw_cves)
             demisto.debug(f'Creating {len(temp_cves)} using "createIndicators"')
-            demisto.createIndicators(temp_cves)
+            for iter_ in batch(temp_cves, batch_size=2000):
+                demisto.createIndicators(iter_)
             total_results += len(temp_cves)
 
         start_index = end_date
