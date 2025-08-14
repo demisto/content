@@ -21,6 +21,7 @@ PRODUCT = "By_Request"
 MAX_FETCH_AUDIT_LIMIT = 50000
 MAX_FETCH_EVENT_LIMIT = 50000
 MAX_FETCH_REQUEST_LIMIT = 5000
+EVENTS_LIMIT = 100_000
 DATE_FORMAT_CALLS = "%Y-%m-%d"
 
 
@@ -411,7 +412,7 @@ def list_requests_command(client: Client, args: dict) -> CommandResults:
         url_suffix = "requests"
         if all_results:
             params["take"] = 1000
-            while True:
+            while len(results) < EVENTS_LIMIT:
                 response = client.get_events_request(url_suffix, params)
                 if not response:
                     break
