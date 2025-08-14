@@ -3,7 +3,7 @@ args:
   name: domain_list
   required: true
 - name: external_enrichment
-  description: Set to true to run reputation commands from external sources. If false (default), the script only queries internal sources as TIM and core-get-domain-analytics-prevalence. Note, providing a value for the brands argument overrides this option.
+  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -20,10 +20,13 @@ args:
   required: false
 - name: brands
   description: |-
-    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If empty, runs against all internal integrations and if external_enrichment is true will run on all external integrations.
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag.
+    Run !ProvidesCommand command=domain to see available integrations.
+    Add Cortex Core - IR to run core-get-domain-analytics-prevalence.
+  isArray: true
   required: false
 - name: additional_fields
-  description: Whether to return unmapped (secondary) fields to the context output under the "DomainEnrichment.results.AdditionalFields" path.
+  description: Whether to return secondary fields to the context output under "AdditionalFields".
   auto: PREDEFINED
   predefined:
   - 'true'

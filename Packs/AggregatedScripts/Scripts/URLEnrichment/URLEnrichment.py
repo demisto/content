@@ -5,18 +5,23 @@ from AggregatedCommandApiModule import *
 
 
 def validate_input_function(args):
+    """
+    Validates the input arguments.
+    Args:
+        args (dict[str, Any]): The arguments from `demisto.args()`.
+    Raises:
+        ValueError: If the input is invalid.
+    """
     url_list = argToList(args.get("url_list"))
     if not url_list:
-        raise DemistoException("url_list is required")
+        raise ValueError("url_list is required")
     for url in url_list:
         if auto_detect_indicator_type(url) != FeedIndicatorType.URL:
-            raise DemistoException(f"URL '{url}' is invalid")
+            raise ValueError(f"URL '{url}' is invalid")
             
 
 
-def url_enrichment_script(
-    url_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
-):
+def url_enrichment_script(url_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False):
     """
     Enriches URL data with information from various integrations
     """
@@ -29,25 +34,26 @@ def url_enrichment_script(
     url_indicator = Indicator(type="url",
                               value_field="Data",
                               context_path_prefix="URL(",
-                              mapping=indicator_mapping)
+                              context_output_mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=url_indicator, data=url) for url in url_list]
     commands.append(
-        Command(name="wildfire-get-verdict", args={"url": url_list}, command_type=CommandType.INTERNAL, brand="WildFire-v2", mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})
+        Command(name="wildfire-get-verdict", args={"url": url_list}, command_type=CommandType.INTERNAL, brand="WildFire-v2",
+                context_output_mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})
     )
-    urlreputation = ReputationAggregatedCommand(
+    url_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
         validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path=f"URLEnrichment(val.{url_indicator.value_field} && val.{url_indicator.value_field} == obj.{url_indicator.value_field})",
+        final_context_path="URLEnrichment(val.Data && val.Data == obj.Data)",
         args=demisto.args(),
         data=url_list,
         indicator=url_indicator,
     )
-    return urlreputation.aggregated_command_main_loop()
+    return url_reputation.run()
     
 
 """ MAIN FUNCTION """
@@ -60,6 +66,8 @@ def main(): # pragma: no cover
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
+    demisto.debug(f"Data list: {url_list}")
+    demisto.debug(f"Brands: {brands}")
 
     try:
         return_results(url_enrichment_script(url_list, external_enrichment, verbose, brands, additional_fields))

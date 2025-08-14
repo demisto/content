@@ -10,10 +10,10 @@ def validate_input_function(args):
     """
     domain_list = argToList(args.get("domain_list"))
     if not domain_list:
-        raise DemistoException("domain_list is required")
+        raise ValueError("domain_list is required")
     for domain in domain_list:
         if auto_detect_indicator_type(domain) != FeedIndicatorType.Domain:
-            raise DemistoException("Invalid domain name")
+            raise ValueError("Invalid domain name")
 
 def domain_enrichment_script(
     domain_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
@@ -30,10 +30,14 @@ def domain_enrichment_script(
     domain_indicator = Indicator(type="domain",
                                  value_field="Name",
                                  context_path_prefix="Domain(",
-                                 mapping=indicator_mapping)
+                                 context_output_mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=domain_indicator, data=data) for data in domain_list]
-    commands.extend([Command(name="core-get-domain-analytics-prevalence", args={"domain_name": domain_list}, command_type=CommandType.INTERNAL, brand="Cortex Core - IR", mapping={"Core.AnalyticsPrevalence.Domain":"Core.AnalyticsPrevalence.Domain[]"})])
+    commands.extend([Command(name="core-get-domain-analytics-prevalence",
+                             args={"domain_name": domain_list},
+                             command_type=CommandType.INTERNAL,
+                             brand="Cortex Core - IR",
+                             context_output_mapping={"Core.AnalyticsPrevalence.Domain":"Core.AnalyticsPrevalence.Domain[]"})])
     demisto.debug(f"Data list: {domain_list}")
     domain_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
@@ -47,7 +51,7 @@ def domain_enrichment_script(
         data=domain_list,
         indicator=domain_indicator,
     )
-    return domain_reputation.aggregated_command_main_loop()
+    return domain_reputation.run()
     
 
 """ MAIN FUNCTION """
@@ -60,6 +64,9 @@ def main(): # pragma: no cover
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
+    demisto.debug(f"Data list: {domain_list}")
+    demisto.debug(f"Brands: {brands}")
+    
 
     try:
         return_results(domain_enrichment_script(domain_list, external_enrichment, verbose, brands, additional_fields))

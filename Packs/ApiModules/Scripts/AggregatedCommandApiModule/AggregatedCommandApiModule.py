@@ -23,6 +23,11 @@ DBOT_SCORE_TO_VERDICT = {
     3: "Malicious",
 }
 
+class Status(Enum):
+    """Enum for command status."""
+    SUCCESS = "Success"
+    FAILURE = "Failure"
+
 # --- Core Enumerations and Data Classes ---
 class EntryResult:
     """
@@ -32,14 +37,14 @@ class EntryResult:
         command_name (str): The name of the command.
         brand (str): The brand of the command.
         args (dict[str, Any]): The arguments associated with the entry.
-        status (str): The status of the command.
+        status (Status): The status of the command.
         message (str): The message associated with the entry.
     """
     def __init__(self,
                  command_name: str,
                  args: dict[str, Any],
                  brand: str,
-                 status: str,
+                 status: Status,
                  message: str):
         self.command_name = command_name
         self.args = args
@@ -64,7 +69,7 @@ class Indicator:
         type (str): The indicator type (e.g., 'url', 'ip', 'cve').
         value_field (str): The field name holding the indicator's value (e.g., 'Data', 'Address').
         context_path_prefix (str): The context path prefix for the indicator (e.g., 'URL(', 'IP(').
-        mapping (Dict[str, str]): Rules to map raw command output to the final context.
+        context_output_mapping (Dict[str, str]): Rules to map raw command output to the final context.
             - Key: Source path in double dot notation (e.g., 'VirusTotal..POSITIVES').
             - Value: Destination path in double dot notation.
               Append '[]' in the end to transform the final value to a list.
@@ -72,7 +77,7 @@ class Indicator:
     type: str
     value_field: str
     context_path_prefix: str
-    mapping: dict[str, str]
+    context_output_mapping: dict[str, str]
 
 
 class CommandType(Enum):
@@ -95,7 +100,7 @@ class Command:
         args (dict[str, Any]): Arguments for the command.
         brand (str): The specific integration brand to use.
         command_type (CommandType): The type of the command.
-        mapping (dict[str, str]): Mapping rules for the command's output.
+        context_output_mapping (dict[str, str]): Mapping rules for the command's output.
             Example:
                 {"Name": "Value"} will change the key "Name" to "Value".
                 For nested mapping use double dot notation. Example:
@@ -107,13 +112,13 @@ class Command:
                  args: dict={},
                  brand: str="",
                  command_type: CommandType=CommandType.REGULAR,
-                 mapping: dict[str, str]={}):
+                 context_output_mapping: dict[str, str]={}):
         
         self.name = name
         self.args = args
         self.brand = brand
         self.command_type = command_type
-        self.mapping = mapping
+        self.context_output_mapping = context_output_mapping
         
     def __str__(self) -> str:
         """
@@ -147,7 +152,7 @@ class ReputationCommand(Command):
         super().__init__(name=indicator.type,
                          args={indicator.type: data},
                          command_type=CommandType.EXTERNAL,
-                         mapping=indicator.mapping)
+                         context_output_mapping=indicator.context_output_mapping)
         self.indicator = indicator
 
 
@@ -162,7 +167,7 @@ class BatchExecutor:
         self.commands = commands
         self.brands_to_run = brands_to_run
         if not self.commands:
-            demisto.debug("BatchExecutor.execute called with no commands. Returning empty list.")
+            demisto.info("BatchExecutor.execute called with no commands. Returning empty list.")
             raise ValueError("BatchExecutor.execute called with no commands.")
     
     def execute(self) -> list[list[dict]]:
@@ -178,9 +183,133 @@ class BatchExecutor:
         demisto.debug(f"Batch execution completed with {len(results)} result sets.")
         return results
 
+# --- Context Builder ---
+class ContextBuilder:
+    """
+    A builder class to handle the aggregation and merging of context data.
+    Support merging reputation sources and DBot scores with priority ranks where higher ranks win.
+    merge other commands results straightforward.
+    Args:
+        indicator (Indicator): The indicator object.
+        final_context_path (str): The final context path.
+    """
+    def __init__(self, indicator: Indicator, final_context_path: str):
+        self.indicator = indicator
+        self.final_context_path = final_context_path
+        self.reputation_context: list[tuple[int, ContextResult]] = []
+        self.dbot_context: list[tuple[int, DBotScoreList]] = []
+        self.other_context: ContextResult = {}
+
+    def add_reputation_context(self, reputation_ctx: ContextResult, dbot_scores: DBotScoreList, priority: int):
+        """Adds a data source with a given priority. Higher numbers win.
+        Args:
+            reputation_ctx (ContextResult): The reputation context.
+            dbot_scores (DBotScoreList): The DBot scores.
+            priority (int): The priority of the data source.
+        """
+        if reputation_ctx:
+            self.reputation_context.append((priority, reputation_ctx))
+        if dbot_scores:
+            self.dbot_context.append((priority, dbot_scores))
+
+    def add_other_commands_results(self, commands_ctx: ContextResult):
+        """Adds context from non-prioritized commands.
+        Args:
+            commands_ctx (ContextResult): The commands context.
+        """
+        self.other_context.update(commands_ctx or {})
+    
+    def build(self) -> ContextResult:
+        """
+        Builds the final context by merging sources according to their priority.
+        Returns:
+            ContextResult: The final context.
+        """
+        # 1. Merge Reputation Context (Brand-aware)
+        merged_reputation_map = self.merge_indicators()
+
+        # 2. Merge DBot Scores (Indicator/Vendor-aware)
+        merged_dbot_map = self.merge_dbot_scores()
+        
+        # 3. Assemble the Final Context
+        final_context = self.other_context
+        indicator_list = self.create_indicator_list(merged_reputation_map)
+        self.enrich_final_indicator(indicator_list)
+        
+        final_context[self.final_context_path] = indicator_list
+        final_context[Common.DBotScore.CONTEXT_PATH] = list(merged_dbot_map.values())
+        final_context.update(self.other_context)
+        
+        return remove_empty_elements(final_context)
+
+    def merge_indicators(self) -> list[dict]:
+        """
+        Merges reputation sources with priority ranks where higher ranks win.
+        Args:
+            merged_map (dict): The merged reputation map.
+        Returns:
+            list[dict]: The final list structure.
+        """
+        sorted_rep_sources = sorted(self.reputation_context, key=lambda x: x[0], reverse=True)
+        merged_reputation_map = {}
+
+        for _, context in sorted_rep_sources:
+            for indicator_value, brands_from_source in context.items():
+                if indicator_value not in merged_reputation_map:
+                    merged_reputation_map[indicator_value] = {}
+
+                for brand, results in brands_from_source.items():
+                    if brand not in merged_reputation_map[indicator_value]:
+                        merged_reputation_map[indicator_value][brand] = results
+                        
+        return merged_reputation_map
+
+    def merge_dbot_scores(self) -> list[dict]:
+        """
+        Merges DBot scores with priority ranks where higher ranks win.
+        Args:
+            merged_map (dict): The merged reputation map.
+        Returns:
+            list[dict]: The final list structure.
+        """
+        merged_dbot_map = {}
+        sorted_dbot_sources = sorted(self.dbot_context, key=lambda x: x[0], reverse=True)
+        for _, dbot_list in sorted_dbot_sources:
+            for item in dbot_list:
+                key = (item.get("Indicator"), item.get("Vendor"))
+                if key not in merged_dbot_map:
+                    merged_dbot_map[key] = item
+        return merged_dbot_map
+        
+    def create_indicator_list(self, merged_map: dict) -> list[dict]:
+        """
+        Converts the merged reputation map into the final list structure.
+        Args:
+            merged_map (dict): The merged reputation map.
+        Returns:
+            list[dict]: The final list structure.
+        """
+        return [
+            {self.indicator.value_field: indicator_value, "results": flatten_list(list(brands.values()))}
+            for indicator_value, brands in merged_map.items()
+        ]
+    
+    def enrich_final_indicator(self, indicator_list: list[dict]):
+        """
+        Adds max_score and max_verdict to the final indicator objects.
+        Args:
+            indicator_list (list[dict]): The list of indicators to enrich.
+        """
+        for indicator in indicator_list:
+            all_scores = [res.get("Score", 0) for res in indicator.get("results", [])]
+            max_score = max(all_scores or [0])
+            indicator["max_score"] = max_score
+            indicator["max_verdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
+
+
 # --- Main Framework Abstraction and Implementation ---
 
-class AggregatedCommandAPIModule(ABC):
+class AggregatedCommand(ABC):
     def __init__(self,
                  args: dict,
                  brands: list[str],
@@ -250,22 +379,9 @@ class AggregatedCommandAPIModule(ABC):
         demisto.debug(f"Missing brands: {missing_brands}")
         return missing_brands
 
-    
-    @abstractmethod
-    def process_batch_results(self, execution_results: list[dict[str, Any]]):
-        """Abstract method that must be implemented by subclasses.
-        Process the batch results after batch execution.
-        """
-        raise NotImplementedError
-    
-    @abstractmethod
-    def aggregated_command_main_loop(self):
-        """Abstract method that must be implemented by subclasses.
-        This method handles the main execution loop for aggregated commands.
-        """
-        raise NotImplementedError
 
-class ReputationAggregatedCommand(AggregatedCommandAPIModule):
+
+class ReputationAggregatedCommand(AggregatedCommand):
     def __init__(self,
                  args: dict[str, Any],
                  brands: list[str],
@@ -316,15 +432,17 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         demisto.debug(f"External brands to run on: {external_brands}")
         return list(external_brands - set(self.enabled_brands))
     
-    def aggregated_command_main_loop(self) -> CommandResults:
+    
+    def run(self) -> CommandResults:
         """
         Main execution loop for the reputation aggregation.
         """
         demisto.debug("Starting aggregated command main loop.")
-        
+        context_builder = ContextBuilder(self.indicator, self.final_context_path)
         # 1. Prepare commands and get TIM results
         demisto.debug("Step 1: querying TIM.")
         tim_context, tim_dbot, tim_entries = self.get_indicators_from_tim()
+        context_builder.add_reputation_context(tim_context, tim_dbot, priority=1)
         demisto.debug(f"TIM query resulted in {len(tim_dbot)} DBot scores, "
                       f"and {sum(len(lst) for brands_map in tim_context.values() for lst in brands_map.values())} indicators.")
         
@@ -341,11 +459,13 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         
         # 3. Process batch results
         demisto.debug("Step 3: Processing batch results.")
-        batch_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(batch_results, commands_to_execute)
+        commands_context, reputation_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(batch_results, commands_to_execute)
+        context_builder.add_reputation_context(reputation_context, batch_dbot, priority=2)
+        context_builder.add_other_commands_results(commands_context)
         
         # 4. Merge context
         demisto.debug("Step 4: Merging all contexts.")
-        final_context = self.merge_context(tim_context, batch_context,tim_dbot, batch_dbot)
+        final_context = context_builder.build()
         
         # 5. Summarize command results
         demisto.debug("Step 5: Summarizing command results.")
@@ -404,7 +524,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         result_entry = EntryResult(command_name="search-indicators-in-tim",
                                    args={"query": query},
                                    brand="TIM",
-                                   status="Success",
+                                   status=Status.SUCCESS,
                                    message="")
         try:
             demisto.debug(f"Executing TIM search with query: {query}")
@@ -417,7 +537,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             return iocs, result_entry
         except Exception as e:
             demisto.debug(f"Error searching TIM: {e}\n{traceback.format_exc()}")
-            result_entry.status = "Failure"
+            result_entry.status = Status.FAILURE
             result_entry.message = str(e)
             
             return [], result_entry
@@ -482,7 +602,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
     def process_batch_results(self,
                               all_results: list[list[ContextResult]],
                               commands_to_execute: CommandList,
-                              ) -> tuple[ContextResult, DBotScoreList, list[str], list[EntryResult]]:
+                              ) -> tuple[ContextResult, ContextResult, DBotScoreList, list[str], list[EntryResult]]:
         """
         Processes the results from the batch executor.
         runs through the execution results and processes each result according to the command.
@@ -493,7 +613,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         
         Returns:
             tuple[
-                ContextResult, The batch context output.
+                ContextResult, The non-reputation context output.
+                ContextResult, The reputation context output.
                 DBotScoreList, The dbot scores context.
                 list[str], The verbose command results.
                 list[EntryResult], The entry results.
@@ -501,14 +622,15 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         """
         verbose_outputs: list[str] = []
         entry_results: list[EntryResult] = []
-        batch_context = defaultdict(lambda: defaultdict(list))
+        context_result = defaultdict(lambda: defaultdict(list))
+        reputation_context_result = defaultdict(lambda: defaultdict(list))
         dbot_scores: DBotScoreList = []
         
         demisto.debug(f"Processing {len(all_results)} sets of batch results.")
         for command, results_for_command in zip(commands_to_execute, all_results):
             demisto.debug(f"Processing result for command: {command} len: {len(results_for_command)}")
             for result in results_for_command:
-                if is_debug(result):
+                if is_debug_entry(result):
                     demisto.debug("Skipping debug result")
                     continue
                 
@@ -523,9 +645,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 if cmd_context:
                     # Reputation commands are grouped under a single key for easier merging.
                     if isinstance(command, ReputationCommand):
-                        merge_nested_dicts_in_place(batch_context["reputation"], cmd_context)
+                        merge_nested_dicts_in_place(reputation_context_result, cmd_context)
                     else:
-                        merge_nested_dicts_in_place(batch_context, cmd_context)
+                        merge_nested_dicts_in_place(context_result, cmd_context)
                 dbot_scores.extend(cmd_dbot)
                 if entry:
                     entry_results.append(entry)
@@ -538,7 +660,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             f"Found {len(entry_results)} command entries.\n"
         )
 
-        return batch_context, dbot_scores, verbose_outputs, entry_results
+        return context_result, reputation_context_result, dbot_scores, verbose_outputs, entry_results
 
     def parse_result(self, result: ContextResult, command: Command, brand: str)-> tuple[ContextResult, DBotScoreList, str, EntryResult]:
         """
@@ -560,7 +682,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         result_entry = EntryResult(command_name=command.name,
                                    args=json.dumps(command.args),
                                    brand=brand,
-                                   status="Success",
+                                   status=Status.SUCCESS,
                                    message="")
         hr_output = ""
         command_context: ContextResult = {}
@@ -569,7 +691,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         if is_error(result):
             demisto.debug(f"Result for command: {command} is error")
             error = get_error(result)
-            result_entry.status = "Failure"
+            result_entry.status = Status.FAILURE
             result_entry.message = error
             if self.verbose:
                 hr_output = f"#### Error for name={command.name} args={command.args} current brand={brand}\n{error}"
@@ -587,9 +709,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
                 command_context, dbot_scores = self.parse_indicator(entry_context, brand)
             else:
                 demisto.debug(f"Mapping indicator for command: {command}")
-                command_context = self.map_command_context(entry_context, command.mapping)
+                command_context = self.map_command_context(entry_context, command.context_output_mapping)
                 
-        if not command_context and result_entry.status == "Success":
+        if not command_context and result_entry.status == Status.SUCCESS:
             demisto.debug(f"No context or DBot scores for command: {command}")
             result_entry.message = "No matching indicators found."
         demisto.debug(f"Current Entry Result: {result_entry.to_entry()}")
@@ -597,7 +719,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         
         return command_context, dbot_scores, hr_output, result_entry
     
-    def map_command_context(self, entry_context: dict[str, Any], mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
+    def map_command_context(self, entry_context: dict[str, Any], context_output_mapping: dict[str, str], is_indicator: bool=False)-> dict[str, Any]:
         """
         Maps the entry context item to the final context using the mapping.
         Can add [] to transform the final path value to list.
@@ -613,7 +735,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         Returns:
             dict[str, Any]: The mapped context.
         """
-        if not mapping:
+        if not context_output_mapping:
             demisto.debug("No mapping provided, returning entry context item as is.")
             return entry_context
         
@@ -622,9 +744,9 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             return {}
         
         mapped_context = defaultdict()
-        demisto.debug(f"Starting context mapping with {len(mapping)} rules. for indicator: {is_indicator}")
-        for src_path, dst_path in mapping.items():
-            value = get_and_remove_dict_value(entry_context, src_path)
+        demisto.debug(f"Starting context mapping with {len(context_output_mapping)} rules. for indicator: {is_indicator}")
+        for src_path, dst_path in context_output_mapping.items():
+            value = pop_dict_value(entry_context, src_path)
             if value:
                 set_dict_value(mapped_context, dst_path, value)
             
@@ -676,141 +798,16 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
         for indicator_data in indicator_entries:
             indicator_value = indicator_data.get(self.indicator.value_field)
             demisto.debug(f"Parsing indicator: {indicator_value}")
-            mapped_indicator = self.map_command_context(indicator_data, self.indicator.mapping, is_indicator=True)
+            mapped_indicator = self.map_command_context(indicator_data, self.indicator.context_output_mapping, is_indicator=True)
             
-            # Enrich with standard fields if they were mapped
-            if "Score" in self.indicator.mapping:
-                mapped_indicator["Score"] = effective_score
-            if "Verdict" in self.indicator.mapping:
-                mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(effective_score, "Unknown")
-            if "Brand" in self.indicator.mapping:
-                mapped_indicator["Brand"] = brand
+            mapped_indicator["Score"] = effective_score
+            mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(effective_score, "Unknown")
+            mapped_indicator["Brand"] = brand
             
             indicators_context[indicator_value][brand].append(mapped_indicator)
             demisto.debug(f"Parsed indicator '{indicator_value}' from brand '{brand}' with score {effective_score}")
         
         return indicators_context, dbot_list
-    
-    def merge_context(self, tim_ctx: ContextResult,batch_ctx: ContextResult,tim_dbot: DBotScoreList, batch_dbot: DBotScoreList,
-                      )-> ContextResult:
-        """
-        Merges all context pieces into the final, structured output.
-        structure as follow:
-        {final_context_path: [{"data":"example",
-                               "other_context": other_context,
-                               "results":[indicators_dicts]},
-                               ...]
-        DBotScore: []
-        Other Command Contexts: []
-                               }
-        Indicator from reputation are prioritize over indicators from TIM.
-        DBotScore are listed in one list.
-        Args:
-            tim_ctx (ContextResult): The context output of the TIM.
-            batch_ctx (ContextResult): The context output of the batch executor.
-            tim_dbot (DBotScoreList): The DBotScore context of the TIM.
-            batch_dbot (DBotScoreList): The DBotScore context of the batch executor.
-        Returns:
-            ContextResult: The final context.
-        """
-        demisto.debug("Merging contexts.")
-        merged_indicators = self.merge_indicators(batch_ctx.get("reputation", {}), tim_ctx)
-        self.enrich_final_indicator(merged_indicators)
-                
-        final_context = {k: v for k, v in batch_ctx.items() if k != "reputation"}
-        final_context[self.final_context_path] = merged_indicators
-        final_context[Common.DBotScore.CONTEXT_PATH] = self.merge_dbot_list(batch_dbot, tim_dbot)
-        
-        return remove_empty_elements(final_context)
-    
-    def enrich_final_indicator(self, indicator_list: list[dict[str, Any]])-> None:
-        """
-        Adds aggregated fields like max score and verdict to the final indicator list.
-        Args:
-            indicator_list (list[dict[str, Any]]): The list of indicators to enrich.
-        """
-        demisto.debug(f"Enriching {len(indicator_list)} final indicators with max scores.")
-        for indicator in indicator_list:
-            if "Score" in self.indicator.mapping:
-                all_scores = [res.get("Score", Common.DBotScore.NONE) for res in indicator.get("results", [])]
-                max_score = max(all_scores or [Common.DBotScore.NONE])
-                demisto.debug(f"Enriching indicator {indicator[self.indicator.value_field]} with max scores {max_score}.")
-                indicator["max_score"] = max_score
-                indicator["max_verdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
-    
-    def merge_indicators(
-        self,
-        batch_map: dict[str, dict[str, list[dict]]],
-        tim_map: dict[str, dict[str, list[dict]]]
-    ) -> list[dict[str, Any]]:
-        """
-        Merges indicator results from batch commands and TIM, prioritizing batch results.
-        
-        Args:
-            batch_map (Dict): Indicators from reputation commands, structured as {indicator_value: {brand: [results]}}.
-            tim_map (Dict): Indicators from TIM, with the same structure.
-
-        Returns:
-            A list of final, merged indicator objects.
-        """
-        demisto.debug(f"Merging indicators from batch ({len(batch_map)} values) and TIM ({len(tim_map)} values).")
-        merged_list: list[dict[str, Any]] = []
-        all_indicator_values = set(batch_map.keys()) | set(tim_map.keys())
-        demisto.debug(f"Found {len(all_indicator_values)} unique indicator values to merge.")
-        
-        for indicator_value in all_indicator_values:
-            batch_brands = batch_map.get(indicator_value, {})
-            tim_brands   = tim_map.get(indicator_value,   {})
-            final_results: list[dict] = []
-            
-            # 1) add all batch entries (in whatever order they came)
-            for brand_results in batch_brands.values():
-                final_results.extend(brand_results)
-                demisto.debug(f"For '{indicator_value}', added {len(brand_results)} results from batch.")
-                
-            # 2) add only those tim entries whose brand wasn’t in batch
-            for brand, brand_results in tim_brands.items():
-                if brand not in batch_brands:
-                    final_results.extend(brand_results)
-                    demisto.debug(f"For '{indicator_value}', added {len(brand_results)} results from tim brand '{brand}'.")
-
-            merged_list.append({
-                self.indicator.value_field:indicator_value,
-                "results": final_results
-            })
-        demisto.debug(f"Finished merging. Created {len(merged_list)} final indicator objects.")
-        return merged_list
-
-    def merge_dbot_list(
-        self,
-        batch_dbot: DBotScoreList,
-        tim_dbot: DBotScoreList
-    ) -> DBotScoreList:
-        """
-        Merges two lists of DBotScore, giving priority to items from batch_dbot.
-
-        Uses key of ('indicator', 'vendor').
-        If an item with the same indicator and vendor exists in both lists, the one from
-        batch_dbot will be kept in the final merged list.
-
-        Args:
-            batch_dbot: A list of DBotScore, considered the priority source.
-            tim_dbot: A list of DBotScore.
-
-        Returns:
-            A single merged list of unique DBotScore.
-        """
-        merged_data = {}
-        for item in batch_dbot:
-            key = (item.get("Indicator"), item.get("Vendor"))
-            merged_data[key] = item
-        
-        for item in tim_dbot:
-            key = (item.get("Indicator"), item.get("Vendor"))
-            if key not in merged_data:
-                merged_data[key] = item
-
-        return list(merged_data.values())
             
     def summarize_command_results(self,
                                    entries: list[EntryResult],
@@ -838,7 +835,7 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             entries.append(EntryResult(command_name=self.indicator.type,
                                        args="",
                                        brand=",".join(self.external_missing_brands),
-                                       status="Failure",
+                                       status=Status.FAILURE,
                                        message="Unsupported Command : Verify you have proper integrations enabled to support it"))
         self.raise_non_enabled_brands_error(entries)
         human_readable = tableToMarkdown("Final Results", t=[entry.to_entry() for entry in entries],
@@ -848,8 +845,8 @@ class ReputationAggregatedCommand(AggregatedCommandAPIModule):
             human_readable += "\n\n".join(verbose_outputs)
         
         # Return an error only if there were no successes AND at least one of those was a hard failure.
-        if all(entry.status == "Failure" or entry.message == "No matching indicators found." for entry in entries) and \
-           any(entry.status == "Failure" for entry in entries):
+        if all(entry.status == Status.FAILURE or entry.message == "No matching indicators found." for entry in entries) and \
+           any(entry.status == Status.FAILURE for entry in entries):
             # Error when all failed, or some failed and the other had no indicators found.
             # If no indicators found, it is not an error.
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
@@ -944,7 +941,7 @@ def set_dict_value(d: dict[str, Any], path: str, value: Any)-> None:
         current[last_part] = value
 
 
-def get_and_remove_dict_value(d: dict[str, Any], path: str) -> Any:
+def pop_dict_value(d: dict[str, Any], path: str) -> Any:
     """
     Retrieves a value from a nested dictionary given a ".." separated path.
     after getting remove the item from the dict.
@@ -968,7 +965,7 @@ def get_and_remove_dict_value(d: dict[str, Any], path: str) -> Any:
     
     return None
 
-def is_debug(execute_command_result) -> bool:
+def is_debug_entry(execute_command_result) -> bool:
     """
     Check if the given execute_command_result is a debug entry.
 

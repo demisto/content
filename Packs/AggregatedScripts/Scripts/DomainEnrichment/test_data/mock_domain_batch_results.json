@@ -1,0 +1,44 @@
+[
+    [
+        {
+            "Type": 1,
+            "Brand": "brand1",
+            "Metadata": { "brand": "brand1" },
+            "EntryContext": {
+                "Domain(obj.Name == val.Name)": {
+                    "Name": "domain1.com",
+                    "PositiveDetections": 15
+                },
+                "DBotScore": { "Indicator": "domain1.com", "Score": 3, "Vendor": "brand1", "Type": "domain" }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Brand": "brand3",
+            "Metadata": { "brand": "brand3" },
+            "EntryContext": {
+                "Domain(obj.Name == val.Name)": {
+                    "Name": "domain2.com",
+                    "PositiveDetections": 0
+                },
+                "DBotScore": { "Indicator": "domain2.com", "Score": 1, "Vendor": "brand3", "Type": "domain" }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Brand": "Cortex Core - IR",
+            "Metadata": { "brand": "Cortex Core - IR" },
+            "EntryContext": {
+                "Core.AnalyticsPrevalence.Domain": {
+                    "domain_name": "domain1.com",
+                    "total_count": 500,
+                    "is_rare": false
+                }
+            }
+        }
+    ]
+]

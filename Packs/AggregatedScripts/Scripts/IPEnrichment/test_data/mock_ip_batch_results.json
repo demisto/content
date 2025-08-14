@@ -1,0 +1,55 @@
+[
+    [
+        {
+            "Type": 1,
+            "Brand": "brand1",
+            "Metadata": { "brand": "brand1" },
+            "EntryContext": {
+                "IP(obj.Address == val.Address)": {
+                    "Address": "8.8.8.8",
+                    "PositiveDetections": 25
+                },
+                "DBotScore": { "Indicator": "8.8.8.8", "Score": 3, "Vendor": "brand1", "Type": "ip" }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Brand": "brand3",
+            "Metadata": { "brand": "brand3" },
+            "EntryContext": {
+                "IP(obj.Address == val.Address)": {
+                    "Address": "1.1.1.1",
+                    "PositiveDetections": 0
+                },
+                "DBotScore": { "Indicator": "1.1.1.1", "Score": 1, "Vendor": "brand3", "Type": "ip" }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Brand": "Scripts",
+            "Metadata": { "brand": "Scripts" },
+            "EntryContext": {
+                "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)": {
+                    "Brand": "TestAgent", "ID": "endpoint-123", "Hostname": "test-host"
+                }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Brand": "Cortex Core - IR",
+            "Metadata": { "brand": "Cortex Core - IR" },
+            "EntryContext": {
+                "IPAnalyticsPrevalence": {
+                    "total_count": 150,
+                    "is_rare": false
+                }
+            }
+        }
+    ]
+]

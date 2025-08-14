@@ -6,6 +6,7 @@ It introduces a set of classes and utilities to help you build scripts that run 
 The **ReputationAggregatedCommand** is a framework that inherits from the **AggregatedCommandAPIModule** and provides a simple interface for building complex indicator enrichment scripts in Cortex XSOAR and XSIAM.
 It automates the workflow of querying multiple integrations, merging results with existing Threat Intelligence Management (TIM) data, and producing a single, unified output.
 
+Note: Usage of these scripts are subject to breaking changes in the future, due to relying on commands outputs structure.
 ***
 
 ## Key Features

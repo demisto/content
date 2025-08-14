@@ -6,10 +6,10 @@ from AggregatedCommandApiModule import *
 def validate_input_function(args):
     cve_list = argToList(args.get("cve_list"))
     if not cve_list:
-        raise DemistoException("cve_list is required")
+        raise ValueError("cve_list is required")
     for cve in cve_list:
         if auto_detect_indicator_type(cve) != FeedIndicatorType.CVE:
-            raise DemistoException(f"Invalid CVE ID: {cve}")
+            raise ValueError(f"Invalid CVE ID: {cve}")
 
 def cve_enrichment_script(
     cve_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
@@ -26,7 +26,7 @@ def cve_enrichment_script(
     cve_indicator = Indicator(type="cve",
                               value_field="ID",
                               context_path_prefix="CVE(",
-                              mapping=indicator_mapping)
+                              context_output_mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=cve_indicator, data=data) for data in cve_list]
     cve_reputation = ReputationAggregatedCommand(
@@ -41,7 +41,7 @@ def cve_enrichment_script(
         data=cve_list,
         indicator=cve_indicator,
     )
-    return cve_reputation.aggregated_command_main_loop()
+    return cve_reputation.run()
     
 
 """ MAIN FUNCTION """
@@ -54,7 +54,9 @@ def main(): # pragma: no cover
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
-
+    demisto.debug(f"Data list: {cve_list}")
+    demisto.debug(f"Brands: {brands}")
+    
     try:
         return_results(cve_enrichment_script(cve_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:

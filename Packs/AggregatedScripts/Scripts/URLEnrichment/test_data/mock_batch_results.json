@@ -1,0 +1,58 @@
+[
+    [
+        {
+            "Type": 1,
+            "Contents": {},
+            "Brand": "brand1",
+            "Metadata": { "brand": "brand1" },
+            "EntryContext": {
+                "URL(obj.Data == val.Data)": {
+                    "Data": "https://example.com",
+                    "PositiveDetections": 5,
+                    "DetectionEngines": 92
+                },
+                "DBotScore": {
+                    "Indicator": "https://example.com",
+                    "Score": 3,
+                    "Vendor": "brand1",
+                    "Type": "url"
+                }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Contents": {},
+            "Brand": "brand2",
+            "Metadata": { "brand": "brand2" },
+            "EntryContext": {
+                "URL(obj.Data == val.Data)": {
+                    "Data": "https://example2.com",
+                    "PositiveDetections": 0,
+                    "DetectionEngines": 95
+                },
+                "DBotScore": {
+                    "Indicator": "https://example2.com",
+                    "Score": 1,
+                    "Vendor": "brand2",
+                    "Type": "url"
+                }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Contents": {},
+            "Brand": "WildFire-v2",
+            "Metadata": { "brand": "WildFire-v2" },
+            "EntryContext": {
+                "WildFire.Verdicts(val.url && val.url == obj.url)": [
+                    { "url": "https://example.com", "verdict": 1, "foo": "bar" },
+                    { "url": "https://example2.com", "verdict": 0, "foo": "bar" }
+                ]
+            }
+        }
+    ]
+]

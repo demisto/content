@@ -3,7 +3,7 @@ args:
   name: ip_list
   required: true
 - name: external_enrichment
-  description: Whether to run external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module (TIM) will be retrieved.
+  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -20,12 +20,13 @@ args:
   required: false
 - name: brands
   description: |-
-    Integrations brands to use for running external enrichment. If not provided and external_enrichment is set to true, the command will run for all available integrations that implement the ip reputation command.
-    For multiple values, provide a comma-separated list of integration IDs. For example: "Joe Security,Joe Security". Specifying enrichment_brands will force enable external_enrichment.
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag.
+    Run !ProvidesCommand command=ip to see available integrations.
+    Add Cortex Core - IR to run core-get-IP-analytics-prevalence or Script to run get-endpoint-data.
   isArray: true
   required: false
 - name: additional_fields
-  description: Whether to return unmapped (secondary) fields to the context output under the "IP.AdditionalFields" path.
+  description: Whether to return secondary fields to the context output under "AdditionalFields".
   auto: PREDEFINED
   predefined:
   - 'true'

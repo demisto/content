@@ -1,0 +1,38 @@
+[
+    {
+        "iocs": [
+            {
+                "value": "8.8.8.8",
+                "indicator_type": "IP",
+                "insightCache": {
+                    "scores": {
+                        "brand1": {
+                            "score": 1,
+                            "context": {
+                                "IP(obj.Address == val.Address)": {
+                                    "Address": "8.8.8.8",
+                                    "PositiveDetections": 2
+                                }
+                            }
+                        },
+                        "brand2": {
+                            "score": 2,
+                            "context": {
+                                "IP(obj.Address == val.Address)": {
+                                    "Address": "8.8.8.8",
+                                    "PositiveDetections": 10
+                                },
+                                "DBotScore": {
+                                    "Indicator": "8.8.8.8",
+                                    "Score": 2,
+                                    "Vendor": "brand2",
+                                    "Type": "ip"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+]

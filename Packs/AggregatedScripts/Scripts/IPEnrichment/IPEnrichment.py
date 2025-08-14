@@ -3,14 +3,15 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
+ENDPOINT_PATH = "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"
 
 def validate_input_function(args):
     ip_list = argToList(args.get("ip_list"))
     if not ip_list:
-        raise DemistoException("ip_list is required")
+        raise ValueError("ip_list is required")
     for ip in ip_list:
         if not is_ip_valid(ip,accept_v6_ips=True):
-            raise DemistoException(f"Invalid IP address: {ip}")
+            raise ValueError(f"Invalid IP address: {ip}")
             
 
 def ip_enrichment_script(
@@ -28,13 +29,23 @@ def ip_enrichment_script(
     ip_indicator = Indicator(type="ip",
                              value_field="Address",
                              context_path_prefix="IP(",
-                             mapping=indicator_mapping)
+                             context_output_mapping=indicator_mapping)
     
     commands = [ReputationCommand(indicator=ip_indicator, data=data) for data in ip_list]
     commands.extend([
-        Command(name="get-endpoint-data", args={"endpoint_ip": ip_list}, command_type=CommandType.INTERNAL, brand="Scripts", mapping={"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)":"EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"}),
-        Command(name="core-get-IP-analytics-prevalence", args={"ip_address": ip_list}, command_type=CommandType.INTERNAL, brand="Cortex Core - IR", mapping={"IPAnalyticsPrevalence":"IPAnalyticsPrevalence[]"})])
-    ipreputation = ReputationAggregatedCommand(
+        Command(name="get-endpoint-data",
+                args={"endpoint_ip": ip_list},
+                command_type=CommandType.INTERNAL,
+                brand="Scripts",
+                context_output_mapping={ENDPOINT_PATH:ENDPOINT_PATH}),
+        
+        Command(name="core-get-IP-analytics-prevalence",
+                args={"ip_address": ip_list},
+                command_type=CommandType.INTERNAL,
+                brand="Cortex Core - IR",
+                context_output_mapping={"IPAnalyticsPrevalence":"IPAnalyticsPrevalence[]"})])
+    
+    ip_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,
         verbose=verbose,
         commands = commands,
@@ -46,7 +57,7 @@ def ip_enrichment_script(
         data=ip_list,
         indicator=ip_indicator,
     )
-    return ipreputation.aggregated_command_main_loop()
+    return ip_reputation.run()
     
 
 """ MAIN FUNCTION """
@@ -60,6 +71,9 @@ def main():
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
+    demisto.debug(f"Data list: {ip_list}")
+    demisto.debug(f"Brands: {brands}")
+    
 
     try:
         return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields, indicator_type))

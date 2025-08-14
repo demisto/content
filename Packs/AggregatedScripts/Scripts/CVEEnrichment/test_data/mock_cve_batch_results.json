@@ -1,0 +1,33 @@
+[
+    [
+        {
+            "Type": 1,
+            "Brand": "brand1",
+            "Metadata": { "brand": "brand1" },
+            "EntryContext": {
+                "CVE(obj.ID == val.ID)": {
+                    "ID": "CVE-2023-1001",
+                    "CVSS": 9.8,
+                    "Published": "2023-03-15T00:00:00Z",
+                    "Description": "A critical vulnerability."
+                },
+                "DBotScore": { "Indicator": "CVE-2023-1001", "Score": 3, "Vendor": "brand1", "Type": "cve" }
+            }
+        }
+    ],
+    [
+        {
+            "Type": 1,
+            "Brand": "brand3",
+            "Metadata": { "brand": "brand3" },
+            "EntryContext": {
+                "CVE(obj.ID == val.ID)": {
+                    "ID": "CVE-2023-1002",
+                    "CVSS": 5.3,
+                    "Published": "2023-04-01T00:00:00Z"
+                },
+                "DBotScore": { "Indicator": "CVE-2023-1002", "Score": 2, "Vendor": "brand3", "Type": "cve" }
+            }
+        }
+    ]
+]

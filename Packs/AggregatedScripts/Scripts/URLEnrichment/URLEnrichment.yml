@@ -3,7 +3,7 @@ args:
   name: url_list
   required: true
 - name: external_enrichment
-  description: Set to true to run reputation commands from external sources. If false (default), the script only queries internal sources as TIM and wildfire-get-verdict. Note, providing a value for the brands argument overrides this option.
+  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -20,11 +20,13 @@ args:
   required: false
 - name: brands
   description: |-
-    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If empty, runs against all internal integrations and if external_enrichment is true will run on all external integrations.
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag. 
+    Run !ProvidesCommand command=url to see available integrations.
+    Add WildfFire-v2 in order to run wildfire-get-verdict.
   isArray: true
   required: false
 - name: additional_fields
-  description: Whether to return unmapped (secondary) fields to the context output under the "URL.AdditionalFields" path.
+  description: Whether to return secondary fields to the context output under "AdditionalFields".
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -52,17 +54,17 @@ outputs:
 - contextPath: URLEnrichment.results.Brand
   description: the brand of the indicator
   type: string
-- contextPath: URLEnrichment.results.score
+- contextPath: URLEnrichment.results.Score
   description: the score of the indicator
   type: number
-- contextPath: URLEnrichment.results.detection_engines
+- contextPath: URLEnrichment.results.DetectionEngines
   description: the detection engines of the indicator
   type: number
-- contextPath: URLEnrichment.results.positive_detections
+- contextPath: URLEnrichment.results.PositiveDetections
   description: the positive detections of the indicator
   type: number
-- contextPath: URLEnrichment.results.additional_fields
-  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+- contextPath: URLEnrichment.results.AdditionalFields
+  description: Secondary fields. Only available if the additional_fields argument is set to true.
   type: Object
 - contextPath: WildFire.Verdicts.VerdictDescription
   description: Description of the verdict.
