@@ -402,12 +402,6 @@ class BrandHandler(ABC):
         """
 
     @abstractmethod
-    def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
-        """
-        Runs brand-specific pre-checks, like checking if a file is already quarantined.
-        """
-
-    @abstractmethod
     def initiate_quarantine(self, args: dict) -> dict:
         """
         Initiates the quarantine action for the brand and returns a polling job object.
@@ -556,13 +550,6 @@ class XDRHandler(BrandHandler):
         return QuarantineResult.create(
             endpoint_id=endpoint_id, status=status, message=message, brand=self.brand, script_args=self.orchestrator.args
         )
-
-    def run_pre_checks_and_get_initial_results(self, args: dict) -> tuple[list, list[QuarantineResult]]:
-        """
-        Runs pre-checks for XDR endpoints.
-        """
-
-        pass
 
     def initiate_quarantine(self, args: dict) -> dict:
         """

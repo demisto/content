@@ -1112,7 +1112,6 @@ class TestQuarantineOrchestrator:
                 "poll_command": "some-poll-cmd",
             }
 
-
             mocker.patch("QuarantineFile.handler_factory", return_value=mock_handler_instance)
 
             orchestrator = _get_orchestrator(args)
