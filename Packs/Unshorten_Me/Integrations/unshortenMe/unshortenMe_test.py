@@ -38,7 +38,7 @@ def test_unshorten_url_command_success(client, mocker):
     # Assert: Check the outputs (accessing the first item in the list)
     assert result.outputs_prefix == 'unshortenMe'
     assert result.outputs[0]['success'] is True
-    assert result.outputs[0]['unshortened_url'] == 'https://www.example.com/'
+    assert result.outputs[0]['unshortened_url'] == 'https://www.youtube.com/'
     assert 'unshorten.me results' in result.readable_output # Check for table title
     
 
@@ -92,4 +92,3 @@ def test_test_module_command(client, mocker):
 
     # Assert
     assert result == 'ok'
-    
