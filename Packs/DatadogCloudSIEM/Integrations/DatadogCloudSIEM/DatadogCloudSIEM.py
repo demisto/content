@@ -50,6 +50,38 @@ from datadog_api_client.v2.model.incident_update_attributes import (
 )
 from datadog_api_client.v2.model.incident_update_data import IncidentUpdateData
 from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRequest
+from datadog_api_client.v2.api.security_monitoring_api import SecurityMonitoringApi
+from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_attributes import (
+    SecurityMonitoringSignalAssigneeUpdateAttributes,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_data import (
+    SecurityMonitoringSignalAssigneeUpdateData,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_request import (
+    SecurityMonitoringSignalAssigneeUpdateRequest,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_state_update_attributes import (
+    SecurityMonitoringSignalStateUpdateAttributes,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_state_update_data import (
+    SecurityMonitoringSignalStateUpdateData,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_state_update_request import (
+    SecurityMonitoringSignalStateUpdateRequest,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_list_request import (
+    SecurityMonitoringSignalListRequest,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_list_request_filter import (
+    SecurityMonitoringSignalListRequestFilter,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_list_request_page import (
+    SecurityMonitoringSignalListRequestPage,
+)
+from datadog_api_client.v2.model.security_monitoring_signals_sort import (
+    SecurityMonitoringSignalsSort,
+)
+import dateparser
 from dateparser import parse
 from urllib3 import disable_warnings
 
@@ -74,6 +106,7 @@ NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parame
 ERROR_MSG = "Something went wrong!\n"
 DATE_ERROR_MSG = "Unable to parse date. Please check help section for right format."
 URL_SEARCH_INCIDENTS = "https://api.datadoghq.com/api/v2/incidents/search"
+URL_SEARCH_SIGNALS = "https://api.datadoghq.com/api/v2/security_monitoring/signals/search"
 AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API Key. Make sure API Key and Server URL are correct."
 
 
@@ -217,6 +250,35 @@ def incident_for_lookup(incident: dict) -> dict:
         "Notification Handle": str(incident.get("attributes", {}).get("notification_handles")[0].get("handle"))
         if incident.get("attributes", {}).get("notification_handles")
         else None,
+    }
+
+def signal_for_lookup(signal: dict) -> dict:
+    """
+    Returns a dictionary with selected security signal information.
+
+    Args:
+        signal (Dict): A dictionary representing a security signal.
+
+    Returns:
+        Dict: A dictionary containing the following keys.
+    """
+    attributes = signal.get("attributes", {})
+    return {
+        "ID": str(signal.get("id")),
+        "Message": str(attributes.get("message", "")),
+        "Timestamp": datetime.fromisoformat(attributes.get("timestamp", "")).strftime(UI_DATE_FORMAT)
+        if attributes.get("timestamp", "")
+        else "",
+        "Severity": str(attributes.get("severity", "")),
+        "State": str(attributes.get("state", "")),
+        "Status": str(attributes.get("status", "")),
+        "Rule Name": str(attributes.get("rule", {}).get("name", "")),
+        "Rule ID": str(attributes.get("rule", {}).get("id", "")),
+        "Tags": ",".join(tag for tag in attributes.get("tags", [])) if attributes.get("tags") else None,
+        "Source": str(attributes.get("source", "")),
+        "Service": str(attributes.get("service", "")),
+        "Host": str(attributes.get("host", "")),
+        "Assignee": str(attributes.get("assignee", "")),
     }
 
 
@@ -1077,6 +1139,188 @@ def incident_serach_query(args: dict) -> str:
     return query
 
 
+def update_security_signal_assignee_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    """
+    Updates the assignee of a security monitoring signal in Datadog.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (Dict[str, Any]): A dictionary of arguments for updating the signal assignee.
+                              - signal_id (str): The ID of the signal to update
+                              - assignee (str): The user UUID to assign the signal to
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    signal_id = args.get("signal_id")
+    assignee = args.get("assignee")
+
+    if not signal_id:
+        return DemistoException("signal_id is required")
+
+    body = SecurityMonitoringSignalAssigneeUpdateRequest(
+        data=SecurityMonitoringSignalAssigneeUpdateData(
+            attributes=SecurityMonitoringSignalAssigneeUpdateAttributes(
+                assignee=assignee,
+            ),
+        ),
+    )
+
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        response = api_instance.edit_security_monitoring_signal_assignee(
+            signal_id=str(signal_id), body=body
+        )
+        results = response.to_dict()
+        formatted_data = convert_datetime_to_str(results.get("data"))
+        signal_lookup_data = [signal_for_lookup(formatted_data)]
+        readable_output = lookup_to_markdown(signal_lookup_data, "Security Signal Details")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal",
+            outputs_key_field="id",
+            outputs=formatted_data if results else {},
+        )
+
+
+def update_security_signal_state_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    """
+    Updates the state of a security monitoring signal.
+
+    Args:
+     configuration (Configuration): The configuration object for Datadog.
+     args: A dictionary of arguments for the command.
+            - signal_id (str): The ID of the signal to update
+            - state (str): The new state for the signal (open, under_review, resolved, etc.)
+            - reason (str): Reason for the state change
+            - comment (str): Comment about the state change
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    signal_id = args.get("signal_id")
+    state = args.get("state")
+    reason = args.get("reason")
+    comment = args.get("comment")
+
+    if not signal_id:
+        return DemistoException("signal_id is required.")
+    if not state:
+        return DemistoException("state is required.")
+
+    body = SecurityMonitoringSignalStateUpdateRequest(
+        data=SecurityMonitoringSignalStateUpdateData(
+            attributes=SecurityMonitoringSignalStateUpdateAttributes(
+                state=state,
+                reason=reason,
+                comment=comment,
+            ),
+        ),
+    )
+
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        response = api_instance.edit_security_monitoring_signal_state(
+            signal_id=str(signal_id), body=body
+        )
+        results = response.to_dict()
+        formatted_data = convert_datetime_to_str(results.get("data"))
+        signal_lookup_data = [signal_for_lookup(formatted_data)]
+        readable_output = lookup_to_markdown(signal_lookup_data, "Security Signal Details")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal",
+            outputs_key_field="id",
+            outputs=formatted_data if results else {},
+        )
+
+
+# Note: Security signals cannot be deleted, only their state can be updated
+# Use update_security_signal_state_command to resolve or close signals
+
+
+def get_security_signals_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    signal_id = args.get("signal_id")
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        if signal_id:
+            signal_response = api_instance.get_security_monitoring_signal(
+                signal_id=signal_id,
+            )
+            results = signal_response.to_dict()
+            data = results.get("data", {})
+            if data:
+                data = convert_datetime_to_str(data)
+                signal_lookup = signal_for_lookup(data)
+                readable_output = lookup_to_markdown([signal_lookup], "Security Signal Details")
+            else:
+                readable_output = "No security signal to present.\n"
+        else:
+            sort = args.get("sort", "asc")
+            sort_data = {"asc": SecurityMonitoringSignalsSort.TIMESTAMP_ASCENDING, "desc": SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING}
+            page = arg_to_number(args.get("page"), arg_name="page")
+            page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+            limit = arg_to_number(args.get("limit"), arg_name="limit")
+            limit, offset = pagination(limit, page, page_size)
+
+            # Create filter for signals
+            filter_query = security_signals_search_query(args)
+
+            body = SecurityMonitoringSignalListRequest(
+                filter=SecurityMonitoringSignalListRequestFilter(
+                    query=filter_query,
+                    _from=parse(args.get("from_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"}),
+                    to=parse(args.get("to_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"}),
+                ),
+                page=SecurityMonitoringSignalListRequestPage(
+                    cursor="",
+                    limit=limit,
+                ),
+                sort=sort_data[sort],
+            )
+
+            from_date = parse(args.get("from_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"})
+            to_date = parse(args.get("to_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"})
+            demisto.debug(f"Command - from_date: {from_date}, to_date: {to_date}")
+            signal_list_response = api_instance.list_security_monitoring_signals(
+                filter_query=filter_query,
+                filter_from=from_date,
+                filter_to=to_date,
+                sort=sort_data[sort],
+                page_limit=limit,
+            )
+            results = signal_list_response.to_dict()
+            data = results.get("data", [])
+            data = [convert_datetime_to_str(signal) for signal in data]
+            lookup_data = [signal_for_lookup(obj) for obj in data]
+            readable_output = lookup_to_markdown(lookup_data, "Security Signals List")
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal",
+        outputs_key_field="id",
+        outputs=data,
+    )
+
+
+def security_signals_search_query(args: dict) -> str:
+    query = ""
+    if args.get("state"):
+        query += f"state:{args.get('state')}"
+    if args.get("severity"):
+        query += f" AND severity:{args.get('severity')}" if len(query) else f"severity:{args.get('severity')}"
+    if args.get("status"):
+        query += f" AND status:{args.get('status')}" if len(query) else f"status:{args.get('status')}"
+    if args.get("rule_name"):
+        query += f" AND rule.name:{args.get('rule_name')}" if len(query) else f"rule.name:{args.get('rule_name')}"
+    if args.get("source"):
+        query += f" AND source:{args.get('source')}" if len(query) else f"source:{args.get('source')}"
+    if not query:
+        query = "*"
+    return query
+
+
 def query_timeseries_points_command(configuration: Configuration, args: dict[str, Any]):
     query = str(args.get("query"))
     from_time = parse(args.get("from", ""), settings={"TIMEZONE": "UTC"})
@@ -1166,6 +1410,92 @@ def fetch_incidents(configuration: Configuration, params: dict):
     return "OK"
 
 
+def fetch_security_signals(configuration: Configuration, params: dict):
+    first_fetch_time = params.get("first_fetch", "3 days")
+    fetch_limit = params.get("max_fetch", 50)
+    first_fetch_time = parse(f"-{first_fetch_time}", settings={"TIMEZONE": "UTC"})
+    last_run = demisto.getLastRun()
+
+    with ApiClient(configuration) as api_client:
+        incidents = []
+        api_instance = SecurityMonitoringApi(api_client)
+
+        # Create the request body for listing security signals
+        body = SecurityMonitoringSignalListRequest(
+            filter=SecurityMonitoringSignalListRequestFilter(
+                query="*",  # Get all signals
+                _from=first_fetch_time if first_fetch_time else parse("-3days", settings={"TIMEZONE": "UTC"}),
+                to=parse("now", settings={"TIMEZONE": "UTC"}),
+            ),
+            page=SecurityMonitoringSignalListRequestPage(
+                cursor="",
+                limit=min(200, int(fetch_limit)),
+            ),
+            sort=SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING,
+        )
+
+        from_time = first_fetch_time if first_fetch_time else parse("-3days", settings={"TIMEZONE": "UTC"})
+        to_time = parse("now", settings={"TIMEZONE": "UTC"})
+        demisto.debug(f"from_time: {from_time}, to_time: {to_time}")
+        response = api_instance.list_security_monitoring_signals(
+            filter_query="*",
+            filter_from=from_time,
+            filter_to=to_time,
+            sort=SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING,
+            page_limit=min(200, int(fetch_limit)),
+        )
+        results = response.to_dict()
+        data = results.get("data", [])
+        data = [convert_datetime_to_str(signal) for signal in data]
+
+        # Filter signals based on last run timestamp
+        data_list = [
+            signal
+            for signal in data
+            if (
+                datetime.fromisoformat(signal["attributes"]["timestamp"]).replace(tzinfo=None).timestamp()
+                > datetime.fromisoformat(last_run.get("lastRun")).timestamp()
+                if last_run.get("lastRun")
+                else first_fetch_time.timestamp()
+                if first_fetch_time
+                else None
+            )
+        ]
+
+        for signal in data_list:
+            attributes = signal["attributes"]
+            new_obj = {
+                "id": signal["id"],
+                "type": signal["type"],
+                "message": attributes.get("message", ""),
+                "timestamp": datetime.fromisoformat(attributes["timestamp"]).strftime(UI_DATE_FORMAT),
+                "severity": attributes.get("severity", ""),
+                "state": attributes.get("state", ""),
+                "status": attributes.get("status", ""),
+                "rule_name": attributes.get("rule", {}).get("name", ""),
+                "rule_id": attributes.get("rule", {}).get("id", ""),
+                "tags": attributes.get("tags", []),
+                "source": attributes.get("source", ""),
+                "service": attributes.get("service", ""),
+                "host": attributes.get("host", ""),
+            }
+
+            incident = {
+                "name": attributes.get("message", "Security Signal"),
+                "occurred": attributes["timestamp"],
+                "dbotMirrorId": signal["id"],
+                "rawJSON": json.dumps({"security_signal": new_obj}),
+                "type": "Datadog Cloud SIEM Security Signal",
+            }
+            incidents.append(incident)
+
+        if data_list:
+            demisto.setLastRun({"lastRun": data_list[0].get("attributes", {}).get("timestamp", "")})
+
+    demisto.incidents(incidents)
+    return "OK"
+
+
 def add_utc_offset(dt_str: str):
     """
     Converts a datetime string in ISO format to the equivalent datetime object
@@ -1212,12 +1542,17 @@ def main() -> None:
             "datadog-incident-update": update_incident_command,
             "datadog-incident-delete": delete_incident_command,
             "datadog-incident-list": get_incident_command,
+            "datadog-security-signal-assignee-update": update_security_signal_assignee_command,
+            "datadog-security-signal-state-update": update_security_signal_state_command,
+            "datadog-security-signals-list": get_security_signals_command,
             "datadog-time-series-point-query": query_timeseries_points_command,
         }
         if command == "test-module":
             return_results(module_test(configuration))
         elif command == "fetch-incidents":
             return_results(fetch_incidents(configuration, params))
+        elif command == "fetch-security-signals":
+            return_results(fetch_security_signals(configuration, params))
         elif command in commands:
             return_results(commands[command](configuration, args))
         else:
