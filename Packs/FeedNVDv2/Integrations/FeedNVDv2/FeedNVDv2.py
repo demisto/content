@@ -14,7 +14,8 @@ from dateparser import parse
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-LATEST_CVSS_VERSION_SEVERITY = "cvssv4severity" # In case of cvss update - need to update this param to the latest cvss version
+LATEST_CVSS_VERSION_SEVERITY = "cvssv4severity"  # In case of cvss update - need to update this param to the latest cvss version
+
 
 class Client(BaseClient):
     """Client class to interact with the service API"""
@@ -297,9 +298,9 @@ def cves_to_war_room(raw_cves):
 
 
 def get_cvss_version_and_score(metrics):
-    cvss_metrics = metrics.get("cvssMetricV40", metrics.get("cvssMetricV31",
-                                                metrics.get("cvssMetricV30",
-                                                metrics.get("cvssMetricV2", []))))
+    cvss_metrics = metrics.get(
+        "cvssMetricV40", metrics.get("cvssMetricV31", metrics.get("cvssMetricV30", metrics.get("cvssMetricV2", [])))
+    )
 
     if cvss_metrics and cvss_metrics[0]:
         return cvss_metrics[0]["cvssData"]["version"], cvss_metrics[0]["cvssData"]["baseScore"]
