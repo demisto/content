@@ -1219,6 +1219,7 @@ def main():
     params = {key: value for key, value in demisto.params().items() if value is not None}
     handle_proxy()
     client = TAXIIClient(**params)
+
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
     # Switch case
