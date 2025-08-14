@@ -154,7 +154,7 @@ NEQ = "NEQ"
 CONTAINS = "CONTAINS"
 IP_MATCH = "IP_MATCH"
 IPLIST_MATCH = "IPLIST_MATCH"
-    
+
 RBAC_VALIDATIONS_VERSION = "8.6.0"
 RBAC_VALIDATIONS_BUILD_NUMBER = "992980"
 FORWARD_USER_RUN_RBAC = (
@@ -1390,15 +1390,16 @@ class AlertFilterArg:
     def __init__(self, search_field: str, search_type: str, arg_type: str, option_mapper: dict = {}):
         self.search_field: str = search_field
         self.search_type: str = search_type
-        self.arg_type: str  = arg_type
-        self.option_mapper: dict  = option_mapper
-    
+        self.arg_type: str = arg_type
+        self.option_mapper: dict = option_mapper
+
     def get_search_value(self, value: str) -> str:
         """Returns the value based on option mapping or original value."""
         if self.option_mapper:
             return self.option_mapper.get(value, value)
 
         return value
+
 
 def catch_and_exit_gracefully(e):
     """
@@ -1414,14 +1415,17 @@ def catch_and_exit_gracefully(e):
     else:
         raise e
 
-STATUS_PROGRESS = {'New': "STATUS_010_NEW",
-                            "In Progress": "STATUS_020_UNDER_INVESTIGATION",
-                            "Resolved": "STATUS_025_RESOLVED"}
-SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH",
-                                         "critical": "SEV_050_CRITICAL"}
 
-ALERT_DOMAIN = {"Security": "DOMAIN_SECURITY", "Health": "DOMAIN_HEALTH", "Hunting": "DOMAIN_HUNTING",
-                "IT": "DOMAIN_IT", "Posture": "DOMAIN_POSTURE"}
+STATUS_PROGRESS = {"New": "STATUS_010_NEW", "In Progress": "STATUS_020_UNDER_INVESTIGATION", "Resolved": "STATUS_025_RESOLVED"}
+SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+
+ALERT_DOMAIN = {
+    "Security": "DOMAIN_SECURITY",
+    "Health": "DOMAIN_HEALTH",
+    "Hunting": "DOMAIN_HUNTING",
+    "IT": "DOMAIN_IT",
+    "Posture": "DOMAIN_POSTURE",
+}
 
 DETECTION_METHOD_HR_TO_MACHINE_NAME = {
     "XDR Agent": "TRAPS",
@@ -1461,20 +1465,18 @@ DETECTION_METHOD_HR_TO_MACHINE_NAME = {
     "Attack Surface Test": "ATTACK_SURFACE_TEST",
     "Package Operational Risk": "CAS_OPERATIONAL_RISK_SCANNER",
     "Vulnerability Policy": "VULNERABILITY_POLICY",
-    "AI Security Posture": "AISPM_RULE_ENGINE"
+    "AI Security Posture": "AISPM_RULE_ENGINE",
 }
+
 
 def init_filter_args_options() -> dict[str, AlertFilterArg]:
     array = "array"
     dropdown = "dropdown"
     time_frame = "time_frame"
-    
+
     return {
         "alert_id": AlertFilterArg("internal_id", EQ, array),
-        "severity": AlertFilterArg(
-            "severity", EQ, array, SEVERITY_STATUSES
-        ),
-        
+        "severity": AlertFilterArg("severity", EQ, array, SEVERITY_STATUSES),
         "starred": AlertFilterArg(
             "starred",
             EQ,
@@ -1519,7 +1521,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "status": AlertFilterArg("status.progress", EQ, array, STATUS_PROGRESS),
         "not_status": AlertFilterArg("status.progress", NEQ, array, STATUS_PROGRESS),
         "asset_ids": AlertFilterArg("asset_ids", EQ, array),
-        "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array)
+        "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array),
     }
 
 
@@ -1622,20 +1624,18 @@ def convert_time_to_epoch(time_to_convert: str) -> int:
                 "epoch UNIX timestamp (example: 1651505482)"
             )
 
+
 def construct_query_building_block(search_field: str, search_type: str, search_value: str):
     """
-        Constructs a query building block with search field, type, and value.
-        :param search_field: The field to search in
-        :param search_type: The type of search to perform
-        :param search_value: The value to search for
-        :return: A dictionary containing the search parameters
+    Constructs a query building block with search field, type, and value.
+    :param search_field: The field to search in
+    :param search_type: The type of search to perform
+    :param search_value: The value to search for
+    :return: A dictionary containing the search parameters
     """
-    return {
-                "SEARCH_FIELD": search_field,
-                "SEARCH_TYPE": search_type,
-                "SEARCH_VALUE": search_value
-    }
-    
+    return {"SEARCH_FIELD": search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
+
+
 def create_filter_from_args(args: dict) -> dict:
     """
     Builds an XDR format filter dict for the xdr-get-alert command.
@@ -1644,8 +1644,8 @@ def create_filter_from_args(args: dict) -> dict:
     """
     valid_args = init_filter_args_options()
     and_operator_list = []
-    start_time = args.pop("start_time", '')
-    end_time = args.pop("end_time", '')
+    start_time = args.pop("start_time", "")
+    end_time = args.pop("end_time", "")
 
     if (start_time or end_time) and ("time_frame" not in args):
         raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time arguments')
@@ -1653,17 +1653,17 @@ def create_filter_from_args(args: dict) -> dict:
     for arg_name, arg_value in args.items():
         if arg_name not in valid_args:
             raise DemistoException(f"Argument {arg_name} is not valid.")
-        
-        arg_properties: AlertFilterArg = valid_args.get(arg_name)   # type: ignore[assignment]
-        
+
+        arg_properties: AlertFilterArg = valid_args.get(arg_name)  # type: ignore[assignment]
+
         # handle time frame
         if arg_name == "time_frame":
             # custom time frame
             if arg_value == "custom":
                 if not start_time or not end_time:
                     raise DemistoException("Please provide start_time and end_time arguments when using time_frame as custom.")
-                start_time = convert_time_to_epoch(start_time) # type: ignore[assignment]
-                end_time = convert_time_to_epoch(end_time) # type: ignore[assignment]
+                start_time = convert_time_to_epoch(start_time)  # type: ignore[assignment]
+                end_time = convert_time_to_epoch(end_time)  # type: ignore[assignment]
                 search_type = "RANGE"
                 search_value: Union[dict, Optional[str]] = {"from": start_time, "to": end_time}
 
@@ -1687,9 +1687,7 @@ def create_filter_from_args(args: dict) -> dict:
             for arg_item in arg_list:
                 negation_and_list.append(
                     construct_query_building_block(
-                        arg_properties.search_field,
-                        arg_properties.search_type,
-                        arg_properties.get_search_value(arg_item)
+                        arg_properties.search_field, arg_properties.search_type, arg_properties.get_search_value(arg_item)
                     )
                 )
             and_operator_list.append({"AND": negation_and_list})
@@ -1700,17 +1698,15 @@ def create_filter_from_args(args: dict) -> dict:
             arg_list = argToList(arg_value)
             for arg_item in arg_list:
                 or_operator_list.append(
-                    construct_query_building_block(arg_properties.search_field,
-                                                   arg_properties.search_type,
-                                                   arg_properties.get_search_value(arg_item))
+                    construct_query_building_block(
+                        arg_properties.search_field, arg_properties.search_type, arg_properties.get_search_value(arg_item)
+                    )
                 )
             and_operator_list.append({"OR": or_operator_list})
         else:
             and_operator_list.append(
                 construct_query_building_block(
-                    arg_properties.search_field,
-                    arg_properties.search_type,
-                    arg_properties.get_search_value(arg_value)
+                    arg_properties.search_field, arg_properties.search_type, arg_properties.get_search_value(arg_value)
                 )
             )
 
@@ -3724,6 +3720,7 @@ ALERT_STATUS_TYPES = {
 
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
+
 def filter_context_fields(output_keys: list, context: list):
     """
     Filters only specific keys from the context dictionary based on provided output_keys.
@@ -3731,9 +3728,10 @@ def filter_context_fields(output_keys: list, context: list):
     filtered_context = []
     for alert in context:
         filtered_context.append({key: alert.get(key) for key in output_keys})
-    
+
     return filtered_context
-    
+
+
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     """
     Get alerts by filter.
@@ -3764,14 +3762,14 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     sort_field = args.pop("sort_field", "source_insert_ts")
     sort_order = args.pop("sort_order", "DESC")
     prefix = args.pop("integration_context_brand", "CoreApiModule")
-    output_keys = argToList(args.pop('output_keys', []))
+    output_keys = argToList(args.pop("output_keys", []))
     args.pop("integration_name", None)
     custom_filter = {}
     filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
     offset = args.pop("offset", 0)
     limit = args.pop("limit", 50)
     if offset > limit:
-        raise DemistoException('starting offset cannot be greater than limit')
+        raise DemistoException("starting offset cannot be greater than limit")
 
     filter_data["paging"] = {"from": int(offset), "to": int(limit)}
     if not args:
@@ -3820,10 +3818,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
             alert["alert_action_status_readable"] = ALERT_STATUS_TYPES.get(action_status, action_status)
 
         context.append(alert)
-   
+
     SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
     STATUS_PROGRESS_REVERSE = {value: key for key, value in STATUS_PROGRESS.items()}
-    
+
     ALERT_OR_ISSUE = "Alert" if not is_platform() else "Issue"
     human_readable = [
         {
@@ -3840,7 +3838,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         }
         for alert in context
     ]
-    
+
     if output_keys:
         context = filter_context_fields(output_keys, context)
 

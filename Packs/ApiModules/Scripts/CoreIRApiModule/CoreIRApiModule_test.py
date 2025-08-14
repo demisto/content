@@ -4340,96 +4340,73 @@ def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
     args = {"endpoint_id": "1111", "suppress_disconnected_endpoint_error": True}
     result = isolate_endpoint_command(test_client, args)
     assert result.readable_output == "Warning: isolation action is pending for the following disconnected endpoint: 1111."
-                
-                
+
+
 def test_create_filter_from_args():
     """
     Test case to verify the filter creation logic based on input arguments
     """
     from CoreIRApiModule import create_filter_from_args
+
     # Default test case with valid inputs
-    args = {'alert_id': 'test_1, test_2, test_3', 'not_status': 'In Progress, New'}
+    args = {"alert_id": "test_1, test_2, test_3", "not_status": "In Progress, New"}
     query = create_filter_from_args(args)
     expected_result = {
         "AND": [
             {
                 "OR": [
-                    {
-                        "SEARCH_FIELD": "internal_id",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "test_1"
-                    },
-                    {
-                        "SEARCH_FIELD": "internal_id",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "test_2"
-                    },
-                    {
-                        "SEARCH_FIELD": "internal_id",
-                        "SEARCH_TYPE": "EQ",
-                        "SEARCH_VALUE": "test_3"
-                    }
+                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_1"},
+                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_2"},
+                    {"SEARCH_FIELD": "internal_id", "SEARCH_TYPE": "EQ", "SEARCH_VALUE": "test_3"},
                 ]
             },
             {
                 "AND": [
-                    {
-                        "SEARCH_FIELD": "status.progress",
-                        "SEARCH_TYPE": "NEQ",
-                        "SEARCH_VALUE": "STATUS_020_UNDER_INVESTIGATION"
-                    },
-                    {
-                        "SEARCH_FIELD": "status.progress",
-                        "SEARCH_TYPE": "NEQ",
-                        "SEARCH_VALUE": "STATUS_010_NEW"
-                    }
+                    {"SEARCH_FIELD": "status.progress", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "STATUS_020_UNDER_INVESTIGATION"},
+                    {"SEARCH_FIELD": "status.progress", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "STATUS_010_NEW"},
                 ]
-            }
+            },
         ]
     }
     assert expected_result == query
-    
+
+
 def test_filter_context_fields():
     from CoreIRApiModule import filter_context_fields
+
     context_data = [
-            {
-                "id": "alert_1",
-                "name": "Critical Alert",
-                "status": "active",
-                "severity": "high",
-                "timestamp": "2023-10-01T10:00:00Z",
-                "internal_field": "should_be_removed",
-                "private_data": "confidential"
-            },
-            {
-                "id": "alert_2",
-                "name": "Warning Alert",
-                "status": "resolved",
-                "severity": "medium",
-                "timestamp": "2023-10-01T11:00:00Z",
-                "internal_field": "should_be_removed",
-                "debug_info": "debug_data"
-            }
-        ]
-        
-    output_keys_to_keep = ["id", "name", "status", "severity", "timestamp"]
-    filtered_data = filter_context_fields(output_keys_to_keep, context_data)
-    
-    expected_result = [
         {
             "id": "alert_1",
             "name": "Critical Alert",
             "status": "active",
             "severity": "high",
-            "timestamp": "2023-10-01T10:00:00Z"
+            "timestamp": "2023-10-01T10:00:00Z",
+            "internal_field": "should_be_removed",
+            "private_data": "confidential",
         },
         {
             "id": "alert_2",
             "name": "Warning Alert",
-            "status": "resolved", 
+            "status": "resolved",
             "severity": "medium",
-            "timestamp": "2023-10-01T11:00:00Z"
-        }
+            "timestamp": "2023-10-01T11:00:00Z",
+            "internal_field": "should_be_removed",
+            "debug_info": "debug_data",
+        },
     ]
-    
+
+    output_keys_to_keep = ["id", "name", "status", "severity", "timestamp"]
+    filtered_data = filter_context_fields(output_keys_to_keep, context_data)
+
+    expected_result = [
+        {"id": "alert_1", "name": "Critical Alert", "status": "active", "severity": "high", "timestamp": "2023-10-01T10:00:00Z"},
+        {
+            "id": "alert_2",
+            "name": "Warning Alert",
+            "status": "resolved",
+            "severity": "medium",
+            "timestamp": "2023-10-01T11:00:00Z",
+        },
+    ]
+
     assert expected_result == filtered_data

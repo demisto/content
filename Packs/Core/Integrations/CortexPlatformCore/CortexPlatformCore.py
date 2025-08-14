@@ -110,37 +110,6 @@ def main():  # pragma: no cover
             return_results(get_asset_details_command(client, args))
 
         elif command == "core-get-issues":
-            OUTPUT_KEYS = ['alert_id',
-                'severity',
-                'Identity_type',
-                'alert_name',
-                'alert_source',
-                'actor_process_image_sha256',
-                'causality_actor_process_image_sha256',
-                'action_process_image_sha256',
-                'alert_category',
-                'alert_domain',
-                'alert_description',
-                'os_actor_process_image_sha256',
-                'action_file_macro_sha256',
-                'status.progress',
-                'asset_ids',
-                'assigned_to_pretty'
-                ]
-
-            if args.get('end_time') and not args.get("start_time"):
-                raise DemistoException('When end time is provided start_time must be provided as well.')
-
-            if args.get('start_time') and not args.get('end_time'):
-                args['end_time'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-
-            if args.get('start_time') and args.get('end_time'):
-                # When working with start time and end time need to specify time_frame custom.
-                args['time_frame'] = 'custom'
-
-            # Return only specific fields to the context.
-            args['output_keys'] = ', '.join(OUTPUT_KEYS)
-
             if not is_platform():
                 raise DemistoException("This command is not supported on XSIAM tenants.")
 
