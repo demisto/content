@@ -58,7 +58,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 
 ## Instance Creation Flow
 
-This integration supports two types of authorization:
+This integration supports three types of authorization:
 
 1. Basic authorization using username and password.
 2. OAuth 2.0 authorization
