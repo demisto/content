@@ -10,8 +10,13 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Security",
+        "IoT"
+    ],
+    "useCases": [
+        "Vulnerability Management"
+    ],
     "keywords": [
         "cve",
         "score",

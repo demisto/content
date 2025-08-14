@@ -10,11 +10,17 @@
         "Network Security"
     ],
     "tags": [
-        "Forensics"
+        "Forensics",
+        "Pcap",
+        "Security"
     ],
-    "useCases": [],
+    "useCases": [
+        "Network Security",
+        "Incident Response"
+    ],
     "keywords": [
-        "Moloch"
+        "Moloch",
+        "Arkime"
     ],
     "marketplaces": [
         "xsoar",
