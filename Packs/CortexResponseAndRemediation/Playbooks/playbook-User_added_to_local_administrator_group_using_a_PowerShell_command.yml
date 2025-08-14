@@ -698,6 +698,7 @@ tasks:
       id: 1e0e88d0-1bdd-439d-af9f-d71475b671ee
       version: -1
       name: Was the user successfully removed from the administrators group?
+      description: checks whether the user was successfully removed from the administrators group.
       type: condition
       iscommand: false
       brand: ""
