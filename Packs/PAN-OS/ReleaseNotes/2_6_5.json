@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes":"Removed the following content items from XSOAR and XSIAM, making them available only in the platform marketplace."
+}
