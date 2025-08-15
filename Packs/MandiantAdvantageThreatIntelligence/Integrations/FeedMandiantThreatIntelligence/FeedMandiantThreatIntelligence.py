@@ -148,7 +148,7 @@ def build_indicator_relationships(value_: str, indicator: Dict) -> List:
                     entity_a_type=entity_a_type,
                     entity_b=entity_b,
                     entity_b_type="Threat Actor",
-                    brand="Mandiant"
+                    brand="Mandiant",
                 ).to_indicator()
             )
         elif association_type == "malware":
