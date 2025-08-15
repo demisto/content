@@ -35,4 +35,6 @@ script:
   script: ''
   subtype: python3
   type: python
+tests:
+  - unshortenMe Test
 fromversion: 6.5.0
