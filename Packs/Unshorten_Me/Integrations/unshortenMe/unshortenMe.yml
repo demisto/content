@@ -21,13 +21,13 @@ script:
     description: The response will contain the unshortened URL corresponding to the provided short URL and success status.
     name: unshorten-me-unshorten-url
     outputs:
-    - contextPath: unshortenedUrl
+    - contextPath: unshortenMe.unshortened_url
       description: The original URL
       type: string
-    - contextPath: shortenedUrl
+    - contextPath: unshortenMe.shortened_url
       description: The shortened URL
       type: string
-    - contextPath: status
+    - contextPath: unshortenMe.success
       description: The status of the unshorten operation
       type: boolean
   dockerimage: demisto/python3:3.12.8.1983910
@@ -35,3 +35,4 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.5.0

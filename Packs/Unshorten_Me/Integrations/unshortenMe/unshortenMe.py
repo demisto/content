@@ -18,7 +18,6 @@ class Client(BaseClient):
         """
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
 
-
     def unshorten_request(self, short_url: str):
         """Sends the unshorten request to the unshorten.me API.
 
@@ -38,12 +37,7 @@ class Client(BaseClient):
             or if the request fails.
         """
         outputs = []
-        res = self._http_request(
-            method="GET",
-            raise_on_status=True,
-            url_suffix="/unshorten",
-            params={'url': short_url}
-        )
+        res = self._http_request(method="GET", raise_on_status=True, url_suffix="/unshorten", params={"url": short_url})
         demisto.info(f"Request sent. Respons{res}")
 
         if not res.get("success"):
@@ -54,7 +48,7 @@ class Client(BaseClient):
             {
                 "unshortened_url": res.get("unshortened_url"),
                 "shortened_url": res.get("shortened_url"),
-                "success": res.get("success")
+                "success": res.get("success"),
             }
         )
 
@@ -63,7 +57,7 @@ class Client(BaseClient):
             outputs_prefix="unshortenMe",
             outputs=outputs,
             readable_output=tableToMarkdown("unshorten.me results", outputs, table_headers, removeNull=True),
-            raw_response=res
+            raw_response=res,
         )
 
     def is_valid(self, url: str):
@@ -104,8 +98,7 @@ def unshorten_url_command(client: Client, short_url):
     is_url = client.is_valid(short_url)
     if is_url is False:
         raise ValueError(
-            f"Input is not a valid URL format. It must include http:// or https://."
-            f"\nInput provided: {short_url}"
+            f"Input is not a valid URL format. It must include http:// or https://." f"\nInput provided: {short_url}"
         )
 
     res = client.unshorten_request(short_url)
@@ -125,7 +118,7 @@ def test_module(client):
     try:
         short_url = "https://bit.ly/3DKWm5t"
         client.unshorten_request(short_url=short_url)
-        return 'ok'
+        return "ok"
     except DemistoException as e:
         return f"Error: {e}"
 
@@ -140,21 +133,14 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    token = params.get('credentials', {}).get('password')
+    token = params.get("credentials", {}).get("password")
     base_url = "https://unshorten.me/api/v2/"
     proxy = params.get("proxy", False)
     verify_certificate = not params.get("insecure", False)
-    headers = {
-        "Authorization": f"Token {token}"
-    }
+    headers = {"Authorization": f"Token {token}"}
 
     try:
-        client = Client(
-            base_url = base_url,
-            verify = verify_certificate,
-            proxy = proxy,
-            headers = headers
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
 
         # Runs the unshorten command
         if command == "unshorten-me-unshorten-url":
@@ -169,6 +155,7 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} encountered {e}.")
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

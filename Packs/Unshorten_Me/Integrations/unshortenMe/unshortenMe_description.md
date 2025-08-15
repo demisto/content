@@ -1,5 +1,3 @@
-### Community Contributed Integration
- #### Integration Author: Rich Fontaine
 This integration was tested with version 2 of the `unshorten.me` API.
 
 ---
