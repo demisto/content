@@ -1068,6 +1068,210 @@ script:
     - contextPath: Datadog.TimeSeriesPoint.to_date
       description: End of requested time window in milliseconds since Unix epoch.
       type: Date
+  - arguments:
+    - description: The ID of the specific security signal to retrieve.
+      name: signal_id
+    - description: |-
+        Start Date for filtering signals.
+        Format: yyyy-MM-dd'T'HH:mm:ssZ or "-7days" or "12 hours ago" or "-12 hours" or "15 min ago" or "-15 min".
+        Default: -7days
+      name: from_date
+    - description: |-
+        End Date for filtering signals.
+        Format: yyyy-MM-dd'T'HH:mm:ssZ or "-1 days" or "12 hours ago" or "-12 hours" or "15 min ago" or "-15 min".
+        Default: now
+      name: to_date
+    - auto: PREDEFINED
+      description: The severity of the security signal.
+      name: severity
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - info
+    - auto: PREDEFINED
+      description: The state of the security signal.
+      name: state
+      predefined:
+      - open
+      - archived
+      - under_review
+    - auto: PREDEFINED
+      description: The status of the security signal.
+      name: status
+      predefined:
+      - open
+      - archived
+      - under_review
+    - description: Filter by rule name.
+      name: rule_name
+    - description: Filter by source.
+      name: source
+    - auto: PREDEFINED
+      description: Specifies the order of returned security signals.
+      name: sort
+      predefined:
+      - asc
+      - desc
+    - description: The page number. Default is 1.
+      name: page
+    - description: The number of requested results per page. Default is 50.
+      name: page_size
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      name: limit
+    description: Get security monitoring signals from Datadog. Can retrieve a specific signal by ID or list multiple signals with filters.
+    name: datadog-security-signals-list
+    outputs:
+    - contextPath: Datadog.SecuritySignal.id
+      description: The ID of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.message
+      description: The message of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.timestamp
+      description: The timestamp when the security signal was created.
+      type: Date
+    - contextPath: Datadog.SecuritySignal.attributes.severity
+      description: The severity of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.state
+      description: The state of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.status
+      description: The status of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.rule.name
+      description: The name of the rule that triggered the signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.rule.id
+      description: The ID of the rule that triggered the signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.tags
+      description: Tags associated with the security signal.
+      type: Unknown
+    - contextPath: Datadog.SecuritySignal.attributes.source
+      description: The source of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.service
+      description: The service associated with the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.host
+      description: The host associated with the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.assignee
+      description: The assignee of the security signal.
+      type: String
+  - arguments:
+    - description: |-
+        Search query for logs. Use Datadog log search syntax.
+        Examples: "*", "error", "status:error", "service:web-api"
+        Default: *
+      name: query
+    - description: Filter logs by service name.
+      name: service
+    - description: Filter logs by host name.
+      name: host
+    - description: Filter logs by source.
+      name: source
+    - description: Filter logs by status level (info, warning, error, etc.).
+      name: status
+    - description: |-
+        Start Date for filtering logs.
+        Format: yyyy-MM-dd'T'HH:mm:ssZ or "-7days" or "12 hours ago" or "-12 hours" or "15 min ago" or "-15 min".
+        Default: -7days
+      name: from_date
+    - description: |-
+        End Date for filtering logs.
+        Format: yyyy-MM-dd'T'HH:mm:ssZ or "-1 days" or "12 hours ago" or "-12 hours" or "15 min ago" or "-15 min".
+        Default: now
+      name: to_date
+    - auto: PREDEFINED
+      description: Specifies the order of returned logs.
+      name: sort
+      predefined:
+      - asc
+      - desc
+    - description: The page number. Default is 1.
+      name: page
+    - description: The number of requested results per page. Default is 50.
+      name: page_size
+    - description: The maximum number of records to return from the collection. Default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored.
+      name: limit
+    description: Search for logs in Datadog. Supports filtering by service, host, source, status, and custom queries using Datadog's log search syntax.
+    name: datadog-logs-search
+    outputs:
+    - contextPath: Datadog.Log.id
+      description: The ID of the log entry.
+      type: String
+    - contextPath: Datadog.Log.attributes.message
+      description: The log message content.
+      type: String
+    - contextPath: Datadog.Log.attributes.timestamp
+      description: The timestamp when the log was created.
+      type: Date
+    - contextPath: Datadog.Log.attributes.service
+      description: The service that generated the log.
+      type: String
+    - contextPath: Datadog.Log.attributes.host
+      description: The host that generated the log.
+      type: String
+    - contextPath: Datadog.Log.attributes.source
+      description: The source of the log.
+      type: String
+    - contextPath: Datadog.Log.attributes.status
+      description: The status level of the log.
+      type: String
+    - contextPath: Datadog.Log.attributes.tags
+      description: Tags associated with the log.
+      type: Unknown
+  - arguments:
+    - description: The ID of the security signal to update.
+      name: signal_id
+      required: true
+    - description: The user UUID to assign the signal to.
+      name: assignee
+      required: true
+    description: Update the assignee of a security monitoring signal.
+    name: datadog-security-signal-assignee-update
+    outputs:
+    - contextPath: Datadog.SecuritySignal.id
+      description: The ID of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.assignee
+      description: The updated assignee of the security signal.
+      type: String
+  - arguments:
+    - description: The ID of the security signal to update.
+      name: signal_id
+      required: true
+    - auto: PREDEFINED
+      description: The new state for the security signal.
+      name: state
+      required: true
+      predefined:
+      - open
+      - archived
+      - under_review
+    - description: Reason for the state change.
+      name: reason
+    - description: Comment explaining the state change.
+      name: comment
+    description: Update the state of a security monitoring signal.
+    name: datadog-security-signal-state-update
+    outputs:
+    - contextPath: Datadog.SecuritySignal.id
+      description: The ID of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.state
+      description: The updated state of the security signal.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.reason
+      description: The reason for the state change.
+      type: String
+    - contextPath: Datadog.SecuritySignal.attributes.comment
+      description: The comment explaining the state change.
+      type: String
   dockerimage: demisto/datadog-api-client:1.0.0.1832460
   isfetch: true
   runonce: false
