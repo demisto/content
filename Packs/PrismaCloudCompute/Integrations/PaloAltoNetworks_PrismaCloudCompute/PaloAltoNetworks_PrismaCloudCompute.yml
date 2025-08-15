@@ -17,7 +17,6 @@ configuration:
   section: Connect
 - name: project
   display: Prisma Cloud Compute Project Name (if applicable)
-  defaultvalue:
   type: 0
   additionalinfo: Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field.
   section: Connect
@@ -39,14 +38,11 @@ configuration:
 - name: credentials
   display: Username
   required: true
-  defaultvalue:
   type: 9
   additionalinfo: Prisma Cloud Compute login credentials.
-  displaypassword: ""
   section: Connect
 - name: certificate
   display: Prisma Cloud Compute CA Certificate
-  defaultvalue:
   type: 12
   additionalinfo: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
   section: Connect
@@ -71,14 +67,19 @@ configuration:
   type: 15
   required: false
   section: Connect
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4417419
   isfetch: true
   runonce: false
-  script: "-"
+  script: ''
   subtype: python3
   type: python
   commands:
@@ -88,7 +89,6 @@ script:
     - name: hostname
       description: A comma-separated list of profile (hostname) IDs. For example, !prisma-cloud-compute-profile-host-list hostname="*149*,*257*".
       isArray: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of hosts and their profile events to return. Must be between 1-50.
       defaultValue: "15"
@@ -240,31 +240,24 @@ script:
     - name: cluster
       description: A comma-separated list of runtime profile Kubernetes clusters.
       isArray: true
-      defaultValue: ""
     - name: id
       description: A comma-separated list of runtime profile (hostname) IDs. For example, !prisma-cloud-compute-profile-container-list id="*256*,*148*".
       isArray: true
-      defaultValue: ""
     - name: image
       description: A comma-separated list of runtime profile images. For example, !prisma-cloud-compute-profile-container-list image="*console*,*defender*".
       isArray: true
-      defaultValue: ""
     - name: image_id
       description: A comma-separated list of runtime profile image IDs. For example, !prisma-cloud-compute-profile-container-list image_id="*123*,*456*".
       isArray: true
-      defaultValue: ""
     - name: namespace
       description: A comma-separated list of runtime profile Kubernetes namespaces. For example, !prisma-cloud-compute-profile-container-list namespace="*namespace1*,*namespace2*".
       isArray: true
-      defaultValue: ""
     - name: os
       description: A comma-separated list of service runtime profile operating systems. For example, !prisma-cloud-compute-profile-container-list os="*Red Hat*,*Windows*".
       isArray: true
-      defaultValue: ""
     - name: state
       description: A comma-separated list of runtime profile states. For example, !prisma-cloud-compute-profile-container-list state=*active*.
       isArray: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of containers and their profile events. Must be between 1-50.
       defaultValue: "15"
@@ -527,7 +520,6 @@ script:
     - name: id
       description: Container profile ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command.
       required: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of hosts to return. Must be between 1-50.
       defaultValue: "50"
@@ -547,18 +539,14 @@ script:
     - name: id
       description: The container ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command.
       required: true
-      defaultValue: ""
     - name: collections
       description: The collections scoping the query.
-      defaultValue: ""
     - name: hostname
       description: The hostname for which data should be fetched. Can be retrieved from the "prisma-cloud-compute-hosts-list" command.
       required: true
-      defaultValue: ""
     - name: incident_id
       description: A comma-separated list of incident IDs if the request type is an incident.
       isArray: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of forensics data records to return. Must be between 1-50.
       defaultValue: "20"
@@ -650,15 +638,12 @@ script:
     - name: id
       description: The host ID. Can be retrieved from the "prisma-cloud-compute-hosts-list" command.
       required: true
-      defaultValue: ""
     - name: collections
       description: A comma-separated list of collections.
       isArray: true
-      defaultValue: ""
     - name: incident_id
       description: A comma-separated list of incident IDs in case the request type is an incident.
       isArray: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of forensics data records to return. Must be between 1-50.
       defaultValue: "20"
@@ -753,10 +738,6 @@ script:
       description: A comma-separated list of custom IP addresses to add to the banned IPs list that will be blocked. For example ip=1.1.1.1,2.2.2.2.
       required: true
       isArray: true
-      defaultValue: ""
-    outputs: []
-    compliantpolicies:
-    - IP Blockage
   - name: prisma-cloud-compute-custom-feeds-ip-remove
     description: Remove a list of IPs from the system's block list.
     arguments:
@@ -764,8 +745,6 @@ script:
       description: A comma-separated list of custom IP addresses to remove from the banned IPs list. For example ip=1.1.1.1,2.2.2.2.
       required: true
       isArray: true
-      defaultValue: ""
-    outputs: []
   - name: prisma-cloud-compute-custom-feeds-malware-list
     description: List all custom uploaded md5 malwares.
     arguments:
@@ -794,24 +773,19 @@ script:
     - name: name
       description: The name that will be attached to the MD5 records.
       required: true
-      defaultValue: ""
     - name: md5
       description: A comma-separated list of MD5 hashes to be added.
       required: true
       isArray: true
-      defaultValue: ""
-    outputs: []
   - name: cve
     description: Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package.
     arguments:
     - name: cve_id
       description: Deprecated. Use the `cve` argument instead.
       isArray: true
-      defaultValue: ""
     - name: cve
       description: A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546.
       isArray: true
-      defaultValue: ""
       default: true
     outputs:
     - contextPath: CVE.ID
@@ -846,19 +820,16 @@ script:
     arguments:
     - name: cluster
       description: The cluster name by which to scope the query.
-      defaultValue: ""
     - name: hostname
       description: Name of a specific defender to retrieve.
-      defaultValue: ""
     - name: type
       description: Indicates the defender types to return (e.g., docker, dockerWindows, cri, etc.).
-      defaultValue: ""
     - name: connected
       description: Indicates whether to return only connected defenders (true) or disconnected defenders (false).
-      defaultValue: ""
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: limit
       description: The maximum number of defender records to return.
       defaultValue: "20"
@@ -990,11 +961,9 @@ script:
     - name: cluster
       description: A comma-separated list of cluster names to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: collections
       description: A comma-separated list of collections to filter the results by. Can be retrieved from the "prisma-cloud-compute-collections-list" command.
       isArray: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of namespace name records to return.
       defaultValue: "50"
@@ -1008,37 +977,31 @@ script:
     - name: clusters
       description: A comma-separated list of cluster names to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: compact
       description: Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata).
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: fields
       description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
-      defaultValue: ""
     - name: hostname
       description: A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command.
       isArray: true
-      defaultValue: ""
     - name: id
       description: A comma-separated list of image IDs to filter the results by. Run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs.
       isArray: true
-      defaultValue: ""
     - name: name
       description: A comma-separated list of image names to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: registry
       description: A comma-separated list of image registries to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: repository
       description: A comma-separated list of image repositories to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: compliance_ids
       description: A comma-separated list of compliance IDs to filter the results by.
       isArray: true
@@ -1057,6 +1020,7 @@ script:
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     outputs:
     - contextPath: PrismaCloudCompute.ReportsImagesScan._id
       description: Image identifier (image ID or repo:tag).
@@ -1241,29 +1205,25 @@ script:
     - name: clusters
       description: A comma-separated list of cluster names to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: compact
       description: Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata).
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: distro
       description: A comma-separated list of operating system distros to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: fields
       description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
-      defaultValue: ""
     - name: hostname
       description: A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command.
       isArray: true
-      defaultValue: ""
     - name: provider
       description: A comma-separated list of cloud providers to filter the results by.
       isArray: true
-      defaultValue: ""
     - name: compliance_ids
       description: A comma-separated list of compliance IDs to filter the results by.
       isArray: true
@@ -1282,6 +1242,7 @@ script:
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     outputs:
     - contextPath: PrismaCloudCompute.ReportHostScan._id
       description: The host identifier (host ID or hostname).
@@ -1436,7 +1397,6 @@ script:
     - name: cve
       description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535.
       isArray: true
-      defaultValue: ""
     - name: limit
       description: The maximum number of records of impacted hosts/images to return.
       defaultValue: "50"
@@ -1572,7 +1532,6 @@ script:
     - name: limit
       description: The limit of the number of alerts to return.
     description: Get the audits for the firewall container policies.
-    outputs: []
   - arguments:
     - description: The project to get the alert profiles for.
       name: project
@@ -1929,7 +1888,7 @@ script:
       name: hostname
     - description: The number of log lines to fetch.
       name: lines
-      defaultValue: 10
+      defaultValue: '10'
     description: Download the Defender logs.
     name: prisma-cloud-compute-logs-defender
     outputs:
@@ -1950,7 +1909,7 @@ script:
       name: hostname
     - description: The number of log lines to fetch.
       name: lines
-      defaultValue: 100
+      defaultValue: '100'
     description: Download a zip of all Defender logs.
     name: prisma-cloud-compute-logs-defender-download
     outputs:
@@ -2057,6 +2016,7 @@ script:
       type: string
   - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
     name: prisma-cloud-compute-unstuck-fetch-stream
+    arguments: []
   - name: prisma-cloud-compute-ci-scan-results-list
     description: Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli. Maps to Monitor > Vulnerabilities > Images > CI in the Console UI. The default will retrieve only the passed scans.
     arguments:
@@ -2085,6 +2045,7 @@ script:
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: scan_time_to
       description: Filters results by end datetime. Based on scan time.
     - name: scan_time_from
@@ -2101,12 +2062,14 @@ script:
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: verbose
       description: Whether to retrieve all fields of each scan result. When used with the "all_results" argument, it may return a lot of results in a file.
       defaultValue: "false"
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     outputs:
     - contextPath: PrismaCloudCompute.CIScan._id
       description: The scan ID.
@@ -2345,6 +2308,7 @@ script:
     - contextPath: PrismaCloudCompute.TrustedImage.groups.images
       description: The images in the trusted image group.
       type: Unknown
+    arguments: []
   - name: prisma-cloud-compute-trusted-images-update
     description: Updates a trusted image to the system. Specify trusted images using either the image name or layers properties. This is a potentially harmful command which overwrites the existing list, so use with caution. We recommend that is only be used in a playbook by a script that uses it.
     execution: true
@@ -2396,6 +2360,7 @@ script:
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: search
       description: Term to search for.
     - name: limit
@@ -2528,6 +2493,7 @@ script:
       predefined:
       - "true"
       - "false"
+      auto: PREDEFINED
     - name: search
       description: Term to search for.
     - name: limit
@@ -2746,7 +2712,6 @@ script:
     arguments:
     - name: incident_id
       description: Incident ID.
-      isArray: false
       required: true
     - auto: PREDEFINED
       name: action
@@ -2916,11 +2881,18 @@ script:
     - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified
       description: The audited event modified time.
       type: Date
+  - arguments:
+    - description: The name that will be attached to the MD5 records.
+      name: name
+      required: true
+      type: unknown
+    - description: A comma-separated list of MD5 hashes to be added.
+      isArray: true
+      name: md5
+      required: true
+      type: unknown
+    description: Remove custom MD5 malware hashes.
+    name: prisma-cloud-compute-custom-feeds-malware-remove
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
-defaultmapperin: PaloAltoNetworks_PrismaCloudCompute-mapper
-defaultclassifier: PaloAltoNetworks_PrismaCloudCompute
-sectionOrder:
-- Connect
-- Collect

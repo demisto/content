@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import urllib.parse
 from collections import defaultdict
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 import ipaddress
@@ -1256,14 +1256,22 @@ def add_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> Command
     """
     # the api overrides the blacklisted IPs, therefore it is necessary to add those who exist to the 'PUT' request.
     current_ip_feeds = (client.get_custom_ip_feeds() or {}).get("feed") or []
-    new_ip_feeds = argToList(arg=args.pop("ip"))
+    new_ip_feeds = argToList(arg=args.pop("ip", []))
 
     # remove duplicates, the api doesn't give error on duplicate IPs
     combined_feeds = list(set(current_ip_feeds + new_ip_feeds))
 
     client.add_custom_ip_feeds(feeds=combined_feeds)
-
     return CommandResults(readable_output="Successfully updated the custom IP feeds")
+
+    '''
+    result = CommandResults(
+    outputs_prefix="MyCustomIPs",
+    outputs=combined_feeds,
+    readable_output=tableToMarkdown("My Custom IPs", combined_feeds, headers=["combined_feeds"]))
+
+    return_results(result)
+    '''
 
 
 def remove_custom_ip_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
@@ -1372,6 +1380,38 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
 
     client.add_custom_md5_malware(feeds=feeds)
 
+    return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
+
+
+def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Remove a list of hashes from the system's malware list.
+    Implements the command 'prisma-cloud-compute-custom-feeds-malware-remove'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-custom-feeds-malware-remove command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    # Cast to sets for faster operations and to remove duplicates
+    current_md5_feeds = (client.get_custom_md5_malware() or {}).get("feed") or []
+    # print(current_md5_feeds) #prints current prisma list of dictionaries with name/md5
+
+    # populate variables for name and md5 input
+    name = args.get("name")
+    md5 = args.get("md5")
+
+    # if md5 input is in current feed, remove it
+    for i in range(len(current_md5_feeds) - 1, -1, -1):
+        if current_md5_feeds[i].get('md5') == md5:
+            current_md5_feeds.pop(i)
+            # print(current_md5_feeds) #list of dictionaries with removed md5
+            break
+
+    # send updated list with removed md5 to Prisma
+    client.add_custom_md5_malware(feeds=current_md5_feeds)
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
 
 
@@ -2740,7 +2780,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     if runtime_container_policy_events := client.get_runtime_container_policy():
         runtime_rules = runtime_container_policy_events.get("rules") or []
         if len(runtime_rules) > limit and not all_results:
-            runtime_rules = runtime_rules[offset * limit : offset * limit + limit]
+            runtime_rules = runtime_rules[offset * limit: offset * limit + limit]
 
         table = tableToMarkdown(
             name="Runtime Container Policy Events Information",
@@ -2832,6 +2872,8 @@ def main():
             return_results(results=get_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-custom-feeds-malware-add":
             return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-custom-feeds-malware-remove":
+            return_results(results=remove_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == "cve":
             return_results(results=get_cves(client=client, args=demisto.args(), reliability=reliability))
         elif requested_command == "prisma-cloud-compute-defenders-list":
