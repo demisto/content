@@ -1,0 +1,40 @@
+[
+    {
+        "iocs": [
+            {
+                "value": "https://example.com",
+                "indicator_type": "URL",
+                "insightCache": {
+                    "scores": {
+                        "brand1": {
+                            "score": 1,
+                            "context": {
+                                "URL(obj.Data == val.Data)": {
+                                    "Data": "https://example.com",
+                                    "PositiveDetections": 1,
+                                    "DetectionEngines": 90
+                                }
+                            }
+                        },
+                        "brand3": {
+                            "score": 2,
+                            "context": {
+                                "URL(obj.Data == val.Data)": {
+                                    "Data": "https://example.com",
+                                    "PositiveDetections": 10,
+                                    "DetectionEngines": 60
+                                },
+                                "DBotScore": {
+                                    "Indicator": "https://example.com",
+                                    "Score": 2,
+                                    "Vendor": "brand3",
+                                    "Type": "url"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+]

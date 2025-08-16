@@ -1,0 +1,107 @@
+args:
+- description: A comma-separated list of domains to enrich.
+  name: domain_list
+  required: true
+- name: external_enrichment
+  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: verbose
+  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |-
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag.
+    Run !ProvidesCommand command=domain to see available integrations.
+    Add Cortex Core - IR to run core-get-domain-analytics-prevalence.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: Whether to return secondary fields to the context output under "AdditionalFields".
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+comment: This script gathers domain reputation data from multiple integrations and returns a "DomainEnrichment" object with consolidated information to the context output.
+commonfields:
+  id: domain-enrichment
+  version: -1
+enabled: false
+name: domain-enrichment
+outputs:
+- contextPath: DomainEnrichment.Data
+  description: the domain it self
+  type: string
+- contextPath: DomainEnrichment.max_score
+  description: the max score of all the indicators found
+  type: number
+- contextPath: DomainEnrichment.max_verdict
+  description: the max verdict of all the indicators found
+  type: string
+- contextPath: DomainEnrichment.results
+  description: list of all indicators found for the domain
+  type: array
+- contextPath: DomainEnrichment.results.Brand
+  description: the brand of the indicator
+  type: string
+- contextPath: DomainEnrichment.results.score
+  description: the score of the indicator
+  type: number
+- contextPath: DomainEnrichment.results.detection_engines
+  description: the detection engines of the indicator
+  type: number
+- contextPath: DomainEnrichment.results.positive_detections
+  description: the positive detections of the indicator
+  type: number
+- contextPath: DomainEnrichment.results.additional_fields
+  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  type: Object
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: DBotScore.Reliability
+  description: The reliability of the score.
+  type: string
+- contextPath: Core.AnalyticsPrevalence.Domain.value
+  description: Whether the domain is prevalent or not.
+  type: Boolean
+- contextPath: Core.AnalyticsPrevalence.Domain.data.global_prevalence.value
+  description: The global prevalence of the domain.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Domain.data.local_prevalence.value
+  description: The local prevalence of the domain.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Domain.data.prevalence.value
+  description: The prevalence of the domain.
+  type: Number
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2

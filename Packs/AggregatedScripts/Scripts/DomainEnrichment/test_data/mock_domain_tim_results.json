@@ -1,0 +1,38 @@
+[
+    {
+        "iocs": [
+            {
+                "value": "domain1.com",
+                "indicator_type": "Domain",
+                "insightCache": {
+                    "scores": {
+                        "brand1": {
+                            "score": 1,
+                            "context": {
+                                "Domain(obj.Name == val.Name)": {
+                                    "Name": "domain1.com",
+                                    "PositiveDetections": 2
+                                }
+                            }
+                        },
+                        "brand2": {
+                            "score": 2,
+                            "context": {
+                                "Domain(obj.Name == val.Name)": {
+                                    "Name": "domain1.com",
+                                    "PositiveDetections": 5
+                                },
+                                "DBotScore": {
+                                    "Indicator": "domain1.com",
+                                    "Score": 2,
+                                    "Vendor": "brand2",
+                                    "Type": "domain"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+]

@@ -1,0 +1,65 @@
+args:
+- description: A comma-separated list of IPs to enrich.
+  name: ip_list
+  required: true
+- name: external_enrichment
+  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: verbose
+  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |-
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag.
+    Run !ProvidesCommand command=ip to see available integrations.
+    Add Cortex Core - IR to run core-get-IP-analytics-prevalence or Script to run get-endpoint-data.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: Whether to return secondary fields to the context output under "AdditionalFields".
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+comment: This script gathers ip reputation data from multiple integrations and returns an ip entity with consolidated information to the context.
+commonfields:
+  id: ip-enrichment
+  version: -1
+enabled: false
+name: ip-enrichment
+outputs:
+- contextPath: IPEnrichment
+  description: list of ip enrichments
+  type: array
+- contextPath: Core.AnalyticsPrevalence.IP
+  description: list of core analytics prevalence
+  type: array
+- contextPath: EndpointData
+  description: list of endpoint data
+  type: array
+- contextPath: DBotScore
+  description: list of dbot scores
+  type: array
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
