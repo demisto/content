@@ -592,14 +592,23 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             attachment_name = attachment.get("name", "")
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
-            is_succeed, _ = execute_command(
-                "core-api-post",
-                {"uri": f"/incident/remove/{incident_id}", "body": file_data},
-                extract_contents=False,
-                fail_on_error=False,
-            )
-            if not is_succeed:
-                demisto.debug("Failed to remove attachment")
+
+            max_retries = 4
+            for attempt in range(max_retries):
+                is_succeed, res_body = execute_command(
+                    "core-api-post",
+                    {"uri": f"/incident/remove/{incident_id}", "body": file_data},
+                    extract_contents=False,
+                    fail_on_error=False,
+                )
+
+                if is_succeed:
+                    break
+
+                status = "retrying..." if attempt < max_retries - 1 else "giving up."
+                demisto.debug(
+                    f"Attempt {attempt + 1}/{max_retries} failed to remove attachment, {status} API response body: {res_body}"
+                )
 
             if not isinstance(files, list):
                 files = [files]
