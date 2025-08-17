@@ -42,4 +42,4 @@ tests:
 marketplaces:
 - platform
 supportedModules:
-- agentix
+- agentix_xsiam

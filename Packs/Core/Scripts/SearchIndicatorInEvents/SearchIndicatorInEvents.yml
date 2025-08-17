@@ -45,3 +45,4 @@ polling: true
 marketplaces:
   - marketplacev2
   - platform
+  - agentix_xsiam
