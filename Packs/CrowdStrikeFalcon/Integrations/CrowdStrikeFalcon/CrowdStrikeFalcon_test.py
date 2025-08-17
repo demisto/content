@@ -7910,6 +7910,7 @@ def test_is_detection_occurred_before_fetch_time():
     start_fetch_time = "2020-05-17T17:30:38Z"
     assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
 
+
 def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
     """
     Given:
@@ -7929,41 +7930,41 @@ def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
     res_200 = Response()
     res_200.status_code = 200
     res_200._content = b'{"result": "success"}'
-    
+
     # Mock demisto.params like in the existing test
     mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "proxy": True})
-    
+
     # Mock get_token to avoid authentication calls
     mocker.patch("CrowdStrikeFalcon.get_token", return_value="test_token")
-    
+
     # Test case 1: is_time_sensitive()=True should set retries=0 and timeout=15
     mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
     mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=True)
-    
+
     http_request(method="GET", url_suffix="/test", no_json=True)
-    
+
     assert mock_generic_http_request.call_count == 1
     call_args = mock_generic_http_request.call_args[1]  # kwargs
     assert call_args["retries"] == 0, f"Expected retries=0 when is_time_sensitive=True, got {call_args['retries']}"
     assert call_args["timeout"] == 15, f"Expected timeout=15 when is_time_sensitive=True, got {call_args['timeout']}"
-    
+
     # Test case 2: is_time_sensitive()=False should set retries=0 and timeout=60
     mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
     mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=False)
-    
+
     http_request(method="GET", url_suffix="/test", no_json=True)
-    
+
     assert mock_generic_http_request.call_count == 1
     call_args = mock_generic_http_request.call_args[1]  # kwargs
     assert call_args["retries"] == 0, f"Expected retries=0 when is_time_sensitive=False, got {call_args['retries']}"
     assert call_args["timeout"] == 60, f"Expected timeout=60 when is_time_sensitive=False, got {call_args['timeout']}"
-    
+
     # Test case 3: get_token_flag=False should set retries=5 and timeout=60
     mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
     mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=False)
-    
+
     http_request(method="GET", url_suffix="/test", get_token_flag=False, no_json=True)
-    
+
     assert mock_generic_http_request.call_count == 1
     call_args = mock_generic_http_request.call_args[1]  # kwargs
     assert call_args["retries"] == 5, f"Expected retries=5 when get_token_flag=False, got {call_args['retries']}"
