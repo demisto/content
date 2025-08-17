@@ -255,7 +255,7 @@ def test_endpoint_command(requests_mock):
             {
                 "ID": "1111",
                 "Hostname": "ip-3.3.3.3",
-                "IPAddress": "3.3.3.3",
+                "IPAddress": ["3.3.3.3"],
                 "OS": "Linux",
                 "Vendor": "CoreApiModule",
                 "Status": "Online",
@@ -4263,3 +4263,80 @@ def test_list_risky_users_or_host_command(exception_instance, command, expected_
                 mock_return_warning.assert_called_once_with(expected_result, exit=True)
             else:
                 mock_return_warning.assert_not_called()
+
+
+def test_get_alert_by_filter_custom_filter_valid_json(requests_mock):
+    """
+    Given:
+        - Core client
+        - Valid JSON custom_filter with agent_id
+    When
+        - Running get_alerts_by_filter command
+    Then
+        - Verify the JSON is parsed correctly without any fixes applied
+    """
+    from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
+
+    api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
+    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+
+    # Valid JSON with agent_id
+    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "1.2.3.4"}]}'
+    args = {"custom_filter": custom_filter}
+
+    response = get_alerts_by_filter_command(client, args)
+    assert response.outputs[0].get("internal_id", {}) == 33333
+
+
+def test_get_alert_by_filter_custom_filter_malformed_json_fixed(requests_mock):
+    """
+    Given:
+        - Core client
+        - Malformed JSON custom_filter with agent_id containing array-like string values
+    When
+        - Running get_alerts_by_filter command
+    Then
+        - Verify the malformed JSON is automatically fixed and parsed correctly
+    """
+    from CoreIRApiModule import CoreClient, get_alerts_by_filter_command
+
+    api_response = load_test_data("./test_data/get_alerts_by_filter_results.json")
+    requests_mock.post(f"{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/", json=api_response)
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+
+    # Malformed JSON with agent_id - array values as string with unescaped quotes
+    custom_filter = '{"AND":[{"SEARCH_FIELD": "agent_id", "SEARCH_TYPE": "CONTAINS", "SEARCH_VALUE": "[1.2.3.4, 5.6.7.8]"}]}'
+    args = {"custom_filter": custom_filter}
+
+    response = get_alerts_by_filter_command(client, args)
+    assert response.outputs[0].get("internal_id", {}) == 33333
+
+
+def test_isolate_endpoint_disconnected_with_suppress_enabled(mocker):
+    """
+    Given:
+        - An endpoint with status DISCONNECTED
+        - suppress_disconnected_endpoint_error is True
+    When:
+        - Calling isolate_endpoint_command
+    Then:
+        - The client.isolate_endpoint method is called (no error is raised)
+        - A warning message is returned
+    """
+    from CoreIRApiModule import isolate_endpoint_command
+
+    # Mock the get_endpoint API to return a disconnected endpoint
+    mocker.patch.object(
+        test_client,
+        "_http_request",
+        side_effect=[
+            {"reply": {"endpoints": [{"endpoint_id": "1111", "endpoint_status": "DISCONNECTED"}]}},
+            {"reply": {"action_id": "fake_action_id"}},  # mock for isolate_endpoint
+        ],
+    )
+    mocker.patch.object(test_client, "isolate_endpoint", return_value={"action_id": "fake_action_id"})
+
+    args = {"endpoint_id": "1111", "suppress_disconnected_endpoint_error": True}
+    result = isolate_endpoint_command(test_client, args)
+    assert result.readable_output == "Warning: isolation action is pending for the following disconnected endpoint: 1111."

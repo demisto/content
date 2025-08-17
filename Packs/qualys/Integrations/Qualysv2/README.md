@@ -22196,14 +22196,14 @@ Retrieves a list of assets (hosts) affected by a specified Qualys QID. If no QID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_assets | If true, the command will create assets, otherwise it will only display the amount of available assets. Possible values are: true, false. Default is false. | Required | 
-| qid | The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability. | Optional | 
+| should_push_assets | If true, the command will create assets, otherwise it will only display the amount of available assets. Possible values are: true, false. Default is false. | Required |
+| qid | The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Assets | unknown | All Qualys assets associated with the specified QID \(Qualys ID\). | 
+| Qualys.Assets | unknown | All Qualys assets associated with the specified QID \(Qualys ID\). |
 
 ### qualys-get-quid-by-cve
 
@@ -22218,11 +22218,10 @@ Retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID. | Required | 
+| cve | The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.QID | unknown | All the Qualys QID \(Qualys ID\) associated with a specified CVE. | 
-
+| Qualys.QID | unknown | All the Qualys QID \(Qualys ID\) associated with a specified CVE. |

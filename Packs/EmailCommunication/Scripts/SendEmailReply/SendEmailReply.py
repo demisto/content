@@ -39,24 +39,125 @@ def get_utc_now():
     return dt.utcnow()
 
 
-def append_email_signature(html_body):
+def apply_direction(line: str) -> str:
     """
-        Retrieve the user defined email signature to include on new messages, if present.
+    Processes a single line of Markdown text and converts
+    custom direction tags into corresponding HTML divs.
+
+    Supported tags:
+    - '<-:->'  : Center aligned text
+    - '<--:>'  : Left-to-right text (LTR)
+    - '<:-->'  : Right-to-left text (RTL)
+
+    Args:
+        line (str): A single line of Markdown text.
+
+    Returns:
+        str: The processed line with HTML div for direction if tag found,
+             or the original line unchanged.
+    """
+    # Remove leading spaces to detect tags even if line is indented
+    stripped_line = line.lstrip()
+
+    # Check for center alignment tag
+    if stripped_line.startswith("<-:->"):
+        # Remove the tag prefix (5 chars) and strip any extra spaces
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with center text alignment
+        return f'<div style="text-align:center;">{content}</div>'
+
+    # Check for left-to-right text direction tag
+    elif stripped_line.startswith("<--:>"):
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with LTR direction attribute
+        return f'<div dir="ltr">{content}</div>'
+
+    # Check for right-to-left text direction tag
+    elif stripped_line.startswith("<:-->"):
+        content = stripped_line[5:].lstrip()
+        # Wrap content in a div with RTL direction attribute
+        return f'<div dir="rtl">{content}</div>'
+
+    # If no direction tag is found, return the line unchanged
+    else:
+        return line
+
+
+def process_directions(md: str) -> str:
+    return "\n".join(apply_direction(line) for line in md.splitlines())
+
+
+def ensure_markdown_tables_have_spacing(md: str) -> str:
+    lines = md.splitlines()
+    new_lines: list[str] = []
+    in_table = False
+
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        is_table_line = stripped.startswith("|") and stripped.endswith("|")
+
+        if is_table_line:
+            if not in_table:
+                # Add blank line before table if previous line is non-empty
+                if new_lines and new_lines[-1].strip() != "":
+                    new_lines.append("")
+                in_table = True
+            new_lines.append(line)
+        else:
+            if in_table:
+                # Table just ended. Add blank line *only if there’s more non-empty content ahead*.
+                remaining_lines = lines[i:]
+                if any(rl.strip() for rl in remaining_lines) and line.strip() != "":
+                    new_lines.append("")
+                in_table = False
+            new_lines.append(line)
+
+    return "\n".join(new_lines)
+
+
+def replace_atlassian_tags(md: str) -> str:
+    # Replace color tags
+    md = re.sub(r"\{\{color:(#[0-9a-fA-F]{6})\}\}\((.*?)\)", r'<span style="color:\1;">\2</span>', md)
+    # Replace background tags
+    md = re.sub(r"\{\{background:(#[0-9a-fA-F]{6})\}\}\((.*?)\)", r'<span style="background-color:\1;">\2</span>', md)
+    return md
+
+
+def append_email_signature(html_body: str) -> str:
+    """
+    Retrieve the user defined email signature to include on new messages, if present.
     Args: (string) html_body
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
-    demisto.debug("append_email_signature")
-    is_succeed, email_signature = execute_command(
-        "getList", {"listName": "XSOAR - Email Communication Signature"}, extract_contents=False, fail_on_error=False
+    demisto.debug("Starting to append email signature.")
+
+    # 1. Load the signature list
+    list_name = "XSOAR - Email Communication Signature"
+    demisto.debug(f"Trying to load the `{list_name}` list.")
+    is_succeed, email_signature_result = execute_command(
+        "getList", {"listName": list_name}, extract_contents=False, fail_on_error=False
     )
-    if is_succeed:
-        # Find the position of the closing </html> tag and insert the signature there
-        if re.search("(?i)</body>", html_body):
-            html_body = re.sub("(?i)</body>", f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
-    else:
+    if not is_succeed:
+        # If not is_succeed, email_signature_result is an error message
+        error_message = email_signature_result
         demisto.debug(
-            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
+            f"Error occurred while trying to load the `{list_name}` list. No signature added to email. Error: {error_message}."
         )
+        return html_body
+
+    # 2. Append signature
+    demisto.debug(f"Successfully loaded the `{list_name}` list.")
+    email_signature_contents = f"\r\n{email_signature_result[0]['Contents']}\r\n"
+    demisto.debug(f"Found signature of length {len(email_signature_contents)} chars.")
+
+    # Find the position of the closing </body> tag and insert the signature before closing tag
+    if re.search("(?i)</body>", html_body):
+        demisto.debug("Appending signature before HTML body closing tag.")
+        html_body = re.sub("(?i)</body>", f"{email_signature_contents}</body>", html_body)
+    # Otherwise, if no closing </body> tag, concatenate the signature to the end of the string
+    else:
+        demisto.debug("Appending signature to the end of the text string.")
+        html_body += email_signature_contents
 
     return html_body
 
@@ -492,14 +593,23 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             attachment_name = attachment.get("name", "")
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
-            is_succeed, _ = execute_command(
-                "core-api-post",
-                {"uri": f"/incident/remove/{incident_id}", "body": file_data},
-                extract_contents=False,
-                fail_on_error=False,
-            )
-            if not is_succeed:
-                demisto.debug("Failed to remove attachment")
+
+            max_retries = 4
+            for attempt in range(max_retries):
+                is_succeed, res_body = execute_command(
+                    "core-api-post",
+                    {"uri": f"/incident/remove/{incident_id}", "body": file_data},
+                    extract_contents=False,
+                    fail_on_error=False,
+                )
+
+                if is_succeed:
+                    break
+
+                status = "retrying..." if attempt < max_retries - 1 else "giving up."
+                demisto.debug(
+                    f"Attempt {attempt + 1}/{max_retries} failed to remove attachment, {status} API response body: {res_body}"
+                )
 
             if not isinstance(files, list):
                 files = [files]
@@ -890,8 +1000,21 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
+    use_raw_body = argToBoolean(demisto.incident().get("CustomFields").get("sendbodyasrawnomarkdown", False))
+    if use_raw_body:  # it true, will send the body as is and won't use markdown
+        return new_email_body, new_email_body
+
+    # 1. Apply your direction tags first
+    md_with_direction = process_directions(new_email_body)
+
+    # 2. Fix spacing before tables
+    fixed_body = ensure_markdown_tables_have_spacing(md_with_direction)
+
+    # 3. Replace Atlassian color/background tags with inline HTML spans
+    fixed_body = replace_atlassian_tags(fixed_body)
+
     context_html_body = markdown(
-        new_email_body,
+        fixed_body,
         extensions=[
             "tables",
             "fenced_code",
@@ -901,6 +1024,13 @@ def format_body(new_email_body):
             DemistoExtension(),
         ],
     )
+    # Apply inline styles to tables only if <table> is present
+    if "<table>" in context_html_body:
+        context_html_body = context_html_body.replace(
+            "<table>",
+            '<table border="1" cellpadding="6" cellspacing="0" ' 'style="border-collapse: collapse; border: 1px solid #999;">',
+        )
+
     saas_xsiam_prefix = "/xsoar" if is_xsiam_or_xsoar_saas() else ""
     html_body = re.sub(rf'src="({saas_xsiam_prefix}/markdown/[^"]+)"', convert_internal_url_to_base64, context_html_body)
     return context_html_body, html_body

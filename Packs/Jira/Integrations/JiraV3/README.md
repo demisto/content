@@ -65,6 +65,7 @@ Leave the *Client ID*, *Client Secret* and *Personal Access Token* fields empty 
 
 Ensure that you possess the necessary permissions by navigating to **Project Settings** > **Permissions** in the project.
 Locate permissions for the tasks listed below:
+
 - Browse projects
 - Create issues
 - Edit issues
