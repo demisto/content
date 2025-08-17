@@ -107,7 +107,7 @@ Get articles including their properties and relationships.
 | --- | --- | --- |
 | article_id | Article ID to retrieve specific article details. | Optional |
 | limit | Number of incidents in the list. | Optional |
-| odata | Filter incidents using "odata" query. | Optional |
+| odata | Use "odata" query to customize the response | Optional |
 
 #### Context Output
 
@@ -132,7 +132,7 @@ Get indicators of threat or compromise related to the contents of an article.
 | article_id | The unique identifier of the article. | Optional |
 | article_indicator_id | The unique identifier of a specific indicator within the article. | Optional |
 | limit | Number of incidents in the list. | Optional |
-| odata | Filter incidents using "odata" query. | Optional |
+| odata | Use "odata" query to customize the response | Optional |
 
 #### Context Output
 
@@ -156,7 +156,7 @@ Get Intelligence Profiles including their properties and relationships.
 | --- | --- | --- |
 | intel_profile_id | The unique identifier of the intelligence profile. | Optional |
 | limit | Number of incidents in the list. | Optional |
-| odata | Filter incidents using "odata" query. | Optional |
+| odata | Use "odata" query to customize the response | Optional |
 
 #### Context Output
 
@@ -181,7 +181,7 @@ Get Intelligence Profiles Indicators and their properties.
 | intel_profile_id | The unique identifier of the intelligence profile. | Optional |
 | intel_profile_indicator_id | The unique identifier of a specific indicator related to an intelligence profile. | Optional |
 | limit | Number of incidents in the list. | Optional |
-| odata | Filter incidents using "odata" query. | Optional |
+| odata | Use "odata" query to customize the response | Optional |
 
 #### Context Output
 
@@ -204,7 +204,7 @@ Read the properties and relationships of a host object.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The unique identifier of the host. | Required |
-| odata | Filter incidents using "odata" query. | Optional |
+| odata | Use "odata" query to customize the response | Optional |
 
 #### Context Output
 
@@ -229,7 +229,7 @@ Get the specified whoisRecord resource.
 | --- | --- | --- |
 | host_id | hostname or IP address. | Optional |
 | whois_record_id | The unique identifier of a specific WHOIS record. | Optional |
-| odata | Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top. | Optional |
+| odata | Use "odata" query to customize the response. | Optional |
 | limit | Number of records in the list. | Optional |
 
 #### Context Output
@@ -255,8 +255,7 @@ Get the history for a whoisRecord, as represented by a collection of whoisHistor
 | --- | --- | --- |
 | host_id | hostname or IP address. | Optional |
 | whois_record_id | The unique identifier of the WHOIS record whose history you want to retrieve. | Optional |
-| whois_history_record_id | The unique identifier of a specific WHOIS history record. | Optional |
-| odata | Use "odata" query to customize the response. Supports the $count, $select, $skip, and $top. | Optional |
+| odata | Use "odata" query to customize the response. | Optional |
 | limit | Number of records in the list. | Optional |
 
 #### Context Output
@@ -281,12 +280,12 @@ Read the properties and relationships of a host object.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The unique identifier of the host. | Required |
-| odata | Filter incidents using "odata" query. | Optional |
+| odata | Use "odata" query to customize the response. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MSGDefenderThreatIntel.HostReputation.id | unknown | The unique identifier of the host object in Microsoft Defender Threat Intelligence. |
-| MSGDefenderThreatIntel.Host.classification | String | The reputation classification of the host (e.g., Malicious, Suspicious, Unknown). |
-| MSGDefenderThreatIntel.Host.score | String | TA numerical score representing the confidence or severity of the host's reputation. |
+| MSGDefenderThreatIntel.HostReputation.classification | String | The reputation classification of the host (e.g., Malicious, Suspicious, Unknown). |
+| MSGDefenderThreatIntel.HostReputation.score | String | TA numerical score representing the confidence or severity of the host's reputation. |

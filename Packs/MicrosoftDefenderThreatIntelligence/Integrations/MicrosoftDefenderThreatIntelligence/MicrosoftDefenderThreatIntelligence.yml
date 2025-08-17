@@ -213,8 +213,6 @@ script:
       name: host_id
     - description: "The unique identifier of the whois record whose history you want to retrieve.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
       name: whois_record_id
-    - description: "The unique identifier of a specific WHOIS history record.\nChoose one of the following arguments: host_id, whois_record_id or whois_history_record_id."
-      name: whois_history_record_id
     - description: 'Use "odata" query to customize the response.'
       name: odata
     - defaultValue: '50'
@@ -231,7 +229,6 @@ script:
     - contextPath: MSGDefenderThreatIntel.WhoisHistory.domainStatus
       description: The domain's status at the time of the historical WHOIS record (e.g., clientTransferProhibited, inactive).
       type: String
-
   - arguments:
     - description: Hostname or IP address.
       name: host_id
