@@ -34,7 +34,6 @@ def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
-    watched_folders = options.watched_folders
     changed_files = options.changed_files
 
     github_client: Github = Github(github_token, verify=False)
@@ -44,7 +43,7 @@ def main():
     pr_label_names = [label.name for label in pr.labels]
     se_approved = SE_APPROVED_LABEL in pr_label_names
 
-    watched_folders = [f.strip() for f in watched_folders.split(",")]
+    watched_folders = SE_PACKS
 
     print(f"watched_folders: {watched_folders}")
     print(f"changed_files: {changed_files}")
