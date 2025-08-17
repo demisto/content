@@ -14,7 +14,7 @@ from CommonServerPython import (
     outputPaths,
     requests,
     is_time_sensitive,
-    generic_http_request
+    generic_http_request,
 )
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
@@ -7912,6 +7912,7 @@ def test_is_detection_occurred_before_fetch_time():
     start_fetch_time = "2020-05-17T17:30:38Z"
     assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
 
+
 def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
     """
     Given:
@@ -7934,10 +7935,11 @@ def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
 
     # Mock get_token to avoid authentication calls
     mocker.patch("CrowdStrikeFalcon.get_token", return_value="test_token")
-    mock_generic_http_request = mocker.patch.object(generic_http_request, return_value=success_response)
+    mock_generic_http_request = mocker.patch("CommonServerPython.generic_http_request", return_value=success_response)
 
     # Test case 1: is_time_sensitive()=True should set retries=0 and timeout=15
-    mocker.patch.object(is_time_sensitive, return_value=True)
+    mocker.patch("CommonServerPython.is_time_sensitive", return_value=True)
+
 
     http_request(method="GET", url_suffix="/test", no_json=True)
 
