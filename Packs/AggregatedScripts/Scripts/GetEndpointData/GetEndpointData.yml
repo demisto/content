@@ -9,15 +9,17 @@ args:
   name: endpoint_hostname
   isArray: true
 - description: |-
-    A comma-seperated list of brands you wish to run the command for. If not provided, the command will run for all available integrations. Example: 'Active Directory Query v2,FireEyeHX v2'.
-    Supported brands are:
+    A comma-seperated list of brands you want to run get-endpoint-data for. If not provided, the get-endpoint-data script will run for the list of supported default brands. Example: 'Active Directory Query v2,FireEyeHX v2'.
+    Default supported brands are:
     - 'Active Directory Query v2'
     - 'McAfee ePO v2'
     - 'CrowdstrikeFalcon'
     - 'Cortex XDR - IR'
     - 'Cortex Core - IR'
     - 'FireEyeHX v2'
-    - 'Generic Command'.
+    If you provide a list of brands, only those brands will be executed and not the default list.
+    If you include a brand that is not on the default list, the script will run the !endpoint command on it.
+    If you do not provide any brand, the predefined list of default brands and the !endpoint command will automatically run on all brands.
   name: brands
   isArray: true
 - description: Set to true to display human-readable output for each step of the command. Set to false (default) to only display the final result.
@@ -38,137 +40,140 @@ commonfields:
   version: -1
 name: get-endpoint-data
 outputs:
-- contextPath: Endpoint.Hostname.value
+- contextPath: EndpointData.Hostname.value
   description: The endpoint's hostname.
   type: String
-- contextPath: Endpoint.Hostname.source
+- contextPath: EndpointData.Hostname.source
   description: The vendor from which the hostname of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.EntityA.value
+- contextPath: EndpointData.EntityA.value
   description: The source of the relationship.
   type: String
-- contextPath: Endpoint.EntityA.source
+- contextPath: EndpointData.EntityA.source
   description: The vendor from which EntityA of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.EntityB.value
+- contextPath: EndpointData.EntityB.value
   description: The destination of the relationship.
   type: String
-- contextPath: Endpoint.EntityB.source
+- contextPath: EndpointData.EntityB.source
   description: The vendor from which EntityB of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Relationship.value
+- contextPath: EndpointData.Relationship.value
   description: The name of the relationship.
   type: String
-- contextPath: Endpoint.Relationship.source
+- contextPath: EndpointData.Relationship.source
   description: The vendor from which the relationship of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.EntityAType.value
+- contextPath: EndpointData.EntityAType.value
   description: The type of the source of the relationship.
   type: String
-- contextPath: Endpoint.EntityAType.source
+- contextPath: EndpointData.EntityAType.source
   description: The vendor from which the type of the source of the relationship of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.EntityBType.value
+- contextPath: EndpointData.EntityBType.value
   description: The type of the destination of the relationship.
   type: String
-- contextPath: Endpoint.EntityBType.source
+- contextPath: EndpointData.EntityBType.source
   description: The vendor from which the type of the destination of the relationship of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.ID.value
+- contextPath: EndpointData.ID.value
   description: The endpoint's ID.
   type: String
-- contextPath: Endpoint.ID.source
+- contextPath: EndpointData.ID.source
   description: The vendor from which the ID of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.IPAddress.value
+- contextPath: EndpointData.RiskLevel
+  description: The endpoint's risk level.
+  type: String
+- contextPath: EndpointData.IPAddress.value
   description: The endpoint's IP address.
   type: String
-- contextPath: Endpoint.IPAddress.source
+- contextPath: EndpointData.IPAddress.source
   description: The vendor from which the IP address of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Domain.value
+- contextPath: EndpointData.Domain.value
   description: The endpoint's domain.
   type: String
-- contextPath: Endpoint.Domain.source
+- contextPath: EndpointData.Domain.source
   description: The vendor from which the domain of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.MACAddress.value
+- contextPath: EndpointData.MACAddress.value
   description: The endpoint's MAC address.
   type: String
-- contextPath: Endpoint.MACAddress.source
+- contextPath: EndpointData.MACAddress.source
   description: The vendor from which the MAC address of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.DHCPServer.value
-  description: The DHCP server of the endpoint.
+- contextPath: EndpointData.DHCPServer.value
+  description: The DHCP server of the EndpointData.
   type: String
-- contextPath: Endpoint.DHCPServer.source
+- contextPath: EndpointData.DHCPServer.source
   description: The vendor from which the DHCP server of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.OS.value
+- contextPath: EndpointData.OS.value
   description: The endpoint's operating system.
   type: String
-- contextPath: Endpoint.OS.source
+- contextPath: EndpointData.OS.source
   description: The vendor from which the operating system of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.OSVersion.value
+- contextPath: EndpointData.OSVersion.value
   description: The endpoint's operating system version.
   type: String
-- contextPath: Endpoint.OSVersion.source
+- contextPath: EndpointData.OSVersion.source
   description: The vendor from which the operating system version of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.BIOSVersion.value
+- contextPath: EndpointData.BIOSVersion.value
   description: The endpoint's BIOS version.
   type: String
-- contextPath: Endpoint.BIOSVersion.source
+- contextPath: EndpointData.BIOSVersion.source
   description: The vendor from which the BIOS version of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Model.value
+- contextPath: EndpointData.Model.value
   description: The model of the machine or device.
   type: String
-- contextPath: Endpoint.Model.source
+- contextPath: EndpointData.Model.source
   description: The vendor from which the model of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Memory.value
-  description: Amount of memory on this endpoint.
+- contextPath: EndpointData.Memory.value
+  description: Amount of memory on this EndpointData.
   type: Integer
-- contextPath: Endpoint.Memory.source
+- contextPath: EndpointData.Memory.source
   description: The vendor from which the amount of memory of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Processors.value
+- contextPath: EndpointData.Processors.value
   description: The number of processors.
   type: Integer
-- contextPath: Endpoint.Processors.source
+- contextPath: EndpointData.Processors.source
   description: The vendor from which the processors of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Processor.value
+- contextPath: EndpointData.Processor.value
   description: The model of the processor.
   type: String
-- contextPath: Endpoint.Processor.source
+- contextPath: EndpointData.Processor.source
   description: The vendor from which the processor of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.IsIsolated.value
+- contextPath: EndpointData.IsIsolated.value
   description: The endpoint's isolation status.
   type: String
-- contextPath: Endpoint.IsIsolated.source
+- contextPath: EndpointData.IsIsolated.source
   description: The vendor from which the isolation of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Status.value
+- contextPath: EndpointData.Status.value
   description: The endpoint's status.
   type: String
-- contextPath: Endpoint.Status.source
+- contextPath: EndpointData.Status.source
   description: The vendor from which the status of this endpoint was retrieved.
   type: String
-- contextPath: Endpoint.Vendor.value
+- contextPath: EndpointData.Vendor.value
   description: The integration name of the endpoint vendor.
   type: String
-- contextPath: Endpoint.Vendor.source
+- contextPath: EndpointData.Vendor.source
   description: The vendor from which the Vendor of this endpoint was retrieved.
   type: String
 script: '-'
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
