@@ -37,4 +37,4 @@ jobs:
         run: |
           echo "Checking label SE-packs-approved for: $PR_NUMBER"
           cd .github/github_workflow_scripts
-          poetry run python check_if_se_packs_approved_label_exists.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN
+          poetry run python check_if_se_packs_approved_label_exists.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --changed_files $CHANGED_FILES
