@@ -1,2 +1,5 @@
 [file:DisableUser.py]
 ignore=PA124
+
+[file:IsolateEndpoint.py]
+ignore=SC101
