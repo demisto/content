@@ -1,5 +1,5 @@
 import demistomock as demisto
-from Packs.ServiceNow.Integrations.ServiceNowv2.test_data.response_constants import JWT_PARAMS, OAUTH_PARAMS
+from Packs.ServiceNow.Integrations.ServiceNowv2.test_data.response_constants import JWT_PARAMS
 from ServiceNowApiModule import *
 
 PARAMS = {
@@ -10,6 +10,7 @@ PARAMS = {
     "client_secret": "client_secret",
     "use_oauth": True,
 }
+
 
 # Unit tests for OAuth authorization
 def test_get_access_token(mocker):
@@ -89,11 +90,7 @@ def test_separate_client_id_and_refresh_token():
 
 
 def test_validate_and_format_private_key_valid():
-    valid_key = (
-        "-----BEGIN PRIVATE KEY-----"
-        "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC"
-        "-----END PRIVATE KEY-----"
-    )
+    valid_key = "-----BEGIN PRIVATE KEY-----" "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC" "-----END PRIVATE KEY-----"
     result = ServiceNowClient._validate_and_format_private_key(valid_key)
     assert result.startswith("-----BEGIN PRIVATE KEY-----")
     assert result.endswith("-----END PRIVATE KEY-----")
@@ -111,18 +108,14 @@ def test_validate_and_format_private_key_invalid():
 
 
 def test_validate_and_format_private_key_spaces():
-    key_with_spaces = (
-        "-----BEGIN PRIVATE KEY----- MIIE vQIBADAN Bgkqh kiG9w0 BAEF AASC -----END PRIVATE KEY-----"
-    )
+    key_with_spaces = "-----BEGIN PRIVATE KEY----- MIIE vQIBADAN Bgkqh kiG9w0 BAEF AASC -----END PRIVATE KEY-----"
     result = ServiceNowClient._validate_and_format_private_key(key_with_spaces)
     assert " " not in result
     assert result.count("\n") > 2
 
 
 def test_validate_and_format_private_key_double_newlines():
-    key_with_double_newlines = (
-        "-----BEGIN PRIVATE KEY-----\n\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\n\n-----END PRIVATE KEY-----"
-    )
+    key_with_double_newlines = "-----BEGIN PRIVATE KEY-----\n\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\n\n-----END PRIVATE KEY-----"
     result = ServiceNowClient._validate_and_format_private_key(key_with_double_newlines)
     assert "\n\n" not in result
 
