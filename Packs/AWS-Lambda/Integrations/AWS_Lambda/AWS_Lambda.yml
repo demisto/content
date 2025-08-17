@@ -4,7 +4,6 @@ commonfields:
   version: -1
 sectionOrder:
 - Connect
-- Collect
 configuration:
 - display: AWS Default Region
   section: Connect
