@@ -1493,7 +1493,7 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "rule_id": AlertFilterArg("matching_service_rule_id", EQ, array),
         "rule_name": AlertFilterArg("fw_rule", EQ, array),
         "alert_name": AlertFilterArg("alert_name", CONTAINS, array),
-        "alert_source": AlertFilterArg("alert_source", EQ, array, DETECTION_METHOD_HR_TO_MACHINE_NAME),
+        "alert_source": AlertFilterArg("alert_source", CONTAINS, array, DETECTION_METHOD_HR_TO_MACHINE_NAME),
         "time_frame": AlertFilterArg("source_insert_ts", "", time_frame),
         "user_name": AlertFilterArg("actor_effective_username", CONTAINS, array),
         "actor_process_image_name": AlertFilterArg("actor_process_image_name", CONTAINS, array),
@@ -3766,8 +3766,8 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     args.pop("integration_name", None)
     custom_filter = {}
     filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
-    offset = args.pop("offset", 0)
-    limit = args.pop("limit", 50)
+    offset = int(args.pop("offset", 0))
+    limit = int(args.pop("limit", 50))
     if offset > limit:
         raise DemistoException("starting offset cannot be greater than limit")
 
