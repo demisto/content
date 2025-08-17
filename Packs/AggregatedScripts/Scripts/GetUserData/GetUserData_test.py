@@ -1063,7 +1063,7 @@ class TestGetUserData:
         """
         command = Command("Microsoft Graph User", "msgraph-user-get-manager", {"user": "graph_user"})
         mock_outputs = {"Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}}
-        expected_account = {"manager_display_name": "Graph Manager", "manager_email": "manager@example.com"}
+        expected_account = {"ManagerDisplayName": "Graph Manager", "ManagerEmail": "manager@example.com"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1073,7 +1073,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = msgraph_user_get_manager(command, additional_fields=True)
+        result = msgraph_user_get_manager(command)
 
         assert isinstance(result, dict)
         assert result == expected_account
