@@ -989,7 +989,7 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: d
             else:
                 endpoint_mapping[brand][endpoint[main_key]] = endpoint
         else:
-            endpoint_mapping[brand] = {endpoint[main_key]: endpoint}
+            endpoint_mapping[brand] = {endpoint[main_key]: endpoint}  # type: ignore[index]
 
 
 def endpoint_mapping_to_list(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
