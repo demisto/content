@@ -20,16 +20,16 @@ commonfields:
   version: -1
 name: isolate-endpoint
 outputs:
-- contextPath: IsolateEndpointResults.Endpoint
+- contextPath: IsolateEndpoint.Endpoint
   description: The endpoint's hostname.
   type: String
-- contextPath: IsolateEndpointResults.Result
+- contextPath: IsolateEndpoint.Result
   description: The result of the isolation.
   type: String
-- contextPath: IsolateEndpointResults.Brand
+- contextPath: IsolateEndpoint.Brand
   description: The used brand for the isolation.
   type: String
-- contextPath: IsolateEndpointResults.Message
+- contextPath: IsolateEndpoint.Message
   description: An informative message for the isolation results.
   type: String
 script: '-'
