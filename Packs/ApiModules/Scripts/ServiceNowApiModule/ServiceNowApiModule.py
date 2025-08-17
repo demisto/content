@@ -21,7 +21,7 @@ class ServiceNowClient(BaseClient):
         verify: bool = False,
         proxy: bool = False,
         headers: dict = None,
-        jwt_params: dict = None
+        jwt_params: dict = None,
     ):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
@@ -56,7 +56,6 @@ class ServiceNowClient(BaseClient):
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
-
 
     def http_request(
         self,
@@ -166,8 +165,6 @@ class ServiceNowClient(BaseClient):
         start_marker = "-----BEGIN PRIVATE KEY-----"
         end_marker = "-----END PRIVATE KEY-----"
 
-
-
         if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
             raise ValueError("Invalid private key format.")
         # Remove the markers and replace whitespaces with '\n'
@@ -178,13 +175,13 @@ class ServiceNowClient(BaseClient):
         processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
         return processed_key
 
-    def create_jwt(self, jwt_params : dict) -> str:
+    def create_jwt(self, jwt_params: dict) -> str:
         """
         Create JWT token
         Returns:
             JWT token
         """
-        private_key = self._validate_and_format_private_key(jwt_params.get("private_key" , ""))
+        private_key = self._validate_and_format_private_key(jwt_params.get("private_key", ""))
 
         header = {
             "alg": "RS256",  # Signing algorithm
@@ -263,5 +260,3 @@ class ServiceNowClient(BaseClient):
                 return_error(
                     f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
                 )
-
-

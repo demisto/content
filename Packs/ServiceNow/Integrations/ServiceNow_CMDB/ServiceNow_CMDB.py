@@ -571,7 +571,7 @@ def main() -> None:
             "kid": params.get("kid"),
             "sub": params.get("sub"),
             "iss": params.get("iss", client_id),
-            "aud": client_id
+            "aud": client_id,
         }
 
     client = Client(
@@ -582,7 +582,7 @@ def main() -> None:
         url=url,
         verify=verify,
         proxy=proxy,
-        jwt_params=jwt_params
+        jwt_params=jwt_params,
     )
 
     commands = {

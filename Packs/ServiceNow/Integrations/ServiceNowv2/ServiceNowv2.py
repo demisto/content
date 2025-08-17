@@ -11,9 +11,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-import jwt
-from datetime import datetime, timedelta, UTC
-import uuid
+from datetime import datetime
 
 DEFAULT_FETCH_TIME = "10 minutes"
 MAX_RETRY = 9
@@ -688,7 +686,7 @@ class Client(BaseClient):
                 verify=oauth_params.get("verify", False),
                 proxy=oauth_params.get("proxy", False),
                 headers=oauth_params.get("headers", ""),
-                jwt_params=jwt_params
+                jwt_params=jwt_params,
             )
 
         else:
@@ -1903,7 +1901,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                                f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -3760,7 +3758,7 @@ def main():
                 "kid": params.get("kid"),
                 "sub": params.get("sub"),
                 "iss": params.get("iss", client_id),
-                "aud": client_id
+                "aud": client_id,
             }
 
     else:  # use basic authentication

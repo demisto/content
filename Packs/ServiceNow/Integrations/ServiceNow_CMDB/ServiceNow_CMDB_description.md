@@ -20,24 +20,23 @@ To use OAuth 2.0 authorization perform the following steps:
 #### JWT Authentication
 ##### Prerequisites in order to support JWT
 
-1. Create a Java Key Store and upload it to the instance. (Accessing from the upper menu :**Al** > **System Definition** > **Certificates**.)
-(Private key will be used as an integration parameter)
-2. Configure a JWT signing key (Use the keystore from above. Keep the Key ID. It will be used as kid integration parameter)
-(All→System OAuth→JWT Keys)
-3. Create a JWT provider with a JWT signing key
-(Customer required to set in Standard Claims the same values for aud, iss and sub that will be used as integration parameters. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles)(All→System OAuth→JWT providers)
-4. Connect to an OAuth provider and create an OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. The value of kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key. The value can be updated if necessary.)
-(All→System OAuth→Application Registry)
-5. Create API Access Policy or add Authentication profile to existing Policy (All→System Web Services→API Access Policies→Rest API Access Policies )
+1. Create a Java Key Store and upload it to the instance by accessing from the upper menu: **All** > **System Definition** > **Certificates**. The private key will be used as an integration parameter. 
+2. Configure a JWT signing key by accessing: All→System OAuth→JWT Keys using the keystore from above and keep the Key ID as it will be used as kid integration parameter. 
+3. Create a JWT provider with a JWT signing key by accessing: All→System OAuth→JWT providers. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles.
+4. Connect to an OAuth provider and create an OAuth application registry by accessing All→System OAuth→Application Registry: 
+   1. aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. 
+   2. The value of kid in JWT Verifier Maps has to be the same as Key Id in JWT signing key.
+      The value can be updated if necessary.
+5. Create API Access Policy or add Authentication profile to existing Policy by accessing: All→System Web Services→API Access Policies→Rest API Access Policies
 
 **IMPORTANT:**
-1. Standard Authentication Profile of type Oauth should be already present in ServiceNow and this one needs to be added to Policy.
+1. The Standard Authentication Profile of type Oauth should be already present in ServiceNow and has to be added to the Policy.
 API Access Policy should be configured as global in order to cover all available resources and not just now/table
 2. Granting JWT to admin is not allowed.
-You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing  role snc_platform_rest_api_access that is required to make API calls.
+You should have a non-admin user with all necessary roles (only non-admin roles) in addition to the existing role snc_platform_rest_api_access that is required to make API calls.
 
 ### Using Multi Factor Authentication (MFA)
-MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however we strongly recommend using OAuth 2.0 when using MFA.
+MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however, we strongly recommend using OAuth 2.0 when using MFA.
 If MFA is enabled for your user, perform the following steps:
 1. Open the Google Authenticator application on your mobile device and make note of the number. The number refreshes every 30 seconds.
 2. Enter your username and password, and append the One Time Password (OTP) that you currently see on your mobile device to your password without any extra spaces. For example, if your password is **12345** and the current OTP code is **424 058**, enter `12345424058`.

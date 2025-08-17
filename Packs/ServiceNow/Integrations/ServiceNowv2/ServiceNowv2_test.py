@@ -10,7 +10,6 @@ import pytest
 import requests
 
 import ServiceNowv2
-import jwt
 
 from CommonServerPython import CommandResults, DemistoException, EntryType, QuickActionPreview, EntryFormat
 from freezegun import freeze_time
@@ -126,7 +125,6 @@ from test_data.response_constants import (
     RESPONSE_UPDATE_TICKET_SC_REQ,
     RESPONSE_UPLOAD_FILE,
     USER_RESPONSE,
-    JWT_PARAMS,
 )
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
@@ -1733,8 +1731,6 @@ def test_test_module(mocker):
     with pytest.raises(Exception) as e:
         module(client)
     assert "Test button cannot be used when using OAuth 2.0" in str(e)
-
-
 
 
 def test_oauth_test_module(mocker):
