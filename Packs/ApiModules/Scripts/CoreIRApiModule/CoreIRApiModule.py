@@ -1521,7 +1521,31 @@ def init_filter_args_options() -> dict[str, AlertFilterArg]:
         "assignee": AlertFilterArg("assigned_to_pretty", CONTAINS, array)
     }
 
+def cases_human_readable_transformer(string):
+    """
+    Convert a string into a human-readable format:
+    - Replace underscores with spaces
+    - Capitalize every word
+    - Transform "Incident" into "Case"
 
+    Example:
+        "one_two"       -> "One Two"
+        "incident_test" -> "Case Test"
+
+    :type text: str
+    :param text: The string to be converted (required)
+
+    :return: The converted string
+    :rtype: str
+    """
+    if isinstance(string, STRING_OBJ_TYPES):
+        current_name = " ".join(word.capitalize() for word in string.replace("_", " ").split())
+        current_name = current_name.replace("Incident", "Case")
+        return current_name
+    else:
+        raise Exception('The key is not a string: {}'.format(string))
+    
+    
 def run_polling_command(
     client: CoreClient,
     args: dict,
@@ -1674,6 +1698,7 @@ def create_filter_from_args(args: dict) -> dict:
                 if relative_date:
                     delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
                     search_value = str(delta_in_milliseconds)
+                
 
             and_operator_list.append(
                 {"SEARCH_FIELD": arg_properties.search_field, "SEARCH_TYPE": search_type, "SEARCH_VALUE": search_value}
@@ -4404,6 +4429,113 @@ def get_incidents_command(client, args):
         {f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents},
         raw_incidents,
     )
+    
+ 
+def get_cases_command(client, args):
+    """
+    Retrieve a list of Cases from XDR, filtered by some filters.
+    """
+
+    # sometimes incident id can be passed as integer from the playbook
+    case_id_list = args.get("case_id_list")
+    if isinstance(case_id_list, int):
+        case_id_list = str(case_id_list)
+
+    case_id_list = argToList(case_id_list)
+    # make sure all the ids passed are strings and not integers
+    for index, id_ in enumerate(case_id_list):
+        if isinstance(id_, int | float):
+            case_id_list[index] = str(id_)
+
+    lte_modification_time = args.get("lte_modification_time")
+    gte_modification_time = args.get("gte_modification_time")
+    since_modification_time = args.get("since_modification_time")
+
+    if since_modification_time and gte_modification_time:
+        raise ValueError("Can't set both since_modification_time and lte_modification_time")
+    if since_modification_time:
+        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
+
+    lte_creation_time = args.get("lte_creation_time")
+    gte_creation_time = args.get("gte_creation_time")
+    since_creation_time = args.get("since_creation_time")
+
+    if since_creation_time and gte_creation_time:
+        raise ValueError("Can't set both since_creation_time and lte_creation_time")
+    if since_creation_time:
+        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
+
+    statuses = argToList(args.get("status", ""))
+
+    starred = argToBoolean(args.get("starred")) if args.get("starred", None) not in ("", None) else None
+    starred_incidents_fetch_window = args.get("starred_incidents_fetch_window", "3 days")
+    starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+
+    sort_by_modification_time = args.get("sort_by_modification_time")
+    sort_by_creation_time = args.get("sort_by_creation_time")
+
+    page = int(args.get("page", 0))
+    limit = int(args.get("limit", 100))
+
+    # If no filters were given, return a meaningful error message
+    if not case_id_list and (
+        not lte_modification_time
+        and not gte_modification_time
+        and not since_modification_time
+        and not lte_creation_time
+        and not gte_creation_time
+        and not since_creation_time
+        and not statuses
+        and not starred
+    ):
+        raise ValueError(
+            "Specify a query for the incidents.\nFor example:"
+            ' since_creation_time="1 year" sort_by_creation_time="desc" limit=10'
+        )
+
+    if statuses:
+        raw_cases = []
+
+        for status in statuses:
+            raw_cases += client.get_incidents(
+                incident_id_list=case_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+            )
+
+        if len(raw_cases) > limit:
+            raw_cases = raw_cases[:limit]
+    else:
+        raw_cases = client.get_incidents(
+            incident_id_list=case_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+            starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+        )
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", raw_cases, headerTransform=cases_human_readable_transformer),
+        outputs_prefix="Core.Case",
+        outputs=raw_cases,
+        raw_response=raw_cases,
+    )
+
 
 
 def terminate_process_command(client, args) -> CommandResults:

@@ -33,18 +33,6 @@ class Client(CoreClient):
         )
 
         return reply
-    
-    def get_cases_by_filter_data(self, request_data):
-        res = self._http_request(
-            method="POST",
-            url_suffix="/incidents/get_incidents/",
-            json_data={"request_data": request_data},
-            headers=self._headers,
-            timeout=self.timeout,
-        )
-        incidents = res.get("reply", {}).get("incidents", [])
-
-        return incidents
 
 
 def get_asset_details_command(client: Client, args: dict) -> CommandResults:
@@ -73,25 +61,7 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         outputs=reply,
         raw_response=reply,
     )
-
-def get_cases_command(client: Client, args: dict):
-    # get arguments
-    request_data: dict = {"filter_data": {}}
-    filter_data = request_data["filter_data"]
-    sort_field = args.pop("sort_field", "LAST_UPDATE_TIME")
-    sort_order = args.pop("sort_order", "DESC")
-    filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
-    offset = args.pop("offset", 0)
-    limit = args.pop("limit", 50)
-    filter_data["paging"] = {"from": int(offset), "to": int(limit)}
-    if not args:
-        raise DemistoException("Please provide at least one filter argument.")
-
-    filter_res = create_filter_from_args(args)
-    filter_data["filter"] = filter_res
-    demisto.debug(f"sending the following request data: {request_data}")
-    raw_response = client.get_cases_by_filter_data(request_data)
-
+    
 
 def main():  # pragma: no cover
     """
@@ -142,6 +112,7 @@ def main():  # pragma: no cover
             return_results(get_alerts_by_filter_command(client, args))
             
         elif command == "core-get-cases":
+            client._base_url = "/api/webapp/public_api/v1"
             return_results(get_cases_command(client, args))
 
 
