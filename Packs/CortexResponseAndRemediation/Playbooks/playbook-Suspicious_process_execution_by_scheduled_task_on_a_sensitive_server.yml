@@ -382,7 +382,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2380
+          "y": 2199
         }
       }
     note: false
@@ -410,7 +410,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2550
+          "y": 2334
         }
       }
     note: false
@@ -428,9 +428,8 @@ tasks:
       id: 4441878b-6246-43e1-89e9-2d39529ab7d1
       version: -1
       name: Run script to locate and disable the malicious scheduled task.
-      description: |
-        The script locates and disables the malicious scheduled task.
-      script: '|||core-run-script-execute-commands'
+      description: Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
       type: regular
       iscommand: true
       brand: ""
@@ -438,15 +437,15 @@ tasks:
       '#error#':
       - "37"
       '#none#':
-      - "40"
+      - "41"
     scriptarguments:
-      commands:
+      command:
         simple: powershell -Command "$ActionPath = '${alert.targetprocesscmd.[0]}'; $tasks = Get-ScheduledTask | Where-Object { $_.Actions | Where-Object { $_.Execute -eq $ActionPath } }; if ($tasks -or $tasks.Count -gt 0) { $tasks | ForEach-Object { Disable-ScheduledTask -TaskPath $_.TaskPath -TaskName $_.TaskName; Write-Host 'The task ' + $_.TaskName + ' has been disabled successfully.' } } else { Write-Host 'No tasks found running the action at ' + $ActionPath }"
       endpoint_ids:
         simple: ${alert.agentid}
-      timeout:
+      polling_timeout_in_seconds:
         simple: "120"
-      timeout_in_seconds:
+      timeout:
         simple: "120"
     separatecontext: false
     continueonerror: true
@@ -513,7 +512,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1870
+          "y": 1689
         }
       }
     note: false
@@ -555,7 +554,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 2040
+          "y": 1859
         }
       }
     note: false
@@ -591,7 +590,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 1700
+          "y": 1519
         }
       }
     note: false
@@ -622,7 +621,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 2210
+          "y": 2029
         }
       }
     note: false
@@ -672,41 +671,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "40":
-    id: "40"
-    taskid: 684f7170-5892-477b-8eae-47b5d3143493
-    type: regular
-    task:
-      id: 684f7170-5892-477b-8eae-47b5d3143493
-      version: -1
-      name: Get script execution results
-      description: Retrieve the results of a script execution action.
-      script: '|||core-get-script-execution-results'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    scriptarguments:
-      action_id:
-        simple: ${Core.ScriptRun.action_id}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "41":
     id: "41"
     taskid: 729a62c7-ddec-4f8f-829b-0ea4266ca887
@@ -731,7 +695,7 @@ tasks:
       - - operator: AnyMatch
           left:
             value:
-              simple: Core.ScriptResult.results.standard_output
+              simple: Core.ScriptResult.results.executed_command.standard_output
             iscontext: true
           right:
             value:
@@ -742,7 +706,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1530
+          "y": 1349
         }
       }
     note: false
@@ -882,7 +846,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2830,
+        "height": 2614,
         "width": 1561,
         "x": 20,
         "y": -220

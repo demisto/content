@@ -28,21 +28,18 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CoreIOCs
-* CortexCoreIR
-* CortexCoreXQLQueryEngine
+This playbook does not use any integrations.
 
 ### Scripts
 
 * SearchIncidentsV2
+* file-enrichment
 
 ### Commands
 
 * closeInvestigation
-* core-get-script-execution-results
-* core-run-script-execute-commands
+* core-execute-command
 * core-terminate-causality
-* file
 
 ## Playbook Inputs
 
