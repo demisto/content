@@ -138,9 +138,9 @@ def append_email_signature(html_body: str) -> str:
         "getList", {"listName": list_name}, extract_contents=False, fail_on_error=False
     )
     if not is_succeed:
-        error_message = get_error(email_signature_result)
+        # If not is_succeed, email_signature_result is an error message
         demisto.debug(
-            f"Error occurred while trying to load the `{list_name}` list. No signature added to email. Error: {error_message}."
+            f"Error occurred while trying to load the `{list_name}` list. No signature added to email. Error: {email_signature_result}."
         )
         return html_body
 
