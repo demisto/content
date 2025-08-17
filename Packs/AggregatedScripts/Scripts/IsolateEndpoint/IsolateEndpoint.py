@@ -436,7 +436,7 @@ def main():  # pragma: no cover
         results.append(
             CommandResults(
                 outputs_prefix="IsolateEndpoint",
-                outputs_key_field="EndpointName",
+                outputs_key_field="Endpoint",
                 outputs=context_outputs,
                 readable_output=readable_output,
             )
