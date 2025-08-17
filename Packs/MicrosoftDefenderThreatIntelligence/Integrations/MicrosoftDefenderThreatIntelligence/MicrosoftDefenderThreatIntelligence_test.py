@@ -529,6 +529,7 @@ def test_host_whois_history_command_with_whois_record_id():
     assert result.outputs_prefix == "MSGDefenderThreatIntel.WhoisHistory"
     assert result.outputs_key_field == "id"
 
+
 def test_host_whois_history_command_with_empty_response():
     """
     Test host_whois_history_command with empty response.
