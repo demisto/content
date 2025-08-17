@@ -8,10 +8,12 @@ def util_load_json(path):
     """A helper function to load mock JSON files."""
     with open(path, encoding="utf-8") as f:
         return json.load(f)
-    
+
+
 # -------------------------------------------------------------------------------------------------
 # -- 1. Test Input Validation
 # -------------------------------------------------------------------------------------------------
+
 
 def test_validate_input_function_success(mocker):
     """
@@ -60,6 +62,7 @@ def test_validate_input_function_invalid_domain(mocker):
 # -- 2. Test Main Script Logic end-to-end
 # -------------------------------------------------------------------------------------------------
 
+
 def test_domain_enrichment_script_end_to_end(mocker):
     """
     Given:
@@ -81,38 +84,38 @@ def test_domain_enrichment_script_end_to_end(mocker):
     # Mock the external dependencies to return our mock data
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute", return_value=mock_batch_results)
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=mock_tim_results)
-    mocker.patch.object(demisto, "getModules", return_value={
-        "brand1": {"state": "active", "brand": "brand1"},
-        "brand2": {"state": "active", "brand": "brand2"},
-        "brand3": {"state": "active", "brand": "brand3"},
-        "Cortex Core - IR": {"state": "active", "brand": "Cortex Core - IR"}
-    })
+    mocker.patch.object(
+        demisto,
+        "getModules",
+        return_value={
+            "brand1": {"state": "active", "brand": "brand1"},
+            "brand2": {"state": "active", "brand": "brand2"},
+            "brand3": {"state": "active", "brand": "brand3"},
+            "Cortex Core - IR": {"state": "active", "brand": "Cortex Core - IR"},
+        },
+    )
 
     # --- Act ---
-    command_results = domain_enrichment_script(
-        domain_list=domain_list,
-        external_enrichment=True,
-        enrichment_brands=[]
-    )
+    command_results = domain_enrichment_script(domain_list=domain_list, external_enrichment=True, enrichment_brands=[])
     outputs = command_results.outputs
 
     # --- Assert ---
-    enrichment_map = {item["Name"]: item for item in outputs.get("DomainEnrichment(val.Name && val.Name == obj.Name)", [])}
+    enrichment_map = {item["Value"]: item for item in outputs.get("DomainEnrichment(val.Value && val.Value == obj.Value)", [])}
     assert len(enrichment_map) == 2
 
     # 1. Verify results for domain1.com (overlapping TIM and batch data)
     domain_result = enrichment_map.get("domain1.com")
     assert domain_result is not None
-    assert len(domain_result["results"]) == 2  # brand1 (from batch) + brand2 (from TIM)
+    assert len(domain_result["Results"]) == 2  # brand1 (from batch) + brand2 (from TIM)
 
     # The brand1 result should be from the BATCH (Score: 3), not TIM (Score: 1)
-    brand1_result = next(r for r in domain_result["results"] if r["Brand"] == "brand1")
+    brand1_result = next(r for r in domain_result["Results"] if r["Brand"] == "brand1")
     assert brand1_result["Score"] == 3
     assert brand1_result["PositiveDetections"] == 15
 
     # The max score should be 3 (from batch), not 2 (from TIM)
-    assert domain_result["max_score"] == 3
-    assert domain_result["max_verdict"] == "Malicious"
+    assert domain_result["MaxScore"] == 3
+    assert domain_result["MaxVerdict"] == "Malicious"
 
     # 2. Verify internal command output was mapped correctly
     prevalence_data = outputs.get("Core.AnalyticsPrevalence.Domain", [])

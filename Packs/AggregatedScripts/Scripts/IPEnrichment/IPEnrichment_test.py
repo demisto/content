@@ -4,15 +4,18 @@ from CommonServerPython import Common
 from IPEnrichment import ENDPOINT_PATH, validate_input_function, ip_enrichment_script
 import json
 
+
 def util_load_json(path):
     """A helper function to load mock JSON files."""
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.load(f)
+
 
 # -------------------------------------------------------------------------------------------------
 # -- 1. Test Input Validation
 # -------------------------------------------------------------------------------------------------
-    
+
+
 def test_validate_input_function_success(mocker):
     """
     Given:
@@ -53,7 +56,7 @@ def test_validate_input_function_raises_error_on_invalid_ip(mocker):
     """
     with pytest.raises(ValueError, match=r"Invalid IP address: not-an-ip"):
         validate_input_function({"ip_list": "not-an-ip"})
-    
+
 
 # -------------------------------------------------------------------------------------------------
 # -- 2. Test Main Script Logic end-to-end
@@ -74,57 +77,61 @@ def test_ip_enrichment_script_end_to_end(mocker):
     # --- Arrange ---
     mock_tim_results = util_load_json("test_data/mock_ip_tim_results.json")
     mock_batch_results = util_load_json("test_data/mock_ip_batch_results.json")
-    
+
     ip_list = ["8.8.8.8", "1.1.1.1"]
-    mocker.patch.object(demisto, 'args', return_value={"ip_list": ",".join(ip_list)})
+    mocker.patch.object(demisto, "args", return_value={"ip_list": ",".join(ip_list)})
 
     # Mock the external dependencies to return our mock data
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute", return_value=mock_batch_results)
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=mock_tim_results)
-    
-    mocker.patch.object(demisto, "getModules", return_value={
-        "brand1": {"state": "active", "brand": "brand1"},
-        "brand2": {"state": "active", "brand": "brand2"},
-        "Scripts": {"state": "active", "brand": "Scripts"},
-        "Cortex Core - IR": {"state": "active", "brand": "Cortex Core - IR"}
-    })
+
+    mocker.patch.object(
+        demisto,
+        "getModules",
+        return_value={
+            "brand1": {"state": "active", "brand": "brand1"},
+            "brand2": {"state": "active", "brand": "brand2"},
+            "Scripts": {"state": "active", "brand": "Scripts"},
+            "Cortex Core - IR": {"state": "active", "brand": "Cortex Core - IR"},
+        },
+    )
 
     # --- Act ---
     command_results = ip_enrichment_script(
         ip_list=ip_list,
         external_enrichment=True,
         verbose=True,
-        enrichment_brands=["brand1", "brand2", "Scripts", "Cortex Core - IR"]
+        enrichment_brands=["brand1", "brand2", "Scripts", "Cortex Core - IR"],
     )
     outputs = command_results.outputs
 
     # --- Assert ---
-    enrichment_map = {item["Address"]: item for item in outputs.get("IPEnrichment(val.Address && val.Address == obj.Address)", [])}
+    enrichment_map = {item["Value"]: item for item in outputs.get("IPEnrichment(val.Value && val.Value == obj.Value)", [])}
     assert len(enrichment_map) == 2
 
     # 1. Verify results for 8.8.8.8 (overlapping TIM and batch data)
     ip_result = enrichment_map.get("8.8.8.8")
     assert ip_result is not None
-    assert len(ip_result["results"]) == 2 # brand1 (batch) + brand2 (TIM)
-    
+    assert len(ip_result["Results"]) == 2  # brand1 (batch) + brand2 (TIM)
+
     # The brand1 result should be from the BATCH (Score: 3), not TIM (Score: 1)
-    vt_brand_result = next(r for r in ip_result["results"] if r["Brand"] == "brand1")
+    vt_brand_result = next(r for r in ip_result["Results"] if r["Brand"] == "brand1")
     assert vt_brand_result["Score"] == 3
     assert vt_brand_result["PositiveDetections"] == 25
 
     # The max score should be 3 (from batch), not 2 (from TIM)
-    assert ip_result["max_score"] == 3
-    assert ip_result["max_verdict"] == "Malicious"
+    assert ip_result["MaxScore"] == 3
+    assert ip_result["MaxVerdict"] == "Malicious"
 
     # 2. Verify internal command outputs were mapped correctly
     endpoint_data = outputs.get(ENDPOINT_PATH, {})
     assert endpoint_data.get("Hostname") == "test-host"
-    
+
     ip_prevalence = outputs.get("IPAnalyticsPrevalence", [])
     assert len(ip_prevalence) == 1
     assert ip_prevalence[0]["total_count"] == 150
 
     # 3. Verify DBotScore context was populated from all sources
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
-    assert len(dbot_scores) == 3 # 2 from TIM, 2 from Batch, 1 is the same so 3
+    assert len(dbot_scores) == 3  # 2 from TIM, 2 from Batch, 1 is the same so 3
     assert {s["Vendor"] for s in dbot_scores} == {"brand1", "brand2", "brand3"}

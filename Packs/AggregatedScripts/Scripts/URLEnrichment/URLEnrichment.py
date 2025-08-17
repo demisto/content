@@ -18,48 +18,55 @@ def validate_input_function(args):
     for url in url_list:
         if auto_detect_indicator_type(url) != FeedIndicatorType.URL:
             raise ValueError(f"URL '{url}' is invalid")
-            
 
 
 def url_enrichment_script(url_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False):
     """
     Enriches URL data with information from various integrations
     """
-    indicator_mapping = {"Data":"Data",
-                        "DetectionEngines":"DetectionEngines",
-                        "PositiveDetections":"PositiveDetections",
-                        "Score":"Score",
-                        "Brand":"Brand"}
-    
-    url_indicator = Indicator(type="url",
-                              value_field="Data",
-                              context_path_prefix="URL(",
-                              context_output_mapping=indicator_mapping)
-    
-    commands = [ReputationCommand(indicator=url_indicator, data=url) for url in url_list]
+    indicator_mapping = {
+        "Data": "Data",
+        "DetectionEngines": "DetectionEngines",
+        "PositiveDetections": "PositiveDetections",
+        "Score": "Score",
+        "Brand": "Brand",
+    }
+
+    url_indicator = Indicator(
+        type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping=indicator_mapping
+    )
+
+    commands: list[Command] = [ReputationCommand(indicator=url_indicator, data=url) for url in url_list]
     commands.append(
-        Command(name="wildfire-get-verdict", args={"url": url_list}, command_type=CommandType.INTERNAL, brand="WildFire-v2",
-                context_output_mapping={"WildFire.Verdicts(val.url && val.url == obj.url)":"WildFireVerdicts(val.url && val.url == obj.url)[]"})
+        Command(
+            name="wildfire-get-verdict",
+            args={"url": url_list},
+            command_type=CommandType.INTERNAL,
+            brand="WildFire-v2",
+            context_output_mapping={
+                "WildFire.Verdicts(val.url && val.url == obj.url)": "WildFire.Verdicts(val.url && val.url == obj.url)[]"
+            },
+        )
     )
     url_reputation = ReputationAggregatedCommand(
-        brands = enrichment_brands,
+        brands=enrichment_brands,
         verbose=verbose,
-        commands = commands,
+        commands=commands,
         validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
-        final_context_path="URLEnrichment(val.Data && val.Data == obj.Data)",
+        final_context_path="URLEnrichment",
         args=demisto.args(),
         data=url_list,
         indicator=url_indicator,
     )
     return url_reputation.run()
-    
+
 
 """ MAIN FUNCTION """
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     args = demisto.args()
     url_list = argToList(args.get("url_list"))
     external_enrichment = argToBoolean(args.get("external_enrichment", False))

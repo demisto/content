@@ -68,19 +68,19 @@ outputs:
 - contextPath: URLEnrichment.Results.AdditionalFields
   description: Secondary fields. Only available if the additional_fields argument is set to true.
   type: Object
-- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityA
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityA
   description: The source of the relationship.
   type: string
-- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityB
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityB
   description: The destination of the relationship.
   type: string
-- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.Relationship
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.Relationship
   description: The name of the relationship.
   type: string
-- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityAType
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityAType
   description: The type of the source of the relationship.
   type: string
-- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityBType
+- contextPath: URLEnrichment.Results.AdditionalFields.Relationships.EntityBType
   description: The type of the destination of the relationship.
   type: string
 - contextPath: URLEnrichment.Results.AdditionalFields.Category
