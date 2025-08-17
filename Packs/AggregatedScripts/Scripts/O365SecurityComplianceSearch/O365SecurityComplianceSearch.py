@@ -168,10 +168,9 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
         # get search status and results
         results = demisto.executeCommand(cmd, args)
         search_status = get_result_value(results, "Status")  # type: ignore
-        search_results = get_result_value(results, result_key)  # type: ignore
 
         # if status and results show command finished, return
-        if (search_status == "Completed") and (len(search_results) > 2):
+        if search_status == "Completed":
             return results  # type: ignore
 
         time.sleep(interval)  # pylint: disable=E9003
