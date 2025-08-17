@@ -16,13 +16,14 @@ def validate_input_function(args):
     ip_list = argToList(args.get("ip_list"))
     if not ip_list:
         raise ValueError("ip_list is required")
+    
     for ip in ip_list:
         if not is_ip_valid(ip,accept_v6_ips=True):
             raise ValueError(f"Invalid IP address: {ip}")
             
 
 def ip_enrichment_script(
-    ip_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False, indicator_type="url"
+    ip_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False,
 ):
     """
     Enriches IP data with information from various integrations
@@ -73,7 +74,6 @@ def ip_enrichment_script(
 def main():
     args = demisto.args()
     ip_list = argToList(args.get("ip_list"))
-    indicator_type = "ip"
     external_enrichment = argToBoolean(args.get("external_enrichment", False))
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
@@ -83,7 +83,7 @@ def main():
     
 
     try:
-        return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields, indicator_type))
+        return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:
         return_error(f"Failed to execute IPEnrichment. Error: {str(ex)}")
 

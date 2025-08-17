@@ -39,18 +39,318 @@ commonfields:
 enabled: false
 name: ip-enrichment
 outputs:
-- contextPath: IPEnrichment
-  description: list of ip enrichments
+# IPEnrichment
+- contextPath: IPEnrichment.Value
+  description: the ip address
+  type: string
+- contextPath: IPEnrichment.MaxScore
+  description: the max score of all the indicators found
+  type: number
+- contextPath: IPEnrichment.MaxVerdict
+  description: the max verdict of all the indicators found
+  type: string
+# IPEnrichment results main keys
+- contextPath: IPEnrichment.Results
+  description: list of all indicators found for the ip
   type: array
-- contextPath: Core.AnalyticsPrevalence.IP
-  description: list of core analytics prevalence
-  type: array
-- contextPath: EndpointData
-  description: list of endpoint data
-  type: array
-- contextPath: DBotScore
-  description: list of dbot scores
-  type: array
+- contextPath: IPEnrichment.Results.Source
+  description: the source of the indicator
+  type: string
+- contextPath: IPEnrichment.Results.Brand
+  description: the brand of the indicator
+  type: string
+- contextPath: IPEnrichment.Results.DetectionEngines
+  description: the detection engines of the indicator
+  type: number
+- contextPath: IPEnrichment.Results.PositiveDetections
+  description: the positive detections of the indicator
+  type: number
+- contextPath: IPEnrichment.Results.ASOwner
+  description: the AS owner of the indicator
+  type: string
+- contextPath: IPEnrichment.Results.Score
+  description: the score of the indicator
+  type: number
+- contextPath: IPEnrichment.Results.Verdict
+  description: the verdict of the indicator
+  type: string
+# IPEnrichment results additional fields
+- contextPath: IPEnrichment.Results.additionalFields
+  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  type: list
+- contextPath: IPEnrichment.Results.additionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.additionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.additionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.additionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.additionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: IPEnrichment.Results.additionalFields.ASN
+  description: 'The autonomous system name for the IP address, for example: "AS8948".'
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Hostname
+  description: The hostname that is mapped to this IP address.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Geo.Location
+  description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Geo.Country
+  description: The country in which the IP address is located.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Geo.Description
+  description: Additional information about the location.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Malicious.Vendor
+  description: The vendor reporting the IP address as malicious.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Malicious.Description
+  description: A description explaining why the IP address was reported as malicious.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Tags
+  description: (List) Tags of the IP.
+  type: Unknown
+- contextPath: IPEnrichment.Results.additionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.MalwareFamily
+  description: The malware family associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Organization.Name
+  description: The organization of the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Organization.Type
+  description: The organization type of the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Region
+  description: The region in which the IP is located.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Port
+  description: Ports that are associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Internal
+  description: Whether or not the IP is internal or external.
+  type: Bool
+- contextPath: IPEnrichment.Results.additionalFields.UpdatedDate
+  description: The date that the IP was last updated.
+  type: Date
+- contextPath: IPEnrichment.Results.additionalFields.Registrar.Abuse.Name
+  description: The name of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Registrar.Abuse.Address
+  description: The address of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Registrar.Abuse.Country
+  description: The country of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Registrar.Abuse.Network
+  description: The network of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Registrar.Abuse.Phone
+  description: The phone number of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Registrar.Abuse.Email
+  description: The email address of the contact for reporting abuse.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Campaign
+  description: The campaign associated with the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the IP.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.CommunityNotes.note
+  description: Notes on the IP that were given by the community.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: IPEnrichment.Results.additionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+- contextPath: IPEnrichment.Results.additionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: IPEnrichment.Results.additionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  type: String
+# Core.AnalyticsPrevalence
+- contextPath: Core.AnalyticsPrevalence.Ip.value
+  description: Whether the IP address is prevalent or not.
+  type: Boolean
+- contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
+  description: The global prevalence of the IP.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+  description: The local prevalence of the IP.
+  type: Number
+- contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
+  description: The prevalence of the IP.
+  type: Number
+# Endpoint
+- contextPath: Endpoint.Hostname.value
+  description: The endpoint's hostname.
+  type: String
+- contextPath: Endpoint.Hostname.source
+  description: The vendor from which the hostname of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.EntityA.value
+  description: The source of the relationship.
+  type: String
+- contextPath: Endpoint.EntityA.source
+  description: The vendor from which EntityA of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.EntityB.value
+  description: The destination of the relationship.
+  type: String
+- contextPath: Endpoint.EntityB.source
+  description: The vendor from which EntityB of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Relationship.value
+  description: The name of the relationship.
+  type: String
+- contextPath: Endpoint.Relationship.source
+  description: The vendor from which the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.EntityAType.value
+  description: The type of the source of the relationship.
+  type: String
+- contextPath: Endpoint.EntityAType.source
+  description: The vendor from which the type of the source of the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.EntityBType.value
+  description: The type of the destination of the relationship.
+  type: String
+- contextPath: Endpoint.EntityBType.source
+  description: The vendor from which the type of the destination of the relationship of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.ID.value
+  description: The endpoint's ID.
+  type: String
+- contextPath: Endpoint.ID.source
+  description: The vendor from which the ID of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.IPAddress.value
+  description: The endpoint's IP address.
+  type: String
+- contextPath: Endpoint.IPAddress.source
+  description: The vendor from which the IP address of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Domain.value
+  description: The endpoint's domain.
+  type: String
+- contextPath: Endpoint.Domain.source
+  description: The vendor from which the domain of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.MACAddress.value
+  description: The endpoint's MAC address.
+  type: String
+- contextPath: Endpoint.MACAddress.source
+  description: The vendor from which the MAC address of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.DHCPServer.value
+  description: The DHCP server of the endpoint.
+  type: String
+- contextPath: Endpoint.DHCPServer.source
+  description: The vendor from which the DHCP server of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.OS.value
+  description: The endpoint's operating system.
+  type: String
+- contextPath: Endpoint.OS.source
+  description: The vendor from which the operating system of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.OSVersion.value
+  description: The endpoint's operating system version.
+  type: String
+- contextPath: Endpoint.OSVersion.source
+  description: The vendor from which the operating system version of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.BIOSVersion.value
+  description: The endpoint's BIOS version.
+  type: String
+- contextPath: Endpoint.BIOSVersion.source
+  description: The vendor from which the BIOS version of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Model.value
+  description: The model of the machine or device.
+  type: String
+- contextPath: Endpoint.Model.source
+  description: The vendor from which the model of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Memory.value
+  description: Amount of memory on this endpoint.
+  type: Integer
+- contextPath: Endpoint.Memory.source
+  description: The vendor from which the amount of memory of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Processors.value
+  description: The number of processors.
+  type: Integer
+- contextPath: Endpoint.Processors.source
+  description: The vendor from which the processors of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Processor.value
+  description: The model of the processor.
+  type: String
+- contextPath: Endpoint.Processor.source
+  description: The vendor from which the processor of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.IsIsolated.value
+  description: The endpoint's isolation status.
+  type: String
+- contextPath: Endpoint.IsIsolated.source
+  description: The vendor from which the isolation of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Status.value
+  description: The endpoint's status.
+  type: String
+- contextPath: Endpoint.Status.source
+  description: The vendor from which the status of this endpoint was retrieved.
+  type: String
+- contextPath: Endpoint.Vendor.value
+  description: The integration name of the endpoint vendor.
+  type: String
+- contextPath: Endpoint.Vendor.source
+  description: The vendor from which the Vendor of this endpoint was retrieved.
+  type: String
+# DBotScore
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: DBotScore.Reliability
+  description: The reliability of the score.
+  type: string
 script: '-'
 system: false
 tags:

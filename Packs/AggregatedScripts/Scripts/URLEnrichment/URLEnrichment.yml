@@ -39,33 +39,123 @@ commonfields:
 enabled: false
 name: url-enrichment
 outputs:
-- contextPath: URLEnrichment.Data
+# URLEnrichment
+- contextPath: URLEnrichment.Value
   description: the url it self
   type: string
-- contextPath: URLEnrichment.max_score
+- contextPath: URLEnrichment.MaxScore
   description: the max score of all the indicators found
   type: number
-- contextPath: URLEnrichment.max_verdict
+- contextPath: URLEnrichment.MaxVerdict
   description: the max verdict of all the indicators found
   type: string
-- contextPath: URLEnrichment.results
+- contextPath: URLEnrichment.Results
   description: list of all indicators found for the url
   type: array
-- contextPath: URLEnrichment.results.Brand
+- contextPath: URLEnrichment.Results.Brand
   description: the brand of the indicator
   type: string
-- contextPath: URLEnrichment.results.Score
+- contextPath: URLEnrichment.Results.Score
   description: the score of the indicator
   type: number
-- contextPath: URLEnrichment.results.DetectionEngines
+- contextPath: URLEnrichment.Results.DetectionEngines
   description: the detection engines of the indicator
   type: number
-- contextPath: URLEnrichment.results.PositiveDetections
+- contextPath: URLEnrichment.Results.PositiveDetections
   description: the positive detections of the indicator
   type: number
-- contextPath: URLEnrichment.results.AdditionalFields
+# URLEnrichment Additional Fields
+- contextPath: URLEnrichment.Results.AdditionalFields
   description: Secondary fields. Only available if the additional_fields argument is set to true.
   type: Object
+- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.Relationships.AdditionalFields.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: URLEnrichment.Results.AdditionalFields.Category
+  description: The category associated with the indicator.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the URL as malicious.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A description of the malicious URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the URL.
+  type: Unknown
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Port
+  description: Ports that are associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Internal
+  description: Whether or not the URL is internal or external.
+  type: Bool
+- contextPath: URLEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ASN
+  description: "The autonomous system name for the URL, for example: 'AS8948'."
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.ASOwner
+  description: The autonomous system owner of the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.GeoCountry
+  description: The country in which the URL is located.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Organization
+  description: The organization of the URL.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the URL that were given by the community.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: URLEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+# WildFire Verdicts
 - contextPath: WildFire.Verdicts.VerdictDescription
   description: Description of the verdict.
   type: string
@@ -81,6 +171,7 @@ outputs:
 - contextPath: WildFire.Verdicts.Verdict
   description: Verdict of the URL.
   type: Number
+# DBotScore
 - contextPath: DBotScore.Indicator
   description: The indicator value.
   type: string

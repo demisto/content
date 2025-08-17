@@ -290,7 +290,7 @@ class ContextBuilder:
             list[dict]: The final list structure.
         """
         return [
-            {self.indicator.value_field: indicator_value, "results": flatten_list(list(brands.values()))}
+            {"Value": indicator_value, "Results": flatten_list(list(brands.values()))}
             for indicator_value, brands in merged_map.items()
         ]
     
@@ -303,8 +303,8 @@ class ContextBuilder:
         for indicator in indicator_list:
             all_scores = [res.get("Score", 0) for res in indicator.get("results", [])]
             max_score = max(all_scores or [0])
-            indicator["max_score"] = max_score
-            indicator["max_verdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
+            indicator["MaxScore"] = max_score
+            indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
 
 
 # --- Main Framework Abstraction and Implementation ---

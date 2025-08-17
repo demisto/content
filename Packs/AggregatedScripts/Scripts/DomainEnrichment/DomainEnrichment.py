@@ -11,6 +11,7 @@ def validate_input_function(args):
     domain_list = argToList(args.get("domain_list"))
     if not domain_list:
         raise ValueError("domain_list is required")
+    
     for domain in domain_list:
         if auto_detect_indicator_type(domain) != FeedIndicatorType.Domain:
             raise ValueError("Invalid domain name")
@@ -22,10 +23,10 @@ def domain_enrichment_script(
     Enriches Domain data with information from various integrations
     """
     indicator_mapping = {"Name":"Name",
-               "DetectionEngines":"DetectionEngines",
-               "PositiveDetections":"PositiveDetections",
-               "Score":"Score",
-               "Brand":"Brand"}
+                        "DetectionEngines":"DetectionEngines",
+                        "PositiveDetections":"PositiveDetections",
+                        "Score":"Score",
+                        "Brand":"Brand"}
     
     domain_indicator = Indicator(type="domain",
                                  value_field="Name",
@@ -38,6 +39,7 @@ def domain_enrichment_script(
                              command_type=CommandType.INTERNAL,
                              brand="Cortex Core - IR",
                              context_output_mapping={"Core.AnalyticsPrevalence.Domain":"Core.AnalyticsPrevalence.Domain[]"})])
+    
     demisto.debug(f"Data list: {domain_list}")
     domain_reputation = ReputationAggregatedCommand(
         brands = enrichment_brands,

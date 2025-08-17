@@ -39,33 +39,232 @@ commonfields:
 enabled: false
 name: domain-enrichment
 outputs:
-- contextPath: DomainEnrichment.Data
+# DomainEnrichment
+- contextPath: DomainEnrichment.Value
   description: the domain it self
   type: string
-- contextPath: DomainEnrichment.max_score
+- contextPath: DomainEnrichment.MaxScore
   description: the max score of all the indicators found
   type: number
-- contextPath: DomainEnrichment.max_verdict
+- contextPath: DomainEnrichment.MaxVerdict
   description: the max verdict of all the indicators found
   type: string
-- contextPath: DomainEnrichment.results
+- contextPath: DomainEnrichment.Results
   description: list of all indicators found for the domain
   type: array
-- contextPath: DomainEnrichment.results.Brand
+# DomainEnrichment Main Keys
+- contextPath: DomainEnrichment.Results.Brand
   description: the brand of the indicator
   type: string
-- contextPath: DomainEnrichment.results.score
+- contextPath: DomainEnrichment.Results.Score
   description: the score of the indicator
   type: number
-- contextPath: DomainEnrichment.results.detection_engines
+- contextPath: DomainEnrichment.Results.DetectionEngines
   description: the detection engines of the indicator
   type: number
-- contextPath: DomainEnrichment.results.positive_detections
+- contextPath: DomainEnrichment.Results.PositiveDetections
   description: the positive detections of the indicator
   type: number
-- contextPath: DomainEnrichment.results.additional_fields
+# DomainEnrichment Additional Fields
+- contextPath: DomainEnrichment.Results.AdditionalFields
   description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
   type: Object
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: DomainEnrichment.Results.AdditionalFields.DNS
+  description: A list of IP objects resolved by DNS.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.CreationDate
+  description: The date that the domain was created.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.UpdatedDate
+  description: The date that the domain was last updated.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.DomainStatus
+  description: The status of the domain.
+  type: Datte
+- contextPath: DomainEnrichment.Results.AdditionalFields.NameServers
+  description: (List<String>) Name servers of the domain.  
+  type: Unknown
+- contextPath: DomainEnrichment.Results.AdditionalFields.Organization
+  description: The organization of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Subdomains
+  description: (List<String>) Subdomains of the domain.
+  type: Unknown
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Country
+  description: The country of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Email
+  description: The email address of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Name
+  description: The name of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Country
+  description: The country of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Email
+  description: The email address of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Name
+  description: The name of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Registrant.Phone
+  description: The phone number for receiving abuse reports.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tags
+  description: (List) Tags of the domain.
+  type: Unknown
+- contextPath: DomainEnrichment.Results.AdditionalFields.FeedRelatedIndicators.value
+  description: Indicators that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.FeedRelatedIndicators.type
+  description: The type of the indicators that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.FeedRelatedIndicators.description
+  description: The description of the indicators that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.MalwareFamily
+  description: The malware family associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.DomainStatus
+  description: The status of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.NameServers
+  description: (List<String>) Name servers of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.CreationDate
+  description: The date that the domain was created.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.UpdatedDate
+  description: The date that the domain was last updated.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.ExpirationDate
+  description: The expiration date of the domain.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrant.Name
+  description: The name of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrant.Email
+  description: The email address of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrant.Phone
+  description: The phone number of the registrant.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.Name
+  description: The name of the registrar, for example GoDaddy
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbuseEmail
+  description: The email address of the contact for reporting abuse.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbusePhone
+  description: The phone number of contact for reporting abuse.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Name
+  description: The name of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Email
+  description: The email address of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.History
+  description: List of Whois objects
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Malicious.Vendor
+  description: The vendor reporting the domain as malicious.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Malicious.Description
+  description: A description explaining why the domain was reported as malicious.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.DomainIDNName
+  description: The internationalized domain name (IDN) of the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Port
+  description: Ports that are associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Internal
+  description: Whether or not the domain is internal or external.
+  type: Bool
+- contextPath: DomainEnrichment.Results.AdditionalFields.Category
+  description: The category associated with the indicator.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Campaign
+  description: The campaign associated with the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.TrafficLightProtocol
+  description: The Traffic Light Protocol (TLP) color that is suitable for the domain.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategory
+  description: The threat category associated to this indicator by the source vendor. For example, Phishing, Control, TOR, etc.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.ThreatTypes.threatcategoryconfidence
+  description: Threat Category Confidence is the confidence level provided by the vendor for the threat type category For example a confidence of 90 for threat type category 'malware' means that the vendor rates that this is 90% confidence of being a malware.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Location
+  description: 'The geolocation where the domain address is located, in the format: latitude:longitude.'
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Country
+  description: The country in which the domain address is located.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Geo.Description
+  description: Additional information about the location.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Country
+  description: The country of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Name
+  description: The name of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Organization
+  description: The organization of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Tech.Email
+  description: The email address of the domain technical contact.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.CommunityNotes.note
+  description: Notes on the domain that were given by the community.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.CommunityNotes.timestamp
+  description: The time in which the note was published.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.source
+  description: The source in which the article was published.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.title
+  description: The name of the article.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.link
+  description: A link to the original article.
+  type: String
+- contextPath: DomainEnrichment.Results.AdditionalFields.Publications.timestamp
+  description: The time in which the article was published.
+  type: Date
+- contextPath: DomainEnrichment.Results.AdditionalFields.Billing
+  description: The billing address of the domain.
+  type: String
+# DBotScore
 - contextPath: DBotScore.Indicator
   description: The indicator value.
   type: string
@@ -81,6 +280,7 @@ outputs:
 - contextPath: DBotScore.Reliability
   description: The reliability of the score.
   type: string
+# Core.AnalyticsPrevalence
 - contextPath: Core.AnalyticsPrevalence.Domain.value
   description: Whether the domain is prevalent or not.
   type: Boolean

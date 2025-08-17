@@ -38,27 +38,49 @@ commonfields:
 enabled: false
 name: cve-enrichment
 outputs:
-- contextPath: CveEnrichment.ID
+# CVEEnrichment
+- contextPath: CVEEnrichment.Value
   description: the cve it self
   type: string
-- contextPath: CveEnrichment.Results
+- contextPath: CVEEnrichment.Results
   description: list of all indicators found for the cve
   type: array
-- contextPath: CveEnrichment.Results.Brand
+# CVEEnrichment Main Keys
+- contextPath: CVEEnrichment.Results.Brand
   description: the brand of the indicator
   type: string
-- contextPath: CveEnrichment.Results.CVSS
+- contextPath: CVEEnrichment.Results.CVSS
   description: the CVSS of the indicator
   type: number
-- contextPath: CveEnrichment.Results.Description
+- contextPath: CVEEnrichment.Results.Description
   description: the description of the indicator
   type: string
-- contextPath: CveEnrichment.Results.Published
+- contextPath: CVEEnrichment.Results.Published
   description: the published date of the indicator
   type: string
-- contextPath: CveEnrichment.Results.additional_fields
+# CVEEnrichment Additional Fields
+- contextPath: CVEEnrichment.Results.additionalFields
   description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
   type: Object
+- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.additionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.additionalFields.Modified
+  description: The timestamp of when the CVE was last modified.
+  type: Date
+# DBotScore
 - contextPath: DBotScore.Indicator
   description: The indicator value.
   type: string

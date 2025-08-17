@@ -56,7 +56,6 @@ def main(): # pragma: no cover
     additional_fields = argToBoolean(args.get("additional_fields", False))
     demisto.debug(f"Data list: {cve_list}")
     demisto.debug(f"Brands: {brands}")
-    
     try:
         return_results(cve_enrichment_script(cve_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:

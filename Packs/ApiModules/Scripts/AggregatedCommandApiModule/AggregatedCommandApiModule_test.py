@@ -39,7 +39,7 @@ def build_ioc(scores: dict) -> dict:
 
 def as_map(merged_list, value_key):
     """Turn the merged list into {value: results} for easy assertions."""
-    return {item[value_key]: item["results"] for item in merged_list}
+    return {item[value_key]: item["Results"] for item in merged_list}
 
 
 def make_entry_result(name, brand, status, msg):
@@ -284,19 +284,19 @@ def test_add_other_commands_results():
     (
         {"indicator1": {"brandA": [{"batch": "data"}]}},
         {},
-        [{"Value": "indicator1", "max_score": 0, "max_verdict": "Unknown", "results": [{"batch": "data"}]}]
+        [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"batch": "data"}]}]
     ),
     # Case 2: TIM only
     (
         {},
         {"indicator1": {"brandA": [{"tim": "data"}]}},
-        [{"Value": "indicator1", "max_score": 0, "max_verdict": "Unknown", "results": [{"tim": "data"}]}]
+        [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"tim": "data"}]}]
     ),
     # Case 3: Batch overrides TIM for the same brand, but keeps other TIM brands
     (
         {"indicator1": {"brandA": [{"batch": "data"}]}},
         {"indicator1": {"brandA": [{"tim": "ignored"}], "brandB": [{"tim": "kept"}]}},
-        [{"Value": "indicator1", "max_score": 0, "max_verdict": "Unknown", "results": [{"batch": "data"}, {"tim": "kept"}]}]
+        [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"batch": "data"}, {"tim": "kept"}]}]
     ),
 ])
 def test_build_merges_indicators_correctly(batch_map, tim_map, expected_results):
@@ -364,7 +364,7 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     When:
         - The build() method is called.
     Then:
-        - The final output is enriched with the correct max_score and max_verdict.
+        - The final output is enriched with the correct MaxScore and MaxVerdict.
     """
     builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
     batch_context = {"indicator1": {"brandA": results}}
@@ -373,8 +373,8 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     final_context = builder.build()
 
     final_indicator = final_context["Test.Path"][0]
-    assert final_indicator["max_score"] == expected_max
-    assert final_indicator["max_verdict"] == expected_verdict
+    assert final_indicator["MaxScore"] == expected_max
+    assert final_indicator["MaxVerdict"] == expected_verdict
 
 
 def test_build_assembles_all_context_types():
