@@ -33,6 +33,13 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Fetch acknowledged incidents
+  additionalinfo: "By default, only unacknowledged incidents are fetched. Set to true to fetch all incidents."
+  name: isFetchAcknowledged
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13

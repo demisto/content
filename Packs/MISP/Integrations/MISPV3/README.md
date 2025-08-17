@@ -2552,9 +2552,9 @@ Adds a tag to the given UUID event .
 `perm_tag_editor`
 
 When adding local tags, make sure to have the following:
-1. Host Organization Requirement: The most important requirement is that the user (or the API key) you are authenticating with must belong to the organization that is set as the MISP.host_org_id on your MISP instance. If this is not met, you will get a permission error even if you have perm_tagger and perm_tag_editor.
-2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient. 
 
+1. Host Organization Requirement: The most important requirement is that the user (or the API key) you are authenticating with must belong to the organization that is set as the MISP.host_org_id on your MISP instance. If this is not met, you will get a permission error even if you have perm_tagger and perm_tag_editor.
+2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient.
 
 #### Input
 
@@ -2677,8 +2677,9 @@ Adds a tag to the given UUID attribute.
 `perm_tag_editor`
 
 When adding local tags, make sure to have the following:
+
 1. Host Organization Requirement: The most important requirement is that the user (or the API key) you are authenticating with must belong to the organization that is set as the MISP.host_org_id on your MISP instance. If this is not met, you will get a permission error even if you have perm_tagger and perm_tag_editor.
-2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient. 
+2. Tag Existence: If the local tag you are trying to add does not already exist on your MISP instance, your user will also need the *perm_tag_editor* permission for it to be created. If it already exists, *perm_tagger* is sufficient.
 
 #### Input
 

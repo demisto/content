@@ -94,7 +94,7 @@
         },
         {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
-            "integrations": "LOLBAS Feed",
+            "integrations": ["LOLBAS Feed", "Cortex Core - IR"],
             "timeout": 600
         },
         {
@@ -912,7 +912,6 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize",
             "timeout": 1000
         },
         {
@@ -3261,7 +3260,7 @@
             "playbookID": "Bluecat Address Manager test"
         },
         {
-            "integrations": "MailListener - POP3 Beta",
+            "integrations": "MailListener - POP3",
             "playbookID": "MailListener-POP3 - Test"
         },
         {
@@ -4053,7 +4052,7 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize"
+            "has_api": false
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -6061,7 +6060,8 @@
         "PAN-OS-panorama-topology-test-pb": "The creds were expired CIAC-13553",
         "OpenPhish Test Playbook": "API issue CIAC-13583",
         "SaasSecurity-Test": "blocked by SCA-8028",
-        "Mail-Listener Test Playbook": " invalid creds CRTX-171878"
+        "Mail-Listener Test Playbook": " invalid creds CRTX-171878",
+        "DbotPredictOufOfTheBoxTest": "Script DBotPredictOutOfTheBox is deprecated"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",

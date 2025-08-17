@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "used_by": "",
+            "urls_count": 1,
+            "name": "urllisttest",
+            "urls": [
+                "test.net"
+            ]
+        },
+        {
+            "used_by": "",
+            "urls_count": 1,
+            "name": "testlist",
+            "urls": [
+                "test.com"
+            ]
+        },
+        {
+            "used_by": "Security Services : URL Filtering : URL Allowed List, Incoming Content Filters",
+            "urls_count": 2,
+            "name": "bypass_urls",
+            "urls": [
+                "*.test.com/*",
+                "*.test.com/*"
+            ]
+        }
+    ]
+}
