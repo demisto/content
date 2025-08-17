@@ -84,16 +84,17 @@ To use OAuth 2.0 authorization follow the next steps:
 
 #### Prerequisites in order to support JWT
 
-1. Create a Java Key Store and upload it to the instance by accessing from the upper menu: **All** > **System Definition** > **Certificates**. The private key will be used as an integration parameter. 
-2. Configure a JWT signing key by accessing: All→System OAuth→JWT Keys using the keystore from above and keep the Key ID as it will be used as kid integration parameter. 
+1. Create a Java Key Store and upload it to the instance by accessing from the upper menu: **All** > **System Definition** > **Certificates**. The private key will be used as an integration parameter.
+2. Configure a JWT signing key by accessing: All→System OAuth→JWT Keys using the keystore from above and keep the Key ID as it will be used as kid integration parameter.
 3. Create a JWT provider with a JWT signing key by accessing: All→System OAuth→JWT providers. Claim Name sub in Standard Claims has to be existing non-admin servicenow user with all necessary roles.
-4. Connect to an OAuth provider and create an OAuth application registry by accessing All→System OAuth→Application Registry: 
-   1. aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. 
+4. Connect to an OAuth provider and create an OAuth application registry by accessing All→System OAuth→Application Registry:
+   1. aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary.
    2. The value of kid in JWT Verifier Maps has to be the same as Key Id in JWT signing key.
       The value can be updated if necessary.
 5. Create API Access Policy or add Authentication profile to existing Policy by accessing: All→System Web Services→API Access Policies→Rest API Access Policies
 
 **IMPORTANT:**
+
 1. The Standard Authentication Profile of type Oauth should be already present in ServiceNow and has to be added to the Policy.
 API Access Policy should be configured as global in order to cover all available resources and not just now/table
 2. Granting JWT to admin is not allowed.
