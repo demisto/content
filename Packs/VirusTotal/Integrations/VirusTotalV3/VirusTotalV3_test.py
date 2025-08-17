@@ -649,6 +649,78 @@ def test_not_found_private_file_command(mocker, requests_mock):
     assert results[0].indicator.dbot_score.score == 0
 
 
+def test_invalid_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing file
+
+    When:
+    - Running the !file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from VirusTotalV3 import Client, file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    client = Client(params=params)
+
+    results = file_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=None,
+    )
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_private_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing private file
+
+    When:
+    - Running the !vt-privatescanning-file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from VirusTotalV3 import Client, private_file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    results = private_file_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
+    assert results[0].indicator.dbot_score.score == 0
+
+
 def test_private_url_command(mocker, requests_mock):
     """
     Given:

@@ -23,39 +23,64 @@ urllib3.disable_warnings()
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
 INTEGRATION_NAME = "CrowdStrike Falcon"
+
+# Incidents Type names - use for debugging and context save.
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
-ENDPOINT_DETECTION = "detection"
+ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
+OFP_DETECTION = "OFP detection"
+NGSIEM_DETECTION = "ngsiem_detection"
+THIRD_PARTY_DETECTION = "thirdparty_detection"
+
+# Fetch type names as they appear in the .yml instance configurations
 DETECTION_FETCH_TYPES = ["Detections", "Endpoint Detection"]
 INCIDENT_FETCH_TYPES = ["Incidents", "Endpoint Incident"]
 IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
-IOA_FETCH_TYPE = "Indicator of Attack"
-IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
-ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION_TYPE = "OFP Detection"
-OFP_DETECTION = "OFP detection"
+IOM_FETCH_TYPE = "Indicator of Misconfiguration"
+IOA_FETCH_TYPE = "Indicator of Attack"
+NGSIEM_DETECTION_FETCH_TYPE = "NGSIEM Detection"
+THIRD_PARTY_DETECTION_FETCH_TYPE = "Third Party Detection"
+
+ENDPOINT_DETECTION = "detection"
+
+SUPPORTED_DETECTIONS_TYPES = [
+    IDP_DETECTION_FETCH_TYPE,
+    ON_DEMAND_SCANS_DETECTION_TYPE,
+    OFP_DETECTION_TYPE,
+    NGSIEM_DETECTION_FETCH_TYPE,
+    THIRD_PARTY_DETECTION_FETCH_TYPE,
+]
+
 PARAMS = demisto.params()
+PROXY = PARAMS.get("proxy", False)
 CLIENT_ID = PARAMS.get("credentials", {}).get("identifier") or PARAMS.get("client_id")
 SECRET = PARAMS.get("credentials", {}).get("password") or PARAMS.get("secret")
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS["url"].removesuffix("/")
+
 # Should we use SSL
 USE_SSL = not PARAMS.get("insecure", False)
+
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = "now" if demisto.command() == "fetch-events" else PARAMS.get("fetch_time", "3 days")
+
 MAX_FETCH_SIZE = 10000
 MAX_FETCH_DETECTION_PER_API_CALL = 10000
 MAX_FETCH_INCIDENT_PER_API_CALL = 500
-PROXY = PARAMS.get("proxy", False)
+
 BYTE_CREDS = f"{CLIENT_ID}:{SECRET}".encode()
+
 # Headers to be sent in requests
 HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json",
     "Authorization": f"Basic {base64.b64encode(BYTE_CREDS).decode()}",
 }
+
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(PARAMS.get("incidents_per_fetch", 15))
@@ -356,8 +381,8 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
     "monthly": 30,
 }
 
-TOTAL_FETCH_TYPE_XSOAR = 8
-TOTAL_FETCH_TYPE_XSIAM = 6
+TOTAL_FETCH_TYPE_XSOAR = 10  # Matches the total number of fetch types for XSOAR in the LastRunIndex class
+TOTAL_FETCH_TYPE_XSIAM = 6  # Matches the total number of fetch types for XSIAM in the LastRunIndex class
 
 
 class LastRunIndex(IntEnum):
@@ -380,6 +405,8 @@ class LastRunIndex(IntEnum):
     # Fetch types only for fetch-incidents
     IOM = 6
     IOA = 7
+    THIRD_PARTY_DETECTIONS = 8
+    NGSIEM_DETECTIONS = 9
 
 
 class IncidentType(Enum):
@@ -390,6 +417,8 @@ class IncidentType(Enum):
     IOA_EVENTS = "ioa_events"
     ON_DEMAND = "ods"
     OFP = "ofp"
+    NGSIEM = ":ngsiem:"
+    THIRD_PARTY = ":thirdparty:"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -401,6 +430,15 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 def is_detection_fetch_type_selected(selected_types: list):
     return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
+
+
+def is_detection_occurred_before_fetch_time(detection_created_timestamp: str, start_fetch_time: str) -> bool:
+    # the following test is to filter out detections that are older than the start_fetch_time.
+    # The CS Falcon API does not do that reliably
+    create_date = datetime.fromisoformat(detection_created_timestamp.replace("Z", "+00:00"))
+    start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
+
+    return create_date < start_date
 
 
 def is_incident_fetch_type_selected(selected_types: list):
@@ -899,22 +937,22 @@ def fix_time_field(detection: dict, time_key: str):
 
 def detection_to_incident_context(detection, detection_type, start_time_key: str = "start_time", is_fetch_events: bool = False):
     """
-    Creates an incident context of an IDP/Mobile/ODS detection.
+    Creates an incident context from multiple detection types.
 
     :type detection: ``dict``
     :param detection: Single detection object.
 
-    :return: Incident context representation of an IDP/Mobile detection.
+    :return: The incident context for the detection.
     :rtype ``dict``
     """
     add_mirroring_fields(detection)
     demisto.debug(f"detection_to_incident_context, {detection_type=}")
-    if detection_type == IDP_DETECTION_FETCH_TYPE:
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE):
         demisto.debug(f"detection_to_incident_context, {detection_type=} calling fix_time_field")
         fix_time_field(detection, start_time_key)
 
     incident_context = {"occurred": detection.get(start_time_key), "rawJSON": json.dumps(detection)}
-    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE, OFP_DETECTION_TYPE):
+    if detection_type in SUPPORTED_DETECTIONS_TYPES:
         incident_context["name"] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context["last_updated"] = detection.get("updated_timestamp")
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -1596,12 +1634,10 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         params["filter"] = f"first_behavior:>'{last_behavior_time}'"
 
     if not LEGACY_VERSION:
-        endpoint_url = "alerts/queries/alerts/v2?filter=product"
-        text_to_encode = ":'epp'+type:'ldt'"
-        # in the new version we send only the filter_arg argument as encoded string without the params
+        endpoint_url = "alerts/queries/alerts/v2?filter="
         if filter_arg:
-            text_to_encode += f"+{filter_arg}"
-        endpoint_url += urllib.parse.quote_plus(text_to_encode)
+            # in the new version we send only the filter_arg argument as encoded string without the params
+            endpoint_url += urllib.parse.quote_plus(filter_arg)
         demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
         return http_request("GET", endpoint_url, {"sort": "created_timestamp.asc"})
     else:
@@ -2268,7 +2304,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
-def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
+def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
     """
     Manage the status to send to update to for IDP/Mobile detections.
     :type ids: ``list``
@@ -2479,8 +2515,13 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
-        # for endpoint (in the new version) ,idp/ods/ofp/mobile detections
-        elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION, IncidentType.ON_DEMAND):
+        # for endpoint in the new version
+        elif incident_type in (
+            IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
+            IncidentType.ON_DEMAND,
+            IncidentType.NGSIEM,
+            IncidentType.THIRD_PARTY,
+        ):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update {detection_type} detection {remote_incident_id} with fields: {updated_object}")
@@ -2518,6 +2559,10 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
+    if IncidentType.NGSIEM.value in remote_incident_id:
+        return IncidentType.NGSIEM
+    if IncidentType.THIRD_PARTY.value in remote_incident_id:
+        return IncidentType.THIRD_PARTY
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
@@ -2568,6 +2613,8 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     - Detection (not legacy)
     - OFP (Other File Protection)
     - ODS (On-Demand Scans)
+    - NGSIEM (Next-Generation Security Information and Event Management)
+    - THIRD PARTY Detection
 
     :type remote_incident_id: ``str``
     :param remote_incident_id: The incident id to return its information.
@@ -2603,6 +2650,14 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     if "ods" in mirrored_data["type"]:
         updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
         detection_type = "ods"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if "ngsiem" in mirrored_data["product"]:
+        updated_object = {"incident_type": NGSIEM_DETECTION}
+        detection_type = "ngsiem"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if "thirdparty" in mirrored_data["product"]:
+        updated_object = {"incident_type": THIRD_PARTY_DETECTION}
+        detection_type = "thirdparty"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
     demisto.debug(f"in get_remote_detection_data_for_multiple_types {mirrored_data=} { mirroring_fields=} {updated_object=}")
@@ -2731,6 +2786,14 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ofp'"
         ).get("resources", [])
+    if NGSIEM_DETECTION_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ngsiem'"
+        ).get("resources", [])
+    if THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
+        ).get("resources", [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
@@ -2768,11 +2831,14 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
 
-            elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION:
-                result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
+            elif incident_type in (
+                IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
+                IncidentType.NGSIEM,
+                IncidentType.THIRD_PARTY,
+            ):
+                result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
-                    demisto.debug(f"IDP/Mobile Detection updated successfully. Result: {result}")
-
+                    demisto.debug(f"IDP/Mobile/NGSIEM/Thirs Party Detection updated successfully. Result: {result}")
             else:
                 raise Exception(f"Executed update-remote-system command with undefined id: {remote_incident_id}")
 
@@ -2814,25 +2880,25 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
     return ""
 
 
-def update_remote_idp_or_mobile_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
+def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     """
-    Sends the request the request to update the relevant IDP/Mobile detection entity.
+    Sends the request to update the relevant IDP/Mobile/NGSIEM/Third Party detection entity.
 
     :type delta: ``dict``
     :param delta: The modified fields.
     :type inc_status: ``IncidentStatus``
-    :param inc_status: The IDP/Mobile detection status.
+    :param inc_status: The IDP/Mobile/NGSIEM/Third Party detection status.
     :type detection_id: ``str``
-    :param detection_id: The IDP/Mobile detection ID to update.
+    :param detection_id: The IDP/Mobile/NGSIEM/Third Party detection ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f"Closing IDP/Mobile detection with remote ID {detection_id} in remote system.")
-        return str(update_idp_or_mobile_detection_request([detection_id], "closed"))
+        demisto.debug(f"Closing IDP/Mobile/NGSIEM/Third Party detection with remote ID {detection_id} in remote system.")
+        return str(update_request_for_multiple_detection_types([detection_id], "closed"))
 
     # status field in CS Falcon is mapped to State field in XSOAR
     elif "status" in delta:
         demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(update_idp_or_mobile_detection_request([detection_id], delta.get("status")))
+        return str(update_request_for_multiple_detection_types([detection_id], delta.get("status")))
 
     return ""
 
@@ -2978,7 +3044,6 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-
     fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
     incident_type = "detection"
 
@@ -3004,10 +3069,17 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     if raw_res is not None and "resources" in raw_res:
         full_detections = demisto.get(raw_res, "resources")
+        # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
         for detection in full_detections:
-            detection["incident_type"] = incident_type
-            # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
             detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
+            if is_detection_occurred_before_fetch_time(detection.get("created_timestamp"), start_fetch_time):
+                demisto.debug(
+                    f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
+                    f"was created before the fetch start date: {start_fetch_time}"
+                )
+                continue
+
+            detection["incident_type"] = incident_type
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
                 f"was fetched which was created in {detection['created_timestamp']}"
@@ -3037,7 +3109,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         date_format=DETECTION_DATE_FORMAT,
         new_offset=detections_offset,
     )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     return detections, current_fetch_info_detections
 
@@ -3298,6 +3370,8 @@ def fetch_items(command="fetch-incidents"):
     # last_run objects - fetch types only for fetch-incidents
     iom_last_run: dict[str, Any] = {}
     ioa_last_run: dict[str, Any] = {}
+    third_party_detection_last_run: dict[str, Any] = {}
+    ngsiem_detection_last_run: dict[str, Any] = {}
 
     if is_fetch_events:
         fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
@@ -3309,11 +3383,12 @@ def fetch_items(command="fetch-incidents"):
         # last_run object - Only for fetch_incident
         iom_last_run = get_last_run_per_type(last_run, LastRunIndex.IOM)
         ioa_last_run = get_last_run_per_type(last_run, LastRunIndex.IOA)
+        third_party_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.THIRD_PARTY_DETECTIONS)
+        ngsiem_detection_last_run = get_last_run_per_type(last_run, LastRunIndex.NGSIEM_DETECTIONS)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
     # Fetch Endpoint Detections
-
     if is_detection_fetch_type_selected(selected_types=fetch_incidents_or_detections):
         # if "Detections" in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch Detections")
@@ -3364,22 +3439,6 @@ def fetch_items(command="fetch-incidents"):
         )
         items.extend(fetched_mobile_detections)
 
-    # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
-    if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
-        demisto.debug("CrowdStrikeFalconMsg: Start fetch IOM")
-        demisto.debug(f"CrowdStrikeFalconMsg: Current IOM last_run object: {iom_last_run}")
-
-        fetched_iom_incidents, iom_last_run = fetch_iom_incidents(iom_last_run)
-        items.extend(fetched_iom_incidents)
-
-    # Fetch Indicators of Attack (IOA) - supported for fetch-incidents command only.
-    if IOA_FETCH_TYPE in fetch_incidents_or_detections:
-        demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
-        demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
-
-        fetched_ioa_incidents, ioa_last_run = fetch_ioa_incidents(ioa_last_run)
-        items.extend(fetched_ioa_incidents)
-
     # Fetch On-Demand Scan Detections
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch ODS Detection")
@@ -3387,6 +3446,7 @@ def fetch_items(command="fetch-incidents"):
 
         if LEGACY_VERSION:
             raise DemistoException("On-Demand Scans Detection is not supported in legacy version.")
+
         fetched_on_demand_detections, on_demand_detections_last_run = fetch_detections_by_product_type(
             on_demand_detections_last_run,
             look_back=look_back,
@@ -3406,6 +3466,7 @@ def fetch_items(command="fetch-incidents"):
 
         if LEGACY_VERSION:
             raise DemistoException(f"{OFP_DETECTION_TYPE} is not supported in legacy version.")
+
         fetched_ofp_detections, ofp_detection_last_run = fetch_detections_by_product_type(
             ofp_detection_last_run,
             look_back=look_back,
@@ -3417,6 +3478,60 @@ def fetch_items(command="fetch-incidents"):
             is_fetch_events=is_fetch_events,
         )
         items.extend(fetched_ofp_detections)
+
+    # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
+    if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdStrikeFalconMsg: Start fetch IOM")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current IOM last_run object: {iom_last_run}")
+
+        fetched_iom_incidents, iom_last_run = fetch_iom_incidents(iom_last_run)
+        items.extend(fetched_iom_incidents)
+
+    # Fetch Indicators of Attack (IOA) - supported for fetch-incidents command only.
+    if not is_fetch_events and IOA_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
+
+        fetched_ioa_incidents, ioa_last_run = fetch_ioa_incidents(ioa_last_run)
+        items.extend(fetched_ioa_incidents)
+
+    if not is_fetch_events and NGSIEM_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdStrikeFalconMsg: Start fetch NGSIEM Detection")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current NGSIEM Detection last_run object: {ngsiem_detection_last_run}")
+
+        if LEGACY_VERSION:
+            raise DemistoException(f"{NGSIEM_DETECTION_FETCH_TYPE} is not supported in legacy version.")
+
+        fetched_ngsiem_detections, ngsiem_detection_last_run = fetch_detections_by_product_type(
+            ngsiem_detection_last_run,
+            look_back=look_back,
+            fetch_query=params.get("ngsiem_detection_fetch_query", ""),
+            detections_type=NGSIEM_DETECTION,
+            product_type="ngsiem",
+            detection_name_prefix=NGSIEM_DETECTION_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=is_fetch_events,
+        )
+        items.extend(fetched_ngsiem_detections)
+
+    if not is_fetch_events and THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
+        demisto.debug("CrowdStrikeFalconMsg: Start fetch THIRD PARTY Detection")
+        demisto.debug(f"CrowdStrikeFalconMsg: Current THIRD PARTY Detection last_run object: {third_party_detection_last_run}")
+
+        if LEGACY_VERSION:
+            raise DemistoException(f"{THIRD_PARTY_DETECTION_FETCH_TYPE} is not supported in legacy version.")
+
+        fetched_third_party_detections, third_party_detection_last_run = fetch_detections_by_product_type(
+            third_party_detection_last_run,
+            look_back=look_back,
+            fetch_query=params.get("third_party_detection_fetch_query", ""),
+            detections_type=THIRD_PARTY_DETECTION,
+            product_type="thirdparty",
+            detection_name_prefix=THIRD_PARTY_DETECTION_FETCH_TYPE,
+            start_time_key="created_timestamp",
+            is_fetch_events=is_fetch_events,
+        )
+        items.extend(fetched_third_party_detections)
 
     # Assign each sub last_run info per type at its proper index
     set_last_run_per_type(last_run, index=LastRunIndex.DETECTIONS, data=detections_last_run, is_fetch_events=is_fetch_events)
@@ -3433,11 +3548,21 @@ def fetch_items(command="fetch-incidents"):
     set_last_run_per_type(
         last_run, index=LastRunIndex.OFP_DETECTION, data=ofp_detection_last_run, is_fetch_events=is_fetch_events
     )
+
     if not is_fetch_events:
         set_last_run_per_type(last_run, index=LastRunIndex.IOM, data=iom_last_run, is_fetch_events=is_fetch_events)
         set_last_run_per_type(last_run, index=LastRunIndex.IOA, data=ioa_last_run, is_fetch_events=is_fetch_events)
-
+        set_last_run_per_type(
+            last_run,
+            index=LastRunIndex.THIRD_PARTY_DETECTIONS,
+            data=third_party_detection_last_run,
+            is_fetch_events=is_fetch_events,
+        )
+        set_last_run_per_type(
+            last_run, index=LastRunIndex.NGSIEM_DETECTIONS, data=ngsiem_detection_last_run, is_fetch_events=is_fetch_events
+        )
         demisto.setLastRun(last_run)
+
     demisto.debug(f"CrowdStrikeFalconMsg: Updated last_run object after fetch: {last_run}")
     return last_run, items
 
@@ -3507,7 +3632,8 @@ def fetch_detections_by_product_type(
                 detections.append(detection_to_context)
         detections = (
             truncate_long_time_str(detections, "occurred")
-            if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}
+            if product_type
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
@@ -4585,9 +4711,8 @@ def search_detections_command():
     detections_ids = argToList(d_args.get("ids"))
     extended_data = argToBoolean(d_args.get("extended_data", False))
     if not detections_ids:
-        filter_arg = d_args.get("filter")
-        if not filter_arg:
-            return_error("Command Error: Please provide at least one argument.")
+        # This value is similar to the default value of the filter argument in the YAML file
+        filter_arg = d_args.get("filter", "product:'epp'+type:'ldt'")
         detections_ids = get_detections(filter_arg=filter_arg).get("resources")
     raw_res = get_detections_entities(detections_ids)
     entries = []
@@ -6116,35 +6241,38 @@ def get_cve_command(args: dict) -> list[dict[str, Any]]:
     command_results_list = []
     http_response = cve_request(cve)
     raw_cve = [res_element.get("cve") for res_element in http_response.get("resources", [])]
-    for cve in raw_cve:
-        relationships_list = create_relationships(cve)
-        cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get("Reliability", "A+ - 3rd party enrichment"))
-        cve_indicator = Common.CVE(
-            id=cve.get("id"),
-            cvss="",
-            published=cve.get("published_date"),
-            modified="",
-            description=cve.get("description"),
-            cvss_score=cve.get("base_score"),
-            cvss_vector=cve.get("vector"),
-            dbot_score=cve_dbot_score,
-            publications=create_publications(cve),
-            relationships=relationships_list,
-        )
-        cve_human_readable = {
-            "ID": cve.get("id"),
-            "Description": cve.get("description"),
-            "Published Date": cve.get("published_date"),
-            "Base Score": cve.get("base_score"),
-        }
-        human_readable = tableToMarkdown(
-            "CrowdStrike Falcon CVE", cve_human_readable, headers=["ID", "Description", "Published Date", "Base Score"]
-        )
-        command_results = CommandResults(
-            raw_response=cve, readable_output=human_readable, relationships=relationships_list, indicator=cve_indicator
-        ).to_context()
-        if command_results not in command_results_list:
-            command_results_list.append(command_results)
+    if not raw_cve:
+        command_results_list = [(CommandResults(readable_output="No matching results found.")).to_context()]
+    else:
+        for cve in raw_cve:
+            relationships_list = create_relationships(cve)
+            cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get("Reliability", "A+ - 3rd party enrichment"))
+            cve_indicator = Common.CVE(
+                id=cve.get("id"),
+                cvss="",
+                published=cve.get("published_date"),
+                modified="",
+                description=cve.get("description"),
+                cvss_score=cve.get("base_score"),
+                cvss_vector=cve.get("vector"),
+                dbot_score=cve_dbot_score,
+                publications=create_publications(cve),
+                relationships=relationships_list,
+            )
+            cve_human_readable = {
+                "ID": cve.get("id"),
+                "Description": cve.get("description"),
+                "Published Date": cve.get("published_date"),
+                "Base Score": cve.get("base_score"),
+            }
+            human_readable = tableToMarkdown(
+                "CrowdStrike Falcon CVE", cve_human_readable, headers=["ID", "Description", "Published Date", "Base Score"]
+            )
+            command_results = CommandResults(
+                raw_response=cve, readable_output=human_readable, relationships=relationships_list, indicator=cve_indicator
+            ).to_context()
+            if command_results not in command_results_list:
+                command_results_list.append(command_results)
     return command_results_list
 
 

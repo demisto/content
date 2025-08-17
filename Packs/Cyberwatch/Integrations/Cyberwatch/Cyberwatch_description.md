@@ -6,6 +6,7 @@ The Cyberwatch integration allows you to manage vulnerabilities on your IT & OT 
   - Fetch asset: Get all details for an asset scanned by Cyberwatch.
   - List security issues: Get a list of security issues from Cyberwatch.
   - Fetch security issue: Get all details for a security issue from Cyberwatch.
+  - Fetch incidents : Get Incidents from cyberwatch
 
 To use the Cyberwatch integration, you must have a valid Cyberwatch instance, and a valid Cyberwatch API key. For more information, see the [Cyberwatch documentation](https://docs.cyberwatch.fr/en/).
 

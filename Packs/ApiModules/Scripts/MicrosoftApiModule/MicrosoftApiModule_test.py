@@ -4,6 +4,8 @@ import pytest
 from MicrosoftApiModule import *
 from requests import Response
 
+from collections.abc import Iterable
+
 TOKEN = "dummy_token"
 TENANT = "dummy_tenant"
 REFRESH_TOKEN = "dummy_refresh"
@@ -165,7 +167,8 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
             b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}',
             400,
             "invalid_grant. \nThe refresh token has expired due to inactivity.\xa0The token was issued on "
-            "2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.\nYou can run the ***command_prefix-auth-reset*** "
+            "2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.\nGot the following error codes from Microsoft: [700082]."  # noqa: E501
+            "\nYou can run the ***command_prefix-auth-reset*** "
             "command to reset the authentication process.",
         ),
         (
@@ -513,6 +516,7 @@ def test_national_endpoints(mocker, azure_cloud_name):
         enc_key=enc_key,
         app_name=app_name,
         tenant_id=tenant_id,
+        base_url=BASE_URL,
         verify=True,
         proxy=False,
         ok_codes=ok_codes,
@@ -737,9 +741,8 @@ def test_get_from_args_or_params__when_the_key_dose_not_exists():
     with pytest.raises(Exception) as e:
         get_from_args_or_params(args, params, "mock")
     assert (
-        e.value.args[0]
-        == "No mock was provided. Please provide a mock either in the instance \
-configuration or as a command argument."
+        e.value.args[0] == "No mock was provided. Please provide a mock either in the instance "
+        "configuration or as a command argument."
     )
 
 
@@ -960,3 +963,45 @@ def test_oproxy_authorize_retry_mechanism(mocker, capfd, mocked_delay_request_co
         with pytest.raises(Exception):
             client._oproxy_authorize()
         assert res.call_args[0][0] == excepted
+
+
+def test_http_request_status_list_to_retry_parameter(requests_mock, mocker):
+    """
+    Test that MicrosoftClient passes status_list_to_retry parameter correctly as a list.
+
+    This test verifies that the retry mechanism receives the correct parameter format
+    to prevent TypeError: argument of type 'int' is not iterable.
+
+    Given:
+        - MicrosoftClient configured for self-deployed authentication
+    When:
+        - Making an HTTP request through http_request method
+    Then:
+        - Verify that status_list_to_retry is passed as an Iterable
+    """
+
+    client = self_deployed_client()
+    api_url = f"{BASE_URL}test-endpoint"
+    requests_mock.get(api_url, status_code=200, json={"success": True})
+    requests_mock.post(APP_URL, json={"access_token": TOKEN, "expires_in": "3600"})
+
+    captured_params = {}
+
+    def capture_http_request_params(self, *args, **kwargs):
+        from unittest.mock import Mock
+
+        captured_params.update(kwargs)
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"success": True}
+        return mock_response
+
+    mocker.patch.object(BaseClient, "_http_request", side_effect=capture_http_request_params)
+    client.http_request("GET", "test-endpoint")
+
+    assert "status_list_to_retry" in captured_params, "status_list_to_retry parameter not found"
+
+    status_list = captured_params["status_list_to_retry"]
+    assert isinstance(
+        status_list, Iterable
+    ), f"status_list_to_retry should be an Iterable, got {type(status_list)}: {status_list}"
