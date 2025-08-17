@@ -64,6 +64,114 @@ script:
       description: The normalized fields associated with the asset.
     - contextPath: Core.CoreAsset.all_sources
       description: A list of all sources providing information about the asset.
+  - arguments:
+    - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved.
+      name: lte_creation_time
+    - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved.
+      name: gte_creation_time
+    - description: Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
+      name: lte_modification_time
+    - description: Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
+      name: gte_modification_time
+    - description: An array or CSV string of case IDs.
+      isArray: true
+      name: case_id_list
+    - description: Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      name: since_creation_time
+    - description: Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      name: since_modification_time
+    - auto: PREDEFINED
+      description: Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending).
+      name: sort_by_modification_time
+      predefined:
+      - asc
+      - desc
+    - auto: PREDEFINED
+      description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
+      name: sort_by_creation_time
+      predefined:
+      - asc
+      - desc
+    - defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      name: page
+    - defaultValue: '100'
+      description: Maximum number of cases to return per page. The default and maximum is 100.
+      name: limit
+    - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
+      name: status
+    - auto: PREDEFINED
+      description: 'Whether the case is starred (Boolean value: true or false).'
+      name: starred
+      predefined:
+      - 'true'
+      - 'false'
+    name: core-get-cases
+    description: Get cases information based on the specified filters.
+    outputs:
+    - contextPath: Core.Case.case_id
+      description: Unique ID assigned to each returned case.
+      type: String
+    - contextPath: Core.Case.manual_severity
+      description: Case severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high".
+      type: String
+    - contextPath: Core.Case.manual_description
+      description: Case description provided by the user.
+      type: String
+    - contextPath: Core.Case.assigned_user_mail
+      description: Email address of the assigned user.
+      type: String
+    - contextPath: Core.Case.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: String
+    - contextPath: Core.Case.host_count
+      description: Number of hosts involved in the case.
+      type: number
+    - contextPath: Core.Case.xdr_url
+      description: A link to the case view on Cortex XDR.
+      type: String
+    - contextPath: Core.Case.assigned_user_pretty_name
+      description: Full name of the user assigned to the case.
+      type: String
+    - contextPath: Core.Case.alert_count
+      description: Total number of alerts in the case.
+      type: number
+    - contextPath: Core.Case.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: number
+    - contextPath: Core.Case.user_count
+      description: Number of users involved in the case.
+      type: number
+    - contextPath: Core.Case.severity
+      description: |-
+        Calculated severity of the case. Valid values are:
+        "low","medium","high".
+      type: String
+    - contextPath: Core.Case.low_severity_alert_count
+      description: Number of alerts with the severity LOW.
+      type: String
+    - contextPath: Core.Case.status
+      description: |
+        Current status of the case. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+      type: String
+    - contextPath: Core.Case.description
+      description: Dynamic calculated description of the case.
+      type: String
+    - contextPath: Core.Case.resolve_comment
+      description: Comments entered by the user when the case was resolved.
+      type: String
+    - contextPath: Core.Case.notes
+      description: Comments entered by the user regarding the case.
+      type: String
+    - contextPath: Core.Case.creation_time
+      description: Date and time the case was created on Cortex XDR.
+      type: date
+    - contextPath: Core.Case.detection_time
+      description: Date and time that the first alert occurred in the case.
+      type: date
+    - contextPath: Core.Case.modification_time
+      description: Date and time that the case was last modified.
+      type: date
   runonce: false
   script: '-'
   subtype: python3

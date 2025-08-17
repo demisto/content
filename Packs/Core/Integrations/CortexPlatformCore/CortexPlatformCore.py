@@ -99,6 +99,10 @@ def main():  # pragma: no cover
         elif command == "core-get-asset-details":
             return_results(get_asset_details_command(client, args))
 
+        elif command == "core-get-cases":
+            client._base_url = "/api/webapp/public_api/v1"
+            return_results(get_cases_command(client, args))
+            
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))
