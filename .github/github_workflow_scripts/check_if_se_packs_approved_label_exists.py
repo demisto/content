@@ -51,7 +51,7 @@ def main():
 
     # Detect if watched folder changed
     folder_changed = any(
-        any(folder in file for folder in watched_folders if folder)
+        any(folder.lower() in file.lower() for folder in watched_folders if folder)
         for file in changed_files
     )
     print(f"folder_changed: {folder_changed}")

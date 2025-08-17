@@ -33,10 +33,6 @@ jobs:
           files: |
             Packs/**/ModelingRules/**
           since_last_remote_commit: false
-      - name: Debug args
-        run: |
-          echo "Changed files: ${{ steps.files.outputs.all_changed_files }}"
-          echo "Changed changed-files : ${{ steps.changed-files.outputs.all_changed_files }}"
       - name: Check if se-packs-approved label exists
         id: check_label
         env:
