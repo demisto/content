@@ -154,6 +154,10 @@ COMMAND_REQUIREMENTS = {
     ),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
+    "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
+    "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
+    "gcp-compute-project-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
     "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
     "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
     "gcp-container-cluster-security-update": (
@@ -164,6 +168,7 @@ COMMAND_REQUIREMENTS = {
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
+    "gcp-iam-folder-iam-policy-get": (GCPServices.RESOURCE_MANAGER, ["resourcemanager.folders.getIamPolicy"]),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
     #     GCPServices.COMPUTE,
@@ -254,6 +259,40 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def parse_key_value_args(arg_str: str, arg_type: str) -> list:
+    """
+    Transforms a string of multiple inputs to a dictionary list
+    parameter: (string) labels
+
+    Return labels as a dictionary list
+    Returns the specified Instance resource.
+    Args:
+        arg_str (str): The actual string to parse to a key & value pair.
+        arg_type (str): The type of the argument. Can be 'metadata' or 'labels'.
+
+    Returns:
+        Returns the relevant dictionary with the extracted key & value pairs.
+    """
+    labels = {}
+    metadata_items = []
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
+    for f in arg_str.split(";"):
+        match = regex.match(f)
+        if match is None:
+            raise ValueError(
+                f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=def,value=456"
+            )
+
+        if arg_type == 'labels':
+            labels.update({match.group(1).lower(): match.group(2).lower()})
+        else:  # metadata
+            metadata_items.append({"key": match.group(1), "value": match.group(2)})
+    if arg_type == 'labels':
+        return [labels]
+    else:  # metadata
+        return metadata_items
 
 
 ##########
@@ -949,6 +988,260 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #
 #     return CommandResults(readable_output=hr)
 
+def gcp_iam_folder_iam_policy_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Gets the access control policy for a folder.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    identifier = args.get("identifier", "")
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    folder_policy_get_request = resource_manager.folders().getIamPolicy(resource=f"folders/{identifier}")
+    folder_policy_response = folder_policy_get_request.execute()
+    readable_header = f"Folder {identifier} IAM policy information:"
+    readable_output = tableToMarkdown(
+        readable_header, folder_policy_response.get("bindings"), headers=["role", "members"], headerTransform=pascalToSpace, removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.IAM.Policy",
+        outputs_key_field="role",
+        outputs=folder_policy_response.get("bindings"),
+        raw_response=folder_policy_response,
+    )
+
+
+def gcp_iam_folder_iam_permission_test_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns permissions that a caller has on the specified folder.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    identifier = args.get("identifier", "")
+    permissions = argToList(args.get("permissions", ""))
+    body = {"permissions": permissions}
+    demisto.debug(f"before executing the command with {body}")
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    response = resource_manager.folders().testIamPermissions(resource=f"folders/{identifier}", body=body).execute()
+    demisto.debug(f"the response to the command {response}")
+
+    readable_output = tableToMarkdown(f"The folder {identifier} permissions:", response, headers=["permissions"], headerTransform=pascalToSpace, removeNull=True,)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.IAM.Permission",
+        outputs_key_field="permissions",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of instances contained within the specified zone.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = int(args.get("limit"))
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    page_token = args.get("page_token")
+
+    if limit and (limit > 500 or limit < 0):
+        raise DemistoException(f"The acceptable values of the argument limit are 0 to 500, inclusive. Currently the value is {limit}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token).execute()
+    demisto.debug(f"{response=}")
+
+    next_page_token = response.get("nextPageToken", "")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-list project_id={project_id} zone={zone} page_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+    if next_page_token:
+        response['InstancesNextPageToken'] = response.pop("nextPageToken")
+    response['Instances'] = response.pop("items")
+
+    hr_data = []
+    for instance in response['Instances']:
+        d = {
+            "id": instance.get("id"),
+            "name": instance.get("name"),
+            "kind": instance.get("kind"),
+            "creationTimestamp": instance.get("creationTimestamp"),
+            "description": instance.get("description"),
+            "status": instance.get("status"),
+            "machineType": instance.get("machineType"),
+            "zone": instance.get("zone")
+        }
+        hr_data.append(d)
+
+    readable_output = tableToMarkdown("GCP Instances",
+                                      hr_data,
+                                      headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "zone"],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True,
+                                      metadata=metadata,)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified Instance resource.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().get(project=project_id, zone=zone, instance=instance).execute()
+    demisto.debug(f"the {response=}")
+
+    hr_data = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "kind": response.get("kind"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+        "status": response.get("status"),
+        "machineType": response.get("machineType"),
+    }
+    readable_output = tableToMarkdown(f"GCP Instance {instance} from zone {zone}",
+                                      hr_data,
+                                      headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType"],
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True,)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Instances",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets labels on an instance.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance")
+    label_fingerprint = args.get("label_fingerprint")
+    labels = parse_key_value_args(args.get("labels"), "labels")[0]
+
+    body = {"labels": labels}
+
+    if label_fingerprint:
+        body.update({"labelFingerprint": label_fingerprint})
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().setLabels(project=project_id, zone=zone, instance=instance, body=body).execute()
+
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["id", "name", "kind", "status", "progress", "operationType"]
+
+    readable_output = tableToMarkdown(f"GCP instance {instance} labels update", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_project_metadata_set_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets labels on an instance.
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'resource_name'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id", "")
+    zone = extract_zone_name(args.get("zone"))
+    instance = args.get("instance", "")
+    fingerprint = args.get("fingerprint", "")
+    metadata_items = parse_key_value_args(args.get("metadata_items", ""), "metadata")
+
+    body = {
+        "kind": "compute#metadata",
+        "fingerprint": fingerprint,
+        "items": metadata_items
+    }
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=instance, body=body).execute()
+
+    data_res = {
+        "status": response.get("status"),
+        "kind": response.get("kind"),
+        "name": response.get("name"),
+        "id": response.get("id"),
+        "progress": response.get("progress"),
+        "operationType": response.get("operationType"),
+    }
+
+    headers = ["id", "name", "kind", "status", "progress", "operationType"]
+
+    readable_output = tableToMarkdown(f"GCP instance {instance} metadata update", data_res, headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
 
 def _get_commands_for_requirement(requirement: str, req_type: str) -> list[str]:
     """
@@ -1253,6 +1546,10 @@ def main():  # pragma: no cover
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-instances-list": gcp_compute_instances_list_command,
+            "gcp-compute-instance-get": gcp_compute_instance_get_command,
+            "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
+            "gcp-compute-project-metadata-set": gcp_compute_project_metadata_set_command,
             # Storage commands
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
@@ -1260,6 +1557,8 @@ def main():  # pragma: no cover
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            "gcp-iam-folder-iam-policy-get": gcp_iam_folder_iam_policy_get_command,
+            "gcp-iam-folder-iam-permission-test": gcp_iam_folder_iam_permission_test_command,
             # The following commands are currently unsupported:
             # # Compute Engine commands
             # "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
@@ -1277,6 +1576,8 @@ def main():  # pragma: no cover
             return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
         elif command in command_map:
+            if "identifier" in args:  # for commands that use folder identifier and not a project id.
+                args['project_id'] = args['identifier']
             creds = get_credentials(args, params)
             return_results(command_map[command](creds, args))
         else:

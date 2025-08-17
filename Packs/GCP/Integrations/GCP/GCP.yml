@@ -846,6 +846,648 @@ script:
     - contextPath: GCP.Compute.Operations.kind
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
+  - arguments:
+    - description: A folder ID.
+      name: identifier
+      required: true
+    description: Gets the access control policy for a folder.
+    name: gcp-iam-folder-iam-policy-get
+    outputs:
+      - contextPath: GCP.IAM.Policy.bindings.members
+        description: The members who associate to the role.
+        type: String
+      - contextPath: GCP.IAM.Policy.bindings.role
+        description: The role that is assigned to the list of members.
+        type: String
+  - arguments:
+    - description: A folder identifier.
+      name: identifier
+      required: true
+    - description: A comma-separated list of permission names to validate for the resource.
+      isArray: true
+      name: permissions
+      required: true
+    description: Returns permissions that a caller has on the specified folder.
+    name: gcp-iam-folder-iam-permission-test
+    outputs:
+      - contextPath: GCP.IAM.Permission
+        description: The caller allowed permissions.
+        type: String
+  - arguments:
+    - name: project_id
+      required: true
+      description: GCP project ID.
+    - description: The name of the zone for this request.
+      name: zone
+      required: true
+    - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.
+      name: filters
+    - defaultValue: '500'
+      description: 'The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. (Default: 500).'
+      name: limit
+    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+      name: order_by
+    - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+      name: page_token
+    description: Retrieves the list of instances contained within the specified zone.
+    name: gcp-compute-instances-list
+    outputs:
+      - contextPath: GCP.Compute.kind
+        description: Type of resource. Always compute#instanceList for lists of Instance resources.
+        type: String
+      - contextPath: GCP.Compute.id
+        description: Unique identifier for the resource.
+        type: String
+      - contextPath: GCP.Compute.Instances.kind
+        description: Type of the resource.Always compute#instance for instances.
+        type: String
+      - contextPath: GCP.Compute.Instances.id
+        description: The unique identifier for the resource.
+        type: String
+      - contextPath: GCP.Compute.Instances.creationTimestamp
+        description: Creation timestamp in RFC3339 text format.
+        type: String
+      - contextPath: GCP.Compute.Instances.name
+        description: The name of the resource, provided by the client when initially creating the resource.
+        type: String
+      - contextPath: GCP.Compute.Instances.description
+        description: An optional description of this resource.
+        type: String
+      - contextPath: GCP.Compute.Instances.tags
+        description: Tags to apply to this instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.machineType
+        description: 'Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type.'
+        type: String
+      - contextPath: GCP.Compute.Instances.status
+        description: The status of the instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.statusMessage
+        description: An optional, human-readable explanation of the status.
+        type: String
+      - contextPath: GCP.Compute.Instances.zone
+        description: URL of the zone where the instance resides.
+        type: String
+      - contextPath: GCP.Compute.Instances.canIpForward
+        description: Allows this instance to send and receive packets with non-matching destination or source IPs.
+        type: String
+      - contextPath: GCP.Compute.Instances.networkInterfaces
+        description: An array of network configurations for this instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.disks
+        description: Array of disks associated with this instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.metadata
+        description: The metadata key/value pairs assigned to this instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.serviceAccounts
+        description: A list of service accounts, with their specified scopes, authorized for this instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.selfLink
+        description: Server-defined URL for this resource.
+        type: String
+      - contextPath: GCP.Compute.Instances.scheduling
+        description: Sets the scheduling options for this instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.cpuPlatform
+        description: The CPU platform used by this instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.labels
+        description: Labels to apply to this instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.labelFingerprint
+        description: A fingerprint for this request, which is essentially a hash of the label's contents and used for optimistic locking.
+        type: String
+      - contextPath: GCP.Compute.Instances.instanceEncryptionKey
+        description: Encrypts suspended data for an instance with a customer-managed encryption key.
+        type: Object
+      - contextPath: GCP.Compute.Instances.minCpuPlatform
+        description: Specifies a minimum CPU platform for the VM instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.guestAccelerators
+        description: A list of the type and count of accelerator cards attached to the instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.startRestricted
+        description: Whether a VM has been restricted for start because Compute Engine has detected suspicious activity.
+        type: Boolean
+      - contextPath: GCP.Compute.Instances.deletionProtection
+        description: Whether the resource should be protected against deletion.
+        type: Boolean
+      - contextPath: GCP.Compute.Instances.resourcePolicies
+        description: Resource policies applied to this instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.sourceMachineImage
+        description: Source machine image.
+        type: String
+      - contextPath: GCP.Compute.Instances.reservationAffinity
+        description: Specifies the reservations that this instance can consume from.
+        type: Object
+      - contextPath: GCP.Compute.Instances.hostname
+        description: Specifies the hostname of the instance.
+        type: String
+      - contextPath: GCP.Compute.Instances.displayDevice
+        description: Enables display device for the instance.
+        type: Object
+      - contextPath: GCP.Compute.Instances.shieldedInstanceConfig
+        description: ''
+        type: Object
+      - contextPath: GCP.Compute.Instances.sourceMachineImageEncryptionKey
+        description: Source machine image encryption key when creating an instance from a machine image.
+        type: Object
+      - contextPath: GCP.Compute.Instances.confidentialInstanceConfig
+        description: ''
+        type: Object
+      - contextPath: GCP.Compute.Instances.fingerprint
+        description: Specifies a fingerprint for this resource, which is essentially a hash of the instance's contents and used for optimistic locking.
+        type: String
+      - contextPath: GCP.Compute.Instances.privateIpv6GoogleAccess
+        description: The private IPv6 google access type for the VM.
+        type: String
+      - contextPath: GCP.Compute.Instances.advancedMachineFeatures
+        description: Controls for advanced machine-related behavior features.
+        type: Object
+      - contextPath: GCP.Compute.Instances.lastStartTimestamp
+        description: Last start timestamp in RFC3339 text format.
+        type: String
+      - contextPath: GCP.Compute.Instances.lastStopTimestamp
+        description: Last stop timestamp in RFC3339 text format.
+        type: String
+      - contextPath: GCP.Compute.Instances.lastSuspendedTimestamp
+        description: Last suspended timestamp in RFC3339 text format.
+        type: String
+      - contextPath: GCP.Compute.Instances.satisfiesPzs
+        description: ''
+        type: String
+      - contextPath: GCP.Compute.Instances.satisfiesPzi
+        description: ''
+        type: String
+      - contextPath: GCP.Compute.Instances.resourceStatus
+        description: The resource status.
+        type: Object
+      - contextPath: GCP.Compute.Instances.networkPerformanceConfig
+        description: Network performance configuration.
+        type: Object
+      - contextPath: GCP.Compute.Instances.keyRevocationActionType
+        description: KeyRevocationActionType of the instance.
+        type: String
+      - contextPath: GCP.Compute.InstancesNextPageToken
+        description: This token allows you to get the next page of results for list requests.
+        type: String
+      - contextPath: GCP.Compute.selfLink
+        description: Server-defined URL for this resource.
+        type: String
+      - contextPath: GCP.Compute.warning
+        description: Informational warning message.
+        type: Object
+  - arguments:
+    - description: Project ID that you want to run this command on.
+      name: project_id
+      required: true
+    - description: The name of the zone for this request.
+      name: zone
+      required: true
+    - description: Name of the instance resource to return.
+      name: instance
+      required: true
+    description: Returns the specified Instance resource. Gets a list of available instances by making a list() request.
+    name: gcp-compute-instance-get
+    outputs:
+      - contextPath: GCP.Compute.Instances.id
+        description: The unique identifier for the resource. This identifier is defined by the server.
+        type: string
+      - contextPath: GCP.Compute.Instances.creationTimestamp
+        description: Creation timestamp in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Instances.name
+        description: The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+        type: string
+      - contextPath: GCP.Compute.Instances.description
+        description: An optional description of this resource. Provide this property when you create the resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.tags
+        description: Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the tags.items field.
+        type: string
+      - contextPath: GCP.Compute.Instances.tags.items
+        description: An array of tags. Each tag must be 1-63 characters long, and comply with RFC1035.
+        type: string
+      - contextPath: GCP.Compute.Instances.tags.fingerprint
+        description: Specifies a fingerprint for this request, which is essentially a hash of the tags contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update tags. You must always provide an up-to-date fingerprint hash in order to update or change tags.
+        type: string
+      - contextPath: GCP.Compute.Instances.machineType
+        description: 'Full or partial URL of the machine type resource to use for this instance, in the format: zones/zone/machineTypes/machine-type. This is provided by the client when the instance is created.'
+        type: string
+      - contextPath: GCP.Compute.Instances.status
+        description: 'The status of the instance. One of the following values: PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, SUSPENDING, SUSPENDED, and TERMINATED.'
+        type: string
+      - contextPath: GCP.Compute.Instances.statusMessage
+        description: An optional, human-readable explanation of the status.
+        type: string
+      - contextPath: GCP.Compute.Instances.zone
+        description: URL of the zone where the instance resides. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Instances.canIpForward
+        description: Allows this instance to send and receive packets with non-matching destination or source IPs. This is required if you plan to use this instance to forward routes. For more information, see Enabling IP Forwarding.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.networkInterfaces
+        description: An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.network
+        description: URL of the network resource for this instance. When creating an instance, if neither the network nor the subnetwork is specified, the default network global/networks/default is used; if the network is not specified but the subnetwork is specified, the network is inferred.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.subnetwork
+        description: The URL of the Subnetwork resource for this instance. If the network resource is in legacy mode, do not provide this property. If the network is in auto subnet mode, providing the subnetwork is optional. If the network is in custom subnet mode, then this field should be specified. If you specify this property, you can specify the subnetwork as a full or partial URL.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.networkIP
+        description: An IPv4 internal network address to assign to the instance for this network interface. If not specified by the user, an unused internal IP is assigned by the system.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.name
+        description: ' The name of the network interface, generated by the server. For network devices, these are eth0, eth1, etc.'
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs
+        description: An array of configurations for this interface. Currently, only one access config, ONE_TO_ONE_NAT, is supported. If there are no accessConfigs specified, then this instance will have no external internet access.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.type
+        description: The type of configuration. The default and only option is ONE_TO_ONE_NAT.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.name
+        description: The name of this access configuration. The default and recommended name is External NAT but you can use any arbitrary string you would like. For example, My external IP or Network Access.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.natIP
+        description: An external IP address associated with this instance. Specify an unused static external IP address available to the project or leave this field undefined to use an IP from a shared ephemeral IP address pool. If you specify a static external IP address, it must live in the same region as the zone of the instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.setPublicPtr
+        description: Specifies whether a public DNS ‘PTR’ record should be created to map the external IP address of the instance to a DNS domain name.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.publicPtrDomainName
+        description: The DNS domain name for the public PTR record. This field can only be set when the setPublicPtr field is enabled.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.networkTier
+        description: 'This signifies the networking tier used for configuring this access configuration and can only take the following values: PREMIUM, STANDARD.'
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.accessConfigs.kind
+        description: Type of the resource. Always compute#accessConfig for access configs.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.aliasIpRanges
+        description: An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.aliasIpRanges.ipCidrRange
+        description: The IP CIDR range represented by this alias IP range. This IP CIDR range must belong to the specified subnetwork and cannot contain IP addresses reserved by system or used by other network interfaces. This range may be a single IP address (e.g. 0.0.0.0), a netmask (e.g. /24) or a CIDR format string (e.g. 0.0.0.0/24).
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.aliasIpRanges.subnetworkRangeName
+        description: Optional subnetwork secondary range name specifying the secondary range from which to allocate the IP CIDR range for this alias IP range. If left unspecified, the primary range of the subnetwork will be used.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.fingerprint
+        description: Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface, otherwise the request will fail with error 412 conditionNotMet.
+        type: string
+      - contextPath: GCP.Compute.Instances.networkInterfaces.kind
+        description: Type of the resource. Always compute#networkInterface for network interfaces.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks
+        description: Array of disks associated with this instance. Persistent disks must be created before you can assign them.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.type
+        description: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.mode
+        description: The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.source
+        description: Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.deviceName
+        description: Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.index
+        description: A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number.
+        type: number
+      - contextPath: GCP.Compute.Instances.disks.boot
+        description: Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.disks.initializeParams
+        description: Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.diskName
+        description: Specifies the disk name. If not specified, the default is to use the name of the instance. If the disk with the instance name exists already in the given zone/region, a new name will be automatically generated.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.sourceImage
+        description: The source image to create this disk. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.diskSizeGb
+        description: Specifies the size of the disk in base-2 GB.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.diskType
+        description: Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.sourceImageEncryptionKey
+        description: The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.sourceImageEncryptionKey.sha256
+        description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.sourceImageEncryptionKey.rawKey
+        description: Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.sourceImageEncryptionKey.kmsKeyName
+        description: 'The name of the encryption key that is stored in Google Cloud KMS. '
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.labels
+        description: Labels to apply to this disk. These can be later modified by the disks.setLabels method. This field is only applicable for persistent disks.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.labels.key
+        description: The disk label key.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.labels.value
+        description: The disk label value.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.initializeParams.description
+        description: An optional description. Provide this property when creating the disk.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.autoDelete
+        description: Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance).
+        type: boolean
+      - contextPath: GCP.Compute.Instances.disks.licenses
+        description: ' Any valid publicly visible licenses.'
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.interface
+        description: Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.guestOsFeatures
+        description: A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.guestOsFeatures.type
+        description: The ID of a supported feature. Read Enabling guest operating system features to see a list of available options.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.diskEncryptionKey
+        description: Encrypts or decrypts a disk using a customer-supplied encryption key.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.diskEncryptionKey.rawKey
+        description: Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.diskEncryptionKey.kmsKeyName
+        description: The name of the encryption key that is stored in Google Cloud KMS.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.diskEncryptionKey.sha256
+        description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.disks.kind
+        description: Type of the resource. Always compute#attachedDisk for attached disks.
+        type: string
+      - contextPath: GCP.Compute.Instances.metadata
+        description: The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys.
+        type: string
+      - contextPath: GCP.Compute.Instances.metadata.fingerprint
+        description: Specifies a fingerprint for this request, which is essentially a hash of the metadatas contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet.
+        type: string
+      - contextPath: GCP.Compute.Instances.metadata.items
+        description: Array of key/value pairs. The total size of all keys and values must be less than 512 KB.
+        type: string
+      - contextPath: GCP.Compute.Instances.metadata.items.key
+        description: 'Key for the metadata entry. Keys must conform to the following regexp: [a-zA-Z0-9-_]+, and be less than 128 bytes in length. This is reflected as part of a URL in the metadata server. Additionally, to avoid ambiguity, keys must not conflict with any other metadata keys for the project.'
+        type: string
+      - contextPath: GCP.Compute.Instances.metadata.items.value
+        description: Value for the metadata entry. These are free-form strings, and only have meaning as interpreted by the image running in the instance. The only restriction placed on values is that their size must be less than or equal to 262144 bytes (256 KiB).
+        type: string
+      - contextPath: GCP.Compute.Instances.metadata.kind
+        description: Type of the resource. Always compute#metadata for metadata.
+        type: string
+      - contextPath: GCP.Compute.Instances.serviceAccounts
+        description: A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported.
+        type: string
+      - contextPath: GCP.Compute.Instances.serviceAccounts.email
+        description: Email address of the service account.
+        type: string
+      - contextPath: GCP.Compute.Instances.serviceAccounts.scopes
+        description: The list of scopes to be made available for this service account.
+        type: string
+      - contextPath: GCP.Compute.Instances.selfLink
+        description: Server-defined URL for this resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.scheduling
+        description: Sets the scheduling options for this instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.scheduling.onHostMaintenance
+        description: Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options.
+        type: string
+      - contextPath: GCP.Compute.Instances.scheduling.automaticRestart
+        description: Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.scheduling.preemptible
+        description: Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.scheduling.nodeAffinities
+        description: A set of node affinity and anti-affinity.
+        type: string
+      - contextPath: GCP.Compute.Instances.scheduling.nodeAffinities.key
+        description: Corresponds to the label key of Node resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.scheduling.nodeAffinities.operator
+        description: Defines the operation of node selection.
+        type: string
+      - contextPath: GCP.Compute.Instances.scheduling.nodeAffinities.values
+        description: Corresponds to the label values of Node resource.
+        type: string
+      - contextPath: GCP.Compute.Instances.cpuPlatform
+        description: The CPU platform used by this instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.labels
+        description: Labels to apply to this instance. These can be later modified by the setLabels method.
+        type: string
+      - contextPath: GCP.Compute.Instances.labels.key
+        description: The label key.
+        type: string
+      - contextPath: GCP.Compute.Instances.labels.value
+        description: The label value.
+        type: string
+      - contextPath: GCP.Compute.Instances.labelFingerprint
+        description: A fingerprint for this request, which is essentially a hash of the labels contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels.
+        type: string
+      - contextPath: GCP.Compute.Instances.minCpuPlatform
+        description: 'Specifies a minimum CPU platform for the VM instance. Applicable values are the friendly names of CPU platforms, such as minCpuPlatform: "Intel Haswell" or minCpuPlatform: "Intel Sandy Bridge".'
+        type: string
+      - contextPath: GCP.Compute.Instances.guestAccelerators
+        description: A list of the type and count of accelerator cards attached to the instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.guestAccelerators.acceleratorType
+        description: 'Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my-project/zones/us-central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an instance template, specify only the accelerator name. See GPUs on Compute Engine for a full list of accelerator types.'
+        type: string
+      - contextPath: GCP.Compute.Instances.guestAccelerators.acceleratorCount
+        description: The number of the guest accelerator cards exposed to this instance.
+        type: string
+      - contextPath: GCP.Compute.Instances.startRestricted
+        description: Whether a VM has been restricted for start because Compute Engine has detected suspicious activity.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.deletionProtection
+        description: Whether the resource should be protected against deletion.
+        type: boolean
+      - contextPath: GCP.Compute.Instances.hostname
+        description: Hostname.
+        type: string
+      - contextPath: GCP.Compute.Instances.kind
+        description: 'Type of the resource. Always compute#instance for instances.'
+        type: string
+  - arguments:
+      - description: Name of the instance resource to return.
+        name: instance
+        required: true
+      - description: Project ID that you want to run this command on.
+        name: project_id
+        required: true
+      - description: The name of the zone for this request.
+        name: zone
+        required: true
+      - description: 'An object containing a list of "key": value pairs. Example: key=abc,value=123;key=ABC,value=321.'
+        name: labels
+        required: true
+      - description: Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels.
+        name: label_fingerprint
+        required: true
+    description: Sets labels on an instance.
+    name: gcp-compute-instance-labels-set
+    outputs:
+      - contextPath: GCP.Compute.Operations.id
+        description: The unique identifier for the resource. This identifier is defined by the server.
+        type: string
+      - contextPath: GCP.Compute.Operations.name
+        description: Name of the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.zone
+        description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.clientOperationId
+        description: The value of requestId if you provided it in the request. Not present otherwise.
+        type: string
+      - contextPath: GCP.Compute.Operations.operationType
+        description: The type of operation, such as insert, update, or delete, and so on.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetLink
+        description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetId
+        description: The unique target ID, which identifies a specific incarnation of the target resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.status
+        description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+        type: string
+      - contextPath: GCP.Compute.Operations.statusMessage
+        description: An optional textual description of the current status of the operation.
+        type: string
+      - contextPath: GCP.Compute.Operations.user
+        description: User who requested the operation for example EMAILADDRESS.
+        type: string
+      - contextPath: GCP.Compute.Operations.progress
+        description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+        type: number
+      - contextPath: GCP.Compute.Operations.insertTime
+        description: The time that this operation was requested. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.startTime
+        description: The time that this operation was started by the server. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.endTime
+        description: The time that this operation was completed. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.error
+        description: If errors are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+        description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
+        type: number
+      - contextPath: GCP.Compute.Operations.httpErrorMessage
+        description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+        type: string
+      - contextPath: GCP.Compute.Operations.selfLink
+        description: Server-defined URL for the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.region
+        description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.description
+        description: A textual description of the operation, which is set when the operation is created.
+        type: string
+      - contextPath: GCP.Compute.Operations.kind
+        description: Type of the resource. Always compute#operation for Operation resources.
+        type: string
+  - arguments:
+      - description: Project ID that you want to run this command on.
+        name: project_id
+        required: true
+      - description: Name of the instance scoping this request.
+        name: instance
+        required: true
+      - description: The name of the zone for this request.
+        name: zone
+        required: true
+      - description: Specifies a fingerprint for this request, which is essentially a hash of the metadata's contents and used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update metadata. You must always provide an up-to-date fingerprint hash in order to update or change metadata, otherwise the request will fail with error 412 conditionNotMet.
+        name: fingerprint
+      - description: 'key/value pairs. For example: key=abc,value=123;key=ABC,value=321.'
+        name: metadata_items
+        required: true
+    description: Sets metadata for the specified instance to the data included in the request.
+    name: gcp-compute-project-metadata-set
+    outputs:
+      - contextPath: GCP.Compute.Operations.id
+        description: The unique identifier for the resource. This identifier is defined by the server.
+        type: string
+      - contextPath: GCP.Compute.Operations.name
+        description: Name of the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.zone
+        description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.clientOperationId
+        description: The value of requestId if you provided it in the request. Not present otherwise.
+        type: string
+      - contextPath: GCP.Compute.Operations.operationType
+        description: The type of operation, such as insert, update, or delete, and so on.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetLink
+        description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+        type: string
+      - contextPath: GCP.Compute.Operations.targetId
+        description: The unique target ID, which identifies a specific incarnation of the target resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.status
+        description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+        type: string
+      - contextPath: GCP.Compute.Operations.statusMessage
+        description: An optional textual description of the current status of the operation.
+        type: string
+      - contextPath: GCP.Compute.Operations.user
+        description: User who requested the operation for example EMAILADDRESS.
+        type: string
+      - contextPath: GCP.Compute.Operations.progress
+        description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+        type: number
+      - contextPath: GCP.Compute.Operations.insertTime
+        description: The time that this operation was requested. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.startTime
+        description: The time that this operation was started by the server. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.endTime
+        description: The time that this operation was completed. This value is in RFC3339 text format.
+        type: string
+      - contextPath: GCP.Compute.Operations.error
+        description: If errors are generated during processing of the operation, this field will be populated.
+        type: string
+      - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+        description: If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found.
+        type: number
+      - contextPath: GCP.Compute.Operations.httpErrorMessage
+        description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+        type: string
+      - contextPath: GCP.Compute.Operations.selfLink
+        description: Server-defined URL for the resource.
+        type: string
+      - contextPath: GCP.Compute.Operations.region
+        description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+        type: string
+      - contextPath: GCP.Compute.Operations.description
+        description: A textual description of the operation, which is set when the operation is created.
+        type: string
+      - contextPath: GCP.Compute.Operations.kind
+        description: Type of the resource. Always compute#operation for Operation resources.
+        type: string
 
 # The command is currently unsupported.
 #  - name: gcp-admin-user-update
