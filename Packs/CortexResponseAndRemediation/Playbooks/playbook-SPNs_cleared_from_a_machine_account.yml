@@ -91,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 460
+          "y": 396
         }
       }
     note: false
@@ -123,7 +123,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 320
+          "y": 285
         }
       }
     note: false
@@ -135,10 +135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1dd94cbd-03cd-4206-848d-914cb9528d6f
+    taskid: ba34f600-c2df-41a5-99f4-1e3ef1331a61
     type: regular
     task:
-      id: 1dd94cbd-03cd-4206-848d-914cb9528d6f
+      id: ba34f600-c2df-41a5-99f4-1e3ef1331a61
       version: -1
       name: Search incident for additional alerts
       description: Searches for additional alerts in the incident that could indicate attempts to find controlled accounts or create accounts, as the first step of an attack.
@@ -153,7 +153,7 @@ tasks:
       extend-context:
         simple: RelatedIncidentAlertsResults=
       fromdate:
-        simple: 2 days ago
+        simple: 1 days ago
       ignore-outputs:
         simple: "true"
       query:
@@ -183,7 +183,7 @@ tasks:
       {
         "position": {
           "x": -410,
-          "y": 930
+          "y": 791
         }
       }
     note: false
@@ -216,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 630
+          "y": 531
         }
       }
     note: false
@@ -228,10 +228,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 976f7b6c-32a2-4d03-822d-384823a6f871
+    taskid: 98118418-c33b-4e75-afc9-6e4e8af8f787
     type: regular
     task:
-      id: 976f7b6c-32a2-4d03-822d-384823a6f871
+      id: 98118418-c33b-4e75-afc9-6e4e8af8f787
       version: -1
       name: Search for creation of suspicious account on DC
       description: Searches for Rare Machine Account Creation insight on the Domain Controller of this alert.
@@ -261,7 +261,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 930
+          "y": 791
         }
       }
     note: false
@@ -273,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 5efb5e7b-c44d-44cc-85a7-8fee1b1c233d
+    taskid: 8639de3a-97bf-41f7-92f2-6dcbb69c0c6a
     type: regular
     task:
-      id: 5efb5e7b-c44d-44cc-85a7-8fee1b1c233d
+      id: 8639de3a-97bf-41f7-92f2-6dcbb69c0c6a
       version: -1
       name: Search for user insights for malicious tools
       description: Searches for insights about the user who cleared the SPNs from the machine account, that are associated with the "Steal or Forge Kerberos Tickets" MITRE technique (T1558). These insights may appear when the user is using tools to manipulate tickets.
@@ -306,7 +306,7 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 930
+          "y": 791
         }
       }
     note: false
@@ -337,8 +337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
-          "y": 790
+          "x": 1078,
+          "y": 672
         }
       }
     note: false
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 790
+          "y": 672
         }
       }
     note: false
@@ -401,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1490
+          "y": 1224
         }
       }
     note: false
@@ -413,10 +413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: b613ac1e-26d8-406c-8b06-2552fc84f296
+    taskid: f535f56f-8a57-40d3-8336-15b476955cbb
     type: title
     task:
-      id: b613ac1e-26d8-406c-8b06-2552fc84f296
+      id: f535f56f-8a57-40d3-8336-15b476955cbb
       version: -1
       name: Incident Alerts
       type: title
@@ -432,7 +432,7 @@ tasks:
       {
         "position": {
           "x": -410,
-          "y": 800
+          "y": 672
         }
       }
     note: false
@@ -444,10 +444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 5f09e1a7-542b-4825-86b0-c239f4171523
+    taskid: 05610c98-4887-4b9e-abb7-3e5b9e3c4958
     type: regular
     task:
-      id: 5f09e1a7-542b-4825-86b0-c239f4171523
+      id: 05610c98-4887-4b9e-abb7-3e5b9e3c4958
       version: -1
       name: Search for suspicious account renames
       description: Searches for suspicious sAMAccountName change alerts for the user who cleared the SPNs from the machine account. If the user cleared the SPNs of the machine account and made a suspicious account rename this can be part of a privilege escalation attack.
@@ -477,7 +477,7 @@ tasks:
       {
         "position": {
           "x": 1290,
-          "y": 930
+          "y": 791
         }
       }
     note: false
@@ -489,10 +489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: af6c7e1c-d946-4af5-816d-9e2233f8b263
+    taskid: 87673533-31fb-45a8-888f-b79fa9c56f72
     type: regular
     task:
-      id: af6c7e1c-d946-4af5-816d-9e2233f8b263
+      id: 87673533-31fb-45a8-888f-b79fa9c56f72
       version: -1
       name: Search for suspicious TGT/Service ticket requests
       description: |-
@@ -524,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": 930
+          "y": 791
         }
       }
     note: false
@@ -590,7 +590,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1620
+          "y": 1340
         }
       }
     note: false
@@ -644,7 +644,7 @@ tasks:
       {
         "position": {
           "x": 1290,
-          "y": 1090
+          "y": 913
         }
       }
     note: false
@@ -669,13 +669,14 @@ tasks:
     nexttasks:
       '#none#':
       - "32"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2135
+          "x": 400,
+          "y": 1990
         }
       }
     note: false
@@ -712,7 +713,7 @@ tasks:
       {
         "position": {
           "x": 1290,
-          "y": 1270
+          "y": 1031
         }
       }
     note: false
@@ -759,8 +760,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1790
+          "x": 697,
+          "y": 1477
         }
       }
     note: false
@@ -817,8 +818,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 1960
+          "x": 909,
+          "y": 1606
         }
       }
     note: false
@@ -830,10 +831,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 4ebf4b0e-08d9-4f3b-8ae4-83db06da3770
+    taskid: 5a52e63c-6ba6-41c6-8f56-7626500c110e
     type: collection
     task:
-      id: 4ebf4b0e-08d9-4f3b-8ae4-83db06da3770
+      id: 5a52e63c-6ba6-41c6-8f56-7626500c110e
       version: -1
       name: Monitor incoming alerts
       description: |-
@@ -868,8 +869,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 2270
+          "x": 909,
+          "y": 1860
         }
       }
     note: false
@@ -938,8 +939,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2640
+          "x": 400,
+          "y": 2395
         }
       }
     note: false
@@ -969,8 +970,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 2135
+          "x": 909,
+          "y": 1732
         }
       }
     note: false
@@ -982,10 +983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 346ce181-a38f-4214-8526-090553afb107
+    taskid: b387e45f-7be0-414f-90de-de09f72edbff
     type: condition
     task:
-      id: 346ce181-a38f-4214-8526-090553afb107
+      id: b387e45f-7be0-414f-90de-de09f72edbff
       version: -1
       name: Manual - decide whether to disable the user
       description: |-
@@ -1040,7 +1041,7 @@ tasks:
       brand: ""
     nexttasks:
       Disable:
-      - "33"
+      - "40"
       Do not disable:
       - "29"
     separatecontext: false
@@ -1048,8 +1049,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2270
+          "x": 210,
+          "y": 2119
         }
       }
     note: false
@@ -1073,55 +1074,6 @@ tasks:
       - Disable
       - Do not disable
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 9f57821b-bf4c-4c44-8824-de1cea40d837
-    type: regular
-    task:
-      id: 9f57821b-bf4c-4c44-8824-de1cea40d837
-      version: -1
-      name: Disable user in AD
-      description: Disables the user that executed the LDAP enumeration queries in Active Directory.
-      script: '|||ad-disable-account'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      username:
-        complex:
-          root: alert
-          accessor: username
-          transformers:
-          - operator: LastArrayElement
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (?<=\\)[^\\]+$
-              unpack_matches: {}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 2460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1170,7 +1122,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": 1100
+          "y": 913
         }
       }
     note: false
@@ -1206,8 +1158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 460
+          "x": 831,
+          "y": 396
         }
       }
     note: false
@@ -1244,7 +1196,7 @@ tasks:
       {
         "position": {
           "x": 30,
-          "y": 1290
+          "y": 1054
         }
       }
     note: false
@@ -1256,10 +1208,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: af8ba433-ff25-4514-8e8c-7786fb4e9314
+    taskid: 7ad782a8-9d77-4697-8751-ee86bdce2692
     type: regular
     task:
-      id: af8ba433-ff25-4514-8e8c-7786fb4e9314
+      id: 7ad782a8-9d77-4697-8751-ee86bdce2692
       version: -1
       name: Close alert as False Positive
       description: Closes the current alert.
@@ -1275,8 +1227,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 2640
+          "x": 1171,
+          "y": 2119
         }
       }
     note: false
@@ -1302,7 +1254,7 @@ tasks:
       '#default#':
       - "37"
       True Positive:
-      - "29"
+      - "39"
     separatecontext: false
     conditions:
     - label: True Positive
@@ -1320,8 +1272,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 2440
+          "x": 909,
+          "y": 1985
         }
       }
     note: false
@@ -1331,24 +1283,111 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 2f88feea-7de3-4486-be52-e686ee648df4
+    type: regular
+    task:
+      id: 2f88feea-7de3-4486-be52-e686ee648df4
+      version: -1
+      name: Increase alert severity
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 613,
+          "y": 2119
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: ef54d98e-a4a6-43d3-8564-688939671533
+    type: regular
+    task:
+      id: ef54d98e-a4a6-43d3-8564-688939671533
+      version: -1
+      name: Disable user in AD
+      description: This script disables users for multiple services.
+      scriptName: disable-user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      brands:
+        simple: Active Directory Query v2
+      user_name:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: LastArrayElement
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\\)[^\\]+$
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -46,
+          "y": 2256
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "21_23_yes": 0.27,
       "21_25_#default#": 0.47,
-      "22_15_#default#": 0.3,
+      "22_15_#default#": 0.2,
       "22_24_yes": 0.53,
       "25_23_yes": 0.23,
-      "27_30_yes": 0.45,
-      "27_37_#default#": 0.13,
-      "32_29_Do not disable": 0.24,
-      "34_15_#default#": 0.21,
-      "38_29_True Positive": 0.8
+      "27_30_yes": 0.17,
+      "27_37_#default#": 0.37,
+      "32_29_Do not disable": 0.16,
+      "34_15_#default#": 0.48,
+      "38_37_#default#": 0.25,
+      "38_39_True Positive": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 2575,
-        "width": 2080,
+        "height": 2305,
+        "width": 2081,
         "x": -410,
         "y": 160
       }
@@ -1361,3 +1400,5 @@ tests:
 issilent: false
 marketplaces: ["marketplacev2", "platform"]
 fromversion: 8.9.0
+contentitemexportablefields:
+  contentitemfields: {}
