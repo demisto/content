@@ -31,6 +31,8 @@ jobs:
         uses: tj-actions/changed-files@v46.0.1 # disable-secrets-detection
         with:
           separator: ${{ env.CHANGED_FILES_DELIMITER }}
+          files: |
+            Packs/**/ModelingRules/**
           since_last_remote_commit: false
       - name: Debug args
         run: |
