@@ -32,7 +32,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WATCHED_FOLDERS: ${{ secrets.WATCHED_FOLDERS }}
-          CHANGED_FILES: ${{ steps.files.outputs.all_changed_files }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
 
         run: |
           echo "Checking label SE-packs-approved for: $PR_NUMBER"
