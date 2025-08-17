@@ -26,6 +26,10 @@ jobs:
       - name: set pythonpath
         run: |
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+      - name: Debug args
+        run: |
+          echo "Changed files: ${{ steps.files.outputs.all_changed_files }}"
+          echo "Changed changed-files : ${{ steps.changed-files.outputs.all_changed_files }}"
       - name: Check if se-packs-approved label exists
         id: check_label
         env:
