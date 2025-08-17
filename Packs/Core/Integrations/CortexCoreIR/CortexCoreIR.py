@@ -823,8 +823,8 @@ def main():  # pragma: no cover
 
         if not all((api_key, api_key_id, url)):
             raise DemistoException(
-                    "Native API calls are not available. "
-                    "Please provide the following parameters: Server URL, API Key, API Key ID")
+                "Native API calls are not available. " "Please provide the following parameters: Server URL, API Key, API Key ID"
+            )
 
         headers = {"Content-Type": "application/json", "x-xdr-auth-id": str(api_key_id), "Authorization": api_key}
         add_sensitive_log_strs(api_key)

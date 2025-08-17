@@ -42,7 +42,8 @@ class Client(CoreClient):
             if not all((url, params.get("apikey"), params.get("apikey_id"))):
                 raise DemistoException(
                     "Native API calls are not available. "
-                    "Please provide the following parameters: Server URL, API Key, API Key ID")
+                    "Please provide the following parameters: Server URL, API Key, API Key ID"
+                )
         self._base_url: str = urljoin(url, "/public_api/v1/indicators/")
         self._verify_cert: bool = not params.get("insecure", False)
         self._params = params
