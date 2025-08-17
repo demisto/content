@@ -222,14 +222,7 @@ tasks:
       version: -1
       name: Search for related alerts
       description: |-
-        Searches Cortex alerts. A summarized version of this script is available with the summarized version argument.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        For Cortex XSOAR 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+        Searches Cortex alerts.
 
       scriptName: SearchAlertsV2
       type: regular
@@ -260,7 +253,7 @@ tasks:
       {
         "position": {
           "x": 1290,
-          "y": 870
+          "y": 1190
         }
       }
     note: false
@@ -309,17 +302,19 @@ tasks:
     task:
       id: 7fb6a3b0-8ca8-43cb-8d7e-a593d39eaf43
       version: -1
-      name: Get core user risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
+      name: Get user data
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: get-user-data
     nexttasks:
       '#none#':
       - "11"
     scriptarguments:
-      user_id:
+      additional_fields:
+        simple: "true"
+      user_name:
         simple: ${alert.username}
     separatecontext: false
     continueonerror: true
@@ -381,15 +376,7 @@ tasks:
       id: 7583749e-d3d4-4666-873b-3bf3ccf666a3
       version: -1
       name: Check user risk score
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -406,19 +393,22 @@ tasks:
           left:
             value:
               complex:
-                root: Core.RiskyUser
+                root: UserData
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
-                        simple: Core.RiskyUser.risk_level
+                        simple: UserData.RiskLevel
                       iscontext: true
                     right:
                       value:
                         simple: HIGH
                     ignorecase: true
+                accessor: ID
             iscontext: true
           ignorecase: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -477,15 +467,7 @@ tasks:
       id: eefbd712-247b-4945-87d1-b436e497fded
       version: -1
       name: Get risky user activity
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -497,14 +479,14 @@ tasks:
       key:
         simple: UserRiskyCoreReason
       value:
-        simple: '${Core=extractRiskyUsers(Array.isArray(val.RiskyUser) ? val.RiskyUser : [val.RiskyUser]); function extractRiskyUsers(data){let result={};data.forEach(d=>{if(d.risk_level==="MED"&&d.id&&d.reasons){result[d.id]=result[d.id]||[];d.reasons.forEach(r=>{if(r.description&&!result[d.id].includes(r.description))result[d.id].push(r.description);});}});return Object.keys(result).map(id=>({UserID:id,Reasons:result[id].join(", ")}));}}'
+        simple: '${UserData=>extractRiskyUsers(Array.isArray(val) ? val : [val]); function extractRiskyUsers(data){let result={};data.forEach(d=>{if(d.RiskLevel==="HIGH"&&d.ID&&d.AdditionalFields.reasons){result[d.ID]=result[d.ID]||[];d.AdditionalFields.reasons.forEach(r=>{if(r.description&&!result[d.ID].includes(r.description))result[d.ID].push(r.description);});}});return Object.keys(result).map(id=>({UserID:id,Reasons:result[id].join(", ")}));}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 880,
-          "y": 1230
+          "y": 1190
         }
       }
     note: false
@@ -597,15 +579,7 @@ tasks:
       id: be7a82bd-6416-4d7d-846d-51cd9d0c1d04
       version: -1
       name: Extract Azure user detections
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -680,10 +654,10 @@ tasks:
       id: b02de2cf-d972-4f3c-8446-c8f4b24849fa
       version: -1
       name: Check For Azure Alerts
-      description: Returns a list of all risky users and their properties.
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -728,7 +702,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 1020
+          "y": 1030
         }
       }
     note: false
@@ -746,15 +720,7 @@ tasks:
       id: 06dd635b-d471-428b-8cb2-1ef114d52f9b
       version: -1
       name: Extract Azure user alerts
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -791,15 +757,7 @@ tasks:
       id: 61a37d87-5dda-475e-82e6-ab8a3ddd3903
       version: -1
       name: Prepare UPNs list for query
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -842,7 +800,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 860
+          "y": 870
         }
       }
     note: false
@@ -1017,7 +975,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 870
+          "y": 1190
         }
       }
     note: false
@@ -1034,7 +992,7 @@ tasks:
     task:
       id: f418d59a-37f6-45a3-81e4-4d7c491346c8
       version: -1
-      name: Close Alert
+      name: Inconclusive
       type: title
       iscommand: false
       brand: ""
@@ -1065,8 +1023,8 @@ tasks:
     task:
       id: 91719fc4-f4d2-437f-8cd2-9ab087009e2e
       version: -1
-      name: Close Alert
-      description: commands.local.cmd.close.inv
+      name: Close Alert as True Positive
+      description: Close the current alert.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1077,6 +1035,8 @@ tasks:
     scriptarguments:
       closeReason:
         simple: Resolved - True Positive
+      closeNotes:
+        simple: Handled by the playbook "Intense SSO failures with suspicious characteristics"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1329,7 +1289,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "52"
+      - "58"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1361,6 +1321,7 @@ tasks:
     nexttasks:
       Disable Users:
       - "50"
+      - "57"
       No Action:
       - "31"
     separatecontext: false
@@ -1394,7 +1355,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 2170
+          "y": 2355
         }
       }
     note: false
@@ -1413,72 +1374,25 @@ tasks:
       version: -1
       name: Disable user in Azure AD
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-        but does not terminate an existing session. Supported only in a self deployed app flow with the
-        Permission: Directory.AccessAsUser.All(Delegated).
-      script: '|||msgraph-user-account-disable'
+        This script disables users for Azure AD service.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: disable-user
     nexttasks:
       '#none#':
-      - "51"
+      - "31"
     scriptarguments:
-      user:
+      brands:
+        simple: Microsoft Graph User
+      user_name:
         simple: ${Analyst Action.Answers.0}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 2375
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
-    taskid: 3c70b6e3-c19f-4404-8412-33a9d552f73a
-    type: playbook
-    task:
-      id: 3c70b6e3-c19f-4404-8412-33a9d552f73a
-      version: -1
-      name: Containment Plan - Clear User Sessions
-      description: |-
-        ## Containment Plan - Clear User Sessions
-
-        This playbook is a sub-playbook within the containment plan playbook.
-        The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
-      playbookName: Containment Plan - Clear User Sessions
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      ClearUserSessions:
-        simple: "True"
-      Username:
-        simple: ${Analyst Action.Answers.0}
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-      forEach: true
-    view: |-
-      {
-        "position": {
-          "x": 670,
+          "x": 460,
           "y": 2540
         }
       }
@@ -1513,7 +1427,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 1995
+          "y": 2170
         }
       }
     note: false
@@ -1567,15 +1481,7 @@ tasks:
       id: eec81ddd-04c6-4791-80b2-b8569bd5ba1e
       version: -1
       name: Get successful login UPNs
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex 6.x, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        - For Cortex XSOAR 8 Cloud, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR on-prem, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-        - For Cortex XSIAM, see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Create-a-script
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1680,26 +1586,26 @@ tasks:
     task:
       id: e34a0fe6-2e76-4908-812f-1afbb78f56eb
       version: -1
-      name: Close alert - No suspicious evidence was found
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      name: Inconclusive | No suspicious evidence was found
+      description: ''
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
+      scriptName: SetAndHandleEmpty
     nexttasks:
       '#none#':
       - "32"
     scriptarguments:
-      closeNotes:
-        simple: No suspicious evidence was found.
-      closeReason:
-        simple: Resolved - False Positive
+      key:
+        simple: Inconclusive
+      value:
+        simple: No suspicious evidence was found
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1080,
+          "x": 1081,
           "y": 2740
         }
       }
@@ -1717,20 +1623,20 @@ tasks:
     task:
       id: 7fad63b3-518f-44a6-8ef3-6816452c1fa4
       version: -1
-      name: Close alert - Non-malicious IP and excessive user involvement
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      name: Inconclusive | Non-malicious IP and excessive user involvement
+      description: ''
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
+      scriptName: SetAndHandleEmpty
     nexttasks:
       '#none#':
       - "32"
     scriptarguments:
-      closeNotes:
-        simple: Non-malicious IP and excessive user involvement.
-      closeReason:
-        simple: Resolved - False Positive
+      key:
+        simple: Inconclusive
+      value:
+        simple: Non-malicious IP and excessive user involvement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1738,6 +1644,76 @@ tasks:
         "position": {
           "x": 260,
           "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 2ff58112-68db-438f-b6c0-d43f62368481
+    type: regular
+    task:
+      id: 2ff58112-68db-438f-b6c0-d43f62368481
+      version: -1
+      name: Clear User Sessions
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      user_name:
+        simple: ${Analyst Action.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 95c6650c-d69e-4d5a-8ec6-ca71b5415728
+    type: regular
+    task:
+      id: 95c6650c-d69e-4d5a-8ec6-ca71b5415728
+      version: -1
+      name: Increase Alert Severity to Medium
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1995
         }
       }
     note: false
@@ -1757,14 +1733,14 @@ view: |-
       "24_30_Over 50": 0.18,
       "37_55_#default#": 0.21,
       "49_31_No Action": 0.24,
-      "49_50_Disable Users": 0.51,
+      "49_50_Disable Users": 0.78,
       "54_28_#default#": 0.81,
       "54_6_#default#": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 3595,
-        "width": 2480,
+        "height": 3590,
+        "width": 2481,
         "x": -390,
         "y": -620
       }
