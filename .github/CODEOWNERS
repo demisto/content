@@ -94,3 +94,35 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
 /Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
 /Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto
+
+# Platform Automation
+/Packs/AzureDevOps/ @dantavori
+/Packs/AzureSentinel/ @dantavori
+/Packs/Jira/ @dantavori
+/Packs/ServiceNow/ @dantavori
+/Packs/MicrosoftTeams/ @dantavori
+/Packs/Slack/ @dantavori
+
+/Packs/PingIdentity @JudahSchwartz
+/Packs/Okta @JudahSchwartz
+/Packs/Core @JudahSchwartz
+/Packs/CortexXDR @JudahSchwartz
+/Packs/SentinelOne @JudahSchwartz
+/Packs/CrowdstrikeFalcon @JudahSchwartz
+/Packs/CrowdstrikeFalconSandbox @JudahSchwartz
+/Packs/CrowdStrikeFalconStreamingV2 @JudahSchwartz
+/Packs/MicrosoftExchangeOnline @JudahSchwartz
+/Packs/AggregatedScripts @JudahSchwartz
+/Packs/MicrosoftExchangeOnPremise/ @JudahSchwartz
+/Packs/Office365AndAzureAuditLog @JudahSchwartz
+/Packs/MicrosoftManagementActivity @JudahSchwartz
+/Packs/Microsoft365Defender @JudahSchwartz
+/Packs/MicrosoftDefenderAdvancedThreatProtection @JudahSchwartz
+/Packs/MicrosoftCloudAppSecurity @JudahSchwartz
+/Packs/AzureSecurityCenter/Integrations/MicrosoftDefenderForCloudEventCollector @JudahSchwartz
+/Packs/FeedAzureADConnectHealth @JudahSchwartz
+/Packs/AzureRiskyUsers @JudahSchwartz
+/Packs/MicrosoftGraphListenenr @JudahSchwartz
+/Packs/Microsoft Graph Mail Single User @JudahSchwartz
+/Packs/MicrosoftGraphUser @JudahSchwartz
+/Packs/MicrosoftGraphMail @JudahSchwartz
