@@ -494,7 +494,7 @@ def test_host_whois_history_command_with_host_id():
     mock_response = util_load_json("test_data/host_whois_history_response.json")
 
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
 
     args = {"host_id": "host123"}
     result = host_whois_history_command(client, args)
@@ -520,7 +520,7 @@ def test_host_whois_history_command_with_whois_record_id():
     mock_response = util_load_json("test_data/host_whois_history_response.json")
 
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
 
     args = {"whois_record_id": "whois123"}
     result = host_whois_history_command(client, args)
@@ -543,7 +543,7 @@ def test_host_whois_history_command_with_whois_history_record_id():
     mock_response = util_load_json("test_data/host_whois_history_response.json")
 
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
 
     args = {"whois_history_record_id": "history123"}
     result = host_whois_history_command(client, args)
@@ -566,7 +566,7 @@ def test_host_whois_history_command_with_empty_response():
     mock_response = []
 
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
 
     args = {"host_id": "nonexistent"}
     result = host_whois_history_command(client, args)
@@ -581,13 +581,13 @@ def test_host_whois_history_command_with_empty_response():
         (
             {"host_id": "test1", "whois_record_id": "test2"},
             "Only one of the following arguments should be provided: host_id,"
-            " whois_record_id, whois_history_record_id.\nCurrently provided: host_id, whois_record_id",
+            " whois_record_id.\nCurrently provided: host_id, whois_record_id",
         ),
         (
-            {"host_id": "test1", "whois_record_id": "test2", "whois_history_record_id": "test3"},
+            {"host_id": "test1", "whois_record_id": "test2"},
             "Only one of the following arguments"
-            " should be provided: host_id, whois_record_id, whois_history_record_id.\n"
-            "Currently provided: host_id, whois_record_id, whois_history_record_id",
+            " should be provided: host_id, whois_record_id.\n"
+            "Currently provided: host_id, whois_record_id",
         ),
     ],
 )

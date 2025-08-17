@@ -263,9 +263,7 @@ class Client:
             url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}{odata}",
         )
 
-    def host_whois_history(
-        self, host_id: str, whois_record_id: str, whois_history_record_id: str, odata: str, limit: str
-    ) -> list:
+    def host_whois_history(self, host_id: str, whois_record_id: str, odata: str, limit: str) -> list:
         """
         Retrieves WHOIS history records for a host or specific WHOIS record.
         Docs:
@@ -275,7 +273,6 @@ class Client:
         Args:
             host_id (str): The ID (host name or ip address) of the host to get WHOIS history for.
             whois_record_id (str): The ID of a specific WHOIS record to get history for.
-            whois_history_record_id (str): The ID of a specific WHOIS history record.
             odata (str): OData query parameters for filtering and formatting results.
             limit (str): Maximum number of records to return (used when whois_history_record_id is not provided).
 
@@ -295,24 +292,14 @@ class Client:
 
             return response.get("value", [])
 
-        elif whois_record_id:
-            odata_query += f"?$top={limit}&{odata}"
+        odata_query += f"?$top={limit}&{odata}"
 
-            response = self.ms_client.http_request(
-                method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}",
-            )
+        response = self.ms_client.http_request(
+            method="GET",
+            url_suffix=f"v1.0/security/threatIntelligence/whoisRecords/{whois_record_id}/history{odata_query}",
+        )
 
-            return response.get("value", [])
-
-        odata_query += f"?{odata}"
-
-        return [
-            self.ms_client.http_request(
-                method="GET",
-                url_suffix=f"v1.0/security/threatIntelligence/whoisHistoryRecord/{whois_history_record_id}{odata_query}",
-            )
-        ]
+        return response.get("value", [])
 
     def host_reputation(self, host_id: str, odata: str) -> dict:
         """
@@ -648,7 +635,6 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
         args (dict[str, Any]): Command arguments containing:
             - host_id (str, optional): Specific host ID to retrieve WHOIS history for.
             - whois_record_id (str, optional): Specific WHOIS record ID to retrieve history for.
-            - whois_history_record_id (str, optional): Specific WHOIS history record ID to retrieve.
             - odata (str, optional): OData query parameters for filtering.
             - limit (int, optional): Maximum number of records to return. Defaults to 50.
 
@@ -657,15 +643,12 @@ def host_whois_history_command(client: Client, args: dict[str, Any]) -> CommandR
     """
     host_id = args.get("host_id", "")
     whois_record_id = args.get("whois_record_id", "")
-    whois_history_record_id = args.get("whois_history_record_id", "")
     odata = args.get("odata", "")
     limit = args.get("limit", 50)
 
-    ensure_only_one_argument_provided(
-        host_id=host_id, whois_record_id=whois_record_id, whois_history_record_id=whois_history_record_id
-    )
+    ensure_only_one_argument_provided(host_id=host_id, whois_record_id=whois_record_id)
 
-    response = client.host_whois_history(host_id, whois_record_id, whois_history_record_id, odata, limit)
+    response = client.host_whois_history(host_id, whois_record_id, odata, limit)
 
     if len(response) == 0:
         return CommandResults(readable_output="No WHOIS history records found.")
