@@ -588,13 +588,14 @@ def http_request(
         demisto.debug(f"In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes")
 
     headers["User-Agent"] = "PANW-XSOAR"
-    
+
     if is_time_sensitive():
+        demisto.debug("Changing timeout to 10 seconds and retries to 1 due to time_sensitive=True")
         retries = TOTAL_RETRIES_ON_ENRICHMENT
         request_timeout = TIMEOUT_ON_ENRICHMENT
     else:
         request_timeout = int(timeout) if timeout else DEFAULT_TIMEOUT_ON_GENERIC_HTTP_REQUEST
-    
+
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
         # To cover the condition when status_code is a list of status codes
