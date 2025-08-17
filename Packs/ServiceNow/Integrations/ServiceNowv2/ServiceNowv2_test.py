@@ -3896,3 +3896,41 @@ def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMo
     assert result.outputs["id"] == ticket_id
     assert result.outputs["title"] == "Network printer offline"
     assert result.outputs["status"] == "New"
+
+def test_client_jwt_param_usage(mocker):
+    """
+    Given:
+    - JWT params provided to the ServiceNow CMDB Client
+    When:
+    - Initializing the Client with jwt_params
+    Then:
+    - ServiceNowClient is instantiated with the same jwt_params
+    - The jwt attribute is set on the inner ServiceNowClient
+    """
+    jwt_params = {
+        "private_key": "-----BEGIN PRIVATE KEY-----test-----END PRIVATE KEY-----",
+        "kid": "test_kid",
+        "sub": "test_sub",
+        "aud": "test_aud",
+        "iss": "test_iss",
+    }
+    mocker.patch("ServiceNowApiModule.jwt.encode", return_value="jwt_token_stub")
+    client = Client(
+            "server_url",
+            "sc_server_url",
+            "cr_server_url",
+            "username",
+            "password",
+            "verify",
+            "fetch_time",
+            "sysparm_query",
+            sysparm_limit=10,
+            timestamp_field="opened_at",
+            ticket_type="incident",
+            get_attachments=False,
+            incident_name="description",
+            oauth_params=OAUTH_PARAMS,
+            jwt_params=jwt_params,
+        )
+    assert hasattr(client.snow_client, "jwt")
+    assert client.snow_client.jwt == "jwt_token_stub"
