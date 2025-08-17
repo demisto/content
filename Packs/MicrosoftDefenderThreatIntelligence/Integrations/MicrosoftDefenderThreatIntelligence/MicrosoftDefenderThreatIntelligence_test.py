@@ -529,30 +529,6 @@ def test_host_whois_history_command_with_whois_record_id():
     assert result.outputs_prefix == "MSGDefenderThreatIntel.WhoisHistory"
     assert result.outputs_key_field == "id"
 
-
-def test_host_whois_history_command_with_whois_history_record_id():
-    """
-    Test host_whois_history_command with whois_history_record_id parameter.
-
-    Given: A client is configured and whois_history_record_id is provided
-    When: The host_whois_history_command is called with whois_history_record_id
-    Then: The command returns specific whois history record information
-    """
-    from MicrosoftDefenderThreatIntelligence import Client, host_whois_history_command
-
-    mock_response = util_load_json("test_data/host_whois_history_response.json")
-
-    client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
-
-    args = {"whois_history_record_id": "history123"}
-    result = host_whois_history_command(client, args)
-
-    assert result.outputs == mock_response
-    assert result.outputs_prefix == "MSGDefenderThreatIntel.WhoisHistory"
-    assert result.outputs_key_field == "id"
-
-
 def test_host_whois_history_command_with_empty_response():
     """
     Test host_whois_history_command with empty response.
@@ -682,9 +658,9 @@ def test_host_whois_history_command_single_record_response():
     mock_response = [{"id": "single_record", "whoisServer": "single.server.com", "domainStatus": "active"}]
 
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
 
-    args = {"whois_history_record_id": "single_record"}
+    args = {"whois_record_id": "single_record"}
     result = host_whois_history_command(client, args)
 
     assert result.outputs == mock_response
@@ -712,9 +688,9 @@ def test_host_whois_history_command_multiple_records_response():
     ]
 
     client = Client(app_id="test_app_id", verify=False, proxy=False)
-    client.host_whois_history = lambda host_id, whois_record_id, whois_history_record_id, odata, limit: mock_response
+    client.host_whois_history = lambda host_id, whois_record_id, odata, limit: mock_response
 
-    args = {"whois_history_record_id": "multiple_records"}
+    args = {"whois_record_id": "multiple_records"}
     result = host_whois_history_command(client, args)
 
     assert result.outputs == mock_response
