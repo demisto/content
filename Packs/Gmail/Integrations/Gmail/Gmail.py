@@ -38,7 +38,7 @@ from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 
 """ GLOBAL VARS """
-
+test = ""
 ADMIN_EMAIL = ""  # set from params later on
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
