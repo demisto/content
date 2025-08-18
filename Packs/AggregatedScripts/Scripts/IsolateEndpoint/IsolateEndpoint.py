@@ -15,7 +15,6 @@ class Brands(StrEnum):
     CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
     CORTEX_CORE_IR = "Cortex Core - IR"
     MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION = "Microsoft Defender Advanced Threat Protection"
-    MICROSOFT_DEFENDER_ATP = "Microsoft Defender ATP"  # this name is used in get-endpoint-data script
 
     @classmethod
     def get_all_values(cls) -> list[str]:
@@ -72,7 +71,7 @@ def initialize_commands() -> list:
             arg_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},  # command can use agentId or hostName
         ),
         Command(
-            brand=Brands.MICROSOFT_DEFENDER_ATP,
+            brand="Microsoft Defender ATP",  # this name is used in get-endpoint-data script,
             name="microsoft-atp-isolate-machine",
             arg_mapping={"machine_id": "endpoint_id"},
             hard_coded_args={"isolation_type": "Full", "comment": "Isolated endpoint with IsolateEndpoint script."},
