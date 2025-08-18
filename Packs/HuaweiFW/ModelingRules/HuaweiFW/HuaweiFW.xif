@@ -38,7 +38,8 @@ extract_username = arrayindex(regextract(extract_log_description ,"user=(\S+),")
 // System Managment
 call header_fields
 |filter _raw_log ~= "%%\d{1,2}UPDATE\/"
-| alter check_outcome_by_brief = parsed_fields_headers ->log_brief
+| alter check_outcome_by_brief = parsed_fields_headers ->log_brief,
+        get_description = arrayindex(split(extract_log_description,"."),0)
 |alter 
     extract_syslog_id = arrayindex(regextract(extract_log_description ,"SyslogId=(\S+),"),0),
     extract_user = arrayindex(regextract(extract_log_description ,"User=(\S+),"),0),
@@ -53,18 +54,19 @@ call header_fields
     extract_pre_update_version = arrayindex(regextract(extract_log_description ,"Pre-UpdateVersion=(\S+),"),0),
     extract_update_version = arrayindex(regextract(extract_log_description ,"UpdateVersion=(\S+),"),0)
 
-| alter create_description = object_create("Slot ID",if(len(extract_slot) != 0, extract_slot , "No slot id"),
-"CPU ID",if(len(extract_cpu ) != 0, extract_cpu  , "No CPU id"),
-"Status",if(len(extract_status) != 0, extract_status  , "No status"),
-"Pre-Updated Version",if(len(extract_pre_update_version) != 0, extract_pre_update_version  , "No Pre-Update Version"),
-"Updated Version",if(len(extract_update_version ) != 0, extract_update_version  , "No Update Version"),
-"Module",if(len(extract_module) != 0, extract_module , "No module was updated") ,
-"Suggestion",if(len(extract_suggestion) != 0, extract_suggestion , "No Suggestion"))
+| alter create_description = to_string(concat(get_description ,". ",
+if(len(extract_slot) != 0, concat("Slot ID: ",extract_slot,", "), ""),
+if(len(extract_cpu ) != 0, concat("CPU ID: ",extract_cpu,", "), ""),
+if(len(extract_status) != 0, concat("Status: ",extract_status,", "), ""),
+if(len(extract_pre_update_version) != 0, concat("Pre-Updated Version: ",extract_pre_update_version,", "), ""),
+if(len(extract_update_version ) != 0, concat("Updated Version: ",extract_update_version,", "), ""),
+if(len(extract_module) != 0, concat("Module: ",extract_module,", "), "") ,
+if(len(extract_suggestion) != 0, concat("Suggestion: ",extract_suggestion,"."),"")))
 
 |alter 
     xdm.event.id = extract_syslog_id,
     xdm.event.duration = to_integer(multiply(extract_duration , 1000)),
-    xdm.event.description = to_string(create_description ),
+    xdm.event.description = replex(create_description,"\,\s?$","."),
     xdm.event.outcome = if(check_outcome_by_brief ~= "(FAIL|FAILURE)", XDM_CONST.OUTCOME_FAILED, check_outcome_by_brief ~= "(OK|SUCCESS)", XDM_CONST.OUTCOME_SUCCESS, check_outcome_by_brief ~= "RETRY", XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
     xdm.event.outcome_reason = extract_reason,
     xdm.source.user.username = extract_user,
@@ -77,7 +79,7 @@ call header_fields
 call header_fields
 |filter _raw_log ~= "%%\d{1,2}SSH\/[4|5]\/" and xdm.event.type not in("CMD_USERCHOICE", "CONTINUE_KEYEXCHANGE", "OVERWRITE_FILE", "RENAME_FILE", "SAVE_PUBLICKEY", "SAVEAS_PUBLICKEY", "STELNET_SERVER", "UPDATE_PUBLICKEY")
 | alter check_outcome_by_brief = parsed_fields_headers ->log_brief,
-        create_description = coalesce(split_description -> [0],extract_log_description)
+        create_description = arrayindex(split(extract_log_description,"."),0)
 
 |alter 
     extract_user_name = replace(arrayindex(regextract(extract_log_description ,"(?:User|UserName)=(\S+)"),0),",",""),
@@ -118,7 +120,7 @@ call header_fields
     extract_error_code = arrayindex(regextract(extract_log_description ,"ErrorCode=\s?(\d+)"),0)
 
 |alter 
-    xdm.event.description = coalesce(split_description -> [0],extract_log_description),
+    xdm.event.description = arrayindex(split(extract_log_description,"."),0),
     xdm.event.outcome_reason = if(extract_error_code ~= "2","Handle is invalid", extract_error_code ~= "3","Pointer is invalid", extract_error_code ~= "4","Incorrect opening type", extract_error_code ~= "5","Incorrect parameter", extract_error_code),
     xdm.event.outcome = if(check_outcome_by_brief ~= "FAIL", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN);
 
