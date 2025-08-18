@@ -26,7 +26,18 @@ var indicatorsRes = executeCommand('findIndicators', {
     query: query,
     populateFields: 'name,score,aggregatedReliability,type,expirationStatus'
 });
-if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0].Contents[0]) {
+
+  if (!isValidRes(indicatorsRes)) {
+      if (indicatorsRes[0].Contents) {
+          return {
+              ContentsFormat: formats.markdown,
+              Type: entryTypes.error,
+              Contents: indicatorsRes[0].Contents
+          };
+      }
+  }
+
+if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0]) {
     var returnEntries = [];
 
 

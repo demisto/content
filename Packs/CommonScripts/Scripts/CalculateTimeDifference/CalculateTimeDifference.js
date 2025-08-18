@@ -1,4 +1,5 @@
   function isValidTimestampFormat(timestamp) {
+    //  the valid Timestamp Format is in ISO 8601 "yyyy-MM-dd'T'HH:mm:ss" for example : 2020-01-01T00:01:00
       const regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
       return regex.test(timestamp);
   }

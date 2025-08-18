@@ -120,7 +120,7 @@ if (
     tasks = res[0].Contents.response.invPlaybook.tasks;
 
 
-    if (tasks== undefined){
+    if (tasks == undefined){
         return{
             Type: entryTypes.note,
             HumanReadable: `Workplan for incident ${inc_id} has no tasks.`,
@@ -155,7 +155,7 @@ if (
     }
 
 
-    var ec= {'Tasks(val.id && val.id == obj.id)': res};
+    var ec = {'Tasks(val.id && val.id == obj.id)': res};
 
 
     return {
@@ -172,7 +172,7 @@ if (
 
 
 
-if (tasks== undefined){
+if (tasks == undefined){
 	return{
 		Type: entryTypes.note,
 		HumanReadable: `Workplan for incident ${inc_id} has no tasks.`,

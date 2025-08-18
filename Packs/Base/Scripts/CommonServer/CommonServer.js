@@ -1941,6 +1941,7 @@ function stringToDate(dateString, format) {
     var md5Regex = /\b[a-fA-F\d]{32}\b/gm;
     var sha1Regex = /\b[a-fA-F\d]{40}\b/gm;
     var sha256Regex = /\b[a-fA-F\d]{64}\b/gm;
+    var parseURLRegex = /^(https?:)\/\/([^:/?#]+)(?::(\d+))?([^?#]*)(\?[^#]*)?(#.*)?$/;
 
   /**************************** REGEX FORMATTING end *******************************/
 

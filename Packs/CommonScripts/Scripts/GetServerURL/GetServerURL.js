@@ -1,6 +1,5 @@
   function parseUrl(url) {
-      pattern = /^(https?:)\/\/([^:/?#]+)(?::(\d+))?([^?#]*)(\?[^#]*)?(#.*)?$/;
-      match = url.match(pattern);
+      match = url.match(parseURLRegex);
 
       return match ? {
           shcema: url.match(/^(https?):/)[1],
