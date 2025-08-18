@@ -41,7 +41,7 @@ There are no outputs for this script.
 
 When executing this script from another script using `demisto.executeCommand('DeleteContext', args)` with the `keysToKeep` parameter set, the script will return preserved context data in the `EntryContext` field.
 
-In order to preserve the returned context data when calling this script from another script, use `return_results()` to ensure the context is properly maintained.
+To ensure the preserved context data is properly maintained in the `EntryContext` field, use `return_results()`.
 
 ```javascript
 // Example usage in another script
