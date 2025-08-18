@@ -1,0 +1,30 @@
+[RULE:values_format_logs]
+alter parsed_fields = regexcapture(_raw_log,"<(?P<pri>\d{1,3})>(?P<version>\d{1,3})\s(?P<iso_timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})\s(?P<hostname>\S+)[\s-]+\\?\"?(?P<remote_addr>\S+)\\?\"?\s(?P<timestamp>\S+)\s(?P<status>\S+)\s(?P<bytes_sent>\S+)\s\"(?P<request>.+)\s\"?(?P<blocked>\d)\s\"?(?P<is_human>\d)\"?\s\"?(?P<block_reason>[^\"]*)\"\s\"(?P<country_name>[^\"]*)\"\s\"(?P<country_code>[^\"]*)\"\s\"(?P<request_id>[^\"]*)\"\s\"(?P<captured_vector>[^\"]*)\"\s(?P<request_time>\S+)\s\"(?P<upstream_addr>[^\"]*)\"?\s(?P<upstream_response_time>[^\"]*)\"?\s\"(?P<upstream_status>\d?\d?\d?)(?P<domain_name>[^\"]*)\"\s\"(?P<host>[^\"]*)\"\s\"(?P<referer>[^\"]*)\"\s\"?(?P<user_agent>[^\"]*)\"\s\"(?P<asn>[^\"]*)\"\s\"(?P<ssl_protocol>[^\"]*)");
+
+
+[RULE:key_value_format_logs]
+alter 
+    tmp_get_keys = rtrim(arraystring(arraymap(regextract(_raw_log ,"\s(\S+):\"[^\"]*"), concat("(?P", "<"+"@element"+">", "[^|]+)\|")),""),"\|"),
+    tmp_get_values = arraystring(regextract(_raw_log ,"\s\S+:\"([^\"]*)"),"|")
+
+| alter parsed_fields = regexcapture(tmp_get_values, tmp_get_keys)
+| fields -tmp_get_keys ,tmp_get_values ;
+
+
+[RULE:get_hostname_rule]
+filter _raw_log ~= "\*\*NF\*\*"
+|alter parsed_fields_get_headers = regexcapture(_raw_log,"<(?P<pri>\d{1,3})>(?P<version>\d{1,3})\s(?P<iso_timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})\s(?P<hostname>\S+)")
+| alter get_time = parse_timestamp("%FT%X%Z", parsed_fields_get_headers -> iso_timestamp)
+| alter _time = get_time 
+| fields -get_time;
+
+
+[INGEST:vendor="reblaze", product="waf", target_dataset="reblaze_waf_raw", no_hit = keep]
+
+call get_hostname_rule 
+|filter parsed_fields_get_headers -> hostname = "reblazer"
+|call key_value_format_logs;
+
+call get_hostname_rule 
+|filter parsed_fields_get_headers -> hostname != "reblazer"
+|call values_format_logs ;

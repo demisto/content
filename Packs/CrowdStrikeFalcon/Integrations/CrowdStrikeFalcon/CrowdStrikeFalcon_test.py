@@ -5,7 +5,6 @@ from urllib.parse import unquote
 
 import demistomock as demisto
 import pytest
-from _pytest.python_api import raises
 from CommonServerPython import (
     CommandResults,
     DemistoException,
@@ -1894,6 +1893,35 @@ class TestFetchFunctionsTimestampFormatting:
             fetch_endpoint_detections({}, None, False)
         except Exception as e:
             pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
+
+    def test_fetch_endpoint_detections__is_detection_occurred_before_fetch_time(self, mocker):
+        """
+        Tests that detection["created_timestamp"] timestamps are filtered out if they are not after the start_fetch_time.
+        Given:
+            start_fetch_time is "2025-07-25T01:01:00.000000000Z"
+            Two detections with created_timestamps, one is before the start_fetch_time and the other is not.
+        When:
+            Fetching endpoint detections
+        Then:
+            Only the detection that occurred after the start_fetch_time is returned.
+        """
+        from CrowdStrikeFalcon import fetch_endpoint_detections
+
+        mocked_res = [
+            {"created_timestamp": "2025-07-25T23:59:59.999999Z", "composite_id": "123"},
+            {"created_timestamp": "2025-07-24T01:01:00.000001Z", "composite_id": "456"},
+        ]
+        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detections_entities",
+            return_value={"resources": mocked_res},
+        )
+
+        start_fetch_time = "2025-07-25T01:01:00.000000000Z"
+
+        results, _ = fetch_endpoint_detections({"time": start_fetch_time}, 2, False)
+        assert len(results) == 1
+        assert results[0]["occurred"] == mocked_res[0]["created_timestamp"]
 
     @pytest.mark.parametrize(
         "product_type, detection_name_prefix",
@@ -3978,7 +4006,7 @@ def test_add_error_message(failed_devices, all_requested_devices, expected_resul
 def test_add_error_message_raise_error(failed_devices, all_requested_devices):
     from CrowdStrikeFalcon import add_error_message
 
-    with raises(DemistoException, match=f"CrowdStrike Falcon The command was failed with the errors: {failed_devices}"):
+    with pytest.raises(DemistoException, match=f"CrowdStrike Falcon The command was failed with the errors: {failed_devices}"):
         add_error_message(failed_devices, all_requested_devices)
 
 
@@ -7860,3 +7888,80 @@ def test_fetch_items_reads_last_run_indexes_correctly(mocker, command):
 
     # Verify that fetch_events refers to the correctly indexes for each type by last_run object.
     assert last_run_identifiers_result == last_run_identifiers
+
+
+def test_is_detection_occurred_before_fetch_time():
+    """
+    Given:
+        - A detection with a created timestamp.
+        - A start time for fetching.
+    When:
+        - Running is_detection_occurred_before_fetch_time.
+    Then:
+        - Validate that the function returns True if the detection was before the start time, False otherwise.
+    """
+    from CrowdStrikeFalcon import is_detection_occurred_before_fetch_time
+
+    detection = {"created_timestamp": "2020-05-16T17:30:38Z"}
+    start_fetch_time = "2020-05-17T17:30:38Z"
+    assert is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
+
+    detection = {"created_timestamp": "2020-05-17T17:30:38Z"}
+    start_fetch_time = "2020-05-17T17:30:38Z"
+    assert not is_detection_occurred_before_fetch_time(detection["created_timestamp"], start_fetch_time)
+
+
+def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
+    """
+    Given:
+        - is_time_sensitive() returns True or False
+        - get_token_flag is True or False
+    When:
+        - Running http_request function
+    Then:
+        - Validate that when is_time_sensitive()=True: retries=0 and timeout=15
+        - Validate that when is_time_sensitive()=False: retries=0 and timeout=60 (default)
+        - Validate that when get_token_flag=False: retries=5 and timeout=60
+    """
+    from CrowdStrikeFalcon import http_request
+    from requests import Response
+
+    res_200 = Response()
+    res_200.status_code = 200
+    res_200._content = b'{"result": "success"}'
+
+    mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "proxy": True})
+    mocker.patch("CrowdStrikeFalcon.get_token", return_value="test_token")
+
+    # Test case 1: is_time_sensitive()=True should set retries=0 and timeout=15
+    mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
+    mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=True)
+
+    http_request(method="GET", url_suffix="/test", no_json=True)
+
+    assert mock_generic_http_request.call_count == 1
+    call_args = mock_generic_http_request.call_args[1]  # kwargs
+    assert call_args["retries"] == 0, f"Expected retries=0 when is_time_sensitive=True, got {call_args['retries']}"
+    assert call_args["timeout"] == 15, f"Expected timeout=15 when is_time_sensitive=True, got {call_args['timeout']}"
+
+    # Test case 2: is_time_sensitive()=False should set retries=0 and timeout=60
+    mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
+    mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=False)
+
+    http_request(method="GET", url_suffix="/test", no_json=True)
+
+    assert mock_generic_http_request.call_count == 1
+    call_args = mock_generic_http_request.call_args[1]  # kwargs
+    assert call_args["retries"] == 0, f"Expected retries=0 when is_time_sensitive=False, got {call_args['retries']}"
+    assert call_args["timeout"] == 60, f"Expected timeout=60 when is_time_sensitive=False, got {call_args['timeout']}"
+
+    # Test case 3: get_token_flag=False should set retries=5 and timeout=60
+    mock_generic_http_request = mocker.patch("CrowdStrikeFalcon.generic_http_request", side_effect=[res_200])
+    mocker.patch("CrowdStrikeFalcon.is_time_sensitive", return_value=False)
+
+    http_request(method="GET", url_suffix="/test", get_token_flag=False, no_json=True)
+
+    assert mock_generic_http_request.call_count == 1
+    call_args = mock_generic_http_request.call_args[1]  # kwargs
+    assert call_args["retries"] == 5, f"Expected retries=5 when get_token_flag=False, got {call_args['retries']}"
+    assert call_args["timeout"] == 60, f"Expected timeout=60 when get_token_flag=False, got {call_args['timeout']}"
