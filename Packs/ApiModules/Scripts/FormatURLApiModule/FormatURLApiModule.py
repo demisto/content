@@ -933,7 +933,7 @@ def parse_mixed_ip(ip_str: str) -> int:
 
 def remove_trailing_bracket_and_comma_from_part(part: str, inside_brackets: int) -> tuple[str, int]:
     """
-    Removes trailing brackets and commas from a part of a URL.
+    Removes trailing bracket and commas from a part of a URL.
     """
     if part.endswith(",") and inside_brackets:
         # This Fixes the edge case of catching a separator comma in a part when extracting from a list.
