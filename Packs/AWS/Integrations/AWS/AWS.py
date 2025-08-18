@@ -202,9 +202,7 @@ class AWSErrorHandler:
         error_entry = {
             "account_id": account_id,
             "message": error_message,
-            "name": permission_name,
-            "classification": "WARNING",
-            "error": "Permission Error",
+            "name": permission_name
         }
 
         demisto.debug(f"Permission error detected: {error_entry}")
