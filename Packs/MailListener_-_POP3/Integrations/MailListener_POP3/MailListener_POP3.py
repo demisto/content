@@ -2,6 +2,7 @@ import base64
 import poplib
 import quopri
 from email.parser import Parser
+from email.header import decode_header
 from html.entities import name2codepoint
 from html.parser import HTMLParser
 
@@ -82,22 +83,41 @@ def get_attachment_name(headers):
         if m:
             name = m.group(1)
 
-    if re.match(r"^.+\..{3,5}$", name):
+    if re.match("^.+\..{3,5}$", name):
         return name
 
-    match = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt"))
-    extension = match.group(1) if match else "txt"
+    extension = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt")).group(1)  # type: ignore
 
     return name + "." + extension
 
 
-def parse_base64(text):
-    if re.match(r"^=\?.*?=$", text):
-        res = re.search(r"=\?.*?\?[A-Z]{1}\?(.*?)\?=", text, re.IGNORECASE)
-        if res:
-            res = res.group(1)  # type: ignore
-            return base64.b64decode(res)  # type: ignore
-    return text
+def parse_header(text: str | None) -> str:
+    """Decode MIME encoded text from email headers.
+
+    Args:
+        text: The text to decode, potentially MIME encoded
+
+    Returns:
+        Decoded text as a string
+    """
+    if not text:
+        return ""
+
+    try:
+        decoded_parts = decode_header(text)
+        final = ""
+        for part, encoding in decoded_parts:
+            if isinstance(part, bytes):
+                final += part.decode(encoding or "utf-8", errors="ignore")
+            else:
+                final += part
+        return final
+    except (UnicodeDecodeError, LookupError) as e:
+        demisto.debug(f"Failed to decode email header with specific encoding. Error: {e}")
+        return text
+    except Exception as e:
+        demisto.debug(f"Failed to decode email header. Error: {e}")
+        return text
 
 
 class TextExtractHtmlParser(HTMLParser):
@@ -162,7 +182,7 @@ def get_email_context(email_data):
         "Labels": ", ".join(email_data.get("labelIds", "")),
         "Headers": context_headers,
         "Format": headers.get("content-type", "").split(";")[0],
-        "Subject": parse_base64(headers.get("subject")),
+        "Subject": parse_header(headers.get("subject", "")),
         "Body": email_data._payload,
         "From": headers.get("from"),
         "To": headers.get("to"),
