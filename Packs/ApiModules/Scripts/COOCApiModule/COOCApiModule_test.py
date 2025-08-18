@@ -729,8 +729,7 @@ def test_return_multiple_permissions_error_single_entry(mocker):
     results_call = demisto.results.call_args[0][0]
     assert results_call["Type"] == entryTypes["error"]
     assert results_call["ContentsFormat"] == formats["json"]
-    assert len(results_call["Contents"][0]) == 1
-    assert results_call["Contents"][0][0]["account_id"] == "account_id"
+    assert results_call["Contents"]["account_id"] == "account_id"
 
 
 def test_return_multiple_permissions_error_multiple_entries(mocker):
@@ -762,9 +761,9 @@ def test_return_multiple_permissions_error_multiple_entries(mocker):
     demisto.results.assert_called_once()
     results_call = demisto.results.call_args[0][0]
     assert len(results_call["Contents"][0]) == 3
-    assert results_call["Contents"][0][0]["account_id"] == "account-1"
-    assert results_call["Contents"][0][1]["account_id"] == "account-2"
-    assert results_call["Contents"][0][2]["account_id"] == "account-3"
+    assert results_call["Contents"][0]["account_id"] == "account-1"
+    assert results_call["Contents"][1]["account_id"] == "account-2"
+    assert results_call["Contents"][2]["account_id"] == "account-3"
 
 
 def test_return_multiple_permissions_error_empty_list(mocker):
@@ -786,7 +785,7 @@ def test_return_multiple_permissions_error_empty_list(mocker):
 
     demisto.results.assert_called_once()
     results_call = demisto.results.call_args[0][0]
-    assert len(results_call["Contents"][0]) == 0
+    assert len(results_call["Contents"]) == 0
 
 
 def test_return_multiple_permissions_error_entry_context_is_none(mocker):
@@ -827,7 +826,7 @@ def test_return_multiple_permissions_error_correct_format_and_type(mocker):
     assert results_call["Type"] == entryTypes["error"]
     assert results_call["ContentsFormat"] == formats["json"]
     assert isinstance(results_call["Contents"], list)
-    assert isinstance(results_call["Contents"][0], list)
+    assert isinstance(results_call["Contents"][0], dict)
 
 
 def test_return_multiple_permissions_error_debug_logging_format(mocker):
