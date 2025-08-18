@@ -340,7 +340,6 @@ MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Inc
 
 HOST_STATUS_DICT = {"online": "Online", "offline": "Offline", "unknown": "Unknown"}
 
-
 QUARANTINE_FILES_OUTPUT_HEADERS = [
     "id",
     "aid",
@@ -370,7 +369,6 @@ CPU_UTILITY_INT_TO_STR_KEY_MAP = {
     5: "Highest",
 }
 CPU_UTILITY_STR_TO_INT_KEY_MAP = {value: key for key, value in CPU_UTILITY_INT_TO_STR_KEY_MAP.items()}
-
 
 SCHEDULE_INTERVAL_STR_TO_INT = {
     "never": 0,
@@ -423,7 +421,6 @@ class IncidentType(Enum):
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
-
 
 """ HELPER FUNCTIONS """
 
@@ -2144,19 +2141,20 @@ def get_username_uuid(username: str):
     :param username: Username to get UUID of.
     :return: The user UUID
     """
-    response = http_request("GET", "/users/queries/user-uuids-by-email/v1", params={"uid": username})
+    response = http_request("GET", "/user-management/queries/users/v1", params={"uid": username})
     resources: list = response.get("resources", [])
     if not resources:
         raise ValueError(f"User {username} was not found")
     return resources[0]
 
 
-def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
+def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag):
     """
     Sends a resolve detection request
     :param ids: Single or multiple ids in an array string format.
     :param status: New status of the detection.
     :param assigned_to_uuid: uuid to assign the detection to.
+    :param username: Username to assign the detection to.
     :param show_in_ui: Boolean flag in string format (true/false).
     :param comment: Optional comment to add to the detection.
     :param The tag to add.
@@ -2167,6 +2165,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         payload["status"] = status
     if assigned_to_uuid:
         payload["assigned_to_uuid"] = assigned_to_uuid
+    if username and not LEGACY_VERSION:
+        payload["assigned_to_name"] = username
     if show_in_ui:
         payload["show_in_ui"] = show_in_ui
     if comment:
@@ -2176,6 +2176,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag):
         # modify the payload to match the Raptor API
         ids = payload.pop("ids")
         payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["assign_to_name"] = payload.pop("assigned_to_name") if "assigned_to_name" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
         if tag:
@@ -2301,7 +2302,8 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
+    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None,
+                             tag=None)
 
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
@@ -3633,7 +3635,7 @@ def fetch_detections_by_product_type(
         detections = (
             truncate_long_time_str(detections, "occurred")
             if product_type
-            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
+               in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
@@ -3861,7 +3863,7 @@ def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict
         mirror_direction=MIRROR_DIRECTION,
         mirror_instance=INTEGRATION_INSTANCE,
         extracted_account_id=demisto.get(ioa_event, "cloud_account_id.aws_account_id")
-        or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
+                             or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
         extracted_uuid=uuid[0] if uuid else None,
         extracted_resource_id=id[0] if id else None,
         incident_type=incident_type,
@@ -4600,7 +4602,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i : i + batch_size]
+        batch = device_ids[i: i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -4758,7 +4760,8 @@ def resolve_detection_command():
     comment = args.get("comment")
     if username and assigned_to_uuid:
         raise ValueError("Only one of the arguments assigned_to_uuid or username should be provided, not both.")
-    if username:
+
+    if username and LEGACY_VERSION:
         assigned_to_uuid = get_username_uuid(username)
 
     status = args.get("status")
@@ -4768,7 +4771,7 @@ def resolve_detection_command():
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
     if LEGACY_VERSION and tag:
         raise DemistoException("tag argument is only relevant when running with API V3.")
-    raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment, tag)
+    raw_res = resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comment, tag)
     args.pop("ids")
     hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += "With the following values:\n"
@@ -5635,8 +5638,10 @@ def resolve_incident_command(
             "At least one of the following arguments must be provided:"
             "status, assigned_to_uuid, username, add_tag, remove_tag, add_comment"
         )
+    if user_name and user_uuid:
+        raise DemistoException("Only one of the following arguments can be provided: assigned_to_uuid, username")
 
-    if user_name and not user_uuid:
+    if user_name and LEGACY_VERSION:
         user_uuid = get_username_uuid(username=user_name)
 
     action_parameters = {}
@@ -5649,6 +5654,10 @@ def resolve_incident_command(
     if user_uuid:
         action_parameters["update_assigned_to_v2"] = user_uuid
         readable_output += f"Assigned user has been updated to '{user_uuid}'.\n"
+
+    if user_name and not LEGACY_VERSION:
+        action_parameters["update_assigned_to_v2"] = user_name
+        readable_output += f"Assigned user has been updated to '{user_name}'.\n"
 
     if add_tag:
         action_parameters["add_tag"] = add_tag
@@ -5882,7 +5891,8 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids,
+                                    timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")
@@ -7024,7 +7034,7 @@ def make_create_scan_request_body(args: dict, is_scheduled: bool) -> dict:
 def ODS_create_scan_request(args: dict, is_scheduled: bool) -> dict:
     body = make_create_scan_request_body(args, is_scheduled)
     remove_nulls_from_dictionary(body)
-    return http_request("POST", f'/ods/entities/{"scheduled-"*is_scheduled}scans/v1', json=body)
+    return http_request("POST", f'/ods/entities/{"scheduled-" * is_scheduled}scans/v1', json=body)
 
 
 def ODS_verify_create_scan_command(args: dict) -> None:
