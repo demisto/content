@@ -1433,7 +1433,7 @@ function scoreToReputation(score) {
         0: 'Unknown'
     };
 
-    return toStr[score] ?? 'None';
+    return toStr[score] !== undefined ? toStr[score] : 'None';
 }
 
 /**
