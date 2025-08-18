@@ -16,13 +16,12 @@ They feature built-in hardware acceleration to significantly improve the perform
 <~XSIAM>
 
 <h2>This Pack Includes</h2>
-<p>Data normalization capabilities:</p>
-<ul>
-<li>Data modeling rules to normalize Huawei Firewall logs that are ingested via Broker VM to Cortex XSIAM.</li>
-<li>Ingested logs can be queried in XQL Search using the <em><i>huawei_fw_raw</i></em> dataset.</li>
-</ul>
-
+<p>Data normalization capabilities:
 <br>
+1. Data modeling rules to normalize Huawei Firewall logs that are ingested via Broker VM to Cortex XSIAM.
+<br>
+2. Ingested logs can be queried in XQL Search using the <em><i>huawei_fw_raw</i></em> dataset.
+</p>
 
 <h3>Supported Log Categories</h3>
 
@@ -94,8 +93,6 @@ They feature built-in hardware acceleration to significantly improve the perform
 </table>
 </details>
 
-<br>
-
 <h2></h2>
 
 <h3>Supported Timestamp Formats</h3>
@@ -111,32 +108,23 @@ They feature built-in hardware acceleration to significantly improve the perform
 </table>
 <h2></h2>
 
-<br>
-
 <h2>Data Collection</h2>
-
 <h3>Configure Huawei Firewall</h3>
-<ol>
-<li>Enable the Information Center. For instructions, refer to the <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_TASK_0178943611">Huawei documentation</a>.</li>
-<li>Navigate to <strong>System</strong>.</li>
-<li>In the left pane, select <strong>Log Configuration</strong>.</li>
-<li>
-Select the <strong>Log Configuration</strong> tab and configure the following settings:
-<br><br>
-<strong>System Logs</strong>
-<ol>
-<li>Enter the <i>Log Host IP Address</i>.</li>
-<li>Enter the <i>Port</i> number (default is 514).</li>
-</ol>
+<p>
+1. Enable the Information Center. For instructions, refer to the <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_TASK_0178943611">Huawei documentation</a>.
 <br>
-<strong>Service Logs</strong>
-<ol>
-<li>For <i>Log Format</i>, select <strong>Syslog</strong>.</li>
-</ol>
+2. Navigate to <strong>System</strong>.
 <br>
+3. In the left pane, select <strong>Log Configuration</strong>.
+<br>
+4. Select the <strong>Log Configuration</strong> tab and configure the following settings:<br><strong style="padding-left: 16px;margin-top: 0em;">System Logs</strong></p>
+<p style="padding-left: 40px;margin-top: 0em;">* Enter the <i>Log Host IP Address</i>.</p>
+<p style="padding-left: 40px;margin-top: 0em;">* Enter the <i>Port</i> number (default is 514).</p>
+
+<p style="padding-left: 16px;margin-top: 0em;"><strong>Service Logs</strong> <br>
+<p style="padding-left: 40px;margin-top: 0em;">* For <i>Log Format</i>, select <strong>Syslog</strong>.</p></p>
+
 <p>For more details on configuring log output, see this <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178928516">configuration guide</a>.</p>
-</li>
-</ol>
 
 <h3>Cortex XSIAM - Broker VM Configuration</h3>
 <p>
@@ -144,16 +132,19 @@ To create or configure the Broker VM, refer to the <a href="https://docs-cortex.
 <br>
 Follow these steps to configure the Broker VM to receive Huawei Firewall logs.
 </p>
-<ol>
-<li>Navigate to <strong>Settings → Configuration → Data Broker → Broker VMs</strong>.</li>
-<li>
-In the <strong>APPS</strong> column on the <strong>Brokers</strong> tab, add the <strong>Syslog</strong> app for the relevant broker instance.
+
+<p>
+1. Navigate to <strong>Settings → Configuration → Data Broker → Broker VMs</strong>.
 <br>
-If the <strong>Syslog</strong> app already exists, hover over it and click <strong>Configure</strong>.
-</li>
-<li>Click <strong>Add New</strong>.</li>
-<li>
-Configure the Syslog Collector with the following parameters:
+2. In the <strong>APPS</strong> column on the <strong>Brokers</strong> tab, add the <strong>Syslog</strong> app for the relevant broker instance.
+<br>
+3. If the <strong>Syslog</strong> app already exists, hover over it and click <strong>Configure</strong>.
+<br>
+4. Click <strong>Add New</strong>.
+<br>
+5. Configure the Syslog Collector with the following parameters:
+</p>
+
 <table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
 <tr>
 <th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Parameter</th>
@@ -169,11 +160,11 @@ Configure the Syslog Collector with the following parameters:
 </tr>
 <tr>
 <td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Vendor</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter `Huawei`.</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter  <em><i>Huawei</em></i>.</td>
 </tr>
 <tr>
 <td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Product</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter `FW`.</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter  <em><i>FW</em></i>.</td>
 </tr>
 </table>
 </li>
