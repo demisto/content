@@ -41,7 +41,7 @@ Audit log is an advanced security feature and available on the Enterprise plan a
 | Client ID |  | False |
 | Client secret |  | False |
 | Authorization code | The code received from the redirect URL after running monday-generate-login-url command. \(needed for Activity Logs only\) | False |
-| Board ID | Integer board ID. \(needed for Activity Logs only\) | False |
+| Board IDs | Comma separated list of board IDs. \(needed for Activity Logs only\) | False |
 | Events Fetch Interval |  | False |
 | Maximum number of Activity Logs per fetch |  | False |
 | Audit Server URL |  | False |

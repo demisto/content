@@ -28,9 +28,10 @@ configuration:
   section: Connect
   required: false
   additionalinfo: "The code received from the redirect URL after running monday-generate-login-url command. (needed for Activity Logs only)"
-- display: Board ID
-  name: board_id
+- display: Board IDs
+  name: board_ids
   required: false
+  additionalinfo: "Comma separated list of board IDs. (needed for Activity Logs only)"
   type: 0
   section: Connect
 - display: 'Events Fetch Interval'
