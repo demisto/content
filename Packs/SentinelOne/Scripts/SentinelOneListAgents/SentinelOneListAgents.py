@@ -47,7 +47,7 @@ def filter_by_agent_ip(ip: str, entry_outputs) -> CommandResults:
             metadata="Provides summary information and details for all the agents that matched your search criteria",
         ),
         outputs_prefix="SentinelOne.Agents",
-        outputs_key_field="ID",
+        outputs_key_field="id",
         outputs=matching_agents,
         raw_response=matching_agents,
     )
