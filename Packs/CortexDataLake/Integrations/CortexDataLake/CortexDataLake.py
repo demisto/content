@@ -28,7 +28,13 @@ INSTANCE_ID_CONST = "instance_id"
 API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
+
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
+STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+FEDRAMP_TOKEN_URL = (
+    "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"  # guardrails-disable-line
+)
+
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
 FETCH_TABLE_HR_NAME = {
@@ -1046,17 +1052,21 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
     """
     # Get tenant URL
     demisto.debug("Getting URL from license custom field.")
-    url = demisto.getLicenseCustomField("Http_Connector.url")  # Returns tenant URL without https scheme (i.e. the hostname)
+    url = str(demisto.getLicenseCustomField("Http_Connector.url"))
     demisto.debug(f"Got {url=} from license custom field.")
+
+    # Ensure 'https' scheme in tenant URL, otherwise URL may not be parsed correctly
+    if not url.startswith("https"):
+        demisto.debug("Prepending 'https' scheme to tenant URL.")
+        url = f"https://{url}"
 
     # Extract hostname from tenant URL
     demisto.debug("Extracting hostname from parsed URL.")
     parsed_url = urlparse(url)
-    # If the tenant URL is returned without http(s) scheme, `parsed_url.hostname` = None. In this case, hostname == tenant URL
-    hostname = parsed_url.hostname if (parsed_url.scheme and parsed_url.scheme.startswith("http")) else url
+    hostname = parsed_url.hostname
     demisto.debug(f"Extracted {hostname=} from parsed URL.")
 
-    is_fr = hostname and hostname.endswith(".federal.paloaltonetworks.com")  # Boolean flag that indicates if FedRAMP tenant
+    is_fr = isinstance(hostname, str) and hostname.endswith(".federal.paloaltonetworks.com")  # Indicates if FedRAMP tenant
     demisto.debug(f"Working on tenant with {is_fr=}.")
 
     registration_id_and_url = configured_registration_id_and_url.split("@")
@@ -1068,11 +1078,11 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
 
     elif is_fr:
         demisto.debug("Getting token retrieval URL for FedRAMP tenant.")
-        token_retrieval_url = "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"
+        token_retrieval_url = FEDRAMP_TOKEN_URL
 
     else:
         demisto.debug("Getting token retrieval URL for standard tenant.")
-        token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+        token_retrieval_url = STANDARD_TOKEN_URL
 
     return token_retrieval_url, registration_id, is_fr
 

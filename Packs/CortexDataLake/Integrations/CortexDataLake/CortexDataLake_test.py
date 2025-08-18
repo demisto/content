@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from pytest_mock import MockerFixture
 from CommonServerPython import parse_date_range, DemistoException
-from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST
+from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST, STANDARD_TOKEN_URL, FEDRAMP_TOKEN_URL
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
     (1582210145000000, False, "2020-02-20T14:49:05"),
@@ -473,41 +473,25 @@ class TestBackoffStrategy:
         pytest.param(
             "test_id_fr",
             "https://fr-tenant.federal.paloaltonetworks.com",
-            (
-                "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl",  # guardrails-disable-line
-                "test_id_fr",
-                True,
-            ),
+            (FEDRAMP_TOKEN_URL, "test_id_fr", True),
             id="No custom URL, FedRAMP tenant URL with a 'http(s)' scheme",
         ),
         pytest.param(
             "test_id_std",
             "https://std-tenant.paloaltonetworks.com",
-            (
-                "https://oproxy.demisto.ninja",  # guardrails-disable-line
-                "test_id_std",
-                False,
-            ),
+            (STANDARD_TOKEN_URL, "test_id_std", False),
             id="No custom URL, a standard tenant URL with a scheme",
         ),
         pytest.param(
             "test_id_fr_nohost",
             "fr-tenant.federal.paloaltonetworks.com",
-            (
-                "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl",  # guardrails-disable-line
-                "test_id_fr_nohost",
-                True,
-            ),
+            (FEDRAMP_TOKEN_URL, "test_id_fr_nohost", True),
             id="No custom URL, FedRAMP tenant URL WITHOUT 'http(s)' scheme",
         ),
         pytest.param(
             "test_id_std_nohost",
             "std-tenant.paloaltonetworks.com",
-            (
-                "https://oproxy.demisto.ninja",  # guardrails-disable-line
-                "test_id_std_nohost",
-                False,
-            ),
+            (STANDARD_TOKEN_URL, "test_id_std_nohost", False),
             id="No custom URL, standard tenant URL WITHOUT 'http(s)' scheme",
         ),
     ],
