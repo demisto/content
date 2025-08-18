@@ -351,7 +351,7 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
         {
             "Type": entryTypes["error"],
             "ContentsFormat": formats["json"],
-            "Contents": [entries],
+            "Contents": entries,
             "EntryContext": None,
         }
     )
