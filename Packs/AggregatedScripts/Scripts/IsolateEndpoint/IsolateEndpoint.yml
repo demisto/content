@@ -23,14 +23,17 @@ outputs:
 - contextPath: IsolateEndpoint.Endpoint
   description: The endpoint's hostname.
   type: String
-- contextPath: IsolateEndpoint.Result
-  description: The result of the isolation.
-  type: String
-- contextPath: IsolateEndpoint.Brand
-  description: The used brand for the isolation.
+- contextPath: IsolateEndpoint.Isolated
+  description: Is the endpoint isolated.
   type: String
 - contextPath: IsolateEndpoint.Message
   description: An informative message for the isolation results.
+  type: String
+- contextPath: IsolateEndpoint.Result
+  description: The result of the isolation.
+  type: String
+- contextPath: IsolateEndpoint.Source
+  description: The used brand for the isolation.
   type: String
 script: '-'
 timeout: '0'
