@@ -463,11 +463,7 @@ class TestBackoffStrategy:
         pytest.param(
             "test_id_custom@https://custom.test.com/api",
             "https://tenant.paloaltonetworks.com",
-            (
-                "https://custom.test.com/api",
-                "test_id_custom",
-                False,
-            ),
+            ("https://custom.test.com/api", "test_id_custom", False),
             id="Custom URL in params. License field URL NOT used for token URL",
         ),
         pytest.param(
