@@ -1,2 +1,3 @@
 [file:DisableUser.py]
 ignore=PA124
+ignore=SC101
