@@ -54,4 +54,4 @@ var result = demisto.executeCommand('DeleteContext', {
 return_results(result);
 ```
 
-This ensures that any context keys specified in `keysToKeep` are properly restored to the context after the deletion operation.
+Any context keys specified in `keysToKeep` are then properly restored to the context after the deletion operation.
