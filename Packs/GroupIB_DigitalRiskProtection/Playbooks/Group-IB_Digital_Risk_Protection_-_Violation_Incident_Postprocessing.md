@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![Violation Incident Postprocessing - Group-IB Digital Risk Protection](../doc_files/Violation_Incident_Postprocessing_-_Group-IB_Digital_Risk_Protection_Wed_Apr_02_2025.png)
+![Group-IB Digital Risk Protection - Violation Incident Postprocessing](../doc_files/Violation_Incident_Postprocessing_-_Group-IB_Digital_Risk_Protection_Wed_Apr_02_2025.png)

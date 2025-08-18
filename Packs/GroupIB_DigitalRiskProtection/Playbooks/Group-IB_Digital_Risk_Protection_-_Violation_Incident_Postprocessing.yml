@@ -1,8 +1,8 @@
-id: Violation Incident Postprocessing - Group-IB Digital Risk Protection
+id: Group-IB Digital Risk Protection - Violation Incident Postprocessing
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Violation Incident Postprocessing - Group-IB Digital Risk Protection
+name: Group-IB Digital Risk Protection - Violation Incident Postprocessing
 description: Handles postprocessing of violation incidents detected by Group-IB Digital Risk Protection.
 starttaskid: "0"
 fromversion: 6.10.0
@@ -233,7 +233,7 @@ tasks:
     task:
       id: dbb43028-c9d7-4609-89e0-908e87190560
       version: -1
-      name: Done
+      name: Close the investigation
       description: Close the investigation after processing the violation.
       script: Builtin|||closeInvestigation
       type: regular

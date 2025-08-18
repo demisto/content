@@ -40,7 +40,8 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: "Violation Section to filter the received Violation"
+- display: Filter by Violation Type
+  additionalinfo: Requests only Violations with the specified Violation Type IDs
   name: violationSection
   type: 15
   required: false
@@ -51,11 +52,11 @@ configuration:
   - "Mobile Apps"
   - "Social Networks"
   - "Instant Messengers"
-- display: Brands to filter the received Violation
+- display: Filter by Brand
   name: brands
   type: 0
   required: false
-  additionalinfo: Brands for filtering received violations. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
+  additionalinfo: Requests only Violations associated with the specified Brand IDs. The list of available brands can be obtained with the command !gibdrp-get-brands in the menu WarRoom -> Playground. After getting the brands you must specify the brand ID for which you want to receive violations. Attention! Currently filtering is available only by one brand in one Instance
 - additionalinfo: Date to start fetching incidents from.
   defaultvalue: 3 days
   display: Incidents first fetch
@@ -69,12 +70,12 @@ configuration:
   type: 8
   required: false
   additionalinfo: Enables or disables loading of each image in each violation. Can significantly affect the speed of data collection if the parameter is enabled, i.e. set to True
-- display: Getting Typosquatting only
+- display: Get Typosquatting Only
   name: only_typosquatting
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: Allows for the collection of offenses suitable only for Typo Squatting
+  additionalinfo: Returns only records of the Typosquatting type. If not specified, you consume only violations - without Typosquatting detections.
 - display: Number of requests per collection
   name: max_fetch
   type: 15
