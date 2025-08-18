@@ -208,16 +208,8 @@ class AWSErrorHandler:
         }
 
         demisto.debug(f"Permission error detected: {error_entry}")
-        demisto.results(
-                {
-                    "Type": entryTypes["error"],
-                    "ContentsFormat": formats["json"],
-                    "Contents": [error_entry],
-                    "EntryContext": None,
-                }
-        )
+        return_multiple_permissions_error([error_entry])
         sys.exit(0)
-        # return_error([error_entry])
 
     @classmethod
     def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
