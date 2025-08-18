@@ -28,6 +28,7 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 - Monitor status and severity changes and trigger escalation or remediation workflows.
 
 ## Setup Instructions
+
 1.
     1. Navigate to **Settings** → **Integrations** → **Servers & Services**.
     2. Search for **Check Point XDR** and click **Add instance**.
@@ -172,10 +173,12 @@ There is no context output for this command.
 
 - **Authentication Errors**: Ensure the Client ID and Access Key are correct and have the necessary permissions.
 - **No Incidents Fetched**: 
+
 1. Verify the date range parameter is long enough (so there are incidents to fetch).
 2. Verify the limit parameter in the integration configuration is higher then 0.
 3. Verify your client Id and Access key are correct - copy them from the XDR portal under your settings.
 4. Verify the Fetch Incidents checkbox is cheked.
+
 - **SSL Errors**: If SSL verification is enabled, ensure the base URL uses a valid SSL certificate.
 
 ## Additional Resources

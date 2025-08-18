@@ -1,7 +1,7 @@
 [
     {
     "type": "Check Point XDR Insight",
-    "dbotMirrorId": "636750_950961",
+    "dbotMirrorId": 636750,
     "name": "Behavioral.Geo.Bulgaria",
     "severity": 2,
     "occurred": "2023-12-24T03:10:02.954000Z",

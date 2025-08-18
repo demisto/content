@@ -86,7 +86,7 @@ configuration:
   section: Collect
 description: Fetch and manage incidents from Check Point XDR.
 display: 'Check Point XDR'
-name: CheckPointXDR 
+name: CheckPointXDR
 script:
   commands:
   - arguments: []
@@ -102,7 +102,6 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   dockerimage: demisto/python3:3.12.11.4417419
-defaultclassifier: CheckpointXDR_classifier
 defaultmapperin: CheckPointXDR_Incoming_Mapper
 defaultmapperout: CheckPointXDR_Out_Mapper
 fromversion: 6.10.0
