@@ -729,7 +729,7 @@ def test_return_multiple_permissions_error_single_entry(mocker):
     results_call = demisto.results.call_args[0][0]
     assert results_call["Type"] == entryTypes["error"]
     assert results_call["ContentsFormat"] == formats["json"]
-    assert results_call["Contents"]["account_id"] == "account_id"
+    assert results_call["Contents"][0]["account_id"] == "account_id"
 
 
 def test_return_multiple_permissions_error_multiple_entries(mocker):
@@ -760,7 +760,7 @@ def test_return_multiple_permissions_error_multiple_entries(mocker):
 
     demisto.results.assert_called_once()
     results_call = demisto.results.call_args[0][0]
-    assert len(results_call["Contents"][0]) == 3
+    assert len(results_call["Contents"]) == 3
     assert results_call["Contents"][0]["account_id"] == "account-1"
     assert results_call["Contents"][1]["account_id"] == "account-2"
     assert results_call["Contents"][2]["account_id"] == "account-3"
