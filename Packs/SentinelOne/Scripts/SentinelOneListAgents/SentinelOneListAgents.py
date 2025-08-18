@@ -18,7 +18,8 @@ def filter_by_agent_ip(ip: str, entry_outputs) -> CommandResults:
     matching_agents = []
 
     def check_agent_ip(agent):
-        agent_external_ip = agent.get("ExternalIP")
+        agent_external_ip = agent.get("externalIp")
+        demisto.debug(f"{agent_external_ip=}")
         return agent_external_ip and str(agent_external_ip) == ip
 
     # Handle case when command_res is a list
