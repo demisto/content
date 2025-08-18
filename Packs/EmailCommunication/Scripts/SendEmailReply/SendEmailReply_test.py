@@ -64,8 +64,8 @@ def test_append_email_signature_fails(mocker):
     """
     from SendEmailReply import append_email_signature
 
-    get_list_error_response = False, util_load_json("test_data/getList_signature_error.json")
-    mocker.patch("SendEmailReply.execute_command", return_value=get_list_error_response)
+    get_list_error_response = util_load_json("test_data/getList_signature_error.json")
+    mocker.patch.object(demisto, "executeCommand", return_value=get_list_error_response)
     debug_mocker = mocker.patch.object(demisto, "debug")
     html_body = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
     debug_mocker_call_args = debug_mocker.call_args
