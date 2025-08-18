@@ -869,20 +869,9 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[int | None, int | None]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"] = args.get("from_port", "")
+        kwargs["ToPort"] = args.get("to_port", "")
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -919,20 +908,9 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[int | None, int | None]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"] = args.get("from_port", "")
+        kwargs["ToPort"] = args.get("to_port", "")
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -969,18 +947,6 @@ class EC2:
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
 
-        def parse_port_range(port: str) -> tuple[int | None, int | None]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -993,7 +959,8 @@ class EC2:
         else:
             # Simple mode: build a single rule descriptor
             proto = args.get("protocol")
-            from_port, to_port = parse_port_range(args.get("port", ""))
+            from_port = args.get("from_port", "")
+            to_port = args.get("to_port", "")
             cidr = args.get("cidr")
             ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
 
@@ -1170,20 +1137,9 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[int | None, int | None]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
-        from_port, to_port = parse_port_range(args.get("port", ""))
+        from_port = args.get("from_port", "")
+        to_port = args.get("to_port", "")
 
         if ip_permissions := args.get("ip_permissions"):
             try:

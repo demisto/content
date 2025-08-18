@@ -1314,10 +1314,10 @@ def test_ec2_delete_security_group_command_unexpected_exception(mocker):
         EC2.delete_security_group_command(mock_client, args)
 
 
-def test_ec2_describe_security_group_command_success_with_group_ids(mocker):
+def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
     """
     Given: A mocked boto3 EC2 client and valid group_ids argument.
-    When: describe_security_group_command is called with group IDs.
+    When: describe_security_groups_command is called with group IDs.
     Then: It should return CommandResults with security group details and proper outputs.
     """
     from AWS import EC2
@@ -1340,7 +1340,7 @@ def test_ec2_describe_security_group_command_success_with_group_ids(mocker):
 
     args = {"group_ids": "sg-1234567890abcdef0"}
 
-    result = EC2.describe_security_group_command(mock_client, args)
+    result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "AWS.EC2.SecurityGroups"
     assert result.outputs_key_field == "GroupId"
@@ -1348,10 +1348,10 @@ def test_ec2_describe_security_group_command_success_with_group_ids(mocker):
     assert "AWS EC2 SecurityGroups" in result.readable_output
 
 
-def test_ec2_describe_security_group_command_success_with_group_names(mocker):
+def test_ec2_describe_security_groups_command_success_with_group_names(mocker):
     """
     Given: A mocked boto3 EC2 client and valid group_names argument.
-    When: describe_security_group_command is called with group names.
+    When: describe_security_groups_command is called with group names.
     Then: It should return CommandResults with security group details.
     """
     from AWS import EC2
@@ -1373,16 +1373,16 @@ def test_ec2_describe_security_group_command_success_with_group_names(mocker):
 
     args = {"group_names": "production-sg"}
 
-    result = EC2.describe_security_group_command(mock_client, args)
+    result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs[0]["GroupName"] == "production-sg"
     assert "production-sg" in result.readable_output
 
 
-def test_ec2_describe_security_group_command_with_multiple_groups(mocker):
+def test_ec2_describe_security_groups_command_with_multiple_groups(mocker):
     """
     Given: A mocked boto3 EC2 client and multiple group IDs.
-    When: describe_security_group_command is called with comma-separated group IDs.
+    When: describe_security_groups_command is called with comma-separated group IDs.
     Then: It should return CommandResults with all security groups.
     """
     from AWS import EC2
@@ -1413,17 +1413,17 @@ def test_ec2_describe_security_group_command_with_multiple_groups(mocker):
 
     args = {"group_ids": "sg-1111111111111111, sg-2222222222222222"}
 
-    result = EC2.describe_security_group_command(mock_client, args)
+    result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert len(result.outputs) == 2
     assert result.outputs[0]["GroupId"] == "sg-1111111111111111"
     assert result.outputs[1]["GroupId"] == "sg-2222222222222222"
 
 
-def test_ec2_describe_security_group_command_no_security_groups_found(mocker):
+def test_ec2_describe_security_groups_command_no_security_groups_found(mocker):
     """
     Given: A mocked boto3 EC2 client returning empty security groups list.
-    When: describe_security_group_command is called with non-existent group ID.
+    When: describe_security_groups_command is called with non-existent group ID.
     Then: It should return CommandResults with no security groups message.
     """
     from AWS import EC2
@@ -1433,16 +1433,16 @@ def test_ec2_describe_security_group_command_no_security_groups_found(mocker):
 
     args = {"group_ids": "sg-nonexistent123"}
 
-    result = EC2.describe_security_group_command(mock_client, args)
+    result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.readable_output == "No security groups were found."
     assert result.outputs is None
 
 
-def test_ec2_describe_security_group_command_with_tags(mocker):
+def test_ec2_describe_security_groups_command_with_tags(mocker):
     """
     Given: A mocked boto3 EC2 client and security group with multiple tags.
-    When: describe_security_group_command is called successfully.
+    When: describe_security_groups_command is called successfully.
     Then: It should return CommandResults with tags included in the table data.
     """
     from AWS import EC2
@@ -1469,7 +1469,7 @@ def test_ec2_describe_security_group_command_with_tags(mocker):
 
     args = {"group_ids": "sg-1234567890abcdef0"}
 
-    result = EC2.describe_security_group_command(mock_client, args)
+    result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "Environment" in result.readable_output
     assert "Production" in result.readable_output

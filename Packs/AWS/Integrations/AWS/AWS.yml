@@ -1159,8 +1159,11 @@ script:
     - name: protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
       required: false
-    - name: port
-      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+    - name: from_port
+      description: 'The start of port range for the TCP and UDP protocols.'
+      required: false
+    - name: to_port
+      description: 'The end of port range for the TCP and UDP protocols.'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
@@ -1364,8 +1367,11 @@ script:
     - name: protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
       required: false
-    - name: port
-      description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
+    - name: from_port
+      description: 'The start of port range for the TCP and UDP protocols.'
+      required: false
+    - name: to_port
+      description: 'The end of port range for the TCP and UDP protocols.'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
@@ -1502,8 +1508,11 @@ script:
     - name: protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
       required: false
-    - name: port
-      description: 'For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation.'
+    - name: from_port
+      description: 'The start of port range for the TCP and UDP protocols.'
+      required: false
+    - name: to_port
+      description: 'The end of port range for the TCP and UDP protocols.'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
@@ -1640,8 +1649,11 @@ script:
     - name: protocol
       description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly.'
       required: false
-    - name: port
-      description: 'For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization.'
+    - name: from_port
+      description: 'The start of port range for the TCP and UDP protocols.'
+      required: false
+    - name: to_port
+      description: 'The end of port range for the TCP and UDP protocols.'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
