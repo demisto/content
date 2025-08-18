@@ -432,6 +432,15 @@ def is_detection_fetch_type_selected(selected_types: list):
     return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
 
 
+def is_detection_occurred_before_fetch_time(detection_created_timestamp: str, start_fetch_time: str) -> bool:
+    # the following test is to filter out detections that are older than the start_fetch_time.
+    # The CS Falcon API does not do that reliably
+    create_date = datetime.fromisoformat(detection_created_timestamp.replace("Z", "+00:00"))
+    start_date = datetime.fromisoformat(start_fetch_time.replace("Z", "+00:00"))
+
+    return create_date < start_date
+
+
 def is_incident_fetch_type_selected(selected_types: list):
     return any(incident_type in selected_types for incident_type in INCIDENT_FETCH_TYPES)
 
@@ -3035,7 +3044,6 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-
     fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
     incident_type = "detection"
 
@@ -3061,10 +3069,17 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     if raw_res is not None and "resources" in raw_res:
         full_detections = demisto.get(raw_res, "resources")
+        # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
         for detection in full_detections:
-            detection["incident_type"] = incident_type
-            # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
             detection_id = detection.get("detection_id") if LEGACY_VERSION else detection.get("composite_id")
+            if is_detection_occurred_before_fetch_time(detection.get("created_timestamp"), start_fetch_time):
+                demisto.debug(
+                    f"CrowdStrikeFalconMsg: Detection {detection_id} created at {detection.get('created_timestamp')} "
+                    f"was created before the fetch start date: {start_fetch_time}"
+                )
+                continue
+
+            detection["incident_type"] = incident_type
             demisto.debug(
                 f"CrowdStrikeFalconMsg: Detection {detection_id} "
                 f"was fetched which was created in {detection['created_timestamp']}"
@@ -3094,7 +3109,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         date_format=DETECTION_DATE_FORMAT,
         new_offset=detections_offset,
     )
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     return detections, current_fetch_info_detections
 
@@ -6226,35 +6241,38 @@ def get_cve_command(args: dict) -> list[dict[str, Any]]:
     command_results_list = []
     http_response = cve_request(cve)
     raw_cve = [res_element.get("cve") for res_element in http_response.get("resources", [])]
-    for cve in raw_cve:
-        relationships_list = create_relationships(cve)
-        cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get("Reliability", "A+ - 3rd party enrichment"))
-        cve_indicator = Common.CVE(
-            id=cve.get("id"),
-            cvss="",
-            published=cve.get("published_date"),
-            modified="",
-            description=cve.get("description"),
-            cvss_score=cve.get("base_score"),
-            cvss_vector=cve.get("vector"),
-            dbot_score=cve_dbot_score,
-            publications=create_publications(cve),
-            relationships=relationships_list,
-        )
-        cve_human_readable = {
-            "ID": cve.get("id"),
-            "Description": cve.get("description"),
-            "Published Date": cve.get("published_date"),
-            "Base Score": cve.get("base_score"),
-        }
-        human_readable = tableToMarkdown(
-            "CrowdStrike Falcon CVE", cve_human_readable, headers=["ID", "Description", "Published Date", "Base Score"]
-        )
-        command_results = CommandResults(
-            raw_response=cve, readable_output=human_readable, relationships=relationships_list, indicator=cve_indicator
-        ).to_context()
-        if command_results not in command_results_list:
-            command_results_list.append(command_results)
+    if not raw_cve:
+        command_results_list = [(CommandResults(readable_output="No matching results found.")).to_context()]
+    else:
+        for cve in raw_cve:
+            relationships_list = create_relationships(cve)
+            cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get("Reliability", "A+ - 3rd party enrichment"))
+            cve_indicator = Common.CVE(
+                id=cve.get("id"),
+                cvss="",
+                published=cve.get("published_date"),
+                modified="",
+                description=cve.get("description"),
+                cvss_score=cve.get("base_score"),
+                cvss_vector=cve.get("vector"),
+                dbot_score=cve_dbot_score,
+                publications=create_publications(cve),
+                relationships=relationships_list,
+            )
+            cve_human_readable = {
+                "ID": cve.get("id"),
+                "Description": cve.get("description"),
+                "Published Date": cve.get("published_date"),
+                "Base Score": cve.get("base_score"),
+            }
+            human_readable = tableToMarkdown(
+                "CrowdStrike Falcon CVE", cve_human_readable, headers=["ID", "Description", "Published Date", "Base Score"]
+            )
+            command_results = CommandResults(
+                raw_response=cve, readable_output=human_readable, relationships=relationships_list, indicator=cve_indicator
+            ).to_context()
+            if command_results not in command_results_list:
+                command_results_list.append(command_results)
     return command_results_list
 
 

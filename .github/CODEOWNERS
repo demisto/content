@@ -15,7 +15,7 @@
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @jlevypaloalto
+/Packs/PAN-OS/Integrations/ @lironcohen272
 
 # Important Integrations
 /Packs/QRadar/Integrations/QRadar_v3/* @jbabazadeh
@@ -26,7 +26,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
-/Packs/rasterize/Integrations/rasterize/* @ilaredo
+/Packs/rasterize/Integrations/rasterize/* @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
@@ -54,8 +54,8 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @SamuelFain @YuvHayun
-validation_config.toml @YuvHayun
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun @yedidyacohenpalo
+validation_config.toml @YuvHayun @yedidyacohenpalo
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @jlevypaloalto
