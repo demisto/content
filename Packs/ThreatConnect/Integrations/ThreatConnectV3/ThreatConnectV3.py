@@ -1311,6 +1311,8 @@ def tc_add_indicator_command(
     if indicator_type == "File":
         hash_type = args.get("hashType", "md5")
         payload[hash_type] = indicator
+    if indicator_type == "CIDR":
+        payload["Block"] = indicator
 
     url = "/api/v3/indicators"
     response = client.make_request(Method.POST, url, payload=json.dumps(payload))
