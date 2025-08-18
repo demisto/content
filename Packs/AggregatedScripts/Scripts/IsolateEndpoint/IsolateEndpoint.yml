@@ -42,4 +42,4 @@ subtype: python3
 dockerimage: demisto/python3:3.12.11.4284848
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- IsolateEndpoint - Testplaybook
