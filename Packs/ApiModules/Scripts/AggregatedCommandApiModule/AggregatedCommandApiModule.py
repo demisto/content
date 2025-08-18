@@ -22,6 +22,13 @@ DBOT_SCORE_TO_VERDICT = {
     3: "Malicious",
 }
 
+CVSS_TO_VERDICT = {
+    "None": (0.0, 0.0),
+    "Low": (0.1, 3.9),
+    "Medium": (4.0, 6.9),
+    "High": (7.0, 8.9),
+    "Critical": (9.0, 10.0),
+}
 
 class Status(Enum):
     """Enum for command status."""
@@ -317,6 +324,11 @@ class ContextBuilder:
             max_score = max(all_scores or [0])
             indicator["MaxScore"] = max_score
             indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
+            if "CVSS" in self.indicator.context_output_mapping:
+                indicator["MaxCVSS"] = max(
+                    [normalize_cvss_score(res.get("CVSS", 0)) for res in indicator.get("Results", [])] or [0]
+                )
+                indicator["MaxCVSSRating"] = get_cvss_rating(indicator["MaxCVSS"])
 
 
 # --- Main Framework Abstraction and Implementation ---
@@ -1024,3 +1036,58 @@ def is_debug_entry(execute_command_result) -> bool:
                 return True
 
     return isinstance(execute_command_result, dict) and execute_command_result["Type"] == entryTypes["debug"]
+
+
+def normalize_cvss_score(value) -> float:
+    """
+    Normalize various CVSS input formats into a numeric score (0.0 - 10.0).
+
+    Accepted inputs:
+      - "N/A" -> 0.0
+      - 0, "0" -> 0.0
+      - int/float (0-10) -> returned as float
+      - string rating ("None", "Low", "Medium", "High", "Critical")
+      - dict with {"Score": <value>} -> recursively normalized
+
+    Returns:
+        float: CVSS score (0.0 - 10.0)
+    """
+
+    # Handle dict case: {"Score": ...}
+    if isinstance(value, dict) and "Score" in value:
+        return normalize_cvss_score(value["Score"])
+
+    # Handle "N/A"
+    if isinstance(value, str) and value.strip().upper() == "N/A":
+        return 0.0
+
+    # Handle numbers (int, float, str)
+    try:
+        score = float(value)
+        if 0.0 <= score <= 10.0:
+            return score
+    except (TypeError, ValueError):
+        pass
+
+    # Handle string ratings like "critical", "High", etc.
+    if isinstance(value, str):
+        verdict = value.strip().capitalize()
+        if verdict in CVSS_TO_VERDICT:
+            lo, hi = CVSS_TO_VERDICT[verdict]
+            return (lo + hi) / 2
+    return 0.0
+
+def get_cvss_rating(score: float) -> str:
+    """
+    Given a CVSS numeric score (0.0 - 10.0),
+    return the corresponding severity rating.
+    Args:
+        score (float): The CVSS numeric score.
+    Returns:
+        str: The severity rating. "Unknown" if the score is not in the range (0.0 - 10.0).
+    """
+    for rating, (low, high) in CVSS_TO_VERDICT.items():
+        if low <= score <= high:
+            return rating
+
+    return "Unknown"

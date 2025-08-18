@@ -308,8 +308,6 @@ def test_add_other_commands_results():
 
 
 # --- Tests for the build() method and its helpers ---
-
-
 @pytest.mark.parametrize(
     "batch_map, tim_map, expected_results",
     [
@@ -445,6 +443,46 @@ def test_build_assembles_all_context_types():
     assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "brandA"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
+    
+def test_builder_enriches_with_max_cvss_no_mocks():
+    """
+    Given:
+        - A set of indicator results with various valid CVSS score formats.
+        - An indicator mapping that includes "CVSS".
+    When:
+        - The builder's build() method is called, allowing real helper functions to run.
+    Then:
+        - The final output should be enriched with the correct MaxCVSS and MaxCVSSRating.
+    """
+    # --- Arrange ---
+    # The mapping must include "CVSS" to trigger the logic.
+    indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
+    builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
+
+    # Use a variety of data formats that the real normalize_cvss_score can handle.
+    # These will be normalized to: [7.5, 7.95, 9.8, 0.0]
+    results_with_cvss = [
+        {"CVSS": 7.5},                  # A standard float
+        {"CVSS": "High"},               # A string rating
+        {"CVSS": {"Score": 9.8}},      # A dictionary
+        {"CVSS": "N/A"}                 # A special string
+    ]
+    batch_context = {"CVE-2023-1234": {"brandA": results_with_cvss}}
+    builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
+
+    # --- Act ---
+    final_context = builder.build()
+
+    # --- Assert ---
+    final_indicator = final_context["FinalEnrichment(val.Value && val.Value == obj.Value)"][0]
+    
+    # Assert that the highest normalized score is 9.8
+    assert final_indicator["MaxCVSS"] == 9.8
+    
+    # Assert that the rating for 9.8 is correctly calculated as "Critical"
+    assert final_indicator["MaxCVSSRating"] == "Critical"
+
+
 
 
 # -------------------------------------------------------------------------------------------------
@@ -1064,3 +1102,57 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
         module.raise_non_enabled_brands_error(entries)
     except DemistoException:
         pytest.fail("raise_non_enabled_brands_error raised an exception unexpectedly.")
+
+
+@pytest.mark.parametrize("cvss_input, expected_score", [
+    # --- Numeric and String Numeric Inputs ---
+    (7.5, 7.5),
+    (9, 9.0),
+    ("8.2", 8.2),
+    (0, 0.0),
+    # --- Special String Inputs ---
+    ("N/A", 0.0),
+    ("n/a", 0.0),
+    # --- Dictionary Input ---
+    ({"Score": 9.1}, 9.1),
+    # --- String Rating Inputs ---
+    ("Critical", 9.5),
+    ("High", 7.95),
+    ("Medium", 5.45),
+    ("Low", 2.0),
+    ("None", 0.0),
+])
+def test_normalize_cvss_score(cvss_input, expected_score):
+    """
+    Given:
+        - Various valid formats for a CVSS score.
+    When:
+        - The normalize_cvss_score function is called.
+    Then:
+        - It should return the correct normalized float score.
+    """
+    assert normalize_cvss_score(cvss_input) == expected_score
+    
+@pytest.mark.parametrize("score, expected_rating", [
+    (0.0, "None"),
+    (2.5, "Low"),
+    (3.9, "Low"),
+    (4.0, "Medium"),
+    (6.9, "Medium"),
+    (7.0, "High"),
+    (8.9, "High"),
+    (9.0, "Critical"),
+    (10.0, "Critical"),
+    (11.0, "Unknown"), # Out of bounds
+    (-1.0, "Unknown"), # Out of bounds
+])
+def test_get_cvss_rating(score, expected_rating):
+    """
+    Given:
+        - A numeric CVSS score.
+    When:
+        - The get_cvss_rating function is called.
+    Then:
+        - It should return the correct string-based severity rating.
+    """
+    assert get_cvss_rating(score) == expected_rating

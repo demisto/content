@@ -42,6 +42,18 @@ outputs:
 - contextPath: CVEEnrichment.Value
   description: the cve it self.
   type: string
+- contextPath: CVEEnrichment.MaxScore
+  description: the max score of the indicator.
+  type: number
+- contextPath: CVEEnrichment.MaxVerdict
+  description: the max verdict of the indicator.
+  type: string
+- contextPath: CVEEnrichment.MaxCVSS
+  description: the max CVSS of the indicator.
+  type: number
+- contextPath: CVEEnrichment.MaxCVSSRating
+  description: the max CVSS rating of the indicator.
+  type: string
 - contextPath: CVEEnrichment.Results
   description: list of all indicators found for the cve.
   type: array
@@ -58,26 +70,27 @@ outputs:
 - contextPath: CVEEnrichment.Results.Published
   description: the published date of the indicator.
   type: string
+  
 # CVEEnrichment Additional Fields
-- contextPath: CVEEnrichment.Results.additionalFields
+- contextPath: CVEEnrichment.Results.AdditionalFields
   description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
   type: Object
-- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityA
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityA
   description: The source of the relationship.
   type: string
-- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityB
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityB
   description: The destination of the relationship.
   type: string
-- contextPath: CVEEnrichment.Results.additionalFields.Relationships.Relationship
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.Relationship
   description: The name of the relationship.
   type: string
-- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityAType
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityAType
   description: The type of the source of the relationship.
   type: string
-- contextPath: CVEEnrichment.Results.additionalFields.Relationships.EntityBType
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityBType
   description: The type of the destination of the relationship.
   type: string
-- contextPath: CVEEnrichment.Results.additionalFields.Modified
+- contextPath: CVEEnrichment.Results.AdditionalFields.Modified
   description: The timestamp of when the CVE was last modified.
   type: Date
 # DBotScore
