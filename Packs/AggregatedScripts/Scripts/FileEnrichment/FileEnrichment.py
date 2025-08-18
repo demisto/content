@@ -834,7 +834,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
     file_hashes: list = argToList(args.get("file_hash", ""))
     external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
-    enrichment_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for external enrichment
+    enrichment_brands: list = argToList(args.get("brands"))  # brands to use for external enrichment
     verbose: bool = argToBoolean(args.get("verbose", False))
     include_additional_fields: bool = argToBoolean(args.get("additional_fields", False))
 
