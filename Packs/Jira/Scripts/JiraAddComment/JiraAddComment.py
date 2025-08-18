@@ -10,7 +10,7 @@ def add_comment(args: Dict[str, Any]) -> CommandResults:
 
 def main():  # pragma: no cover
     try:
-        demisto.debug("JiraAddComment is being called")
+        demisto.debug("JiraAddComment is being called!") # for testing
         res = add_comment(demisto.args())
         return_results(res)
 
