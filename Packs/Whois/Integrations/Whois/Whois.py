@@ -683,7 +683,7 @@ tlds = {
     "imdb": {"_group": "amazonregistry", "_type": "newgtld", "adapter": "none"},
     "immo": {"_group": "donuts", "_type": "newgtld", "host": "whois.nic.immo"},
     "immobilien": {"_group": "donuts", "_type": "newgtld", "host": "whois.nic.immobilien"},
-    "in": {"host": "in.whois-servers.net"},
+    "in": {"host": "whois.nixiregistry.in"},
     "inc": {"_group": "uniregistry", "_type": "newgtld", "host": "whois.nic.inc"},
     "industries": {"_group": "donuts", "_type": "newgtld", "host": "whois.nic.industries"},
     "infiniti": {"_group": "gmo", "_type": "newgtld", "host": "whois.nic.gmo"},
