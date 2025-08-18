@@ -2142,6 +2142,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2160,6 +2161,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "sort": {"field": "creation_time", "keyword": "asc"},
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2177,6 +2179,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "sort": {"field": "creation_time", "keyword": "asc"},
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2195,6 +2198,7 @@ def test_get_remote_data_command_exclude_fields(mocker):
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
+                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2333,3 +2337,59 @@ def test_handle_excluded_data_param_old_param():
     assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (["a", "b"], False)
     excluded_data_from_alerts = ["null_values", "b"]
     assert handle_excluded_data_from_alerts_param(excluded_data_from_alerts) == (["b"], True)
+
+
+def test_extract_paths_and_names_valid_mapping():
+    """
+    Given:
+        - Dictionary mapping file paths to file names
+    When:
+        - Calling extract_paths_and_names
+    Then:
+        - Returns tuple with separate lists of paths and names
+    """
+    from CortexXDRIR import extract_paths_and_names
+
+    paths = ["C:\\folder\\file.exe", "/home/user/script.py", "document.txt"]
+
+    file_paths, file_names = extract_paths_and_names(paths)
+
+    assert set(file_paths) == {"C:\\folder\\file.exe", "/home/user/script.py", "document.txt"}
+    assert set(file_names) == {"file.exe", "script.py", "document.txt"}
+    assert len(file_paths) == len(file_names) == 3
+
+
+def test_extract_paths_and_names_empty_mapping():
+    """
+    Given:
+        - Empty dictionary
+    When:
+        - Calling extract_paths_and_names
+    Then:
+        - Returns tuple with empty lists
+    """
+    from CortexXDRIR import extract_paths_and_names
+
+    paths = []
+    file_paths, file_names = extract_paths_and_names(paths)
+
+    assert file_paths == []
+    assert file_names == []
+
+
+def test_extract_paths_and_names_single_item():
+    """
+    Given:
+        - Dictionary with single mapping
+    When:
+        - Calling extract_paths_and_names
+    Then:
+        - Returns tuple with single item lists
+    """
+    from CortexXDRIR import extract_paths_and_names
+
+    paths = ["C:\\test\\file.exe"]
+    file_paths, file_names = extract_paths_and_names(paths)
+
+    assert file_paths == ["C:\\test\\file.exe"]
+    assert file_names == ["file.exe"]
