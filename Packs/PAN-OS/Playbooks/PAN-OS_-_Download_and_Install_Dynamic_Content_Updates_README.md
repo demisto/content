@@ -5,8 +5,6 @@ This playbook automates the download and installation of the following Dynamic U
 - WildFire
 - GlobalProtect Clientless VPN
 
-Use the "itemsToUpdate" input to control which update type(s) to download and install. All types are updated by default.
-
 NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
 
 ## Dependencies
@@ -23,6 +21,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+- PrintErrorEntry
 - Set
 - SetAndHandleEmpty
 
@@ -36,15 +35,12 @@ This playbook does not use any sub-playbooks.
 - pan-os-install-latest-content-update
 - pan-os-install-latest-gp-update
 - pan-os-install-latest-wildfire-update
+- pan-os-platform-get-system-info
 
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| targetDevice | The serial number of a specific firewall to target \(Used when connected to Panorama\) \[Optional\].<br/> |  | Optional |
-| itemsToUpdate | Specifies which item types to download and install. Select one of the following options:<br/>all<br/>app/threat<br/>anti-virus<br/>wildfire<br/>gp | all | Required |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 

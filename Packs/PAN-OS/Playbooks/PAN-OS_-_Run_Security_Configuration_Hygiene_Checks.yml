@@ -21,18 +21,9 @@ description: |-
 id: 'PAN-OS - Run Security Configuration Hygiene Checks'
 inputSections:
 - description: Generic group for inputs
-  inputs:
-  - targetDevice
+  inputs: []
   name: General (Inputs group)
-inputs:
-- description: |-
-    The serial number of a specific firewall to target (Used when connected to Panorama) [Optional].
-
-    When connected to Panorama, leaving this blank will run the checks against Panorama configuration as well as all currently connected managed firewalls.
-  key: targetDevice
-  playbookInputQuery: null
-  required: false
-  value: {}
+inputs: []
 name: PAN-OS - Run Security Configuration Hygiene Checks
 outputSections:
 - description: Generic group for outputs
@@ -42,14 +33,10 @@ outputSections:
   - PANOS.ConfigurationHygiene.Result
 outputs:
 - contextPath: PANOS.ConfigurationHygiene.Summary
-  description: A list of hygiene check summaries (constructed as dictionaries) describing
-    the overall result of hygiene checks and how many issues of each type were found,
-    if any.
+  description: A list of hygiene check summaries (constructed as dictionaries) describing the overall result of hygiene checks and how many issues of each type were found, if any.
   type: unknown
 - contextPath: PANOS.ConfigurationHygiene.Result
-  description: A list of hygiene check results (constructed as dictionaries) including
-    a description of the issue found, the configuration location (container name),
-    and the name of the object affected by the issue.
+  description: A list of hygiene check results (constructed as dictionaries) including a description of the issue found, the configuration location (container name), and the name of the object affected by the issue.
   type: unknown
 starttaskid: "0"
 tasks:
@@ -96,20 +83,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.targetDevice}
+        simple: ${targetDevice}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Checks that at least one log forwarding profile is configured according
-        to best practices.
-      id: a1a350a4-fee2-4577-a09d-5cd8ddcbf7a9
+      description: Checks that at least one log forwarding profile is configured according to best practices.
+      id: b96f9134-d288-4772-9ab5-e4e304996c39
       iscommand: true
       name: Check Log Forwarding
       script: '|||pan-os-hygiene-check-log-forwarding'
       type: regular
       version: -1
-    taskid: a1a350a4-fee2-4577-a09d-5cd8ddcbf7a9
+    taskid: b96f9134-d288-4772-9ab5-e4e304996c39
     timertriggers: []
     type: regular
     view: |-
@@ -132,19 +118,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.targetDevice}
+        simple: ${targetDevice}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Checks that security rules are configured correctly.
-      id: e8d4d348-3d41-4988-86c2-38cbf0ec6d02
+      id: cb69559a-8211-4930-b2fa-e45576a8d20f
       iscommand: true
       name: Check Security Rules
       script: '|||pan-os-hygiene-check-security-rules'
       type: regular
       version: -1
-    taskid: e8d4d348-3d41-4988-86c2-38cbf0ec6d02
+    taskid: cb69559a-8211-4930-b2fa-e45576a8d20f
     timertriggers: []
     type: regular
     view: |-
@@ -167,19 +153,19 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.targetDevice}
+        simple: ${targetDevice}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Checks that configured security zones have correct settings.
-      id: c7224c04-403e-4bc1-85e2-83dcf5d11df4
+      id: 6377f393-c375-439c-bfdb-f6286fd04e11
       iscommand: true
       name: Check Security Zones
       script: '|||pan-os-hygiene-check-security-zones'
       type: regular
       version: -1
-    taskid: c7224c04-403e-4bc1-85e2-83dcf5d11df4
+    taskid: 6377f393-c375-439c-bfdb-f6286fd04e11
     timertriggers: []
     type: regular
     view: |-
@@ -202,22 +188,21 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.targetDevice}
+        simple: ${targetDevice}
       return_nonconforming_profiles:
         simple: "yes"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configured anti-spyware profiles to ensure at least
-        one meets best practices.
-      id: da4a28ec-6f5a-4daf-a1ec-f5abd92fcf9e
+      description: Checks the configured anti-spyware profiles to ensure at least one meets best practices.
+      id: 3b49374a-00ad-42be-b0b7-d60fb119eed3
       iscommand: true
       name: Check Spyware Profiles
       script: '|||pan-os-hygiene-check-spyware-profiles'
       type: regular
       version: -1
-    taskid: da4a28ec-6f5a-4daf-a1ec-f5abd92fcf9e
+    taskid: 3b49374a-00ad-42be-b0b7-d60fb119eed3
     timertriggers: []
     type: regular
     view: |-
@@ -240,22 +225,21 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.targetDevice}
+        simple: ${targetDevice}
       return_nonconforming_profiles:
         simple: "yes"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configured URL filtering profiles to ensure at least
-        one meets best practices.
-      id: cfe7ecd9-26d7-4b73-ade4-26216c0ca5c4
+      description: Checks the configured URL filtering profiles to ensure at least one meets best practices.
+      id: 906afad1-0d04-44bf-99aa-e6030b749c53
       iscommand: true
       name: Check URL Filtering Profiles
       script: '|||pan-os-hygiene-check-url-filtering-profiles'
       type: regular
       version: -1
-    taskid: cfe7ecd9-26d7-4b73-ade4-26216c0ca5c4
+    taskid: 906afad1-0d04-44bf-99aa-e6030b749c53
     timertriggers: []
     type: regular
     view: |-
@@ -278,22 +262,21 @@ tasks:
     quietmode: 0
     scriptarguments:
       device_filter_string:
-        simple: ${inputs.targetDevice}
+        simple: ${targetDevice}
       return_nonconforming_profiles:
         simple: "yes"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Checks the configured vulnerability profiles to ensure at least
-        one meets best practices.
-      id: ecfe90f2-1b42-4212-9943-4d84df7e993b
+      description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
+      id: 883135b1-b645-4817-9cd0-76c2c955a186
       iscommand: true
       name: Check Vulnerability Profiles
       script: '|||pan-os-hygiene-check-vulnerability-profiles'
       type: regular
       version: -1
-    taskid: ecfe90f2-1b42-4212-9943-4d84df7e993b
+    taskid: 883135b1-b645-4817-9cd0-76c2c955a186
     timertriggers: []
     type: regular
     view: |-
@@ -375,13 +358,13 @@ tasks:
     task:
       brand: ""
       description: Replace unicode in Summary result values with string.
-      id: 9d6d73d6-89fb-497e-8823-3cfcdb98fb7e
+      id: 2732bf0f-e34b-4cd9-868b-3b8a5b13e702
       iscommand: false
       name: Set check results to Passed or Failed
       script: Set
       type: regular
       version: -1
-    taskid: 9d6d73d6-89fb-497e-8823-3cfcdb98fb7e
+    taskid: 2732bf0f-e34b-4cd9-868b-3b8a5b13e702
     timertriggers: []
     type: regular
     view: |-
@@ -512,8 +495,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry for no active Panorama integration instances
-        found.
+      description: Prints an error entry for no active Panorama integration instances found.
       id: a5e72e6f-8c87-44f2-869c-3dfa3c639331
       iscommand: false
       name: No active Panorama Integration instance
@@ -549,5 +531,8 @@ view: |-
     }
   }
 fromversion: 6.10.0
-supportedModules:
-- agentix
+contentitemexportablefields:
+  contentitemfields: {}
+tests:
+- PAN-OS-panorama-topology-test-pb
+- PAN-OS-firewall-topology-test-pb

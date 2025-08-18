@@ -33,7 +33,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SetAndHandleEmpty
+* PrintErrorEntry
+* Set
 
 ### Commands
 
@@ -47,10 +48,7 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| targetDevice | The serial number of a specific firewall to target \(Used when connected to Panorama\) \[Optional\].<br/><br/>When connected to Panorama, leaving this blank will run the checks against Panorama configuration as well as all currently connected managed firewalls. |  | Optional |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
