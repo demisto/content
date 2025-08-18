@@ -1,3 +1,4 @@
 [file:DisableUser.py]
 ignore=PA124
+[file:FileEnrichment.yml]
 ignore=SC101
