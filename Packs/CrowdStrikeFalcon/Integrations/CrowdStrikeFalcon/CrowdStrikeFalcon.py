@@ -590,7 +590,7 @@ def http_request(
     headers["User-Agent"] = "PANW-XSOAR"
 
     if is_time_sensitive():
-        demisto.debug("Changing timeout to 10 seconds and retries to 1 due to time_sensitive=True")
+        demisto.debug("Changing timeout to 15 seconds and retries to 0 due to time_sensitive=True")
         retries = TOTAL_RETRIES_ON_ENRICHMENT
         request_timeout = TIMEOUT_ON_ENRICHMENT
     else:
