@@ -22,90 +22,96 @@ They feature built-in hardware acceleration to significantly improve the perform
 <li>Ingested logs can be queried in XQL Search using the <em><i>huawei_fw_raw</i></em> dataset.</li>
 </ul>
 
+<br>
+
 <h3>Supported Log Categories</h3>
 
 <details>
 <summary>Traffic management</summary>
-<table>
+<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
 <tr>
-<th>Classification</th>
-<th>Module Name</th>
-<th>Details</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Classification</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Module Name</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Details</th>
 </tr>
 <tr>
-<td>Traffic management</td>
-<td>BWM</td>
-<td>Bandwidth module</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Traffic management</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">BWM</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Bandwidth module</td>
 </tr>
 </table>
 </details>
 <br>
 <details>
 <summary>System management</summary>
-<table>
+<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
 <tr>
-<th>Classification</th>
-<th>Module Name</th>
-<th>Details</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Classification</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Module Name</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Details</th>
 </tr>
 <tr>
 <td rowspan="10">System management</td>
-<td>PAF</td>
-<td>Product adapter file (PAF) customization</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">PAF</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Product adapter file (PAF) customization</td>
 </tr>
 <tr>
-<td>SSH</td>
-<td>STelnet module</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">SSH</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">STelnet module</td>
 </tr>
 <tr>
-<td>SYSTEM</td>
-<td>Alarms for CPU, memory, and session usage</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">SYSTEM</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Alarms for CPU, memory, and session usage</td>
 </tr>
 <tr>
-<td>TFTP</td>
-<td>TFTP module</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">TFTP</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">TFTP module</td>
 </tr>
 <tr>
-<td>UPDATE</td>
-<td>Signature database update</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">UPDATE</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Signature database update</td>
 </tr>
 <tr>
-<td>BWM</td>
-<td>Bandwidth module</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">BWM</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Bandwidth module</td>
 </tr>
 <tr>
-<td>VOSCPU</td>
-<td>CPU usage</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">VOSCPU</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">CPU usage</td>
 </tr>
 <tr>
-<td>VOSMEM</td>
-<td>Memory usage</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">VOSMEM</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Memory usage</td>
 </tr>
 <tr>
-<td>FWLCNS</td>
-<td>License module</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">FWLCNS</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">License module</td>
 </tr>
 <tr>
-<td>SNMPMAC</td>
-<td>Across-Layer-3 MAC Identification</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">SNMPMAC</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Across-Layer-3 MAC Identification</td>
 </tr>
 </table>
 </details>
 
+<br>
+
 <h2></h2>
 
 <h3>Supported Timestamp Formats</h3>
-<table>
+<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
 <tr>
-<th>Format</th>
-<th>Example</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Format</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Example</th>
 </tr>
 <tr>
-<td>MMM dd yyyy HH:mm:ss </td>
-<td>Aug 16 2024 12:30:50</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">MMM dd yyyy HH:mm:ss </td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Aug 17 2024 12:30:50</td>
 </tr>
 </table>
 <h2></h2>
+
+<br>
 
 <h2>Data Collection</h2>
 
@@ -148,26 +154,26 @@ If the <strong>Syslog</strong> app already exists, hover over it and click <stro
 <li>Click <strong>Add New</strong>.</li>
 <li>
 Configure the Syslog Collector with the following parameters:
-<table>
+<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
 <tr>
-<th>Parameter</th>
-<th>Value</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Parameter</th>
+<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Value</th>
 </tr>
 <tr>
-<td>Protocol</td>
-<td>Select the protocol (UDP, TCP, or Secure TCP) that you configured on your Huawei Firewall.</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Protocol</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Select the protocol (UDP, TCP, or Secure TCP) that you configured on your Huawei Firewall.</td>
 </tr>
 <tr>
-<td>Port</td>
-<td>Enter the syslog port for the Broker VM to listen on. This must match the port configured on the Huawei Firewall (default: 514).</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Port</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter the syslog port for the Broker VM to listen on. This must match the port configured on the Huawei Firewall (default: 514).</td>
 </tr>
 <tr>
-<td>Vendor</td>
-<td>Enter `Huawei`.</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Vendor</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter `Huawei`.</td>
 </tr>
 <tr>
-<td>Product</td>
-<td>Enter `Firewall`.</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Product</td>
+<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter `FW`.</td>
 </tr>
 </table>
 </li>
