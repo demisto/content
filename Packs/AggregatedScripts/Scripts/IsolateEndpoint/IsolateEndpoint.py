@@ -15,6 +15,7 @@ class Brands(StrEnum):
     CROWDSTRIKE_FALCON = "CrowdstrikeFalcon"
     CORTEX_CORE_IR = "Cortex Core - IR"
     MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION = "Microsoft Defender Advanced Threat Protection"
+    MICROSOFT_DEFENDER_ATP = "Microsoft Defender ATP"  # this name is used in get-endpoint-data script
 
     @classmethod
     def get_all_values(cls) -> list[str]:
@@ -56,22 +57,22 @@ def initialize_commands() -> list:
     commands = [
         Command(
             # Can be used only in XSIAM
-            brand="Cortex Core - IR",
+            brand=Brands.CORTEX_CORE_IR,
             name="core-isolate-endpoint",
             arg_mapping={"endpoint_id": "endpoint_id"},
         ),
         Command(
-            brand="CrowdstrikeFalcon",
+            brand=Brands.CROWDSTRIKE_FALCON,
             name="cs-falcon-contain-host",
             arg_mapping={"ids": "endpoint_id"},
         ),
         Command(
-            brand="FireEyeHX v2",
+            brand=Brands.FIREEYE_HX_V2,
             name="fireeye-hx-host-containment",
             arg_mapping={"agentId": "endpoint_id", "hostName": "endpoint_hostname"},  # command can use agentId or hostName
         ),
         Command(
-            brand="Microsoft Defender ATP",
+            brand=Brands.MICROSOFT_DEFENDER_ATP,
             name="microsoft-atp-isolate-machine",
             arg_mapping={"machine_id": "endpoint_id"},
             hard_coded_args={"isolation_type": "Full", "comment": "Isolated endpoint with IsolateEndpoint script."},
