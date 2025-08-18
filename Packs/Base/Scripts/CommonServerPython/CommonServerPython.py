@@ -600,7 +600,7 @@ class ErrorTypes(object):
 
 
 class FeedIndicatorType(object):
-    """Type of Indicator (Reputations), used in TIP integrations"""
+    """Type of Indicator (Reputations), used in TIM integrations"""
     Account = "Account"
     CVE = "CVE"
     Domain = "Domain"
