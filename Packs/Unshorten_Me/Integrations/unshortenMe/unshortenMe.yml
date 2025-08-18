@@ -16,7 +16,7 @@ name: unshortenMe
 script:
   commands:
   - arguments:
-    - description: The shortened URL
+    - description: The shortened URL.
       name: shortUrl
       required: true
     description: The response will contain the unshortened URL corresponding to the provided short URL and success status.
