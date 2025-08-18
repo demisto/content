@@ -2226,6 +2226,7 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+    
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()

@@ -28,6 +28,11 @@ configuration:
   required: false
   defaultvalue: '20'
   display: Maximum number of incidents per fetch.
+- name: test
+  type: 0
+  section: Collect
+  required: false
+  display: test.
 - name: creds_tenant_id
   type: 9
   section: Connect

@@ -1,11 +1,11 @@
-category: Endpoint
+
 sectionOrder:
 - Connect
 - Collect
 commonfields:
   id: CrowdstrikeFalcon
   version: -1
-configuration:
+
 - defaultvalue: 'false'
   display: Use legacy API
   name: legacy_version
