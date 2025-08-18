@@ -7926,15 +7926,11 @@ def test_http_request_is_time_sensitive_timeout_and_retries(mocker):
     from CrowdStrikeFalcon import http_request
     from requests import Response
 
-    # Mock successful response (following the pattern from test_http_request_get_token_request)
     res_200 = Response()
     res_200.status_code = 200
     res_200._content = b'{"result": "success"}'
 
-    # Mock demisto.params like in the existing test
     mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "proxy": True})
-
-    # Mock get_token to avoid authentication calls
     mocker.patch("CrowdStrikeFalcon.get_token", return_value="test_token")
 
     # Test case 1: is_time_sensitive()=True should set retries=0 and timeout=15
