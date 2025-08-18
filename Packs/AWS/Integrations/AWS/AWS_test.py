@@ -636,8 +636,7 @@ def test_ec2_revoke_security_group_ingress_command_success(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "80",
-            "to_port": "80", "cidr": "0.0.0.0/0"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "80", "to_port": "80", "cidr": "0.0.0.0/0"}
 
     result = EC2.revoke_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -681,8 +680,7 @@ def test_ec2_authorize_security_group_ingress_command_success(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp",
-            "from_port": "00", "to_port": "00", "cidr": "10.0.0.0/8"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "00", "to_port": "00", "cidr": "10.0.0.0/8"}
 
     result = EC2.authorize_security_group_ingress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -700,8 +698,7 @@ def test_ec2_authorize_security_group_ingress_command_duplicate_rule(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidPermission.Duplicate")
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "00",
-            "to_port": "00", "cidr": "0.0.0.0/0"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "00", "to_port": "00", "cidr": "0.0.0.0/0"}
 
     with pytest.raises(DemistoException, match="already exists"):
         EC2.authorize_security_group_ingress_command(mock_client, args)
@@ -721,8 +718,7 @@ def test_ec2_revoke_security_group_egress_command_success(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp",
-            "from_port": "40", "to_port": "443", "cidr": "0.0.0.0/0"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "40", "to_port": "443", "cidr": "0.0.0.0/0"}
 
     result = EC2.revoke_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1499,8 +1495,7 @@ def test_ec2_authorize_security_group_egress_command_success(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "to_port": "000",
-            "from_port": "000", "cidr": "cidr"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "to_port": "000", "from_port": "000", "cidr": "cidr"}
 
     result = EC2.authorize_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1521,8 +1516,7 @@ def test_ec2_authorize_security_group_egress_command_with_port_range(mocker):
         "Return": True,
     }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp",
-            "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
     result = EC2.authorize_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1579,8 +1573,7 @@ def test_ec2_authorize_security_group_egress_command_security_group_not_found(mo
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidGroup.NotFound")
 
-    args = {"group_id": "sg-nonexistent", "protocol": "tcp", "from_port": "0000",
-            "to_port": "0000", "cidr": "cidr"}
+    args = {"group_id": "sg-nonexistent", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
     with pytest.raises(DemistoException, match="Security group sg-nonexistent not found"):
         EC2.authorize_security_group_egress_command(mock_client, args)
@@ -1597,8 +1590,7 @@ def test_ec2_authorize_security_group_egress_command_invalid_group_id(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidGroupId.NotFound")
 
-    args = {"group_id": "sg-invalid", "protocol": "tcp", "from_port": "0000", 
-            "to_port": "0000", "cidr": "cidr"}
+    args = {"group_id": "sg-invalid", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
     with pytest.raises(DemistoException, match="Invalid security group ID: sg-invalid"):
         EC2.authorize_security_group_egress_command(mock_client, args)
@@ -1615,8 +1607,7 @@ def test_ec2_authorize_security_group_egress_command_duplicate_rule(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidPermission.Duplicate")
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000",
-            "to_port": "0000", "cidr": "cidr"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
     with pytest.raises(DemistoException, match="The specified rule already exists in the security group"):
         EC2.authorize_security_group_egress_command(mock_client, args)
@@ -1636,8 +1627,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
         "Return": False,
     }
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000",
-            "to_port": "0000", "cidr": "cidr"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
     with pytest.raises(DemistoException, match="Unexpected response from AWS - EC2"):
         EC2.authorize_security_group_egress_command(mock_client, args)
@@ -1675,8 +1665,7 @@ def test_ec2_authorize_security_group_egress_command_generic_exception(mocker):
     mock_client = mocker.Mock()
     mock_client.authorize_security_group_ingress.side_effect = Exception("Unexpected error occurred")
 
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000",
-            "to_port": "0000", "cidr": "cidr"}
+    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
     with pytest.raises(DemistoException, match="Failed to authorize security group egress rule: Unexpected error occurred"):
         EC2.authorize_security_group_egress_command(mock_client, args)
