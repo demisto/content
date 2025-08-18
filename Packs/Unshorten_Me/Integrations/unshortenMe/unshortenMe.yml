@@ -37,7 +37,7 @@ script:
   subtype: python3
   type: python
 tests:
-  - unshortenMe Test
+- unshortenMe Test
 sectionOrder:
-  - Connect
-fromversion: 6.5.0
+- Connect
+fromversion: 6.10.0
