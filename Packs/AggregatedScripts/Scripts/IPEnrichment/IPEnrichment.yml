@@ -41,38 +41,38 @@ name: ip-enrichment
 outputs:
 # IPEnrichment
 - contextPath: IPEnrichment.Value
-  description: the ip address
+  description: the ip address .
   type: string
 - contextPath: IPEnrichment.MaxScore
-  description: the max score of all the indicators found
+  description: the max score of all the indicators found.
   type: number
 - contextPath: IPEnrichment.MaxVerdict
-  description: the max verdict of all the indicators found
+  description: the max verdict of all the indicators found.
   type: string
 # IPEnrichment results main keys
 - contextPath: IPEnrichment.Results
-  description: list of all indicators found for the ip
+  description: list of all indicators found for the ip.
   type: array
 - contextPath: IPEnrichment.Results.Source
-  description: the source of the indicator
+  description: the source of the indicator.
   type: string
 - contextPath: IPEnrichment.Results.Brand
-  description: the brand of the indicator
+  description: the brand of the indicator.
   type: string
 - contextPath: IPEnrichment.Results.DetectionEngines
-  description: the detection engines of the indicator
+  description: the detection engines of the indicator.
   type: number
 - contextPath: IPEnrichment.Results.PositiveDetections
-  description: the positive detections of the indicator
+  description: the positive detections of the indicator.
   type: number
 - contextPath: IPEnrichment.Results.ASOwner
-  description: the AS owner of the indicator
+  description: the AS owner of the indicator.
   type: string
 - contextPath: IPEnrichment.Results.Score
-  description: the score of the indicator
+  description: the score of the indicator.
   type: number
 - contextPath: IPEnrichment.Results.Verdict
-  description: the verdict of the indicator
+  description: the verdict of the indicator.
   type: string
 # IPEnrichment results additional fields
 - contextPath: IPEnrichment.Results.additionalFields

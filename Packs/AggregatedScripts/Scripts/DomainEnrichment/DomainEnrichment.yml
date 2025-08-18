@@ -41,29 +41,29 @@ name: domain-enrichment
 outputs:
 # DomainEnrichment
 - contextPath: DomainEnrichment.Value
-  description: the domain it self
+  description: the domain it self.
   type: string
 - contextPath: DomainEnrichment.MaxScore
-  description: the max score of all the indicators found
+  description: the max score of all the indicators found.
   type: number
 - contextPath: DomainEnrichment.MaxVerdict
-  description: the max verdict of all the indicators found
+  description: the max verdict of all the indicators found.
   type: string
 - contextPath: DomainEnrichment.Results
-  description: list of all indicators found for the domain
+  description: list of all indicators found for the domain.
   type: array
 # DomainEnrichment Main Keys
 - contextPath: DomainEnrichment.Results.Brand
-  description: the brand of the indicator
+  description: the brand of the indicator.
   type: string
 - contextPath: DomainEnrichment.Results.Score
-  description: the score of the indicator
+  description: the score of the indicator.
   type: number
 - contextPath: DomainEnrichment.Results.DetectionEngines
-  description: the detection engines of the indicator
+  description: the detection engines of the indicator.
   type: number
 - contextPath: DomainEnrichment.Results.PositiveDetections
-  description: the positive detections of the indicator
+  description: the positive detections of the indicator.
   type: number
 # DomainEnrichment Additional Fields
 - contextPath: DomainEnrichment.Results.AdditionalFields
@@ -172,7 +172,7 @@ outputs:
   description: The phone number of the registrant.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.Name
-  description: The name of the registrar, for example GoDaddy
+  description: The name of the registrar, for example GoDaddy.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.Registrar.AbuseEmail
   description: The email address of the contact for reporting abuse.
@@ -190,7 +190,7 @@ outputs:
   description: The phone number of the domain administrator.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.WHOIS.History
-  description: List of Whois objects
+  description: List of Whois objects.
   type: String
 - contextPath: DomainEnrichment.Results.AdditionalFields.Malicious.Vendor
   description: The vendor reporting the domain as malicious.

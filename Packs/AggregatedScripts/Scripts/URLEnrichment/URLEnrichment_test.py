@@ -126,7 +126,7 @@ def test_url_enrichment_script_end_to_end(mocker):
     assert vt_result["MaxVerdict"] == "Malicious"
 
     # 2. Verify the wildfire-get-verdict results were mapped correctly
-    wildfire_verdicts = outputs.get("WildFireVerdicts(val.url && val.url == obj.url)", [])
+    wildfire_verdicts = outputs.get("WildFire.Verdicts(val.url && val.url == obj.url)", [])
     assert len(wildfire_verdicts) == 1
     assert len(wildfire_verdicts[0]) == 2  # The list of verdicts is nested
     assert wildfire_verdicts[0][0]["verdict"] == 1

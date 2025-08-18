@@ -40,23 +40,23 @@ name: cve-enrichment
 outputs:
 # CVEEnrichment
 - contextPath: CVEEnrichment.Value
-  description: the cve it self
+  description: the cve it self.
   type: string
 - contextPath: CVEEnrichment.Results
-  description: list of all indicators found for the cve
+  description: list of all indicators found for the cve.
   type: array
 # CVEEnrichment Main Keys
 - contextPath: CVEEnrichment.Results.Brand
-  description: the brand of the indicator
+  description: the brand of the indicator.
   type: string
 - contextPath: CVEEnrichment.Results.CVSS
-  description: the CVSS of the indicator
+  description: the CVSS of the indicator.
   type: number
 - contextPath: CVEEnrichment.Results.Description
-  description: the description of the indicator
+  description: the description of the indicator.
   type: string
 - contextPath: CVEEnrichment.Results.Published
-  description: the published date of the indicator
+  description: the published date of the indicator.
   type: string
 # CVEEnrichment Additional Fields
 - contextPath: CVEEnrichment.Results.additionalFields
