@@ -347,7 +347,7 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
     demisto.results(
         {
             "Type": entryTypes["error"],
-            "ContentsFormat": formats["text"],
+            "ContentsFormat": formats["json"],
             "Contents": entries,
             "EntryContext": None,
         }
