@@ -25,12 +25,6 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Application name
-  additionalinfo: The Application name.
-  name: application
-  required: true
-  type: 0
-  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -49,9 +43,9 @@ configuration:
   section: Collect
   required: false
   defaultvalue: "true"
-- additionalinfo: 'Maximum number of events entries to retrieve per fetch cycle.'
-  display: Maximum number of events per fetch
-  name: max_events_per_fetch
+- additionalinfo: 'Maximum number of Audit Logs entries to retrieve per fetch cycle.'
+  display: Maximum number of audit logs per fetch
+  name: max_audit_per_fetch
   required: false
   type: 0
   section: Collect
