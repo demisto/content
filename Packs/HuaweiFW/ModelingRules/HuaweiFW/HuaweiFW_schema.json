@@ -7,6 +7,10 @@
       "parsed_fields_headers": {
         "type": "string",
         "is_array": false
+      },
+     "extract_log_description": {
+        "type": "string",
+        "is_array": false
       }
     }
 }

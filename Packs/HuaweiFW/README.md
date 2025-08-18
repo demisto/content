@@ -91,7 +91,8 @@ They feature built-in hardware acceleration to significantly improve the perform
 </tr>
 </table>
 </details>
-<br>
+
+<h2></h2>
 
 <h3>Supported Timestamp Formats</h3>
 <table>
@@ -104,6 +105,7 @@ They feature built-in hardware acceleration to significantly improve the perform
 <td>Aug 16 2024 12:30:50</td>
 </tr>
 </table>
+<h2></h2>
 
 <h2>Data Collection</h2>
 
