@@ -6,12 +6,13 @@ args:
   name: endpoint_ip
   isArray: true
 - description: |-
-    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations. For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
+    Specify the integration brands to run the command for. If not provided, the command will run for all available integrations.
     Default supported brands are:
     - 'Cortex Core - IR'
     - 'CrowdstrikeFalcon'
     - 'FireEyeHX v2'
     - 'Microsoft Defender Advanced Threat Protection'
+     For multi-select, provide a comma-separated list. For example: 'Cortex Core - IR, CrowdstrikeFalcon, FireEyeHX v2'.
   name: brands
 comment: This script isolates endpoints using multiple integrations and returns a success or failure message.
 commonfields:
