@@ -228,8 +228,9 @@ def search_indicators(args):
         filtered_indicators.append(style_indicator)
 
     headers = fields + ["verdict"]
-    queries = ",".join(list_of_queries)
-    markdown = tableToMarkdown(f"Indicators Found: {queries[0]=}", filtered_indicators, headers)
+    query = " OR".join(list_of_queries)
+    demisto.debug(f"Final query string: {query}")
+    markdown = tableToMarkdown(f"Indicators Found: {query=}", filtered_indicators, headers)
     demisto.debug(f"filtered_indicators: {filtered_indicators}")
     return markdown, filtered_indicators
 

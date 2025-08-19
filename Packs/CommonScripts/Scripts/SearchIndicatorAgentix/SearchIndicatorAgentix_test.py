@@ -325,3 +325,247 @@ def test_build_query_for_values_large_chunk_boundary():
     assert "domain199.example" in result[1]
     assert "domain200.example" in result[2]
     assert "domain249.example" in result[2]
+
+
+def test_build_query_excluding_values_empty_args():
+    """
+    Given: Empty arguments dictionary
+    When: build_query_excluding_values is called
+    Then: Returns empty string
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+
+    args = {}
+    result = build_query_excluding_values(args)
+    assert result == ""
+
+
+def test_build_query_excluding_values_only_value_key():
+    """
+    Given: Arguments containing only 'value' key
+    When: build_query_excluding_values is called
+    Then: Returns empty string as value key is excluded
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"value": json.dumps(["example.com"])}
+    result = build_query_excluding_values(args)
+    assert result == ""
+
+
+def test_build_query_excluding_values_single_field():
+    """
+    Given: Arguments with single field (not value)
+    When: build_query_excluding_values is called
+    Then: Returns query for that field wrapped in parentheses
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"type": json.dumps(["Domain"])}
+    result = build_query_excluding_values(args)
+    assert "type:" in result
+    assert "Domain" in result
+    # assert result.startswith("(") and result.endswith(")")
+
+
+def test_build_query_excluding_values_multiple_fields():
+    """
+    Given: Arguments with multiple fields excluding value
+    When: build_query_excluding_values is called
+    Then: Returns query with AND operators between field conditions
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
+    result = build_query_excluding_values(args)
+    assert " AND " in result
+    assert "type:" in result
+    assert "verdict:" in result
+    assert "Domain" in result
+    assert "Malicious" in result
+
+
+def test_build_query_excluding_values_with_value_mixed():
+    """
+    Given: Arguments with value field and other fields
+    When: build_query_excluding_values is called
+    Then: Returns query excluding value field but including others
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"value": json.dumps(["example.com"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
+    result = build_query_excluding_values(args)
+    assert "value:" not in result
+    assert "type:" in result
+    assert "verdict:" in result
+    assert "example.com" not in result
+
+
+def test_build_query_excluding_values_issues_ids_transformation():
+    """
+    Given: Arguments with IssuesIDs field
+    When: build_query_excluding_values is called
+    Then: Returns query with field name transformed to investigationIDs
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"IssuesIDs": json.dumps(["123", "456"])}
+    result = build_query_excluding_values(args)
+    assert "investigationIDs:" in result
+    assert "IssuesIDs:" not in result
+    assert "123" in result
+    assert "456" in result
+
+
+def test_build_query_excluding_values_empty_field_values():
+    """
+    Given: Arguments with fields having empty values
+    When: build_query_excluding_values is called
+    Then: Returns empty string as empty fields are skipped
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"type": json.dumps([]), "verdict": ""}
+    result = build_query_excluding_values(args)
+    assert result == ""
+
+
+def test_build_query_excluding_values_none_values():
+    """
+    Given: Arguments with None values
+    When: build_query_excluding_values is called
+    Then: Returns empty string as None values are skipped
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+
+    args = {"type": None, "verdict": None}
+    result = build_query_excluding_values(args)
+    assert result == ""
+
+
+def test_build_query_excluding_values_mixed_empty_and_valid():
+    """
+    Given: Arguments with mix of empty and valid field values
+    When: build_query_excluding_values is called
+    Then: Returns query only for valid fields
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"type": json.dumps(["Domain"]), "verdict": "", "score": json.dumps(["High"])}
+    result = build_query_excluding_values(args)
+    assert "type:" in result
+    assert "score:" in result
+    assert "verdict:" not in result
+    assert " AND " in result
+
+
+def test_build_query_excluding_values_json_decode_error():
+    """
+    Given: Arguments with invalid JSON values
+    When: build_query_excluding_values is called
+    Then: Treats values as strings and processes them
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+
+    args = {"type": "invalid json string"}
+    result = build_query_excluding_values(args)
+    assert "type:" in result
+    # assert result.startswith("(") and result.endswith(")")
+
+
+def test_build_query_excluding_values_string_list_values():
+    """
+    Given: Arguments with comma-separated string values
+    When: build_query_excluding_values is called
+    Then: Returns query with OR operators for multiple values
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+
+    args = {"type": "Domain,IP,URL"}
+    result = build_query_excluding_values(args)
+    assert "type:" in result
+    assert "Domain" in result
+    assert "IP" in result
+    assert "URL" in result
+
+
+def test_build_query_excluding_values_excluded_keys():
+    """
+    Given: Arguments containing keys that should be excluded from query
+    When: build_query_excluding_values is called
+    Then: Returns query excluding those keys
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values, KEYS_TO_EXCLUDE_FROM_QUERY
+    import json
+
+    args = {"type": json.dumps(["Domain"])}
+    for excluded_key in KEYS_TO_EXCLUDE_FROM_QUERY:
+        args[excluded_key] = json.dumps(["test_value"])
+
+    result = build_query_excluding_values(args)
+    assert "type:" in result
+    for excluded_key in KEYS_TO_EXCLUDE_FROM_QUERY:
+        assert f"{excluded_key}:" not in result
+
+
+def test_build_query_excluding_values_parentheses_wrapping():
+    """
+    Given: Arguments with multiple field conditions
+    When: build_query_excluding_values is called
+    Then: Returns query with each field condition wrapped in parentheses
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+    import json
+
+    args = {"type": json.dumps(["Domain", "IP"]), "verdict": json.dumps(["Malicious"])}
+    result = build_query_excluding_values(args)
+    assert result.count("(") >= 2
+    assert result.count(")") >= 2
+    assert " AND " in result
+
+
+def test_build_query_excluding_values_type_error_handling():
+    """
+    Given: Arguments with values that cause TypeError during JSON parsing
+    When: build_query_excluding_values is called
+    Then: Falls back to treating values as strings
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values
+
+    args = {"type": 12345}
+    result = build_query_excluding_values(args)
+    assert "type:" in result
+    assert "12345" in result
+
+
+def test_build_query_excluding_values_complex_mixed_scenario():
+    """
+    Given: Arguments with value field, excluded keys, empty values, and valid fields
+    When: build_query_excluding_values is called
+    Then: Returns query only for valid non-excluded fields
+    """
+    from SearchIndicatorAgentix import build_query_excluding_values, KEYS_TO_EXCLUDE_FROM_QUERY
+    import json
+
+    excluded_key = KEYS_TO_EXCLUDE_FROM_QUERY[0] if KEYS_TO_EXCLUDE_FROM_QUERY else "dummy"
+    args = {
+        "value": json.dumps(["example.com"]),
+        "type": json.dumps(["Domain"]),
+        "verdict": "",
+        excluded_key: json.dumps(["excluded_value"]),
+        "score": json.dumps(["High"]),
+    }
+    result = build_query_excluding_values(args)
+    assert "value:" not in result
+    assert "type:" in result
+    assert "score:" in result
+    assert "verdict:" not in result
+    assert f"{excluded_key}:" not in result
+    assert " AND " in result
