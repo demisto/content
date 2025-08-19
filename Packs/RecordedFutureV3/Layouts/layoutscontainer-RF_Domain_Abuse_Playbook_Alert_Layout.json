@@ -651,6 +651,5 @@
 	"name": "RF Domain Abuse Playbook Alert Layout",
 	"system": false,
 	"version": -1,
-	"fromVersion": "6.0.0",
-	"marketplaces": ["xsoar"]
+	"fromVersion": "6.0.0"
 }

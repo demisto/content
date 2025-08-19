@@ -18,7 +18,7 @@ MAX_IMAGES_TO_FETCH = 25
 
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
-__version__ = "0.1.0"
+__version__ = "1.0.1"
 
 TIMEOUT_60 = 60
 TIMEOUT_90 = 90
@@ -394,7 +394,7 @@ def get_client():
     headers = {
         "X-RFToken": api_token,
         "X-RF-User-Agent": (
-            f"RecordedFuture.py/{__version__} ({platform.platform()}) "
+            f"RecordedFutureAlerts.py/{__version__} ({platform.platform()}) "
             f"XSOAR/{__version__} "
             f"RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()['version']})"
         ),
