@@ -73,6 +73,8 @@ def build_query_for_values(args: dict) -> list:
     except (json.JSONDecodeError, TypeError) as e:
         demisto.debug(f"JSON decode failed for values {values}: {str(e)}.")
 
+    if not values_as_list:
+        return []
     # Split the list into chunks of 100 values each
     if len(values_as_list) > 100:
         chunked_lists = [values_as_list[i : i + 100] for i in range(0, len(values_as_list), 100)]
@@ -179,7 +181,10 @@ def prepare_query(args: dict) -> list:
     queries = []
     fields = build_query_excluding_values(args)
     values_fields = build_query_for_values(args)
-
+    if not values_fields and not fields:
+        return []
+    if not values_fields:
+        return [fields]
     for f in values_fields:
         if fields:
             q = f"{f} AND {fields}"
