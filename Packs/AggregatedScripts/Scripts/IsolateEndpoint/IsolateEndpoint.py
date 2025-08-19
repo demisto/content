@@ -145,9 +145,7 @@ def create_message_to_context_and_hr(
         message (str): A message explaining the result.
         endpoint_output (dict): A list to store the structured output for context.
     """
-    endpoint_hostname = (
-        endpoint_args.get("endpoint_id") or endpoint_args.get("endpoint_ip")
-    )
+    endpoint_hostname = endpoint_args.get("endpoint_id") or endpoint_args.get("endpoint_ip")
     brand = endpoint_args.get("endpoint_brand", "")
     if brand == "Microsoft Defender ATP":  # convert brand
         brand = Brands.MICROSOFT_DEFENDER_ADVANCED_THREAT_PROTECTION
