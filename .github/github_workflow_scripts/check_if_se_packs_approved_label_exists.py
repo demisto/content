@@ -21,7 +21,7 @@ def arguments_handler():
     parser = argparse.ArgumentParser(description='Check if se-packs-approved label exists.')
     parser.add_argument('-p', '--pr_number', help='The PR number to check if the label exists.')
     parser.add_argument('-g', '--github_token', help='The GitHub token to authenticate the GitHub client.')
-    parser.add_argument('-c', '--changed_files', type=str, help='The path of modified files')
+    parser.add_argument('-c', '--changed_files', nargs="+", help='The path of modified files')
     return parser.parse_args()
 
 
