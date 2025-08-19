@@ -35,7 +35,7 @@ def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
-    changed_files = options.changed_files.split(",")
+    changed_files = options.changed_files
 
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
