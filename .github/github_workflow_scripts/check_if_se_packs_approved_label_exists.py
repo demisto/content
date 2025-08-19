@@ -46,10 +46,10 @@ def main():
 
     watched_folders = SE_PACKS
 
-    watched_folders = [folder.lower() for folder in watched_folders if folder]
-    changed_files = [str(file).lower() for file in changed_files]
     print(f"watched_folders: {watched_folders}")
     print(f"changed_files: {changed_files}")
+
+    watched_folders = [folder.lower() for folder in watched_folders if folder]
     # Detect if watched folder changed
     folder_changed = any(
         any(folder in file.lower() for folder in watched_folders)
