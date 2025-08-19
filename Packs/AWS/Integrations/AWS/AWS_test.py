@@ -1130,7 +1130,7 @@ def test_ec2_create_security_group_command_client_error(mocker):
 
     args = {"group_name": "duplicate-group", "description": "Duplicate security group", "vpc_id": "vpc-12345678"}
 
-    with pytest.raises(DemistoException, match=r".*when calling the CreateSecurityGroup operation.*"):
+    with pytest.raises(DemistoException, match=r".*AWS API Error occurred while executing*"):
         EC2.create_security_group_command(mock_client, args)
 
 
