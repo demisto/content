@@ -372,7 +372,7 @@ class TestCommands:
     def test_command_test_raise_exception(self, mocker, exception_to_raise, expected_res):
         """
         Given:
-            - Args for test_command
+            - Args for  test_command
 
         When:
             - Run the test_command
