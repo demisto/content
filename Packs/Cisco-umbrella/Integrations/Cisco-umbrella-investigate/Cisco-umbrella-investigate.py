@@ -969,7 +969,7 @@ def get_domain_risk_score_command(
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(risk_score=arg_to_number(data.get("risk_score")) or 0),
+                score=calculate_domain_dbot_score(risk_score=arg_to_number(data.get("risk_score"))),
                 reliability=client.reliability,
             ),
         ),
@@ -1311,7 +1311,7 @@ def get_domain_who_is_command(client: Client, args: dict[str, Any]) -> CommandRe
                 integration_name=INDICATOR_VENDOR,
                 indicator=domain,
                 indicator_type=DBotScoreType.DOMAIN,
-                score=calculate_domain_dbot_score(secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)),
+                score=calculate_domain_dbot_score(secure_rank=arg_to_number(secure_rank)),
                 reliability=client.reliability,
             ),
         ),
@@ -1688,12 +1688,12 @@ def domain_command(
             domain,
         )
         security_data = security_res
-        secure_rank = security_data.get("securerank2")
+        risk_score = risk_score_data.get("risk_score")
         dbot_score = Common.DBotScore(
             integration_name=INDICATOR_VENDOR,
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
-            score=calculate_domain_dbot_score(secure_rank=arg_to_number(int(secure_rank) if secure_rank else None)),
+            score=calculate_domain_dbot_score(secure_rank=arg_to_number(risk_score)),
             reliability=client.reliability,
             malicious_description="Malicious domain found with risk score -1",
         )
@@ -1828,7 +1828,7 @@ def calculate_domain_dbot_score(
 
     Args:
         status (int | None): The status of the domain.
-        risk_score (int | None, optional): The secure rankof the domain. Defaults to None.
+        secure_rank (int | None, optional): The secure rank of the domain. Defaults to None.
         risk_score (int | None, optional): The risk score of the domain. Defaults to None.
 
     Raises:
