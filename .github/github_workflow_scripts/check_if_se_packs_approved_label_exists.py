@@ -10,7 +10,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 SE_APPROVED_LABEL = 'se-approved'
-SE_PACKS = ["Fortigate"]
+SE_PACKS = ("FortiGate", "CheckpointFirewall","Zscaler","ZscalerZPA","CiscoASA","CorelightZeek","Okta","MicrosoftEntraID",
+            "GoogleCloudLogging","MicrosoftEntraID","AWS-CloudTrail","GoogleCloudLogging","Office365",
+            "Dropbox","DuoAdminApi","MicrosoftWindowsEvents","Box","OneLogin")
+
 
 def arguments_handler():
     """ Validates and parses script arguments.
@@ -49,19 +52,16 @@ def main():
     print(f"watched_folders: {watched_folders}")
     print(f"changed_files: {changed_files}")
 
-    watched_folders = [folder.lower() for folder in watched_folders if folder]
+    watched_folders = set(folder.lower() for folder in watched_folders if folder)
     # Detect if watched folder changed
-    folder_changed = any(
-    any(folder in file.lower() for folder in watched_folders)
-    for file in changed_files
-    )
+    folder_changed = any(file in watched_folders for file in changed_files)
     # Validation logic
     if folder_changed and not se_approved:
         print(f"❌ Missing {SE_APPROVED_LABEL} label: This pack has XSIAM content that is also available in SE, please verify.")
         sys.exit(1)
 
     if not folder_changed and se_approved:
-        print(f"❌ Label '{SE_APPROVED_LABEL}' added, but no changes found in {watched_folders}")
+        print(f"❌ Label '{SE_APPROVED_LABEL}' added, but no changes found in SE packs")
         sys.exit(1)
 
 
