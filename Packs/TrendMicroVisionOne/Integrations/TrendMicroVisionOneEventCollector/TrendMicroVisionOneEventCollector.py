@@ -1,5 +1,5 @@
 import hashlib
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Any
 
 import dateparser
@@ -21,6 +21,12 @@ DEFAULT_URL = "https://api.xdr.trendmicro.com"
 PRODUCT = "vision_one"
 VENDOR = "trend_micro"
 ONE_YEAR = 365
+
+
+class Timeouts(IntEnum):  # In seconds
+    FETCH_EVENTS = 180
+    HTTP_CONNECTION = 60
+    HTTP_READ = 120
 
 
 class LastRunLogsStartTimeFields(Enum):
@@ -145,11 +151,18 @@ class Client(BaseClient):
         url = next_link or f"{self.base_url}/{self.API_VERSION}{url_suffix}"
         demisto.info(f"Sending the http request to {url=} with {params=}")
 
+        timeout = (
+            Timeouts.HTTP_CONNECTION.value,  # Max seconds to wait for a connection to the server to be established
+            Timeouts.HTTP_READ.value,  # Max seconds to wait between streamed bytes of the response body from the server
+        )
+        # These timeout values do *NOT* impose a strict upper bound on the total request execution time
+
         return self._http_request(
             method=method,
             full_url=url,
             params=params,
             headers=request_headers,
+            timeout=timeout,
         )
 
     def get_logs(
@@ -287,7 +300,7 @@ class Client(BaseClient):
         Returns:
             tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
-        # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
+        # will retrieve all the events that are more or equal to detected_start_datetime, does not support milliseconds
         # returns in descending order by default and cannot be changed
         # will retrieve all the events that are less than detected_end_datetime and not less equal
         # The data retrieval time range cannot be greater than 365 days.
@@ -1019,68 +1032,70 @@ def fetch_events(
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
     """
-    demisto.debug(f"Starting to fetch up to {limit} events per type: {', '.join(log_types)}")
-
     last_run = demisto.getLastRun()
     demisto.info(f"Last run in the start of the fetch: {last_run}")
 
-    workbench_logs: list[dict] = []
-    updated_workbench_last_run: dict = {}
-    if LogTypes.WORKBENCH.value in log_types:
-        demisto.info(f"Starting to fetch {LogTypes.WORKBENCH} logs")
-        workbench_logs, updated_workbench_last_run = get_workbench_logs(
-            client=client,
-            first_fetch=first_fetch,
-            last_run=last_run,
-            limit=limit,
-        )
-        demisto.info(f"Fetched amount of {LogTypes.WORKBENCH} logs: {len(workbench_logs)}")
+    fetch_limit = last_run.pop("limit", limit)
+    is_finished = False
 
-    observed_attack_techniques_logs: list[dict] = []
-    updated_observed_attack_technique_last_run: dict = {}
-    if LogTypes.OBSERVED_ATTACK_TECHNIQUES.value in log_types:
-        demisto.info(f"Starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
-        observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
-            client=client,
-            first_fetch=first_fetch,
-            last_run=last_run,
-            limit=limit,
-        )
-        demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
+    with ExecutionTimeout(seconds=Timeouts.FETCH_EVENTS.value):
+        demisto.debug(f"Starting to fetch up to {fetch_limit} events per type: {', '.join(log_types)}")
+        get_logs_kwargs = {"client": client, "first_fetch": first_fetch, "last_run": last_run, "limit": fetch_limit}
 
-    search_detection_logs: list[dict] = []
-    updated_search_detection_last_run: dict = {}
-    if LogTypes.SEARCH_DETECTIONS.value in log_types:
-        demisto.info(f"Starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
-        search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
-            client=client,
-            first_fetch=first_fetch,
-            last_run=last_run,
-            limit=limit,
-        )
-        demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
+        workbench_logs: list[dict] = []
+        updated_workbench_last_run: dict = {}
+        if LogTypes.WORKBENCH.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.WORKBENCH} logs")
+            workbench_logs, updated_workbench_last_run = get_workbench_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.WORKBENCH} logs: {len(workbench_logs)}")
 
-    audit_logs: list[dict] = []
-    updated_audit_last_run: dict = {}
-    if LogTypes.AUDIT.value in log_types:
-        demisto.info(f"Starting to fetch {LogTypes.AUDIT} logs")
-        audit_logs, updated_audit_last_run = get_audit_logs(
-            client=client,
-            first_fetch=first_fetch,
-            last_run=last_run,
-            limit=limit,
-        )
-        demisto.info(f"Fetched amount of {LogTypes.AUDIT} logs: {len(audit_logs)}")
+        observed_attack_techniques_logs: list[dict] = []
+        updated_observed_attack_technique_last_run: dict = {}
+        if LogTypes.OBSERVED_ATTACK_TECHNIQUES.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
+            observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
 
-    events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+        search_detection_logs: list[dict] = []
+        updated_search_detection_last_run: dict = {}
+        if LogTypes.SEARCH_DETECTIONS.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
+            search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
 
-    for logs_last_run in [
-        updated_workbench_last_run,
-        updated_observed_attack_technique_last_run,
-        updated_search_detection_last_run,
-        updated_audit_last_run,
-    ]:
-        last_run.update(logs_last_run)
+        audit_logs: list[dict] = []
+        updated_audit_last_run: dict = {}
+        if LogTypes.AUDIT.value in log_types:
+            demisto.info(f"Starting to fetch {LogTypes.AUDIT} logs")
+            audit_logs, updated_audit_last_run = get_audit_logs(
+                **get_logs_kwargs,
+            )
+            demisto.info(f"Fetched amount of {LogTypes.AUDIT} logs: {len(audit_logs)}")
+
+        is_finished = True  # Indicates code block inside `ExecutionTimeout` context manager finished executing in time
+
+    if is_finished:
+        demisto.debug(f"Completed fetching up to {fetch_limit} events. Updating last run")
+        events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
+
+        for logs_last_run in [
+            updated_workbench_last_run,
+            updated_observed_attack_technique_last_run,
+            updated_search_detection_last_run,
+            updated_audit_last_run,
+        ]:
+            last_run.update(logs_last_run)
+
+    else:
+        demisto.debug(f"Timed out fetching up to {fetch_limit} events. Halving limit in last run")
+        events = []  # No events sent to XSIAM
+        last_run.update({"limit": max(fetch_limit // 2, 1), "nextTrigger": "30"})  # Reduce size of API calls in next fetch
 
     demisto.info(f"Last run after fetching all logs: {last_run}")
     return events, last_run
