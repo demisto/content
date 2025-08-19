@@ -34,6 +34,8 @@ PARAMS = demisto.params()
 PROXY = PARAMS.get("proxy", False)
 USE_SSL = not PARAMS.get("insecure", False)
 
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
 day_ms = 365 * 24 * 60 * 60 * 1000
 FETCH_TIME = 3 * day_ms             # TODO: change it to  (60 * 1000)-1 minutes, now its 3 days
 
@@ -280,11 +282,11 @@ def process_activity_log_data(log: dict) -> dict:
         return {}
 
 
-def convert_17_digit_unix_time_to_ISO8601(ts):
+def convert_17_digit_unix_time_to_ISO8601(ts, data_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"):
     ts_int = int(ts)
     seconds = ts_int / 10_000_000      # convert to seconds
     dt = datetime.fromtimestamp(seconds, tz=timezone.utc)
-    dt = dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    dt = dt.strftime(data_format)
     return dt
 
 
@@ -609,7 +611,13 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page={page} is the last page.")
 
             lower_bound_log_id = last_run.get("lower_bound_log_id")
+            fetched_logs_before_remove_duplicates = len(fetched_logs)
             fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=False)
+            
+            if not fetched_logs:
+                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}No logs available for this request after removing duplicates.\n(Fetched logs before remove duplicates: {fetched_logs_before_remove_duplicates})")
+            else:
+                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Removed {fetched_logs_before_remove_duplicates - len(fetched_logs)} duplicate logs removed.")
             total_logs.extend(fetched_logs)
     
             last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
@@ -702,16 +710,17 @@ def remove_decimal_places_from_timestamp(timestamp: str) -> str:
 
 def add_time_field_to_audit_logs(logs: list) -> list:
     for log in logs:
-        timestamp_str = log.get("timestamp")
-        log["_time"] = remove_decimal_places_from_timestamp(timestamp_str)
+        log["_time"] = arg_to_datetime(arg=log.get("timestamp")).strftime(DATE_FORMAT)
+        # timestamp_str = log.get("timestamp")
+        # log["_time"] = remove_decimal_places_from_timestamp(timestamp_str)
     return logs
 
 
 def add_time_field_to_activity_logs(logs: list) -> list:
     for log in logs:
         timestamp_str = log.get("created_at")
-        converted_timestamp = convert_17_digit_unix_time_to_ISO8601(timestamp_str)
-        log["_time"] = remove_decimal_places_from_timestamp(converted_timestamp)
+        converted_timestamp = convert_17_digit_unix_time_to_ISO8601(timestamp_str, DATE_FORMAT)
+        log["_time"] = converted_timestamp
     return logs
 
 
@@ -822,7 +831,7 @@ def main() -> None:  # pragma: no cover
     
     params = demisto.params()
     command = demisto.command()
-    proxy = bool(params.get("proxy", False))
+    proxy = bool(params.get("proxy", False))    # TODO: check about how to using it.
 
     demisto.debug(f"{DEBUG_PREFIX}Command being called is {command}")
     try:
