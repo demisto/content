@@ -5862,10 +5862,14 @@
         },
         {
             "playbookID": "GetUserData - Test",
+            "integrations": [
+                "Microsoft Graph User",
+                "Active Directory Query v2",
+                "AWS - IAM"
+            ],
             "instance_names": [
                 "active_directory_80k",
-                "ms_graph_user_dev",
-                "AWS - IAM"
+                "ms_graph_user_dev"
             ]
         }
     ],
