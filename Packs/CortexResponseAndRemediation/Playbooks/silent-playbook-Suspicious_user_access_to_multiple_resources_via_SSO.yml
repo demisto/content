@@ -233,7 +233,8 @@ tasks:
       id: ebb81edc-20ed-439d-a207-e09be5e247f4
       version: -1
       name: Search for related alerts
-      description: Searches Cortex alerts.
+      description: |-
+        Searches Cortex alerts.
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -450,12 +451,11 @@ tasks:
       id: e0e07708-3890-4137-82d8-16ee7d05dc4d
       version: -1
       name: Get user data
-      description: This script gathers user data from multiple integrations and returns
-        an Account entity with consolidated information to the context.
-      scriptName: get-user-data
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
       type: regular
       iscommand: false
       brand: ""
+      scriptName: get-user-data
     nexttasks:
       '#none#':
       - "10"
@@ -489,10 +489,10 @@ tasks:
       id: 0512a39d-7453-4e41-8020-6307009d946c
       version: -1
       name: Check user risk score
+      description: ''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -673,11 +673,11 @@ tasks:
       id: 8bd63392-3d32-4095-932d-acf1429c1284
       version: -1
       name: Extract Azure user alerts
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -776,11 +776,10 @@ tasks:
       '#none#':
       - "30"
     scriptarguments:
-      closeNotes:
-        simple: Handled by the playbook "Suspicious user access to multiple resources
-          via SSO"
       closeReason:
         simple: Resolved - True Positive
+      closeNotes:
+        simple: Handled by the playbook "Suspicious user access to multiple resources via SSO"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -808,6 +807,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -897,11 +897,12 @@ tasks:
       id: 544aa29d-624d-43ec-8d9b-10d1dc56098c
       version: -1
       name: Disable user in Azure AD
-      description: This script disables users for multiple services.
-      scriptName: disable-user
+      description: |-
+        This script disables users for multiple services.
       type: regular
       iscommand: false
       brand: ""
+      scriptName: disable-user
     nexttasks:
       '#none#':
       - "23"
@@ -1008,6 +1009,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1032,11 +1034,11 @@ tasks:
       id: cf4f78a8-d6a5-40c5-833d-398f2930dbe7
       version: -1
       name: Extract Azure user detections
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1120,11 +1122,11 @@ tasks:
       id: 3e480f03-3566-4061-bec9-0cae229698d5
       version: -1
       name: Get risky user activity
+      description: ''
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1164,6 +1166,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -1194,6 +1197,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -1224,6 +1228,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -1254,6 +1259,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -1408,6 +1414,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1438,8 +1445,7 @@ tasks:
       id: 4d41513e-653e-440a-89f3-169d3f8e1f90
       version: -1
       name: Clear User Sessions
-      description: This script clears user sessions across multiple integrations for
-        a list of usernames.
+      description: This script clears user sessions across multiple integrations for a list of usernames.
       scriptName: clear-user-session
       type: regular
       iscommand: false
