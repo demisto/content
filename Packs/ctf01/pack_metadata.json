@@ -1,6 +1,6 @@
 {
     "name": "Capture The Flag - 01",
-    "description": "XSOAR's Capture the flag (CTF)",
+    "description": "XSOAR's Capture the flag (CTF) test",
     "support": "xsoar",
     "currentVersion": "1.0.48",
     "serverMinVersion": "8.2.0",
