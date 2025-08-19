@@ -10,7 +10,7 @@
                     "simple": "severity"
                 },
                 "Status": {
-                    "simple": "status"
+                    "simple": "dbotstatus"
                 }
             }
         }
