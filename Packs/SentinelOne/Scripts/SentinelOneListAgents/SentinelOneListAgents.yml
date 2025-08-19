@@ -34,55 +34,55 @@ commonfields:
 enabled: true
 name: SentinelOneListAgents
 outputs:
-- contextPath: SentinelOne.Agents.NetworkStatus
+- contextPath: SentinelOne.Agents.networkStatus
   description: The agent network status.
   type: string
-- contextPath: SentinelOne.Agents.ID
+- contextPath: SentinelOne.Agents.id
   description: The agent ID.
   type: string
-- contextPath: SentinelOne.Agents.AgentVersion
+- contextPath: SentinelOne.Agents.agentVersion
   description: The agent software version.
   type: string
-- contextPath: SentinelOne.Agents.IsDecommissioned
+- contextPath: SentinelOne.Agents.isDecommissioned
   description: Whether the agent is decommissioned.
   type: boolean
-- contextPath: SentinelOne.Agents.IsActive
+- contextPath: SentinelOne.Agents.isActive
   description: Whether the agent is active.
   type: boolean
-- contextPath: SentinelOne.Agents.LastActiveDate
+- contextPath: SentinelOne.Agents.lastActiveDate
   description: When was the agent last active.
   type: date
-- contextPath: SentinelOne.Agents.RegisteredAt
+- contextPath: SentinelOne.Agents.registeredAt
   description: The registration date of the agent.
   type: date
-- contextPath: SentinelOne.Agents.ExternalIP
+- contextPath: SentinelOne.Agents.externalIp
   description: The agent IP address.
   type: string
-- contextPath: SentinelOne.Agents.ThreatCount
+- contextPath: SentinelOne.Agents.threatCount
   description: Number of active threats.
   type: number
-- contextPath: SentinelOne.Agents.EncryptedApplications
+- contextPath: SentinelOne.Agents.encryptedApplications
   description: Whether disk encryption is enabled.
   type: boolean
-- contextPath: SentinelOne.Agents.OSName
+- contextPath: SentinelOne.Agents.osName
   description: Name of operating system.
   type: string
-- contextPath: SentinelOne.Agents.ComputerName
+- contextPath: SentinelOne.Agents.computerName
   description: Name of agent computer.
   type: string
-- contextPath: SentinelOne.Agents.MachineType
+- contextPath: SentinelOne.Agents.machineType
   description: Machine type.
   type: string
-- contextPath: SentinelOne.Agents.Domain
+- contextPath: SentinelOne.Agents.domain
   description: Domain name of the agent.
   type: string
-- contextPath: SentinelOne.Agents.CreatedAt
+- contextPath: SentinelOne.Agents.createdAt
   description: Creation time of the agent.
   type: date
-- contextPath: SentinelOne.Agents.SiteName
+- contextPath: SentinelOne.Agents.siteName
   description: Site name associated with the agent.
   type: string
-- contextPath: SentinelOne.Agents.Tags
+- contextPath: SentinelOne.Agents.tags
   description: Tags associated with the agent.
   type: unknown
 script: '-'
