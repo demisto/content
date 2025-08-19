@@ -156,6 +156,8 @@ def split_multiple_values_and_add_or_between(key, values_as_list):
         str: A query string in the format 'field:"value1" OR field:"value2" OR ...' for multiple
                 values, or 'field:"value"' for a single value. All values are escaped and quoted.
     """
+    if not values_as_list:
+        return ""
     if len(values_as_list) > 1:
         query = " OR ".join(f'{key}:"{escape_special_characters(str(v).strip())}"' for v in values_as_list)
     else:
