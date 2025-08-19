@@ -575,6 +575,7 @@ def test_create_permissions_error_entry_with_debug_logging(mocker):
     from COOCApiModule import create_permissions_error_entry
 
     mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
 
     account_id = "account_id"
     message = "Access denied for permission"
@@ -588,125 +589,6 @@ def test_create_permissions_error_entry_with_debug_logging(mocker):
     assert account_id in debug_call_args
 
 
-def test_create_permissions_error_entry_empty_account_id(mocker):
-    """
-    Given: An empty account_id parameter.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry("", "test message", "test.permission")
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
-def test_create_permissions_error_entry_none_account_id(mocker):
-    """
-    Given: A None account_id parameter.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry(None, "test message", "test.permission")
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
-def test_create_permissions_error_entry_empty_message(mocker):
-    """
-    Given: An empty message parameter.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry("test-account", "", "test.permission")
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
-def test_create_permissions_error_entry_none_message(mocker):
-    """
-    Given: A None message parameter.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry("test-account", None, "test.permission")
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
-def test_create_permissions_error_entry_empty_name(mocker):
-    """
-    Given: An empty name parameter.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry("test-account", "test message", "")
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
-def test_create_permissions_error_entry_none_name(mocker):
-    """
-    Given: A None name parameter.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry("test-account", "test message", None)
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
-def test_create_permissions_error_entry_all_invalid_params(mocker):
-    """
-    Given: All parameters are None or empty.
-    When: create_permissions_error_entry is called.
-    Then: It calls return_error with invalid arguments message.
-    """
-    from COOCApiModule import create_permissions_error_entry
-
-    mocker.patch("COOCApiModule.return_error")
-
-    create_permissions_error_entry(None, "", None)
-
-    from COOCApiModule import return_error
-
-    return_error.assert_called_once_with("Invalid arguments for permission entry")
-
-
 def test_return_multiple_permissions_error_single_entry(mocker):
     """
     Given: A single valid error entry in the error_entries list.
@@ -715,6 +597,7 @@ def test_return_multiple_permissions_error_single_entry(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
+    mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
 
@@ -740,6 +623,7 @@ def test_return_multiple_permissions_error_multiple_entries(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
+    mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
 
@@ -774,6 +658,7 @@ def test_return_multiple_permissions_error_empty_list(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
+    mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
 
@@ -796,6 +681,7 @@ def test_return_multiple_permissions_error_entry_context_is_none(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
+    mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
 
@@ -815,6 +701,7 @@ def test_return_multiple_permissions_error_correct_format_and_type(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
+    mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
 
@@ -837,6 +724,7 @@ def test_return_multiple_permissions_error_debug_logging_format(mocker):
     """
     from COOCApiModule import return_multiple_permissions_error
 
+    mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "results")
 
@@ -851,3 +739,193 @@ def test_return_multiple_permissions_error_debug_logging_format(mocker):
         ": {'account_id': 'account_id', 'message': 'Debug test permission error', "
         "'name': 'debug.test.permission', 'classification': 'WARNING', 'error': 'Permission Error'}"
     )
+
+
+def test_create_permissions_error_entry_none_account_id_string_message_name(mocker):
+    """
+    Given: A None account_id with valid string message and name.
+    When: create_permissions_error_entry is called.
+    Then: It sets account_id to "N/A" and logs an info message about invalid entry.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry(None, "Valid message", "valid.permission")
+
+    assert result["account_id"] == "N/A"
+    assert result["message"] == "Valid message"
+    assert result["name"] == "valid.permission"
+    assert result["classification"] == "WARNING"
+    assert result["error"] == "Permission Error"
+
+    demisto.info.assert_called_once()
+    info_call = demisto.info.call_args[0][0]
+    assert "[COOC API] Invalid entry was given to the permissions entry" in info_call
+    assert "account_id" in info_call
+
+
+def test_create_permissions_error_entry_whitespace_only_account_id(mocker):
+    """
+    Given: An account_id containing only whitespace characters.
+    When: create_permissions_error_entry is called.
+    Then: It sets account_id to "N/A" and logs an info message.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry("   ", "Valid message", "valid.permission")
+
+    assert result["account_id"] == "N/A"
+    assert result["message"] == "Valid message"
+    assert result["name"] == "valid.permission"
+
+    demisto.info.assert_called_once()
+    info_call = demisto.info.call_args[0][0]
+    assert "account_id" in info_call
+
+
+def test_create_permissions_error_entry_whitespace_only_message(mocker):
+    """
+    Given: A message containing only whitespace characters.
+    When: create_permissions_error_entry is called.
+    Then: It sets message to "N/A" and logs an info message.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry("valid-account", "\t\n  ", "valid.permission")
+
+    assert result["account_id"] == "valid-account"
+    assert result["message"] == "N/A"
+    assert result["name"] == "valid.permission"
+
+    demisto.info.assert_called_once()
+    info_call = demisto.info.call_args[0][0]
+    assert "message" in info_call
+
+
+def test_create_permissions_error_entry_whitespace_only_name(mocker):
+    """
+    Given: A name containing only whitespace characters.
+    When: create_permissions_error_entry is called.
+    Then: It sets name to "N/A" and logs an info message.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry("valid-account", "Valid message", "  \r\n")
+
+    assert result["account_id"] == "valid-account"
+    assert result["message"] == "Valid message"
+    assert result["name"] == "N/A"
+
+    demisto.info.assert_called_once()
+    info_call = demisto.info.call_args[0][0]
+    assert "name" in info_call
+
+
+def test_create_permissions_error_entry_multiple_invalid_parameters(mocker):
+    """
+    Given: Multiple parameters that are None or empty.
+    When: create_permissions_error_entry is called.
+    Then: It sets all invalid parameters to "N/A" and logs multiple info messages.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry(None, "", "  ")
+
+    assert result["account_id"] == "N/A"
+    assert result["message"] == "N/A"
+    assert result["name"] == "N/A"
+    assert result["classification"] == "WARNING"
+    assert result["error"] == "Permission Error"
+
+    assert demisto.info.call_count == 3
+
+
+def test_create_permissions_error_entry_all_valid_no_info_log(mocker):
+    """
+    Given: All valid non-empty parameters.
+    When: create_permissions_error_entry is called.
+    Then: It does not call demisto.info and only calls demisto.debug.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry("valid-account", "Valid error message", "permission.name")
+
+    assert result["account_id"] == "valid-account"
+    assert result["message"] == "Valid error message"
+    assert result["name"] == "permission.name"
+
+    demisto.info.assert_not_called()
+    demisto.debug.assert_called_once()
+
+
+def test_create_permissions_error_entry_info_log_content_format(mocker):
+    """
+    Given: An invalid parameter value.
+    When: create_permissions_error_entry is called.
+    Then: The info log contains the exact format with variable name and value.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    create_permissions_error_entry("", "Valid message", "valid.permission")
+
+    info_call = demisto.info.call_args[0][0]
+    assert info_call == "[COOC API] Invalid entry was given to the permissions entry var_name='account_id':var_value=''."
+
+
+def test_create_permissions_error_entry_debug_log_with_na_values(mocker):
+    """
+    Given: Parameters that get converted to "N/A".
+    When: create_permissions_error_entry is called.
+    Then: The debug log shows the final entry with "N/A" values.
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    create_permissions_error_entry(None, "Valid message", "")
+
+    debug_call = demisto.debug.call_args[0][0]
+    assert "[COOC API] Permission error detected for account N/A:" in debug_call
+    assert "'account_id': 'N/A'" in debug_call
+    assert "'name': 'N/A'" in debug_call
+
+
+def test_create_permissions_error_entry_integer_zero_as_string(mocker):
+    """
+    Given: A string "0" as account_id.
+    When: create_permissions_error_entry is called.
+    Then: It treats "0" as valid and does not convert to "N/A".
+    """
+    from COOCApiModule import create_permissions_error_entry
+
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+
+    result = create_permissions_error_entry("0", "Valid message", "valid.permission")
+
+    assert result["account_id"] == "0"
+    assert result["message"] == "Valid message"
+    assert result["name"] == "valid.permission"
+
+    demisto.info.assert_not_called()

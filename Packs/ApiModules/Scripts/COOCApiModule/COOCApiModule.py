@@ -384,17 +384,13 @@ def create_permissions_error_entry(account_id: Optional[str], message: Optional[
         SystemExit: If any required argument is None or empty (via return_error)
     """
     # Input validation
-    if not account_id or not message or not name:
-        return_error("Invalid arguments for permission entry")
+    error_entry = {"account_id": account_id, "message": message, "name": name}
+    for var_name, var_value in error_entry.items():
+        if not var_value or (isinstance(var_value, str) and not var_value.strip()):
+            error_entry.update({var_name: "N/A"})
+            demisto.info(f"[COOC API] Invalid entry was given to the permissions entry {var_name=}:{var_value=}.")
 
-    # Create entry
-    error_entry = {
-        "account_id": account_id,
-        "message": message,
-        "name": name,
-        "classification": "WARNING",
-        "error": "Permission Error",
-    }
+    error_entry.update({"classification": "WARNING", "error": "Permission Error"})
     # Log the permission error for security audit purposes
     demisto.debug(f"[COOC API] Permission error detected for account {error_entry.get('account_id')}: {error_entry}")
 
