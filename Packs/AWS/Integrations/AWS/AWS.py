@@ -132,6 +132,7 @@ class AWSErrorHandler:
         "AccessDeniedException",
         "UnauthorizedOperationException",
         "InsufficientPrivilegesException",
+        "NotAuthorized",
     ]
 
     @classmethod
@@ -195,14 +196,35 @@ class AWSErrorHandler:
         if not account_id:
             account_id = demisto.args().get("account_id", "unknown")
 
-        # Extract permission name from error message
-        permission_name = cls._extract_permission_from_message(error_message)
-
-        # Create structured error entry
-        error_entry = {"account_id": account_id, "message": error_message, "name": permission_name}
-
+        action = cls._extract_action_from_message(error_message)
+        # When encountering an unauthorized error, an encoded authorization message may be returned with different
+        # encoding each time. This will create different error entries for each unauthorized error and will confuse the user.
+        # Therefore we will omit the actual encoded message.
+        demisto.info(f"Original error message: {error_message}")
+        error_entry = {
+            "account_id": account_id,
+            "message": cls.remove_encoded_authorization_message(error_message),
+            "name": action,
+        }
         demisto.debug(f"Permission error detected: {error_entry}")
         return_multiple_permissions_error([error_entry])
+
+    @classmethod
+    def remove_encoded_authorization_message(cls, message: str) -> str:
+        """
+        Remove encoded authorization messages from AWS error responses.
+
+        Args:
+            message (str): Original error message
+
+        Returns:
+            str: Cleaned error message without encoded authorization details
+        """
+        index = message.lower().find("encoded authorization failure message:")
+        if index != -1:  # substring found
+            return message[:index]
+        else:
+            return message
 
     @classmethod
     def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
@@ -231,7 +253,7 @@ class AWSErrorHandler:
         raise DemistoException(detailed_error)
 
     @classmethod
-    def _extract_permission_from_message(cls, error_message: str) -> str:
+    def _extract_action_from_message(cls, error_message: str) -> str:
         """
         Extract AWS permission name from error message using regex patterns.
 

@@ -1328,6 +1328,7 @@ def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
 
     mock_client = mocker.Mock()
     mock_client.describe_security_groups.return_value = {
+        "NextToken": "NextToken",
         "SecurityGroups": [
             {
                 "GroupId": "sg-1234567890abcdef0",
@@ -1339,16 +1340,17 @@ def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
                 "IpPermissionsEgress": [],
                 "Tags": [{"Key": "Environment", "Value": "Test"}],
             }
-        ]
+        ],
     }
 
     args = {"group_ids": "sg-1234567890abcdef0"}
 
     result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.SecurityGroups"
-    assert result.outputs_key_field == "GroupId"
-    assert len(result.outputs) == 1
+    assert result.outputs == {
+        "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": "",
+        "AWS.EC2(true)": {"SecurityGroupsNextToken": "NextToken"},
+    }
     assert "AWS EC2 SecurityGroups" in result.readable_output
 
 
@@ -1489,7 +1491,7 @@ def test_ec2_authorize_security_group_egress_command_success(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.return_value = {
+    mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
     }
@@ -1510,7 +1512,7 @@ def test_ec2_authorize_security_group_egress_command_with_port_range(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.return_value = {
+    mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
     }
@@ -1531,7 +1533,7 @@ def test_ec2_authorize_security_group_egress_command_with_ip_permissions_json(mo
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.return_value = {
+    mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
     }
@@ -1570,7 +1572,7 @@ def test_ec2_authorize_security_group_egress_command_security_group_not_found(mo
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidGroup.NotFound")
+    mock_client.authorize_security_group_egress.side_effect = Exception("InvalidGroup.NotFound")
 
     args = {"group_id": "sg-nonexistent", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
@@ -1587,7 +1589,7 @@ def test_ec2_authorize_security_group_egress_command_invalid_group_id(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidGroupId.NotFound")
+    mock_client.authorize_security_group_egress.side_effect = Exception("InvalidGroupId.NotFound")
 
     args = {"group_id": "sg-invalid", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
@@ -1604,7 +1606,7 @@ def test_ec2_authorize_security_group_egress_command_duplicate_rule(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.side_effect = Exception("InvalidPermission.Duplicate")
+    mock_client.authorize_security_group_egress.side_effect = Exception("InvalidPermission.Duplicate")
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
@@ -1621,7 +1623,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.return_value = {
+    mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
         "Return": False,
     }
@@ -1641,7 +1643,7 @@ def test_ec2_authorize_security_group_egress_command_without_port(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.return_value = {
+    mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
     }
@@ -1662,7 +1664,7 @@ def test_ec2_authorize_security_group_egress_command_generic_exception(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_ingress.side_effect = Exception("Unexpected error occurred")
+    mock_client.authorize_security_group_egress.side_effect = Exception("Unexpected error occurred")
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
