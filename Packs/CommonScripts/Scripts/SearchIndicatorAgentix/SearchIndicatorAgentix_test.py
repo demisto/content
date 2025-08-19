@@ -1,9 +1,11 @@
 from SearchIndicatorAgentix import (
     escape_special_characters,
-    build_query_for_values,
+    build_query_for_indicator_values,
+    prepare_query, KEYS_TO_EXCLUDE_FROM_QUERY,
+    build_query_excluding_indicator_values
 )
-import demistomock as demisto
-
+import json
+import pytest
 
 def test_escape_special_characters_backslash():
     """
@@ -124,6 +126,41 @@ def test_escape_special_characters_repeated_chars():
     result = escape_special_characters(value)
     assert result == expected
 
+@pytest.mark.parametrize(
+    "n,expected_chunks",
+    [
+        (0, 0),     # empty -> []
+        (50, 1),    # <100 -> one chunk
+        (100, 1),   # exactly 100 -> one chunk
+        (110, 2),   # 100 + 10 -> two chunks
+        (250, 3),   # 100 + 100 + 50 -> three chunks
+    ],
+)
+def test_build_query_for_indicator_values_chunk_counts(n, expected_chunks):
+    # build n indicator values
+    values = [f"v{i}" for i in range(n)]
+    args = {"value": json.dumps(values)}
+
+    result = build_query_for_indicator_values(args)
+
+    # Check number of chunk queries returned
+    assert isinstance(result, list)
+    assert len(result) == expected_chunks
+
+    # Optionally, verify each chunk’s size by counting " OR " occurrences (+1 = items in chunk)
+    # because our stub joins values with " OR " and build_query wraps with parentheses.
+    remaining = n
+    for chunk_str in result:
+        # strip outer parentheses added in build_query_for_indicator_values
+        assert chunk_str.startswith("(") and chunk_str.endswith(")"), "chunk should be wrapped in parentheses"
+        inner = chunk_str[1:-1]
+        # items_in_chunk = 0 if inner == "" else inner.count(" OR ") + 1
+        items_in_chunk = 0 if inner == "" else inner.count(" OR ") + 1
+        expected_size = min(100, remaining)
+        assert items_in_chunk == expected_size
+        remaining -= expected_size
+
+    assert remaining == 0
 
 def test_build_query_for_values_empty_args():
     """
@@ -132,7 +169,7 @@ def test_build_query_for_values_empty_args():
     Then: Returns empty list
     """
     args = {}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert result == []
 
 
@@ -143,7 +180,7 @@ def test_build_query_for_values_no_value_key():
     Then: Returns empty list
     """
     args = {"type": "Domain", "verdict": "Malicious"}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert result == []
 
 
@@ -154,7 +191,7 @@ def test_build_query_for_values_empty_value_list():
     Then: Returns empty list
     """
     args = {"value": []}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert result == []
 
 
@@ -164,10 +201,9 @@ def test_build_query_for_values_single_value():
     When: build_query_for_values is called
     Then: Returns list with one properly formatted query
     """
-    import json
 
     args = {"value": json.dumps(["example"])}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 1
     assert 'value:"example"' in result[0]
 
@@ -178,11 +214,10 @@ def test_build_query_for_values_multiple_values_under_100():
     When: build_query_for_values is called
     Then: Returns list with one query containing OR operators
     """
-    import json
 
     values = ["example", "test", "sample"]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 1
     for value in values:
         assert f'value:"{value}"' in result[0]
@@ -195,11 +230,10 @@ def test_build_query_for_values_exactly_100_values():
     When: build_query_for_values is called
     Then: Returns list with one query containing all values
     """
-    import json
 
     values = [f"example{i}" for i in range(100)]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 1
     assert "example0" in result[0]
     assert "example99" in result[0]
@@ -211,11 +245,10 @@ def test_build_query_for_values_over_100_values():
     When: build_query_for_values is called
     Then: Returns multiple queries with chunked values
     """
-    import json
 
     values = [f"example{i}" for i in range(150)]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 2
     assert "example0" in result[0]
     assert "example99" in result[0]
@@ -229,11 +262,10 @@ def test_build_query_for_values_exactly_101_values():
     When: build_query_for_values is called
     Then: Returns two queries with 100 and 1 values respectively
     """
-    import json
 
     values = [f"test{i}" for i in range(101)]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 2
     assert "test0" in result[0]
     assert "test99" in result[0]
@@ -247,11 +279,10 @@ def test_build_query_for_values_with_special_characters():
     When: build_query_for_values is called
     Then: Returns queries with properly escaped special characters
     """
-    import json
 
     values = ["test with spaces", 'test"quotes', "test\\backslash"]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 1
     assert "test\\ with\\ spaces" in result[0]
     assert 'test\\"quotes' in result[0]
@@ -278,11 +309,10 @@ def test_build_query_for_values_with_whitespace():
     When: build_query_for_values is called
     Then: Returns queries with whitespace stripped from values
     """
-    import json
 
     values = ["  example  ", "\ttest\n", " sample "]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 1
     assert 'value:"example"' in result[0]
     assert 'value:"test"' in result[0]
@@ -295,11 +325,10 @@ def test_build_query_for_values_mixed_data_types():
     When: build_query_for_values is called
     Then: Returns queries with all values converted to strings
     """
-    import json
 
     values = ["example", 192168001001, True, None]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 1
     assert 'value:"example"' in result[0]
     assert 'value:"192168001001"' in result[0]
@@ -313,12 +342,9 @@ def test_build_query_for_values_large_chunk_boundary():
     When: build_query_for_values is called
     Then: Returns three queries with proper chunk distribution
     """
-    from SearchIndicatorAgentix import build_query_for_values
-    import json
-
     values = [f"domain{i}.example" for i in range(250)]
     args = {"value": json.dumps(values)}
-    result = build_query_for_values(args)
+    result = build_query_for_indicator_values(args)
     assert len(result) == 3
     assert "domain0.example" in result[0]
     assert "domain99.example" in result[0]
@@ -334,8 +360,6 @@ def test_prepare_query_empty_args():
     When: prepare_query is called
     Then: Returns empty list
     """
-    from SearchIndicatorAgentix import prepare_query
-
     args = {}
     result = prepare_query(args)
     assert result == []
@@ -347,9 +371,6 @@ def test_prepare_query_only_value_filters():
     When: prepare_query is called
     Then: Returns queries containing only value filters
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
-
     args = {"value": json.dumps(["example", "test"])}
     result = prepare_query(args)
     assert len(result) == 1
@@ -365,9 +386,6 @@ def test_prepare_query_only_field_filters():
     When: prepare_query is called
     Then: Returns empty list as no value filters exist
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
-
     args = {"type": "Domain", "verdict": "Malicious"}
     result = prepare_query(args)
     assert result == ['(type:"Domain") AND (verdict:"Malicious")']
@@ -379,8 +397,6 @@ def test_prepare_query_value_and_field_filters():
     When: prepare_query is called
     Then: Returns queries combining value and field filters with AND
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {"value": json.dumps(["example"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
     result = prepare_query(args)
@@ -399,8 +415,6 @@ def test_prepare_query_multiple_value_chunks():
     When: prepare_query is called
     Then: Returns multiple queries each combined with field filters
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     values = [f"example{i}" for i in range(150)]
     args = {"value": json.dumps(values), "type": json.dumps(["Domain"])}
@@ -418,8 +432,6 @@ def test_prepare_query_single_value_with_fields():
     When: prepare_query is called
     Then: Returns single query with value and all field filters
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {
         "value": json.dumps(["test.example"]),
@@ -442,7 +454,6 @@ def test_prepare_query_empty_value_list():
     When: prepare_query is called
     Then: Returns empty list
     """
-    from SearchIndicatorAgentix import prepare_query
 
     args = {"value": "[]", "type": "Domain"}
     result = prepare_query(args)
@@ -455,8 +466,6 @@ def test_prepare_query_values_with_special_characters():
     When: prepare_query is called
     Then: Returns queries with properly escaped values combined with fields
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {"value": json.dumps(["test with spaces", 'test"quotes']), "type": "Domain"}
     result = prepare_query(args)
@@ -473,8 +482,6 @@ def test_prepare_query_excluded_keys_ignored():
     When: prepare_query is called
     Then: Returns queries excluding the excluded keys but including valid fields
     """
-    from SearchIndicatorAgentix import prepare_query, KEYS_TO_EXCLUDE_FROM_QUERY
-    import json
 
     excluded_key = KEYS_TO_EXCLUDE_FROM_QUERY[0] if KEYS_TO_EXCLUDE_FROM_QUERY else "dummy"
     args = {"value": json.dumps(["example"]), "type": "Domain", excluded_key: json.dumps(["excluded_value"])}
@@ -491,8 +498,6 @@ def test_prepare_query_issues_ids_transformation():
     When: prepare_query is called
     Then: Returns queries with IssuesIDs transformed to investigationIDs
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {"value": json.dumps(["example"]), "IssuesIDs": "123,456"}
     result = prepare_query(args)
@@ -509,8 +514,6 @@ def test_prepare_query_empty_fields_ignored():
     When: prepare_query is called
     Then: Returns queries containing only value filters as empty fields are ignored
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {"value": json.dumps(["example"]), "type": "", "verdict": ""}
     result = prepare_query(args)
@@ -527,8 +530,6 @@ def test_prepare_query_large_value_set_with_complex_fields():
     When: prepare_query is called
     Then: Returns three queries each combined with all field filters
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     values = [f"domain{i}.example" for i in range(250)]
     args = {
@@ -552,8 +553,6 @@ def test_prepare_query_mixed_data_types_in_values():
     When: prepare_query is called
     Then: Returns queries with all values converted to strings and combined with fields
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {"value": json.dumps(["example", 192168001001, True]), "type": "Domain"}
     result = prepare_query(args)
@@ -571,8 +570,6 @@ def test_prepare_query_whitespace_stripped_from_values():
     When: prepare_query is called
     Then: Returns queries with whitespace stripped from values
     """
-    from SearchIndicatorAgentix import prepare_query
-    import json
 
     args = {"value": json.dumps(["  example  ", "\ttest.org\n"]), "type": "Domain"}
     result = prepare_query(args)
@@ -583,57 +580,51 @@ def test_prepare_query_whitespace_stripped_from_values():
     assert " AND " in result[0]
 
 
-def test_build_query_excluding_values_empty_args():
+def test_build_query_excluding_indicator_values_empty_args():
     """
     Given: Empty arguments dictionary
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns empty string
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert result == ""
 
 
-def test_build_query_excluding_values_only_value_key():
+def test_build_query_excluding_indicator_values_only_value_key():
     """
     Given: Arguments containing only 'value' key
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns empty string as value key is excluded
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
-    import json
 
     args = {"value": json.dumps(["example", "test"])}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert result == ""
 
 
-def test_build_query_excluding_values_single_field():
+def test_build_query_excluding_indicator_values_single_field():
     """
     Given: Arguments with single field excluding value
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string with single field condition in parentheses
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"type": "Domain"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert result == '(type:"Domain")'
 
 
-def test_build_query_excluding_values_multiple_fields():
+def test_build_query_excluding_indicator_values_multiple_fields():
     """
     Given: Arguments with multiple fields excluding value
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string with multiple field conditions joined by AND
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
-    import json
 
     args = {"type": json.dumps(["Domain"]), "verdict": "Malicious"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "(type:" in result
     assert "(verdict:" in result
     assert "Domain" in result
@@ -641,95 +632,85 @@ def test_build_query_excluding_values_multiple_fields():
     assert " AND " in result
 
 
-def test_build_query_excluding_values_with_value_field_mixed():
+def test_build_query_excluding_indicator_values_with_value_field_mixed():
     """
     Given: Arguments with value field and other fields
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string excluding value field but including other fields
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
-    import json
 
     args = {"value": json.dumps(["example"]), "type": "Domain", "verdict": "Malicious"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "value:" not in result
     assert "type:" in result
     assert "verdict:" in result
     assert " AND " in result
 
 
-def test_build_query_excluding_values_issues_ids_transformation():
+def test_build_query_excluding_indicator_values_issues_ids_transformation():
     """
     Given: Arguments with IssuesIDs field
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string with IssuesIDs transformed to investigationIDs
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
-    import json
-
     args = {"IssuesIDs": "123,456"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "investigationIDs:" in result
     assert "IssuesIDs:" not in result
     assert "123" in result
     assert "456" in result
 
 
-def test_build_query_excluding_values_excluded_keys_ignored():
+def test_build_query_excluding_indicator_values_excluded_keys_ignored():
     """
     Given: Arguments with fields in KEYS_TO_EXCLUDE_FROM_QUERY
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string excluding the excluded keys
     """
-    from SearchIndicatorAgentix import build_query_excluding_values, KEYS_TO_EXCLUDE_FROM_QUERY
-    import json
 
     excluded_key = KEYS_TO_EXCLUDE_FROM_QUERY[0] if KEYS_TO_EXCLUDE_FROM_QUERY else "dummy"
     args = {"type": "Domain", excluded_key: "excluded_value"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "type:" in result
     assert f"{excluded_key}:" not in result
 
 
-def test_build_query_excluding_values_empty_field_values():
+def test_build_query_excluding_indicator_values_empty_field_values():
     """
     Given: Arguments with empty field values
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns empty string as empty fields are ignored
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"type": [], "verdict": "", "score": None}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert result == ""
 
 
-def test_build_query_excluding_values_mixed_empty_and_valid_fields():
+def test_build_query_excluding_indicator_values_mixed_empty_and_valid_fields():
     """
     Given: Arguments with mix of empty and valid field values
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string containing only valid fields
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"type": "Domain", "verdict": "", "score": "High"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "type:" in result
     assert "score:" in result
     assert "verdict:" not in result
     assert " AND " in result
 
 
-def test_build_query_excluding_values_multiple_values_in_field():
+def test_build_query_excluding_indicator_values_multiple_values_in_field():
     """
     Given: Arguments with field containing multiple values
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string with OR operators between multiple values
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"type": "Domain,IP,URL"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "(type:" in result
     assert "Domain" in result
     assert "IP" in result
@@ -737,35 +718,33 @@ def test_build_query_excluding_values_multiple_values_in_field():
     assert " OR " in result
 
 
-def test_build_query_excluding_values_single_value_no_or():
+def test_build_query_excluding_indicator_values_single_value_no_or():
     """
     Given: Arguments with field containing single value
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string without OR operators
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"type": "Domain"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "(type:" in result
     assert "Domain" in result
     assert " OR " not in result
 
 
-def test_build_query_excluding_values_complex_multiple_fields():
+def test_build_query_excluding_indicator_values_complex_multiple_fields():
     """
     Given: Arguments with multiple fields each having multiple values
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string with proper AND/OR structure
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {
         "type": "Domain,IP",
         "verdict": "Malicious,Suspicious",
         "score": "High",
     }
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert result.count("(") == 3
     assert result.count(")") == 3
     assert result.count(" AND ") == 2
@@ -774,16 +753,15 @@ def test_build_query_excluding_values_complex_multiple_fields():
     assert "score:" in result
 
 
-def test_build_query_excluding_values_non_json_string_values():
+def test_build_query_excluding_indicator_values_non_json_string_values():
     """
     Given: Arguments with field values as plain strings (not JSON)
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string treating plain strings as single values
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"type": "Domain", "verdict": "Malicious"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "type:" in result
     assert "verdict:" in result
     assert "Domain" in result
@@ -791,17 +769,15 @@ def test_build_query_excluding_values_non_json_string_values():
     assert " AND " in result
 
 
-def test_build_query_excluding_values_mixed_json_and_plain_values():
+def test_build_query_excluding_indicator_values_mixed_json_and_plain_values():
     """
     Given: Arguments with mix of JSON and plain string field values
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string handling both value types correctly
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
-    import json
 
     args = {"type": "Domain,IP", "verdict": "Malicious", "score": "High"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "type:" in result
     assert "verdict:" in result
     assert "score:" in result
@@ -809,33 +785,30 @@ def test_build_query_excluding_values_mixed_json_and_plain_values():
     assert " AND " in result
 
 
-def test_build_query_excluding_values_issues_ids_with_other_fields():
+def test_build_query_excluding_indicator_values_issues_ids_with_other_fields():
     """
     Given: Arguments with IssuesIDs and other fields
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string with IssuesIDs transformed and combined with other fields
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
 
     args = {"IssuesIDs": "123,456", "type": "Domain"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "investigationIDs:" in result
     assert "type:" in result
     assert "IssuesIDs:" not in result
     assert " AND " in result
 
 
-def test_build_query_excluding_values_value_field_at_different_positions():
+def test_build_query_excluding_indicator_values_value_field_at_different_positions():
     """
     Given: Arguments with value field at beginning, middle, and end positions
-    When: build_query_excluding_values is called
+    When: build_query_excluding_indicator_values is called
     Then: Returns query string excluding value field regardless of position
     """
-    from SearchIndicatorAgentix import build_query_excluding_values
-    import json
 
     args = {"value": json.dumps(["test"]), "type": "Domain", "verdict": "Malicious"}
-    result = build_query_excluding_values(args)
+    result = build_query_excluding_indicator_values(args)
     assert "value:" not in result
     assert "type:" in result
     assert "verdict:" in result
