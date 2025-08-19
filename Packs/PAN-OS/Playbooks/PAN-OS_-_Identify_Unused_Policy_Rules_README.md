@@ -1,4 +1,5 @@
 The playbook collects and analyzes Palo Alto Networks NGFW policy rule hitcount information and generates a summary of unused rules for potential clean-up.  Policy rules are classified into three categories:
+
 1. Unused Local Rules - Rules configured locally on Firewalls
 2. Unused Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have zero hits on all Firewalls.
 3. Used Panorama Rules - Rules pushed to one or more Firewalls from Panorama that have hits on some Firewalls but not all.
