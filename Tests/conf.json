@@ -5862,12 +5862,10 @@
         },
         {
             "playbookID": "GetUserData - Test",
-            "integrations": [
-                "AWS - IAM"
-            ],
             "instance_names": [
                 "active_directory_80k",
-                "ms_graph_user_dev"
+                "ms_graph_user_dev",
+                "AWS - IAM"
             ]
         }
     ],
