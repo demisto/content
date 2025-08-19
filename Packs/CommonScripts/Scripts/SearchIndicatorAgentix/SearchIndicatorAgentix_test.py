@@ -165,10 +165,10 @@ def test_build_query_for_values_single_value():
     """
     import json
 
-    args = {"value": json.dumps(["example.com"])}
+    args = {"value": json.dumps(["example"])}
     result = build_query_for_values(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
 
 
 def test_build_query_for_values_multiple_values_under_100():
@@ -179,7 +179,7 @@ def test_build_query_for_values_multiple_values_under_100():
     """
     import json
 
-    values = ["example.com", "test.org", "sample.net"]
+    values = ["example", "test", "sample"]
     args = {"value": json.dumps(values)}
     result = build_query_for_values(args)
     assert len(result) == 1
@@ -196,12 +196,12 @@ def test_build_query_for_values_exactly_100_values():
     """
     import json
 
-    values = [f"example{i}.com" for i in range(100)]
+    values = [f"example{i}" for i in range(100)]
     args = {"value": json.dumps(values)}
     result = build_query_for_values(args)
     assert len(result) == 1
-    assert "example0.com" in result[0]
-    assert "example99.com" in result[0]
+    assert "example0" in result[0]
+    assert "example99" in result[0]
 
 
 def test_build_query_for_values_over_100_values():
@@ -212,14 +212,14 @@ def test_build_query_for_values_over_100_values():
     """
     import json
 
-    values = [f"example{i}.com" for i in range(150)]
+    values = [f"example{i}" for i in range(150)]
     args = {"value": json.dumps(values)}
     result = build_query_for_values(args)
     assert len(result) == 2
-    assert "example0.com" in result[0]
-    assert "example99.com" in result[0]
-    assert "example100.com" in result[1]
-    assert "example149.com" in result[1]
+    assert "example0" in result[0]
+    assert "example99" in result[0]
+    assert "example100" in result[1]
+    assert "example149" in result[1]
 
 
 def test_build_query_for_values_exactly_101_values():
@@ -230,13 +230,13 @@ def test_build_query_for_values_exactly_101_values():
     """
     import json
 
-    values = [f"test{i}.com" for i in range(101)]
+    values = [f"test{i}" for i in range(101)]
     args = {"value": json.dumps(values)}
     result = build_query_for_values(args)
     assert len(result) == 2
-    assert "test0.com" in result[0]
-    assert "test99.com" in result[0]
-    assert "test100.com" in result[1]
+    assert "test0" in result[0]
+    assert "test99" in result[0]
+    assert "test100" in result[1]
     assert " OR " not in result[1]
 
 
@@ -279,13 +279,13 @@ def test_build_query_for_values_with_whitespace():
     """
     import json
 
-    values = ["  example.com  ", "\ttest.org\n", " sample.net "]
+    values = ["  example  ", "\ttest\n", " sample "]
     args = {"value": json.dumps(values)}
     result = build_query_for_values(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
-    assert 'value:"test.org"' in result[0]
-    assert 'value:"sample.net"' in result[0]
+    assert 'value:"example"' in result[0]
+    assert 'value:"test"' in result[0]
+    assert 'value:"sample"' in result[0]
 
 
 def test_build_query_for_values_mixed_data_types():
@@ -296,11 +296,11 @@ def test_build_query_for_values_mixed_data_types():
     """
     import json
 
-    values = ["example.com", 192168001001, True, None]
+    values = ["example", 192168001001, True, None]
     args = {"value": json.dumps(values)}
     result = build_query_for_values(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
     assert 'value:"192168001001"' in result[0]
     assert 'value:"True"' in result[0]
     assert 'value:"None"' in result[0]
@@ -349,7 +349,7 @@ def test_build_query_excluding_values_only_value_key():
     from SearchIndicatorAgentix import build_query_excluding_values
     import json
 
-    args = {"value": json.dumps(["example.com"])}
+    args = {"value": json.dumps(["example"])}
     result = build_query_excluding_values(args)
     assert result == ""
 
@@ -397,12 +397,12 @@ def test_build_query_excluding_values_with_value_mixed():
     from SearchIndicatorAgentix import build_query_excluding_values
     import json
 
-    args = {"value": json.dumps(["example.com"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
+    args = {"value": json.dumps(["example"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
     result = build_query_excluding_values(args)
     assert "value:" not in result
     assert "type:" in result
     assert "verdict:" in result
-    assert "example.com" not in result
+    assert "example" not in result
 
 
 def test_build_query_excluding_values_issues_ids_transformation():
@@ -556,7 +556,7 @@ def test_build_query_excluding_values_complex_mixed_scenario():
 
     excluded_key = KEYS_TO_EXCLUDE_FROM_QUERY[0] if KEYS_TO_EXCLUDE_FROM_QUERY else "dummy"
     args = {
-        "value": json.dumps(["example.com"]),
+        "value": json.dumps(["example"]),
         "type": json.dumps(["Domain"]),
         "verdict": "",
         excluded_key: json.dumps(["excluded_value"]),
@@ -593,11 +593,11 @@ def test_prepare_query_only_value_filters():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    args = {"value": json.dumps(["example.com", "test.org"])}
+    args = {"value": json.dumps(["example", "test"])}
     result = prepare_query(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
-    assert 'value:"test.org"' in result[0]
+    assert 'value:"example"' in result[0]
+    assert 'value:"test"' in result[0]
     assert " OR " in result[0]
     assert " AND " not in result[0]
 
@@ -625,10 +625,10 @@ def test_prepare_query_value_and_field_filters():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    args = {"value": json.dumps(["example.com"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
+    args = {"value": json.dumps(["example"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
     result = prepare_query(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
     assert "type:" in result[0]
     assert "verdict:" in result[0]
     assert "Domain" in result[0]
@@ -645,7 +645,7 @@ def test_prepare_query_multiple_value_chunks():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    values = [f"example{i}.com" for i in range(150)]
+    values = [f"example{i}" for i in range(150)]
     args = {"value": json.dumps(values), "type": json.dumps(["Domain"])}
     result = prepare_query(args)
     assert len(result) == 2
@@ -721,10 +721,10 @@ def test_prepare_query_excluded_keys_ignored():
     import json
 
     excluded_key = KEYS_TO_EXCLUDE_FROM_QUERY[0] if KEYS_TO_EXCLUDE_FROM_QUERY else "dummy"
-    args = {"value": json.dumps(["example.com"]), "type": json.dumps(["Domain"]), excluded_key: json.dumps(["excluded_value"])}
+    args = {"value": json.dumps(["example"]), "type": json.dumps(["Domain"]), excluded_key: json.dumps(["excluded_value"])}
     result = prepare_query(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
     assert "type:" in result[0]
     assert f"{excluded_key}:" not in result[0]
 
@@ -738,7 +738,7 @@ def test_prepare_query_issues_ids_transformation():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    args = {"value": json.dumps(["example.com"]), "IssuesIDs": json.dumps(["123", "456"])}
+    args = {"value": json.dumps(["example"]), "IssuesIDs": json.dumps(["123", "456"])}
     result = prepare_query(args)
     assert len(result) == 1
     assert "investigationIDs:" in result[0]
@@ -756,10 +756,10 @@ def test_prepare_query_empty_fields_ignored():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    args = {"value": json.dumps(["example.com"]), "type": json.dumps([]), "verdict": ""}
+    args = {"value": json.dumps(["example"]), "type": json.dumps([]), "verdict": ""}
     result = prepare_query(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
     assert "type:" not in result[0]
     assert "verdict:" not in result[0]
     assert " AND " not in result[0]
@@ -799,10 +799,10 @@ def test_prepare_query_mixed_data_types_in_values():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    args = {"value": json.dumps(["example.com", 192168001001, True]), "type": json.dumps(["Domain"])}
+    args = {"value": json.dumps(["example", 192168001001, True]), "type": json.dumps(["Domain"])}
     result = prepare_query(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
     assert 'value:"192168001001"' in result[0]
     assert 'value:"True"' in result[0]
     assert "type:" in result[0]
@@ -818,10 +818,10 @@ def test_prepare_query_whitespace_stripped_from_values():
     from SearchIndicatorAgentix import prepare_query
     import json
 
-    args = {"value": json.dumps(["  example.com  ", "\ttest.org\n"]), "type": json.dumps(["Domain"])}
+    args = {"value": json.dumps(["  example  ", "\ttest.org\n"]), "type": json.dumps(["Domain"])}
     result = prepare_query(args)
     assert len(result) == 1
-    assert 'value:"example.com"' in result[0]
+    assert 'value:"example"' in result[0]
     assert 'value:"test.org"' in result[0]
     assert "type:" in result[0]
     assert " AND " in result[0]
