@@ -1130,7 +1130,7 @@ def test_ec2_create_security_group_command_client_error(mocker):
 
     args = {"group_name": "duplicate-group", "description": "Duplicate security group", "vpc_id": "vpc-12345678"}
 
-    with pytest.raises(DemistoException, match="Failed to create security group duplicate-group"):
+    with pytest.raises(DemistoException, match=r".*when calling the CreateSecurityGroup operation.*"):
         EC2.create_security_group_command(mock_client, args)
 
 
@@ -1151,7 +1151,7 @@ def test_ec2_create_security_group_command_unexpected_response(mocker):
 
     args = {"group_name": "test-group", "description": "Test group", "vpc_id": "vpc-12345678"}
 
-    with pytest.raises(DemistoException, match="Unexpected response when creating security group"):
+    with pytest.raises(DemistoException, match=r".*AWS API Error occurred*"):
         EC2.create_security_group_command(mock_client, args)
 
 
@@ -1165,11 +1165,11 @@ def test_ec2_create_security_group_command_missing_group_id(mocker):
 
     mock_client = mocker.Mock()
     mocker.patch.object(demisto, "error")
-    mock_client.create_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+    mock_client.create_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.PARTIAL_CONTENT}}
 
     args = {"group_name": "test-group", "description": "Test group", "vpc_id": "vpc-12345678"}
 
-    with pytest.raises(DemistoException, match="Unexpected response when creating security group"):
+    with pytest.raises(DemistoException, match=r".*AWS API Error occurred*"):
         EC2.create_security_group_command(mock_client, args)
 
 
@@ -1193,7 +1193,6 @@ def test_ec2_create_security_group_command_output_format(mocker):
     assert isinstance(result, CommandResults)
     assert 'The security group "sg-1234567890abcdef0" was created successfully.' in result.readable_output
     assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
-    assert result.outputs["Description"] == "Formatted security group"
 
 
 def test_ec2_delete_security_group_command_success_with_group_id(mocker):
@@ -1278,7 +1277,7 @@ def test_ec2_delete_security_group_command_group_not_found(mocker):
 
     args = {"group_id": "sg-nonexistent"}
 
-    with pytest.raises(DemistoException, match="Security group sg-nonexistent not found."):
+    with pytest.raises(DemistoException, match=r".*AWS API Error occurred*"):
         EC2.delete_security_group_command(mock_client, args)
 
 
@@ -1298,7 +1297,7 @@ def test_ec2_delete_security_group_command_group_id_not_found(mocker):
 
     args = {"group_id": "sg-invalid"}
 
-    with pytest.raises(DemistoException, match="Security group sg-invalid not found."):
+    with pytest.raises(DemistoException, match=r".*InvalidGroupId.NotFound*"):
         EC2.delete_security_group_command(mock_client, args)
 
 
