@@ -1106,9 +1106,9 @@ class EC2:
         if args.get("filters") is not None:
             kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
         if args.get("group_ids") is not None:
-            kwargs.update({"GroupIds": argToList(args.get("group_ids",[]))})
+            kwargs.update({"GroupIds": argToList(args.get("group_ids", []))})
         if args.get("group_names") is not None:
-            kwargs.update({"GroupNames": argToList(args.get("group_names",[]))})
+            kwargs.update({"GroupNames": argToList(args.get("group_names", []))})
         kwargs.update(build_pagination_kwargs(args))
         try:
             remove_nulls_from_dictionary(kwargs)
