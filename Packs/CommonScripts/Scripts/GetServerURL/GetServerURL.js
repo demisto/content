@@ -1,5 +1,5 @@
   function parseUrl(url) {
-      match = url.match(parseURLRegex);
+      match = url.match(urlRegex);
 
       return match ? {
           shcema: url.match(/^(https?):/)[1],
