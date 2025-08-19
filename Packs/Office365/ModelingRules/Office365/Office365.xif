@@ -1,5 +1,4 @@
 [RULE: o365_common_fields]
-#test
 alter
 	RecordType = to_integer(RecordType)
 | alter
