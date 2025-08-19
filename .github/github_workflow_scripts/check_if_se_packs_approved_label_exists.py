@@ -21,7 +21,7 @@ def arguments_handler():
     parser = argparse.ArgumentParser(description='Check if se-packs-approved label exists.')
     parser.add_argument('-p', '--pr_number', help='The PR number to check if the label exists.')
     parser.add_argument('-g', '--github_token', help='The GitHub token to authenticate the GitHub client.')
-    parser.add_argument('-c', '--changed_files', help='The path of modified files')
+    parser.add_argument('-c', '--changed_files', type=str, help='The path of modified files')
     return parser.parse_args()
 
 
@@ -35,7 +35,7 @@ def main():
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
-    changed_files = options.changed_files
+    changed_files = options.changed_files.split(",")
 
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
@@ -51,7 +51,10 @@ def main():
 
     watched_folders = [folder.lower() for folder in watched_folders if folder]
     # Detect if watched folder changed
-    folder_changed = any(folder in changed_files.lower() for folder in watched_folders)
+    folder_changed = any(
+    any(folder in file.lower() for folder in watched_folders)
+    for file in changed_files
+    )
     print(f"folder_changed: {folder_changed}")
     print(f'Checking if {SE_APPROVED_LABEL} label exist in PR {pr_number}')
     # Validation logic
