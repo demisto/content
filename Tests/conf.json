@@ -5859,6 +5859,13 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "playbookID": "ClearUserSession - Test",
+            "instance_names": [
+                "Okta v2",
+                "ms_graph_user_dev"
+            ]
         }
     ],
     "skipped_tests": {
