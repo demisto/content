@@ -74,7 +74,7 @@ def build_query_for_indicator_values(args: dict) -> list:
 
     if not values_as_list:
         return []
-    
+
     # Split the list into chunks of 100 values each
     chunked_lists = [values_as_list[i : i + 100] for i in range(0, len(values_as_list), 100)]
     chunk_queries = []
@@ -83,7 +83,6 @@ def build_query_for_indicator_values(args: dict) -> list:
         chunk_queries.append(f"({chunk_query})")
         demisto.debug(f"indicator values chunk_queries[{i}]: {chunk_query}")
     return chunk_queries
-
 
 
 def build_query_excluding_indicator_values(args: dict) -> str:
@@ -228,7 +227,7 @@ def search_indicators(args):
     return markdown, filtered_indicators
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     args = demisto.args()
     try:
         readable_output, outputs = search_indicators(args)
