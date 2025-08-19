@@ -55,15 +55,13 @@ They use smart threat detection to actively stop advanced threats and include a 
 4. Select the **Log Configuration** tab and configure the following settings:
 
     **System Logs**
-
     - Enter the **_Log Host IP Address_**.
     - Enter the **_Port_** number (default is 514).
 
     **Service Logs**
-
     - For **_Log Format_**, select **Syslog**.
 
-For more details on configuring log output, see this [configuration guide](https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178928516).
+For more details on configuring log output, see the [Huawei documentation](https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178928516).
 
 ### Cortex XSIAM - Broker VM Configuration
 
@@ -79,8 +77,8 @@ Follow these steps to configure the Broker VM to ingest Huawei firewall logs.
 
    | Parameter     | Value
    | :---          | :---
-   | `Protocol`    | Select the protocol (UDP, TCP, or Secure TCP) that you configured on your Huawei Firewall.
-   | `Port`        | Enter the syslog port for the Broker VM to listen on. This must match the port configured on the Huawei Firewall (default: 514).
+   | `Protocol`    | Select the protocol (UDP, TCP, or Secure TCP) that you configured on your Huawei firewall.
+   | `Port`        | Enter the syslog port for the Broker VM to listen on. This must match the port configured on the Huawei firewall (default: 514).
    | `Vendor`      | Enter **Huawei**.
    | `Product`     | Enter **FW**.
 
