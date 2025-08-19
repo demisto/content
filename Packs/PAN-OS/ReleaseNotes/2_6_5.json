@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes":"Removed unnecessary playbooks and scripts from XSOAR and XSIAM, making them available only in the platform marketplace."
+    "breakingChangesNotes":"Removed incompatible playbooks and scripts from the Marketplace."
 }
