@@ -126,11 +126,7 @@ def build_query_excluding_values(args: dict) -> str:
         if key == "IssuesIDs":
             key = "investigationIDs"
 
-        try:
-            values_as_list = json.loads(values)
-        except (json.JSONDecodeError, TypeError) as e:
-            demisto.debug(f"JSON decode failed for values {values}: {str(e)}.\nTreating as string value.")
-            values_as_list = argToList(values)
+        values_as_list = argToList(values)
 
         query = split_multiple_values_and_add_or_between(key, values_as_list)
 
