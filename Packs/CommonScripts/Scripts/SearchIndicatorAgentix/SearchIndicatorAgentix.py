@@ -19,25 +19,21 @@ def escape_special_characters(value):
         str: The input value with special characters properly escaped.
     """
     demisto.debug(f"Escaping special characters in value: {value}")
-    escape_characters = ["\\", "\n", "\t", "\r", '"', "^", ":", " "]
+    
+    # Dictionary mapping characters to their escape sequences for more maintainable code
+    escape_map = {
+        "\\": "\\\\",
+        "\n": "\\n", 
+        "\t": "\\t",
+        "\r": "\\r",
+        '"': '\\"',
+        "^": "\\^",
+        ":": "\\:",
+        " ": "\\ "
+    }
 
-    for char in escape_characters:
-        if char == "\\":
-            value = value.replace(char, "\\\\")
-        elif char == "\n":
-            value = value.replace(char, "\\n")
-        elif char == "\t":
-            value = value.replace(char, "\\t")
-        elif char == "\r":
-            value = value.replace(char, "\\r")
-        elif char == '"':
-            value = value.replace(char, '\\"')
-        elif char == "^":
-            value = value.replace(char, "\\^")
-        elif char == ":":
-            value = value.replace(char, "\\:")
-        elif char == " ":
-            value = value.replace(char, "\\ ")
+    for char, escaped in escape_map.items():
+        value = value.replace(char, escaped)
 
     demisto.debug(f"After escaping special characters in value: {value}")
 
