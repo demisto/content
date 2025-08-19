@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "fortinet",
+        "fortigate"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
