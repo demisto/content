@@ -16,26 +16,6 @@ urllib3.disable_warnings()
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-# BASE_EVENT_BODY: dict = {
-#     "aggregation": False,
-#     "api_id": 0,
-#     "category": [
-#         "CRS",
-#         "SchemaValidation",
-#         "SmartAlerts",
-#         "Reputation",
-#         "UsageAnomaly",
-#         "BehaviourAnomal",
-#         "GeolocationAler",
-#         "PassiveScan",
-#         "ActiveScan",
-#         "AutomatedThreat",
-#         "Governance",
-#     ],
-#     "include_runtime_scan": False,
-#     "severity": ["critical", "major", "minor", "info"],
-#     "type": ["security_events", "vulnerabilities"],
-# }
 BASE_EVENT_BODY: dict = {
     "action": [
         "create"
@@ -50,15 +30,14 @@ class Client(BaseClient):
     """Client class to interact with the service API"""
 
     def __init__(
-        self,
-        base_url: str,
-        user_key: str,
-        api_key: str,
-        organization: str,
-        application: str,
-        base_event_body: dict,
-        verify: bool,
-        use_proxy: bool,
+            self,
+            base_url: str,
+            user_key: str,
+            api_key: str,
+            organization: str,
+            base_event_body: dict,
+            verify: bool,
+            use_proxy: bool,
     ) -> None:
         """
         Prepare constructor for Client class.
@@ -70,7 +49,6 @@ class Client(BaseClient):
             user_key: The user key for AppSentinels.ai API.
             api_key: The Api key for AppSentinels.ai API - specific for every licensing.
             organization: The organization ID for AppSentinels.ai API.
-            application: The application ID for AppSentinels.ai API.
             base_event_body: The base body for the http request.
             verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
             use_proxy: True if the proxy server needs to be used, False otherwise.
@@ -84,7 +62,6 @@ class Client(BaseClient):
             "Content-Type": "application/json",
         }
         self.organization = organization
-        self.application = application
         self.base_event_body = base_event_body
         self.api_key = api_key
         self.user_key = user_key
@@ -93,8 +70,9 @@ class Client(BaseClient):
         """Retrieve the detections from AppSentinels.ai  API."""
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
         body = self.base_event_body.copy()
-        body.update(params)
-        return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, resp_type="json")
+        # body.update(params)
+        return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params,
+                                  resp_type="json")
 
 
 """ HELPER FUNCTIONS """
@@ -108,11 +86,12 @@ def remove_first_run_params(params: dict[str, Any]) -> None:
         params (Dict[str, Any]): Integration parameters.
 
     """
-    for key in ("from_timestamp", "to_timestamp"):
+    for key in ("from_date", "to_date"):
         params.pop(key, None)
 
 
-def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_params: bool) -> List[Dict]:
+def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_params: bool) -> List[
+    Dict]:
     """
     Fetches events from the AppSentinels.ai API, handling pagination and last_run.
 
@@ -132,19 +111,19 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
     # Determine the fetch params
     if use_last_run_as_params:
         params.update(last_run)
-    elif "last_event_id" not in last_run:
+    elif "last_log_id" not in last_run:
         # Initial fetch: from 1 minute before now to now
         current_time = get_current_time()
         start_time = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_time = current_time.strftime(DATE_FORMAT)
-        params["from_timestamp"] = start_time
-        params["to_timestamp"] = end_time
+        params["from_date"] = start_time
+        params["to_date"] = end_time
         demisto.debug(f"Fetching events from date={start_time} to date={end_time}.")
     else:
-        # Subsequent fetches: use last_event_id
-        last_event_id_last = last_run["last_event_id"]
-        params["last_event_id"] = last_event_id_last
-        demisto.debug(f"Fetching with last_event_id: {last_event_id_last}")
+        # Subsequent fetches: use last_log_id
+        last_log_id_last = last_run["last_log_id"]
+        params["last_log_id"] = last_log_id_last
+        demisto.debug(f"Fetching with last_log_id: {last_log_id_last}")
 
     while True:
         try:
@@ -154,7 +133,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
             raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
 
         if not response_data or not response_data.get("data"):
-            demisto.debug("No events returned from API.")
+            demisto.debug("No Audit logs returned from API.")
             break  # Exit loop if no data
 
         new_events = response_data.get("data", [])
@@ -162,8 +141,8 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         if not new_events:
             break
 
-        last_event_id = response_data.get("last_event_id")
-        last_run["last_event_id"] = last_event_id
+        last_log_id = response_data.get("last_log_id")
+        last_run["last_log_id"] = last_log_id
         more_records = response_data.get("more_records", False)
 
         for event in new_events:
@@ -173,7 +152,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
             events.append(event)
 
             if fetch_limit and len(events) >= fetch_limit:
-                last_run["last_event_id"] = event["eventid"]
+                last_run["last_log_id"] = event["eventid"]
                 return events
 
         if not more_records:
@@ -181,7 +160,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
 
         # Update Params for next call
         remove_first_run_params(params)
-        params["last_event_id"] = last_event_id
+        params["last_log_id"] = last_log_id
 
     return events
 
@@ -228,7 +207,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(
-    client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_params: bool = False
+        client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_params: bool = False
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AppSentinels.ai entity records.
 
@@ -272,7 +251,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
 
     if first_fetch:
         first_fetch_date = first_fetch.strftime(DATE_FORMAT)
-        params_run.update({"from_timestamp": first_fetch_date})
+        params_run.update({"from_date": first_fetch_date})
 
     output, _ = fetch_events(client, params_run, max_events, use_last_run_as_params=True)
     human_readable = prepare_list_output(output)
@@ -298,7 +277,6 @@ def main():
     user_key = params.get("credentials", {}).get("identifier")
     api_key = params.get("credentials", {}).get("password")
     organization = params.get("organization", "")
-    application = params.get("application", "")
     fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or None
     demisto.debug(f"Command being called is {command}")
 
@@ -308,7 +286,6 @@ def main():
             user_key=user_key,
             api_key=api_key,
             organization=organization,
-            application=application,
             base_event_body=BASE_EVENT_BODY,
             verify=verify_certificate,
             use_proxy=proxy,
@@ -318,8 +295,8 @@ def main():
             # Command made to test the integration
             # result = test_module(client)
             params_test = {
-                "page": "0",
-                "limit": "1",
+                "page": "3",
+                "limit": "100",
                 "sort": "timestamp",
                 "sort_by": "desc",
                 "include_system": "false"
