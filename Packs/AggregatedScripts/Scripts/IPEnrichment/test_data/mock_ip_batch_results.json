@@ -9,7 +9,7 @@
                     "Address": "8.8.8.8",
                     "PositiveDetections": 25
                 },
-                "DBotScore": { "Indicator": "8.8.8.8", "Score": 3, "Vendor": "brand1", "Type": "ip" }
+                "DBotScore": { "Indicator": "8.8.8.8", "Score": 2, "Vendor": "brand1", "Type": "ip" }
             }
         }
     ],
@@ -45,7 +45,7 @@
             "Brand": "Cortex Core - IR",
             "Metadata": { "brand": "Cortex Core - IR" },
             "EntryContext": {
-                "IPAnalyticsPrevalence": {
+                "Core.AnalyticsPrevalence.Ip": {
                     "total_count": 150,
                     "is_rare": false
                 }

@@ -13,7 +13,7 @@
                 },
                 "DBotScore": {
                     "Indicator": "https://example.com",
-                    "Score": 3,
+                    "Score": 2,
                     "Vendor": "brand1",
                     "Type": "url"
                 }

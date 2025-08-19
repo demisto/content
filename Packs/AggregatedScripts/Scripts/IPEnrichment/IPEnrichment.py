@@ -39,6 +39,7 @@ def ip_enrichment_script(
         "ASOwner": "ASOwner",
         "DetectionEngines": "DetectionEngines",
         "PositiveDetections": "PositiveDetections",
+        "Score": "Score",
     }
     ip_indicator = Indicator(
         type="ip", value_field="Address", context_path_prefix="IP(", context_output_mapping=indicator_mapping
@@ -51,7 +52,7 @@ def ip_enrichment_script(
                 name="get-endpoint-data",
                 args={"endpoint_ip": ip_list},
                 command_type=CommandType.INTERNAL,
-                brand="Scripts",
+                brand="Core",
                 context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
             ),
             Command(
@@ -59,7 +60,7 @@ def ip_enrichment_script(
                 args={"ip_address": ip_list},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",
-                context_output_mapping={"IPAnalyticsPrevalence": "IPAnalyticsPrevalence[]"},
+                context_output_mapping={"Core.AnalyticsPrevalence.Ip":"Core.AnalyticsPrevalence.Ip"},
             ),
         ]
     )
@@ -95,7 +96,7 @@ def main():
     try:
         return_results(ip_enrichment_script(ip_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:
-        return_error(f"Failed to execute IPEnrichment. Error: {str(ex)}")
+        return_error(f"Failed to execute !ip-enrichment. Error: {str(ex)}")
 
 
 """ ENTRY POINT """

@@ -56,7 +56,7 @@ def make_dbot(indicator, vendor, score):
 # =================================================================================================
 # == Global Mocks & Fixtures
 # =================================================================================================
-default_indicator = Indicator(type="indicator", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={})
+default_indicator = Indicator(type="indicator", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={"Score": "Score"})
 
 
 @pytest.fixture
@@ -315,7 +315,7 @@ def test_add_other_commands_results():
         (
             {"indicator1": {"brandA": [{"batch": "data"}]}},
             {},
-            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"batch": "data"}]}],
+            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown",  "Results": [{"batch": "data"}]}],
         ),
         # Case 2: TIM only
         (
@@ -388,6 +388,43 @@ def test_build_merges_dbot_scores_correctly(batch_dbot, tim_dbot, expected_outpu
 
     assert sorted(final_context[Common.DBotScore.CONTEXT_PATH], key=sort_key) == sorted(expected_output, key=sort_key)
 
+@pytest.mark.parametrize("results, expected_tim_score", [
+    (
+        [{"Score": 5, "Brand": "TIM"}, {"Score": 8, "Brand": "brandA"}, {"Score": 3, "Brand": "TIM"}],
+        5 # The max score from results where Brand is "TIM"
+    ),
+    (
+        [{"Score": 8, "Brand": "brandA"}, {"Score": 9, "Brand": "brandB"}],
+        0 # No TIM results, so should default to 0
+    ),
+    (
+        [],
+        0 # Empty results, should default to 0
+    ),
+])
+def test_build_calculates_tim_score_correctly(results, expected_tim_score):
+    """
+    Given:
+        - A list of indicator results from various brands.
+    When:
+        - The build() method is called.
+    Then:
+        - The final indicator should have a TIMScore calculated only from results where the brand is "TIM".
+    """
+    indicator_with_score = Indicator(
+        type="test",
+        value_field="ID",
+        context_path_prefix="Test(",
+        context_output_mapping={"Score": "Score"}
+    )
+    builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
+    batch_context = {"indicator1": {"brandX": results}} # Brand doesn't matter, structure does
+    builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
+
+    final_context = builder.build()
+
+    final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
+    assert final_indicator.get("TIMScore",0) == expected_tim_score
 
 @pytest.mark.parametrize(
     "results, expected_max, expected_verdict",
@@ -799,7 +836,7 @@ def test_parse_result_with_error(module_factory, mocker, verbose, include_hr):
     assert entry.command_name == cmd.name
     assert entry.brand == "BrandX"
     assert entry.status == Status.FAILURE
-    assert entry.args == json.dumps(cmd.args)
+    assert entry.args == "example.com"
     assert entry.message == "Error Message"
 
     if verbose:

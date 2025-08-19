@@ -79,7 +79,7 @@ def main():  # pragma: no cover
     try:
         return_results(url_enrichment_script(url_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:
-        return_error(f"Failed to execute URLEnrichment. Error: {str(ex)}")
+        return_error(f"Failed to execute !url-enrichment. Error: {str(ex)}")
 
 
 """ ENTRY POINT """

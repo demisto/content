@@ -106,7 +106,8 @@ def test_domain_enrichment_script_end_to_end(mocker):
     # 1. Verify results for domain1.com (overlapping TIM and batch data)
     domain_result = enrichment_map.get("domain1.com")
     assert domain_result is not None
-    assert len(domain_result["Results"]) == 2  # brand1 (from batch) + brand2 (from TIM)
+    assert len(domain_result["Results"]) == 3  # brand1 (from batch) + brand2 (from TIM) + TIM Itself
+
 
     # The brand1 result should be from the BATCH (Score: 3), not TIM (Score: 1)
     brand1_result = next(r for r in domain_result["Results"] if r["Brand"] == "brand1")
@@ -118,11 +119,15 @@ def test_domain_enrichment_script_end_to_end(mocker):
     assert domain_result["MaxVerdict"] == "Malicious"
 
     # 2. Verify internal command output was mapped correctly
-    prevalence_data = outputs.get("Core.AnalyticsPrevalence.Domain", [])
-    assert len(prevalence_data) == 1
-    assert prevalence_data[0]["total_count"] == 500
+    prevalence_data = outputs.get("Core.AnalyticsPrevalence.Domain", {})
+    assert len(prevalence_data) == 3
+    assert prevalence_data["total_count"] == 500
 
     # 3. Verify DBotScore context was populated and merged correctly
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
     assert len(dbot_scores) == 3  # 1 from TIM, 2 from Batch
     assert {s["Vendor"] for s in dbot_scores} == {"brand1", "brand2", "brand3"}
+    
+    # 4. TIM Score Updated
+    tim_result = next(r for r in domain_result["Results"] if r["Brand"] == "TIM")
+    assert tim_result["Score"] == 3

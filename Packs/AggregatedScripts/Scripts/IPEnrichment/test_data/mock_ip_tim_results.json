@@ -2,6 +2,7 @@
     {
         "iocs": [
             {
+                "score":3,
                 "value": "8.8.8.8",
                 "indicator_type": "IP",
                 "insightCache": {

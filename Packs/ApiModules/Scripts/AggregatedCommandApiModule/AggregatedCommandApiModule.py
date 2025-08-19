@@ -59,7 +59,6 @@ class EntryResult:
 
     def to_entry(self) -> dict[str, Any]:
         return {
-            "command name": self.command_name,
             "args": self.args,
             "brand": self.brand,
             "status": self.status.value,
@@ -322,8 +321,11 @@ class ContextBuilder:
         for indicator in indicator_list:
             all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])]
             max_score = max(all_scores or [0])
-            indicator["MaxScore"] = max_score
-            indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
+            if "Score" in self.indicator.context_output_mapping:
+                indicator["MaxScore"] = max_score
+                indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
+                if max_tim_score := [r.get("Score", 0) for r in indicator.get("Results", []) if r.get("Brand") == "TIM"]:
+                    indicator["TIMScore"] = max(max_tim_score)
             if "CVSS" in self.indicator.context_output_mapping:
                 indicator["MaxCVSS"] = max(
                     [normalize_cvss_score(res.get("CVSS", 0)) for res in indicator.get("Results", [])] or [0]
@@ -466,17 +468,10 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         demisto.debug("Starting aggregated command main loop.")
         context_builder = ContextBuilder(self.indicator, self.final_context_path)
-        # 1. Prepare commands and get TIM results
-        demisto.debug("Step 1: querying TIM.")
-        tim_context, tim_dbot, tim_entries = self.get_indicators_from_tim()
-        context_builder.add_reputation_context(tim_context, tim_dbot, priority=1)
-        demisto.debug(
-            f"TIM query resulted in {len(tim_dbot)} DBot scores, "
-            f"and {sum(len(lst) for brands_map in tim_context.values() for lst in brands_map.values())} indicators."
-        )
+        
 
-        # 2. Execute batch commands
-        demisto.debug("Step 2: Executing batch commands.")
+        # 1. Execute batch commands
+        demisto.debug("Step 1: Executing batch commands.")
         commands_to_execute = self.prepare_commands(self.external_enrichment)
         if commands_to_execute:
             batch_executor = BatchExecutor(commands_to_execute, self.brands_to_run)
@@ -485,6 +480,15 @@ class ReputationAggregatedCommand(AggregatedCommand):
         else:
             demisto.debug("No commands to execute.")
             batch_results = []
+        
+        # 2. Prepare commands and get TIM results
+        demisto.debug("Step 2: querying TIM.")
+        tim_context, tim_dbot, tim_entries = self.get_indicators_from_tim()
+        context_builder.add_reputation_context(tim_context, tim_dbot, priority=1)
+        demisto.debug(
+            f"TIM query resulted in {len(tim_dbot)} DBot scores, "
+            f"and {sum(len(lst) for brands_map in tim_context.values() for lst in brands_map.values())} indicators."
+        )
 
         # 3. Process batch results
         demisto.debug("Step 3: Processing batch results.")
@@ -554,7 +558,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         query = f"type:{self.indicator.type} and ({indicators})"
         result_entry = EntryResult(
             command_name="search-indicators-in-tim",
-            args=json.dumps({"query": query}),
+            args=query,
             brand="TIM",
             status=Status.SUCCESS,
             message="",
@@ -622,6 +626,10 @@ class ReputationAggregatedCommand(AggregatedCommand):
         dbot_scores: DBotScoreList = []
 
         for ioc in iocs:
+            tim_indicator = self.create_tim_indicator(ioc)
+            if tim_indicator:
+                demisto.debug(f"Processing TIM results for indicator: {tim_indicator}")
+                merge_nested_dicts_in_place(tim_context, tim_indicator)
             for brand, indicators in ioc.get("insightCache", {}).get("scores", {}).items():
                 demisto.debug(f"Processing TIM results from brand: {brand}")
                 score = indicators.get("score", 0)
@@ -631,6 +639,21 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 dbot_scores.extend(parsed_dbot)
 
         return tim_context, dbot_scores
+    
+    def create_tim_indicator(self, ioc: ContextResult) -> dict[str, Any]:
+        indicators_context: ContextResult = defaultdict(lambda: defaultdict(list))
+        value = ioc.get("value")
+        score = ioc.get("score", Common.DBotScore.NONE)
+        if not value:
+            return {}
+        indicators_context[value]["TIM"].append({
+            self.indicator.value_field: value,
+            "Brand": "TIM",
+            "Score": score,
+            "Verdict": DBOT_SCORE_TO_VERDICT.get(score),
+        })
+        return indicators_context
+        
 
     def process_batch_results(
         self,
@@ -668,7 +691,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                     demisto.debug("Skipping debug result")
                     continue
 
-                brand = result.get("Metadata", {}).get("brand", command.brand or "Unknown")
+                brand = command.brand or result.get("Metadata", {}).get("brand", command.brand or "Unknown")
                 if brand == "Unknown":
                     # When only internal brands given and reputation command run with using-brand and no relevant brand
                     # Empty result with empty brand will be skipped
@@ -715,8 +738,13 @@ class ReputationAggregatedCommand(AggregatedCommand):
                   str, The human readable of the result.
                   EntryResult]: The entry result of the result.
         """
+        indicator_args = ",".join(str(v) for v in command.args.values())
         result_entry = EntryResult(
-            command_name=command.name, args=json.dumps(command.args), brand=brand, status=Status.SUCCESS, message=""
+            command_name = command.name,
+            args = indicator_args,
+            brand = brand,
+            status = Status.SUCCESS,
+            message = "",
         )
         hr_output = ""
         command_context: ContextResult = {}
@@ -839,9 +867,10 @@ class ReputationAggregatedCommand(AggregatedCommand):
             indicator_value = indicator_data.get(self.indicator.value_field)
             demisto.debug(f"Parsing indicator: {indicator_value}")
             mapped_indicator = self.map_command_context(indicator_data, self.indicator.context_output_mapping, is_indicator=True)
-
-            mapped_indicator["Score"] = effective_score
-            mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(effective_score, "Unknown")
+            
+            if "Score" in self.indicator.context_output_mapping:
+                mapped_indicator["Score"] = effective_score
+                mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(effective_score, "Unknown")
             mapped_indicator["Brand"] = brand
 
             indicators_context[indicator_value][brand].append(mapped_indicator)
@@ -884,7 +913,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         human_readable = tableToMarkdown(
             "Final Results",
             t=[entry.to_entry() for entry in entries],
-            headers=["command name", "brand", "args", "status", "message"],
+            headers=["brand", "args", "status", "message"],
         )
         if self.verbose:
             demisto.debug("Adding verbose outputs to human readable.")

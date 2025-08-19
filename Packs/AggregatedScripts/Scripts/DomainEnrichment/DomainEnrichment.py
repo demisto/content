@@ -43,7 +43,7 @@ def domain_enrichment_script(
                 args={"domain_name": domain_list},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",
-                context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain[]"},
+                context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
             )
         ]
     )
@@ -80,7 +80,7 @@ def main():  # pragma: no cover
     try:
         return_results(domain_enrichment_script(domain_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:
-        return_error(f"Failed to execute DomainEnrichment. Error: {str(ex)}")
+        return_error(f"Failed to execute !domain-enrichment. Error: {str(ex)}")
 
 
 """ ENTRY POINT """

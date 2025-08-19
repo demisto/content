@@ -2,6 +2,7 @@
     {
         "iocs": [
             {
+                "score": 3,
                 "value": "https://example.com",
                 "indicator_type": "URL",
                 "insightCache": {

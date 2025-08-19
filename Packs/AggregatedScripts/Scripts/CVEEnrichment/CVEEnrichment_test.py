@@ -103,7 +103,7 @@ def test_cve_enrichment_script_end_to_end(mocker):
     # 1. Verify results for CVE-2023-1001 (overlapping TIM and batch data)
     cve_result = enrichment_map.get("CVE-2023-1001")
     assert cve_result is not None
-    assert len(cve_result["Results"]) == 2  # brand1 (from batch) + brand2 (from TIM)
+    assert len(cve_result["Results"]) == 3  # brand1 (from batch) + brand2 (from TIM) + TIM Itself
 
     # The brand1 result should be from the BATCH (CVSS: 9.8), not TIM (CVSS: 7.5)
     brand1_result = next(r for r in cve_result["Results"] if r["Brand"] == "brand1")
@@ -127,8 +127,8 @@ def test_cve_enrichment_script_end_to_end(mocker):
     assert cve_result["MaxCVSSRating"] == "Critical"
 
     # The max score should be 3 (from batch), not 2 (from TIM)
-    assert cve_result["MaxScore"] == 3
-    assert cve_result["MaxVerdict"] == "Malicious"
+    assert "MaxScore" not in cve_result
+    assert "MaxVerdict" not in cve_result
 
     # 3. Verify DBotScore context was populated and merged correctly
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])

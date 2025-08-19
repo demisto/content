@@ -113,17 +113,18 @@ def test_url_enrichment_script_end_to_end(mocker):
     vt_result = enrichment_map.get("https://example.com")
     assert vt_result is not None
 
-    # It should have merged results from brand1 (batch), and brand2 (TIM)
-    assert len(vt_result["Results"]) == 2
+    # It should have merged results from brand1 (batch), and brand2 (TIM) + TIM Itself
+    assert len(vt_result["Results"]) == 3
 
     # The brand1 result should be the one from the BATCH (Score: 3), not TIM (Score: 1)
     vt_brand_result = next(r for r in vt_result["Results"] if r["Brand"] == "brand1")
-    assert vt_brand_result["Score"] == 3
+    assert vt_brand_result["Score"] == 2
     assert vt_brand_result["PositiveDetections"] == 5
 
-    # The max score should be 3 (from the batch brand1 result), not 2 (from TIM brand2)
+    # The max score should be 3 from TIM, not 2 (from Batch)
     assert vt_result["MaxScore"] == 3
     assert vt_result["MaxVerdict"] == "Malicious"
+    assert vt_result["TIMScore"] == 3
 
     # 2. Verify the wildfire-get-verdict results were mapped correctly
     wildfire_verdicts = outputs.get("WildFire.Verdicts(val.url && val.url == obj.url)", [])

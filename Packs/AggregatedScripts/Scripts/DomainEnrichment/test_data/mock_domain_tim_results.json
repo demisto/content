@@ -2,6 +2,7 @@
     {
         "iocs": [
             {
+                "score": 3,
                 "value": "domain1.com",
                 "indicator_type": "Domain",
                 "insightCache": {

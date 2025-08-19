@@ -101,7 +101,7 @@ def test_ip_enrichment_script_end_to_end(mocker):
         ip_list=ip_list,
         external_enrichment=True,
         verbose=True,
-        enrichment_brands=["brand1", "brand2", "Scripts", "Cortex Core - IR"],
+        enrichment_brands=["brand1", "brand2", "Cortex Core - IR", "Core"],
     )
     outputs = command_results.outputs
 
@@ -112,14 +112,14 @@ def test_ip_enrichment_script_end_to_end(mocker):
     # 1. Verify results for 8.8.8.8 (overlapping TIM and batch data)
     ip_result = enrichment_map.get("8.8.8.8")
     assert ip_result is not None
-    assert len(ip_result["Results"]) == 2  # brand1 (batch) + brand2 (TIM)
+    assert len(ip_result["Results"]) == 3  # brand1 (batch) + brand2 (TIM) + TIM Itself
 
-    # The brand1 result should be from the BATCH (Score: 3), not TIM (Score: 1)
+    # The brand1 result should be from the TIM (Score: 3), not Batch (Score: 2)
     vt_brand_result = next(r for r in ip_result["Results"] if r["Brand"] == "brand1")
-    assert vt_brand_result["Score"] == 3
+    assert vt_brand_result["Score"] == 2
     assert vt_brand_result["PositiveDetections"] == 25
 
-    # The max score should be 3 (from batch), not 2 (from TIM)
+    # The max score should be 3 (from TIM), not 2 (from Batch)
     assert ip_result["MaxScore"] == 3
     assert ip_result["MaxVerdict"] == "Malicious"
 
@@ -127,9 +127,9 @@ def test_ip_enrichment_script_end_to_end(mocker):
     endpoint_data = outputs.get(ENDPOINT_PATH, {})
     assert endpoint_data.get("Hostname") == "test-host"
 
-    ip_prevalence = outputs.get("IPAnalyticsPrevalence", [])
-    assert len(ip_prevalence) == 1
-    assert ip_prevalence[0]["total_count"] == 150
+    ip_prevalence = outputs.get("Core.AnalyticsPrevalence.Ip", {})
+    assert len(ip_prevalence) == 2
+    assert ip_prevalence["total_count"] == 150
 
     # 3. Verify DBotScore context was populated from all sources
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])

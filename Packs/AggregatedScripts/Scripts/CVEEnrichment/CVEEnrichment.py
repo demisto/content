@@ -66,7 +66,7 @@ def main():  # pragma: no cover
     try:
         return_results(cve_enrichment_script(cve_list, external_enrichment, verbose, brands, additional_fields))
     except Exception as ex:
-        return_error(f"Failed to execute CVEEnrichment. Error: {str(ex)}")
+        return_error(f"Failed to execute !cve-enrichment. Error: {str(ex)}")
 
 
 """ ENTRY POINT """
