@@ -738,7 +738,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
                   str, The human readable of the result.
                   EntryResult]: The entry result of the result.
         """
-        indicator_args = ",".join(str(v) for v in command.args.values())
+        indicator_args = ",".join(
+            str(v) for v in flatten_list(command.args.values())
+            ) if isinstance(command.args, dict) else command.args
         result_entry = EntryResult(
             command_name = command.name,
             args = indicator_args,
