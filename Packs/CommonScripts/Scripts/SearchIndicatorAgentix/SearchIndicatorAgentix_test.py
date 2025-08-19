@@ -4,6 +4,7 @@ from SearchIndicatorAgentix import (
     prepare_query,
     KEYS_TO_EXCLUDE_FROM_QUERY,
     build_query_excluding_indicator_values,
+    search_indicators,
 )
 import json
 import pytest
@@ -155,7 +156,7 @@ def test_build_query_for_indicator_values_chunk_counts(n, expected_chunks):
     remaining = n
     for chunk_str in result:
         # strip outer parentheses added in build_query_for_indicator_values
-        #assert chunk_str.startswith("(") and chunk_str.endswith(")"), "chunk should be wrapped in parentheses"
+        # assert chunk_str.startswith("(") and chunk_str.endswith(")"), "chunk should be wrapped in parentheses"
         inner = chunk_str[1:-1]
         # items_in_chunk = 0 if inner == "" else inner.count(" OR ") + 1
         items_in_chunk = 0 if inner == "" else inner.count(" OR ") + 1
@@ -816,3 +817,263 @@ def test_build_query_excluding_indicator_values_value_field_at_different_positio
     assert "value:" not in result
     assert "type:" in result
     assert "verdict:" in result
+
+
+def test_search_indicators_empty_args():
+    """
+    Given: Empty arguments dictionary
+    When: search_indicators is called
+    Then: Returns empty markdown and empty list as no queries are generated
+    """
+    args = {}
+    markdown, filtered_indicators = search_indicators(args)
+    assert filtered_indicators == []
+    assert "Indicators Found" in markdown
+
+
+def test_search_indicators_no_results(mocker):
+    """
+    Given: Valid arguments that generate queries but find no indicators
+    When: search_indicators is called
+    Then: Returns empty results with proper markdown formatting
+    """
+    args = {"value": json.dumps(["nonexistent"])}
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": []}]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert filtered_indicators == []
+    assert "Indicators Found" in markdown
+
+
+def test_search_indicators_single_query_single_result(mocker):
+    """
+    Given: Arguments that generate single query and return single indicator
+    When: search_indicators is called
+    Then: Returns properly formatted indicator with all required fields
+    """
+    args = {"value": json.dumps(["example.com"])}
+    mock_indicator = {
+        "id": "123",
+        "indicator_type": "Domain",
+        "value": "example",
+        "score": 3,
+        "expirationStatus": "Active",
+        "investigationIDs": ["inv1"],
+        "lastSeen": "2023-01-01",
+    }
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": [mock_indicator]}]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert len(filtered_indicators) == 1
+    assert filtered_indicators[0]["id"] == "123"
+    assert filtered_indicators[0]["verdict"] == "Bad"
+    assert "example" in markdown
+
+
+def test_search_indicators_multiple_queries_multiple_results(mocker):
+    """
+    Given: Arguments generating multiple queries each returning indicators
+    When: search_indicators is called
+    Then: Returns combined results from all queries
+    """
+    values = [f"example{i}.com" for i in range(150)]
+    args = {"value": json.dumps(values)}
+
+    mock_indicator1 = {
+        "id": "123",
+        "indicator_type": "Domain",
+        "value": "example1.com",
+        "score": 2,
+        "expirationStatus": "Active",
+        "investigationIDs": [],
+        "lastSeen": "2023-01-01",
+    }
+
+    mock_indicator2 = {
+        "id": "456",
+        "indicator_type": "Domain",
+        "value": "example2.com",
+        "score": 1,
+        "expirationStatus": "Expired",
+        "investigationIDs": ["inv2"],
+        "lastSeen": "2023-01-02",
+    }
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.side_effect = [[{"Contents": [mock_indicator1]}], [{"Contents": [mock_indicator2]}]]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert len(filtered_indicators) == 2
+    assert filtered_indicators[0]["id"] == "123"
+    assert filtered_indicators[1]["id"] == "456"
+    assert mock_demisto.executeCommand.call_count == 2
+
+
+def test_search_indicators_missing_fields_with_custom_fields(mocker):
+    """
+    Given: Indicator with missing standard fields but present in CustomFields
+    When: search_indicators is called
+    Then: Returns indicator with fields populated from CustomFields
+    """
+    args = {"value": json.dumps(["example"])}
+    mock_indicator = {
+        "id": "123",
+        "value": "example",
+        "CustomFields": {
+            "indicator_type": "Domain",
+            "score": 2,
+            "expirationStatus": "Active",
+            "investigationIDs": ["inv1"],
+            "lastSeen": "2023-01-01",
+        },
+    }
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": [mock_indicator]}]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert len(filtered_indicators) == 1
+    assert filtered_indicators[0]["indicator_type"] == "Domain"
+    assert filtered_indicators[0]["score"] == 2
+
+
+def test_search_indicators_with_size_parameter(mocker):
+    """
+    Given: Arguments with size parameter to limit results
+    When: search_indicators is called
+    Then: Passes size parameter to executeCommand
+    """
+    args = {"value": json.dumps(["example.com"]), "size": 50}
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": []}]
+    mock_demisto.debug.return_value = None
+
+    search_indicators(args)
+
+    mock_demisto.executeCommand.assert_called()
+    call_args = mock_demisto.executeCommand.call_args[0][1]
+    assert call_args["size"] == 50
+
+
+def test_search_indicators_no_size_parameter(mocker):
+    """
+    Given: Arguments without size parameter
+    When: search_indicators is called
+    Then: Passes None as size to executeCommand
+    """
+    args = {"value": json.dumps(["example"])}
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": []}]
+    mock_demisto.debug.return_value = None
+
+    search_indicators(args)
+
+    mock_demisto.executeCommand.assert_called()
+    call_args = mock_demisto.executeCommand.call_args[0][1]
+    assert call_args["size"] is None
+
+
+def test_search_indicators_execute_command_returns_none(mocker):
+    """
+    Given: executeCommand returns None
+    When: search_indicators is called
+    Then: Handles None result gracefully and returns empty results
+    """
+    args = {"value": json.dumps(["example"])}
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = None
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert filtered_indicators == []
+
+
+def test_search_indicators_execute_command_empty_result(mocker):
+    """
+    Given: executeCommand returns empty result structure
+    When: search_indicators is called
+    Then: Handles empty result gracefully
+    """
+    args = {"value": json.dumps(["example.com"])}
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{}]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert filtered_indicators == []
+
+
+def test_search_indicators_score_to_reputation_conversion(mocker):
+    """
+    Given: Indicators with different score values
+    When: search_indicators is called
+    Then: Returns indicators with correct verdict based on score
+    """
+    args = {"value": json.dumps(["example"])}
+    mock_indicators = [
+        {"id": "2", "score": 1, "value": "unknown"},
+        {"id": "3", "score": 2, "value": "suspicious"},
+        {"id": "4", "score": 3, "value": "bad"},
+    ]
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": mock_indicators}]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert len(filtered_indicators) == 3
+    assert filtered_indicators[0]["verdict"] == "Good"
+    assert filtered_indicators[1]["verdict"] == "Suspicious"
+    assert filtered_indicators[2]["verdict"] == "Bad"
+
+
+def test_search_indicators_mixed_field_sources(mocker):
+    """
+    Given: Indicators with fields from both standard and CustomFields locations
+    When: search_indicators is called
+    Then: Returns indicators with proper field precedence (standard over CustomFields)
+    """
+    args = {"value": json.dumps(["example."])}
+    mock_indicator = {
+        "id": "123",
+        "indicator_type": "Domain",
+        "value": "example.",
+        "score": 2,
+        "CustomFields": {
+            "indicator_type": "IP",
+            "score": 3,
+            "expirationStatus": "Expired",
+            "investigationIDs": ["custom_inv"],
+            "lastSeen": "2022-01-01",
+        },
+    }
+
+    mock_demisto = mocker.patch("SearchIndicatorAgentix.demisto")
+    mock_demisto.executeCommand.return_value = [{"Contents": [mock_indicator]}]
+    mock_demisto.debug.return_value = None
+
+    markdown, filtered_indicators = search_indicators(args)
+
+    assert len(filtered_indicators) == 1
+    assert filtered_indicators[0]["indicator_type"] == "Domain"
+    assert filtered_indicators[0]["score"] == 2
+    assert filtered_indicators[0]["expirationStatus"] == "Expired"

@@ -19,18 +19,9 @@ def escape_special_characters(value):
         str: The input value with special characters properly escaped.
     """
     demisto.debug(f"Escaping special characters in value: {value}")
-    
+
     # Dictionary mapping characters to their escape sequences for more maintainable code
-    escape_map = {
-        "\\": "\\\\",
-        "\n": "\\n", 
-        "\t": "\\t",
-        "\r": "\\r",
-        '"': '\\"',
-        "^": "\\^",
-        ":": "\\:",
-        " ": "\\ "
-    }
+    escape_map = {"\\": "\\\\", "\n": "\\n", "\t": "\\t", "\r": "\\r", '"': '\\"', "^": "\\^", ":": "\\:", " ": "\\ "}
 
     for char, escaped in escape_map.items():
         value = value.replace(char, escaped)
@@ -165,17 +156,17 @@ def prepare_query(args: dict) -> list:
     """
     queries = []
     query_without_indicator_values = build_query_excluding_indicator_values(args)
-    indicator_value_query = build_query_for_indicator_values(args)
-    if not indicator_value_query and not query_without_indicator_values:
+    indicator_value_queries = build_query_for_indicator_values(args)
+    if not indicator_value_queries and not query_without_indicator_values:
         return []
-    if not indicator_value_query:
+    if not indicator_value_queries:
         return [query_without_indicator_values]
-    for f in indicator_value_query:
+    for query in indicator_value_queries:
         if query_without_indicator_values:
-            q = f"{f} AND {query_without_indicator_values}"
+            full_query = f"{query} AND {query_without_indicator_values}"
         else:
-            q = f
-        queries.append(q)
+            full_query = query
+        queries.append(full_query)
     return queries
 
 
