@@ -40,9 +40,7 @@ class Client(CoreClient):
         if not FORWARD_USER_RUN_RBAC:
             url = params.get("url", "")
             if not all((url, params.get("apikey"), params.get("apikey_id"))):
-                raise DemistoException(
-                    "Please provide the following parameters: Server URL, API Key, API Key ID"
-                )
+                raise DemistoException("Please provide the following parameters: Server URL, API Key, API Key ID")
         self._base_url: str = urljoin(url, "/public_api/v1/indicators/")
         self._verify_cert: bool = not params.get("insecure", False)
         self._params = params
@@ -50,9 +48,7 @@ class Client(CoreClient):
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:
         if FORWARD_USER_RUN_RBAC:
-            return CoreClient._http_request(
-                self, method="POST", url_suffix=url_suffix, data=requests_kwargs
-            )
+            return CoreClient._http_request(self, method="POST", url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = {}
         res = requests.post(
@@ -96,11 +92,7 @@ def get_headers(params: dict) -> dict:
 
 def get_requests_kwargs(_json=None) -> dict:
     if _json is not None:
-        return (
-            {"request_data": _json}
-            if FORWARD_USER_RUN_RBAC
-            else {"data": json.dumps({"request_data": _json})}
-        )
+        return {"request_data": _json} if FORWARD_USER_RUN_RBAC else {"data": json.dumps({"request_data": _json})}
     else:
         return {}
 
@@ -146,18 +138,14 @@ def get_iocs_size(query=None) -> int:
     search_indicators = IndicatorsSearcher()
     query = query if query else Client.query
     query = f"expirationStatus:active AND ({query})"
-    return search_indicators.search_indicators_by_version(query=query, size=1).get(
-        "total", 0
-    )
+    return search_indicators.search_indicators_by_version(query=query, size=1).get("total", 0)
 
 
 def get_iocs(page=0, size=200, query=None) -> list:
     search_indicators = IndicatorsSearcher(page=page)
     query = query if query else Client.query
     query = f"expirationStatus:active AND ({query})"
-    return search_indicators.search_indicators_by_version(query=query, size=size).get(
-        "iocs", []
-    )
+    return search_indicators.search_indicators_by_version(query=query, size=size).get("iocs", [])
 
 
 def demisto_expiration_to_core(expiration) -> int:
@@ -231,9 +219,7 @@ def demisto_ioc_to_core(ioc: dict) -> dict:
 
         threat_type = ioc.get("CustomFields", {}).get("threattypes", {})
         if threat_type:
-            threat_type = (
-                threat_type[0] if isinstance(threat_type, list) else threat_type
-            )
+            threat_type = threat_type[0] if isinstance(threat_type, list) else threat_type
             threat_type = threat_type.get("threatcategory")
             if threat_type:
                 core_ioc["class"] = threat_type
@@ -306,19 +292,13 @@ def get_indicators(indicators: str) -> list:
         not_found = []
         for indicator in indicators.split(","):
             search_indicators = IndicatorsSearcher()
-            data = search_indicators.search_indicators_by_version(value=indicator).get(
-                "iocs"
-            )
+            data = search_indicators.search_indicators_by_version(value=indicator).get("iocs")
             if data:
                 iocs.extend(data)
             else:
                 not_found.append(indicator)
         if not_found:
-            return_warning(
-                "The following indicators were not found: {}".format(
-                    ", ".join(not_found)
-                )
-            )
+            return_warning("The following indicators were not found: {}".format(", ".join(not_found)))
         else:
             return iocs
     return []
@@ -332,9 +312,7 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = "tim_insert_jsons/"
-        requests_kwargs: dict = get_requests_kwargs(
-            _json=[demisto_ioc_to_core(ioc) for ioc in iocs]
-        )
+        requests_kwargs: dict = get_requests_kwargs(_json=[demisto_ioc_to_core(ioc) for ioc in iocs])
         client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs("push done.")
 
@@ -364,9 +342,7 @@ def core_expiration_to_demisto(expiration) -> str | None:
     if expiration:
         if expiration == -1:
             return "Never"
-        return datetime.utcfromtimestamp(expiration / 1000).strftime(
-            DEMISTO_TIME_FORMAT
-        )
+        return datetime.utcfromtimestamp(expiration / 1000).strftime(DEMISTO_TIME_FORMAT)
 
     return None
 
@@ -375,9 +351,7 @@ def module_test(client: Client):
     ts = int(datetime.now(UTC).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
-    client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get(
-        "reply", []
-    )
+    client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get("reply", [])
     demisto.results("ok")
 
 
@@ -422,15 +396,11 @@ def get_indicator_core_score(indicator: str, core_server: int):
     score = 0
     if indicator:
         search_indicators = IndicatorsSearcher()
-        ioc = search_indicators.search_indicators_by_version(value=indicator).get(
-            "iocs"
-        )
+        ioc = search_indicators.search_indicators_by_version(value=indicator).get("iocs")
         if ioc:
             ioc = ioc[0]
             score = ioc.get("score", 0)
-            temp: dict = next(
-                filter(is_core_data, ioc.get("moduleToFeedMap", {}).values()), {}
-            )
+            temp: dict = next(filter(is_core_data, ioc.get("moduleToFeedMap", {}).values()), {})
             core_local = temp.get("score", 0)
     if core_server != score:
         return core_server
@@ -471,9 +441,7 @@ def upload_file_to_bucket(file_path: str) -> None:
         blob = bucket.blob(file_path)
         blob.upload_from_filename(file_path)
     except Exception as error:
-        raise DemistoException(
-            f"Could not upload to bucket {gcpconf_papi_bucket}", exception=error
-        )
+        raise DemistoException(f"Could not upload to bucket {gcpconf_papi_bucket}", exception=error)
 
 
 def main():
@@ -501,7 +469,6 @@ def main():
             commands[command](client)
         elif command == "core-iocs-sync":
             raise DemistoException("Command unavailable.")
-            # core_iocs_sync_command(client, demisto.args().get("firstTime") == "true")
         else:
             raise NotImplementedError(command)
     except Exception as error:
