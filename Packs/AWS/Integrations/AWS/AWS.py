@@ -98,7 +98,7 @@ def parse_filter_field(filter_string: str | None):
         list_filters = list_filters[0:50]
         demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
     regex = re.compile(
-        r"^name=([\w_:.-]+),values=([ /\w@_,.*-:]+)",
+        r"^name=([\w:.-]+),values=([ /\w@,.*-:]+)",
         flags=re.I,
     )
     for filter in list_filters:
