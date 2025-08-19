@@ -857,7 +857,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     """
     demisto.debug(f"Last run before the fetch run: {last_run}")
 
-    filter_query = params.get("fetch_query")
+    filter_query = params.get("fetch_query", "")
     limit = arg_to_number(params.get("max_fetch"))
     demisto.debug(f"Fetching incidents with limit={limit}")
 

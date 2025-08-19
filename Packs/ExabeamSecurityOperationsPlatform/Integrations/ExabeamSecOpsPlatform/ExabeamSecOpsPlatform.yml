@@ -34,26 +34,60 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
+    - platform
 - display: Maximum Incidents Per Fetch
-  name: max_fetch
+  additionalinfo: The maximum number of Exabeam Security Operations Platform cases per fetch; capped to 30,000.
+  name: max_fetch  # for fetch-incidents on XSOAR
   defaultvalue: 50
   type: 0
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
+    - platform
+- display: Maximum Events Per Fetch
+  additionalinfo: The maximum number of Exabeam Security Operations Platform cases per fetch; capped to 30,000.
+  name: max_events_fetch  # for fetch-events on XSIAM and PLATFORM
+  defaultvalue: 30000
+  type: 0
+  section: Collect
+  advanced: true
+  hidden:
+    - xsoar
 - display: Fetch query
+  additionalinfo: For example key:value
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
-  additionalinfo: For example key:value
+  hidden:
+    - marketplacev2
+    - platform
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
+  hidden:
+  - marketplacev2
+  - platform
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
 - display: Incident type
   name: incidentType
   type: 13
   section: Collect
+  required: false
+  hidden:
+    - marketplacev2
+    - platform
 description: Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 display: Exabeam Security Operations Platform
 name: ExabeamSecOpsPlatform
@@ -523,8 +557,14 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
+  # Fetch incidents
   isfetch: true
+  isfetch:marketplacev2: false
+  isfetch:platform: false
+  # Fetch events
+  isfetchevents: true
+  isfetchevents:xsoar: false
 fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
