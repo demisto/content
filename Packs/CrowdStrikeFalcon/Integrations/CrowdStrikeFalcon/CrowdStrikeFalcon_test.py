@@ -7484,8 +7484,8 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
         - Running resolve_detection
     Then:
         - Validate that the correct url_suffix is used
-            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v2
-            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v1
+            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v3
+            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v2
     """
     from CrowdStrikeFalcon import resolve_detection
 
@@ -7497,6 +7497,51 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
     )
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
+
+
+def test_resolve_detection_username_not_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign detection to
+    When:
+        - Running resolve_detection not in legacy mode
+    Then:
+        - The username to uuid function should not be called and data containing the username should be sent
+    """
+    from CrowdStrikeFalcon import resolve_detection_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
+
+    expected_data = json.dumps({"action_parameters": [{"name": "assign_to_name", "value": "username"}], "composite_ids": ["123"]})
+
+    resolve_detection_command()
+    assert not translate_username_mocker.called
+    assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
+
+def test_resolve_detection_username_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign detection to
+    When:
+        - Running resolve_detection in legacy mode
+    Then:
+        - The username to uuid function should called and data containing the provided_uuid should be sent
+    """
+    from CrowdStrikeFalcon import resolve_detection_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid", return_value="user_123")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
+
+    expected_data = json.dumps({"ids": ["123"], "assigned_to_uuid": "user_123"})
+
+    resolve_detection_command()
+    assert translate_username_mocker.calledwith("username")
+    assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
 
 
 @pytest.mark.parametrize(
