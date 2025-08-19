@@ -2312,8 +2312,9 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     list_of_stats = LEGACY_DETECTION_STATUS if LEGACY_VERSION else STATUS_LIST_FOR_MULTIPLE_DETECTION_TYPES
     if status not in list_of_stats:
         raise DemistoException(f"CrowdStrike Falcon Error: Status given is {status} and it is not in {list_of_stats}")
-    return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None,
-                             tag=None)
+    return resolve_detection(
+        ids=ids, status=status, assigned_to_uuid=None, username=None, show_in_ui=None, comment=None, tag=None
+    )
 
 
 def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
@@ -3645,7 +3646,7 @@ def fetch_detections_by_product_type(
         detections = (
             truncate_long_time_str(detections, "occurred")
             if product_type
-               in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
+            in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value, IncidentType.NGSIEM, IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
@@ -3873,7 +3874,7 @@ def ioa_event_to_incident(ioa_event: dict[str, Any], incident_type: str) -> dict
         mirror_direction=MIRROR_DIRECTION,
         mirror_instance=INTEGRATION_INSTANCE,
         extracted_account_id=demisto.get(ioa_event, "cloud_account_id.aws_account_id")
-                             or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
+        or demisto.get(ioa_event, "cloud_account_id.azure_account_id"),
         extracted_uuid=uuid[0] if uuid else None,
         extracted_resource_id=id[0] if id else None,
         incident_type=incident_type,
@@ -4612,7 +4613,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i: i + batch_size]
+        batch = device_ids[i : i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -5901,8 +5902,7 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids,
-                                    timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")

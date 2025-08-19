@@ -7492,7 +7492,9 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
     mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", Legacy_version)
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
 
-    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", username=None, show_in_ui="True", comment="comment", tag=tag)
+    resolve_detection(
+        ids=["123"], status="resolved", assigned_to_uuid="123", username=None, show_in_ui="True", comment="comment", tag=tag
+    )
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
 
