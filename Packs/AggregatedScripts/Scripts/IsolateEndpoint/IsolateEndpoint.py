@@ -197,14 +197,14 @@ def map_args(command: Command, args: dict) -> dict:
 
 def map_zipped_args(endpoint_ids: list, endpoint_ips: list) -> list:
     """
-    Combines agent IDs, IPs, and hostnames into a list of dictionaries.
+    Combines agent IDs and IPs into a list of dictionaries.
 
     Args:
         endpoint_ids (list): A list of agent IDs.
         endpoint_ips (list): A list of agent IPs.
 
     Returns:
-        list: A list of dictionaries, each containing 'endpoint_id', 'endpoint_ip', and 'endpoint_hostnames'.
+        list: A list of dictionaries, each containing 'endpoint_id' and 'endpoint_ip'.
     """
     return [
         {"endpoint_id": endpoint_id, "endpoint_ip": endpoint_ip}
@@ -214,11 +214,11 @@ def map_zipped_args(endpoint_ids: list, endpoint_ips: list) -> list:
 
 def check_missing_executed_args_in_output(zipped_args: list, valid_args: list, outputs: list) -> None:
     """
-    Checks if any of the given agent details (ID, IP, or hostname) exist in a list of valid arguments.
+    Checks if any of the given agent details (ID, IP) exist in a list of valid arguments.
     If no match is found, a failure message is added to the context and human-readable outputs.
 
     Args:
-        zipped_args (list): A list of dictionaries, each containing 'endpoint_id', 'endpoint_ip', and 'endpoint_hostname'.
+        zipped_args (list): A list of dictionaries, each containing 'endpoint_id', 'endpoint_ip'.
         valid_args (list): A list of dictionaries representing valid agents with corresponding details.
         outputs (list): A list to store structured output results.
     """
