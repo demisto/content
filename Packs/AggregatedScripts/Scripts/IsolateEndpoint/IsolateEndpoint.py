@@ -146,7 +146,7 @@ def create_message_to_context_and_hr(
         endpoint_output (dict): A list to store the structured output for context.
     """
     endpoint_hostname = (
-        endpoint_args.get("endpoint_id") or endpoint_args.get("endpoint_ip") or endpoint_args.get("endpoint_hostname")
+        endpoint_args.get("endpoint_id") or endpoint_args.get("endpoint_ip")
     )
     brand = endpoint_args.get("endpoint_brand", "")
     if brand == "Microsoft Defender ATP":  # convert brand
