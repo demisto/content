@@ -1,4 +1,4 @@
- {
-    "breakingChanges": true,
-    "breakingChangesNotes": null
+{
+  "breakingChanges": true,
+  "breakingChangesNotes": "Updated the \"enrichment_brands\" argument name to \"brands\" for consistency with other Aggregated Scripts conventions."
 }
