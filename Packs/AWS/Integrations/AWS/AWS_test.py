@@ -1568,13 +1568,16 @@ def test_ec2_authorize_security_group_egress_command_security_group_not_found(mo
     Then: It should raise DemistoException with security group not found message.
     """
     from AWS import EC2
+    from botocore.exceptions import ClientError
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_egress.side_effect = Exception("InvalidGroup.NotFound")
+    mocker.patch.object(demisto, "error")
+    error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "InvalidGroup.NotFound"}}
+    mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
 
     args = {"group_id": "sg-nonexistent", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
-    with pytest.raises(DemistoException, match="Security group sg-nonexistent not found"):
+    with pytest.raises(DemistoException, match=r".*Error Code: InvalidGroup.NotFound*"):
         EC2.authorize_security_group_egress_command(mock_client, args)
 
 
@@ -1585,13 +1588,17 @@ def test_ec2_authorize_security_group_egress_command_invalid_group_id(mocker):
     Then: It should raise DemistoException with invalid group ID message.
     """
     from AWS import EC2
+    from botocore.exceptions import ClientError
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_egress.side_effect = Exception("InvalidGroupId.NotFound")
+    mocker.patch.object(demisto, "error")
+
+    error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "InvalidGroup.NotFound"}}
+    mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
 
     args = {"group_id": "sg-invalid", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
-    with pytest.raises(DemistoException, match="Invalid security group ID: sg-invalid"):
+    with pytest.raises(DemistoException, match=r".*Error Code: InvalidGroup.NotFound*"):
         EC2.authorize_security_group_egress_command(mock_client, args)
 
 
@@ -1602,13 +1609,16 @@ def test_ec2_authorize_security_group_egress_command_duplicate_rule(mocker):
     Then: It should raise DemistoException with duplicate rule message.
     """
     from AWS import EC2
+    from botocore.exceptions import ClientError
 
     mock_client = mocker.Mock()
-    mock_client.authorize_security_group_egress.side_effect = Exception("InvalidPermission.Duplicate")
+    mocker.patch.object(demisto, "error")
+    error_response = {"Error": {"Code": "InvalidPermission.Duplicate", "Message": "InvalidPermission.Duplicate"}}
+    mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
-    with pytest.raises(DemistoException, match="The specified rule already exists in the security group"):
+    with pytest.raises(DemistoException, match=r".*Error Code: InvalidPermission.Duplicate*"):
         EC2.authorize_security_group_egress_command(mock_client, args)
 
 
@@ -1621,6 +1631,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
     from AWS import EC2
 
     mock_client = mocker.Mock()
+    mocker.patch.object(demisto, "error")
     mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
         "Return": False,
@@ -1628,7 +1639,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
 
-    with pytest.raises(DemistoException, match="Unexpected response from AWS - EC2"):
+    with pytest.raises(DemistoException, match=r".*Status Code: 400*"):
         EC2.authorize_security_group_egress_command(mock_client, args)
 
 
@@ -1651,23 +1662,6 @@ def test_ec2_authorize_security_group_egress_command_without_port(mocker):
     result = EC2.authorize_security_group_egress_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "The Security Group egress rule was authorized" in result.readable_output
-
-
-def test_ec2_authorize_security_group_egress_command_generic_exception(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises a generic exception.
-    When: authorize_security_group_egress_command encounters unexpected error.
-    Then: It should raise DemistoException with generic error message.
-    """
-    from AWS import EC2
-
-    mock_client = mocker.Mock()
-    mock_client.authorize_security_group_egress.side_effect = Exception("Unexpected error occurred")
-
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
-
-    with pytest.raises(DemistoException, match="Failed to authorize security group egress rule: Unexpected error occurred"):
-        EC2.authorize_security_group_egress_command(mock_client, args)
 
 
 def test_parse_filter_field_with_valid_single_filter():

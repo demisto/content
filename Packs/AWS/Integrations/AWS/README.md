@@ -150,10 +150,11 @@ Revokes one or more ingress rules in a security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group. | Required |
-| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation. | Optional |
-| port | For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation. | Optional |
+| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| from_port | The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| to_port | The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
 | cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation. | Optional |
-| ip_permissions | The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments. | Optional |
+| ip_permissions | The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments. | Optional |
 
 #### Context Output
 
@@ -296,10 +297,11 @@ Adds the specified inbound (ingress) rules to a security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group. | Required |
-| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. | Optional |
-| port | For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization. | Optional |
-| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. | Optional |
-| ip_permissions | The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments. | Optional |
+| protocol | The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| from_port | The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| to_port | The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| ip_permissions | The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments. | Optional |
 
 #### Context Output
 
@@ -530,10 +532,11 @@ Removes the specified outbound (egress) rules from the specified security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group. | Required |
-| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation. | Optional |
-| port | For TCP or UDP: The range of ports to revoke (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule revocation. | Optional |
+| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| from_port | The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| to_port | The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
 | cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation. | Optional |
-| ip_permissions | The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments. | Optional |
+| ip_permissions | The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments. | Optional |
 
 #### Context Output
 
@@ -804,10 +807,11 @@ Adds the specified inbound (egress) rules to a security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group. | Required |
-| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly. | Optional |
-| port | For TCP or UDP: The range of ports to authorize (e.g., "80" or "80-443"). For ICMP: A single integer or range (type-code) representing the ICMP type and code. Use with protocol and cidr for simple rule authorization. | Optional |
-| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. | Optional |
-| ip_permissions | The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments. | Optional |
+| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| from_port | The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| to_port | The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. To specify multiple rules and descriptions for the rules, use ip_permissions instead. | Optional |
+| ip_permissions | The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments. | Optional |
 
 #### Context Output
 

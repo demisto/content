@@ -98,7 +98,7 @@ def parse_filter_field(filter_string: str | None):
         list_filters = list_filters[0:50]
         demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
     regex = re.compile(
-        r"^name=[^\,]+\,values=[^\;]+",
+        r"^name=([\w_:.-]+),values=([ /\w@_,.*-:]+)",
         flags=re.I,
     )
     for filter in list_filters:
@@ -1158,7 +1158,7 @@ class EC2:
 
         if ip_permissions := args.get("ip_permissions"):
             try:
-                kwargs["IpPermissions"] = [json.loads(ip_permissions)]
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
             except json.JSONDecodeError as e:
                 raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
         else:

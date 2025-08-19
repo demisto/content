@@ -1157,19 +1157,19 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: from_port
-      description: 'The start of port range for the TCP and UDP protocols.'
+      description: 'The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: to_port
-      description: 'The end of port range for the TCP and UDP protocols.'
+      description: 'The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments.'
       required: false
   - name: aws-ec2-security-group-ingress-authorize
     description: 'Adds the specified inbound (ingress) rules to a security group.'
@@ -1219,19 +1219,19 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: from_port
-      description: 'The start of port range for the TCP and UDP protocols.'
+      description: 'The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: to_port
-      description: 'The end of port range for the TCP and UDP protocols.'
+      description: 'The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: cidr
-      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments.'
       required: false
   - name: aws-ec2-security-group-egress-revoke
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
@@ -1281,19 +1281,19 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule revocation. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: from_port
-      description: 'The start of port range for the TCP and UDP protocols.'
+      description: 'The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: to_port
-      description: 'The end of port range for the TCP and UDP protocols.'
+      description: 'The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: cidr
       description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule revocation.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments.'
       required: false
   - name: aws-ec2-security-group-egress-authorize
     execution: true
@@ -1344,19 +1344,19 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. When used with port and cidr arguments for simple rule authorization. VPC security group rules must specify protocols explicitly. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: from_port
-      description: 'The start of port range for the TCP and UDP protocols.'
+      description: 'The start of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: to_port
-      description: 'The end of port range for the TCP and UDP protocols.'
+      description: 'The end of port range for the TCP and UDP protocols. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: cidr
-      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. To specify multiple rules and descriptions for the rules, use ip_permissions instead.'
       required: false
     - name: ip_permissions
-      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
+      description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]"""). Cannot be used together with protocol/port/cidr arguments.'
       required: false
 
   - name: aws-ec2-snapshot-attribute-modify
