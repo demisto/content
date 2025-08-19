@@ -11,18 +11,9 @@ description: |-
 id: 'PAN-OS - Identify Unused Policy Rules'
 inputSections:
 - description: Generic group for inputs
-  inputs:
-  - Rulebase
+  inputs: []
   name: General (Inputs group)
-inputs:
-- description: |-
-    The Firewall rulebase to analyze. Must be one of the following:
-    security, nat, decryption, application-override, authentication, dos, network-packet-broker, pbf, qos, sdwan, security, tunnel-inspect.
-  key: Rulebase
-  playbookInputQuery:
-  required: true
-  value:
-    simple: security
+inputs: []
 name: PAN-OS - Identify Unused Policy Rules
 outputSections:
 - description: Generic group for outputs
@@ -155,10 +146,10 @@ tasks:
     task:
       brand: ""
       id: 0b8f2578-c7af-44ca-8327-3fcaae243241
-      description: ""
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 0b8f2578-c7af-44ca-8327-3fcaae243241
     timertriggers: []
     type: start
@@ -183,7 +174,7 @@ tasks:
     scriptarguments:
       rulebase:
         complex:
-          root: inputs.Rulebase
+          root: Rulebase
           transformers:
           - operator: toLowerCase
       unused_only:
@@ -193,13 +184,13 @@ tasks:
     task:
       brand: ""
       description: Gets rule hit counts from the firewall.  When connected to Panorama this command can be run on any firewall managed by it.
-      id: f069fef8-d0df-4edf-ab5b-b83b4fb91f51
+      id: e5a8f5f9-8707-45a3-a1aa-953edc1e9eb9
       iscommand: true
       name: Get Unused Rules
       script: '|||pan-os-get-rule-hitcounts'
       type: regular
       version: -1
-    taskid: f069fef8-d0df-4edf-ab5b-b83b4fb91f51
+    taskid: e5a8f5f9-8707-45a3-a1aa-953edc1e9eb9
     timertriggers: []
     type: regular
     view: |-
@@ -257,13 +248,13 @@ tasks:
     task:
       brand: ""
       description: Processes the context output from !pan-os-get-rulehitcounts and returns data about unused local rules, unused rules from Panorama, and rules from Panorama that have hits on some firewalls but not all.
-      id: d618788e-7bb0-4e99-8b75-13833e2d614d
+      id: 9fc55329-2f24-4922-8f78-eeeb2f5b18d6
       iscommand: false
       name: Analyze Rule Hit Count Data
       script: PAN-OS-AnalyzeRuleHitCounts
       type: regular
       version: -1
-    taskid: d618788e-7bb0-4e99-8b75-13833e2d614d
+    taskid: 9fc55329-2f24-4922-8f78-eeeb2f5b18d6
     timertriggers: []
     type: regular
     view: |-
@@ -318,11 +309,11 @@ tasks:
     task:
       brand: ""
       id: c3304bdf-9660-480f-86b8-a5c62d05ae7e
-      description: ""
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: c3304bdf-9660-480f-86b8-a5c62d05ae7e
     timertriggers: []
     type: title
@@ -340,7 +331,7 @@ tasks:
           left:
             iscontext: true
             value:
-              simple: inputs.Rulebase
+              simple: Rulebase
           operator: inList
           right:
             value:
@@ -363,12 +354,12 @@ tasks:
     task:
       brand: ""
       description: Determines if the provided input for rulebase is valid.
-      id: 64b42ed1-3d95-4aec-b21d-6b6209d151a5
+      id: f115ad3f-546f-427e-b0c8-91b27f920e9f
       iscommand: false
       name: Is Selected Rulebase Valid?
       type: condition
       version: -1
-    taskid: 64b42ed1-3d95-4aec-b21d-6b6209d151a5
+    taskid: f115ad3f-546f-427e-b0c8-91b27f920e9f
     timertriggers: []
     type: condition
     view: |-
@@ -392,7 +383,7 @@ tasks:
     scriptarguments:
       message:
         simple: |-
-          The given Rulebase input value ("${inputs.Rulebase}") is not valid.  Please try again with one of these options:
+          The given Rulebase input value ("${Rulebase}") is not valid.  Please try again with one of these options:
             - application-override
             - authentication
             - decryption
@@ -409,13 +400,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message.
-      id: fd49cca5-3c58-4041-a5a0-4f95597610e3
+      id: d9bea2e3-c6e5-481c-afbf-5b8f13cb4d95
       iscommand: false
       name: Error - Invalid Rulebase Selected
       script: PrintErrorEntry
       type: regular
       version: -1
-    taskid: fd49cca5-3c58-4041-a5a0-4f95597610e3
+    taskid: d9bea2e3-c6e5-481c-afbf-5b8f13cb4d95
     timertriggers: []
     type: regular
     view: |-
@@ -538,8 +529,6 @@ view: |-
     }
   }
 fromversion: 6.10.0
-supportedModules:
-- agentix
 tests:
 - PAN-OS-panorama-topology-test-pb
 - PAN-OS-firewall-topology-test-pb
