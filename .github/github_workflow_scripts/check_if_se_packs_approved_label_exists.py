@@ -48,13 +48,9 @@ def main():
     se_approved = SE_APPROVED_LABEL in pr_label_names
 
     watched_folders = SE_PACKS
-
-    print(f"watched_folders: {watched_folders}")
-    print(f"changed_files: {changed_files}")
-
     watched_folders = set(folder.lower() for folder in watched_folders if folder)
     # Detect if watched folder changed
-    folder_changed = any(file in watched_folders for file in changed_files)
+    folder_changed = any(file.split("/")[1].lower() in watched_folders for file in changed_files)
     # Validation logic
     if folder_changed and not se_approved:
         print(f"❌ Missing {SE_APPROVED_LABEL} label: This pack has XSIAM content that is also available in SE, please verify.")
