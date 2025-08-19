@@ -7521,6 +7521,7 @@ def test_resolve_detection_username_not_legacy(mocker):
     assert not translate_username_mocker.called
     assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
 
+
 def test_resolve_detection_username_legacy(mocker):
     """
     Given:
