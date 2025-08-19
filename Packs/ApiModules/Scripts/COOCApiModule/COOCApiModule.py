@@ -379,9 +379,6 @@ def create_permissions_error_entry(account_id: Optional[str], message: Optional[
             - name: The permission name
             - classification: Set to "WARNING"
             - error: Set to "Permission Error"
-
-    Raises:
-        SystemExit: If any required argument is None or empty (via return_error)
     """
     # Input validation
     error_entry = {"account_id": account_id, "message": message, "name": name}
