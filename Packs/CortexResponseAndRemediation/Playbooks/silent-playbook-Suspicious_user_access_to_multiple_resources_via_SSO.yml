@@ -48,6 +48,8 @@ description: |-
   - **Core - Investigation and Response** for alert context and user risk scores.
   - **Threat Intelligence Integrations** for IP reputation analysis.
 issilent: true
+tags:
+- T1078 - Valid Accounts
 starttaskid: "0"
 tasks:
   "0":
@@ -433,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 758,
-          "y": 642
+          "y": 634
         }
       }
     note: false
@@ -620,7 +622,7 @@ tasks:
       {
         "position": {
           "x": 131,
-          "y": 642
+          "y": 634
         }
       }
     note: false
@@ -1207,7 +1209,7 @@ tasks:
       {
         "position": {
           "x": -288,
-          "y": 637
+          "y": 634
         }
       }
     note: false
@@ -1238,7 +1240,7 @@ tasks:
       {
         "position": {
           "x": -704,
-          "y": 637
+          "y": 634
         }
       }
     note: false
