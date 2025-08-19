@@ -17,10 +17,8 @@ VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 BASE_EVENT_BODY: dict = {
-    "action": [
-        "create"
-    ],
-    "last_log_id": 0
+    "last_log_id": 0,
+    "from_date": "2025-08-10 10:03",
 }
 
 """ CLIENT CLASS """
@@ -295,7 +293,7 @@ def main():
             # Command made to test the integration
             # result = test_module(client)
             params_test = {
-                "page": "3",
+                "page": "0",
                 "limit": "100",
                 "sort": "timestamp",
                 "sort_by": "desc",
