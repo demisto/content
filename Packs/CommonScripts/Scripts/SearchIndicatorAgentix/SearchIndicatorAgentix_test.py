@@ -156,9 +156,7 @@ def test_build_query_for_indicator_values_chunk_counts(n, expected_chunks):
     remaining = n
     for chunk_str in result:
         # strip outer parentheses added in build_query_for_indicator_values
-        # assert chunk_str.startswith("(") and chunk_str.endswith(")"), "chunk should be wrapped in parentheses"
         inner = chunk_str[1:-1]
-        # items_in_chunk = 0 if inner == "" else inner.count(" OR ") + 1
         items_in_chunk = 0 if inner == "" else inner.count(" OR ") + 1
         expected_size = min(100, remaining)
         assert items_in_chunk == expected_size
@@ -292,20 +290,6 @@ def test_build_query_for_values_with_special_characters():
     assert "test\\ with\\ spaces" in result[0]
     assert 'test\\"quotes' in result[0]
     assert "test\\\\backslash" in result[0]
-
-
-# def test_build_query_for_values_json_decode_error():
-#     """
-#     Given: Arguments with invalid JSON string in value field
-#     When: build_query_for_values is called
-#     Then: Handles JSON decode error gracefully and continues processing
-#     """
-#     args = {"value": "invalid json string"}
-#     try:
-#         result = build_query_for_values(args)
-#         assert isinstance(result, list)
-#     except Exception:
-#         assert False
 
 
 def test_build_query_for_values_with_whitespace():
