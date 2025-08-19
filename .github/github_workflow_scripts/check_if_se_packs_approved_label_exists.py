@@ -55,8 +55,6 @@ def main():
     any(folder in file.lower() for folder in watched_folders)
     for file in changed_files
     )
-    print(f"folder_changed: {folder_changed}")
-    print(f'Checking if {SE_APPROVED_LABEL} label exist in PR {pr_number}')
     # Validation logic
     if folder_changed and not se_approved:
         print(f"❌ Missing {SE_APPROVED_LABEL} label: This pack has XSIAM content that is also available in SE, please verify.")

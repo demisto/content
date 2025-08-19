@@ -3,7 +3,6 @@
     https://docs.fortinet.com/document/fortigate/7.4.4/fortios-log-message-reference 
     https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/94f9e5fe-0e30-11ef-8c42-fa163e15d75b/FortiOS_7.4.4_Log_Reference.pdf
 */
-// test
 alter // format, validate & regroup relevant raw data 
     cef_pri_level = lowercase(FTNTFGTlevel),
     dns_record_class = if(FTNTFGTqclass = null, null, FTNTFGTqclass = "IN", 1, FTNTFGTqclass = "CS", 2, FTNTFGTqclass = "CH", 3, FTNTFGTqclass = "HS", 4), 
