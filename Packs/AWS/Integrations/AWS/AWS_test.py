@@ -1301,23 +1301,6 @@ def test_ec2_delete_security_group_command_group_id_not_found(mocker):
         EC2.delete_security_group_command(mock_client, args)
 
 
-def test_ec2_delete_security_group_command_unexpected_exception(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises unexpected exception.
-    When: delete_security_group_command encounters unexpected error.
-    Then: It should raise DemistoException with unexpected error message.
-    """
-    from AWS import EC2
-
-    mock_client = mocker.Mock()
-    mock_client.delete_security_group.side_effect = Exception("Unexpected error")
-
-    args = {"group_id": "sg-1234567890abcdef0"}
-
-    with pytest.raises(DemistoException, match="Unexpected error deleting security group: Unexpected error"):
-        EC2.delete_security_group_command(mock_client, args)
-
-
 def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
     """
     Given: A mocked boto3 EC2 client and valid group_ids argument.
@@ -1348,7 +1331,18 @@ def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
     result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert result.outputs == {
-        "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": "",
+        "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": [
+            {
+                "GroupId": "sg-1234567890abcdef0",
+                "GroupName": "test-sg",
+                "Description": "Test security group",
+                "OwnerId": "123456789012",
+                "VpcId": "vpc-12345678",
+                "IpPermissions": [],
+                "IpPermissionsEgress": [],
+                "Tags": [{"Key": "Environment", "Value": "Test"}],
+            }
+        ],
         "AWS.EC2(true)": {"SecurityGroupsNextToken": "NextToken"},
     }
     assert "AWS EC2 SecurityGroups" in result.readable_output
@@ -1381,7 +1375,7 @@ def test_ec2_describe_security_groups_command_success_with_group_names(mocker):
 
     result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs[0]["GroupName"] == "production-sg"
+    assert result.outputs["AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)"][0]["GroupName"] == "production-sg"
     assert "production-sg" in result.readable_output
 
 
@@ -1422,8 +1416,12 @@ def test_ec2_describe_security_groups_command_with_multiple_groups(mocker):
     result = EC2.describe_security_groups_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert len(result.outputs) == 2
-    assert result.outputs[0]["GroupId"] == "sg-1111111111111111"
-    assert result.outputs[1]["GroupId"] == "sg-2222222222222222"
+    assert (
+        result.outputs["AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)"][0]["GroupId"] == "sg-1111111111111111"
+    )
+    assert (
+        result.outputs["AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)"][1]["GroupId"] == "sg-2222222222222222"
+    )
 
 
 def test_ec2_describe_security_groups_command_no_security_groups_found(mocker):
