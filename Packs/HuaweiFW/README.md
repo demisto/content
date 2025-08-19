@@ -1,182 +1,92 @@
-<!DOCTYPE html>
-<html>
-<head>
-<h1>Huawei Firewall</h1>
-</head>
-<body>
 
-<h2>Overview</h2>
-<p>
-The Huawei USG6000E series consists of AI-based firewalls designed for enterprises.
-<br>These devices leverage intelligent threat detection and collaborative defense to proactively protect against advanced threats.
-<br>
-They feature built-in hardware acceleration to significantly improve the performance of content security detection and IPSec services.
-</p>
+# Huawei Firewall
+
+## Overview
+
+The Huawei USG6000E series are AI-powered firewalls built for businesses.  
+They use smart threat detection to actively stop advanced threats and include a special hardware accelerator to boost performance for content security detection and IP security services.
 
 <~XSIAM>
 
-<h2>This Pack Includes</h2>
-<p>Data normalization capabilities:
-<br>
-1. Data modeling rules to normalize Huawei Firewall logs that are ingested via Broker VM to Cortex XSIAM.
-<br>
-2. Ingested logs can be queried in XQL Search using the <em><i>huawei_fw_raw</i></em> dataset.
-</p>
+## This Pack Includes
 
-<h3>Supported Log Categories</h3>
+### Data Normalization and Querying Capabilities
 
-<details>
-<summary>Traffic management</summary>
-<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
-<tr>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Classification</th>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Module Name</th>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Details</th>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Traffic management</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">BWM</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Bandwidth module</td>
-</tr>
-</table>
-</details>
-<br>
-<details>
-<summary>System management</summary>
-<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
-<tr>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Classification</th>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Module Name</th>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Details</th>
-</tr>
-<tr>
-<td rowspan="10">System management</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">PAF</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Product adapter file (PAF) customization</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">SSH</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">STelnet module</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">SYSTEM</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Alarms for CPU, memory, and session usage</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">TFTP</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">TFTP module</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">UPDATE</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Signature database update</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">BWM</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Bandwidth module</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">VOSCPU</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">CPU usage</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">VOSMEM</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Memory usage</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">FWLCNS</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">License module</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">SNMPMAC</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Across-Layer-3 MAC Identification</td>
-</tr>
-</table>
-</details>
+- Data modeling rules to normalize Huawei firewall logs that are ingested via Broker VM to Cortex XSIAM.
+- Querying ingested logs in XQL Search using the **`huawei_fw_raw`** dataset.
 
-<h2></h2>
+## Supported Log Categories
 
-<h3>Supported Timestamp Formats</h3>
-<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
-<tr>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Format</th>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Example</th>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">MMM dd yyyy HH:mm:ss </td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Aug 17 2024 12:30:50</td>
-</tr>
-</table>
-<h2></h2>
+#### Traffic management
 
-<h2>Data Collection</h2>
-<h3>Configure Huawei Firewall</h3>
-<p>
-1. Enable the Information Center. For instructions, refer to the <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_TASK_0178943611">Huawei documentation</a>.
-<br>
-2. Navigate to <strong>System</strong>.
-<br>
-3. In the left pane, select <strong>Log Configuration</strong>.
-<br>
-4. Select the <strong>Log Configuration</strong> tab and configure the following settings:<br><strong style="padding-left: 16px;margin-top: 0em;">System Logs</strong></p>
-<p style="padding-left: 40px;margin-top: 0em;">* Enter the <i>Log Host IP Address</i>.</p>
-<p style="padding-left: 40px;margin-top: 0em;">* Enter the <i>Port</i> number (default is 514).</p>
+|Module Name  |Details  |
+|:--|:--|
+|BWM  |Bandwidth module  |  
 
-<p style="padding-left: 16px;margin-top: 0em;"><strong>Service Logs</strong> <br>
-<p style="padding-left: 40px;margin-top: 0em;">* For <i>Log Format</i>, select <strong>Syslog</strong>.</p></p>
+#### System management
 
-<p>For more details on configuring log output, see this <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178928516">configuration guide</a>.</p>
+|Module Name  |Details  |
+|:--|:--|
+|PAF  |Customization of a product adapter file (PAF)  |
+|SSH  |STelnet module  |
+|SYSTEM  |CPU, memory, session usage alarm  |
+|TFTP  |TFTP module  |
+|UPDATE  |Signature database update  |
+|VOSCPU  |CPU usage  |
+|VOSMEM  |Memory usage  |
+|FWLCNS  |License module  |
+|SNMPMAC  |Across-Layer-3 MAC Identification  |
 
-<h3>Cortex XSIAM - Broker VM Configuration</h3>
-<p>
-To create or configure the Broker VM, refer to the <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#">Cortex XSIAM documentation</a>.
-<br>
-Follow these steps to configure the Broker VM to receive Huawei Firewall logs.
-</p>
+### Supported timestamp formats
 
-<p>
-1. Navigate to <strong>Settings → Configuration → Data Broker → Broker VMs</strong>.
-<br>
-2. In the <strong>APPS</strong> column on the <strong>Brokers</strong> tab, add the <strong>Syslog</strong> app for the relevant broker instance.
-<br>
-3. If the <strong>Syslog</strong> app already exists, hover over it and click <strong>Configure</strong>.
-<br>
-4. Click <strong>Add New</strong>.
-<br>
+|Format  |Example  |
+|:--|:--|
+|MMM dd yyyy HH:mm:ss  |Aug 17 2024 12:30:50|
+
+***
+
+## Enable Data Collection
+
+### Configure Huawei Firewall
+
+1. Enable the Information Center. For instructions, see the [Huawei documentation](https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_TASK_0178943611).
+2. Navigate to **System**.
+3. In the left pane, select **Log Configuration**.
+4. Select the **Log Configuration** tab and configure the following settings:
+
+    **System Logs**
+
+    - Enter the **_Log Host IP Address_**.
+    - Enter the **_Port_** number (default is 514).
+
+    **Service Logs**
+
+    - For **_Log Format_**, select **Syslog**.
+
+For more details on configuring log output, see this [configuration guide](https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178928516).
+
+### Cortex XSIAM - Broker VM Configuration
+
+To create or configure the Broker VM, see the [Cortex XSIAM documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Set-up-and-configure-Broker-VM#).
+
+Follow these steps to configure the Broker VM to ingest Huawei firewall logs.  
+
+1. Navigate to **Settings** → **Configuration** → **Data Broker** → **Broker VMs**.
+2. In the **APPS** column on the **Brokers** tab, add the **Syslog** app for the relevant broker instance.
+3. If the **Syslog** app already exists, hover over it and click **Configure**.
+4. Click **Add New**.
 5. Configure the Syslog Collector with the following parameters:
-</p>
 
-<table style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">
-<tr>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Parameter</th>
-<th style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Value</th>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Protocol</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Select the protocol (UDP, TCP, or Secure TCP) that you configured on your Huawei Firewall.</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Port</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter the syslog port for the Broker VM to listen on. This must match the port configured on the Huawei Firewall (default: 514).</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Vendor</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter  <em><i>Huawei</em></i>.</td>
-</tr>
-<tr>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Product</td>
-<td style="border: 1px solid black;padding: 5px;text-align: left;border-collapse: collapse;">Enter  <em><i>FW</em></i>.</td>
-</tr>
-</table>
-</li>
-</ol>
+   | Parameter     | Value
+   | :---          | :---
+   | `Protocol`    | Select the protocol (UDP, TCP, or Secure TCP) that you configured on your Huawei Firewall.
+   | `Port`        | Enter the syslog port for the Broker VM to listen on. This must match the port configured on the Huawei Firewall (default: 514).
+   | `Vendor`      | Enter **Huawei**.
+   | `Product`     | Enter **FW**.
 
-<h4>Notes</h4>
-<p>
-By default, the timestamp in the log header is in UTC.
-<br>
-To set the system time via the web UI, refer to the <a href="https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178938248">Huawei documentation</a>.
-</p>
+Note:  
 
-</body>
-</html>
+- By default, the timestamp in the log header is in UTC.  
+- To set the system time via the web UI, see the [Huawei documentation](https://support.huawei.com/hedex/hdx.do?docid=EDOC1100092598&id=EN-US_XTASK_0178938248).
+
 </~XSIAM>

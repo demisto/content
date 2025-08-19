@@ -8,7 +8,7 @@
         "type": "string",
         "is_array": false
       },
-     "extract_log_description": {
+     "parsed_fields_description": {
         "type": "string",
         "is_array": false
       }
