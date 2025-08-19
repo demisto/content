@@ -569,3 +569,259 @@ def test_build_query_excluding_values_complex_mixed_scenario():
     assert "verdict:" not in result
     assert f"{excluded_key}:" not in result
     assert " AND " in result
+
+
+def test_prepare_query_empty_args():
+    """
+    Given: Empty arguments dictionary
+    When: prepare_query is called
+    Then: Returns empty list
+    """
+    from SearchIndicatorAgentix import prepare_query
+
+    args = {}
+    result = prepare_query(args)
+    assert result == []
+
+
+def test_prepare_query_only_value_filters():
+    """
+    Given: Arguments with only value filters
+    When: prepare_query is called
+    Then: Returns queries containing only value filters
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["example.com", "test.org"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert 'value:"test.org"' in result[0]
+    assert " OR " in result[0]
+    assert " AND " not in result[0]
+
+
+def test_prepare_query_only_field_filters():
+    """
+    Given: Arguments with only field filters (no values)
+    When: prepare_query is called
+    Then: Returns empty list as no value filters exist
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
+    result = prepare_query(args)
+    assert result == []
+
+
+def test_prepare_query_value_and_field_filters():
+    """
+    Given: Arguments with both value and field filters
+    When: prepare_query is called
+    Then: Returns queries combining value and field filters with AND
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["example.com"]), "type": json.dumps(["Domain"]), "verdict": json.dumps(["Malicious"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert "type:" in result[0]
+    assert "verdict:" in result[0]
+    assert "Domain" in result[0]
+    assert "Malicious" in result[0]
+    assert " AND " in result[0]
+
+
+def test_prepare_query_multiple_value_chunks():
+    """
+    Given: Arguments with over 100 values requiring chunking
+    When: prepare_query is called
+    Then: Returns multiple queries each combined with field filters
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    values = [f"example{i}.com" for i in range(150)]
+    args = {"value": json.dumps(values), "type": json.dumps(["Domain"])}
+    result = prepare_query(args)
+    assert len(result) == 2
+    for query in result:
+        assert "type:" in query
+        assert "Domain" in query
+        assert " AND " in query
+
+
+def test_prepare_query_single_value_with_fields():
+    """
+    Given: Arguments with single value and multiple field filters
+    When: prepare_query is called
+    Then: Returns single query with value and all field filters
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {
+        "value": json.dumps(["test.example"]),
+        "type": json.dumps(["Domain"]),
+        "verdict": json.dumps(["Malicious"]),
+        "score": json.dumps(["High"]),
+    }
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"test.example"' in result[0]
+    assert "type:" in result[0]
+    assert "verdict:" in result[0]
+    assert "score:" in result[0]
+    assert result[0].count(" AND ") == 3
+
+
+def test_prepare_query_empty_value_list():
+    """
+    Given: Arguments with empty value list and field filters
+    When: prepare_query is called
+    Then: Returns empty list
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps([]), "type": json.dumps(["Domain"])}
+    result = prepare_query(args)
+    assert result == []
+
+
+def test_prepare_query_values_with_special_characters():
+    """
+    Given: Arguments with values containing special characters and field filters
+    When: prepare_query is called
+    Then: Returns queries with properly escaped values combined with fields
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["test with spaces", 'test"quotes']), "type": json.dumps(["Domain"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert "test\\ with\\ spaces" in result[0]
+    assert 'test\\"quotes' in result[0]
+    assert "type:" in result[0]
+    assert " AND " in result[0]
+
+
+def test_prepare_query_excluded_keys_ignored():
+    """
+    Given: Arguments with value filters, valid fields, and excluded keys
+    When: prepare_query is called
+    Then: Returns queries excluding the excluded keys but including valid fields
+    """
+    from SearchIndicatorAgentix import prepare_query, KEYS_TO_EXCLUDE_FROM_QUERY
+    import json
+
+    excluded_key = KEYS_TO_EXCLUDE_FROM_QUERY[0] if KEYS_TO_EXCLUDE_FROM_QUERY else "dummy"
+    args = {"value": json.dumps(["example.com"]), "type": json.dumps(["Domain"]), excluded_key: json.dumps(["excluded_value"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert "type:" in result[0]
+    assert f"{excluded_key}:" not in result[0]
+
+
+def test_prepare_query_issues_ids_transformation():
+    """
+    Given: Arguments with IssuesIDs field and value filters
+    When: prepare_query is called
+    Then: Returns queries with IssuesIDs transformed to investigationIDs
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["example.com"]), "IssuesIDs": json.dumps(["123", "456"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert "investigationIDs:" in result[0]
+    assert "IssuesIDs:" not in result[0]
+    assert "123" in result[0]
+    assert "456" in result[0]
+
+
+def test_prepare_query_empty_fields_ignored():
+    """
+    Given: Arguments with value filters and empty field values
+    When: prepare_query is called
+    Then: Returns queries containing only value filters as empty fields are ignored
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["example.com"]), "type": json.dumps([]), "verdict": ""}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert "type:" not in result[0]
+    assert "verdict:" not in result[0]
+    assert " AND " not in result[0]
+
+
+def test_prepare_query_large_value_set_with_complex_fields():
+    """
+    Given: Arguments with 250 values and multiple complex field filters
+    When: prepare_query is called
+    Then: Returns three queries each combined with all field filters
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    values = [f"domain{i}.example" for i in range(250)]
+    args = {
+        "value": json.dumps(values),
+        "type": json.dumps(["Domain", "IP"]),
+        "verdict": json.dumps(["Malicious"]),
+        "score": json.dumps(["High", "Medium"]),
+    }
+    result = prepare_query(args)
+    assert len(result) == 3
+    for query in result:
+        assert "type:" in query
+        assert "verdict:" in query
+        assert "score:" in query
+        assert query.count(" AND ") == 3
+
+
+def test_prepare_query_mixed_data_types_in_values():
+    """
+    Given: Arguments with mixed data types in values and field filters
+    When: prepare_query is called
+    Then: Returns queries with all values converted to strings and combined with fields
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["example.com", 192168001001, True]), "type": json.dumps(["Domain"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert 'value:"192168001001"' in result[0]
+    assert 'value:"True"' in result[0]
+    assert "type:" in result[0]
+    assert " AND " in result[0]
+
+
+def test_prepare_query_whitespace_stripped_from_values():
+    """
+    Given: Arguments with values containing whitespace and field filters
+    When: prepare_query is called
+    Then: Returns queries with whitespace stripped from values
+    """
+    from SearchIndicatorAgentix import prepare_query
+    import json
+
+    args = {"value": json.dumps(["  example.com  ", "\ttest.org\n"]), "type": json.dumps(["Domain"])}
+    result = prepare_query(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert 'value:"test.org"' in result[0]
+    assert "type:" in result[0]
+    assert " AND " in result[0]
