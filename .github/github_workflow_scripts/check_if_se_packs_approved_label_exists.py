@@ -51,10 +51,7 @@ def main():
 
     watched_folders = [folder.lower() for folder in watched_folders if folder]
     # Detect if watched folder changed
-    folder_changed = any(
-        any(folder in file.lower() for folder in watched_folders)
-        for file in changed_files
-    )
+    folder_changed = any(folder in changed_files.lower() for folder in watched_folders)
     print(f"folder_changed: {folder_changed}")
     print(f'Checking if {SE_APPROVED_LABEL} label exist in PR {pr_number}')
     # Validation logic
