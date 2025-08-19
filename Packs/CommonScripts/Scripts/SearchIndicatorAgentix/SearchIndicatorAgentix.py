@@ -1,14 +1,24 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
 
 KEYS_TO_EXCLUDE_FROM_QUERY = ["size"]
 
 
 def escape_special_characters(value):
-    demisto.debug(f"Escaping special characters in value: {value}")
+    """
+    Escapes special characters in a string value for use in search lucence queries.
 
-    # Characters that need escaping with backslash when in double quotes
+    This function escapes characters that have special meaning in query syntax by adding
+    appropriate backslash escape sequences. The escaped value can be safely used within
+    double-quoted search terms.
+
+    Args:
+        value (str): The string value to escape special characters in.
+
+    Returns:
+        str: The input value with special characters properly escaped.
+    """
+    demisto.debug(f"Escaping special characters in value: {value}")
     escape_characters = ["\\", "\n", "\t", "\r", '"', "^", ":", " "]
 
     for char in escape_characters:
@@ -34,20 +44,78 @@ def escape_special_characters(value):
     return value
 
 
-def prepare_query(args: dict) -> str:
+def build_query_for_values(args: dict) -> list:
     """
-    Prepares a query for list-based searches with safe handling
+    Builds a list of query strings for the 'value' field from the provided arguments.
+
+    This function extracts the 'value' field from the arguments and creates search queries
+    for those values. If there are more than 100 values, they are split into chunks of 100
+    to optimize query performance. Each chunk generates a separate query string with OR
+    operators between the values.
 
     Args:
-        key (str): Field/attribute to search
-        value (str/list): Value or list of values to match
+        args (dict): Dictionary containing search parameters, expected to have a 'value' key
+                    with either a JSON string or list of values to search for.
 
     Returns:
-        str: Formatted query string
+        list: A list of query strings. Each string contains escaped and quoted values
+                joined with OR operators. Returns empty list if no values are provided.
+                For large value sets, returns multiple query strings representing chunks.
+    """
+    demisto.debug(f"Preparing query values field for args: {args}")
+    values = args.get("value", [])
+
+    if not values:
+        return []
+
+    try:
+        values_as_list = json.loads(values)
+    except (json.JSONDecodeError, TypeError) as e:
+        demisto.debug(f"JSON decode failed for values {values}: {str(e)}.")
+
+    # Split the list into chunks of 100 values each
+    if len(values_as_list) > 100:
+        chunked_lists = [values_as_list[i : i + 100] for i in range(0, len(values_as_list), 100)]
+        chunk_queries = []
+        for i, chunk in enumerate(chunked_lists):
+            if len(chunk) > 1:
+                chunk_query = " OR ".join(f'{"value"}:"{escape_special_characters(str(v).strip())}"' for v in chunk)
+            else:
+                chunk_query = f'{"value"}:"{escape_special_characters(str(chunk[0])).strip()}"'
+            chunk_queries.append(f"({chunk_query})")
+            demisto.debug(f"value chunk_queries[{i}] {chunk_queries}")
+        return chunk_queries
+    else:
+        query = split_multiple_values_and_add_or_between("value", values_as_list)
+        demisto.debug(f"value query {query}")
+        return [query]
+
+
+def build_query_excluding_values(args: dict) -> str:
+    """
+    Builds a query string from the provided arguments, excluding the 'value' field.
+
+    This function processes all fields in the arguments dictionary except for 'value'
+    and creates a search query string. It handles JSON deserialization of field values,
+    applies field name transformations (e.g., 'IssuesIDs' to 'investigationIDs'),
+    and combines multiple field queries with AND operators.
+
+    Args:
+        args (dict): Dictionary containing search parameters. The 'value' field is ignored,
+                    and fields listed in KEYS_TO_EXCLUDE_FROM_QUERY are also excluded.
+                    Values can be JSON strings or regular strings/lists.
+
+    Returns:
+        str: A query string with field conditions joined by AND operators. Each field
+                condition is wrapped in parentheses. Returns empty string if no valid
+                fields are found or all fields are excluded.
     """
     query_sections = []
-    demisto.debug(f"Preparing query for args: {args}")
+    demisto.debug(f"Preparing query fields excluding values for args: {args}")
     for key, values in args.items():
+        if key == "value":
+            continue
+
         query = ""
         if key in KEYS_TO_EXCLUDE_FROM_QUERY:
             continue
@@ -62,84 +130,92 @@ def prepare_query(args: dict) -> str:
             values_as_list = json.loads(values)
         except (json.JSONDecodeError, TypeError) as e:
             demisto.debug(f"JSON decode failed for values {values}: {str(e)}.\nTreating as string value.")
-            values_as_list = [values]
+            values_as_list = argToList(values)
 
-        if len(values_as_list) > 1:
-            query = " OR ".join(f'{key}:"{escape_special_characters(str(v).strip())}"' for v in values_as_list)
-        else:
-            query = f'{key}:"{escape_special_characters(str(values_as_list[0])).strip()}"'
+        query = split_multiple_values_and_add_or_between(key, values_as_list)
 
-        demisto.debug(f"inner query: {query}")
+        demisto.debug(f"excluding values inner query: {query}")
         query_sections.append(query)
 
     return " AND ".join(f"({qs})" for qs in query_sections) if query_sections else ""
 
 
-def split_or_query(query: str, max_literals: int = 100) -> list[str]:
+def split_multiple_values_and_add_or_between(key, values_as_list):
     """
-    Split a Lucene query containing many OR'ed value:"..." literals into smaller queries.
-    If the query has a leading (FIELD: ...) AND (...), where FIELD is one of the allowed
-    fields, keep that FIELD clause intact and split only the OR-part.
+    This function constructs a search query for a specific field that can have one or more values.
+    For multiple values, it creates an OR-separated query string. For single values, it creates
+    a simple field:value query. All values are escaped to handle special characters and wrapped
+    in quotes for exact matching.
 
-    Supported shapes:
-      1) (value:"a" OR value:"b" OR ...)
-      2) (FIELD: x) AND (value:"a" OR value:"b" OR ...), where FIELD in allowed_fields
+    Args:
+        key (str): The field name to search on (e.g., 'type', 'status', 'investigationIDs').
+        values_as_list (list): List of values to search for. Can contain strings, numbers, or
+                                other types that will be converted to strings.
 
-    Returns a list of valid sub-queries with ≤ max_literals value-literals each.
+    Returns:
+        str: A query string in the format 'field:"value1" OR field:"value2" OR ...' for multiple
+                values, or 'field:"value"' for a single value. All values are escaped and quoted.
     """
-    q = query.strip()
-
-    # Allowed leading fields
-    allowed_fields = ["type", "investigationIDs", "expirationStatus"]
-    field_alts = "|".join(map(re.escape, allowed_fields))
-
-    # Try to capture a (FIELD: ...) prefix if present
-    m_field = re.match(rf"^\(\s*(?:{field_alts})\s*:[^)]+\)\s*AND\s*\((.*)\)\s*$", q, flags=re.IGNORECASE | re.DOTALL)
-    if m_field:
-        # Match the leading (FIELD: ...) exactly as written
-        field_match = re.search(rf"^\(\s*(?:{field_alts})\s*:[^)]+\)", q, flags=re.IGNORECASE)
-        if field_match:
-            field_clause = field_match.group(0)
-        else:
-            demisto.debug(f"No leading field clause found in the query: {q!r}")
-            field_clause = None
-
-        value_part = m_field.group(1)
+    if len(values_as_list) > 1:
+        query = " OR ".join(f'{key}:"{escape_special_characters(str(v).strip())}"' for v in values_as_list)
     else:
-        # Strip outer parentheses if they wrap the whole query
-        inner = re.match(r"^\((.*)\)$", q, flags=re.DOTALL)
-        field_clause = None
-        value_part = inner.group(1) if inner else q
+        query = f'{key}:"{escape_special_characters(str(values_as_list[0])).strip()}"'
+    return query
 
-    # Collect all value:"..." literals
-    token_re = re.compile(r'(?:value\s*:\s*"(?:[^"\\]|\\.)*")', flags=re.IGNORECASE)
-    tokens = token_re.findall(value_part)
 
-    if not tokens:
-        return [q]  # Nothing to split
+def prepare_query(args: dict) -> list:
+    """
+    This function builds search queries by taking value-specific filters (like indicator values)
+    and combining them with other field-based filters using AND logic. Each value filter
+    creates a separate query to handle large number of indicator values.
 
-    # Chunk into groups of ≤ max_literals and rebuild queries
-    chunks = [tokens[i : i + max_literals] for i in range(0, len(tokens), max_literals)]
-    out = []
-    for chunk in chunks:
-        joined = " OR ".join(chunk)
-        out.append(f"{field_clause} AND ({joined})" if field_clause else f"({joined})")
-    return out
+    Args:
+        args (dict): Dictionary containing search parameters and filters. Should include
+                    both value-based filters and other field filters.
+
+    Returns:
+        list: List of query strings, where each query combines a value filter with
+                common field filters using AND logic. If no field filters exist,
+                returns just the value filters.
+    """
+    queries = []
+    fields = build_query_excluding_values(args)
+    values_fields = build_query_for_values(args)
+
+    for f in values_fields:
+        if fields:
+            q = f"{f} AND {fields}"
+        else:
+            q = f
+        queries.append(q)
+    return queries
 
 
 def search_indicators(args):
-    # search for indicators
-    query = prepare_query(args)
-    demisto.debug(f"search_indicators query: {query}")
-    list_of_queries = split_or_query(query)
-    for i, q in enumerate(list_of_queries):
-        demisto.debug(f"list_of_queries[{i}]: {q}")
+    """
+    This function searches for indicators based on the provided arguments and returns formatted results.
+    It executes multiple queries generated from the arguments, collects all matching indicators,
+    and formats them with specific fields for display and output.
+
+    Args:
+        args (dict): Dictionary containing search parameters including query filters and size limit.
+                    Used to generate search queries and limit result size.
+
+    Returns:
+        tuple: A tuple containing:
+            - str: Markdown formatted table showing found indicators with their details
+            - list: List of dictionaries containing filtered indicator data with standardized fields
+                    including id, indicator_type, value, score, expirationStatus, investigationIDs,
+                    lastSeen, and verdict
+    """
+    list_of_queries = prepare_query(args)
+    demisto.debug(f"search_indicators list_of_queries: {list_of_queries}")
     indicators = []
-    for single_query in list_of_queries:
+    for i, single_query in enumerate(list_of_queries):
+        demisto.debug(f"list_of_queries[{i}]: {single_query}")
         result = demisto.executeCommand("findIndicators", {"query": single_query, "size": args.get("size")})
         if result and result[0].get("Contents"):
             indicators.extend(result[0]["Contents"])
-    # indicators = demisto.executeCommand("findIndicators", {"query": query, "size": args.get("size")})[0]["Contents"]
     demisto.debug(f"indicators: {indicators}")
     # return specific information for found indicators
     filtered_indicators = []
@@ -152,7 +228,8 @@ def search_indicators(args):
         filtered_indicators.append(style_indicator)
 
     headers = fields + ["verdict"]
-    markdown = tableToMarkdown(f"Indicators Found: {query=}", filtered_indicators, headers)
+    queries = ",".join(list_of_queries)
+    markdown = tableToMarkdown(f"Indicators Found: {queries[0]=}", filtered_indicators, headers)
     demisto.debug(f"filtered_indicators: {filtered_indicators}")
     return markdown, filtered_indicators
 

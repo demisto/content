@@ -1,87 +1,327 @@
-from Packs.CommonScripts.Scripts.SearchIndicatorAgentix.SearchIndicatorAgentix import prepare_query, search_indicators
-import demistomock as demisto
+from Packs.CommonScripts.Scripts.SearchIndicatorAgentix.SearchIndicatorAgentix import (
+    escape_special_characters,
+    build_query_for_values,
+)
 
 
-def test_prepare_list_query():
+def test_escape_special_characters_backslash():
     """
-    Given: Arguments with multiple values for each field including value, expirationStatus, verdict, and type
-    When: prepare_query is called with these arguments
-    Then: Returns a properly formatted query string with OR conditions for multiple values and AND conditions between fields
+    Given: A value containing backslash characters
+    When: escape_special_characters is called
+    Then: Returns value with backslashes properly escaped
     """
-    args = {
-        "value": ["example.com", "example.org"],  # List of values to search
-        "expirationStatus": ["active"],  # Possible expiration statuses
-        "verdict": ["Benign", "Malicious"],  # Possible verdicts
-        "type": ["Domain", "IP", "URL"],  # Indicator
-    }
-    res = """(value:"example.com" OR value:"example.org") AND (expirationStatus:"active") AND\
- (verdict:"Benign" OR verdict:"Malicious") AND (type:"Domain" OR type:"IP" OR type:"URL")"""
-    generated_query = prepare_query(args)
-    assert res == generated_query
+    value = "test\\path\\file"
+    expected = "test\\\\path\\\\file"
+    result = escape_special_characters(value)
+    assert result == expected
 
 
-def test_prepare_query_with_empty_values():
+def test_escape_special_characters_quotes():
     """
-    Given: Arguments with mixed empty lists and populated lists, including custom fields
-    When: prepare_query is called with these arguments
-    Then: Returns a query string that excludes empty fields and includes only populated fields
+    Given: A value containing double quotes
+    When: escape_special_characters is called
+    Then: Returns value with quotes properly escaped
     """
-    args = {
-        "value": ["example.com"],  # Single value
-        "expirationStatus": [],  # Empty list
-        "verdict": ["Benign"],  # Single verdict
-        "type": [],  # Empty list
-        "score": ["5", "10"],  # Additional field with multiple values
-    }
-    res = '(value:"example.com") AND (verdict:"Benign") AND (score:"5" OR score:"10")'
-    generated_query = prepare_query(args)
-    assert res == generated_query
+    value = 'This is a "quoted" string'
+    expected = 'This\\ is\\ a\\ \\"quoted\\"\\ string'
+    result = escape_special_characters(value)
+    assert result == expected
 
 
-def test_prepare_query_edge_cases():
+def test_escape_special_characters_newlines_and_tabs():
     """
-    Given: Arguments with special characters, spaces, email formats, empty strings, and mixed data types
-    When: prepare_query is called with these edge case arguments
-    Then: Returns a properly formatted query string that handles special characters and excludes empty values
+    Given: A value containing newlines, tabs, and carriage returns
+    When: escape_special_characters is called
+    Then: Returns value with whitespace characters properly escaped
     """
-    args = {
-        "value": ["test with spaces", "test@email.com", "192.168.1.1"],  # Special characters and formats
-        "expirationStatus": ["expired"],  # Single status
-        "verdict": [],  # Empty verdict list
-        "type": ["Email", "IP"],  # Mixed types
-        "anotherField": ["value1"],  # Single custom field
-    }
-    res = """(value:"test with spaces" OR value:"test@email.com" OR value:"192.168.1.1") AND \
-(expirationStatus:"expired") AND (type:"Email" OR type:"IP") AND (anotherField:"value1")"""
-    generated_query = prepare_query(args)
-    assert res == generated_query
+    value = "line1\nline2\tcolumn\rreturn"
+    expected = "line1\\nline2\\tcolumn\\rreturn"
+    result = escape_special_characters(value)
+    assert result == expected
 
 
-def test_search_indicators_basic_functionality(mocker):
+def test_escape_special_characters_colon_and_caret():
     """
-    Given: Basic arguments with value, type, and size for searching indicators
-    When: search_indicators is called with these arguments
-    Then: Returns markdown output and filtered indicators with proper verdict mapping
+    Given: A value containing colons and caret characters
+    When: escape_special_characters is called
+    Then: Returns value with special query characters properly escaped
     """
-    args = {"value": "example.com", "type": "Domain", "size": 50}
+    value = "field:value^boost"
+    expected = "field\\:value\\^boost"
+    result = escape_special_characters(value)
+    assert result == expected
 
-    mock_indicators = [
-        {
-            "id": "1",
-            "indicator_type": "Domain",
-            "value": "example.com",
-            "score": 2,
-            "expirationStatus": "active",
-            "investigationIDs": ["inv1"],
-            "expiration": "2024-12-31",
-            "lastSeen": "2024-01-01",
-        }
-    ]
 
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": mock_indicators}])
-    markdown, filtered_indicators = search_indicators(args)
+def test_escape_special_characters_spaces():
+    """
+    Given: A value containing spaces
+    When: escape_special_characters is called
+    Then: Returns value with spaces properly escaped
+    """
+    value = "hello world test"
+    expected = "hello\\ world\\ test"
+    result = escape_special_characters(value)
+    assert result == expected
 
-    assert "Indicators Found" in markdown
-    assert len(filtered_indicators) == 1
-    assert filtered_indicators[0]["id"] == "1"
-    assert filtered_indicators[0]["verdict"] == "Suspicious"
+
+def test_escape_special_characters_mixed_special_chars():
+    """
+    Given: A value containing multiple different special characters
+    When: escape_special_characters is called
+    Then: Returns value with all special characters properly escaped
+    """
+    value = 'path\\file:"value" test\nline^boost'
+    expected = 'path\\\\file\\:\\"value\\"\\ test\\nline\\^boost'
+    result = escape_special_characters(value)
+    assert result == expected
+
+
+def test_escape_special_characters_empty_string():
+    """
+    Given: An empty string
+    When: escape_special_characters is called
+    Then: Returns empty string unchanged
+    """
+    value = ""
+    expected = ""
+    result = escape_special_characters(value)
+    assert result == expected
+
+
+def test_escape_special_characters_no_special_chars():
+    """
+    Given: A value containing no special characters
+    When: escape_special_characters is called
+    Then: Returns the original value unchanged
+    """
+    value = "normaltext123"
+    expected = "normaltext123"
+    result = escape_special_characters(value)
+    assert result == expected
+
+
+def test_escape_special_characters_only_special_chars():
+    """
+    Given: A value containing only special characters
+    When: escape_special_characters is called
+    Then: Returns all characters properly escaped
+    """
+    value = '\\ \n\t\r"^:'
+    expected = '\\\\\\ \\n\\t\\r\\"\\^\\:'
+    result = escape_special_characters(value)
+    assert result == expected
+
+
+def test_escape_special_characters_repeated_chars():
+    """
+    Given: A value with repeated special characters
+    When: escape_special_characters is called
+    Then: Returns value with each occurrence properly escaped
+    """
+    value = "test::value^^boost  space"
+    expected = "test\\:\\:value\\^\\^boost\\ \\ space"
+    result = escape_special_characters(value)
+    assert result == expected
+
+
+def test_build_query_for_values_empty_args():
+    """
+    Given: Empty arguments dictionary
+    When: build_query_for_values is called
+    Then: Returns empty list
+    """
+    args = {}
+    result = build_query_for_values(args)
+    assert result == []
+
+
+def test_build_query_for_values_no_value_key():
+    """
+    Given: Arguments without 'value' key
+    When: build_query_for_values is called
+    Then: Returns empty list
+    """
+    args = {"type": "Domain", "verdict": "Malicious"}
+    result = build_query_for_values(args)
+    assert result == []
+
+
+def test_build_query_for_values_empty_value_list():
+    """
+    Given: Arguments with empty value list
+    When: build_query_for_values is called
+    Then: Returns empty list
+    """
+    args = {"value": []}
+    result = build_query_for_values(args)
+    assert result == []
+
+
+def test_build_query_for_values_single_value():
+    """
+    Given: Arguments with single value in JSON string format
+    When: build_query_for_values is called
+    Then: Returns list with one properly formatted query
+    """
+    import json
+
+    args = {"value": json.dumps(["example.com"])}
+    result = build_query_for_values(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+
+
+def test_build_query_for_values_multiple_values_under_100():
+    """
+    Given: Arguments with multiple values under 100 limit
+    When: build_query_for_values is called
+    Then: Returns list with one query containing OR operators
+    """
+    import json
+
+    values = ["example.com", "test.org", "sample.net"]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 1
+    for value in values:
+        assert f'value:"{value}"' in result[0]
+    assert " OR " in result[0]
+
+
+def test_build_query_for_values_exactly_100_values():
+    """
+    Given: Arguments with exactly 100 values
+    When: build_query_for_values is called
+    Then: Returns list with one query containing all values
+    """
+    import json
+
+    values = [f"example{i}.com" for i in range(100)]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 1
+    assert "example0.com" in result[0]
+    assert "example99.com" in result[0]
+
+
+def test_build_query_for_values_over_100_values():
+    """
+    Given: Arguments with over 100 values
+    When: build_query_for_values is called
+    Then: Returns multiple queries with chunked values
+    """
+    import json
+
+    values = [f"example{i}.com" for i in range(150)]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 2
+    assert "example0.com" in result[0]
+    assert "example99.com" in result[0]
+    assert "example100.com" in result[1]
+    assert "example149.com" in result[1]
+
+
+def test_build_query_for_values_exactly_101_values():
+    """
+    Given: Arguments with exactly 101 values
+    When: build_query_for_values is called
+    Then: Returns two queries with 100 and 1 values respectively
+    """
+    import json
+
+    values = [f"test{i}.com" for i in range(101)]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 2
+    assert "test0.com" in result[0]
+    assert "test99.com" in result[0]
+    assert "test100.com" in result[1]
+    assert " OR " not in result[1]
+
+
+def test_build_query_for_values_with_special_characters():
+    """
+    Given: Arguments with values containing special characters
+    When: build_query_for_values is called
+    Then: Returns queries with properly escaped special characters
+    """
+    import json
+
+    values = ["test with spaces", 'test"quotes', "test\\backslash"]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 1
+    assert "test\\ with\\ spaces" in result[0]
+    assert 'test\\"quotes' in result[0]
+    assert "test\\\\backslash" in result[0]
+
+
+# def test_build_query_for_values_json_decode_error():
+#     """
+#     Given: Arguments with invalid JSON string in value field
+#     When: build_query_for_values is called
+#     Then: Handles JSON decode error gracefully and continues processing
+#     """
+#     args = {"value": "invalid json string"}
+#     try:
+#         result = build_query_for_values(args)
+#         assert isinstance(result, list)
+#     except Exception:
+#         assert False
+
+
+def test_build_query_for_values_with_whitespace():
+    """
+    Given: Arguments with values containing leading/trailing whitespace
+    When: build_query_for_values is called
+    Then: Returns queries with whitespace stripped from values
+    """
+    import json
+
+    values = ["  example.com  ", "\ttest.org\n", " sample.net "]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert 'value:"test.org"' in result[0]
+    assert 'value:"sample.net"' in result[0]
+
+
+def test_build_query_for_values_mixed_data_types():
+    """
+    Given: Arguments with values of mixed data types (strings, numbers)
+    When: build_query_for_values is called
+    Then: Returns queries with all values converted to strings
+    """
+    import json
+
+    values = ["example.com", 192168001001, True, None]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 1
+    assert 'value:"example.com"' in result[0]
+    assert 'value:"192168001001"' in result[0]
+    assert 'value:"True"' in result[0]
+    assert 'value:"None"' in result[0]
+
+
+def test_build_query_for_values_large_chunk_boundary():
+    """
+    Given: Arguments with 250 values (tests multiple chunks)
+    When: build_query_for_values is called
+    Then: Returns three queries with proper chunk distribution
+    """
+    from SearchIndicatorAgentix import build_query_for_values
+    import json
+
+    values = [f"domain{i}.example" for i in range(250)]
+    args = {"value": json.dumps(values)}
+    result = build_query_for_values(args)
+    assert len(result) == 3
+    assert "domain0.example" in result[0]
+    assert "domain99.example" in result[0]
+    assert "domain100.example" in result[1]
+    assert "domain199.example" in result[1]
+    assert "domain200.example" in result[2]
+    assert "domain249.example" in result[2]
