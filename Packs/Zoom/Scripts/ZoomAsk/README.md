@@ -77,4 +77,4 @@ In order to tie the conditional task back to `ZoomAsk`, add the same tag from th
 ---
 
 * `ZoomAsk` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
-* Whitespaces are not supported in custom options and will not work. (e.g. setting a button to `I Agree`)
+* Whitespaces are not supported in custom options and will not work. (i.e. setting a button to `I Agree`)

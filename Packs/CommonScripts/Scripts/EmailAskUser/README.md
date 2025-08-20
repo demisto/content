@@ -104,4 +104,4 @@ In case that the incident in which the automation script is running, has limited
 ---
 
 * `EmailAskUser` will not work when run in the playbook debugger. This is because the debugger does not generate entitlements, since they must be tied to an investigation. Entitlements are needed to track the response.
-* Whitespaces are not supported in custom options and will not work. (e.g. setting a button to `I Agree`)
+* Whitespaces are not supported in custom options and will not work. (i.e. setting a button to `I Agree`)
