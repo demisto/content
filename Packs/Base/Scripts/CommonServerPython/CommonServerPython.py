@@ -22,6 +22,7 @@ import urllib
 import gzip
 import ssl
 import signal
+import ipaddress
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -2957,6 +2958,15 @@ def is_ipv6_valid(address):
         return False
     return True
 
+def is_ip_internal(ip):
+    """
+    Checks if an IP address is an internal (RFC 1918) IP.
+    """
+    try:
+        ip_obj = ipaddress.ip_address(ip)
+        return ip_obj.is_private
+    except ValueError:
+        return False
 
 def is_ip_valid(s, accept_v6_ips=False):
     """
