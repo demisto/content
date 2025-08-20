@@ -120,6 +120,7 @@ def fetch_events(
     last_run = demisto.getLastRun()
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
+        demisto.debug("Bitwarden - No events were found.")
         return [], last_run
     unique_events = get_unique_events(events, last_run)
     recent_events = filter_events(events=events, oldest=False)
@@ -167,9 +168,9 @@ def get_events_with_pagination(
         if len(events) >= max_fetch:
             break
         start_date = last_run.get("last_fetch", "") if last_run.get("last_fetch", "") else dates.get("start", DEFAULT_FIRST_FETCH)
-        response = client.get_events(
-            start_date=start_date, end_date=dates.get("end", DEFAULT_END_DATE), continuation_token=continuation_token
-        )
+        end_date = dates.get("end", DEFAULT_END_DATE)
+        demisto.debug(f"Bitwarden - get-events from {start_date=} to {end_date=}")
+        response = client.get_events(start_date=start_date, end_date=end_date, continuation_token=continuation_token)
         if continuation_token := response.get("continuationToken"):
             has_next = True
         events.extend(response.get("data", []))
