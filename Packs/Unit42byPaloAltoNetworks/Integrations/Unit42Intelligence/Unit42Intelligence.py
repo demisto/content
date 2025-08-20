@@ -387,7 +387,7 @@ def main() -> None:
 
     # Get parameters
     base_url = params.get("url", "").rstrip("/")
-    api_key = params.get("apikey", "")
+    api_key = params.get("credentials", {}).get("password", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     reliability = params.get("integration_reliability", "A - Completely reliable")

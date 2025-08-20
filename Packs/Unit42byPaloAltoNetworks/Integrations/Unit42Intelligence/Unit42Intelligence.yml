@@ -13,9 +13,10 @@ configuration:
   section: Connect
   additionalinfo: The base URL for the Unit 42 Intelligence API
 - display: API Key
-  name: apikey
+  name: credentials
+  hiddenusername: true
   required: true
-  type: 4
+  type: 9
   section: Connect
   additionalinfo: API key for authentication with Unit 42 Intelligence service
 - display: Source Reliability
@@ -59,218 +60,223 @@ name: Unit 42 Intelligence
 script:
   commands:
   - arguments:
-    - description: IP address to enrich
+    - description: IP address to enrich.
       name: ip
       required: true
-    description: Enrich an IP address with Unit 42 threat intelligence
+      default: true
+      isArray: true
+    description: Enrich an IP address with Unit 42 threat intelligence.
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: The IP address
+      description: The IP address.
       type: String
     - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP as malicious
+      description: The vendor reporting the IP as malicious.
       type: String
     - contextPath: IP.Malicious.Description
-      description: Description of the malicious IP
+      description: Description of the malicious IP.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: Unit42.IP.Address
-      description: The IP address
+      description: The IP address.
       type: String
     - contextPath: Unit42.IP.Verdict
-      description: The verdict for the IP
+      description: The verdict for the IP.
       type: String
     - contextPath: Unit42.IP.VerdictCategory
-      description: The verdict category
+      description: The verdict category.
       type: String
     - contextPath: Unit42.IP.FirstSeen
-      description: First seen date
+      description: First seen date.
       type: Date
     - contextPath: Unit42.IP.LastSeen
-      description: Last seen date
+      description: Last seen date.
       type: Date
     - contextPath: Unit42.IP.SeenBy
-      description: Sources that have seen this IP
+      description: Sources that have seen this IP.
       type: String
     - contextPath: Unit42.IP.Tags
-      description: Associated threat tags
+      description: Associated threat tags.
       type: String
   - arguments:
-    - description: Domain to enrich
+    - description: Domain to enrich.
       name: domain
       required: true
-    description: Enrich a domain with Unit 42 threat intelligence
+      isArray: true
+    description: Enrich a domain with Unit 42 threat intelligence.
     name: domain
     outputs:
     - contextPath: Domain.Name
-      description: The domain name
+      description: The domain name.
       type: String
     - contextPath: Domain.Malicious.Vendor
-      description: The vendor reporting the domain as malicious
+      description: The vendor reporting the domain as malicious.
       type: String
     - contextPath: Domain.Malicious.Description
-      description: Description of the malicious domain
+      description: Description of the malicious domain.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: Unit42.Domain.Name
-      description: The domain name
+      description: The domain name.
       type: String
     - contextPath: Unit42.Domain.Verdict
-      description: The verdict for the domain
+      description: The verdict for the domain.
       type: String
     - contextPath: Unit42.Domain.VerdictCategory
-      description: The verdict category
+      description: The verdict category.
       type: String
     - contextPath: Unit42.Domain.FirstSeen
-      description: First seen date
+      description: First seen date.
       type: Date
     - contextPath: Unit42.Domain.LastSeen
-      description: Last seen date
+      description: Last seen date.
       type: Date
     - contextPath: Unit42.Domain.SeenBy
-      description: Sources that have seen this domain
+      description: Sources that have seen this domain.
       type: String
     - contextPath: Unit42.Domain.Tags
-      description: Associated threat tags
+      description: Associated threat tags.
       type: String
   - arguments:
-    - description: URL to enrich
+    - description: URL to enrich.
       name: url
       required: true
-    description: Enrich a URL with Unit 42 threat intelligence
+      isArray: true
+    description: Enrich a URL with Unit 42 threat intelligence.
     name: url
     outputs:
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.Malicious.Vendor
-      description: The vendor reporting the URL as malicious
+      description: The vendor reporting the URL as malicious.
       type: String
     - contextPath: URL.Malicious.Description
-      description: Description of the malicious URL
+      description: Description of the malicious URL.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: Unit42.URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: Unit42.URL.Verdict
-      description: The verdict for the URL
+      description: The verdict for the URL.
       type: String
     - contextPath: Unit42.URL.VerdictCategory
-      description: The verdict category
+      description: The verdict category.
       type: String
     - contextPath: Unit42.URL.FirstSeen
-      description: First seen date
+      description: First seen date.
       type: Date
     - contextPath: Unit42.URL.LastSeen
-      description: Last seen date
+      description: Last seen date.
       type: Date
     - contextPath: Unit42.URL.SeenBy
-      description: Sources that have seen this URL
+      description: Sources that have seen this URL.
       type: String
     - contextPath: Unit42.URL.Tags
-      description: Associated threat tags
+      description: Associated threat tags.
       type: String
   - arguments:
-    - description: File hash to enrich (MD5, SHA1, or SHA256)
+    - description: File hash to enrich (MD5, SHA1, or SHA256).
       name: file
       required: true
-    description: Enrich a file hash with Unit 42 threat intelligence
+      isArray: true
+    description: Enrich a file hash with Unit 42 threat intelligence.
     name: file
     outputs:
     - contextPath: File.MD5
-      description: The MD5 hash of the file
+      description: The MD5 hash of the file.
       type: String
     - contextPath: File.SHA1
-      description: The SHA1 hash of the file
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA256 hash of the file
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.Malicious.Vendor
-      description: The vendor reporting the file as malicious
+      description: The vendor reporting the file as malicious.
       type: String
     - contextPath: File.Malicious.Description
-      description: Description of the malicious file
+      description: Description of the malicious file.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data
+      description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: Unit42.File.Hash
-      description: The file hash
+      description: The file hash.
       type: String
     - contextPath: Unit42.File.Verdict
-      description: The verdict for the file
+      description: The verdict for the file.
       type: String
     - contextPath: Unit42.File.VerdictCategory
-      description: The verdict category
+      description: The verdict category.
       type: String
     - contextPath: Unit42.File.FirstSeen
-      description: First seen date
+      description: First seen date.
       type: Date
     - contextPath: Unit42.File.LastSeen
-      description: Last seen date
+      description: Last seen date.
       type: Date
     - contextPath: Unit42.File.SeenBy
-      description: Sources that have seen this file
+      description: Sources that have seen this file.
       type: String
     - contextPath: Unit42.File.Tags
-      description: Associated threat tags
+      description: Associated threat tags.
       type: String
   dockerimage: demisto/python3:3.10.13.86272
   runonce: false

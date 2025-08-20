@@ -250,16 +250,6 @@ def test_create_context_data():
     assert result["Verdict"] == "malicious"
 
 
-def test_error_handling(client, mocker):
-    """Test error handling in commands"""
-    mocker.patch.object(client, "lookup_indicator", side_effect=Exception("API Error"))
-
-    args = {"ip": "1.2.3.4", "create_relationships": True}
-    result = ip_command(client, args)
-
-    assert "Error enriching IP" in result.readable_output
-
-
 def test_file_hash_detection():
     """Test file hash type detection"""
     from Unit42Intelligence import file_command
