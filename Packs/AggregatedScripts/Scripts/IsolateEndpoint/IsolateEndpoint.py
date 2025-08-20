@@ -154,10 +154,8 @@ def create_message_to_context_and_hr(
     endpoint_output["Result"] = result
     endpoint_output["Source"] = brand
     endpoint_output["Message"] = message
-    if is_isolated:
-        endpoint_output["Isolated"] = "Yes"
-    else:
-        endpoint_output["Isolated"] = "No"
+endpoint_output["Isolated"] = "Yes" if is_isolated else "No"
+
 
 
 def are_there_missing_args(command: Command, args: dict) -> bool:
