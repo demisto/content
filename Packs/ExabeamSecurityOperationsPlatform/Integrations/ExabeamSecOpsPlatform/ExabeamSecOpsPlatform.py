@@ -3,10 +3,16 @@ from CommonServerPython import *  # noqa: F401
 
 """ CONSTANTS """
 
+IS_XSIAM_OR_PLATFORM = is_xsiam() or is_platform()
+IS_XSOAR = is_xsoar()
+
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
+
+PRODUCT = "Exabeam"
+VENDOR = "Threat Center"
 
 
 """ CLIENT CLASS """
@@ -222,6 +228,19 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def disable_if_product(product_condition: bool):
+    """Validates if command is not running on an unsupported Cortex product.
+
+    Args:
+        product_condition (bool): Boolean flag condition relating to a Cortex product. For example: `is_xsoar()`.
+
+    Raises:
+        DemistoException: If command is being run on unsupported product.
+    """
+    if product_condition:
+        raise DemistoException("This command is not supported on this Cortex product.")
 
 
 def get_date(time: str, arg_name: str):
@@ -838,7 +857,7 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
     )
 
 
-def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[list, dict]:
+def fetch_incidents(client: Client, params: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
     """
     Fetches incidents from the client based on specified parameters and updates the last run time.
 
@@ -890,6 +909,25 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     return incidents, last_run
 
 
+def fetch_events(client: Client, params: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
+    demisto.debug("Starting to fetch events")
+    first_fetch = params.get("first_fetch", "3 days")
+    start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
+    kwargs = {
+            "filter": "",
+            "fields": "*",
+            "startTime": start_time,
+            "endTime": end_time,
+            "limit": 3000,
+    }
+    demisto.debug(f"Searching cases using args: {kwargs}.")
+    response = client.case_search_request(kwargs)
+    events = response.get("rows", [])
+    demisto.debug(f"{events=}")
+    return [], {}
+    # return fetch_incidents(client, params, last_run)
+
+
 def test_module(client: Client) -> str:  # pragma: no cover
     """test function
 
@@ -926,15 +964,22 @@ def main() -> None:  # pragma: no cover
             base_url.rstrip("/"), verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
         )
 
-        demisto.debug(f"Command being called is {demisto.command()}")
+        demisto.debug(f"Command being called is {command}")
 
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-incidents":
+            disable_if_product(IS_XSIAM_OR_PLATFORM)
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == "fetch-events":
+            disable_if_product(IS_XSOAR)
+            last_run = demisto.getLastRun()
+            events, next_run = fetch_events(client, params, last_run)
+            send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)
+            demisto.setLastRun(next_run)
         elif command == "exabeam-platform-event-search":
             return_results(event_search_command(client, args))
         elif command == "exabeam-platform-case-search":
