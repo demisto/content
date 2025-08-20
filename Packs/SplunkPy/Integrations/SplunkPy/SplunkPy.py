@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import io
 import json
@@ -5,10 +7,10 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto  # noqa: F401
+
 import pytz
 import requests
-from CommonServerPython import *  # noqa: F401
+
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 from splunklib.data import Record
@@ -3125,11 +3127,31 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     return results
 
 
-def splunk_job_create_command(service: client.Service, args: dict):
+def splunk_job_create_command(service: client.Service, base_url: str, token: str, auth_token: str | None, args: dict):
     app = args.get("app", "")
     query = build_search_query(args)
     search_kwargs = {"exec_mode": "normal", "app": app}
     search_job = service.jobs.create(query, **search_kwargs)
+
+    share = args.get("share", "No")
+    if not share in ["Yes", "No"]:
+        share = "No"
+    if share == "Yes":
+        session_key = None if auth_token else token
+        headers = {"Authorization": f"Bearer {auth_token}"} if auth_token else {"Authorization": session_key}
+        save_results = requests.post(
+            f"{base_url}/services/search/jobs/{search_job.sid}/control",
+            data={"output_mode": OUTPUT_MODE_JSON, "action": "save"},
+            headers=headers,
+            verify=VERIFY_CERTIFICATE,
+        )
+        acl_results = requests.post(
+            f"{base_url}/services/search/jobs/{search_job.sid}/acl",
+            data={"output_mode": OUTPUT_MODE_JSON, "sharing": "global", "perms.read": "*",
+                  "owner": demisto.params()["authentication"]["identifier"]},
+            headers=headers,
+            verify=VERIFY_CERTIFICATE,
+        )
 
     return_results(
         CommandResults(
@@ -3867,7 +3889,9 @@ def main():  # pragma: no cover
     elif command == "splunk-search":
         return_results(splunk_search_command(service, args))
     elif command == "splunk-job-create":
-        splunk_job_create_command(service, args)
+        base_url = f"https://{connection_args['host']}:{connection_args['port']}/"
+        token = get_auth_session_key(service)
+        splunk_job_create_command(service, base_url, token, auth_token, args)
     elif command == "splunk-results":
         splunk_results_command(service, args)
     elif command == "splunk-get-indexes":

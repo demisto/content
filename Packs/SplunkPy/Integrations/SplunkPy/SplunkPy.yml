@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
 - display: Server URL
   name: host
@@ -181,6 +178,7 @@ configuration:
   displaypassword: HEC Token (HTTP Event Collector)
   hiddenusername: true
   required: false
+  display: ''
 - display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   type: 4
@@ -257,6 +255,7 @@ configuration:
       The default is "creation time".
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
@@ -454,6 +453,13 @@ script:
       required: true
     - description: A string that contains the application namespace in which to restrict searches.
       name: app
+    - auto: PREDEFINED
+      defaultValue: No
+      description: Yes/No to indicate if the job should be shared with read only permissions. Sharing will also expand the expiry time of the results to 7 days.
+      name: share
+      predefined:
+      - Yes
+      - No
     description: Creates a new search job in Splunk.
     name: splunk-job-create
     outputs:
@@ -476,7 +482,6 @@ script:
         Event payload key-value pair.
         String example: "event": "Access log test message".
       name: event
-      required: false
     - description: Fields for indexing that do not occur in the event payload itself. Accepts multiple, comma-separated, fields.
       name: fields
     - description: The index name.
@@ -700,7 +705,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.3534043
+  dockerimage: demisto/splunksdk-py3:1.0.0.4418698
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -708,6 +713,7 @@ script:
   script: ''
   subtype: python3
   type: python
+  runonce: false
 tests:
 - SplunkPySearch_Test_default_handler
 - SplunkPy-Test-V2_default_handler
