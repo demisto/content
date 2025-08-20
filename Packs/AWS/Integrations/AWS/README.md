@@ -730,7 +730,6 @@ Creates a security group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.EC2.SecurityGroups.GroupId | string | The ID of the security group. |
-| AWS.EC2.SecurityGroups.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
 
 ### aws-ec2-security-group-delete
 
