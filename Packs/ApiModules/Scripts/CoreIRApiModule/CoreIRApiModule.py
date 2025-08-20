@@ -4317,28 +4317,15 @@ def get_incidents_command(client, args):
     )
 
 
-def cases_human_readable_transformer(string):
-    """
-    Convert a string into a human-readable format:
-    - Replace underscores with spaces
-    - Capitalize every word
-    - Transform "Incident" into "Case"
-    Example:
-        "one_two" -> "One Two"
-        "incident_test" -> "Case Test"
-        
-    :type text: str
-    :param text: The string to be converted (required)
-    
-    :return: The converted string
-    :rtype: str
-    """
-    if isinstance(string, STRING_OBJ_TYPES):
-        current_name = " ".join(word.capitalize() for word in string.replace("_", " ").split())
-        current_name = current_name.replace("Incident", "Case")
-        return current_name
+def replace_response_names(obj):
+    if isinstance(obj, str):
+        return obj.replace("incident", "case").replace("alert", "issue")
+    elif isinstance(obj, list):
+        return [replace_response_names(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {replace_response_names(key): replace_response_names(value) for key, value in obj.items()}
     else:
-        raise Exception('The key is not a string: {}'.format(string))
+        return obj
 
 
 def get_cases_command(client, args):
@@ -4439,11 +4426,14 @@ def get_cases_command(client, args):
             starred_incidents_fetch_window=starred_incidents_fetch_window,
         )
 
+    mapped_raw_cases = replace_response_names(raw_cases)
+    
     return CommandResults(
-        readable_output=tableToMarkdown("Cases", raw_cases, headerTransform=cases_human_readable_transformer),
+        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
         outputs_prefix="Core.Case",
-        outputs=raw_cases,
-        raw_response=raw_cases,
+        outputs_key_field="case_id",
+        outputs=mapped_raw_cases,
+        raw_response=mapped_raw_cases,
     )
 
 
