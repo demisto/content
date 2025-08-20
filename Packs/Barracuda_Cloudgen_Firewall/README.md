@@ -18,7 +18,7 @@ Data normalization and querying capabilities:
 | Category_1 <link_if_exist>  | Category 1                            |
 | Category_2 <link_if_exist>  | Category 2                            |
 
-* This pack supportes syslog only with key=value format
+* This pack only supports syslog in a key=value format.
 
 ### Supported timestamp formats
 
