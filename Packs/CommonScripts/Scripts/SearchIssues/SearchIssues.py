@@ -20,6 +20,7 @@ OUTPUT_KEYS = [
     "status.progress",
     "asset_ids",
     "assigned_to_pretty",
+    "source_insert_ts",
 ]
 
 
@@ -27,31 +28,32 @@ def remove_empty_string_values(args):
     """Remove empty string values from the args dictionary."""
     return {key: value for key, value in args.items() if value != ""}
 
+
 def prepare_start_end_time(args: dict):
     """
     Prepare and validate start and end time parameters from args dictionary.
-        
+
     Parses start_time and end_time from string format to ISO format and validates
     that when end_time is provided, start_time must also be provided. If only start_time
     is provided, sets end_time to current time. Sets time_frame to 'custom' when both
     times are specified.
-    
+
     Args:
         args (dict): Dictionary containing start_time and end_time parameters
-        
+
     Raises:
         DemistoException: If end_time is provided without start_time
-        
+
     Side Effects:
         Modifies the args dictionary in place by:
         - Converting start_time and end_time to ISO format
         - Setting time_frame to 'custom' when both times are present
         - Setting end_time to current time if only start_time is provided
-    
+
     """
-    start_time = args.get("start_time", '')
-    end_time = args.get("end_time", '')
-    
+    start_time = args.get("start_time", "")
+    end_time = args.get("end_time", "")
+
     if end_time and not start_time:
         raise DemistoException("When end time is provided start_time must be provided as well.")
 
@@ -71,14 +73,15 @@ def prepare_start_end_time(args: dict):
         args["start_time"] = start_time
         args["end_time"] = end_time
 
+
 def main():  # pragma: no cover
     try:
         args: dict = demisto.args()
         prepare_start_end_time(args)
-        
-        if additional_output_fields := args.pop('additional_output_fields', []):
+
+        if additional_output_fields := args.pop("additional_output_fields", []):
             OUTPUT_KEYS.extend(additional_output_fields)
-            
+
         # Return only specific fields to the context.
         args["output_keys"] = ",".join(OUTPUT_KEYS)
         args = remove_empty_string_values(args)
@@ -92,7 +95,7 @@ def main():  # pragma: no cover
             raise DemistoException(f"Failed to execute the core-get-issues command {error}")
 
         context = results.get("EntryContext", {}).get("Core.Issue(val.internal_id && val.internal_id == obj.internal_id)")
-        human_readable: str = results.get("HumanReadable", '')
+        human_readable: str = results.get("HumanReadable", "")
 
         return_results(CommandResults(outputs=context, outputs_prefix="Core.Issue", readable_output=human_readable))
 

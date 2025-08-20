@@ -1643,7 +1643,7 @@ def create_filter_from_args(args: dict) -> dict:
     :return: The filter format built from args
     """
     valid_args = init_filter_args_options()
-    and_operator_list = []
+    and_operator_list: list[dict] = []
     start_time = args.pop("start_time", "")
     end_time = args.pop("end_time", "")
 
@@ -1693,7 +1693,7 @@ def create_filter_from_args(args: dict) -> dict:
             and_operator_list.append({"AND": negation_and_list})
 
         elif arg_properties.arg_type == "array":
-            # Array args with QE/Contains operator elements should be separated with 'or' op
+            # Array args with EQ/Contains operator elements should be separated with 'or' op
             or_operator_list = []
             arg_list = argToList(arg_value)
             for arg_item in arg_list:

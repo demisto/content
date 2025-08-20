@@ -21,8 +21,8 @@ script:
   commands:
   - arguments:
     - description: The unique ID of the issue.
-      isArray: true
       name: issue_id
+      isArray: true
     - auto: PREDEFINED
       description: The severity of the issue.
       isArray: true
@@ -291,8 +291,8 @@ script:
     - description: A comma separated list of outputs to include in the context.
       isArray: true
       name: output_keys
-    description: "Returns a list of issues and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
     name: core-get-issues
+    description: "Returns a list of issues and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
     outputs:
     - contextPath: Core.Issue.internal_id
       description: The unique ID of the issue.
@@ -350,7 +350,6 @@ script:
         BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
         BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
         BLOCKED_TRIGGER_4: prevented (on write).
-
       type: String
     - contextPath: Core.Issue.alert_action_status_readable
       description: The issue action.
@@ -376,7 +375,6 @@ script:
     - contextPath: Core.Issue.starred
       description: Whether the issue is starred or not.
       type: Boolean
-    
   - arguments:
     - description: Asset unique identifier.
       name: asset_id
@@ -430,8 +428,6 @@ script:
 tests:
 - No tests
 fromversion: 6.2.0
-marketplaces:
-- platform
 supportedModules:
 - C1
 - C3
@@ -441,3 +437,5 @@ supportedModules:
 - X5
 - ENT_PLUS
 - agentix
+marketplaces:
+- platform
