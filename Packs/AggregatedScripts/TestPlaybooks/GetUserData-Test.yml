@@ -50,7 +50,6 @@ tasks:
       '#none#':
       - "2"
       - "3"
-      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -91,7 +90,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
+          "x": 690,
           "y": 330
         }
       }
@@ -117,47 +116,15 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 0398eb82-5393-48e0-ade2-511a9c93ad93
-    type: regular
-    task:
-      id: 0398eb82-5393-48e0-ade2-511a9c93ad93
-      version: -1
-      name: AD Query list users
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
-      script: '|||ad-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    scriptarguments:
-      limit:
-        simple: "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 240,
           "y": 330
         }
       }
@@ -252,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 202533c1-461a-44c1-bef6-2cb87166e9cf
+    taskid: bcf8529b-fb6a-4453-a3e4-840e9d0b9a53
     type: condition
     task:
-      id: 202533c1-461a-44c1-bef6-2cb87166e9cf
+      id: bcf8529b-fb6a-4453-a3e4-840e9d0b9a53
       version: -1
       name: Verify Outputs
       type: condition
@@ -287,7 +254,7 @@ tasks:
           right:
             value:
               simple: Microsoft Graph User
-      - - operator: containsGeneral
+      - - operator: notContainsGeneral
           left:
             value:
               complex:
@@ -352,7 +319,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: "2"
       - - operator: notContainsGeneral
           left:
             value:
@@ -833,8 +800,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2750,
-        "width": 1180,
-        "x": 60,
+        "width": 830,
+        "x": 240,
         "y": 30
       }
     }
