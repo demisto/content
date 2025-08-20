@@ -4,7 +4,11 @@
       "type": "string",
       "is_array": false
     },
-  "regexcaptureResult": {
+  "parsedFields1": {
+      "type": "string",
+      "is_array": false
+    },
+  "parsedFields2": {
       "type": "string",
       "is_array": false
     }

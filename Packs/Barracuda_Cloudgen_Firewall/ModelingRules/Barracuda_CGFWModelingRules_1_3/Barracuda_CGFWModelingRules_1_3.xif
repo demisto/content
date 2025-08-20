@@ -1,45 +1,68 @@
 [MODEL: dataset="barracuda_cgfw_raw"]
-filter _raw_log ~= "Allow|Detect"
+filter _raw_log ~= "Allow\:|Detect\:"
 | alter
-    //xdm.event.log_level =
-    //xdm.observer.name =
-    xdm.observer.action = regexcaptureResult -> action,
-    xdm.event.type = regexcaptureResult -> type,
-    //xdm.network.application_protocol =
-    //xdm.network.ip_protocol =
-    xdm.source.interface = regexcaptureResult -> srcIF,
-    xdm.source.ipv4 = if(incidr(regexcaptureResult -> srcIP, "0.0.0.0/0"), regexcaptureResult -> srcIP),
-    xdm.source.ipv6 = arrayindex(regextract(regexcaptureResult -> srcIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    xdm.source.port = if(regexcaptureResult -> proto = "ICMP", null, to_number(regexcaptureResult -> srcPort)),
-    xdm.source.host.mac_addresses = arraycreate(regexcaptureResult -> srcMAC),
-    xdm.target.ipv4 = if(incidr(regexcaptureResult -> dstIP, "0.0.0.0/0"), regexcaptureResult -> dstIP),
-    xdm.target.ipv6 = arrayindex(regextract(regexcaptureResult -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    xdm.target.port = if(regexcaptureResult -> proto = "ICMP", null, to_number(regexcaptureResult -> dstPort)),
-    //xdm.target.process.name/xdm.target.resource.name
-    xdm.target.interface = regexcaptureResult -> dstIF,
-    xdm.network.rule = regexcaptureResult -> rule,
-    xdm.event.description = regexcaptureResult -> info,
-    xdm.event.duration = to_number(regexcaptureResult -> duration),
-    xdm.target.sent_bytes = to_number(regexcaptureResult -> receivedBytes),
-    xdm.source.sent_bytes = to_number(regexcaptureResult -> sentBytes),
-    xdm.target.sent_packets = to_number(regexcaptureResult -> receivedPackets),
-    xdm.source.sent_packets = to_number(regexcaptureResult -> sentPackets),
-    xdm.source.user.username = regexcaptureResult -> user,
-    xdm.target.application.name = regexcaptureResult -> application,
-    //xdm.network.http.url_category = if()
+    priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"),0))
+| alter
+    severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8)))
+| alter
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.observer.name = coalesce( parsedFields1 -> observerHostname2, parsedFields1 -> observerHostname1),
+    xdm.observer.action = parsedFields1 -> action,
+    xdm.event.type = parsedFields1 -> type,
+    xdm.network.ip_protocol = if(parsedFields1 -> proto = "ICMP", XDM_CONST.IP_PROTOCOL_ICMP, parsedFields1 -> proto = "TCP", XDM_CONST.IP_PROTOCOL_TCP, parsedFields1 -> proto = "UDP", XDM_CONST.IP_PROTOCOL_UDP, parsedFields1 -> proto),
+    xdm.source.interface = parsedFields1 -> srcIF,
+    xdm.source.ipv4 = if(incidr(parsedFields1 -> srcIP, "0.0.0.0/0"), parsedFields1 -> srcIP),
+    xdm.source.ipv6 = arrayindex(regextract(parsedFields1 -> srcIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.source.port = if(parsedFields1 -> proto = "ICMP", null, to_number(parsedFields1 -> srcPort)), //ICMP does not support using port numbers. Instead, ICMP identifier is logged as the source (srcPort) and destination port (dstPort).
+    xdm.source.host.mac_addresses = arraycreate(parsedFields1 -> srcMAC),
+    xdm.target.ipv4 = if(incidr(parsedFields1 -> dstIP, "0.0.0.0/0"), parsedFields1 -> dstIP),
+    xdm.target.ipv6 = arrayindex(regextract(parsedFields1 -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.target.port = if(parsedFields1 -> proto = "ICMP", null, to_number(parsedFields1 -> dstPort)), //ICMP does not support using port numbers. Instead, ICMP identifier is logged as the source (srcPort) and destination port (dstPort).
+    xdm.target.resource.name = parsedFields1 -> dstService,
+    xdm.target.resource.type "Destination service",
+    xdm.target.interface = parsedFields1 -> dstIF,
+    xdm.network.rule = parsedFields1 -> rule,
+    xdm.network.http.url = json_extract_scalar(parsedFields1, "$.target"),
+    xdm.event.description = parsedFields1 -> info,
+    xdm.event.duration = to_number(parsedFields1 -> duration),
+    xdm.target.sent_bytes = to_number(parsedFields1 -> receivedBytes),
+    xdm.source.sent_bytes = to_number(parsedFields1 -> sentBytes),
+    xdm.target.sent_packets = to_number(parsedFields1 -> receivedPackets),
+    xdm.source.sent_packets = to_number(parsedFields1 -> sentPackets),
+    xdm.source.user.username = parsedFields1 -> user,
+    xdm.target.application.name = parsedFields1 -> application,
+    xdm.network.http.url_category = parsedFields1 -> urlcat,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
 
 filter _raw_log contains "BYF"
 | alter
+    priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"),0))
+| alter
+    severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8)))
+| alter
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.observer.name = parsedFields1 -> hostname,
+    xdm.observer.product = parsedFields1 -> programName,
+    xdm.observer.vendor = "Barracuda",
+    xdm.source.ipv4 = if(incidr(parsedFields1 -> srcIP, "0.0.0.0/0"), parsedFields1 -> srcIP),
+    xdm.source.ipv6 = arrayindex(regextract(parsedFields1 -> srcIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.target.ipv4 = if(incidr(parsedFields1 -> dstIP, "0.0.0.0/0"), parsedFields1 -> dstIP),
+    xdm.target.ipv6 = arrayindex(regextract(parsedFields1 -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.network.http.content_type = if(parsedFields1 -> contentType = "-", null, parsedFields1 -> contentType),
+    xdm.network.http.url = parsedFields1 -> url,
+    xdm.observer.action - parsedFields1 -> action, //1 is blocked, 0 is allowed
+    xdm.network.http.url_category = if(parsedFields1 -> urlCategoryCode = "-", null, parsedFields1 -> urlCategoryCode),
+    xdm.target.host.hostname = parsedFields1 -> targetHostname,
+    xdm.target.user.username = parsedFields1 -> targetUser,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
 
-    xdm.observer.name = regexcaptureResult -> hostname,
-    xdm.source.ipv4 = if(incidr(regexcaptureResult -> srcIP, "0.0.0.0/0"), regexcaptureResult -> srcIP),
-    xdm.source.ipv6 = arrayindex(regextract(regexcaptureResult -> srcIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    xdm.target.ipv4 = if(incidr(regexcaptureResult -> dstIP, "0.0.0.0/0"), regexcaptureResult -> dstIP),
-    xdm.target.ipv6 = arrayindex(regextract(regexcaptureResult -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    xdm.network.http.url = regexcaptureResult -> url,
-    xdm.observer.action - regexcaptureResult -> action, //1 is blocked, 0 is allowed
-    xdm.network.http.url_category = regexcaptureResult -> urlCategoryCode,
-    xdm.target.host.hostname = regexcaptureResult -> targetHostname,
-    xdm.target.user.username = regexcaptureResult -> targetUser,
+filter _raw_log not contains ("BYF", "Allow", "Detect")
+| alter
+    priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"),0))
+| alter
+    severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8)))
+| alter
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.event.description = parsedFields2 -> message,
+    xdm.observer.name = coalesce(parsedFields2 -> observerHostname2, parsedFields2 -> observerHostname1),
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
