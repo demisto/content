@@ -9,7 +9,7 @@ Barracuda CloudGen Firewall is a next-generation firewall and SD-WAN solution. I
 Data normalization and querying capabilities:
 
 * Rules for parsing and modeling firewall activity logs that are ingested via BrokerVM into Cortex XSIAM.
-  * The ingested Barracuda Cloudgen Firewall logs can be queried in XQL Search using the *`barracuda_cgfw_raw`* dataset.
+  * Querying ingested Barracuda Cloudgen Firewall logs in XQL Search using the *`barracuda_cgfw_raw`* dataset.
 
 ### Supported log categories
 
