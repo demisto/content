@@ -1035,7 +1035,7 @@ def fetch_events(
     last_run = demisto.getLastRun()
     demisto.info(f"Last run in the start of the fetch: {last_run}")
 
-    fetch_limit = last_run.pop("limit", limit)
+    fetch_limit = last_run.pop("max_fetch", limit)
     is_finished = False
 
     with ExecutionTimeout(seconds=Timeouts.FETCH_EVENTS.value):
@@ -1095,7 +1095,7 @@ def fetch_events(
     else:
         demisto.debug(f"Timed out fetching up to {fetch_limit} events. Halving limit in last run")
         events = []  # No events sent to XSIAM
-        last_run.update({"limit": max(fetch_limit // 2, 1), "nextTrigger": "30"})  # Reduce size of API calls in next fetch
+        last_run.update({"max_fetch": max(fetch_limit // 2, 1), "nextTrigger": "30"})  # Reduce size of API calls in next fetch
 
     demisto.info(f"Last run after fetching all logs: {last_run}")
     return events, last_run
