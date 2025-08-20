@@ -66,6 +66,7 @@ class Client(BaseClient):
         set_integration_context(context={"token": token, "expires": str(expire_date)})
 
     def get_events(self, start_date: str = "", end_date: str = "", continuation_token: str = "") -> dict:
+        demisto.debug(f"Bitwarden - get-events from {start_date=} to {end_date=}")
         params = {"start": start_date, "end": end_date}
 
         if continuation_token:
@@ -118,6 +119,7 @@ def fetch_events(
             results.
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f"Bitwarden - fetch-events {last_run=}")
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
         demisto.debug("Bitwarden - No events were found.")
@@ -168,9 +170,10 @@ def get_events_with_pagination(
         if len(events) >= max_fetch:
             break
         start_date = last_run.get("last_fetch", "") if last_run.get("last_fetch", "") else dates.get("start", DEFAULT_FIRST_FETCH)
-        end_date = dates.get("end", DEFAULT_END_DATE)
-        demisto.debug(f"Bitwarden - get-events from {start_date=} to {end_date=}")
-        response = client.get_events(start_date=start_date, end_date=end_date, continuation_token=continuation_token)
+        response = client.get_events(
+            start_date=start_date, end_date=dates.get("end", DEFAULT_END_DATE),
+            continuation_token=continuation_token
+        )
         if continuation_token := response.get("continuationToken"):
             has_next = True
         events.extend(response.get("data", []))
