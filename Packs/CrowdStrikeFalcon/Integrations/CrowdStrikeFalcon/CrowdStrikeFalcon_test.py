@@ -7544,6 +7544,7 @@ def test_resolve_detection_username_legacy(mocker):
     assert translate_username_mocker.calledwith("username")
     assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
 
+
 def test_resolve_incident_username_not_legacy(mocker):
     """
     Given:
@@ -7560,10 +7561,7 @@ def test_resolve_incident_username_not_legacy(mocker):
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
     mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "user_name": "username"})
 
-    expected_action_parameters = {
-        "action_parameters": [{"name": "update_assigned_to_v2", "value": "username"}],
-        "ids": ["123"]
-    }
+    expected_action_parameters = {"action_parameters": [{"name": "update_assigned_to_v2", "value": "username"}], "ids": ["123"]}
 
     resolve_incident_command(ids=["123"], user_name="username")
     assert not translate_username_mocker.called
@@ -7586,10 +7584,7 @@ def test_resolve_incident_username_legacy(mocker):
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
     mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "user_name": "username"})
 
-    expected_action_parameters = {
-        "action_parameters": [{"name": "update_assigned_to_v2", "value": "user_123"}],
-        "ids": ["123"]
-    }
+    expected_action_parameters = {"action_parameters": [{"name": "update_assigned_to_v2", "value": "user_123"}], "ids": ["123"]}
 
     resolve_incident_command(ids=["123"], user_name="username")
     assert translate_username_mocker.called
