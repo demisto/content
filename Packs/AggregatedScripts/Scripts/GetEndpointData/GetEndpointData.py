@@ -1196,7 +1196,7 @@ def main():  # pragma: no cover
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",
-                    outputs_key_field=["Brand", "ID", "Hostname"],  # TODO: , "IPAddress"],
+                    outputs_key_field=["Brand", "ID", "Hostname"],
                     outputs=endpoint_outputs_list,
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) data",
