@@ -279,7 +279,8 @@ def signal_for_lookup(signal: dict) -> dict:
         "Status": str(attributes.get("status", "")),
         "Rule Name": str(attributes.get("rule", {}).get("name", "")),
         "Rule ID": str(attributes.get("rule", {}).get("id", "")),
-        "Tags": ",".join(tag for tag in attributes.get("tags", [])) if attributes.get("tags") else None,
+        "Tag" : {t[0]: t[1] for t in filter(lambda x: len(x) == 2, map(lambda x: x.split(':', 1), attributes.get("tags", [])))},
+        "Tags": attributes.get("tags", []),
         "Source": str(attributes.get("source", "")),
         "Service": str(attributes.get("service", "")),
         "Host": str(attributes.get("host", "")),
@@ -308,7 +309,8 @@ def log_for_lookup(log: dict) -> dict:
         "Host": str(attributes.get("host", "")),
         "Source": str(attributes.get("source", "")),
         "Status": str(attributes.get("status", "")),
-        "Tags": ",".join(tag for tag in attributes.get("tags", [])) if attributes.get("tags") else None,
+        "Tag" : {t[0]: t[1] for t in filter(lambda x: len(x) == 2, map(lambda x: x.split(':', 1), attributes.get("tags", [])))},
+        "Tags": attributes.get("tags", []),
     }
 
 
