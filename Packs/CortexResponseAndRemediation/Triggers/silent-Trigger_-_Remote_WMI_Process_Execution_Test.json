@@ -30,6 +30,6 @@
         }
     },
     "issilent": true,
-    "auto_enabled": true,
+    "is_auto_enabled": true,
     "fromVersion": "8.9.0"
 }

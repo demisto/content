@@ -1,5 +1,5 @@
 {
-    "auto_enabled": true,
+    "is_auto_enabled": true,
     "trigger_id": "a69c1c4b366ed567ee21a788e0146b21",
     "playbook_id": "Suspicious execution from tmp folder",
     "suggestion_reason": "Recommended for 'Suspicious interactive execution of a binary from the tmp folder', 'Suspicious cron job task execution of a binary from the tmp folder' and 'A web server process executed an unpopular application from the tmp folder' alerts",

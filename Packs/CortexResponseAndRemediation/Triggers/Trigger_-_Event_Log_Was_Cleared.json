@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "1f4a5afb3a984d8d6eaec744d04a1a78",
   "playbook_id": "Event Log Was Cleared",
   "suggestion_reason": "Recommended for 'Windows Event Log Was Cleared' alerts",

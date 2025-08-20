@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "47cae2955f760d5ed08bf3c0b922887a",
   "playbook_id": "A Successful login from TOR",
   "suggestion_reason": "Recommended for 'A Successful login from TOR' alert",

@@ -6,7 +6,7 @@
   "trigger_name": "silent-Rundll32.exe executes a rare unsigned module",
   "fromVersion": "8.9.0",
   "issilent": true,
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "alerts_filter": {
     "filter": {
         "AND": [

@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "d30b757218c4a36e4b94d8033cf55785",
   "playbook_id": "Suspicious certutil command line",
   "suggestion_reason": "Recommended for the 'Suspicious certutil command line' alerts",

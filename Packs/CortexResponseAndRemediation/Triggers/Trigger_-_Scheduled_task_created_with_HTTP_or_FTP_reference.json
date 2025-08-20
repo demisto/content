@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "36c301a212aa8edc87468e6b214b5f4e",
   "playbook_id": "Scheduled task created with HTTP or FTP reference",
   "suggestion_reason": "Recommended for the 'Scheduled task created with HTTP or FTP reference' alert",

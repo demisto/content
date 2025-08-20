@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "4402083915accc60f72e10bb59224606",
   "playbook_id": "Exchange forwarding rule configured",
   "fromVersion": "8.8.0",

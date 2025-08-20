@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "131fb92f3a07d20cfc2caff5ce9616cf",
   "playbook_id": "Azure AD PIM role settings change",
   "suggestion_reason": "Recommended for Azure AD PIM role settings change alerts.",

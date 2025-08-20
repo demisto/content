@@ -1,5 +1,5 @@
 {
-    "auto_enabled": true,
+    "is_auto_enabled": true,
     "trigger_id": "bcf29aac2aec3afa6e8870b5876e74c1",
     "playbook_id": "First Azure AD PowerShell operation for a user",
     "suggestion_reason": "Recommended for 'First Azure AD PowerShell operation for a user' alert",

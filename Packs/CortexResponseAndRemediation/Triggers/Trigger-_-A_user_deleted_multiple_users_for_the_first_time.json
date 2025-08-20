@@ -6,7 +6,7 @@
   "trigger_name": "A user deleted multiple users for the first time",
   "fromVersion": "8.9.0",
   "issilent": false,
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "alerts_filter": {
     "filter": {
       "AND": [

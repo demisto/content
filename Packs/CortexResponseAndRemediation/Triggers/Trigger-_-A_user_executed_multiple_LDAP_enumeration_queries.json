@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "52c5358feb546561b409817ba1f129d2",
   "playbook_id": "A user executed multiple LDAP enumeration queries",
   "suggestion_reason": "Recommended for A user executed suspicious LDAP enumeration queries alerts.",

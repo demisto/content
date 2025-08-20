@@ -1,5 +1,5 @@
 {
-    "auto_enabled": true,
+    "is_auto_enabled": true,
     "trigger_id": "77c352f11994a9c17008e7e0354a2c96",
     "playbook_id": "Exchange User Mailbox Forwarding",
     "suggestion_reason": "Recommended for Exchange User Mailbox Forwarding alerts.",

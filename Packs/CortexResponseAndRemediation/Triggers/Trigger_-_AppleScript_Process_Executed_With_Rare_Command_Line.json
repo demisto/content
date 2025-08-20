@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "66c14136957cd342e560cedb6e29d3c6",
   "playbook_id": "AppleScript Process Executed With Rare Command Line",
   "suggestion_reason": "Recommended for 'AppleScript Process Executed With Rare Command Line' alerts",

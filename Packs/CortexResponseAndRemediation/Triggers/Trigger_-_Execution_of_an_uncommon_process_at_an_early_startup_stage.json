@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "7f2f88e5e8e929f8d3d01d234c3b9f41",
   "playbook_id": "Execution of an uncommon process at an early startup stage",
   "suggestion_reason": "Recommended for 'Execution of an uncommon process at an early startup stage with suspicious characteristics' and the 'Execution of an uncommon process with a local/domain user SID at an early startup stage with suspicious characteristics' alerts",

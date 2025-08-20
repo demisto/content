@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "4ce60e9949d518fdc734c3151e2cfe4a",
   "playbook_id": "Suspicious Hidden User Created",
   "suggestion_reason": "Recommended for Suspicious Hidden User Created alerts.",

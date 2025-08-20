@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "c3f1be30a61c743ffb869c7dbb0c51f9",
   "playbook_id": "Msiexec execution of an executable from an uncommon remote location",
   "suggestion_reason": "Recommended for 'Msiexec execution of an executable from an uncommon remote location without properties' and 'Msiexec execution of an executable from an uncommon remote location with a specific port' alerts",

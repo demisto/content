@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "159eeaa4dfd198e11af883e4ecc8ab5f",
   "playbook_id": "MFA was disabled for an Azure identity",
   "suggestion_reason": "Recommended for 'MFA was disabled for an Azure identity' and 'MFA was disabled for an Azure identity from a new country' alerts",

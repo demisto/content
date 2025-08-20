@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "16b8fde623a06edcc92b4f6aa7b52db2",
   "playbook_id": "Excessive User Account Lockouts",
   "fromVersion": "8.8.0",

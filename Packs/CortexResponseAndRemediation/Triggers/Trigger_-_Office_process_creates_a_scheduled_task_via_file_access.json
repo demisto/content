@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "5a18cefb3601f01ef4201962af6ae475",
   "playbook_id": "Office process creates a scheduled task via file access",
   "suggestion_reason": "Recommended for the 'Office process creates a scheduled task via file access' alert",

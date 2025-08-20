@@ -1,5 +1,5 @@
 {
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "trigger_id": "5e65b1043ec813f6e7cfd06c2585476e",
   "playbook_id": "Script file added to startup-related Registry keys",
   "suggestion_reason": "Recommended for 'Script file added to startup-related Registry keys' alerts",

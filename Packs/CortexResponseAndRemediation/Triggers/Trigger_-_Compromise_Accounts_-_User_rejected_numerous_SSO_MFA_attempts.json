@@ -1,5 +1,5 @@
 {
-    "auto_enabled": true,
+    "is_auto_enabled": true,
     "trigger_id": "2120c09a8de842f4aae8506487b01e8c",
     "playbook_id": "Compromise Accounts - User rejected numerous SSO MFA attempts",
     "suggestion_reason": "Recommended for Compromise Accounts alerts triggered by multiple MFA rejections.",

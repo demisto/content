@@ -6,7 +6,7 @@
   "trigger_name": "silent-Suspicious LDAP search query Test",
   "fromVersion": "8.9.0",
   "issilent": true,
-  "auto_enabled": true,
+  "is_auto_enabled": true,
   "alerts_filter": {
     "filter": {
         "AND": [
