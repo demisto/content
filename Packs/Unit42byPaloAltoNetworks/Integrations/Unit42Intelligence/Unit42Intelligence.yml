@@ -278,7 +278,7 @@ script:
     - contextPath: Unit42.File.Tags
       description: Associated threat tags.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.12.11.4508456
   runonce: false
   script: '-'
   subtype: python3
