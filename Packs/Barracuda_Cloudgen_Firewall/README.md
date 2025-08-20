@@ -2,7 +2,7 @@
 
 ## Overview
 
-Barracuda CloudGen Firewall is a next-generation firewall and SD-WAN solution. It combines a complete security stack with SD-WAN capabilities to provide secure, connectivity between all parts of a distributed network, all managed from a centralized platform.
+Barracuda CloudGen Firewall is a next-generation firewall and SD-WAN solution. It combines security and SD-WAN into a single platform, providing secure connections across your entire network that are all managed from one central location.
 
 ## This pack includes
 
