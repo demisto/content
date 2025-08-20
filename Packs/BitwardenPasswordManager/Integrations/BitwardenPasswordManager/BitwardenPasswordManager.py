@@ -171,8 +171,7 @@ def get_events_with_pagination(
             break
         start_date = last_run.get("last_fetch", "") if last_run.get("last_fetch", "") else dates.get("start", DEFAULT_FIRST_FETCH)
         response = client.get_events(
-            start_date=start_date, end_date=dates.get("end", DEFAULT_END_DATE),
-continuation_token=continuation_token
+            start_date=start_date, end_date=dates.get("end", DEFAULT_END_DATE), continuation_token=continuation_token
         )
         if continuation_token := response.get("continuationToken"):
             has_next = True
