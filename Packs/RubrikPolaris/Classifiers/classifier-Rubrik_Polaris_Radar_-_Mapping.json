@@ -126,6 +126,69 @@
         }
       }
     },
+    "Rubrik Threat Monitoring Object": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Rubrik CDM Cluster ID": {
+          "complex": {
+            "accessor": "id",
+            "filters": [],
+            "root": "cluster",
+            "transformers": []
+          }
+        },
+        "Rubrik CDM Cluster Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "cluster",
+            "transformers": []
+          }
+        },
+        "Rubrik File Match Count": {
+          "complex": {
+            "filters": [],
+            "root": "filesMatched",
+            "transformers": []
+          }
+        },
+        "Rubrik Last Detected": {
+          "complex": {
+            "filters": [],
+            "root": "lastDetection",
+            "transformers": []
+          }
+        },
+        "Rubrik Match Types": {
+          "complex": {
+            "filters": [],
+            "root": "matchType",
+            "transformers": []
+          }
+        },
+        "Rubrik Polaris Object ID": {
+          "complex": {
+            "filters": [],
+            "root": "objectFid",
+            "transformers": []
+          }
+        },
+        "Rubrik Polaris Object Name": {
+          "complex": {
+            "filters": [],
+            "root": "objectName",
+            "transformers": []
+          }
+        },
+        "Rubrik Polaris Object Type": {
+          "complex": {
+            "filters": [],
+            "root": "objectType",
+            "transformers": []
+          }
+        }
+      }
+    },
     "dbot_classification_incident_type_all": {
       "dontMapEventToLabels": false,
       "internalMapping": {

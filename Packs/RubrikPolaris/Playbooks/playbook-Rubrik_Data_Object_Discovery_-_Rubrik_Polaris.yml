@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9867ced6-90ea-4b87-8280-85e9c8c4f21d
+    taskid: 24cb6f30-e8dc-4c2b-87b8-0a3a9187cbef
     type: start
     task:
-      id: 9867ced6-90ea-4b87-8280-85e9c8c4f21d
+      id: 24cb6f30-e8dc-4c2b-87b8-0a3a9187cbef
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d244504c-e513-4199-838b-a79e7100ca0d
+    taskid: d7d4d0c6-63b5-49b8-8178-0b8f765cc8c4
     type: regular
     task:
-      id: d244504c-e513-4199-838b-a79e7100ca0d
+      id: d7d4d0c6-63b5-49b8-8178-0b8f765cc8c4
       version: -1
       name: Search the global objects
       description: Search for Rubrik discovered objects of any type, return zero or more matches.
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c60c5f84-8825-43ce-87ee-8b14f1d23eed
+    taskid: 33f43136-82bc-4252-8c1b-1bc9f27179f7
     type: condition
     task:
-      id: c60c5f84-8825-43ce-87ee-8b14f1d23eed
+      id: 33f43136-82bc-4252-8c1b-1bc9f27179f7
       version: -1
       name: Is there an Object Name?
       description: Checks whether object_name input is available or not.
@@ -114,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: edfd9bf9-47b5-4193-8757-32c0d6c45ce7
+    taskid: 83c77205-1816-42f3-8990-96ff53fff43c
     type: condition
     task:
-      id: edfd9bf9-47b5-4193-8757-32c0d6c45ce7
+      id: 83c77205-1816-42f3-8990-96ff53fff43c
       version: -1
       name: Is there an Object ID?
       description: Checks whether object_id input is available or not.
@@ -156,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 43540747-cb7d-429b-8542-81efb7a20711
+    taskid: 6d6199c7-359e-4b93-88a2-4563819724da
     type: title
     task:
-      id: 43540747-cb7d-429b-8542-81efb7a20711
+      id: 6d6199c7-359e-4b93-88a2-4563819724da
       version: -1
       name: Done
       description: |-
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 52634a05-f285-4ca6-87aa-10461ce1e984
+    taskid: a1bf2bfb-d0b4-4517-8f92-24107e58d963
     type: regular
     task:
-      id: 52634a05-f285-4ca6-87aa-10461ce1e984
+      id: a1bf2bfb-d0b4-4517-8f92-24107e58d963
       version: -1
       name: List the snapshots for all objects
       description: Retrieve Rubrik snapshot(s) of an object, based on the provided object ID.
@@ -225,10 +225,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f1a53250-ca47-48ff-8d3e-c75dad4810f1
+    taskid: 4e9a4364-0d16-4012-88a1-507df2b0cc57
     type: condition
     task:
-      id: f1a53250-ca47-48ff-8d3e-c75dad4810f1
+      id: 4e9a4364-0d16-4012-88a1-507df2b0cc57
       version: -1
       name: Is Snapshot data returned?
       description: Checks certain fields related to Snapshot.
@@ -282,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 50a7b3da-9f69-4513-8198-4d571770df80
+    taskid: 93a50774-ba34-46b1-8849-699ffee3d955
     type: regular
     task:
-      id: 50a7b3da-9f69-4513-8198-4d571770df80
+      id: 93a50774-ba34-46b1-8849-699ffee3d955
       version: -1
       name: Data not found
       description: Prints text to war room (Markdown supported).
@@ -317,10 +317,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 31981a2d-f11c-4551-8e5c-0db3ac0afdd5
+    taskid: 50b28a50-9fa6-41a2-8a46-e7862ceab984
     type: regular
     task:
-      id: 31981a2d-f11c-4551-8e5c-0db3ac0afdd5
+      id: 50b28a50-9fa6-41a2-8a46-e7862ceab984
       version: -1
       name: Input required
       description: Prints an error entry with a message.
@@ -352,10 +352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 01bffd73-36f2-4211-8981-21f0307f65bd
+    taskid: 00f6cfe8-f764-45b9-85e4-4b7a8c2f6c1c
     type: condition
     task:
-      id: 01bffd73-36f2-4211-8981-21f0307f65bd
+      id: 00f6cfe8-f764-45b9-85e4-4b7a8c2f6c1c
       version: -1
       name: Is Rubrik Polaris Integration enabled?
       description: Skips the playbook if no enabled Rubrik Polaris integration is found.
@@ -414,10 +414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e8c6ff52-9e92-4e81-8d2f-d48e9396ce26
+    taskid: 8171d0d4-7bf0-45be-8130-cfd5f1a0ba42
     type: playbook
     task:
-      id: e8c6ff52-9e92-4e81-8d2f-d48e9396ce26
+      id: 8171d0d4-7bf0-45be-8130-cfd5f1a0ba42
       version: -1
       name: Rubrik List Snapshots - Rubrik Polaris
       description: List snapshots for all objects.
@@ -432,6 +432,16 @@ tasks:
       object_id:
         complex:
           root: RubrikPolaris.GlobalSearchObject
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.GlobalSearchObject.name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.object_name
+                iscontext: true
           accessor: id
     separatecontext: true
     continueonerrortype: ""

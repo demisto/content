@@ -26,7 +26,16 @@ ignore=BA124
 ignore=IF115,IF113
 
 [file:RubrikPolaris.yml]
-ignore=IN124,DO106
+ignore=IN124
+
+[file:incidentfield-Rubrik_File_Match_Count.json]
+ignore=IF115,IF113
+
+[file:incidentfield-Rubrik_Match_Types.json]
+ignore=IF115,IF113
+
+[file:incidentfield-Rubrik_Last_Detected.json]
+ignore=IF115,IF113
 
 [known_words]
 Acct
@@ -159,3 +168,10 @@ B
 Bool
 FILESYSTEM
 HYPERVISOR
+filepath
+UNSCANNED
+dummyuser
+Fids
+Unscannable
+Uuids
+obj

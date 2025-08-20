@@ -1,0 +1,42 @@
+{
+    "data": {
+        "threatMonitoringMatchedObjects": {
+            "edges": [
+                {
+                    "cursor": "dummy-cursor-123",
+                    "node": {
+                        "objectName": "dummy-object-name-456",
+                        "objectFid": "dummy-fid-789012",
+                        "filesMatched": 0,
+                        "lastDetection": "2025-01-01T00:00:00.000Z",
+                        "matchType": [
+                            "dummy-match-type"
+                        ],
+                        "objectType": "dummy-object-type",
+                        "cluster": {
+                            "name": "dummy-cluster-name",
+                            "id": "dummy-cluster-id-123",
+                            "__typename": "dummy-typename"
+                        },
+                        "__typename": "dummy-typename"
+                    },
+                    "__typename": "dummy-typename"
+                }
+            ],
+            "stats": {
+                "objectsWithMatches": 1,
+                "objectsWithNoMatches": 10,
+                "totalObjectsScanned": 11,
+                "__typename": "dummy-typename"
+            },
+            "pageInfo": {
+                "startCursor": "dummy-start-cursor",
+                "endCursor": "dummy-end-cursor",
+                "hasNextPage": true,
+                "hasPreviousPage": false,
+                "__typename": "dummy-typename"
+            },
+            "__typename": "dummy-typename"
+        }
+    }
+}
