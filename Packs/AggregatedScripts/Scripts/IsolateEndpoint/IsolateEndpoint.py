@@ -123,13 +123,14 @@ def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpo
     """
     demisto.debug(f"Got endpoint {endpoint_data} with field isIsolated{endpoint_data.get('IsIsolated')}")
     is_isolated = endpoint_data.get("IsIsolated", "No")
-    if is_isolated == "Yes":
-        message = "The endpoint is already isolated."
-        create_message_to_context_and_hr(
-            is_isolated=True, endpoint_args=endpoint_args, result="Fail", message=message, endpoint_output=endpoint_output
-        )
-        return True
-    return False
+    if is_isolated == "No":
+        return False
+
+    message = "The endpoint is already isolated."
+    create_message_to_context_and_hr(
+        is_isolated=True, endpoint_args=endpoint_args, result="Fail", message=message, endpoint_output=endpoint_output
+    )
+    return True
 
 
 def create_message_to_context_and_hr(
