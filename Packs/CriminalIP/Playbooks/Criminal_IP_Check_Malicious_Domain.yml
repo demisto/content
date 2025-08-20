@@ -1,7 +1,7 @@
-id: 09636027-fd7f-4b7f-8e82-7acc81de4eae
-version: 81
-vcShouldKeepItemLegacyProdMachine: false
-name: Criminal IP Check Malicious Domain
+id: CriminalIPCheckMaliciousDomain
+version: -1
+fromversion: 6.0.0
+name: CriminalIPCheckMaliciousDomain
 description: |-
   Performs Quick, Lite, and Full scans in sequence in Criminal IP to determine whether the input domain is malicious or not. If a determination cannot be made from the Quick scan, a Lite scan is performed. Similarly, if a determination cannot be made from the Lite scan, a Full scan is performed to make a determination. Additionally, if a Full scan is conducted, an overview report of notable findings is compiled through domain-full-scan-make-email-body and sent via email.
   For this purpose, the user needs to fill in the arguments for the #43 send-mail command.
@@ -14,7 +14,8 @@ tasks:
     task:
       id: ac53453e-fac3-4053-8a24-b2f1a195a800
       version: -1
-      name: ""
+      name: Start
+      description: Initialize the playbook.
       iscommand: false
       brand: ""
     nexttasks:
@@ -46,6 +47,7 @@ tasks:
       name: |-
         Criminal IP
         Quick Scan
+      description: Title - Quick Scan phase
       type: title
       iscommand: false
       brand: ""
@@ -76,6 +78,7 @@ tasks:
       id: 2c847672-f9a0-4624-886f-39c496f194bc
       version: -1
       name: "Criminal IP \nLite Scan"
+      description: Title - Lite Scan phase
       type: title
       iscommand: false
       brand: ""
@@ -108,6 +111,7 @@ tasks:
       name: |-
         Criminal IP
         Full Scan
+      description: Title - Full Scan phase
       type: title
       iscommand: false
       brand: ""
@@ -139,7 +143,7 @@ tasks:
       version: -1
       name: domain-quick-scan
       description: domain quick scan
-      script: CriminalIP|||domain-quick-scan
+      script: CriminalIP|||criminal-ip-domain-quick-scan
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -173,6 +177,7 @@ tasks:
       id: 9e279efe-5a75-4bdc-8e73-81d38199f7bc
       version: -1
       name: CheckMalDomainQuick
+      description: Decide by Quick Scan result
       type: condition
       iscommand: false
       brand: ""
@@ -228,6 +233,7 @@ tasks:
       id: ffd6db5f-efdd-4353-83a5-5ffa089d9cd5
       version: -1
       name: Safe Domain
+      description: Title - Safe result
       type: title
       iscommand: false
       brand: ""
@@ -256,7 +262,7 @@ tasks:
       version: -1
       name: domain-lite-scan
       description: domain lite scan
-      script: CriminalIP|||domain-lite-scan
+      script: CriminalIP|||criminal-ip-domain-lite-scan
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -290,6 +296,7 @@ tasks:
       id: 17698142-2c71-4487-80b9-ee903dedde1f
       version: -1
       name: CheckMalDomainLite
+      description: Decide by Lite Scan result
       type: condition
       iscommand: false
       brand: ""
@@ -361,6 +368,7 @@ tasks:
       id: 2a5bbab7-fcca-4bd6-87f1-c41ed9f18e3c
       version: -1
       name: malicious Domain
+      description: Title - Malicious result
       type: title
       iscommand: false
       brand: ""
@@ -389,7 +397,7 @@ tasks:
       version: -1
       name: check-last-scan-date
       description: check last scan date
-      script: CriminalIP|||check-last-scan-date
+      script: CriminalIP|||criminal-ip-check-last-scan-date
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -423,6 +431,7 @@ tasks:
       id: cdf54664-bdaf-440b-870d-5d7ae82a907d
       version: -1
       name: Check_last_scan_data_to_full_scan
+      description: Decide whether to run Full Scan by last scan date
       type: condition
       iscommand: false
       brand: ""
@@ -467,7 +476,7 @@ tasks:
       version: -1
       name: domain-full-scan
       description: domain full scan
-      script: CriminalIP|||domain-full-scan
+      script: CriminalIP|||criminal-ip-domain-full-scan
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -503,12 +512,12 @@ tasks:
       name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        This playbook implements polling by continuously running the command in Step #2 until the operation completes.
         The remote action should have the following structure:
 
         1. Initiate the operation.
         2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+        3. (optional) Get the results of the operation).
 
         NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
       playbookName: GenericPolling
@@ -561,7 +570,7 @@ tasks:
       version: -1
       name: domain-full-scan-result
       description: domain full scan result
-      script: CriminalIP|||domain-full-scan-result
+      script: CriminalIP|||criminal-ip-domain-full-scan-result
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -596,7 +605,7 @@ tasks:
       version: -1
       name: domain-full-scan-result
       description: domain full scan result
-      script: CriminalIP|||domain-full-scan-result
+      script: CriminalIP|||criminal-ip-domain-full-scan-result
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -630,6 +639,7 @@ tasks:
       id: d827c61a-1391-4fa1-8391-d5d52e880c36
       version: -1
       name: CheckMalDomainFull
+      description: Decide by Full Scan result
       type: condition
       iscommand: false
       brand: ""
@@ -691,14 +701,7 @@ tasks:
       name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-
-        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+        This playbook implements polling by continuously running the command in Step #2 until the operation completes.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -749,7 +752,7 @@ tasks:
       version: -1
       name: domain-lite-scan-result
       description: domain lite scan result
-      script: CriminalIP|||domain-lite-scan-result
+      script: CriminalIP|||criminal-ip-domain-lite-scan-result
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -784,7 +787,7 @@ tasks:
       version: -1
       name: domain-full-scan-make-email-body
       description: domain full scan result to email content
-      script: CriminalIP|||domain-full-scan-make-email-body
+      script: CriminalIP|||criminal-ip-domain-full-scan-make-email-body
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -821,7 +824,7 @@ tasks:
       version: -1
       name: domain-full-scan-make-email-body
       description: domain full scan result to email content
-      script: CriminalIP|||domain-full-scan-make-email-body
+      script: CriminalIP|||criminal-ip-domain-full-scan-make-email-body
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -858,10 +861,10 @@ tasks:
       version: -1
       name: send-mail
       description: Send an email
-      script: mail-sender|||send-mail
+      script: send-mail
       type: regular
       iscommand: true
-      brand: mail-sender
+      brand: Builtin
     nexttasks:
       '#none#':
       - "46"
@@ -894,6 +897,7 @@ tasks:
       id: ab75ea60-7998-431f-bd7c-6eb134f9f538
       version: -1
       name: Check exist email body
+      description: Check if email body exists
       type: condition
       iscommand: false
       brand: ""
@@ -1024,14 +1028,6 @@ inputs:
   required: true
   description: Domain to determine whether it is malicious or not
   playbookInputQuery: null
-inputSections:
-- inputs:
-  - Domain
-  name: General (Inputs group)
-  description: Generic group for inputs
-outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
 outputs: []
-dirtyInputs: true
+tests:
+- CriminalIP_TestPlaybook

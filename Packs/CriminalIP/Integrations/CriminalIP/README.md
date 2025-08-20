@@ -1,16 +1,20 @@
 Makes API requests to Criminal IP and performs additional operations through the API.
 Users can directly receive API results or perform additional operations
 
+### API Version Tested
+This integration was tested against **Criminal IP Public REST API v1** (base URL: `https://api.criminalip.io`, endpoints under `/v1/*`).  
+Last validated: **2025-08-20**.
+
 ## Configure Aws Secrets Manager in Cortex
 
-
-| **Parameter**                      | **Description**                                                                                                                                                            | **Required** |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| API Key                            | This is your Criminal IP API key.<br/>You can check the API Key on the My Page after signing up on the [Criminal IP website](https://www.criminalip.io/).   | True         |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key | This is your Criminal IP API key.<br/>You can check the API Key on the My Page after signing up on the [Criminal IP website](https://www.criminalip.io/). | True |
 
 ## Commands
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details or you can check it in the Context.
+
 
 ### ip-report
 

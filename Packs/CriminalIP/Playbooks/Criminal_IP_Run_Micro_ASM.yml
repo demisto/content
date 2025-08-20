@@ -1,9 +1,9 @@
-id: bb840324-e5fa-4b98-8016-6613824507cc
-version: 25
-vcShouldKeepItemLegacyProdMachine: false
-name: Criminal IP Run Micro ASM
+id: CriminalIPRunMicroASM
+version: -1
+fromversion: 6.0.0
+name: CriminalIPRunMicroASM
 description: |-
-  For a single domain, we perform a 'domain-full-scan' and once the scan is complete, we execute 'micro-asm'.
+  For a single domain, we perform a 'criminal-ip-domain-full-scan' and once the scan is complete, we execute 'criminal-ip-micro-asm'.
   You can find the 'micro-asm' results in the context.
   Also, this playbook is for the 'Criminal IP Micro ASM' playbook. For more details, please refer to the 'Criminal IP Micro ASM' playbook.
 starttaskid: "0"
@@ -15,7 +15,8 @@ tasks:
     task:
       id: 4239260e-705a-4374-85b6-b1d2c6e1d06b
       version: -1
-      name: ""
+      name: Start
+      description: Initializes the playbook and validates prerequisites.
       iscommand: false
       brand: ""
     nexttasks:
@@ -44,9 +45,9 @@ tasks:
     task:
       id: 90b6d334-3476-45fc-ad74-05989a36887e
       version: -1
-      name: domain-full-scan
-      description: domain full scan
-      script: CriminalIP|||domain-full-scan
+      name: criminal-ip-domain-full-scan
+      description: Runs a full domain scan in Criminal IP.
+      script: CriminalIP|||criminal-ip-domain-full-scan
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -82,7 +83,7 @@ tasks:
       name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        This playbook implements polling by continuously running the command in Step #2 until the operation completes.
         The remote action should have the following structure:
 
         1. Initiate the operation.
@@ -100,8 +101,8 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ${CriminalIP.Full_Scan.data
-          accessor: scan_id}
+          root: CriminalIP.Full_Scan.data
+          accessor: scan_id
           transformers:
           - operator: LastArrayElement
       Interval:
@@ -109,7 +110,7 @@ tasks:
       PollingCommandArgName:
         simple: scan_id
       PollingCommandName:
-        simple: domain-full-scan-status
+        simple: criminal-ip-domain-full-scan-status
       Timeout:
         simple: "10"
       dt:
@@ -142,9 +143,9 @@ tasks:
     task:
       id: a65124e3-8e74-49b0-b116-575412936205
       version: -1
-      name: micro-asm
-      description: The microASM is performed using the Scan_id and Domain.
-      script: CriminalIP|||micro-asm
+      name: criminal-ip-micro-asm
+      description: Runs Micro ASM using the scan_id and domain.
+      script: CriminalIP|||criminal-ip-micro-asm
       type: regular
       iscommand: true
       brand: CriminalIP
@@ -156,8 +157,8 @@ tasks:
         simple: ${inputs.Domain}
       scan_id:
         complex:
-          root: ${CriminalIP.Full_Scan.data
-          accessor: scan_id}
+          root: CriminalIP.Full_Scan.data
+          accessor: scan_id
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -184,6 +185,7 @@ tasks:
       id: d5fec2b5-08d9-42c4-8e30-66b5ce0afcd0
       version: -1
       name: Done
+      description: Playbook completed successfully.
       type: title
       iscommand: false
       brand: ""
@@ -219,16 +221,8 @@ inputs:
 - key: Domain
   value: {}
   required: true
-  description: A single domain for performing 'micro-asm'
+  description: A single domain for performing 'micro-asm'.
   playbookInputQuery: null
-inputSections:
-- inputs:
-  - Domain
-  name: General (Inputs group)
-  description: Generic group for inputs
-outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
 outputs: []
-dirtyInputs: true
+tests:
+- CriminalIP_TestPlaybook

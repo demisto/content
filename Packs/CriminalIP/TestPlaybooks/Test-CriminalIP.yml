@@ -1,0 +1,75 @@
+id: Test-CriminalIP
+version: -1
+fromversion: 6.0.0
+name: Test-CriminalIP
+description: >
+  Test playbook for the CriminalIP integration.
+  This playbook runs a sample IP report command to verify the integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 11111111-1111-1111-1111-111111111111
+    type: start
+    task:
+      id: 11111111-1111-1111-1111-111111111111
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |
+      {
+        "position": {
+          "x": 250,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 22222222-2222-2222-2222-222222222222
+    type: regular
+    task:
+      id: 22222222-2222-2222-2222-222222222222
+      version: -1
+      name: Get IP Report
+      description: Test calling the CriminalIP integration to get an IP report.
+      script: CriminalIP|||criminal-ip-get-ip-report
+      type: regular
+      iscommand: true
+      brand: CriminalIP
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |
+      {
+        "position": {
+          "x": 250,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 33333333-3333-3333-3333-333333333333
+    type: title
+    task:
+      id: 33333333-3333-3333-3333-333333333333
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    view: |
+      {
+        "position": {
+          "x": 250,
+          "y": 350
+        }
+      }

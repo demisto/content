@@ -1,7 +1,7 @@
 {
     "name": "Criminal IP",
     "description": "Criminal IP integration with Palo Alto Xsoar provides AI and OSINT-powered cyber threat intelligence for IP and domain analysis, along with comprehensive attack surface management capabilities.",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Criminal IP",
     "url": "https://www.criminalip.io/",

@@ -1,7 +1,7 @@
-id: 2a264092-558b-4e1f-8e07-eb832eb6c855
-version: 36
-vcShouldKeepItemLegacyProdMachine: false
-name: Criminal IP Micro ASM
+id: CriminalIPMicroASM
+version: -1
+fromversion: 6.0.0
+name: CriminalIPMicroASM
 description: |-
   This playbook takes domains as a List argument and executes the sub-playbook 'Criminal IP Run Micro ASM' for each domain in the List, then delivers the 'micro-asm' results to the user via email.
   Therefore, the user must set up the relevant arguments for the #4 send-mail command.
@@ -15,7 +15,8 @@ tasks:
     task:
       id: 7cfa5294-9d33-4492-838e-f2beb157e7b7
       version: -1
-      name: ""
+      name: Start
+      description: Initializes the playbook and validates prerequisites.
       iscommand: false
       brand: ""
     nexttasks:
@@ -45,10 +46,7 @@ tasks:
       id: b5125def-262e-4bca-b0eb-0ed9cda4aeea
       version: -1
       name: Criminal IP Run Micro ASM
-      description: |-
-        For a single domain, we perform a 'domain-full-scan' and once the scan is complete, we execute 'micro-asm'.
-        You can find the 'micro-asm' results in the context.
-        Also, this playbook is for the 'Criminal IP Micro ASM' playbook. For more details, please refer to the 'Criminal IP Micro ASM' playbook.
+      description: Executes the 'Criminal IP Run Micro ASM' playbook for each given domain.
       playbookName: Criminal IP Run Micro ASM
       type: playbook
       iscommand: false
@@ -89,7 +87,7 @@ tasks:
       id: cf115d01-8a9a-4d9e-9050-42bee52bc6c4
       version: -1
       name: Set
-      description: Set a value in context under the key you entered.
+      description: Sets the Domains context key from the playbook input.
       scriptName: Set
       type: regular
       iscommand: false
@@ -126,7 +124,7 @@ tasks:
       id: a5e5aa38-ca32-4dd9-b794-98b95a144643
       version: -1
       name: send-mail
-      description: Send an email
+      description: Sends the Micro ASM results via email.
       script: mail-sender|||send-mail
       type: regular
       iscommand: true
@@ -165,6 +163,7 @@ tasks:
       id: 7425fc60-ea8c-45e8-a418-447b12d27c20
       version: -1
       name: Mail Body Check
+      description: Checks if the Micro ASM result body is empty before sending.
       type: condition
       iscommand: false
       brand: ""
@@ -180,8 +179,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: ${subplaybook-1.CriminalIP.Micro_ASM(val.result.indexOf('=')
-                >=0)=val.result}
+              simple: ${subplaybook-1.CriminalIP.Micro_ASM(val.result.indexOf('=') >=0)=val.result}
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -206,6 +204,7 @@ tasks:
       id: f097c788-3844-4384-8ec9-cd5ac7a1fce5
       version: -1
       name: Done
+      description: Playbook completed successfully.
       type: title
       iscommand: false
       brand: ""
@@ -244,17 +243,8 @@ inputs:
 - key: Domains
   value: {}
   required: true
-  description: "A list of domains that require Micro ASM analysis. This must be provided as a list-type input.\n\nex)\n[\n\"www.example.com\",
-    \n\"www.criminalip.io\"\n]"
+  description: "A list of domains that require Micro ASM analysis. This must be provided as a list-type input.\n\nex)\n[\n\"www.example.com\",\n\"www.criminalip.io\"\n]"
   playbookInputQuery: null
-inputSections:
-- inputs:
-  - Domains
-  name: General (Inputs group)
-  description: Generic group for inputs
-outputSections:
-- outputs: []
-  name: General (Outputs group)
-  description: Generic group for outputs
 outputs: []
-dirtyInputs: true
+tests:
+  - CriminalIP_TestPlaybook
