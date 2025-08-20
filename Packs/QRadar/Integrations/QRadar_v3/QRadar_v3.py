@@ -6,6 +6,10 @@ from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
 from deepmerge import always_merger
+import json
+import time
+import traceback
+from datetime import datetime, timedelta
 
 
 import pytz
@@ -38,6 +42,7 @@ MAX_SAMPLE_SIZE_MB = 3  # maximum size in MB for incidents to be stored as sampl
 MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024  # convert MB to bytes
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
+IN_PROGRESS_TTL_MIN = 15  # cancel and resubmit searches older than this (minutes)
 
 EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
@@ -64,6 +69,7 @@ ADVANCED_PARAMETER_INT_NAMES = [
     "SLEEP_FETCH_EVENT_RETRIES",
     "DEFAULT_EVENTS_TIMEOUT",
     "PROFILING_DUMP_ROWS_LIMIT",
+    "IN_PROGRESS_TTL_MIN",
 ]
 
 """ CONSTANTS """
@@ -84,6 +90,7 @@ MIRROR_DIRECTION: dict[str, Optional[str]] = {"No Mirroring": None, "Mirror Offe
 MIRRORED_OFFENSES_QUERIED_CTX_KEY = "mirrored_offenses_queried"
 MIRRORED_OFFENSES_FINISHED_CTX_KEY = "mirrored_offenses_finished"
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = "mirrored_offenses_fetched"
+MIRRORED_OFFENSES_META_CTX_KEY = "mirrored_offenses_meta"  # stores per-offense meta: cid, created_ms, updated_ms, etc.
 
 LAST_MIRROR_KEY = "last_mirror_update"
 LAST_MIRROR_CLOSED_KEY = "last_mirror_closed_update"
@@ -1111,20 +1118,53 @@ def get_remote_events(
     offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     offenses_fetched = context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {})
+    offenses_meta = context_data.get(MIRRORED_OFFENSES_META_CTX_KEY, {})
+    meta = get_or_init_offense_meta(offenses_meta, offense_id, prefix="grd")
 
     events: list[dict] = []
     status = QueryStatus.ERROR.value
     if offenses_queried.get(offense_id) == QueryStatus.ERROR.value:
+        update_offense_meta(offenses_meta, offense_id, {"last_status": "ERROR_MARKER"})
+        partial_changes = {MIRRORED_OFFENSES_META_CTX_KEY: offenses_meta}
+        safely_update_context_data_partial(partial_changes)
         return events, QueryStatus.ERROR.value
     if offense_id not in offenses_finished or offenses_queried.get(offense_id, "") in {
         QueryStatus.WAIT.value,
         QueryStatus.ERROR.value,
     }:
-        # if our offense not in the finished list, we will create a new search
-        # the value will be error because we don't want to wait until the search is complete
-        search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
-        offenses_queried[offense_id] = search_id
-        changed_ids_ctx.append(offense_id)
+        # if our offense not in the finished list, we may create a new search
+        current_concurrent = get_current_concurrent_searches(context_data)
+        if current_concurrent >= MAX_SEARCHES_QUEUE:
+            print_debug_msg(
+                f"[cid={meta.get('cid')}] Capacity reached ({current_concurrent}/{MAX_SEARCHES_QUEUE}). Deferring offense {offense_id}."
+            )
+            offenses_queried[offense_id] = QueryStatus.WAIT.value
+            update_offense_meta(offenses_meta, offense_id, {"last_status": "DEFERRED_CAPACITY", "current": current_concurrent})
+        else:
+            holder = f"grd-{uuid.uuid4().hex[:6]}"
+            if not acquire_submission_lock(holder):
+                print_debug_msg(f"[cid={meta.get('cid')}] Could not acquire submission lock. Deferring {offense_id}.")
+                offenses_queried[offense_id] = QueryStatus.WAIT.value
+                update_offense_meta(offenses_meta, offense_id, {"last_status": "DEFERRED_LOCK"})
+            else:
+                try:
+                    # Recompute concurrency under lock (fresh context)
+                    fresh_ctx, _ = get_integration_context_with_version()
+                    current_concurrent = get_current_concurrent_searches(fresh_ctx)
+                    if current_concurrent >= MAX_SEARCHES_QUEUE:
+                        offenses_queried[offense_id] = QueryStatus.WAIT.value
+                        update_offense_meta(
+                            offenses_meta, offense_id, {"last_status": "DEFERRED_CAPACITY", "current": current_concurrent}
+                        )
+                    else:
+                        search_id = create_events_search(
+                            client, fetch_mode, events_columns, events_limit, int(offense_id)
+                        )
+                        offenses_queried[offense_id] = search_id
+                        changed_ids_ctx.append(offense_id)
+                        update_offense_meta(offenses_meta, offense_id, {"last_status": "SUBMITTED", "search_id": search_id})
+                finally:
+                    release_submission_lock(holder)
     elif offense_id in offenses_finished:  # if our offense is in finished list, we will get the result
         search_id = offenses_finished[offense_id]
         try:
@@ -1133,6 +1173,7 @@ def get_remote_events(
             del offenses_finished[offense_id]
             changed_ids_ctx.append(offense_id)
             status = QueryStatus.SUCCESS.value
+            update_offense_meta(offenses_meta, offense_id, {"last_status": "RESULTS_RETRIEVED", "search_id": search_id})
         except Exception as e:
             # getting results failed, move back to queried queue to be queried again
             del offenses_finished[offense_id]
@@ -1141,6 +1182,7 @@ def get_remote_events(
             status = QueryStatus.ERROR.value
             print_debug_msg(f"No results for {offense_id}. Error: {e}. Stopping execution")
             time.sleep(FAILURE_SLEEP)
+            update_offense_meta(offenses_meta, offense_id, {"last_status": "RESULTS_ERROR", "error": str(e)})
 
     elif offense_id in offenses_queried:
         search_id = offenses_queried[offense_id]
@@ -1148,6 +1190,11 @@ def get_remote_events(
         if status == QueryStatus.SUCCESS.value:
             del offenses_queried[offense_id]
             changed_ids_ctx.append(offense_id)
+            update_offense_meta(offenses_meta, offense_id, {"last_status": "POLL_SUCCESS", "search_id": search_id})
+        elif status == QueryStatus.ERROR.value:
+            update_offense_meta(offenses_meta, offense_id, {"last_status": "POLL_ERROR", "search_id": search_id})
+        else:
+            update_offense_meta(offenses_meta, offense_id, {"last_status": "POLL_WAIT", "search_id": search_id})
 
     if status == QueryStatus.SUCCESS.value:
         offenses_fetched[offense_id] = get_num_events(events)
@@ -1156,6 +1203,7 @@ def get_remote_events(
         MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried,
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished,
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched,
+        MIRRORED_OFFENSES_META_CTX_KEY: offenses_meta,
     }
 
     safely_update_context_data_partial(partial_changes)
@@ -1239,7 +1287,18 @@ def safely_update_context_data_partial(changes: dict, attempts=5) -> None:
         deep_merge_context_changes(merged, changes)
 
         try:
-            demisto.debug(f"Merging partial data to context {merged}")
+            # Avoid logging entire context to prevent huge logs and timeouts
+            changed_keys = list(changes.keys())
+            ctx_sizes = {
+                "queried": len(merged.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})),
+                "finished": len(merged.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})),
+                "fetched": len(merged.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {})),
+                "meta": len(merged.get(MIRRORED_OFFENSES_META_CTX_KEY, {})),
+                "samples": len(merged.get("samples", [])),
+            }
+            demisto.debug(
+                f"QRadarMsg - Safely merging context. keys={changed_keys} sizes={ctx_sizes} version={version}"
+            )
             set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
@@ -2062,6 +2121,118 @@ def print_debug_msg(msg: str):
     demisto.debug(f"QRadarMsg - {msg}")
 
 
+def now_ms() -> int:
+    """Current epoch milliseconds."""
+    return int(time.time() * 1000)
+
+
+def get_or_init_offense_meta(meta_map: dict, offense_id: str, prefix: str = "off") -> dict:
+    """Ensure meta object exists for offense and has a correlation id and created_ms."""
+    meta = meta_map.get(offense_id) or {}
+    if "cid" not in meta:
+        meta["cid"] = f"{prefix}-{uuid.uuid4().hex[:8]}"
+    if "created_ms" not in meta:
+        meta["created_ms"] = now_ms()
+    meta_map[offense_id] = meta
+    return meta
+
+
+def update_offense_meta(meta_map: dict, offense_id: str, updates: dict) -> None:
+    """Shallow-update per-offense meta and set updated_ms."""
+    meta = meta_map.get(offense_id) or {}
+    meta.update(updates)
+    meta["updated_ms"] = now_ms()
+    meta_map[offense_id] = meta
+
+
+def cleanup_stale_in_progress(client: "Client", context_data: dict, ttl_min: int | None = None) -> tuple[dict, dict, int]:
+    """
+    Cancel and reset stale in-progress searches that exceeded TTL.
+    Returns (updated_queried_dict, updated_meta_dict, canceled_count)
+    """
+    ttl_min = ttl_min if ttl_min is not None else IN_PROGRESS_TTL_MIN
+    ttl_ms = ttl_min * 60 * 1000
+    queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {}) or {}
+    meta_map = context_data.get(MIRRORED_OFFENSES_META_CTX_KEY, {}) or {}
+
+    canceled = 0
+    now = now_ms()
+
+    # Build list of active (search_id) entries
+    status_values = {qs.value for qs in QueryStatus}
+    active = [
+        (off_id, search_id)
+        for off_id, search_id in queried.items()
+        if search_id not in status_values
+    ]
+
+    # Sort by created time to prefer canceling the oldest first
+    def created_for(off_id: str) -> int:
+        m = meta_map.get(off_id) or {}
+        return int(m.get("created_ms", m.get("updated_ms", 0)))
+
+    active.sort(key=lambda t: created_for(t[0]))
+
+    for off_id, search_id in active:
+        m = get_or_init_offense_meta(meta_map, off_id, prefix="ev")
+        created_ts = int(m.get("created_ms", m.get("updated_ms", now)))
+        if now - created_ts >= ttl_ms:
+            try:
+                print_debug_msg(f"TTL cleanup: canceling stale search {search_id} for offense {off_id} (cid={m.get('cid')})")
+                client.search_cancel(search_id=search_id)
+            except Exception as e:
+                print_debug_msg(f"TTL cleanup: failed to cancel search {search_id} for offense {off_id}: {e}")
+            queried[off_id] = QueryStatus.ERROR.value
+            update_offense_meta(
+                meta_map,
+                off_id,
+                {
+                    "last_status": "CANCELED_TTL",
+                    "last_error": "ttl_exceeded",
+                    "canceled_search_id": search_id,
+                },
+            )
+            canceled += 1
+
+    return queried, meta_map, canceled
+
+
+def acquire_submission_lock(holder: str, ttl_ms: int = 30_000, attempts: int = 5) -> bool:
+    """Attempt to acquire a short-lived submission lock in context to serialize new search submissions."""
+    for _ in range(attempts):
+        ctx, version = get_integration_context_with_version()
+        lock = ctx.get("submission_lock") or {}
+        now = now_ms()
+        if lock and int(lock.get("expires_ms", 0)) > now and lock.get("holder") not in (None, holder):
+            time.sleep(0.2)
+            continue
+        # acquire
+        lock = {"holder": holder, "expires_ms": now + ttl_ms}
+        ctx["submission_lock"] = lock
+        try:
+            set_integration_context(ctx, version=version)
+            return True
+        except Exception:
+            time.sleep(0.1)
+    return False
+
+
+def release_submission_lock(holder: str) -> None:
+    """Release the submission lock if held by this holder or expired."""
+    for _ in range(3):
+        ctx, version = get_integration_context_with_version()
+        lock = ctx.get("submission_lock") or {}
+        now = now_ms()
+        if not lock or lock.get("holder") == holder or int(lock.get("expires_ms", 0)) <= now:
+            ctx.pop("submission_lock", None)
+            try:
+                set_integration_context(ctx, version=version)
+                return
+            except Exception:
+                time.sleep(0.05)
+        else:
+            return
+
 def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
     """
     Checks if reset of the integration context has been made by the user.
@@ -2083,6 +2254,7 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
         ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = {}
         ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = {}
         ctx["samples"] = []
+        ctx[MIRRORED_OFFENSES_META_CTX_KEY] = {}
 
         partial_changes = {
             # Explicitly remove RESET_KEY by setting it to None (will be handled by merge logic)
@@ -2090,6 +2262,7 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
             "samples": ctx["samples"],
+            MIRRORED_OFFENSES_META_CTX_KEY: ctx[MIRRORED_OFFENSES_META_CTX_KEY],
         }
 
         safely_update_context_data_partial(partial_changes)
@@ -2476,8 +2649,9 @@ def get_current_concurrent_searches(context_data: dict) -> int:
         int: number of concurrent searches
     """
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
-    # we need offenses which we have a search_id for it in QRadar
-    return len([offense_id for offense_id, status in waiting_for_update.items() if status not in list(QueryStatus)])
+    # Count only entries with an actual search_id (exclude WAIT/ERROR/SUCCESS/PARTIAL markers)
+    status_values = {qs.value for qs in QueryStatus}
+    return len([offense_id for offense_id, status in waiting_for_update.items() if status not in status_values])
 
 
 def delete_offense_from_context(offense_id: str):
@@ -2682,8 +2856,16 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 
     finished_queries = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
-    print_debug_msg(f"{finished_queries=}")
-    print_debug_msg(f"{waiting_for_update=}")
+    # Avoid printing entire dicts; summarize
+    finished_ids = list(finished_queries.keys())
+    queried_ids = list(waiting_for_update.keys())
+    print_debug_msg(
+        f"Context Stats ({stage}): finished_count={len(finished_ids)}, queried_count={len(queried_ids)}, "
+        f"concurrent={get_current_concurrent_searches(context_data)}"
+    )
+    # Show small samples of IDs for quick troubleshooting
+    print_debug_msg(f"finished_ids_sample={finished_ids[:10]}")
+    print_debug_msg(f"queried_ids_sample={queried_ids[:10]}")
     last_fetch_key = context_data.get(LAST_FETCH_KEY, "Missing")
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
     last_mirror_update_closed = context_data.get(LAST_MIRROR_CLOSED_KEY, 0)
@@ -2695,14 +2877,10 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     not_updated_ids = list(waiting_for_update)
     finished_queries_ids = list(finished_queries)
     print_debug_msg(
-        f"Context Data Stats: {stage}\n Finished Offenses (id): {finished_queries_ids}"
-        f"\n Offenses ids waiting for update: {not_updated_ids}"
-        f"\n Concurrent mirroring events searches: {concurrent_mirroring_searches}"
-        f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
-        f"Last mirror update closed: {last_mirror_update_closed}, "
-        f"sample length {sample_length}"
+        f"Context Data Stats: {stage} finished_ids_count={len(finished_queries_ids)} "
+        f"waiting_ids_count={len(not_updated_ids)} samples_count={len(samples)} sample_item_len={sample_length}"
     )
-    return set(not_updated_ids + finished_queries_ids)
+    return set(waiting_for_update)
 
 
 def perform_long_running_loop(
@@ -2839,10 +3017,37 @@ def long_running_execution_command(client: Client, params: dict):
     context_data, version = get_integration_context_with_version()
     is_reset_triggered(context_data, version)
     recover_from_last_run(context_data, version)
+    # Aggressive cleanup on startup if ballooned
+    try:
+        active = get_current_concurrent_searches(context_data)
+        if active > 100:
+            print_debug_msg(
+                f"Aggressive cleanup: detected {active} active in-progress searches (>100). Canceling all active to recover."
+            )
+            new_q, new_meta, canceled = cleanup_stale_in_progress(client, context_data, ttl_min=0)
+            if canceled:
+                safely_update_context_data_partial(
+                    {MIRRORED_OFFENSES_QUERIED_CTX_KEY: new_q, MIRRORED_OFFENSES_META_CTX_KEY: new_meta}
+                )
+                print_debug_msg(f"Aggressive cleanup canceled {canceled} searches on startup")
+    except Exception as e:
+        demisto.debug(f"Aggressive cleanup check failed: {e}")
     long_running_container_id = str(uuid.uuid4())
     print_debug_msg(f"Starting container with UUID: {long_running_container_id}")
     while True:
         try:
+            # Periodic TTL cleanup job each loop
+            try:
+                loop_ctx, _ = get_integration_context_with_version()
+                new_q, new_meta, canceled = cleanup_stale_in_progress(client, loop_ctx, ttl_min=IN_PROGRESS_TTL_MIN)
+                if canceled:
+                    safely_update_context_data_partial(
+                        {MIRRORED_OFFENSES_QUERIED_CTX_KEY: new_q, MIRRORED_OFFENSES_META_CTX_KEY: new_meta}
+                    )
+                    print_debug_msg(f"Periodic TTL cleanup canceled {canceled} stale searches")
+            except Exception as e:
+                demisto.debug(f"TTL cleanup job error: {e}")
+
             perform_long_running_loop(
                 client=client,
                 offenses_per_fetch=offenses_per_fetch,
@@ -4307,12 +4512,20 @@ def add_modified_remote_offenses(
     # We'll keep local references to the relevant sub-dicts, just as before:
     mirrored_offenses_queries = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     finished_offenses_queue = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
+    offenses_meta = context_data.get(MIRRORED_OFFENSES_META_CTX_KEY, {})
     changed_ids_ctx = []
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         print_context_data_stats(context_data, "Get Modified Remote Data - Before update")
 
-        current_concurrent_searches = get_current_concurrent_searches(context_data)
+        # TTL cleanup for stale in-progress
+        mirrored_offenses_queries, offenses_meta, canceled = cleanup_stale_in_progress(
+            client, {**context_data, MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries, MIRRORED_OFFENSES_META_CTX_KEY: offenses_meta}
+        )
+        if canceled:
+            print_debug_msg(f"TTL cleanup canceled {canceled} stale searches")
+
+        current_concurrent_searches = get_current_concurrent_searches({**context_data, MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         offense_ids_to_search = []
 
         # Move completed queries from 'queried' to 'finished' or mark them 'ERROR'
@@ -4329,6 +4542,7 @@ def add_modified_remote_offenses(
                 print_debug_msg(f"offense {offense_id}, search query {search_id}, status is {status}")
                 mirrored_offenses_queries[offense_id] = QueryStatus.ERROR.value
                 current_concurrent_searches -= 1
+                update_offense_meta(offenses_meta, offense_id, {"last_status": "POLL_ERROR", "search_id": search_id})
 
             elif status == QueryStatus.SUCCESS.value:
                 del mirrored_offenses_queries[offense_id]
@@ -4337,18 +4551,36 @@ def add_modified_remote_offenses(
                 new_modified_records_ids.add(offense_id)
                 changed_ids_ctx.append(offense_id)
                 current_concurrent_searches -= 1
+                update_offense_meta(offenses_meta, offense_id, {"last_status": "POLL_SUCCESS", "search_id": search_id})
             else:
                 print_debug_msg(f"offense {offense_id}, search query {search_id}, status is {status}")
+                update_offense_meta(offenses_meta, offense_id, {"last_status": "POLL_WAIT", "search_id": search_id})
 
         # Create new search for any WAIT/ERROR offense if concurrency limit not reached
-        for offense_id in offense_ids_to_search:
-            if current_concurrent_searches >= MAX_SEARCHES_QUEUE:
+        available_slots = max(0, MAX_SEARCHES_QUEUE - current_concurrent_searches)
+        if available_slots > 0 and offense_ids_to_search:
+            holder = f"mr-{uuid.uuid4().hex[:6]}"
+            if acquire_submission_lock(holder):
+                try:
+                    # Re-evaluate concurrency under lock
+                    fresh_ctx, _ = get_integration_context_with_version()
+                    current_concurrent_searches = get_current_concurrent_searches(fresh_ctx)
+                    available_slots = max(0, MAX_SEARCHES_QUEUE - current_concurrent_searches)
+                    for offense_id in offense_ids_to_search:
+                        if available_slots <= 0:
+                            break
+                        new_search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
+                        mirrored_offenses_queries[offense_id] = new_search_id
+                        changed_ids_ctx.append(offense_id)
+                        update_offense_meta(offenses_meta, offense_id, {"last_status": "SUBMITTED", "search_id": new_search_id})
+                        available_slots -= 1
+                finally:
+                    release_submission_lock(holder)
+            else:
+                print_debug_msg("Could not acquire submission lock. Skipping new submissions this cycle.")
+        else:
+            if offense_ids_to_search:
                 print_debug_msg(f"Reached maximum concurrent searches ({MAX_SEARCHES_QUEUE}), will try again later.")
-                break
-            current_concurrent_searches += 1
-            new_search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
-            mirrored_offenses_queries[offense_id] = new_search_id
-            changed_ids_ctx.append(offense_id)
 
     # Build partial_changes dict with only the keys we want to write
     partial_changes = {
@@ -4360,6 +4592,7 @@ def add_modified_remote_offenses(
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         partial_changes[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = mirrored_offenses_queries
         partial_changes[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
+        partial_changes[MIRRORED_OFFENSES_META_CTX_KEY] = offenses_meta
 
     # Now safely merge these partial changes.
     safely_update_context_data_partial(partial_changes)
@@ -5310,6 +5543,7 @@ def migrate_integration_ctx(ctx: dict) -> dict:
         MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses,
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
+        MIRRORED_OFFENSES_META_CTX_KEY: {},
         "samples": [],
     }
 
@@ -5337,11 +5571,71 @@ def validate_integration_context() -> None:
         safely_update_context_data_partial(cleared_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
-    elif MIRRORED_OFFENSES_FETCHED_CTX_KEY not in context_data:
-        # Scenario: context is fine, but missing the 'mirrored_offenses_fetched' sub-dict.
-        print_debug_msg(f"Adding {MIRRORED_OFFENSES_FETCHED_CTX_KEY} to context")
-        partial_changes: dict = {MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
+    elif MIRRORED_OFFENSES_FETCHED_CTX_KEY not in context_data or MIRRORED_OFFENSES_META_CTX_KEY not in context_data:
+        # Scenario: context is fine, but missing one of the sub-dicts.
+        partial_changes: dict = {}
+        if MIRRORED_OFFENSES_FETCHED_CTX_KEY not in context_data:
+            print_debug_msg(f"Adding {MIRRORED_OFFENSES_FETCHED_CTX_KEY} to context")
+            partial_changes[MIRRORED_OFFENSES_FETCHED_CTX_KEY] = {}
+        if MIRRORED_OFFENSES_META_CTX_KEY not in context_data:
+            print_debug_msg(f"Adding {MIRRORED_OFFENSES_META_CTX_KEY} to context")
+            partial_changes[MIRRORED_OFFENSES_META_CTX_KEY] = {}
         safely_update_context_data_partial(partial_changes)
+
+
+def qradar_debug_snapshot_command(client: Client, args: dict) -> CommandResults:
+    """Return a redacted snapshot of integration context metrics for debugging."""
+    ctx, _ = get_integration_context_with_version()
+    queried = ctx.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {}) or {}
+    finished = ctx.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {}) or {}
+    fetched = ctx.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}) or {}
+    meta = ctx.get(MIRRORED_OFFENSES_META_CTX_KEY, {}) or {}
+    status_values = {qs.value for qs in QueryStatus}
+    in_progress = {k: v for k, v in queried.items() if v not in status_values}
+    waiting = [k for k, v in queried.items() if v in status_values]
+    conc = get_current_concurrent_searches(ctx)
+    # Top 10 oldest in-progress by created_ms
+    def created_ts(oid: str) -> int:
+        m = meta.get(oid) or {}
+        return int(m.get("created_ms", m.get("updated_ms", 0)))
+
+    oldest = sorted(in_progress.keys(), key=created_ts)[:10]
+    rows = []
+    for oid in oldest:
+        m = meta.get(oid) or {}
+        age_ms = max(0, now_ms() - created_ts(oid))
+        rows.append(
+            {
+                "offense_id": oid,
+                "cid": m.get("cid"),
+                "last_status": m.get("last_status"),
+                "created_ms": m.get("created_ms"),
+                "updated_ms": m.get("updated_ms"),
+                "age_sec": int(age_ms / 1000),
+            }
+        )
+
+    summary = {
+        "queried_count": len(queried),
+        "finished_count": len(finished),
+        "fetched_count": len(fetched),
+        "meta_count": len(meta),
+        "in_progress_count": len(in_progress),
+        "waiting_markers_count": len(waiting),
+        "concurrent_active": conc,
+        "samples_count": len(ctx.get("samples", [])),
+    }
+    readable = tableToMarkdown(
+        "QRadar Debug Snapshot",
+        rows or [{"offense_id": "-", "cid": "-", "last_status": "-", "created_ms": "-", "updated_ms": "-", "age_sec": 0}],
+        headers=["offense_id", "cid", "last_status", "created_ms", "updated_ms", "age_sec"],
+        removeNull=True,
+    )
+    readable += "\n\n" + tableToMarkdown("Summary", [summary], removeNull=True)
+    return CommandResults(readable_output=readable, outputs_prefix="QRadar.Debug", outputs={"snapshot": summary, "oldest": rows})
+
+
+ 
 
 
 """ MAIN FUNCTION """
@@ -5405,6 +5699,11 @@ def main() -> None:  # pragma: no cover
             validate_integration_context()
             support_multithreading()
             long_running_execution_command(client, params)
+
+        elif command in ["qradar-debug-snapshot", "qradar_debug_snapshot"]:
+            return_results(qradar_debug_snapshot_command(client, args))
+
+        
 
         elif command in [
             "qradar-offenses-list",

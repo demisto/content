@@ -1447,6 +1447,31 @@ script:
       name: lastUpdate
     description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
     name: get-modified-remote-data
+
+  - name: qradar-debug-snapshot
+    description: Returns a redacted snapshot of integration context metrics (queued, in-progress, finished, meta sizes, concurrent active, samples count) and the top 10 oldest in-progress searches with correlation IDs.
+    outputs:
+    - contextPath: QRadar.Debug.snapshot
+      description: Summary metrics of current mirroring state.
+      type: Unknown
+    - contextPath: QRadar.Debug.oldest.offense_id
+      description: Offense ID for an old in-progress search.
+      type: String
+    - contextPath: QRadar.Debug.oldest.cid
+      description: Correlation ID associated with the offense.
+      type: String
+    - contextPath: QRadar.Debug.oldest.last_status
+      description: Last status breadcrumb recorded for the offense.
+      type: String
+    - contextPath: QRadar.Debug.oldest.created_ms
+      description: Creation timestamp of the in-progress search in epoch milliseconds.
+      type: Number
+    - contextPath: QRadar.Debug.oldest.updated_ms
+      description: Last update timestamp of the in-progress search in epoch milliseconds.
+      type: Number
+    - contextPath: QRadar.Debug.oldest.age_sec
+      description: Age of the in-progress search in seconds.
+      type: Number
 #    Deprecated commands, to support backward compatibility for QRadar v2.
   - arguments:
     - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
