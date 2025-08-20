@@ -327,6 +327,15 @@ CS_FALCON_DETECTION_INCOMING_ARGS = [
     "composite_id",
     "display_name",
     "tags",
+    "comments",
+    "assigned_to_uid"
+]
+CS_FALCON_DETECTION_INCOMING_ARGS_IDP = [
+    "status",
+    "id",
+    "tags",
+    "comments",
+    "assigned_to_uid"
 ]
 CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "state",
@@ -2644,7 +2653,7 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     if "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
-        mirroring_fields.append("id")
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
     if "mobile" in mirrored_data["product"]:
         updated_object = {"incident_type": MOBILE_DETECTION}
         detection_type = "Mobile"
