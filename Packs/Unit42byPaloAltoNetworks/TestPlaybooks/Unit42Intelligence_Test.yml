@@ -1,0 +1,204 @@
+id: Unit 42 Intelligence Test
+version: -1
+name: Unit 42 Intelligence Test
+description: Test playbook for Unit 42 Intelligence integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3a4b5c6d-7e8f-9012-3456-789012345678
+    type: start
+    task:
+      id: 3a4b5c6d-7e8f-9012-3456-789012345678
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4b5c6d7e-8f90-1234-5678-901234567890
+    type: regular
+    task:
+      id: 4b5c6d7e-8f90-1234-5678-901234567890
+      version: -1
+      name: Test IP enrichment
+      description: Test IP enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5c6d7e8f-9012-3456-7890-123456789012
+    type: regular
+    task:
+      id: 5c6d7e8f-9012-3456-7890-123456789012
+      version: -1
+      name: Test Domain enrichment
+      description: Test Domain enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||domain
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6d7e8f90-1234-5678-9012-345678901234
+    type: regular
+    task:
+      id: 6d7e8f90-1234-5678-9012-345678901234
+      version: -1
+      name: Test URL enrichment
+      description: Test URL enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      url:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7e8f9012-3456-7890-1234-567890123456
+    type: regular
+    task:
+      id: 7e8f9012-3456-7890-1234-567890123456
+      version: -1
+      name: Test File enrichment
+      description: Test File enrichment with Unit 42 Intelligence
+      script: Unit 42 Intelligence|||file
+      type: regular
+      iscommand: true
+      brand: Unit 42 Intelligence
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: d41d8cd98f00b204e9800998ecf8427e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8f901234-5678-9012-3456-789012345678
+    type: title
+    task:
+      id: 8f901234-5678-9012-3456-789012345678
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 790,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
