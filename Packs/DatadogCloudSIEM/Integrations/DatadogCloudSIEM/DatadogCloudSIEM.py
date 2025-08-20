@@ -1425,15 +1425,19 @@ def logs_search_command(configuration: Configuration, args: dict[str, Any]) -> C
             from_date_str = from_date.isoformat() if from_date else None
             to_date_str = to_date.isoformat() if to_date else None
 
-            # Execute the search using direct parameters instead of body
-            response = api_instance.list_logs(
-                filter_query=search_query,
-                filter_from=from_date_str,
-                filter_to=to_date_str,
+            # Execute the search using body with LogsListRequest
+            body = LogsListRequest(
+                filter=LogsQueryFilter(
+                    query=search_query,
+                    _from=from_date_str,
+                    to=to_date_str,
+                ),
+                page=LogsListRequestPage(
+                    limit=limit,
+                ),
                 sort=sort_data[sort],
-                page_cursor="",
-                page_limit=limit,
             )
+            response = api_instance.list_logs(body=body)
             results = response.to_dict()
             data = results.get("data", [])
             data = [convert_datetime_to_str(log) for log in data]
