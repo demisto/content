@@ -11,7 +11,6 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
 - **Pagination Support**: Automatically fetches additional pages of incidents if the result size equals the `max_fetch` parameter.
 - **Insights & Enrichment**: Include related context such as associated users, endpoints, and threat intelligence.
 
-
 ## Prerequisites
 
 - A valid Check Point XDR account with API access enabled.
@@ -43,7 +42,7 @@ The Check Point XDR (Extended Detection and Response) integration allows you to 
     | Max fetch             | Maximum number of incidents to fetch per API call (default recommended: 50-100)              |
     | Fetch incidents       | Enable to allow scheduled fetching of incidents                                               |
     | Trust any certificate | Disable SSL validation (not recommended for production environments)                          |
-    | Use system proxy      | Use the system proxy defined in Cortex XSOAR settings     
+    | Use system proxy      | Use the system proxy defined in Cortex XSOAR settings
 
 2. **Test the Integration**:
    - Click the "Test" button to verify the connection and configuration.
@@ -82,7 +81,6 @@ This command uses the parameters from the integration instance configuration:
 | incident.insights | string | Associated insights |
 | incident.assets | string | Affected assets |
 | incident.mitre | string | MITRE TTPs |
-
 
 #### Human Readable Output
 
@@ -172,7 +170,7 @@ There is no context output for this command.
 ## Troubleshooting
 
 - **Authentication Errors**: Ensure the Client ID and Access Key are correct and have the necessary permissions.
-- **No Incidents Fetched**: 
+- **No Incidents Fetched**:
 
 1. Verify the date range parameter is long enough (so there are incidents to fetch).
 2. Verify the limit parameter in the integration configuration is higher then 0.
