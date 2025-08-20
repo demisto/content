@@ -324,14 +324,17 @@ def get_proxydome_token() -> str:
 def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
     """
     Handles permission errors responses and exits the script execution.
+
     This function logs permission errors, formats them as Demisto error entries,
     and terminates script execution. It's used when cloud operations fail due to
     insufficient permissions or authentication issues.
+
     Args:
         error_entries (list): List of dictionaries containing error details with the following structure:
             - account_id (str): The cloud account identifier where the error occurred
             - message (str): The permission error message (including the name of the permission)
             - name (str): The RAW name of the permission itself that is missing, for example containers.list"
+
     Returns:
         None: This function does not return as it calls sys.exit(0)
     """
@@ -359,13 +362,16 @@ def return_multiple_permissions_error(error_entries: list[Dict]) -> None:
 def create_permissions_error_entry(account_id: Optional[str], message: Optional[str], name: Optional[str]) -> dict:
     """
     Creates a standardized error entry dictionary for permission-related errors.
+
     This function constructs a formatted error entry containing permission error details
     that can be used for logging and error handling in cloud operations. It validates
     input parameters and creates a consistent error structure.
+
     Args:
         account_id (Optional[str]): The cloud account identifier where the error occurred
         message (Optional[str]): The permission error message (including the name of the permission)
         name (Optional[str]): The RAW name of the permission itself that is missing, for example containers.list
+
     Returns:
         dict: A dictionary containing structured error information with keys:
             - account_id: The provided account identifier
