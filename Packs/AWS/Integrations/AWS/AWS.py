@@ -978,7 +978,7 @@ class EC2:
             to_port = args.get("to_port", "")
             cidr = args.get("cidr")
             ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
-
+            remove_nulls_from_dictionary(ip_perms[0])
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
