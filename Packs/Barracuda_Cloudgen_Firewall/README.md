@@ -13,11 +13,7 @@ Data normalization and querying capabilities:
 
 ### Supported log categories
 
-| Category                    | Category Display Name                 |
-|:----------------------------|:--------------------------------------|
-| Category_1 <link_if_exist>  | Category 1                            |
-| Category_2 <link_if_exist>  | Category 2                            |
-
+* Logs from `box/Firewall/Activity` log file. See more information, see [here](https://campus.barracuda.com/product/cloudgenfirewall/doc/170820943/available-log-files-and-structure)
 * This pack only supports syslog in a key=value format.
 
 ### Supported timestamp formats
