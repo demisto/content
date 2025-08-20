@@ -7,7 +7,7 @@ Playbook Stages:
 Triage:
 
 - Get additional event information about the LDAP searches executed by the user
-- Ensure that a single client IP exists g
+- Ensure that a single client IP exists in the alert
 - Get endpoint information for the client IP
 - Check preconditions for continuing investigation based on the number of suspicious attributes, attack tool queries, and vulnerable certificate templates
 
