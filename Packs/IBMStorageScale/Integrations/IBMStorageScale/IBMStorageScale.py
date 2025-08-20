@@ -58,8 +58,8 @@ def store_event_hashes(event_hashes: dict[str, str]) -> None:
     Store event hashes in last run object with timestamp cleanup.
     """
     # Clean up old hashes outside the deduplication window
-    current_time = datetime.utcnow()
-    cutoff_time = (current_time - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)).isoformat() + "Z"
+    current_time = datetime.now(timezone.utc)  # Use timezone-aware datetime
+    cutoff_time = (current_time - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)).isoformat().replace('+00:00', 'Z')
 
     cleaned_hashes = {}
     for hash_val, timestamp in event_hashes.items():
@@ -76,7 +76,6 @@ def store_event_hashes(event_hashes: dict[str, str]) -> None:
     last_run = demisto.getLastRun()
     last_run["event_hashes"] = cleaned_hashes
     demisto.setLastRun(last_run)
-
     demisto.debug(f"Stored {len(cleaned_hashes)} event hashes for deduplication")
 
 
@@ -137,9 +136,9 @@ def get_fetch_start_time() -> datetime:
         # Parse ISO 8601 format, handling 'Z' for UTC
         return datetime.fromisoformat(last_fetch_time_str.replace("Z", "+00:00"))
     else:
-        # First run - use default lookback period
-        start_time = datetime.utcnow() - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)
-        demisto.debug(f"First run - using default lookback time: {start_time.isoformat()}Z")
+        # First run - use default lookback period with timezone-aware datetime
+        start_time = datetime.now(timezone.utc) - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)
+        demisto.debug(f"First run - using default lookback time: {start_time.isoformat().replace('+00:00', 'Z')}")
         return start_time
 
 
@@ -148,8 +147,11 @@ def update_last_run_time(new_fetch_time: datetime) -> None:
     Update the last run object with the given timestamp.
     """
     last_run = demisto.getLastRun()
-    # Store in UTC ISO format with 'Z'
-    last_run["last_fetch_time"] = new_fetch_time.isoformat() + "Z"
+    # Store in UTC ISO format with 'Z', handling timezone-aware datetime
+    time_str = new_fetch_time.isoformat().replace('+00:00', 'Z')
+    if not time_str.endswith('Z'):
+        time_str += 'Z'
+    last_run["last_fetch_time"] = time_str
     demisto.setLastRun(last_run)
     demisto.debug(f"Updated last run with fetch time: {last_run['last_fetch_time']}")
 
@@ -243,9 +245,10 @@ class Client:
         start_time = time.monotonic()
 
         # Define the fetch window using the new regex method
-        fetch_window_end_time = datetime.utcnow()
+        fetch_window_end_time = datetime.now(timezone.utc)
         fetch_window_start_time = get_fetch_start_time()
-        demisto.info(f"Fetching events from {fetch_window_start_time.isoformat()}Z to {fetch_window_end_time.isoformat()}Z")
+        demisto.info(f"Fetching events from {fetch_window_start_time.isoformat().replace('+00:00', 'Z')} to {fetch_window_end_time.isoformat().replace('+00:00', 'Z')}")
+
         query = build_fetch_query(max_events or DEFAULT_PAGE_SIZE, fetch_window_start_time, fetch_window_end_time)
 
         fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE, query)

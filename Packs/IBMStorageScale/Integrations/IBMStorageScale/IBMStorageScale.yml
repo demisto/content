@@ -5,8 +5,8 @@ sectionOrder:
 commonfields:
   id: IBM Storage Scale
   version: -1
-name: IBM Storage Scale - Beta
-display: IBM Storage Scale - Beta
+name: IBM Storage Scale
+display: IBM Storage Scale
 description: |
   Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
 detaileddescription: ''
@@ -18,7 +18,7 @@ configuration:
   required: true
   section: Connect
 - name: credentials
-  display: Credentials
+  display: Username
   additionalinfo: Username and password for API access. The user should have the ProtocolAdmin role.
   type: 9
   required: true
