@@ -71,56 +71,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 20abd686-980a-43dd-8fe9-4a6881df88bc
-    type: playbook
-    task:
-      id: 20abd686-980a-43dd-8fe9-4a6881df88bc
-      version: -1
-      name: Containment Plan - Clear User Sessions
-      description: |-
-        ## Containment Plan - Clear User Sessions
-
-        This playbook is a sub-playbook within the containment plan playbook.
-        The playbook uses the 'Okta v2' and 'MSGraph User' integrations to clear user sessions.
-      playbookName: Containment Plan - Clear User Sessions
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      ClearUserSessions:
-        simple: "True"
-      Username:
-        complex:
-          root: Core.OriginalAlert.event
-          accessor: auth_identity
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1510,
-          "y": 1290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 242c18e5-f1e7-4fea-85db-f9d42f4685cc
@@ -136,16 +86,16 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
-      - "28"
       - "22"
       - "16"
       - "43"
+      - "45"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1090,
+          "x": 1100,
           "y": 480
         }
       }
@@ -173,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 2290
+          "x": 1100,
+          "y": 2270
         }
       }
     note: false
@@ -233,25 +183,36 @@ tasks:
       id: 1133c2aa-8085-44e8-8708-791dc0ea0a95
       version: -1
       name: Get the user risk level to examine its threat potential
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
-      user_id:
-        simple: ${alert.username.[0]}
+      additional_fields:
+        simple: "true"
+      user_name:
+        complex:
+          root: alert.username
+          accessor: '[0]'
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Core.OriginalAlert.event.auth_identity
+                iscontext: true
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 620
+          "x": 1905,
+          "y": 608
         }
       }
     note: true
@@ -281,8 +242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 800
+          "x": 1100,
+          "y": 912
         }
       }
     note: false
@@ -306,9 +267,9 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "41"
+      - "12"
       "Yes":
-      - "39"
+      - "48"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -320,10 +281,10 @@ tasks:
             iscontext: true
           right:
             value: {}
-        - operator: isEqualString
+        - operator: containsGeneral
           left:
             value:
-              simple: Core.RiskyUser.risk_level
+              simple: UserData.RiskLevel
             iscontext: true
           right:
             value:
@@ -368,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 930
+          "x": 1100,
+          "y": 1040
         }
       }
     note: false
@@ -410,8 +371,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 620
+          "x": 849,
+          "y": 608
         }
       }
     note: true
@@ -441,8 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
-          "y": 1620
+          "x": 2100,
+          "y": 1699
         }
       }
     note: false
@@ -524,8 +485,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
-          "y": 1780
+          "x": 2100,
+          "y": 1843
         }
       }
     note: false
@@ -559,8 +520,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 1950
+          "x": 2405,
+          "y": 1972
         }
       }
     note: false
@@ -603,8 +564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 620
+          "x": 1598,
+          "y": 755
         }
       }
     note: true
@@ -794,9 +755,9 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "41"
+      - "12"
       "yes":
-      - "2"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -814,8 +775,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
-          "y": 1110
+          "x": 1372,
+          "y": 1295
         }
       }
     note: false
@@ -869,8 +830,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1510,
-          "y": 1450
+          "x": 1663,
+          "y": 1570
         }
       }
     note: false
@@ -897,15 +858,17 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      closeNotes:
+        simple: Resolved as True Positive - Handled by the playbook "SSO Brute Force"
       closeReason:
-        simple: Resolved - Handled by the playbook "SSO Brute Force"
+        simple: Resolved - True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 2130
+          "x": 1663,
+          "y": 2111
         }
       }
     note: false
@@ -940,8 +903,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 620
+          "x": 449,
+          "y": 608
         }
       }
     note: true
@@ -1020,22 +983,132 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3923afe3-542c-48ed-ae6a-0e3d83c25274
+    type: condition
+    task:
+      id: 3923afe3-542c-48ed-ae6a-0e3d83c25274
+      version: -1
+      name: User agent exist in alert data?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.raw_abioc.event.action_user_agent
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1356,
+          "y": 608
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 95b72c35-742f-4e7f-b662-370bf37da71f
+    type: regular
+    task:
+      id: 95b72c35-742f-4e7f-b662-370bf37da71f
+      version: -1
+      name: Clear user sessions
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      user_name:
+        simple: ${Core.OriginalAlert.event.auth_identity}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1663,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: cc3f77e4-9bce-4934-9ff7-ef4ecd47d308
+    type: regular
+    task:
+      id: cc3f77e4-9bce-4934-9ff7-ef4ecd47d308
+      version: -1
+      name: Raise severity to medium
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1372,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "21_41_#default#": 0.19,
+      "21_12_#default#": 0.23,
       "25_26_Yes": 0.49,
       "25_41_#default#": 0.34,
       "31_32_yes": 0.31,
-      "39_41_#default#": 0.17,
       "40_24_No MFA": 0.42,
-      "40_25_#default#": 0.26,
-      "40_41_yes": 0.51
+      "40_25_#default#": 0.11,
+      "40_41_yes": 0.51,
+      "45_16_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 2290,
+        "height": 2460,
+        "width": 2766,
         "x": 20,
         "y": -130
       }
