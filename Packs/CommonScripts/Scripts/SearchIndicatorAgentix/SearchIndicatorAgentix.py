@@ -65,10 +65,12 @@ def build_query_for_indicator_values(args: dict) -> list:
     # Split the list into chunks of 100 values each
     chunked_lists = [values_as_list[i : i + 100] for i in range(0, len(values_as_list), 100)]
     chunk_queries = []
+
     for i, chunk in enumerate(chunked_lists):
         chunk_query = split_multiple_values_and_add_or_between("value", chunk)
         chunk_queries.append(f"({chunk_query})")
         demisto.debug(f"indicator values chunk_queries[{i}]: {chunk_query}")
+
     return chunk_queries
 
 
@@ -93,8 +95,10 @@ def build_query_excluding_indicator_values(args: dict) -> str:
     """
     query_sections = []
     demisto.debug(f"Preparing query fields excluding values for args: {args}")
+
     for key, values in args.items():
         query = ""
+
         if key in KEYS_TO_EXCLUDE_FROM_QUERY:
             continue
 
@@ -132,10 +136,13 @@ def split_multiple_values_and_add_or_between(key, values_as_list):
     """
     if not values_as_list:
         return ""
+
     if len(values_as_list) > 1:
         query = " OR ".join(f'{key}:"{escape_special_characters(str(v).strip())}"' for v in values_as_list)
+
     else:
         query = f'{key}:"{escape_special_characters(str(values_as_list[0])).strip()}"'
+
     return query
 
 
@@ -157,16 +164,22 @@ def prepare_query(args: dict) -> list:
     queries = []
     query_without_indicator_values = build_query_excluding_indicator_values(args)
     indicator_value_queries = build_query_for_indicator_values(args)
+
     if not indicator_value_queries and not query_without_indicator_values:
         return []
+
     if not indicator_value_queries:
         return [query_without_indicator_values]
+
     for query in indicator_value_queries:
         if query_without_indicator_values:
             full_query = f"{query} AND {query_without_indicator_values}"
+
         else:
             full_query = query
+
         queries.append(full_query)
+
     return queries
 
 
@@ -191,19 +204,24 @@ def search_indicators(args):
     list_of_queries = prepare_query(args)
     demisto.debug(f"Generated {len(list_of_queries)} queries: {list_of_queries}")
     indicators = []
+
     for i, single_query in enumerate(list_of_queries):
         demisto.debug(f"Executing query {i+1}/{len(list_of_queries)}: {single_query}")
         result = demisto.executeCommand("findIndicators", {"query": single_query, "size": args.get("size")})
         if result and result[0].get("Contents"):
             indicators.extend(result[0]["Contents"])
+
     demisto.debug(f"indicators: {indicators}")
     # return specific information for found indicators
     filtered_indicators = []
     fields = ["id", "indicator_type", "value", "score", "expirationStatus", "investigationIDs", "lastSeen"]
+
     for indicator in indicators:
         style_indicator = {}
+
         for field in fields:
             style_indicator[field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
+
         style_indicator["verdict"] = scoreToReputation(style_indicator["score"])
         filtered_indicators.append(style_indicator)
 
@@ -211,11 +229,13 @@ def search_indicators(args):
     hr_query = " OR".join(list_of_queries)
     demisto.debug(f"hr query string: {hr_query}")
     markdown = tableToMarkdown(f"Indicators Found: {hr_query=}", filtered_indicators, headers)
+
     return markdown, filtered_indicators
 
 
 def main():  # pragma: no cover
     args = demisto.args()
+
     try:
         readable_output, outputs = search_indicators(args)
         results = CommandResults(
@@ -226,6 +246,7 @@ def main():  # pragma: no cover
             ignore_auto_extract=True,
         )
         return_results(results)
+
     except DemistoException as error:
         return_error(str(error), error)
 
