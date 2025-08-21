@@ -1226,3 +1226,438 @@ def test_health_check_credentials_creation_failure(mocker):
     assert result.connector_id == connector_id
     assert "Invalid token format" in result.message
     assert result.error_type == "Connectivity Error"
+
+
+def test_parse_labels_valid_2_inputs():
+    """
+    Given: A valid labels string with multiple labels
+    When: parse_labels is called
+    Then: The function returns a correctly parsed dictionary
+    """
+    from GCP import parse_labels
+
+    input_str = "key=label1,value=true;key=label2,value=false"
+    expected = {"label1": "true", "label2": "false"}
+
+    result = parse_labels(input_str)
+    assert result == expected
+
+
+def test_parse_labels_valid_1_input():
+    """
+    Given: A valid labels string with a single label
+    When: parse_labels is called
+    Then: The function returns a correctly parsed dictionary
+    """
+    from GCP import parse_labels
+
+    input_str_option1 = "key=label1,value=true;"
+    input_str_option2 = "key=label1,value=true"
+    expected_option1 = {
+        "label1": "true",
+    }
+    expected_option2 = {
+        "label1": "true",
+    }
+
+    result_option1 = parse_labels(input_str_option1)
+    result_option2 = parse_labels(input_str_option2)
+    assert result_option1 == expected_option1
+    assert result_option2 == expected_option2
+
+
+def test_gcp_iam_folder_iam_policy_get_command_valid_input(mocker):
+    """
+    Given: Valid credentials and folder_name
+    When: gcp_iam_folder_iam_policy_get_command is called with a folder name
+    Then: The function returns the folder IAM policy correctly
+    """
+    from GCP import gcp_iam_folder_iam_policy_get_command
+
+    # Mock arguments
+    args = {"folder_name": "folders/123456789"}
+
+    # Mock policy response
+    mock_policy = {
+        "bindings": [
+            {"role": "roles/viewer", "members": ["user:test@example.com"]},
+            {"role": "roles/editor", "members": ["serviceAccount:sa@project.iam.gserviceaccount.com"]},
+        ],
+        "etag": "etag",
+        "version": 3,
+    }
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().getIamPolicy().execute.return_value = mock_policy
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_policy_get_command(mock_creds, args)
+
+    # Verify API call
+    mock_resource_manager.folders().getIamPolicy.execute().assert_called_once_with(resource="folders/123456789", body={})
+
+    # Verify result structure
+    assert result.outputs_prefix == "GCP.IAM.Policy"
+    assert result.outputs == mock_policy
+
+
+def test_gcp_iam_folder_iam_policy_get_command_with_options(mocker):
+    """
+    Given: Valid credentials with policy options
+    When: gcp_iam_folder_iam_policy_get_command is called with options
+    Then: The function includes the options in the request body
+    """
+    from GCP import gcp_iam_folder_iam_policy_get_command
+
+    # Mock arguments with options
+    args = {"folder_name": "folders/987654321", "options_requested_policy_version": "3"}
+
+    # Mock policy response
+    mock_policy = {
+        "bindings": [{"role": "roles/owner", "members": ["user:admin@example.com"]}],
+        "etag": "etag",
+        "version": 3,
+    }
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().getIamPolicy().execute.return_value = mock_policy
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_policy_get_command(mock_creds, args)
+
+    # Verify API call includes options
+    mock_resource_manager.folders().getIamPolicy.assert_called_once_with(
+        resource="folders/987654321", body={"options": {"requestedPolicyVersion": 3}}
+    )
+
+    # Verify result
+    assert result.outputs == mock_policy
+
+
+def test_gcp_iam_folder_iam_policy_get_command_empty_policy(mocker):
+    """
+    Given: Valid credentials and folder with empty policy
+    When: gcp_iam_folder_iam_policy_get_command is called
+    Then: The function handles empty policy response correctly
+    """
+    from GCP import gcp_iam_folder_iam_policy_get_command
+
+    # Mock arguments
+    args = {"folder_name": "folders/111222333"}
+
+    # Mock empty policy response
+    mock_policy = {"etag": "etag", "version": 1}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().getIamPolicy().execute.return_value = mock_policy
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_policy_get_command(mock_creds, args)
+
+    # Verify result handles empty policy
+    assert result.outputs == mock_policy
+    assert "bindings" not in result.outputs or not result.outputs.get("bindings")
+
+
+def test_gcp_iam_folder_iam_policy_get_command_with_condition(mocker):
+    """
+    Given: Valid credentials and folder with conditional IAM bindings
+    When: gcp_iam_folder_iam_policy_get_command is called
+    Then: The function returns policy with conditional bindings correctly
+    """
+    from GCP import gcp_iam_folder_iam_policy_get_command
+
+    # Mock arguments
+    args = {"folder_name": "folders/444555666"}
+
+    # Mock policy with conditions
+    mock_policy = {
+        "bindings": [
+            {
+                "role": "roles/viewer",
+                "members": ["user:conditional@example.com"],
+                "condition": {
+                    "title": "Time-based access",
+                    "description": "Grant access during business hours",
+                    "expression": "request.time.getHours() >= 9 && request.time.getHours() < 17",
+                },
+            }
+        ],
+        "etag": "etag",
+        "version": 3,
+    }
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().getIamPolicy().execute.return_value = mock_policy
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_policy_get_command(mock_creds, args)
+
+    # Verify conditional binding is preserved
+    assert result.outputs == mock_policy
+    binding = result.outputs["bindings"][0]
+    assert "condition" in binding
+    assert binding["condition"]["title"] == "Time-based access"
+
+
+def test_gcp_iam_folder_iam_policy_get_command_invalid_folder_format(mocker):
+    """
+    Given: Invalid folder name format
+    When: gcp_iam_folder_iam_policy_get_command is called with malformed folder name
+    Then: The function should still make the API call and let GCP handle the error
+    """
+    from GCP import gcp_iam_folder_iam_policy_get_command
+
+    # Mock arguments with invalid folder format
+    args = {"folder_name": "invalid-folder-format"}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().getIamPolicy().execute.side_effect = Exception("Invalid folder format")
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function and expect it to propagate the exception
+    with pytest.raises(Exception) as e:
+        gcp_iam_folder_iam_policy_get_command(mock_creds, args)
+
+    assert "Invalid folder format" in str(e.value)
+
+    # Verify API call was attempted
+    mock_resource_manager.folders().getIamPolicy.assert_called_once_with(resource="invalid-folder-format", body={})
+
+
+def test_gcp_iam_folder_iam_permission_test_command_valid_input(mocker):
+    """
+    Given: Valid credentials and folder_id with permissions list
+    When: gcp_iam_folder_iam_permission_test_command is called
+    Then: The function returns the permissions test results correctly
+    """
+    from GCP import gcp_iam_folder_iam_permission_test_command
+
+    # Mock arguments
+    args = {"folder_id": "123456789", "permissions": "resourcemanager.folders.get,resourcemanager.folders.list"}
+
+    # Mock response
+    mock_response = {"permissions": ["resourcemanager.folders.get", "resourcemanager.folders.list"]}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().testIamPermissions().execute.return_value = mock_response
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_permission_test_command(mock_creds, args)
+
+    # Verify API call
+    mock_resource_manager.folders().testIamPermissions.assert_called_once_with(
+        resource="folders/123456789", body={"permissions": ["resourcemanager.folders.get", "resourcemanager.folders.list"]}
+    )
+
+    # Verify result structure
+    assert result.outputs_prefix == "GCP.IAM.Permission"
+    assert result.outputs_key_field == "permissions"
+    assert result.outputs == mock_response
+
+
+def test_gcp_iam_folder_iam_permission_test_command_single_permission(mocker):
+    """
+    Given: Valid credentials with a single permission to test
+    When: gcp_iam_folder_iam_permission_test_command is called
+    Then: The function handles single permission correctly
+    """
+    from GCP import gcp_iam_folder_iam_permission_test_command
+
+    # Mock arguments with single permission
+    args = {"folder_id": "987654321", "permissions": "resourcemanager.folders.delete"}
+
+    # Mock response
+    mock_response = {"permissions": ["resourcemanager.folders.delete"]}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().testIamPermissions().execute.return_value = mock_response
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_permission_test_command(mock_creds, args)
+
+    # Verify API call with single permission
+    mock_resource_manager.folders().testIamPermissions.assert_called_once_with(
+        resource="folders/987654321", body={"permissions": ["resourcemanager.folders.delete"]}
+    )
+
+    # Verify result
+    assert result.outputs == mock_response
+
+
+def test_gcp_iam_folder_iam_permission_test_command_no_permissions_granted(mocker):
+    """
+    Given: Valid credentials but no permissions granted for the folder
+    When: gcp_iam_folder_iam_permission_test_command is called
+    Then: The function returns empty permissions list
+    """
+    from GCP import gcp_iam_folder_iam_permission_test_command
+
+    # Mock arguments
+    args = {"folder_id": "111222333", "permissions": "resourcemanager.folders.create,resourcemanager.folders.delete"}
+
+    # Mock response with no permissions granted
+    mock_response = {"permissions": []}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().testIamPermissions().execute.return_value = mock_response
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_permission_test_command(mock_creds, args)
+
+    # Verify empty permissions are handled
+    assert result.outputs == mock_response
+    assert result.outputs["permissions"] == []
+
+
+def test_gcp_iam_folder_iam_permission_test_command_partial_permissions(mocker):
+    """
+    Given: Valid credentials with some permissions granted and some denied
+    When: gcp_iam_folder_iam_permission_test_command is called
+    Then: The function returns only the granted permissions
+    """
+    from GCP import gcp_iam_folder_iam_permission_test_command
+
+    # Mock arguments
+    args = {
+        "folder_id": "444555666",
+        "permissions": "resourcemanager.folders.get,resourcemanager.folders.delete,resourcemanager.folders.update",
+    }
+
+    # Mock response with partial permissions
+    mock_response = {"permissions": ["resourcemanager.folders.get"]}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().testIamPermissions().execute.return_value = mock_response
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = gcp_iam_folder_iam_permission_test_command(mock_creds, args)
+
+    # Verify partial permissions are returned correctly
+    assert result.outputs == mock_response
+    assert len(result.outputs["permissions"]) == 1
+    assert "resourcemanager.folders.get" in result.outputs["permissions"]
+
+
+def test_gcp_iam_folder_iam_permission_test_command_api_error(mocker):
+    """
+    Given: Valid credentials but API call fails
+    When: gcp_iam_folder_iam_permission_test_command is called and API raises exception
+    Then: The function should propagate the exception
+    """
+    from GCP import gcp_iam_folder_iam_permission_test_command
+
+    # Mock arguments
+    args = {"folder_id": "error-folder", "permissions": "resourcemanager.folders.get"}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service to raise exception
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().testIamPermissions().execute.side_effect = Exception("Folder not found")
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function and expect exception
+    with pytest.raises(Exception) as e:
+        gcp_iam_folder_iam_permission_test_command(mock_creds, args)
+
+    assert "Folder not found" in str(e.value)
+
+    # Verify API call was attempted
+    mock_resource_manager.folders().testIamPermissions.assert_called_once()
+
+
+def test_gcp_iam_folder_iam_permission_test_command_complex_permissions(mocker):
+    """
+    Given: Valid credentials with complex permission names including wildcards
+    When: gcp_iam_folder_iam_permission_test_command is called
+    Then: The function handles complex permission names correctly
+    """
+    from GCP import gcp_iam_folder_iam_permission_test_command
+
+    # Mock arguments with complex permissions
+    args = {"folder_id": "complex-folder-123", "permissions": "resourcemanager.*,iam.serviceAccounts.create"}
+
+    # Mock credentials
+    mock_creds = mocker.Mock(spec=Credentials)
+
+    # Mock the resource manager service
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.folders().testIamPermissions().execute.side_effect = Exception(
+        "The permission compute.instances.* is invalid."
+    )
+
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    gcp_iam_folder_iam_permission_test_command(mock_creds, args)
+
+    # Verify API call with complex permissions
+    expected_permissions = ["resourcemanager.*", "iam.serviceAccounts.create"]
+    mock_resource_manager.folders().testIamPermissions.assert_called_once_with(
+        resource="folders/complex-folder-123", body={"permissions": expected_permissions}
+    )

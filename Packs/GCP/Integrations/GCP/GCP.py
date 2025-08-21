@@ -191,7 +191,7 @@ COMMAND_REQUIREMENTS = {
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
-METADATA_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
+KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
 
 
 def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:
@@ -230,7 +230,7 @@ def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
     """
     tags = []
     for f in tags_str.split(";"):
-        match = METADATA_ITEM_REGEX.match(f)
+        match = KEY_VALUE_ITEM_REGEX.match(f)
         if match is None:
             raise ValueError(
                 f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
@@ -261,38 +261,29 @@ def extract_zone_name(zone_input: str | None) -> str:
     return zone_input.strip()
 
 
-def parse_key_value_args(arg_str: str, arg_type: str) -> list:
+def parse_labels(labels_str: str) -> dict:
     """
-    Transforms a string of multiple inputs to a dictionary list
-    parameter: (string) labels
+    Transforms a string of multiple inputs to a dictionary
+    parameter: (string) labels_str
 
-    Return labels as a dictionary list
-    Returns the specified Instance resource.
+    Return labels as a dictionary.
     Args:
-        arg_str (str): The actual string to parse to a key & value pair.
-        arg_type (str): The type of the argument. Can be 'metadata' or 'labels'.
+        labels_str (str): The actual string to parse to a key & value pair.
 
     Returns:
-        Returns the relevant dictionary with the extracted key & value pairs.
+        Returns the labels dictionary with the extracted key & value pairs.
     """
     labels = {}
-    metadata_items = []
-    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
-    for f in arg_str.split(";"):
-        match = regex.match(f)
-        if match is None:
-            raise ValueError(
-                f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=def,value=456"
-            )
+    for f in labels_str.strip().split(";"):
+        if f:
+            match = KEY_VALUE_ITEM_REGEX.match(f)
+            if match is None:
+                raise ValueError(
+                    f"Could not parse field: {f}. Please make sure you provided like so: key=abc,value=123;key=def,value=456"
+                )
 
-        if arg_type == 'labels':
             labels.update({match.group(1).lower(): match.group(2).lower()})
-        else:  # metadata
-            metadata_items.append({"key": match.group(1), "value": match.group(2)})
-    if arg_type == 'labels':
-        return [labels]
-    else:  # metadata
-        return metadata_items
+    return labels
 
 
 ##########
@@ -988,6 +979,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #
 #     return CommandResults(readable_output=hr)
 
+
 def gcp_iam_folder_iam_policy_get_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Gets the access control policy for a folder.
@@ -999,19 +991,26 @@ def gcp_iam_folder_iam_policy_get_command(creds: Credentials, args: dict[str, An
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    identifier = args.get("identifier", "")
+    folder_id = args.get("folder_id", "")
+    requested_policy_version = arg_to_number(args.get("requested_policy_version", ""))
+    body = {}
+    if requested_policy_version:
+        body = {"options": {"requestedPolicyVersion": requested_policy_version}}
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-    folder_policy_get_request = resource_manager.folders().getIamPolicy(resource=f"folders/{identifier}")
-    folder_policy_response = folder_policy_get_request.execute()
-    readable_header = f"Folder {identifier} IAM policy information:"
+    folder_policy_response = resource_manager.folders().getIamPolicy(resource=f"folders/{folder_id}", body=body).execute()
+    readable_header = f"Folder {folder_id} IAM policy information:"
     readable_output = tableToMarkdown(
-        readable_header, folder_policy_response.get("bindings"), headers=["role", "members"], headerTransform=pascalToSpace, removeNull=True,
+        readable_header,
+        folder_policy_response.get("bindings"),
+        headers=["role", "members"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.IAM.Policy",
         outputs_key_field="role",
-        outputs=folder_policy_response.get("bindings"),
+        outputs=folder_policy_response,
         raw_response=folder_policy_response,
     )
 
@@ -1026,15 +1025,21 @@ def gcp_iam_folder_iam_permission_test_command(creds: Credentials, args: dict[st
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    identifier = args.get("identifier", "")
+    folder_id = args.get("folder_id", "")
     permissions = argToList(args.get("permissions", ""))
     body = {"permissions": permissions}
     demisto.debug(f"before executing the command with {body}")
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-    response = resource_manager.folders().testIamPermissions(resource=f"folders/{identifier}", body=body).execute()
+    response = resource_manager.folders().testIamPermissions(resource=f"folders/{folder_id}", body=body).execute()
     demisto.debug(f"the response to the command {response}")
 
-    readable_output = tableToMarkdown(f"The folder {identifier} permissions:", response, headers=["permissions"], headerTransform=pascalToSpace, removeNull=True,)
+    readable_output = tableToMarkdown(
+        f"The folder {folder_id} permissions:",
+        response,
+        headers=["permissions"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1063,10 +1068,16 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     page_token = args.get("page_token")
 
     if limit and (limit > 500 or limit < 0):
-        raise DemistoException(f"The acceptable values of the argument limit are 0 to 500, inclusive. Currently the value is {limit}")
+        raise DemistoException(
+            f"The acceptable values of the argument limit are 0 to 500, inclusive. Currently the value is {limit}"
+        )
 
     compute = GCPServices.COMPUTE.build(creds)
-    response = compute.instances().list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token).execute()
+    response = (
+        compute.instances()
+        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .execute()
+    )
     demisto.debug(f"{response=}")
 
     next_page_token = response.get("nextPageToken", "")
@@ -1077,11 +1088,11 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
         else None
     )
     if next_page_token:
-        response['InstancesNextPageToken'] = response.pop("nextPageToken")
-    response['Instances'] = response.pop("items")
+        response["InstancesNextPageToken"] = response.pop("nextPageToken")
+    response["Instances"] = response.pop("items")
 
     hr_data = []
-    for instance in response['Instances']:
+    for instance in response["Instances"]:
         d = {
             "id": instance.get("id"),
             "name": instance.get("name"),
@@ -1090,16 +1101,18 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
             "description": instance.get("description"),
             "status": instance.get("status"),
             "machineType": instance.get("machineType"),
-            "zone": instance.get("zone")
+            "zone": instance.get("zone"),
         }
         hr_data.append(d)
 
-    readable_output = tableToMarkdown("GCP Instances",
-                                      hr_data,
-                                      headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "zone"],
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True,
-                                      metadata=metadata,)
+    readable_output = tableToMarkdown(
+        "GCP Instances",
+        hr_data,
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType", "zone"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute",
@@ -1136,11 +1149,13 @@ def gcp_compute_instance_get_command(creds: Credentials, args: dict[str, Any]) -
         "status": response.get("status"),
         "machineType": response.get("machineType"),
     }
-    readable_output = tableToMarkdown(f"GCP Instance {instance} from zone {zone}",
-                                      hr_data,
-                                      headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType"],
-                                      headerTransform=pascalToSpace,
-                                      removeNull=True,)
+    readable_output = tableToMarkdown(
+        f"GCP Instance {instance} from zone {zone}",
+        hr_data,
+        headers=["id", "name", "kind", "creationTimestamp", "description", "status", "machineType"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="GCP.Compute.Instances",
@@ -1164,16 +1179,20 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     zone = extract_zone_name(args.get("zone"))
     instance = args.get("instance")
     label_fingerprint = args.get("label_fingerprint")
-    labels = parse_key_value_args(args.get("labels"), "labels")[0]
+    labels = parse_labels(args.get("labels"))
+    demisto.debug(f"The parsed {labels=}")
 
     body = {"labels": labels}
 
     if label_fingerprint:
         body.update({"labelFingerprint": label_fingerprint})
 
+    demisto.debug(f"The {body=}")
+
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().setLabels(project=project_id, zone=zone, instance=instance, body=body).execute()
 
+    demisto.debug(f"A response returned {response}")
     data_res = {
         "status": response.get("status"),
         "kind": response.get("kind"),
@@ -1210,13 +1229,9 @@ def gcp_compute_project_metadata_set_command(creds: Credentials, args: dict[str,
     zone = extract_zone_name(args.get("zone"))
     instance = args.get("instance", "")
     fingerprint = args.get("fingerprint", "")
-    metadata_items = parse_key_value_args(args.get("metadata_items", ""), "metadata")
+    metadata_items = parse_metadata_items(args.get("metadata_items", ""))
 
-    body = {
-        "kind": "compute#metadata",
-        "fingerprint": fingerprint,
-        "items": metadata_items
-    }
+    body = {"kind": "compute#metadata", "fingerprint": fingerprint, "items": metadata_items}
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().setMetadata(project=project_id, zone=zone, instance=instance, body=body).execute()
@@ -1576,8 +1591,8 @@ def main():  # pragma: no cover
             return_results(run_health_check_for_accounts(connector_id, CloudTypes.GCP.value, health_check))
 
         elif command in command_map:
-            if "identifier" in args:  # for commands that use folder identifier and not a project id.
-                args['project_id'] = args['identifier']
+            if "folder_id" in args:  # for commands that use folder identifier and not a project id.
+                args["project_id"] = args["folder_id"]
             creds = get_credentials(args, params)
             return_results(command_map[command](creds, args))
         else:
