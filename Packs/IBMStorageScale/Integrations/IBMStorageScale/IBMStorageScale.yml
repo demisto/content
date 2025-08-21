@@ -6,7 +6,7 @@ commonfields:
   id: IBM Storage Scale
   version: -1
 name: IBM Storage Scale
-display: IBM Storage Scale
+display: IBM Storage Scale Beta
 description: |
   Collects Command Line Interface (CLI) audit log records from IBM Storage Scale.
 detaileddescription: ''
