@@ -4307,11 +4307,9 @@ def test_get_remote_detection_data_for_multiple_types__idp(mocker):
         "incident_type": "IDP detection",
         "status": "closed",
         "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
-        'assigned_to_uid': '1',
-        'comments': [{'falcon_user_id': '1',
-                      'timestamp': '2025-06-10T10:39:02.408980782Z',
-                      'value': '1'}],
-        'tags': ['tag']
+        "assigned_to_uid": "1",
+        "comments": [{"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"}],
+        "tags": ["tag"],
     }
 
 
