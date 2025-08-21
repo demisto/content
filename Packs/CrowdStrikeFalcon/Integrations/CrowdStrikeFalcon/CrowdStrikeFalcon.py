@@ -2175,8 +2175,6 @@ def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comme
         payload["status"] = status
     if assigned_to_uuid:
         payload["assigned_to_uuid"] = assigned_to_uuid
-    if username and not LEGACY_VERSION:
-        payload["assigned_to_name"] = username
     if show_in_ui:
         payload["show_in_ui"] = show_in_ui
     if comment:
@@ -2186,7 +2184,7 @@ def resolve_detection(ids, status, assigned_to_uuid, username, show_in_ui, comme
         # modify the payload to match the Raptor API
         ids = payload.pop("ids")
         payload["assign_to_uuid"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
-        payload["assign_to_name"] = payload.pop("assigned_to_name") if "assigned_to_name" in payload else None
+        payload["assign_to_user_id"] = username if username else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
         payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
         if tag:
