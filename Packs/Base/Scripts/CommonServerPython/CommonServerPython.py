@@ -45,7 +45,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 48, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
