@@ -83,32 +83,6 @@ def initialize_commands() -> list:
 """ HELPER FUNCTIONS """
 
 
-def check_inputs_for_command(command: Command, endpoint_output: dict, args: dict) -> bool:
-    """
-    Validates whether a command can be executed by checking the required arguments.
-
-    Args:
-        command (Command): An instance containing the command's metadata and argument mapping.
-        endpoint_output (dict): The dictionary to store output results.
-        args (dict): The dictionary containing the specific arguments for the command.
-
-    Returns:
-        bool: True if the command can be executed, False otherwise.
-    """
-    missing_args = are_there_missing_args(command, args)  # checks if there are missing args
-    if missing_args:
-        demisto.debug(f"Missing the next args {missing_args} for command.name")
-        create_message_to_context_and_hr(
-            is_isolated=False,
-            endpoint_args=args,
-            result="Fail",
-            message=f"Missing the next args: {missing_args} for {command.name}.",
-            endpoint_output=endpoint_output,
-        )
-        return False
-    return True
-
-
 def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpoint_output: dict) -> bool:
     """
     Checks whether an endpoint is isolated already.
@@ -155,8 +129,7 @@ def create_message_to_context_and_hr(
     endpoint_output["Result"] = result
     endpoint_output["Source"] = brand
     endpoint_output["Message"] = message
-endpoint_output["Isolated"] = "Yes" if is_isolated else "No"
-
+    endpoint_output["Isolated"] = "Yes" if is_isolated else "No"
 
 
 def are_there_missing_args(command: Command, args: dict) -> bool:
