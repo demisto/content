@@ -7515,7 +7515,9 @@ def test_resolve_detection_username_not_legacy(mocker):
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
     mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
 
-    expected_data = json.dumps({"action_parameters": [{"name": "assign_to_user_id", "value": "username"}], "composite_ids": ["123"]})
+    expected_data = json.dumps(
+        {"action_parameters": [{"name": "assign_to_user_id", "value": "username"}], "composite_ids": ["123"]}
+    )
 
     resolve_detection_command()
     assert not translate_username_mocker.called
