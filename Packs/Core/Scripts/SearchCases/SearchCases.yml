@@ -115,6 +115,15 @@ outputs:
 - contextPath: Core.Case.modification_time
   description: Date and time that the case was last modified.
   type: date
+- contextPath: Core.Case.issue_ids
+  description: List of unique issue identifiers associated with the case.
+  type: date
+- contextPath: Core.Case.network_artifacts
+  description: Network-related artifacts associated with the case.
+  type: date
+- contextPath: Core.Case.file_artifacts
+  description: File-related artifacts associated with the case.
+  type: date
 dependson:
   must:
   - core-get-cases
