@@ -135,7 +135,9 @@ response_idp_detection = {
     "aggregate_id": "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
     "cid": "20879a8064904ecfbb62c118a6a19411",
     "comment": "new test comment new test comment2 new test comment2 new test comment2 new test comment2 new test comment new test comment new test comment new test comment new test comment2 new test comment2 new test comment new test comment2 new test comment2 comment",
-    "composite_id": "20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+    "comments": [
+        {"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"},
+    ],
     "confidence": 20,
     "context_timestamp": "2023-04-20T11:12:03.089Z",
     "crawl_edge_ids": {
@@ -181,12 +183,13 @@ response_idp_detection = {
     "status": "closed",
     "tactic": "Privilege Escalation",
     "tactic_id": "TA0004",
-    "tags": [],
+    "tags": ["tag"],
     "technique": "Valid Accounts",
     "technique_id": "T1078",
     "timestamp": "2023-04-20T11:12:05.686Z",
     "type": "idp-user-endpoint-app-info",
     "updated_timestamp": "2023-06-27T09:29:52.448779709Z",
+    "assigned_to_uid": "1"
 }
 
 response_ngsiem_detection = {
@@ -871,7 +874,6 @@ remote_incident_handle_tags_args = [
     add_tags,
     delete_tags,
 ]
-
 
 response_detection_new_version = {
     "agent_id": 123,

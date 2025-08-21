@@ -4389,6 +4389,35 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
     }
 
 
+def test_get_remote_detection_data_for_multiple_types__idp_detection(mocker):
+    """
+    Given
+        - an endpoint idp detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
+
+    detection_entity = input_data.response_idp_detection.copy()
+    mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
+    mocker.patch.object(demisto, "debug", return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+        input_data.remote_idp_detection_id
+    )
+
+    assert mirrored_data == detection_entity
+    assert detection_type == "IDP"
+    assert updated_object == {
+        "incident_type": "IDP detection",
+        "status": mirrored_data["status"],
+        "id": mirrored_data["id"],
+        "tags": mirrored_data["tags"],
+        "comments": mirrored_data["comments"],
+        "assigned_to_uid": mirrored_data["assigned_to_uid"],
+    }
+
 @pytest.mark.parametrize("updated_object, entry_content, close_incident", input_data.set_xsoar_incident_entries_args)
 def test_set_xsoar_entries__incident(mocker, updated_object, entry_content, close_incident):
     """
