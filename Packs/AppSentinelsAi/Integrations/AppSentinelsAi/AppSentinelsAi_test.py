@@ -11,9 +11,8 @@ MOCK_BASEURL = "https://example.com"
 MOCK_USER_KEY = "dummy_user_key"
 MOCK_API_KEY = "dummy_api_key"
 MOCK_ORGANIZATION = "dummy_org"
-MOCK_APPLICATION = "dummy_app"
 
-from AppSentinelsAi import Client, BASE_EVENT_BODY, DATE_FORMAT, remove_first_run_params, fetch_events, get_events
+from AppSentinelsAi import Client, BASE_EVENT_BODY, BASE_PARAMS, DATE_FORMAT, remove_first_run_params, fetch_events, get_events
 
 
 @pytest.fixture
@@ -26,10 +25,10 @@ def client():
         user_key=MOCK_USER_KEY,
         api_key=MOCK_API_KEY,
         organization=MOCK_ORGANIZATION,
-        application=MOCK_APPLICATION,
         verify=False,
         use_proxy=False,
-        base_event_body=BASE_EVENT_BODY,  # Corrected variable name
+        base_event_body=BASE_EVENT_BODY,
+        base_params=BASE_PARAMS,
     )
 
 
@@ -42,9 +41,9 @@ class TestHelperFunctions:
     @pytest.mark.parametrize(
         "input_params, expected_params",
         [
-            ({"from_timestamp": "2024-01-01", "to_timestamp": "2024-01-31", "other": 1}, {"other": 1}),
-            ({"from_timestamp": "2024-01-01", "other": 1}, {"other": 1}),
-            ({"to_timestamp": "2024-01-31", "other": 1}, {"other": 1}),
+            ({"from_date": "2024-01-01", "to_date": "2024-01-31", "other": 1}, {"other": 1}),
+            ({"from_date": "2024-01-01", "other": 1}, {"other": 1}),
+            ({"to_date": "2024-01-31", "other": 1}, {"other": 1}),
             ({"other": 1}, {"other": 1}),
             ({}, {}),
         ],
@@ -71,10 +70,10 @@ class TestFetchEvents:
     @pytest.fixture
     def mock_response_data(self):
         """Provides sample API response data."""
-        data = util_load_json("test_data/events-dummy-data.json")
+        response = util_load_json("test_data/events-dummy-data.json")
         return {
-            "data": data,
-            "last_event_id": 22,
+            "response": response,
+            "last_event_id": 4,
             "more_records": False,
         }
 
@@ -95,12 +94,12 @@ class TestFetchEvents:
             - Make sure the 'from' aql parameter request is sent with the "current" time 2023-10-26T10:05:00.
             - Make sure the pagination logic performs as expected.
         """
-        mocker.patch.object(client, "get_events_request", return_value=mock_response_data)
+        mocker.patch.object(client, "get_events_request", return_value=mock_response_data["response"])
         last_run = {}
         events, _ = fetch_events(client, last_run)
 
-        assert len(events) == len(mock_response_data["data"])
-        assert last_run == {"last_event_id": mock_response_data["last_event_id"]}
+        assert len(events) == len(mock_response_data["response"]["data"])
+        assert last_run == {"last_log_id": mock_response_data["last_event_id"]}
         client.get_events_request.assert_called_once()  # Check if the API call was made
 
         current_time = get_current_time()
@@ -108,16 +107,16 @@ class TestFetchEvents:
         end_time = current_time.strftime(DATE_FORMAT)
 
         # Check the parameters of the API call
-        expected_params = {
-            "from_timestamp": start_time,
-            "to_timestamp": end_time,
+        expected_body = {
+            "from_date": start_time,
+            "to_date": end_time,
         }
-        client.get_events_request.assert_called_with(params=expected_params)
+        client.get_events_request.assert_called_with(body=expected_body, params={})
 
         # Check _TIME and source_log_type
         for event in events:
             assert event["_TIME"] == event["timestamp"]
-            assert event["source_log_type"] == "event"
+            assert event["source_log_type"] == "auditlog"
 
     def test_fetch_events_list_subsequent_fetch(self, client, mocker, mock_response_data):
         """

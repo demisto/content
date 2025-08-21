@@ -1,5 +1,6 @@
-[
-   {
+{
+    "data": [
+        {
             "action": "modify",
             "application": "app",
             "category": "security_events",
@@ -47,4 +48,7 @@
             "user_info": "dummy_user_info",
             "username": "dummy_username@dummy_org.com"
         }
-  ]
+    ],
+    "pagination": 0,
+    "total": 4
+}
