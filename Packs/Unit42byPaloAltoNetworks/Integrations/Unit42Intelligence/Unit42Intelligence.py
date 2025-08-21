@@ -23,13 +23,32 @@ VERDICT_TO_SCORE = {
 }
 
 # Indicator type mappings
-INDICATOR_TYPE_MAPPING = {"ip": "ip", "domain": "domain", "url": "url", "file": "filehash_sha256"}
+INDICATOR_TYPE_MAPPING = {
+    "ip": FeedIndicatorType.IP,
+    "domain": FeedIndicatorType.Domain,
+    "url": FeedIndicatorType.URL,
+    "file": FeedIndicatorType.File,
+    "exploit": FeedIndicatorType.CVE,
+    "malware_family": ThreatIntel.ObjectsNames.MALWARE,
+    "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
+    "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "malicious_behavior": "", # Todo add the correct type
+    "malicious behavior": "", # Todo add the correct type
+}
 
 
 class Client(BaseClient):
     """Client class to interact with Unit 42 Intelligence API"""
 
-    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, reliability: str):
+    def __init__(
+        self,
+        base_url: str,
+        api_key: str,
+        verify: bool,
+        proxy: bool,
+        reliability: str,
+    ):
         headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.reliability = reliability
@@ -70,7 +89,12 @@ def test_module(client: Client) -> str:
         return f"Test failed: {str(e)}"
 
 
-def create_dbot_score(indicator: str, indicator_type: str, verdict: str, reliability: str) -> Common.DBotScore:
+def create_dbot_score(
+    indicator: str,
+    indicator_type: str,
+    verdict: str,
+    reliability: str = "A - Completely reliable",
+) -> Common.DBotScore:
     """
     Create DBotScore object
 
@@ -101,7 +125,7 @@ def create_dbot_score(indicator: str, indicator_type: str, verdict: str, reliabi
 
 
 def create_relationships(
-    indicator: str, indicator_type: str, tags: list[dict[str, Any]], create_relationships: bool
+    indicator: str, indicator_type: str, threat_objects: list[dict[str, Any]], create_relationships: bool
 ) -> list[EntityRelationship]:
     """
     Create relationships between indicator and threat objects
@@ -109,7 +133,7 @@ def create_relationships(
     Args:
         indicator: The indicator value
         indicator_type: Type of indicator
-        tags: List of threat tags
+        threat_objects: List of threat object associations
         create_relationships: Whether to create relationships
 
     Returns:
@@ -117,25 +141,24 @@ def create_relationships(
     """
     relationships: list[EntityRelationship] = []
 
-    if not any([create_relationships, tags]):
+    if not any([create_relationships, threat_objects]):
+        demisto.debug(f"Skipping create_relationships as {create_relationships} and {threat_objects=}")
         return relationships
 
-    for tag in tags:
-        tag_name = tag.get("name", "")
-        tag_type = tag.get("type", "").lower()
+    for threat_obj in threat_objects:
+        threat_name = threat_obj.get("name", "")
+        threat_class = threat_obj.get("threat_object_class", "").lower()
 
-        # TODO: implement the mapping
-        if tag_type == "malware_family":
-            entity_b_type = FeedIndicatorType.Malware
-        else:
+        if not threat_name or threat_class not in INDICATOR_TYPE_MAPPING:
+            demisto.debug(f"Skipping create_relationships for threat_name {threat_name} and threat_class {threat_class}")
             continue
 
         relationship = EntityRelationship(
             name=EntityRelationship.Relationships.RELATED_TO,
             entity_a=indicator,
             entity_a_type=indicator_type,
-            entity_b=tag_name,
-            entity_b_type=entity_b_type,
+            entity_b=threat_name,
+            entity_b_type=INDICATOR_TYPE_MAPPING[threat_class],
             source_reliability=DBotScoreReliability.A,
             brand=INTEGRATION_NAME,
         )
@@ -143,6 +166,54 @@ def create_relationships(
 
     return relationships
 
+def create_indicators_from_relationships(relationship: dict[str, Any]) -> CommandResults:
+    """
+    Create indicators from relationship
+
+    Args:
+        relationship: Relationship as dictionary
+
+    Returns:
+        Indicator object based on the relationship type
+    """
+    indicator_name = relationship["name"]
+    indicator_type = relationship["threat_object_class"]
+    score = VERDICT_TO_SCORE.get(relationship["verdict"].lower() or "unknown")
+    
+    if not any([indicator_name, indicator_type]):
+        demisto.debug(f"Skipping create_indicators_from_relationships for {indicator_name=}, {indicator_type=}, {score=}")
+        return
+        
+    dbot_score = create_dbot_score(
+        indicator=indicator_name,
+        indicator_type=indicator_type,
+        verdict=score,
+    )
+    # Retrieve the indicator type from the mapping dictionary based on the relationship type
+    indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, "Indicator")
+    # Create indicator based on type
+    if indicator_type == "IP":
+        indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
+    elif indicator_type == "Domain":
+        indicator = Common.Domain(domain=indicator_name, dbot_score=dbot_score)
+    elif indicator_type == "URL":
+        indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
+    elif indicator_type == "File":
+        indicator = Common.File(ha256=indicator_name, dbot_score=dbot_score)
+    else:
+        # Create custom indicator for unknown types
+        indicator = Common.CustomIndicator(
+            indicator_type=indicator_type,
+            value=indicator_name,
+            dbot_score=dbot_score,
+            data={"value": indicator_name},
+            context_prefix=indicator_type.capitalize()
+        )
+    
+    command_results = CommandResults(
+        indicator=indicator,
+    )
+    return_results(command_results)
 
 def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
     """
@@ -155,35 +226,38 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         Dictionary containing extracted data
     """
     return {
+        "indicator_value": response.get("indicator_value", ""),
+        "indicator_type": response.get("indicator_type", ""),
+        "counts": response.get("counts", []),
         "verdict": response.get("verdict", "unknown"),
-        "verdict_category": response.get("verdict_category", ""),
+        "verdict_category": response.get("verdict_category", []),
         "first_seen": response.get("first_seen", ""),
         "last_seen": response.get("last_seen", ""),
-        "seen_by": response.get("seen_by", []),
-        "tags": response.get("enriched_threat_object_association", []),
+        "seen_by": response.get("source", []),
+        "relationships": response.get("threat_object_association", []),
     }
 
 
-def create_context_data(indicator_key: str, indicator_value: str, response_data: dict[str, Any]) -> dict[str, Any]:
+def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
     """
     Create context data for indicators
 
     Args:
-        indicator_key: The key name for the indicator (Address, Name, Data, Hash)
-        indicator_value: The indicator value
         response_data: Extracted response data
 
     Returns:
         Dictionary containing context data
     """
     return {
-        indicator_key: indicator_value,
+        "Value": response_data["indicator_value"],
+        "Type": response_data["indicator_type"],
         "Verdict": response_data["verdict"],
         "VerdictCategory": response_data["verdict_category"],
+        "Counts": response_data["counts"],
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
         "SeenBy": response_data["seen_by"],
-        "Tags": [tag.get("name", "") for tag in response_data["tags"]],
+        "EnrichedThreatObjectAssociation": response_data["relationships"]
     }
 
 
@@ -200,6 +274,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     ip = args.get("ip", "")
     create_relationships_flag = argToBoolean(args.get("create_relationships", True))
+    create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("ip", ip)
 
@@ -212,22 +287,24 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score)
 
     # Create relationships
-    relationships = create_relationships(
-        ip, FeedIndicatorType.ip_to_indicator_type(ip), response_data["tags"], create_relationships_flag
-    )
+    relationships = create_relationships(ip, FeedIndicatorType.IP, response_data["relationships"], create_relationships_flag)
 
+    # Create indicators from relationships
+    if create_indicators_from_relationships_flag:
+        create_indicators_from_relationships(response_data["relationships"])
+    
     # Create context data
-    context_data = create_context_data("Address", ip, response_data)
+    context_data = create_context_data(response_data)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for IP: {ip}",
         context_data,
-        headers=["Address", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen", "Tags"],
+        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
     )
 
     return CommandResults(
-        outputs_prefix="Unit42.IP",
-        outputs_key_field="Address",
+        outputs_prefix="Unit42Intelligence.IP",
+        outputs_key_field="Value",
         outputs=context_data,
         readable_output=readable_output,
         indicator=ip_indicator,
@@ -248,6 +325,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     domain = args.get("domain", "")
     create_relationships_flag = argToBoolean(args.get("create_relationships", True))
+    create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("domain", domain)
 
@@ -257,23 +335,27 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     dbot_score = create_dbot_score(domain, DBotScoreType.DOMAIN, response_data["verdict"], client.reliability)
 
     # Create Domain indicator
-    domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
+    domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score, tags=response_data["tags"])
 
     # Create relationships
     relationships = create_relationships(domain, FeedIndicatorType.Domain, response_data["tags"], create_relationships_flag)
 
+    # Create indicators from relationships
+    if create_indicators_from_relationships_flag:
+        create_indicators_from_relationships(response_data["relationships"])
+
     # Create context data
-    context_data = create_context_data("Name", domain, response_data)
+    context_data = create_context_data(response_data)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for Domain: {domain}",
         context_data,
-        headers=["Name", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen", "Tags"],
+        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
     )
 
     return CommandResults(
-        outputs_prefix="Unit42.Domain",
-        outputs_key_field="Name",
+        outputs_prefix="Unit42Intelligence.Domain",
+        outputs_key_field="Value",
         outputs=context_data,
         readable_output=readable_output,
         indicator=domain_indicator,
@@ -294,6 +376,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     url = args.get("url", "")
     create_relationships_flag = argToBoolean(args.get("create_relationships", True))
+    create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("url", url)
 
@@ -308,18 +391,22 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # Create relationships
     relationships = create_relationships(url, FeedIndicatorType.URL, response_data["tags"], create_relationships_flag)
 
+    # Create indicators from relationships
+    if create_indicators_from_relationships_flag:
+        create_indicators_from_relationships(response_data["relationships"])
+
     # Create context data
-    context_data = create_context_data("Data", url, response_data)
+    context_data = create_context_data(response_data)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
         context_data,
-        headers=["Data", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen", "Tags"],
+        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
     )
 
     return CommandResults(
-        outputs_prefix="Unit42.URL",
-        outputs_key_field="Data",
+        outputs_prefix="Unit42Intelligence.URL",
+        outputs_key_field="Value",
         outputs=context_data,
         readable_output=readable_output,
         indicator=url_indicator,
@@ -340,6 +427,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     file_hash = args.get("file", "")
     create_relationships_flag = argToBoolean(args.get("create_relationships", True))
+    create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("filehash_sha256", file_hash)
 
@@ -359,18 +447,22 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # Create relationships
     relationships = create_relationships(file_hash, FeedIndicatorType.File, response_data["tags"], create_relationships_flag)
 
+    # Create indicators from relationships
+    if create_indicators_from_relationships_flag:
+        create_indicators_from_relationships(response_data["relationships"])
+
     # Create context data
-    context_data = create_context_data("Hash", file_hash, response_data)
+    context_data = create_context_data(response_data)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for File: {file_hash}",
         context_data,
-        headers=["Hash", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen", "Tags"],
+        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
     )
 
     return CommandResults(
-        outputs_prefix="Unit42.File",
-        outputs_key_field="Hash",
+        outputs_prefix="Unit42Intelligence.File",
+        outputs_key_field="Value",
         outputs=context_data,
         readable_output=readable_output,
         indicator=file_indicator,
@@ -388,18 +480,26 @@ def main() -> None:
     # Get parameters
     base_url = params.get("url", "").rstrip("/")
     api_key = params.get("credentials", {}).get("password", "")
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
+    verify_certificate = not argToBoolean(params.get("insecure", False))
+    proxy = argToBoolean(params.get("proxy", False))
     reliability = params.get("integration_reliability", "A - Completely reliable")
-    create_relationships = params.get("create_relationships", True)
+    create_relationships = argToBoolean(params.get("create_relationships", True))
+    create_indicators_from_relationships = argToBoolean(params.get("create_indicators_from_relationships", False))
 
     # Add create_relationships to args for commands
     args["create_relationships"] = create_relationships
+    args["create_indicators_from_relationships"] = create_indicators_from_relationships
 
     demisto.debug(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy, reliability=reliability)
+        client = Client(
+            base_url=base_url,
+            api_key=api_key,
+            verify=verify_certificate,
+            proxy=proxy,
+            reliability=reliability,
+        )
 
         if command == "test-module":
             result = test_module(client)

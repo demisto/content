@@ -42,6 +42,14 @@ configuration:
   required: false
   section: Collect
   advanced: true
+- display: Create indicators from relationships
+  name: create_indicators_from_relationships
+  additionalinfo: Whether to create indicators from relationships, When selected, the relationships will be created as indicators
+  type: 8
+  defaultvalue: 'false'
+  required: false
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
