@@ -71,11 +71,11 @@ class Client(BaseClient):
         self.api_key = api_key
         self.user_key = user_key
 
-    def get_events_request(self, params: dict, body: dict) -> dict:
+    def get_events_request(self, params_update: dict, body_update: dict) -> dict:
         """Retrieve the detections from AppSentinels.ai  API."""
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
-        params = self.base_params.copy().update(params)
-        body = self.base_params.copy().update(body)
+        params = self.base_params.copy().update(params_update)
+        body = self.base_params.copy().update(body_update)
         # body.update(params)
         return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params,
                                   resp_type="json")
@@ -315,8 +315,8 @@ def main():
         events: List[dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
-            result = test_module(client)
-            # result = client.get_events_request(params={}, body={})
+            # result = test_module(client)
+            result = client.get_events_request(params_update={}, body_update={})
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
