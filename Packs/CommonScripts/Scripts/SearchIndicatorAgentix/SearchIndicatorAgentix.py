@@ -200,7 +200,6 @@ def search_indicators(args):
                     including id, indicator_type, value, score, expirationStatus, investigationIDs,
                     lastSeen, and verdict
     """
-    demisto.debug(f"Preparing query values field for args: {args}")
     list_of_queries = prepare_query(args)
     demisto.debug(f"Generated {len(list_of_queries)} queries: {list_of_queries}")
     indicators = []
@@ -235,6 +234,7 @@ def search_indicators(args):
 
 def main():  # pragma: no cover
     args = demisto.args()
+    demisto.debug(f"Args: {args}")
 
     try:
         readable_output, outputs = search_indicators(args)
