@@ -56,7 +56,7 @@ filter _raw_log contains "BYF"
     xdm.target.user.username = parsedFields1 -> targetUser,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
 
-filter _raw_log not contains ("BYF", "Allow", "Detect")
+filter _raw_log not contains ("BYF", "Allow:", "Detect:")
 | alter
     priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"),0))
 | alter
