@@ -185,12 +185,12 @@ class TestGetCasesWithExtraData:
         
         # Mock extra data responses
         mock_extra_data_1 = {
-            "alerts": {"data": [{"alert_id": "alert_1"}, {"alert_id": "alert_2"}]},
+            "issues": {"data": [{"issue_id": "issue_1"}, {"issue_id": "issue_2"}]},
             "network_artifacts": [{"network": "artifact_1"}],
             "file_artifacts": [{"file": "artifact_1"}]
         }
         mock_extra_data_2 = {
-            "alerts": {"data": [{"alert_id": "alert_3"}]},
+            "issues": {"data": [{"issue_id": "issue_3"}]},
             "network_artifacts": [{"network": "artifact_2"}],
             "file_artifacts": [{"file": "artifact_2"}]
         }
