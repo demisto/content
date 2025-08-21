@@ -2610,7 +2610,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry for Target Device ID is required for Panorama Instance.
+      description: Prints an error entry if the Target Device ID is required for the Panorama instance.
       id: 2eaa27eb-9c2d-45ef-82b2-cab82fda9f45
       iscommand: false
       name: Target Device ID is required for Panorama Instance

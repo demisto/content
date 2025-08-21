@@ -247,7 +247,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Processes the context output from !pan-os-get-rulehitcounts and returns data about unused local rules, unused rules from Panorama, and rules from Panorama that have hits on some firewalls but not all.
+      description: Processes the context output from !pan-os-get-rulehitcounts and returns data about unused local rules, unused rules from Panorama, and rules from Panorama that have hits on some firewalls.
       id: 9fc55329-2f24-4922-8f78-eeeb2f5b18d6
       iscommand: false
       name: Analyze Rule Hit Count Data

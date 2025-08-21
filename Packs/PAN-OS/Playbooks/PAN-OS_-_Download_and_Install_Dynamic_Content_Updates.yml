@@ -5,7 +5,7 @@ description: |-
     - WildFire
     - GlobalProtect Clientless VPN
 
-  NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
+  NOTE: This playbook is intended for use with a single PAN-OS integration instance.
 id: 'PAN-OS - Download and Install Dynamic Content Updates'
 inputSections:
 - description: Generic group for inputs

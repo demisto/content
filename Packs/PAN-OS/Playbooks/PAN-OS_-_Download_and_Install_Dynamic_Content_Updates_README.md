@@ -5,7 +5,7 @@ This playbook automates the download and installation of the following Dynamic U
 - WildFire
 - GlobalProtect Clientless VPN
 
-NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
+NOTE: This playbook is intended for use with a single PAN-OS integration instance.
 
 ## Dependencies
 
