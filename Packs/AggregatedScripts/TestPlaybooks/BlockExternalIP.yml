@@ -1,0 +1,1041 @@
+id: ea5a9475-7914-444f-8f64-d8a75aee12c2
+version: 16
+vcShouldKeepItemLegacyProdMachine: false
+name: BlockExternalIP
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6c1722cd-e0c1-4655-80b1-b2977a904f8b
+    type: start
+    task:
+      id: 6c1722cd-e0c1-4655-80b1-b2977a904f8b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2dffdd93-da14-45d8-9b4e-b2b2ffe5dd11
+    type: regular
+    task:
+      id: 2dffdd93-da14-45d8-9b4e-b2b2ffe5dd11
+      version: -1
+      name: CIsco ASA list rules
+      description: Gets a list all rules for the supplied interface.
+      script: '|||cisco-asa-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0428c50a-4f33-43f1-ba98-cd24ac45b5ae
+    type: title
+    task:
+      id: 0428c50a-4f33-43f1-ba98-cd24ac45b5ae
+      version: -1
+      name: Prepare CiscoASA
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 59356e40-5e0c-427f-ab73-b344102ebe58
+    type: condition
+    task:
+      id: 59356e40-5e0c-427f-ab73-b344102ebe58
+      version: -1
+      name: Does rule exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Dest
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a7c98393-0ac2-439e-abcb-6c29f4a9844e
+    type: regular
+    task:
+      id: a7c98393-0ac2-439e-abcb-6c29f4a9844e
+      version: -1
+      name: Remove rule if exist
+      description: Deletes a rule.
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      interface_type:
+        complex:
+          root: CiscoASA.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Dest
+                iscontext: true
+              right:
+                value:
+                  simple: 8.8.8.8
+          accessor: InterfaceType
+      rule_id:
+        complex:
+          root: CiscoASA.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Dest
+                iscontext: true
+              right:
+                value:
+                  simple: 8.8.8.8
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 69936d93-ae23-449d-b0d9-31d86f2fa91d
+    type: title
+    task:
+      id: 69936d93-ae23-449d-b0d9-31d86f2fa91d
+      version: -1
+      name: 'Case 1: Running with cisco ASA twice'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: dbd0e297-7ae8-4522-859f-d99f34b4e8ae
+    type: regular
+    task:
+      id: dbd0e297-7ae8-4522-859f-d99f34b4e8ae
+      version: -1
+      name: BlockExternalIP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      brands:
+        simple: Cisco ASA
+      ip_list:
+        simple: 8.8.8.8
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 43ef0c7d-dece-4991-85ee-9b515775e347
+    type: condition
+    task:
+      id: 43ef0c7d-dece-4991-85ee-9b515775e347
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.IP
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.Brand
+            iscontext: true
+          right:
+            value:
+              simple: Cisco ASA
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 11d217b8-0314-4409-8bc7-cb9d2544b41e
+    type: regular
+    task:
+      id: 11d217b8-0314-4409-8bc7-cb9d2544b41e
+      version: -1
+      name: Clear context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 70be6d15-67c4-456b-ab15-be19719cc6ec
+    type: condition
+    task:
+      id: 70be6d15-67c4-456b-ab15-be19719cc6ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.IP
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.Brand
+            iscontext: true
+          right:
+            value:
+              simple: Cisco ASA
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 77865b8e-595e-476a-8f18-b1583da90cc8
+    type: regular
+    task:
+      id: 77865b8e-595e-476a-8f18-b1583da90cc8
+      version: -1
+      name: BlockExternalIP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      brands:
+        simple: Cisco ASA
+      ip_list:
+        simple: 8.8.8.8
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 05c9866e-75b4-48b6-ae87-c71c67cb7301
+    type: title
+    task:
+      id: 05c9866e-75b4-48b6-ae87-c71c67cb7301
+      version: -1
+      name: 'Case 2: Run BlockExternalIP with Panorama'
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 46715dea-4dd5-4ce1-b1b2-b40dd205f4d5
+    type: regular
+    task:
+      id: 46715dea-4dd5-4ce1-b1b2-b40dd205f4d5
+      version: -1
+      name: Pan-OS list address groups
+      description: Returns a list of address groups.
+      script: '|||pan-os-list-address-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1966.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3d8c53e9-6292-4211-8e54-6510b161b6c3
+    type: condition
+    task:
+      id: 3d8c53e9-6292-4211-8e54-6510b161b6c3
+      version: -1
+      name: Does "Blocked IPs - XSIAM" exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.AddressGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: Blocked IPs - XSIAM
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2126.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 98a5df17-5931-470b-813c-149f807c8c0a
+    type: regular
+    task:
+      id: 98a5df17-5931-470b-813c-149f807c8c0a
+      version: -1
+      name: Remove address group
+      description: Deletes an address group.
+      script: '|||pan-os-delete-address-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      name:
+        simple: Blocked IPs - XSIAM
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2316.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 9352597d-2742-45f5-86d2-d9c06cdfef10
+    type: regular
+    task:
+      id: 9352597d-2742-45f5-86d2-d9c06cdfef10
+      version: -1
+      name: BlockExternalIP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      brands:
+        simple: Panorama
+      ip_list:
+        simple: 8.8.8.8
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2486.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 610fda9f-661f-411a-a292-8b6f1286dc94
+    type: title
+    task:
+      id: 610fda9f-661f-411a-a292-8b6f1286dc94
+      version: -1
+      name: 'Case 3: Running with F5Silverline & tag'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 732c944f-479f-4d03-ba7a-c493c88a1e40
+    type: regular
+    task:
+      id: 732c944f-479f-4d03-ba7a-c493c88a1e40
+      version: -1
+      name: Silverline list ip objects
+      description: Gets a dynamic list of threatening IP addresses by the given list
+        type.
+      script: '|||f5-silverline-ip-objects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      list_type:
+        simple: denylist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b856e858-1ed3-4c72-9fd1-afeeab4a688b
+    type: condition
+    task:
+      id: b856e858-1ed3-4c72-9fd1-afeeab4a688b
+      version: -1
+      name: Is IP in the list?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: F5Silverline.IPObjectList.attributes.ip
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8/32
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: eac9a0c7-89bf-42db-a9d7-e29a80c62169
+    type: regular
+    task:
+      id: eac9a0c7-89bf-42db-a9d7-e29a80c62169
+      version: -1
+      name: F5 Delete IP from list
+      description: Delete an existing particular threatening IP address object by
+        its object ID or by its IP address. If both id and ip are given, delete operation
+        will be done by the given object_id.
+      script: '|||f5-silverline-ip-object-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      list_type:
+        simple: denylist
+      object_ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 60d3f289-91f1-425c-b671-7e177c530e53
+    type: regular
+    task:
+      id: 60d3f289-91f1-425c-b671-7e177c530e53
+      version: -1
+      name: BlockExternalIP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      brands:
+        simple: F5Silverline
+      ip_list:
+        simple: 8.8.8.8
+      tag:
+        simple: test
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 186b18d2-c6c0-48ff-aa4f-3593918bacd8
+    type: condition
+    task:
+      id: 186b18d2-c6c0-48ff-aa4f-3593918bacd8
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BlockExternalIPResults
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: BlockExternalIPResults.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: F5Silverline
+                accessor: Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: F5Silverline.IPObjectList.attributes.ip
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: F5Silverline.IPObjectList
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: F5Silverline.IPObjectList.attributes.ip
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8.8.8.8
+                accessor: meta.tags
+            iscontext: true
+          right:
+            value:
+              simple: test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a37b0e4c-94ca-43f4-8563-e4a11f835bcd
+    type: regular
+    task:
+      id: a37b0e4c-94ca-43f4-8563-e4a11f835bcd
+      version: -1
+      name: Silverline list ip objects
+      description: Gets a dynamic list of threatening IP addresses by the given list
+        type.
+      script: '|||f5-silverline-ip-objects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      list_type:
+        simple: denylist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3416.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7008644b-7f96-4263-9657-61d2a2bd8600
+    type: title
+    task:
+      id: 7008644b-7f96-4263-9657-61d2a2bd8600
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 5f60b4b1-f622-47b2-a6c3-5d8b1a0edb60
+    type: regular
+    task:
+      id: 5f60b4b1-f622-47b2-a6c3-5d8b1a0edb60
+      version: -1
+      name: Untitled Task
+      description: Commits a configuration to the Palo Alto firewall or Panorama,
+        validates if a commit was successful if using polling="true" otherwise does
+        not validate if the commit was successful. Committing to Panorama does not
+        push the configuration to the firewalls. To push the configuration, run the
+        panorama-push-to-device-group command.
+      script: '|||pan-os-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      polling:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2386.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_14_yes": 0.54,
+      "18_19_yes": 0.46,
+      "21_23_yes": 0.39,
+      "3_4_yes": 0.48,
+      "7_8_yes": 0.43,
+      "9_11_yes": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3750,
+        "width": 780,
+        "x": 450,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -5859,6 +5859,13 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "playbookID": "BlockExternalIp - Test",
+            "integrations": ["F5Silverline", "Cisco ASA", "Panorama"],
+            "instance_names": [
+                "panorama_instance_security_team"
+            ]
         }
     ],
     "skipped_tests": {

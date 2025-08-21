@@ -184,6 +184,8 @@ class PanOs:
         Returns:
             A boolean representing the existence of the value (True) or False.
         """
+        if isinstance(context, dict):
+            context = [context]
         for item in context:
             match = item.get(key, "")
             if match and match == value:
@@ -480,7 +482,7 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
                 {
                     "IP": ip,
                     "Message": failure_message,
-                    "result": "Failed",
+                    "Result": "Failed",
                     "Brand": used_integration,
                 }
             )
