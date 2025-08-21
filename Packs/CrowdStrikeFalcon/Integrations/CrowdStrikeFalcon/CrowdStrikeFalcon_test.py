@@ -4385,6 +4385,7 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
         "composite_id": mirrored_data["composite_id"],
         "display_name": mirrored_data["display_name"],
         "tags": mirrored_data["tags"],
+        "comments": mirrored_data["comments"],
     }
 
 
