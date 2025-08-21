@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 05ec3891-6313-46c7-807e-514fbd1c32b3
+    taskid: fc69d9f8-953c-45f8-880e-77737c704cb7
     type: regular
     task:
-      id: 05ec3891-6313-46c7-807e-514fbd1c32b3
+      id: fc69d9f8-953c-45f8-880e-77737c704cb7
       version: -1
       name: unisolate first endpoint
       description: Lifts containment on the host, which returns its network communications
@@ -131,7 +131,7 @@ tasks:
           - operator: FirstArrayElement
     separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
@@ -166,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1060
+          "y": 1220
         }
       }
     note: false
@@ -219,7 +219,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -288,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 1380
         }
       }
     note: false
@@ -329,7 +329,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1340
+          "y": 1540
         }
       }
     note: false
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1510
+          "y": 1710
         }
       }
     note: false
@@ -383,12 +383,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f5f87c1b-d2e7-4c56-9ed8-2c1b6fce94f4
+    taskid: 23765744-425b-454b-93ff-272223d4ab6a
     type: condition
     task:
-      id: f5f87c1b-d2e7-4c56-9ed8-2c1b6fce94f4
+      id: 23765744-425b-454b-93ff-272223d4ab6a
       version: -1
-      name: check if isolated success
+      name: check if isolated fail
       type: condition
       iscommand: false
       brand: ""
@@ -438,7 +438,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1700
+          "y": 1880
         }
       }
     note: false
@@ -459,16 +459,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1880
+          "y": 2050
         }
       }
     note: false
@@ -494,7 +491,7 @@ tasks:
       brand: CrowdstrikeFalcon
     nexttasks:
       '#none#':
-      - "13"
+      - "4"
     scriptarguments:
       ids:
         complex:
@@ -509,34 +506,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 178ef9ef-7f71-4c8b-a393-db4163a6ab6d
-    type: title
-    task:
-      id: 178ef9ef-7f71-4c8b-a393-db4163a6ab6d
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2270
+          "y": 1050
         }
       }
     note: false
@@ -551,7 +521,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2280,
+        "height": 2060,
         "width": 380,
         "x": 50,
         "y": 50
