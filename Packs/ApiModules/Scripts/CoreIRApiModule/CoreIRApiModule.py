@@ -4465,8 +4465,13 @@ def get_extra_data_for_case_id_command(client, args):
     request_data = {"incident_id": case_id, "alerts_limit": issues_limit, "full_alert_fields": True}
     demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
     response = client.get_extra_data_for_case_id(request_data)
-    return response
-
+    mapped_response = replace_response_names(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseExtraData",
+        outputs=mapped_response,
+        raw_response=mapped_response,
+    )
 
 def terminate_process_command(client, args) -> CommandResults:
     """

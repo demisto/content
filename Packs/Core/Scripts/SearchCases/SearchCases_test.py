@@ -1,4 +1,3 @@
-import pytest
 from SearchCases import extract_ids, replace_response_names, get_cases_with_extra_data, main
 
 
@@ -203,7 +202,7 @@ class TestGetCasesWithExtraData:
             mock_extra_data_2   # Second call to core-get-case-extra-data
         ]
         
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
         # Execute function
         result = get_cases_with_extra_data(args)
@@ -236,7 +235,7 @@ class TestGetCasesWithExtraData:
         """
         args = {"status": "closed"}
         mock_execute_command = mocker.patch("SearchCases.execute_command", return_value=[])
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
         result = get_cases_with_extra_data(args)
         
@@ -272,7 +271,7 @@ class TestGetCasesWithExtraData:
             mock_extra_data   # For case_3
         ]
         
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
         result = get_cases_with_extra_data(args)
         
@@ -293,7 +292,7 @@ class TestGetCasesWithExtraData:
         """
         args = {"status": "open"}
         mock_execute_command = mocker.patch("SearchCases.execute_command", return_value=None)
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
         result = get_cases_with_extra_data(args)
         
@@ -320,7 +319,7 @@ class TestGetCasesWithExtraData:
         
         mock_execute_command = mocker.patch("SearchCases.execute_command")
         mock_execute_command.side_effect = [mock_cases, mock_extra_data]
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
         result = get_cases_with_extra_data(args)
         
@@ -348,7 +347,7 @@ class TestGetCasesWithExtraData:
         
         mock_execute_command = mocker.patch("SearchCases.execute_command")
         mock_execute_command.side_effect = [mock_cases, mock_extra_data]
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
         result = get_cases_with_extra_data(args)
         
@@ -407,9 +406,9 @@ class TestMain:
         
         mock_execute_command = mocker.patch("SearchCases.execute_command")
         mock_execute_command.side_effect = [mock_cases, mock_extra_data]
-        mock_demisto = mocker.patch("SearchCases.demisto")
+        mocker.patch("SearchCases.demisto")
         
-        result = get_cases_with_extra_data(args)
+        get_cases_with_extra_data(args)
         
         # Verify that args was mutated to include case_id
         assert "case_id" in args

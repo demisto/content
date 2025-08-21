@@ -64,8 +64,8 @@ outputs:
 - contextPath: Core.Case.assigned_user_mail
   description: Email address of the assigned user.
   type: String
-- contextPath: Core.Case.high_severity_alert_count
-  description: Number of alerts with the severity HIGH.
+- contextPath: Core.Case.high_severity_issue_count
+  description: Number of issues with the severity HIGH.
   type: String
 - contextPath: Core.Case.host_count
   description: Number of hosts involved in the case.
@@ -76,11 +76,11 @@ outputs:
 - contextPath: Core.Case.assigned_user_pretty_name
   description: Full name of the user assigned to the case.
   type: String
-- contextPath: Core.Case.alert_count
-  description: Total number of alerts in the case.
+- contextPath: Core.Case.issue_count
+  description: Total number of issues in the case.
   type: number
-- contextPath: Core.Case.med_severity_alert_count
-  description: Number of alerts with the severity MEDIUM.
+- contextPath: Core.Case.med_severity_issue_count
+  description: Number of issues with the severity MEDIUM.
   type: number
 - contextPath: Core.Case.user_count
   description: Number of users involved in the case.
@@ -90,8 +90,8 @@ outputs:
     Calculated severity of the case. Valid values are:
     "low","medium","high".
   type: String
-- contextPath: Core.Case.low_severity_alert_count
-  description: Number of alerts with the severity LOW.
+- contextPath: Core.Case.low_severity_issue_count
+  description: Number of issues with the severity LOW.
   type: String
 - contextPath: Core.Case.status
   description: |
@@ -110,7 +110,7 @@ outputs:
   description: Date and time the case was created on Cortex XDR.
   type: date
 - contextPath: Core.Case.detection_time
-  description: Date and time that the first alert occurred in the case.
+  description: Date and time that the first issue occurred in the case.
   type: date
 - contextPath: Core.Case.modification_time
   description: Date and time that the case was last modified.
