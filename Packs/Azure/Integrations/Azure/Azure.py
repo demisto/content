@@ -1144,6 +1144,11 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers\
+                    /Microsoft.Network/networkSecurityGroups?"
+        return self.http_request(method="GET", full_url=full_url)
+
 
 """ HELPER FUNCTIONS """
 
@@ -1934,12 +1939,51 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
     )
 
 
-def nsg_security_groups_list_command() -> CommandResults:
-    pass
+def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+        List all network security groups.
+    Args:
+        client: The MSClient
+        params: configuration parameters
+        args: args dictionary.
+
+    Returns:
+        A detailed list of all network security groups
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    network_groups = response.json().get("value", [])
+
+    # TODO maybe to flatten "properties"?
+    hr = tableToMarkdown("Network Security Groups", network_groups)
+    return CommandResults(
+        raw_response=response,
+        outputs_prefix="Azure.SecurityGroup",
+        outputs_key_field="id",
+        outputs=network_groups,
+        readable_output=hr
+    )
 
 
-def nsg_security_rule_get_command() -> CommandResults:
-    pass
+def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name", "")
+    security_rule_name = args.get("security_rule_name", "")
+    # TODO to add a check
+    security_rule_list = argToList(security_rule_name)
+
+    rules = [
+        client.get_rule(
+            security_group=security_group_name,
+            rule_name=rule,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+        )
+        for rule in security_rule_list
+    ]
+    return format_rule(rules, security_rule_name)
 
 
 def nsg_security_rule_create_command() -> CommandResults:
