@@ -142,7 +142,7 @@ class Command:
         """
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
         raw_response = demisto.executeCommand(self.name, self.args)
-        demisto.debug(f"[Command] Received response for '{self.name}'.")
+        demisto.debug(f"[Command] Received response for '{self.name}'. Raw response: {raw_response}")
 
         verbose_results = []
         for result in raw_response:
