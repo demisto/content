@@ -1934,6 +1934,38 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
     )
 
 
+def nsg_security_groups_list_command() -> CommandResults:
+    pass
+
+
+def nsg_security_rule_get_command() -> CommandResults:
+    pass
+
+
+def nsg_security_rule_create_command() -> CommandResults:
+    pass
+
+
+def nsg_security_rule_delete_command() -> CommandResults:
+    pass
+
+
+def nsg_resource_group_list_command() -> CommandResults:
+    pass
+
+
+def nsg_subscriptions_list_command() -> CommandResults:
+    pass
+
+
+def nsg_network_interfaces_list_command() -> CommandResults:
+    pass
+
+
+def nsg_public_ip_addresses_list_command() -> CommandResults:
+    pass
+
+
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
     """Currently not supported in the integration
     Remove a member from a group by group id and user id.
@@ -2089,6 +2121,14 @@ def main():
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
+            "azure-nsg-security-groups-list": nsg_security_groups_list_command,
+            "azure-nsg-security-rule-get": nsg_security_rule_get_command,
+            "azure-nsg-security-rule-create": nsg_security_rule_create_command,
+            "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
+            "azure-nsg-subscriptions-list": nsg_subscriptions_list_command,
+            "azure-nsg-resource-group-list": nsg_resource_group_list_command,
+            "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
+            "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
         }
         if command == "test-module" and connector_id:
             demisto.debug(f"Running health check for connector ID: {connector_id}")
