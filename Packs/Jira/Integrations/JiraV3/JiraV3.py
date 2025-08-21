@@ -264,7 +264,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
         # data about the attachments in the issue), otherwise, it won't get returned in the query.
         query_params |= {"expand": "renderedFields,transitions,names", "fields": ["*all"]}
-        return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/search", params=query_params)
+        return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/search/jql", params=query_params)
 
     # Board Requests
     def get_issues_from_backlog(
@@ -1493,24 +1493,23 @@ def prepare_pagination_args(page: int | None = None, page_size: int | None = Non
         return {"start_at": DEFAULT_PAGE, "max_results": limit}
 
 
-def create_query_params(jql_query: str, start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+def create_query_params(jql_query: str, next_page_token: str = "", max_results: int | None = None) -> Dict[str, Any]:
     """Create the query parameters when issuing a query.
 
     Args:
         jql_query (str): The JQL query. The Jira Query Language string, used to search for issues in a project using
         SQL-like syntax.
-        start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+        next_page_token (str | None, optional): A token to the next page from a previous query.
         max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
 
     Returns:
         Dict[str, Any]: The query parameters to be sent when issuing a query request to the API.
     """
-    start_at = start_at or 0
     max_results = max_results or DEFAULT_PAGE_SIZE
-    demisto.debug(f"Querying with: {jql_query}\nstart_at: {start_at}\nmax_results: {max_results}\n")
+    demisto.debug(f"Querying with: {jql_query}\nnext_page_token: {next_page_token}\nmax_results: {max_results}\n")
     return {
         "jql": jql_query,
-        "startAt": start_at,
+        "nextPageToken": next_page_token,
         "maxResults": max_results,
     }
 
@@ -2056,15 +2055,19 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
         List[CommandResults] | CommandResults: CommandResults to return to XSOAR.
     """
     jql_query = args.get("query", "")
-    start_at = arg_to_number(args.get("start_at", ""))
+    next_page_token = args.get("next_page_token", "")
     max_results = arg_to_number(args.get("max_results", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     headers = args.get("headers", "")
     specific_fields = argToList(args.get("fields", ""))
-    query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
+    query_params = create_query_params(jql_query=jql_query, next_page_token=next_page_token, max_results=max_results)
     res = client.run_query(query_params=query_params)
     if issues := res.get("issues", []):
         issue_fields_id_to_name_mapping = res.get("names", {}) or {}
         command_results: list[CommandResults] = []
+        command_results.append(CommandResults(
+            outputs_prefix="Query",
+            outputs=res.get("nextPageToken", ""),
+            ))
         for issue in issues:
             markdown_dict, outputs = create_issue_md_and_outputs_dict(
                 issue_data=issue,
