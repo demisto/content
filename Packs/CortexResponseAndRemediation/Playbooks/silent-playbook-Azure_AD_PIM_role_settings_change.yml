@@ -456,8 +456,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -554.75,
-          "y": 1342
+          "x": -554.5,
+          "y": 1089
         }
       }
     note: false
@@ -494,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -554.75,
-          "y": 1212
+          "x": -554.5,
+          "y": 969
         }
       }
     note: false
@@ -507,10 +507,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: f419afa6-d69f-45f1-a5be-33d955050b6a
+    taskid: 201ff51b-370c-4f24-af10-18a200097b28
     type: regular
     task:
-      id: f419afa6-d69f-45f1-a5be-33d955050b6a
+      id: 201ff51b-370c-4f24-af10-18a200097b28
       version: -1
       name: Save detection results
       description: Saves a context key with a value of 1 if the user is risky in Azure AD, 0 otherwise.
@@ -564,52 +564,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -554.75,
-          "y": 1466
+          "x": -554.5,
+          "y": 1211
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 0d707528-17eb-4308-a565-eb0d954c99bd
-    type: regular
-    task:
-      id: 0d707528-17eb-4308-a565-eb0d954c99bd
-      version: -1
-      name: Get Azure risky users
-      description: Returns a list of all risky users and their properties.
-      script: '|||azure-risky-users-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "55"
-    scriptarguments:
-      risk_level:
-        simple: high
-      updated_after:
-        simple: 2 days
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -554.5,
-          "y": 968
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -647,10 +609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4b8a97d1-60d5-45d6-adec-169b86962add
+    taskid: 634280db-620a-43a8-9380-8504b29c4b57
     type: title
     task:
-      id: 4b8a97d1-60d5-45d6-adec-169b86962add
+      id: 634280db-620a-43a8-9380-8504b29c4b57
       version: -1
       name: Azure AD Risk
       type: title
@@ -659,7 +621,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+      - "18"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -697,7 +659,7 @@ tasks:
       {
         "position": {
           "x": 726.25,
-          "y": 1606
+          "y": 1368
         }
       }
     note: false
@@ -740,22 +702,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: d2b6bd04-ace8-4a01-9796-1445ff2ede4e
+    taskid: 107df53b-dbb6-45ef-9edf-e3181b0cb457
     type: regular
     task:
-      id: d2b6bd04-ace8-4a01-9796-1445ff2ede4e
+      id: 107df53b-dbb6-45ef-9edf-e3181b0cb457
       version: -1
       name: Get user risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: get-user-data
     nexttasks:
       '#none#':
       - "29"
     scriptarguments:
-      user_id:
+      user_name:
         complex:
           root: alert
           accessor: username
@@ -780,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d9179648-e64c-4aba-b49a-a56ff0118a50
+    taskid: c06a5e54-2465-47b2-a567-3458d29905b0
     type: regular
     task:
-      id: d9179648-e64c-4aba-b49a-a56ff0118a50
+      id: c06a5e54-2465-47b2-a567-3458d29905b0
       version: -1
       name: Save detection results
       description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
@@ -801,12 +763,12 @@ tasks:
         simple: CoreRiskyUserDetectionsCount
       value:
         complex:
-          root: Core.RiskyUser
+          root: UserData.RiskLevel
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Core.RiskyUser..risk_level
+                  simple: UserData.RiskLevel
                 iscontext: true
               right:
                 value:
@@ -863,23 +825,41 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: efc2798d-bbc1-4dd6-ba67-abec796a0e83
+    taskid: 4a0dcbe4-5dc3-4ddb-b9eb-a357c6fc76cb
     type: regular
     task:
-      id: efc2798d-bbc1-4dd6-ba67-abec796a0e83
+      id: 4a0dcbe4-5dc3-4ddb-b9eb-a357c6fc76cb
       version: -1
       name: Enrich the Caller IP address
-      description: Checks the reputation of an IP address in Threat Intelligence integrations.
-      script: '|||ip'
+      description: This script gathers ip reputation data from multiple integrations and returns an ip entity with consolidated information to the context.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: ip-enrichment
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
-      ip:
-        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.additionalDetails.[7].value}
+      additional_fields:
+        simple: "true"
+      external_enrichment:
+        simple: "true"
+      ip_list:
+        complex:
+          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.OriginalAlert.event.raw_log.additionalDetails.key
+                iscontext: true
+              right:
+                value:
+                  simple: ipaddr
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -887,7 +867,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 854
+          "y": 848
         }
       }
     note: false
@@ -921,7 +901,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "54"
+      - "60"
       True Positive:
       - "43"
     separatecontext: false
@@ -957,7 +937,7 @@ tasks:
       {
         "position": {
           "x": 726.25,
-          "y": 1742
+          "y": 1479
         }
       }
     note: false
@@ -969,10 +949,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 859374b8-7dac-40bf-a569-c5cc15ad90f1
+    taskid: 29fbc140-dd93-4234-a6d4-69425f19e36e
     type: regular
     task:
-      id: 859374b8-7dac-40bf-a569-c5cc15ad90f1
+      id: 29fbc140-dd93-4234-a6d4-69425f19e36e
       version: -1
       name: Save IP reputation
       description: Saves a context key indicating 1 if the IP is malicious and 0 if benign.
@@ -988,27 +968,18 @@ tasks:
         simple: MaliciousIPCount
       value:
         complex:
-          root: DBotScore
+          root: IPEnrichment
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
           - - operator: greaterThanOrEqual
               left:
                 value:
-                  simple: DBotScore.Score
+                  simple: IPEnrichment.MaxScore
                 iscontext: true
               right:
                 value:
                   simple: "3"
               ignorecase: true
-          accessor: Indicator
+          accessor: Value
           transformers:
           - operator: count
     separatecontext: false
@@ -1017,7 +988,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 967
+          "y": 969
         }
       }
     note: false
@@ -1048,7 +1019,7 @@ tasks:
       {
         "position": {
           "x": 1237,
-          "y": 2011
+          "y": 1859
         }
       }
     note: false
@@ -1126,7 +1097,7 @@ tasks:
       {
         "position": {
           "x": 1237,
-          "y": 2517
+          "y": 2365
         }
       }
     note: false
@@ -1155,36 +1126,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: efba9d28-2546-4a90-82b0-eda68da106e6
+    taskid: 349c4513-ef56-4786-8eb4-02b65744343f
     type: regular
     task:
-      id: efba9d28-2546-4a90-82b0-eda68da106e6
+      id: 349c4513-ef56-4786-8eb4-02b65744343f
       version: -1
       name: Revoke user session
       description: |-
-        Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-        Permission: Directory.AccessAsUser.All(Delegated).
-      script: '|||msgraph-user-session-revoke'
+        This script clears user sessions across multiple integrations for a list of usernames.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: clear-user-session
     nexttasks:
       '#none#':
       - "52"
     scriptarguments:
-      user:
-        complex:
-          root: Core.OriginalAlert.raw_abioc.event.identity_orig.user
-          accessor: userPrincipalName
-          transformers:
-          - operator: uniq
+      user_name:
+        simple: ${Core.OriginalAlert.raw_abioc.event.identity_orig.user.userPrincipalName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1237,
-          "y": 2130
+          "y": 1976
         }
       }
     note: false
@@ -1196,37 +1162,33 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 2b21d939-a654-43e8-affd-e9c8c3476f3a
+    taskid: a0b73c29-b200-4e36-833f-599780ef55e8
     type: regular
     task:
-      id: 2b21d939-a654-43e8-affd-e9c8c3476f3a
+      id: a0b73c29-b200-4e36-833f-599780ef55e8
       version: -1
       name: Disable source user
       description: |-
-        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables a user,
-        but does not terminate an existing session. Supported only in a self-deployed app flow with the
-        Permission: Directory.AccessAsUser.All(Delegated).
-      script: '|||msgraph-user-account-disable'
+        This script disables users for multiple services.
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
+      scriptName: disable-user
     nexttasks:
       '#none#':
       - "42"
     scriptarguments:
-      user:
-        complex:
-          root: Core.OriginalAlert.raw_abioc.event.identity_orig.user
-          accessor: userPrincipalName
-          transformers:
-          - operator: uniq
+      brands:
+        simple: Microsoft Graph User
+      user_email:
+        simple: ${Core.OriginalAlert.event.identity_orig.user.userPrincipalName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 989,
-          "y": 2660
+          "y": 2508
         }
       }
     note: false
@@ -1269,7 +1231,7 @@ tasks:
       {
         "position": {
           "x": 1504,
-          "y": 2832
+          "y": 2739
         }
       }
     note: false
@@ -1294,7 +1256,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "61"
     scriptarguments:
       key:
         simple: CloseReason
@@ -1306,7 +1268,7 @@ tasks:
       {
         "position": {
           "x": 1237,
-          "y": 1882
+          "y": 1621
         }
       }
     note: false
@@ -1568,10 +1530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 9a53a683-6cbc-4482-8ba1-43186cf6a47a
+    taskid: cde18382-8cee-46f4-b710-3d13efcb95a9
     type: condition
     task:
-      id: 9a53a683-6cbc-4482-8ba1-43186cf6a47a
+      id: cde18382-8cee-46f4-b710-3d13efcb95a9
       version: -1
       name: Check if hard remediation is needed
       description: |-
@@ -1590,7 +1552,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "42"
+      - "60"
       "Yes":
       - "53"
     separatecontext: false
@@ -1640,14 +1602,6 @@ tasks:
         - operator: greaterThan
           left:
             value:
-              simple: AzureRiskyUserCount
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-        - operator: greaterThan
-          left:
-            value:
               simple: Defender365AlertsCount
             iscontext: true
           right:
@@ -1658,7 +1612,7 @@ tasks:
       {
         "position": {
           "x": 1237,
-          "y": 2261
+          "y": 2109
         }
       }
     note: false
@@ -1689,7 +1643,7 @@ tasks:
       {
         "position": {
           "x": 1237,
-          "y": 2404
+          "y": 2252
         }
       }
     note: false
@@ -1716,61 +1670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 726.25,
-          "y": 2982
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: 534515d8-2df2-438e-9b82-a0059e506e06
-    type: regular
-    task:
-      id: 534515d8-2df2-438e-9b82-a0059e506e06
-      version: -1
-      name: Save risky user results
-      description: Saves a context key with a value of 1 if the user is risky in Core IR, 0 otherwise.
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: AzureRiskyUserCount
-      value:
-        complex:
-          root: AzureRiskyUsers.RiskyUser
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: AzureRiskyUsers.RiskyUser.userPrincipalName
-                iscontext: true
-              right:
-                value:
-                  simple: Core.OriginalAlert.event.cloud_best_identity_match
-                iscontext: true
-              ignorecase: true
-          transformers:
-          - operator: count
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -554.5,
-          "y": 1088
+          "x": 1504,
+          "y": 2862
         }
       }
     note: false
@@ -1884,8 +1785,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3210,
-          "y": 846
+          "x": 3130,
+          "y": 849
         }
       }
     note: false
@@ -1921,8 +1822,71 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3210,
-          "y": 973
+          "x": 3130,
+          "y": 976
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 965a8150-a1f4-4b1d-aa0c-a647d502e234
+    type: title
+    task:
+      id: 965a8150-a1f4-4b1d-aa0c-a647d502e234
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 726.25,
+          "y": 2252
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: fede6f66-3b85-4a02-989b-e3f3ae0582b9
+    type: regular
+    task:
+      id: fede6f66-3b85-4a02-989b-e3f3ae0582b9
+      version: -1
+      name: Increase alert severity
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseAlertSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237,
+          "y": 1740
         }
       }
     note: false
@@ -1936,20 +1900,20 @@ view: |-
   {
     "linkLabelsPosition": {
       "33_43_True Positive": 0.53,
-      "33_54_#default#": 0.9,
+      "33_60_#default#": 0.22,
       "38_41_Disable user": 0.85,
       "38_42_Do not disable user": 0.12,
       "47_26_#default#": 0.11,
       "47_51_yes": 0.6,
-      "52_42_#default#": 0.41,
+      "52_60_#default#": 0.44,
       "56_58_#default#": 0.22,
       "57_26_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 3016,
-        "width": 4145.75,
-        "x": -554.75,
+        "height": 2896,
+        "width": 4065.5,
+        "x": -554.5,
         "y": 26
       }
     }
@@ -1960,3 +1924,5 @@ issilent: true
 fromversion: 8.9.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
