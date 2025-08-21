@@ -106,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 71d82ec5-f65a-4efe-81b4-8681d95b3068
+    taskid: 4faf8801-f114-4d35-b879-ab8d39cf0806
     type: regular
     task:
-      id: 71d82ec5-f65a-4efe-81b4-8681d95b3068
+      id: 4faf8801-f114-4d35-b879-ab8d39cf0806
       version: -1
       name: Search for additional discovery alerts in the incident
       description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
@@ -1194,16 +1194,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f21c6a71-46c5-4549-96d7-5186254fb95f
+    taskid: d572e680-b637-414d-894f-d7203236257e
     type: regular
     task:
-      id: f21c6a71-46c5-4549-96d7-5186254fb95f
+      id: d572e680-b637-414d-894f-d7203236257e
       version: -1
       name: Logoff user from client host
       description: |-
-        Logs off the user by using the logoff command for the active user session's ID.
-        Note: the regex relies on the fact that interactively logged in users will have an active "console" session in Windows machines.
-      script: '|||core-run-script-execute-commands'
+        Run a shell command on a specific endpoint and return its result.
+      script: '|||core-execute-command'
       type: regular
       iscommand: true
       brand: ""
@@ -1213,7 +1212,15 @@ tasks:
     scriptarguments:
       command_type:
         simple: powershell
-      commands:
+      endpoint_ids:
+        complex:
+          root: EndpointData
+          accessor: ID
+          transformers:
+          - operator: uniq
+      is_raw_command:
+        simple: "true"
+      command:
         complex:
           root: Core.ScriptResult.results.executed_command.command_output
           filters:
@@ -1253,14 +1260,6 @@ tasks:
                 value:
                   simple: 'logoff '
               suffix: {}
-      endpoint_ids:
-        complex:
-          root: EndpointData
-          accessor: ID
-          transformers:
-          - operator: uniq
-      is_raw_command:
-        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2193,3 +2192,4 @@ tests:
 fromversion: 6.10.0
 contentitemexportablefields:
   contentitemfields: {}
+issilent: false

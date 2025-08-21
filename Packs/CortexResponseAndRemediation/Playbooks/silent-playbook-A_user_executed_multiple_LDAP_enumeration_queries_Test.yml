@@ -18,9 +18,7 @@ description: |-
 
   - Enrich the user that executed the queries
   - Check if the user was created recently
-
-  - Search for additional discovery alerts in the incident
-
+  - Search for additional discovery alerts in the alert
   - Check user groups and roles to determine if the user is unprivileged
   - Check user querying frequency to detect anomalies
   - Get host risk level
@@ -810,13 +808,13 @@ tasks:
     task:
       brand: ''
       description: Searches for additional alerts in the incident that may further indicate user attempts to enumerate Active Directory.
-      id: 71d82ec5-f65a-4efe-81b4-8681d95b3068
+      id: 4faf8801-f114-4d35-b879-ab8d39cf0806
       iscommand: false
       name: Search for additional discovery alerts in the incident
       scriptName: SearchAlertsV2
       type: regular
       version: -1
-    taskid: 71d82ec5-f65a-4efe-81b4-8681d95b3068
+    taskid: 4faf8801-f114-4d35-b879-ab8d39cf0806
     timertriggers: []
     type: regular
     view: |-
@@ -969,46 +967,6 @@ tasks:
     scriptarguments:
       command_type:
         simple: powershell
-      commands:
-        complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: Core.ScriptResult.results.executed_command.command_output
-              operator: containsGeneral
-              right:
-                iscontext: true
-                value:
-                  simple: UsernameWithoutPrefix
-              ignorecase: true
-          - - ignorecase: true
-              left:
-                iscontext: true
-                value:
-                  simple: Core.ScriptResult.results.executed_command.command_output
-              operator: containsGeneral
-              right:
-                value:
-                  simple: Active
-          root: Core.ScriptResult.results.executed_command.command_output
-          transformers:
-          - args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (?<=\bconsole\s+)\d+
-              unpack_matches: {}
-            operator: RegexExtractAll
-          - args:
-              prefix:
-                value:
-                  simple: 'logoff '
-              suffix: {}
-            operator: concat
       endpoint_ids:
         complex:
           root: EndpointData
@@ -1017,20 +975,58 @@ tasks:
           - operator: uniq
       is_raw_command:
         simple: 'true'
+      command:
+        complex:
+          root: Core.ScriptResult.results.executed_command.command_output
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: UsernameWithoutPrefix
+                iscontext: true
+              ignorecase: true
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.executed_command.command_output
+                iscontext: true
+              right:
+                value:
+                  simple: Active
+              ignorecase: true
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=\bconsole\s+)\d+
+              unpack_matches: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'logoff '
+              suffix: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      description: 'Logs off the user by using the logoff command for the active user session''s ID.
-
-        Note: the regex relies on the fact that interactively logged in users will have an active "console" session in Windows machines.'
-      id: f21c6a71-46c5-4549-96d7-5186254fb95f
+      description: 'Run a shell command on a specific endpoint and return its result.'
+      id: d572e680-b637-414d-894f-d7203236257e
       iscommand: true
       name: Logoff user from client host
-      script: '|||core-run-script-execute-commands'
+      script: '|||core-execute-command'
       type: regular
       version: -1
-    taskid: f21c6a71-46c5-4549-96d7-5186254fb95f
+    taskid: d572e680-b637-414d-894f-d7203236257e
     timertriggers: []
     type: regular
     view: |-
