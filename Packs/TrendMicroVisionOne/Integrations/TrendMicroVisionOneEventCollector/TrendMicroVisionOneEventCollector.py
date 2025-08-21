@@ -1,5 +1,5 @@
 import hashlib
-from enum import Enum, IntEnum
+from enum import Enum
 from typing import Any
 
 import dateparser
@@ -23,10 +23,7 @@ VENDOR = "trend_micro"
 ONE_YEAR = 365
 
 
-class Timeouts(IntEnum):  # In seconds
-    FETCH_EVENTS = 180
-    HTTP_CONNECTION = 60
-    HTTP_READ = 120
+FETCH_EVENTS_TIMEOUT = 180  # 3 minutes
 
 
 class LastRunLogsStartTimeFields(Enum):
@@ -151,18 +148,11 @@ class Client(BaseClient):
         url = next_link or f"{self.base_url}/{self.API_VERSION}{url_suffix}"
         demisto.info(f"Sending the http request to {url=} with {params=}")
 
-        timeout = (
-            Timeouts.HTTP_CONNECTION.value,  # Max seconds to wait for a connection to the server to be established
-            Timeouts.HTTP_READ.value,  # Max seconds to wait between streamed bytes of the response body from the server
-        )
-        # These timeout values do *NOT* impose a strict upper bound on the total request execution time
-
         return self._http_request(
             method=method,
             full_url=url,
             params=params,
             headers=request_headers,
-            timeout=timeout,
         )
 
     def get_logs(
@@ -1038,7 +1028,7 @@ def fetch_events(
     fetch_limit = last_run.pop("max_fetch", limit)
     is_finished = False
 
-    with ExecutionTimeout(seconds=Timeouts.FETCH_EVENTS.value):
+    with ExecutionTimeout(seconds=FETCH_EVENTS_TIMEOUT):
         demisto.debug(f"Starting to fetch up to {fetch_limit} events per type: {', '.join(log_types)}")
         get_logs_kwargs = {"client": client, "first_fetch": first_fetch, "last_run": last_run, "limit": fetch_limit}
 

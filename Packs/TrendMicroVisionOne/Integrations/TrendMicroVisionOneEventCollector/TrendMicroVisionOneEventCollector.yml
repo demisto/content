@@ -44,7 +44,7 @@ configuration:
   - Observed Attack Techniques
   - Search Detections
   - Audit
-  required: true
+  required: false
   section: Collect
 - display: Fetch events
   name: isFetchEvents
