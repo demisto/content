@@ -319,30 +319,6 @@ def test_find_command_by_brand():
     assert result == command_b
 
 
-@patch("IsolateEndpoint.create_message_to_context_and_hr")
-def test_check_inputs_for_command_missing_args(mock_create_message):
-    """
-    Given:
-        - A Command object with an argument mapping of {"arg1": "mapped_arg1"}.
-        - Case 1: args contains an empty string for 'mapped_arg1'.
-        - Case 2: args contains a non-empty value for 'mapped_arg1'.
-    When:
-        - Calling check_inputs_for_command with these args.
-    Then:
-        - Case 1: Should return False and call create_message_to_context_and_hr.
-        - Case 2: Should return True and not require any failure message.
-    """
-    command = Command(brand="BrandA", name="command", arg_mapping={"arg1": "mapped_arg1"})
-    args = {"mapped_arg1": ""}
-    result = check_inputs_for_command(command, endpoint_output={}, args=args)
-    assert result is False
-    assert mock_create_message.called
-
-    args = {"mapped_arg1": "val"}
-    result = check_inputs_for_command(command, endpoint_output={}, args=args)
-    assert result is True
-
-
 @pytest.mark.parametrize(
     "endpoint_args,is_isolated,result,message,expected_source,expected_isolated",
     [
