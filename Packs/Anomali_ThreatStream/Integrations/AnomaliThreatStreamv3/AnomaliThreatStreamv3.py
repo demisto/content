@@ -749,7 +749,7 @@ def ips_reputation_command(
     ips = argToList(ip, ",")
     for single_ip in ips:
         if is_ip_internal(single_ip):
-            print(f"Skipping internal IP: {single_ip}")
+            demisto.info(f"Skipping internal IP: {single_ip}")
             continue
 
         results.append(get_ip_reputation(client, score_calc, single_ip, status, threshold, threat_model_association))

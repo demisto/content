@@ -438,7 +438,7 @@ def ips_reputation_command(client: Client, ip, threshold=None, status="active,in
     ips = argToList(ip, ',')
     for single_ip in ips:
         if is_ip_internal(single_ip):
-            print(f"Skipping internal IP: {single_ip}")
+            demisto.info(f"Skipping internal IP: {single_ip}")
             continue
 
         get_ip_reputation(client, single_ip, threshold, status)

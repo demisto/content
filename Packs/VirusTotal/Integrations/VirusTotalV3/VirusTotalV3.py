@@ -1955,7 +1955,7 @@ def ip_command(
         raise_if_ip_not_valid(ip)
 
         if is_ip_internal(ip):
-            print(f"Skipping internal IP: {ip}")
+            demisto.info(f"Skipping internal IP: {ip}")
             continue
 
         if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
