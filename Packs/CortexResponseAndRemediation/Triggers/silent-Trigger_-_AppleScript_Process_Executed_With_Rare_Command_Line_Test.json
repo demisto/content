@@ -25,5 +25,6 @@
             ]
         }
     },
-    "issilent": true
+    "issilent": true,
+    "is_auto_enabled": true
 }
