@@ -221,7 +221,143 @@ def test_is_debug_various(input_val, expected):
     """
     assert is_debug_entry(input_val) is expected
 
+@pytest.mark.parametrize("data, exceptions, expected", [
+    # --- Case 1: simple dict with None, empty list, empty dict ---
+    (
+        {"a": None, "b": [], "c": {}, "d": 1},
+        None,
+        {"d": 1}
+    ),
+    # --- Case 2: keep None if key in exceptions ---
+    (
+        {"a": None, "b": [], "c": {}, "d": 1},
+        {"a"},
+        {"a": None, "d": 1}
+    ),
+    # --- Case 3: nested dict with empty values ---
+    (
+        {"outer": {"inner1": None, "inner2": []}, "x": "val"},
+        None,
+        {"x": "val"}
+    ),
+    # --- Case 4: nested dict with exceptions ---
+    (
+        {"outer": {"inner1": None, "inner2": []}, "x": "val"},
+        {"inner1"},
+        {"outer": {"inner1": None}, "x": "val"}
+    ),
+    # --- Case 5: list of dicts ---
+    (
+        [{"a": None}, {"b": 2}, {}, []],
+        None,
+        [{"b": 2}]
+    ),
+    # --- Case 6: list of dicts with exceptions ---
+    (
+        [{"a": None}, {"b": 2}, {}, []],
+        {"a"},
+        [{"a": None}, {"b": 2}]
+    ),
+    # --- Case 7: deeply nested structures ---
+    (
+        {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"},
+        None,
+        {"keep": "ok"}
+    ),
+    (
+        {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"},
+        {"lvl3"},
+        {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"}
+    ),
+])
+def test_remove_empty_elements_with_exceptions(data, exceptions, expected):
+    """
+    Given:
+        - A dictionary or list with None, empty dicts/lists, and some values.
+        - Optionally, an exceptions set specifying which keys should not be removed.
+    When:
+        - remove_empty_elements_with_exceptions is called.
+    Then:
+        - The output should have empty values stripped unless they are in exceptions.
+    """
+    result = remove_empty_elements_with_exceptions(data, exceptions)
+    assert result == expected
+    
+@pytest.mark.parametrize("cvss_input, expected_score", [
+    (7.5, 7.5),
+    ("8.2", 8.2),
+    (0, 0.0),
+    ({"Score": 9.1}, 9.1),
+    ("Critical", None),
+    ({"Score":"Critical"}, None),
+    ("N/A", None),
+    ("garbage", None),
+    (None, None),
+])
+def test_extract_cvss_score(cvss_input, expected_score):
+    """
+    Given:
+        - Various formats for a CVSS score.
+    When:
+        - extract_cvss_score is called.
+    Then:
+        - It should return the numeric score if possible, otherwise None.
+    """
+    assert extract_cvss_score(cvss_input) == expected_score
 
+@pytest.mark.parametrize("score, expected_rating", [
+    (0.0, "None"),
+    (3.5, "Low"),
+    (4.0, "Medium"),
+    (6.9, "Medium"),
+    (7.5, "High"),
+    (9.0, "Critical"),
+    (10.0, "Critical"),
+    (-1.0, "Unknown"),
+    (11.0, "Unknown"),
+])
+def test_convert_cvss_score_to_rating(score, expected_rating):
+    """
+    Given:
+        - A numeric CVSS score.
+    When:
+        - convert_cvss_score_to_rating is called.
+    Then:
+        - It should return the correct severity string or 'Unknown' if out of bounds.
+    """
+    assert convert_cvss_score_to_rating(score) == expected_rating
+    
+    
+@pytest.mark.parametrize("cvss_input, expected_rating", [
+    # Numeric values → mapped to rating
+    (0.0, "None"),
+    (2.5, "Low"),
+    (7.0, "High"),
+    (9.8, "Critical"),
+    # Dict with nested score
+    ({"Score": 5.5}, "Medium"),
+    ({"Score": "9.9"}, "Critical"),
+    # Textual severity strings
+    ("high", "High"),
+    ("Critical", "Critical"),
+    ("medium", "Medium"),
+    ("none", "None"),
+    # Special/invalid
+    ("N/A", None),
+    ("garbage", None),
+    (None, None),
+])
+def test_extract_cvss_rating(cvss_input, expected_rating):
+    """
+    Given:
+        - Various CVSS inputs (numeric, dict, textual, invalid).
+    When:
+        - extract_cvss_rating is called.
+    Then:
+        - It should return the correct severity string or None if invalid.
+    """
+    assert extract_cvss_rating(cvss_input) == expected_rating
+    
 # -------------------------------------------------------------------------------------------------
 # -- Level 2: Core Class Units (Command)
 # -------------------------------------------------------------------------------------------------
@@ -260,7 +396,7 @@ def test_batch_executor_init_raises_on_empty_commands():
     Then:
         - A ValueError is raised.
     """
-    with pytest.raises(ValueError, match="called with no commands"):
+    with pytest.raises(ValueError, match="initialized with no commands"):
         BatchExecutor(commands=[])
 
 
@@ -481,46 +617,72 @@ def test_build_assembles_all_context_types():
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
     
-def test_builder_enriches_with_max_cvss_no_mocks():
+import pytest
+
+@pytest.mark.parametrize(
+    "results, expected_max_cvss, expected_max_severity",
+    [
+        (
+            # Case 1: mixed numeric + textual + dict + N/A
+            [
+                {"CVSS": 7.5},
+                {"CVSS": "High"},
+                {"CVSS": {"Score": 9.8}},
+                {"CVSS": "N/A"}
+            ],
+            9.8,  # MaxCVSS From All numerical
+            "Critical"  # MaxSeverity From All
+        ),
+        (
+            # Case 2: only textual ratings
+            [
+                {"CVSS": "Low"},
+                {"CVSS": "Medium"},
+                {"CVSS": "High"},
+            ],
+            None,  # no numeric scores
+            "High"
+        ),
+        (
+            # Case 3: invalid values
+            [
+                {"CVSS": "N/A"},
+                {"CVSS": "garbage"},
+                {"CVSS": None},
+            ],
+            None,  # no numeric
+            None   # no valid rating
+        ),
+    ]
+)
+def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expected_max_severity):
     """
     Given:
-        - A set of indicator results with various valid CVSS score formats.
-        - An indicator mapping that includes "CVSS".
+        - Indicator results with various CVSS formats (numeric, textual, dict, invalid).
     When:
-        - The builder's build() method is called, allowing real helper functions to run.
+        - The builder processes enrichment.
     Then:
-        - The final output should be enriched with the correct MaxCVSS and MaxCVSSRating.
+        - MaxCVSS should reflect the highest numeric score (or None if absent).
+        - MaxSeverity should reflect the highest severity rating (or None if none valid).
     """
-    # --- Arrange ---
-    # The mapping must include "CVSS" to trigger the logic.
-    indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
+    indicator = Indicator(
+        type="cve",
+        value_field="ID",
+        context_path_prefix="CVE(",
+        context_output_mapping={"CVSS": "CVSS"}
+    )
     builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
 
-    # Use a variety of data formats that the real normalize_cvss_score can handle.
-    # These will be normalized to: [7.5, 7.95, 9.8, 0.0]
-    results_with_cvss = [
-        {"CVSS": 7.5},                  # A standard float
-        {"CVSS": "High"},               # A string rating
-        {"CVSS": {"Score": 9.8}},      # A dictionary
-        {"CVSS": "N/A"}                 # A special string
-    ]
-    batch_context = {"CVE-2023-1234": {"brandA": results_with_cvss}}
+    batch_context = {"CVE-TEST": {"brandA": results}}
     builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
 
-    # --- Act ---
     final_context = builder.build()
-
-    # --- Assert ---
     final_indicator = final_context["FinalEnrichment(val.Value && val.Value == obj.Value)"][0]
+
+    assert final_indicator["MaxCVSS"] == expected_max_cvss
+    assert final_indicator["MaxSeverity"] == expected_max_severity
+
     
-    # Assert that the highest normalized score is 9.8
-    assert final_indicator["MaxCVSS"] == 9.8
-    
-    # Assert that the rating for 9.8 is correctly calculated as "Critical"
-    assert final_indicator["MaxCVSSRating"] == "Critical"
-
-
-
 
 # -------------------------------------------------------------------------------------------------
 # -- Level 4: Base Module Logic (AggregatedCommandAPIModule)
@@ -1140,56 +1302,3 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
     except DemistoException:
         pytest.fail("raise_non_enabled_brands_error raised an exception unexpectedly.")
 
-
-@pytest.mark.parametrize("cvss_input, expected_score", [
-    # --- Numeric and String Numeric Inputs ---
-    (7.5, 7.5),
-    (9, 9.0),
-    ("8.2", 8.2),
-    (0, 0.0),
-    # --- Special String Inputs ---
-    ("N/A", 0.0),
-    ("n/a", 0.0),
-    # --- Dictionary Input ---
-    ({"Score": 9.1}, 9.1),
-    # --- String Rating Inputs ---
-    ("Critical", 9.5),
-    ("High", 7.95),
-    ("Medium", 5.45),
-    ("Low", 2.0),
-    ("None", 0.0),
-])
-def test_normalize_cvss_score(cvss_input, expected_score):
-    """
-    Given:
-        - Various valid formats for a CVSS score.
-    When:
-        - The normalize_cvss_score function is called.
-    Then:
-        - It should return the correct normalized float score.
-    """
-    assert normalize_cvss_score(cvss_input) == expected_score
-    
-@pytest.mark.parametrize("score, expected_rating", [
-    (0.0, "None"),
-    (2.5, "Low"),
-    (3.9, "Low"),
-    (4.0, "Medium"),
-    (6.9, "Medium"),
-    (7.0, "High"),
-    (8.9, "High"),
-    (9.0, "Critical"),
-    (10.0, "Critical"),
-    (11.0, "Unknown"), # Out of bounds
-    (-1.0, "Unknown"), # Out of bounds
-])
-def test_get_cvss_rating(score, expected_rating):
-    """
-    Given:
-        - A numeric CVSS score.
-    When:
-        - The get_cvss_rating function is called.
-    Then:
-        - It should return the correct string-based severity rating.
-    """
-    assert get_cvss_rating(score) == expected_rating

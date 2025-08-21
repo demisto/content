@@ -29,6 +29,8 @@ CVSS_TO_VERDICT = {
     "High": (7.0, 8.9),
     "Critical": (9.0, 10.0),
 }
+SEVERITY_ORDER = ["None", "Low", "Medium", "High", "Critical"]
+
 
 class Status(Enum):
     """Enum for command status."""
@@ -75,12 +77,14 @@ class Indicator:
         type (str): The indicator type (e.g., 'url', 'ip', 'cve').
         value_field (str): The field name holding the indicator's value (e.g., 'Data', 'Address').
         context_path_prefix (str): The context path prefix for the indicator (e.g., 'URL(', 'IP(').
-        context_output_mapping (Dict[str, str]): Rules to map raw command output to the final context.
-            - Key: Source path in double dot notation (e.g., 'VirusTotal..POSITIVES').
-            - Value: Destination path in double dot notation.
-              Append '[]' in the end to transform the final value to a list.
+        context_output_mapping (dict[str, str]): Mapping rules for the command's output.
+            - {"Name": "Value"} will change the key "Name" to "Value".
+            - {"Name..Value": "Value"} will map the context {"Name": {"Value": "example"}} to {"Value": "example"}.
+            - When empty mapping is given, the context result will be mapped to the same name.
+            - Append '[]' in the end to transform the final value to a list.
+            - If "Score" is one of the keys, the final indicator will be enriched with MaxScore, MaxVerdict.
+            - If "CVSS" is one of the keys, the final indicator will be enriched with MaxCVSS, MaxCVSSRating.
     """
-
     type: str
     value_field: str
     context_path_prefix: str
@@ -110,11 +114,12 @@ class Command:
         brand (str): The specific integration brand to use.
         command_type (CommandType): The type of the command.
         context_output_mapping (dict[str, str]): Mapping rules for the command's output.
-            Example:
-                {"Name": "Value"} will change the key "Name" to "Value".
-                For nested mapping use double dot notation. Example:
-                {"Name..Value": "Value"} will map the context {"Name": {"Value": "example"}} to {"Value": "example"}.
-                When empty mapping is given, the context result will be mapped to the same name.
+            - {"Name": "Value"} will change the key "Name" to "Value".
+            - {"Name..Value": "Value"} will map the context {"Name": {"Value": "example"}} to {"Value": "example"}.
+            - When empty mapping is given, the context result will be mapped to the same name.
+            - Append '[]' in the end to transform the final value to a list.
+            - If "Score" is one of the keys, the final indicator will be enriched with MaxScore, MaxVerdict.
+            - If "CVSS" is one of the keys, the final indicator will be enriched with MaxCVSS, MaxCVSSRating.
     """
 
     def __init__(
@@ -183,8 +188,8 @@ class BatchExecutor:
         self.commands = commands
         self.brands_to_run = brands_to_run
         if not self.commands:
-            demisto.info("BatchExecutor.execute called with no commands. Returning empty list.")
-            raise ValueError("BatchExecutor.execute called with no commands.")
+            demisto.info("BatchExecutor initialized with no commands. Returning empty list.")
+            raise ValueError("BatchExecutor initialized with no commands.")
 
     def execute(self) -> list[list[dict]]:
         """
@@ -220,6 +225,8 @@ class ContextBuilder:
 
     def add_reputation_context(self, reputation_ctx: ContextResult, dbot_scores: DBotScoreList, priority: int):
         """Adds a data source with a given priority. Higher numbers win.
+        Reputation Context expected format:
+        {"https://example.com": {"brandA": [{"data": "value"}]}}
         Args:
             reputation_ctx (ContextResult): The reputation context.
             dbot_scores (DBotScoreList): The DBot scores.
@@ -243,10 +250,10 @@ class ContextBuilder:
         Returns:
             ContextResult: The final context.
         """
-        # 1. Merge Reputation Context (Brand-aware)
+        # 1. Merge Reputation Context
         merged_reputation_map: dict[str, dict[str, Any]] = self.merge_indicators()
 
-        # 2. Merge DBot Scores (Indicator/Vendor-aware)
+        # 2. Merge DBot Scores
         merged_dbot_map: dict[tuple[str, str], dict[str, Any]] = self.merge_dbot_scores()
 
         # 3. Assemble the Final Context
@@ -258,11 +265,19 @@ class ContextBuilder:
         final_context[Common.DBotScore.CONTEXT_PATH] = list(merged_dbot_map.values())
         final_context.update(self.other_context)
 
-        return remove_empty_elements(final_context)
+        return remove_empty_elements_with_exceptions(final_context, exceptions={"MaxCVSS", "MaxSeverity"})
 
     def merge_indicators(self) -> dict[str, dict[str, Any]]:
         """
         Merges reputation sources with priority ranks where higher ranks win.
+        Example:
+        {"https://example.com": {"brandA": [{"data": "value"}]}} priority 1
+        {"https://example.com": {"brandA": [{"data": "value2"}]}} priority 2
+        {"https://example.com": {"brandB": [{"data": "value"}]}} priority 2
+        {"https://example2.com": {"brandC": [{"data": "value"}]}} priority 1
+        Result:
+        {"https://example.com": {"brandA": [{"data": "value2"}], "brandB": [{"data": "value"}]}}
+        {"https://example2.com": {"brandC": [{"data": "value"}]}}
         Args:
             merged_map (dict): The merged reputation map.
         Returns:
@@ -302,6 +317,13 @@ class ContextBuilder:
     def create_indicator_list(self, merged_map: dict[str, dict[str, Any]]) -> list[dict]:
         """
         Converts the merged reputation map into the final list structure.
+        Example:
+        {"https://example.com": {"brandA": [{"data": "value2"}],
+                                 "brandB": [{"data": "value"}]}}
+        Result:
+        [{"Value": "https://example.com",
+           "Results": [{"data": "value2"},
+                       {"data": "value"}]}}]
         Args:
             merged_map (dict): The merged reputation map.
         Returns:
@@ -314,7 +336,7 @@ class ContextBuilder:
 
     def enrich_final_indicator(self, indicator_list: list[dict]):
         """
-        Adds MaxScore and MaxVerdict to the final indicator objects.
+        Adds enrichment fields to the final indicator objects depending on the context output mapping.
         Args:
             indicator_list (list[dict]): The list of indicators to enrich.
         """
@@ -327,10 +349,35 @@ class ContextBuilder:
                 if max_tim_score := [r.get("Score", 0) for r in indicator.get("Results", []) if r.get("Brand") == "TIM"]:
                     indicator["TIMScore"] = max(max_tim_score)
             if "CVSS" in self.indicator.context_output_mapping:
-                indicator["MaxCVSS"] = max(
-                    [normalize_cvss_score(res.get("CVSS", 0)) for res in indicator.get("Results", [])] or [0]
-                )
-                indicator["MaxCVSSRating"] = get_cvss_rating(indicator["MaxCVSS"])
+                self.compute_cvss_fields(indicator)
+
+    def compute_cvss_fields(self, indicator: ContextResult) -> None:
+        """
+        Update indicator with MaxCVSS (float | None) and MaxSeverity (str | None).
+        MaxCVSS is the maximum numerical Score found in CVSS.
+        MaxSeverity computed from all numerical and string CVSS values found in the indicator.
+        If no numerical score is found, MaxCVSS will remain None.
+        If no CVSS values found at all, MaxSeverity will remain None.
+        """
+        values = [res.get("CVSS") for res in indicator.get("Results", [])]
+
+        # compute max numerical score
+        scores = [extract_cvss_score(v) for v in values]
+        scores = [s for s in scores if s is not None]
+        indicator["MaxCVSS"] = max(scores) if scores else None
+
+        # compute max severity
+        ratings = [extract_cvss_rating(v) for v in values]
+        ratings = [r for r in ratings if r is not None]
+
+        if indicator["MaxCVSS"] is not None:
+            ratings.append(convert_cvss_score_to_rating(indicator["MaxCVSS"]))
+
+        if ratings:
+            # pick the one with highest order
+            indicator["MaxSeverity"] = max(ratings, key=lambda r: SEVERITY_ORDER.index(r))
+        else:
+            indicator["MaxSeverity"] = None
 
 
 # --- Main Framework Abstraction and Implementation ---
@@ -431,9 +478,10 @@ class ReputationAggregatedCommand(AggregatedCommand):
             brands (list[str]): List of brands to run on.
             indicator (Indicator): Indicator object to use for reputation.
             data (list[str]): Data to enrich Example: ["https://example.com"].
-            final_context_path (str): Path to the context to extract to for the indicators unique key is the Value field.
+            final_context_path (str): Path to the context to extract to for the indicators, with this added to the path
+                                      (val.Value && val.Value == obj.Value).
             external_enrichment (bool): Whether to run external enrichment.
-            additional_fields (bool): Whether to include additional fields in the output (what is not in the indicator mapping).
+            additional_fields (bool): Whether to include additional fields in the output.
             verbose (bool): Whether to add verbose outputs.
             commands (list[Command]): List of commands to run.
             validate_input_function (Callable[[dict[str, Any]], None]): Function to validate the input, the function
@@ -469,7 +517,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         demisto.debug("Starting aggregated command main loop.")
         context_builder = ContextBuilder(self.indicator, self.final_context_path)
         
-
         # 1. Execute batch commands
         demisto.debug("Step 1: Executing batch commands.")
         commands_to_execute = self.prepare_commands(self.external_enrichment)
@@ -481,22 +528,22 @@ class ReputationAggregatedCommand(AggregatedCommand):
             demisto.debug("No commands to execute.")
             batch_results = []
         
-        # 2. Prepare commands and get TIM results
-        demisto.debug("Step 2: querying TIM.")
+        # 2. Process batch results
+        demisto.debug("Step 2: Processing batch results.")
+        commands_context, reputation_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(
+            batch_results, commands_to_execute
+        )
+        context_builder.add_reputation_context(reputation_context, batch_dbot, priority=2)
+        context_builder.add_other_commands_results(commands_context)
+        
+        # 3. Prepare commands and get TIM results
+        demisto.debug("Step 3: querying TIM.")
         tim_context, tim_dbot, tim_entries = self.get_indicators_from_tim()
         context_builder.add_reputation_context(tim_context, tim_dbot, priority=1)
         demisto.debug(
             f"TIM query resulted in {len(tim_dbot)} DBot scores, "
             f"and {sum(len(lst) for brands_map in tim_context.values() for lst in brands_map.values())} indicators."
         )
-
-        # 3. Process batch results
-        demisto.debug("Step 3: Processing batch results.")
-        commands_context, reputation_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(
-            batch_results, commands_to_execute
-        )
-        context_builder.add_reputation_context(reputation_context, batch_dbot, priority=2)
-        context_builder.add_other_commands_results(commands_context)
 
         # 4. Merge context
         demisto.debug("Step 4: Merging all contexts.")
@@ -509,7 +556,10 @@ class ReputationAggregatedCommand(AggregatedCommand):
     def prepare_commands(self, external_enrichment: bool = False) -> list[Command]:
         """
         Filters the initial command list based on execution policies.
-
+        If external_enrichment is True, all commands will be executed.
+        If external_enrichment is False, only internal commands will be executed.
+        If brands is not empty, external_enrichment will be overridden and only commands 
+        that are in the brands list will be executed.
         Args:
             external_enrichment (bool): Flag to determine if external commands should run.
         """
@@ -587,7 +637,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Args:
             iocs (list[dict[str, Any]]): The IOC objects from the TIM search in the following format:
             iocs = [
-                {"insightCache":
+                {"score": 1,
+                "insightCache":
                         {"scores":{
                                     "Brand1": {
                                         "score": 1,
@@ -626,6 +677,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         dbot_scores: DBotScoreList = []
 
         for ioc in iocs:
+            demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
             tim_indicator = self.create_tim_indicator(ioc)
             if tim_indicator:
                 demisto.debug(f"Processing TIM results for indicator: {tim_indicator}")
@@ -641,10 +693,19 @@ class ReputationAggregatedCommand(AggregatedCommand):
         return tim_context, dbot_scores
     
     def create_tim_indicator(self, ioc: ContextResult) -> dict[str, Any]:
+        """
+        Creates a TIM indicator from the given IOC.
+        Takes the finalize score from tim result and creates a final indicator object.
+        Args:
+            ioc (ContextResult): The IOC object from the TIM search.
+        Returns:
+            dict[str, Any]: The TIM indicator.
+        """
         indicators_context: ContextResult = defaultdict(lambda: defaultdict(list))
         value = ioc.get("value")
         score = ioc.get("score", Common.DBotScore.NONE)
         if not value:
+            demisto.debug("No value found in TIM result")
             return {}
         indicators_context[value]["TIM"].append({
             self.indicator.value_field: value,
@@ -741,6 +802,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         indicator_args = ",".join(
             str(v) for v in flatten_list(command.args.values())
             ) if isinstance(command.args, dict) else command.args
+        
         result_entry = EntryResult(
             command_name = command.name,
             args = indicator_args,
@@ -778,8 +840,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         if not command_context and result_entry.status == Status.SUCCESS:
             demisto.debug(f"No context or DBot scores for command: {command}")
             result_entry.message = "No matching indicators found."
-        demisto.debug(f"Current Entry Result: {result_entry.to_entry()}")
-        demisto.debug(f"Current Command result: {json.dumps(result, indent=4)}")
 
         return command_context, dbot_scores, hr_output, result_entry
 
@@ -810,7 +870,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             return {}
 
         mapped_context: ContextResult = defaultdict()
-        demisto.debug(f"Starting context mapping with {len(context_output_mapping)} rules. for indicator: {is_indicator}")
+        demisto.debug(f"Starting context mapping with {len(context_output_mapping)} rules. is_indicator: {is_indicator}")
         for src_path, dst_path in context_output_mapping.items():
             value = pop_dict_value(entry_context, src_path)
             if value:
@@ -876,7 +936,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             mapped_indicator["Brand"] = brand
 
             indicators_context[indicator_value][brand].append(mapped_indicator)
-            demisto.debug(f"Parsed indicator '{indicator_value}' from brand '{brand}' with score {effective_score}")
+            demisto.debug(f"Parsed indicator '{indicator_value}' from brand '{brand}'")
 
         return indicators_context, dbot_list
 
@@ -1069,16 +1129,10 @@ def is_debug_entry(execute_command_result) -> bool:
     return isinstance(execute_command_result, dict) and execute_command_result["Type"] == entryTypes["debug"]
 
 
-def normalize_cvss_score(value) -> float:
+def extract_cvss_score(value) -> float:
     """
-    Normalize various CVSS input formats into a numeric score (0.0 - 10.0).
-
-    Accepted inputs:
-      - "N/A" -> 0.0
-      - 0, "0" -> 0.0
-      - int/float (0-10) -> returned as float
-      - string rating ("None", "Low", "Medium", "High", "Critical")
-      - dict with {"Score": <value>} -> recursively normalized
+    Extract the numerical Score from a CVSS object.
+    If no numerical score is found, return None.
 
     Returns:
         float: CVSS score (0.0 - 10.0)
@@ -1086,11 +1140,11 @@ def normalize_cvss_score(value) -> float:
 
     # Handle dict case: {"Score": ...}
     if isinstance(value, dict) and "Score" in value:
-        return normalize_cvss_score(value["Score"])
+        return extract_cvss_score(value["Score"])
 
     # Handle "N/A"
     if isinstance(value, str) and value.strip().upper() == "N/A":
-        return 0.0
+        return None
 
     # Handle numbers (int, float, str)
     try:
@@ -1099,16 +1153,32 @@ def normalize_cvss_score(value) -> float:
             return score
     except (TypeError, ValueError):
         pass
+    
+    return None
 
-    # Handle string ratings like "critical", "High", etc.
+def extract_cvss_rating(value) -> str | None:
+    """
+    Get the severity rating from a CVSS Object.
+    Turn numerical to string rating.
+    """
+    # Dict with nested score
+    if isinstance(value, dict) and "Score" in value:
+        return extract_cvss_rating(value["Score"])
+
+    # Numeric → map to rating
+    score = extract_cvss_score(value)
+    if score is not None:
+        return convert_cvss_score_to_rating(score)
+
+    # String severity
     if isinstance(value, str):
-        verdict = value.strip().capitalize()
-        if verdict in CVSS_TO_VERDICT:
-            lo, hi = CVSS_TO_VERDICT[verdict]
-            return (lo + hi) / 2
-    return 0.0
+        val = value.strip().capitalize()
+        if val in SEVERITY_ORDER:
+            return val
 
-def get_cvss_rating(score: float) -> str:
+    return None
+
+def convert_cvss_score_to_rating(score: float) -> str:
     """
     Given a CVSS numeric score (0.0 - 10.0),
     return the corresponding severity rating.
@@ -1122,3 +1192,38 @@ def get_cvss_rating(score: float) -> str:
             return rating
 
     return "Unknown"
+
+def remove_empty_elements_with_exceptions(d, exceptions: set[str] = None):
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary,
+    unless their key is in the `exceptions` set.
+
+    :param d: Input dictionary or list.
+    :type d: dict | list
+    :param exceptions: Keys that should be kept even if their values are None/empty.
+    :type exceptions: set[str] | None
+    :return: Cleaned dictionary or list.
+    :rtype: dict | list
+    """
+    if exceptions is None:
+        exceptions = set()
+
+    def empty(k, v):
+        """Check if a value is considered empty, unless the key is in exceptions."""
+        if isinstance(v, (dict, list)):
+            return not v  # empty dict or list
+        return v is None and k not in exceptions
+
+    if isinstance(d, list):
+        return [v for v in (remove_empty_elements_with_exceptions(v, exceptions) for v in d) if v not in (None, {}, [])]
+
+    elif isinstance(d, dict):
+        result = {}
+        for k, v in d.items():
+            cleaned = remove_empty_elements_with_exceptions(v, exceptions)
+            if not empty(k, cleaned) or k in exceptions:
+                result[k] = cleaned
+        return result
+
+    else:
+        return d

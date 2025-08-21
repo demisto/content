@@ -123,12 +123,8 @@ def test_cve_enrichment_script_end_to_end(mocker):
     
     # The max CVSS should be 9.8 (from brand1)
     assert cve_result["MaxCVSS"] == 9.8
-    # The rating for a score of 9.8 is "Critical".
-    assert cve_result["MaxCVSSRating"] == "Critical"
-
-    # The max score should be 3 (from batch), not 2 (from TIM)
-    assert "MaxScore" not in cve_result
-    assert "MaxVerdict" not in cve_result
+    # The max severity should be "Critical"
+    assert cve_result["MaxSeverity"] == "Critical"
 
     # 3. Verify DBotScore context was populated and merged correctly
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
