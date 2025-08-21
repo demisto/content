@@ -424,14 +424,14 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.2941324
+  dockerimage: demisto/google-cloud-storage:1.0.0.4088897
 tests:
 - No tests
 fromversion: 6.2.0
 supportedModules:
 - C1
 - C3
-- x0
+- X0
 - X1
 - X3
 - X5
