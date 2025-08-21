@@ -22,7 +22,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -31,9 +31,9 @@ CortexCoreIR
 
 ### Commands
 
-* core-terminate-causality
 * closeInvestigation
-* core-run-script-execute-commands
+* core-execute-command
+* core-terminate-causality
 
 ## Playbook Inputs
 
