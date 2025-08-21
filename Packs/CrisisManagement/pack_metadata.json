@@ -17,7 +17,9 @@
     ],
     "created": "2020-05-06T08:54:47Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "crisis"
+    ],
     "dependencies": {
         "CommonTypes": {
             "mandatory": true,
