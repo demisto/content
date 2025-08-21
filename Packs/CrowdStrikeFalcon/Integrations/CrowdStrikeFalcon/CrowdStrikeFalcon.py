@@ -328,15 +328,9 @@ CS_FALCON_DETECTION_INCOMING_ARGS = [
     "display_name",
     "tags",
     "comments",
-    "assigned_to_uid"
+    "assigned_to_uid",
 ]
-CS_FALCON_DETECTION_INCOMING_ARGS_IDP = [
-    "status",
-    "id",
-    "tags",
-    "comments",
-    "assigned_to_uid"
-]
+CS_FALCON_DETECTION_INCOMING_ARGS_IDP = ["status", "id", "tags", "comments", "assigned_to_uid"]
 CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "state",
     "fine_score",
