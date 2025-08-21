@@ -15,10 +15,14 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-BASE_EVENT_BODY: dict = {
-    "last_log_id": 0,
-    "from_date": "2025-08-10 10:03",
+DATE_FORMAT = "%Y-%m-%d %H:%M"
+BASE_EVENT_BODY: dict = {}
+BASE_PARAMS: dict = {
+    "page": "0",
+    "limit": "1000",
+    "sort": "timestamp",
+    "sort_by": "asc",
+    "include_system": "false"
 }
 
 """ CLIENT CLASS """
@@ -34,6 +38,7 @@ class Client(BaseClient):
             api_key: str,
             organization: str,
             base_event_body: dict,
+            base_params: dict,
             verify: bool,
             use_proxy: bool,
     ) -> None:
@@ -48,6 +53,7 @@ class Client(BaseClient):
             api_key: The Api key for AppSentinels.ai API - specific for every licensing.
             organization: The organization ID for AppSentinels.ai API.
             base_event_body: The base body for the http request.
+            base_params: The base params for the http request.
             verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
             use_proxy: True if the proxy server needs to be used, False otherwise.
         """
@@ -61,13 +67,15 @@ class Client(BaseClient):
         }
         self.organization = organization
         self.base_event_body = base_event_body
+        self.base_params = base_params
         self.api_key = api_key
         self.user_key = user_key
 
-    def get_events_request(self, params: dict) -> dict:
+    def get_events_request(self, params: dict, body: dict) -> dict:
         """Retrieve the detections from AppSentinels.ai  API."""
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
-        body = self.base_event_body.copy()
+        params = self.base_params.copy().update(params)
+        body = self.base_params.copy().update(body)
         # body.update(params)
         return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params,
                                   resp_type="json")
@@ -103,30 +111,32 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         List[Dict]: A list of fetched events.
     """
     events: List[Dict] = []
-
+    current_pagination: int = 0
     params: Dict[str, Any] = {}  # Initialize params
+    body: Dict[str, Any] = {}  # Initialize body
+
 
     # Determine the fetch params
     if use_last_run_as_params:
-        params.update(last_run)
+        body.update(last_run)
     elif "last_log_id" not in last_run:
         # Initial fetch: from 1 minute before now to now
         current_time = get_current_time()
         start_time = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_time = current_time.strftime(DATE_FORMAT)
-        params["from_date"] = start_time
-        params["to_date"] = end_time
+        body["from_date"] = start_time
+        body["to_date"] = end_time
         demisto.debug(f"Fetching events from date={start_time} to date={end_time}.")
     else:
         # Subsequent fetches: use last_log_id
-        last_log_id_last = last_run["last_log_id"]
-        params["last_log_id"] = last_log_id_last
-        demisto.debug(f"Fetching with last_log_id: {last_log_id_last}")
+        last_log_id_last_run = last_run["last_log_id"]
+        body["last_log_id"] = last_log_id_last_run
+        demisto.debug(f"Fetching with last_log_id: {last_log_id_last_run}")
 
     while True:
         try:
             # API call
-            response_data = client.get_events_request(params=params)  # Use the client method
+            response_data = client.get_events_request(params=params, body=body)  # Use the client method
         except DemistoException as error:
             raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
 
@@ -139,26 +149,34 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         if not new_events:
             break
 
-        last_log_id = response_data.get("last_log_id")
+        pagination = response_data.get("pagination")
+        last_log_id = new_events[-1].get("id")
         last_run["last_log_id"] = last_log_id
-        more_records = response_data.get("more_records", False)
 
         for event in new_events:
             event["_TIME"] = event.get("timestamp")
-            event["source_log_type"] = "event"
+            event["source_log_type"] = "auditlog"
 
             events.append(event)
 
             if fetch_limit and len(events) >= fetch_limit:
-                last_run["last_log_id"] = event["eventid"]
+                last_run["last_log_id"] = event["id"]
                 return events
 
-        if not more_records:
-            break
+        if current_pagination + 1 >= pagination:
+                break
 
-        # Update Params for next call
-        remove_first_run_params(params)
-        params["last_log_id"] = last_log_id
+        # First run - using timestamps
+        if "last_log_id" not in body:
+            remove_first_run_params(body)
+            # we make a new call with new architecture - using last_log_id as filter
+            # pagination stays the same
+            body["last_log_id"] = last_log_id
+        # Not first run -  we have used the "last_log_id" as a filter
+        else:
+            # Update Params for next call
+            current_pagination += 1
+            params["page"] = current_pagination
 
     return events
 
@@ -285,6 +303,7 @@ def main():
             api_key=api_key,
             organization=organization,
             base_event_body=BASE_EVENT_BODY,
+            base_params=BASE_PARAMS,
             verify=verify_certificate,
             use_proxy=proxy,
         )
@@ -292,14 +311,7 @@ def main():
         if command == "test-module":
             # Command made to test the integration
             # result = test_module(client)
-            params_test = {
-                "page": "0",
-                "limit": "100",
-                "sort": "timestamp",
-                "sort_by": "desc",
-                "include_system": "false"
-            }
-            result = client.get_events_request(params=params_test)
+            result = client.get_events_request(params=BASE_PARAMS)
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
