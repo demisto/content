@@ -1,5 +1,5 @@
 args:
-- description: 'A comma-separated list of indicator values to filter the search results (e.g., "1.1.1.1,8.8.8.8").'
+- description: A JSON array of indicator values to filter the search results (e.g., `["1.1.1.1", "8.8.8.8"]`, `["https://unit42.paloaltonetworks.com", "https://t.co/i/adsct"]`).
   name: value
   required: false
   isArray: true
