@@ -11,30 +11,30 @@ configuration:
 - display: Server URL
   name: url
   type: 0
-  section: Connect
   additionalinfo: The URL used to access the Carbon Black Cloud.
   required: false
+  section: Connect
 - display: Custom Key
   name: custom_key
   type: 4
   hidden: true
-  section: Connect
   additionalinfo: The custom key to use for the connection.
   required: false
+  section: Connect
 - display: Custom ID
   name: custom_id
   type: 4
   hidden: true
-  section: Connect
   additionalinfo: The custom ID to use for the connection.
   required: false
+  section: Connect
 - displaypassword: Custom Key
   name: credentials_custom_id
   type: 9
   display: Custom ID
-  section: Connect
   additionalinfo: The custom ID to use for the connection.
   required: false
+  section: Connect
 - display: Organization Key
   name: org_key
   type: 4
@@ -324,6 +324,4 @@ sectionOrder:
 - Connect
 - Collect
 tests:
-- carbonBlackEndpointStandardTestPlaybook
-- carbonBlackEndpointStandardV3TestPlaybook
-- CarbonBlackLiveResponseCloud-Test
+- No tests (auto formatted)
