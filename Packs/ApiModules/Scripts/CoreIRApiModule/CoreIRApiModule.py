@@ -398,6 +398,28 @@ class CoreClient(BaseClient):
         incidents = res.get("reply", {}).get("incidents", [])
 
         return incidents
+    
+    def get_extra_data_for_case_id(
+        self,
+        request_data: dict
+    ) -> dict:
+        """
+        Returns case extra data by id
+
+        :param incident_id: The id of case
+        :param alerts_limit: Maximum number issues to get
+        :return:
+        """
+        demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
+        response = self._http_request(
+            method="POST",
+            url_suffix="/incidents/get_incident_extra_data/",
+            json_data={"request_data": request_data},
+            headers=self._headers,
+            timeout=self.timeout,
+        )
+        demisto.debug(f"The response of get_incident_extra_data is: {response}.")
+        return response.get("reply", {})
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: Dict[Any, Any]) -> List[Any]:
         """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
@@ -4435,6 +4457,15 @@ def get_cases_command(client, args):
         outputs=mapped_raw_cases,
         raw_response=mapped_raw_cases,
     )
+    
+def get_extra_data_for_case_id_command(client, args):
+    case_id = args.get("case_id")
+    issues_limit = int(args.get("issues_limit", 1000))
+    issues_limit = min(issues_limit, 1000)
+    request_data = {"incident_id": case_id, "alerts_limit": issues_limit, "full_alert_fields": True}
+    demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
+    response = client.get_extra_data_for_case_id(request_data)
+    return response
 
 
 def terminate_process_command(client, args) -> CommandResults:
