@@ -96,7 +96,7 @@ def remove_first_run_params(params: dict[str, Any]) -> None:
         params.pop(key, None)
 
 
-def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_params: bool) -> List[
+def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_body: bool) -> List[
     Dict]:
     """
     Fetches events from the AppSentinels.ai API, handling pagination and last_run.
@@ -105,7 +105,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         client (Client): The client object for interacting with the AppSentinels.ai API.
         last_run (Dict): A dictionary containing the last processed event ID.
         fetch_limit (Optional[int]): The maximum number of events to fetch.
-        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+        use_last_run_as_body (bool): Flag that sign do we use the last-run as params for the API call
 
     Returns:
         List[Dict]: A list of fetched events.
@@ -115,10 +115,10 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
     params: Dict[str, Any] = {}  # Initialize params
     body: Dict[str, Any] = {}  # Initialize body
 
-
     # Determine the fetch params
-    if use_last_run_as_params:
+    if use_last_run_as_body:
         body.update(last_run)
+        demisto.debug(f"AppSentinels.ai Fetching with {body=}")
     elif "last_log_id" not in last_run:
         # Initial fetch: from 1 minute before now to now
         current_time = get_current_time()
@@ -126,12 +126,12 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         end_time = current_time.strftime(DATE_FORMAT)
         body["from_date"] = start_time
         body["to_date"] = end_time
-        demisto.debug(f"Fetching events from date={start_time} to date={end_time}.")
+        demisto.debug(f"AppSentinels.ai Fetching events from date={start_time} to date={end_time}.")
     else:
         # Subsequent fetches: use last_log_id
         last_log_id_last_run = last_run["last_log_id"]
         body["last_log_id"] = last_log_id_last_run
-        demisto.debug(f"Fetching with last_log_id: {last_log_id_last_run}")
+        demisto.debug(f"AppSentinels.ai Fetching with: {last_log_id_last_run=}")
 
     while True:
         try:
@@ -153,6 +153,9 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         last_log_id = new_events[-1].get("id")
         last_run["last_log_id"] = last_log_id
 
+        demisto.debug(
+            f"AppSentinels.ai fetched events with: {last_log_id=}, {pagination=}, in length: {len(new_events)}")
+
         for event in new_events:
             event["_TIME"] = event.get("timestamp")
             event["source_log_type"] = "auditlog"
@@ -164,7 +167,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
                 return events
 
         if current_pagination + 1 >= pagination:
-                break
+            break
 
         # First run - using timestamps
         if "last_log_id" not in body:
@@ -193,13 +196,12 @@ def prepare_list_output(events: List[dict[str, Any]]) -> str:
     hr_outputs = []
     for event in events:
         hr_output = {
-            "ID": event.get("eventid"),
+            "ID": event.get("id"),
             "Action": event.get("action"),
             "Category": event.get("category"),
-            "Details": event.get("details"),
+            "Description": event.get("description"),
             "Type": event.get("type"),
-            "Subcategory": event.get("subcategory"),
-            "Time": event.get("timestamp"),
+            "Time": event.get("timestamp")
         }
         hr_outputs.append(hr_output)
 
@@ -217,13 +219,14 @@ def test_module(client: Client) -> str:
     Returns:
         str: 'ok' if the connection is successful. If an authorization error occurs, an appropriate error message is returned.
     """
+    demisto.debug("AppSentinels.ai test_module invoked")
     last_run: dict[str, Any] = {}
     fetch_events(client, last_run, fetch_limit=1)
     return "ok"
 
 
 def fetch_events(
-        client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_params: bool = False
+        client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_body: bool = False
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AppSentinels.ai entity records.
 
@@ -231,7 +234,7 @@ def fetch_events(
         client (Client): The client object used to interact with the AppSentinels.ai service.
         last_run (dict): The last_run dictionary having the state of previous cycle.
         fetch_limit (int | None): The maximum number of events to fetch.
-        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+        use_last_run_as_body (bool): Flag that sign do we use the last-run as params for the API call
 
     Returns:
         Tuple[list[dict[str, Any]], dict]: A tuple containing:
@@ -242,7 +245,7 @@ def fetch_events(
 
     events = []
 
-    output = fetch_events_list(client, last_run, fetch_limit, use_last_run_as_params)
+    output = fetch_events_list(client, last_run, fetch_limit, use_last_run_as_body)
     events.extend(output)
 
     demisto.debug(f"AppSentinels.ai next_run is {last_run}")
@@ -259,6 +262,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
 
     Returns: Command results object that contain the results.
     """
+    demisto.debug("AppSentinels.ai get_events invoked")
     params_run = {}
     default_max = 50
     max_events = arg_to_number(args.get("limit")) or default_max
@@ -269,7 +273,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
         first_fetch_date = first_fetch.strftime(DATE_FORMAT)
         params_run.update({"from_date": first_fetch_date})
 
-    output, _ = fetch_events(client, params_run, max_events, use_last_run_as_params=True)
+    output, _ = fetch_events(client, params_run, max_events, use_last_run_as_body=True)
     human_readable = prepare_list_output(output)
 
     command_results = CommandResults(
@@ -282,6 +286,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
 
 def main():
     """main function, parses params and runs command functions"""
+    demisto.debug(f"AppSentinels.ai has been called")
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -293,8 +298,8 @@ def main():
     user_key = params.get("credentials", {}).get("identifier")
     api_key = params.get("credentials", {}).get("password")
     organization = params.get("organization", "")
-    fetch_limit = arg_to_number(params.get("max_events_per_fetch")) or None
-    demisto.debug(f"Command being called is {command}")
+    fetch_limit = arg_to_number(params.get("max_audit_per_fetch")) or None
+    demisto.debug(f"AppSentinels.ai  - Command being called is {command}")
 
     try:
         client = Client(
@@ -310,8 +315,8 @@ def main():
         events: List[dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
-            # result = test_module(client)
-            result = client.get_events_request(params=BASE_PARAMS)
+            result = test_module(client)
+            # result = client.get_events_request(params={}, body={})
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
