@@ -835,17 +835,11 @@ script:
       - contextPath: EWS.MessageTrace.ToIP
         description: The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.
         type: String
-      - contextPath: EWS.MessageTrace.Index
-        description: Message index in pagination. (Index starts from 0.)
-        type: Number
       - contextPath: EWS.MessageTrace.MessageId
         description: Message-ID header field of the message.
         type: String
       - contextPath: EWS.MessageTrace.MessageTraceId
         description: Message trace ID of the message.
-        type: String
-      - contextPath: EWS.MessageTrace.Organization
-        description: Message trace organization source.
         type: String
       - contextPath: EWS.MessageTrace.Received
         description: Message receive time.
@@ -859,12 +853,6 @@ script:
       - contextPath: EWS.MessageTrace.Size
         description: Message size in bytes.
         type: Number
-      - contextPath: EWS.MessageTrace.StartDate
-        description: Message trace start date.
-        type: Date
-      - contextPath: EWS.MessageTrace.EndDate
-        description: Message trace end date.
-        type: Date
       - contextPath: EWS.MessageTrace.Status
         description: Message status.
         type: String
