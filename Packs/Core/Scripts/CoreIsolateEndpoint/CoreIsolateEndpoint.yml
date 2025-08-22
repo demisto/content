@@ -11,14 +11,6 @@ enabled: true
 args:
 - description: Links the response action to the triggered incident.
   name: incident_id
-- description: Interval in seconds between each poll.
-  name: interval_in_seconds
-- description: Polling timeout in seconds.
-  name: timeout_in_seconds
-- description: For polling use.
-  isArray: true
-  name: action_id
-  deprecated: true
 - description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
   name: endpoint_id
   required: true
@@ -35,7 +27,7 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
