@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def main():
     args = demisto.args()
     try:
-        return_results(execute_polling_command("core-quarantine-files", args))
+        return_results(execute_polling_command("SearchIndicatorInEvents", args))
     except Exception as e:
         return_error(f"Failed to execute script.\nError:\n{e!s}")
 

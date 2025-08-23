@@ -10,14 +10,14 @@ def test_main(mocker: MockerFixture):
     Assert:
         Ensure `execute_polling_command` is called once with the correct command name and args.
     """
-    # from Packs.Core.Scripts.CoreIsolateEndpoint.CoreIsolateEndpoint import main
+    from Packs.Core.Scripts.CoreUnisolateEndpoint.CoreUnisolateEndpoint import main
 
-    # args = {"machine_id": "machineA", "file_hash": "TEST", "commnet": "TEST"}
-    # mocker.patch("MicrosoftAtpStopAndQuarantineFile.demisto.args", return_value=args)
-    # mock_execute_polling_command = mocker.patch("MicrosoftAtpStopAndQuarantineFile.execute_polling_command", return_value=[])
+    args = {"k": "v"}
+    mocker.patch("CoreUnisolateEndpoint.demisto.args", return_value=args)
+    mock_execute_polling_command = mocker.patch("CoreUnisolateEndpoint.execute_polling_command", return_value=[])
 
-    # main()
+    main()
 
-    # assert mock_execute_polling_command.call_count == 1
-    # assert mock_execute_polling_command.call_args[0] == ("microsoft-atp-stop-and-quarantine-file", args)
+    assert mock_execute_polling_command.call_count == 1
+    assert mock_execute_polling_command.call_args[0] == ("core-unisolate-endpoint", args)
     pass
