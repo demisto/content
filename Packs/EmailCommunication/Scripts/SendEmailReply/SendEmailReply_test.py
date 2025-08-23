@@ -64,8 +64,8 @@ def test_append_email_signature_fails(mocker):
     """
     from SendEmailReply import append_email_signature
 
-    get_list_error_response = False, util_load_json("test_data/getList_signature_error.json")
-    mocker.patch("SendEmailReply.execute_command", return_value=get_list_error_response)
+    get_list_error_response = util_load_json("test_data/getList_signature_error.json")
+    mocker.patch.object(demisto, "executeCommand", return_value=get_list_error_response)
     debug_mocker = mocker.patch.object(demisto, "debug")
     html_body = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
     debug_mocker_call_args = debug_mocker.call_args
@@ -597,7 +597,7 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
     "test_args, expected_result, expected_message",
     [
         (
-            (
+            (  # Test arguments for send_new_email
                 1,
                 "Email Subject",
                 False,
@@ -606,15 +606,15 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "",
                 "",
-                "<html><body>Email Body</body></html>",
+                "<html><body>Email Body</body></html>",  # email_html_body
                 "html",
                 [],
                 "12345678",
                 "soc_sender@company.com",
                 "attachment.txt",
-                "",
+                "<html><body>Email Body</body></html>",  # context_html_body
             ),
-            (
+            (  # Expected result for send_new_mail_request
                 1,
                 "Email Subject",
                 False,
@@ -623,17 +623,17 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "soc_sender@company.com",
                 "",
                 "",
-                "Email Body + Signature",
+                "Email Body + Signature",  # Updated email_html_body
                 "html",
                 [],
                 "attachment.txt",
                 "12345678",
                 "soc_sender@company.com",
-                "",
+                "Email Body + Signature",  # Updated context_html_body
             ),
             "Mail sent successfully. To: end_user@company.com",
         ),
-        (
+        (  # Test arguments for send_new_email
             (
                 1,
                 "Email Subject",
@@ -649,9 +649,9 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "attachment.txt",
-                "",
+                "<html><body>Email Body</body></html>",
             ),
-            (
+            (  # Expected result for send_new_mail_request
                 1,
                 "Email Subject",
                 False,
@@ -666,11 +666,11 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "attachment.txt",
                 "12345678",
                 "soc_sender@company.com",
-                "",
+                "Email Body + Signature",
             ),
             "Mail sent successfully. To: end_user@company.com Cc: cc_user@company.com",
         ),
-        (
+        (  # Test arguments for send_new_email
             (
                 1,
                 "Email Subject",
@@ -686,9 +686,9 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "12345678",
                 "soc_sender@company.com",
                 "attachment.txt",
-                "",
+                "<html><body>Email Body</body></html>",
             ),
-            (
+            (  # Expected result for send_new_mail_request
                 1,
                 "Email Subject",
                 False,
@@ -703,7 +703,7 @@ def test_create_thread_context(email_code, email_threads, scenario, mocker):
                 "attachment.txt",
                 "12345678",
                 "soc_sender@company.com",
-                "",
+                "Email Body + Signature",
             ),
             "Mail sent successfully. To: end_user@company.com Bcc: bcc_user@company.com",
         ),
@@ -821,6 +821,7 @@ def test_single_thread_reply(email_code, mocker):
     import SendEmailReply
     from SendEmailReply import single_thread_reply
 
+    mocker.patch.object(SendEmailReply, "append_email_signature", side_effect=lambda body: body + " - signature")
     mocker.patch.object(SendEmailReply, "get_unique_code", return_value="12345678")
     execute_command_mocker = mocker.patch.object(demisto, "executeCommand", return_value=True)
     mocker.patch.object(SendEmailReply, "get_entry_id_list", return_value=["5", "10"])
@@ -855,7 +856,7 @@ def test_single_thread_reply(email_code, mocker):
         "soc_sender@company.com",
         "",
         "",
-        "<html><body>Email body.</body></html>",
+        "<html><body>Email body.</body></html> - signature",  # The expected value is now a signed body
         ["5", "10"],
         10,
         "12345678",
@@ -1321,7 +1322,7 @@ def test_multi_thread_reply(scenario, mocker):
             "soc_sender@company.com",
             "cc_user@company.com",
             "bcc_user@company.com",
-            "<html><body>Email body</body></html>",
+            "<html><body>Email body+signature</body></html>",
             [],
             "AAMkAGRcOGZlZTEzLTkyZGDtNGJkNy1iOWMxLYM0NTAwODZhZjlxNABGAAAAAAAP2ksrJ8icRL4Zha"
             "dm7iVXBwAkkBJXBb0sRJWC0zdXEMqsAAAAAAEMAAAkkBJFBb0fRJWC0zdXEMqsABApcWVYAAA=",

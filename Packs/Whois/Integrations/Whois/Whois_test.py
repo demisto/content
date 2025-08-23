@@ -293,7 +293,7 @@ def test_indian_tld():
     from Whois import get_root_server
 
     result = get_root_server("google.in")
-    assert result == "in.whois-servers.net"
+    assert result == "whois.nixiregistry.in"
 
 
 def test_ph_tld():
