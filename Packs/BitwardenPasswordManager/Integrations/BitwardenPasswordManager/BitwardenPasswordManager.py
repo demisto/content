@@ -121,7 +121,7 @@ def fetch_events(
     """
     last_run = demisto.getLastRun()
     demisto.debug(f"Bitwarden - fetch-events {last_run=}")
-    fetch_time = dates["start"]
+    fetch_time = dates.get("start") or DEFAULT_FIRST_FETCH
 
     dates["start"], dates["end"] = get_fetch_run_time_range(
         last_run=last_run, first_fetch=fetch_time, look_back=LOOK_BACK, date_format=DATE_FORMAT
