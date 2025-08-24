@@ -1344,7 +1344,7 @@ script:
       description: 'The ID of the security group.'
       required: true
     - name: protocol
-      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. Use with port and CIDR arguments for simple rule authorization. VPC security group rules must specify protocols explicitly.'
+      description: 'The IP protocol: tcp, udp, icmp, or icmpv6 or a number. Use -1 to specify all protocols. Use with from_port, to_port and CIDR arguments for simple rule authorization. VPC security group rules must specify protocols explicitly.'
       required: false
     - name: from_port
       description: 'If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP type or -1 (all ICMP types).'
@@ -1353,7 +1353,7 @@ script:
       description: 'If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes).'
       required: false
     - name: cidr
-      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization.'
+      description: 'The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and from_port, to_port arguments for simple rule authorization.'
       required: false
     - name: ip_permissions
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/CIDR arguments.'
@@ -1978,7 +1978,7 @@ script:
       isArray: true
     - name: limit
       defaultValue: "50"
-      description: The maximum number of records to return. max value is 1000.
+      description: The maximum number of records to return. Valid range is 5-1000.
     - name: next_token
       description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
     outputs:

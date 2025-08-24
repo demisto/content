@@ -885,8 +885,8 @@ class EC2:
         """
 
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"] = args.get("from_port", "")
-        kwargs["ToPort"] = args.get("to_port", "")
+        kwargs["FromPort"] = arg_to_number(args.get("from_port"))
+        kwargs["ToPort"] = arg_to_number(args.get("to_port"))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -924,8 +924,8 @@ class EC2:
         """
 
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"] = args.get("from_port", "")
-        kwargs["ToPort"] = args.get("to_port", "")
+        kwargs["FromPort"] = arg_to_number(args.get("from_port"))
+        kwargs["ToPort"] = arg_to_number(args.get("to_port"))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -974,10 +974,12 @@ class EC2:
         else:
             # Simple mode: build a single rule descriptor
             proto = args.get("protocol")
-            from_port = args.get("from_port", "")
-            to_port = args.get("to_port", "")
+            from_port = arg_to_number(args.get("from_port"))
+            to_port = arg_to_number(args.get("to_port"))
             cidr = args.get("cidr")
-            ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
+            ip_perms = [
+                {"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}] if cidr else None}
+            ]
             remove_nulls_from_dictionary(ip_perms[0])
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
@@ -985,7 +987,7 @@ class EC2:
             resp = client.revoke_security_group_egress(**kwargs)
             status = resp.get("Return")
             if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
-                return CommandResults(readable_output="Egress rule revoked successfully.")
+                return CommandResults(readable_output="Egress rule revoked successfully.", raw_response=resp)
             else:
                 # If no exception but Return is False, AWS may report unknown perms
                 unknown = resp.get("UnknownIpPermissions")
@@ -1153,8 +1155,8 @@ class EC2:
         """
 
         kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
-        from_port = args.get("from_port", "")
-        to_port = args.get("to_port", "")
+        from_port = arg_to_number(args.get("from_port"))
+        to_port = arg_to_number(args.get("to_port"))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1167,7 +1169,7 @@ class EC2:
                     "IpProtocol": args.get("protocol"),
                     "FromPort": from_port,
                     "ToPort": to_port,
-                    "IpRanges": [{"CidrIp": args.get("cidr")}],
+                    "IpRanges": [{"CidrIp": args.get("cidr")}] if args.get("cidr") else None,
                 }
             ]
 
@@ -1176,7 +1178,12 @@ class EC2:
             response = client.authorize_security_group_egress(**kwargs)
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
-                return CommandResults(readable_output="The Security Group egress rule was authorized", raw_response=response)
+                readable_output = (
+                    "The Security Group egress rule was authorized"
+                    if response.get("SecurityGroupRules")
+                    else "No Security Group egress rule was authorized"
+                )
+                return CommandResults(readable_output=readable_output, raw_response=response)
             else:
                 AWSErrorHandler.handle_response_error(response)
 

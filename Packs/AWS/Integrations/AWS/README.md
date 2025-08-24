@@ -771,7 +771,7 @@ Describes the specified security groups or all of your security groups. Returns 
 | group_ids | Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321). | Optional |
 | group_names | Comma-separated list of security group names. group_names is only supported for EC2-Classic and default VPC. | Optional |
 | filters | One or more custom filters to apply separated by ';' (e.g., name=&lt;name&gt;,values=&lt;values&gt;).You can specify up to 50 filters and up to 200 values per filter in a single request. | Optional |
-| limit | The maximum number of records to return. max value is 1000. Default is 50. | Optional |
+| limit | The maximum number of records to return. Valid range is 5-1000. Default is 50. | Optional |
 | next_token | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. | Optional |
 
 #### Context Output
@@ -806,10 +806,10 @@ Adds the specified inbound (egress) rules to a security group.
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_id | The ID of the security group. | Required |
-| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. Use with port and CIDR arguments for simple rule authorization. VPC security group rules must specify protocols explicitly. | Optional |
+| protocol | The IP protocol: tcp, udp, icmp, or icmpv6. Use -1 to specify all protocols. Use with from_port, to_port and CIDR arguments for simple rule authorization. VPC security group rules must specify protocols explicitly. | Optional |
 | from_port | If the protocol is TCP or UDP, this is the start of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP type or -1 (all ICMP types). | Optional |
 | to_port | If the protocol is TCP or UDP, this is the end of the port range. If the protocol is ICMP or ICMPv6, this is the ICMP code or -1 (all ICMP codes). If the start port is -1 (all ICMP types), then the end port must be -1 (all ICMP codes). | Optional |
-| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0"). Use with protocol and port for simple rule authorization. | Optional |
+| cidr | The IPv4 address range in CIDR format (e.g., "0.0.0.0/0").  Use with protocol and from_port to_port arguments for simple rule authorization. | Optional |
 | ip_permissions | The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/CIDR arguments. | Optional |
 
 #### Context Output
