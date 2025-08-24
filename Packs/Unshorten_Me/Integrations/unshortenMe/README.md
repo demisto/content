@@ -66,7 +66,6 @@ Unshortens a given URL.
     "unshortenMe": {
         "success": true,
         "shortened_url": "https://bit.ly/3DKWm5t",
-        "unshortened_url": "https://www.paloaltonetworks.com/cortex"
+        "unshortened_url": "https://www.youtube.com/"
     }
 }
-```
