@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     args = demisto.args()
+    args["time_frame"] = args.get("time_frame") or "7 days"
     try:
         return_results(execute_polling_command("SearchIndicatorInEvents", args))
     except Exception as e:
