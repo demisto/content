@@ -12,9 +12,11 @@ from ExabeamSecOpsPlatform import (
     convert_all_timestamp_to_datestring,
     event_search_command,
     fetch_incidents,
+    format_case,
     generic_search_command,
     get_date,
     get_limit,
+    get_last_case_time_and_ids,
     process_string,
     table_record_list_command,
     transform_dicts,
@@ -569,17 +571,51 @@ def test_transform_dicts(dict_input, dict_expected):
 
 
 @pytest.mark.parametrize(
-    "attributes_input, expected_output",
+    "attributes_input, key_suffix, expected_output",
     [
-        (
+        pytest.param(
             {"caseCreationTimestamp": 1672531200000000, "lastModifiedTimestamp": 1672617600000000},
+            "",
             {"caseCreationTimestamp": "2023-01-01T00:00:00Z", "lastModifiedTimestamp": "2023-01-02T00:00:00Z"},
+            id="No suffix. Expect keys overwritten",
+        ),
+        pytest.param(
+            {"approxLogTime": 1755685620000000},
+            "Formatted",
+            {"approxLogTime": 1755685620000000, "approxLogTimeFormatted": "2025-08-20T10:27:00Z"},
+            id="'Formatted' suffix. Expect new keys added",
         ),
     ],
 )
-def test_convert_all_timestamp_to_datestring(attributes_input, expected_output):
-    result = convert_all_timestamp_to_datestring(attributes_input)
+def test_convert_all_timestamp_to_datestring(attributes_input: dict, key_suffix: str, expected_output: dict):
+    result = convert_all_timestamp_to_datestring(attributes_input, key_suffix=key_suffix)
     assert result == expected_output
+
+
+def test_last_case_time_and_ids():
+    formatted_cases = [
+        {"caseId": "A", "_time": "2025-01-01T00:00:00Z"},
+        {"caseId": "B", "_time": "2025-01-01T01:01:00Z"},
+        {"caseId": "C", "_time": "2025-01-01T01:01:00Z"},
+    ]
+
+    last_case_time, last_case_ids = get_last_case_time_and_ids(formatted_cases)
+
+    assert last_case_time == "2025-01-01T01:01:00Z"
+    assert last_case_ids == ["B", "C"]
+
+
+def test_format_case():
+    raw_case = {"caseId": "A", "caseCreationTimestamp": 1672531200000000}
+
+    formatted_case = format_case(raw_case)
+
+    assert formatted_case == {
+        "caseId": "A",
+        "caseCreationTimestamp": 1672531200000000,
+        "caseCreationTimestampFormatted": "2023-01-01T00:00:00Z",
+        "_time": "2023-01-01T00:00:00Z",
+    }
 
 
 @pytest.mark.parametrize(

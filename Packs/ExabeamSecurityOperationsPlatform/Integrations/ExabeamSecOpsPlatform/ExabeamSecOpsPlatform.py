@@ -970,7 +970,7 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
     )
 
 
-def fetch_incidents(client: Client, params: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
+def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[list, dict]:
     """
     Fetches incidents from the client based on specified parameters and updates the last run time.
 
