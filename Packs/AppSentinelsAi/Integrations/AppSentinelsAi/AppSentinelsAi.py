@@ -16,8 +16,8 @@ urllib3.disable_warnings()
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%d %H:%M"
-BASE_EVENT_BODY: dict = {}
-BASE_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc", "include_system": "false"}
+BASE_REQUEST_BODY: dict = {}
+BASE_REQUEST_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc", "include_system": "false"}
 
 """ CLIENT CLASS """
 
@@ -31,8 +31,8 @@ class Client(BaseClient):
         user_key: str,
         api_key: str,
         organization: str,
-        base_event_body: dict,
-        base_params: dict,
+        base_request_body: dict,
+        base_request_params: dict,
         verify: bool,
         use_proxy: bool,
     ) -> None:
@@ -46,8 +46,8 @@ class Client(BaseClient):
             user_key: The user key for AppSentinels.ai API.
             api_key: The Api key for AppSentinels.ai API - specific for every licensing.
             organization: The organization ID for AppSentinels.ai API.
-            base_event_body: The base body for the http request.
-            base_params: The base params for the http request.
+            base_request_body: The base body for the http request.
+            base_request_params: The base params for the http request.
             verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
             use_proxy: True if the proxy server needs to be used, False otherwise.
         """
@@ -60,17 +60,24 @@ class Client(BaseClient):
             "Content-Type": "application/json",
         }
         self.organization = organization
-        self.base_event_body = base_event_body
-        self.base_params = base_params
+        self.base_request_body = base_request_body
+        self.base_request_params = base_request_params
         self.api_key = api_key
         self.user_key = user_key
 
     def get_events_request(self, params_update: dict, body_update: dict) -> dict:
-        """Retrieve the detections from AppSentinels.ai  API."""
+        """
+        Retrieve the detections from AppSentinels.ai  API.
+
+        Args:
+            params_update (dict): The param update to add to the base params.
+            body_update (dict): The body update to add to the base body.
+
+        """
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
-        params = self.base_params.copy()
+        params = self.base_request_params.copy()
         params.update(params_update)
-        body = self.base_event_body.copy()
+        body = self.base_request_body.copy()
         body.update(body_update)
         return self._http_request(
             "POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params, resp_type="json"
@@ -115,7 +122,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         body.update(last_run)
         demisto.debug(f"AppSentinels.ai Fetching with {body=}")
     elif "last_log_id" not in last_run:
-        # Initial fetch: from 1 minute before now to now
+        # Initial fetch: from one minute ago to now
         current_time = get_current_time()
         start_time = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_time = current_time.strftime(DATE_FORMAT)
@@ -261,7 +268,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
     params_run = {}
     default_max = 50
     max_events = arg_to_number(args.get("limit")) or default_max
-    # User start date in the get events arguments, else get from today
+    # User start date in the get events arguments
     first_fetch = arg_to_datetime(args.get("first_fetch"))
 
     if first_fetch:
@@ -302,8 +309,8 @@ def main():
             user_key=user_key,
             api_key=api_key,
             organization=organization,
-            base_event_body=BASE_EVENT_BODY,
-            base_params=BASE_PARAMS,
+            base_request_body=BASE_REQUEST_BODY,
+            base_request_params=BASE_REQUEST_PARAMS,
             verify=verify_certificate,
             use_proxy=proxy,
         )
