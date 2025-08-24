@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-from typing import Dict, Any
+from typing import Any
 from datetime import timedelta
 
 import json
@@ -48,7 +48,7 @@ class TestHelperFunctions:
             ({}, {}),
         ],
     )
-    def test_remove_first_run_params(self, input_params: Dict[str, Any], expected_params: Dict[str, Any]):
+    def test_remove_first_run_params(self, input_params: dict[str, Any], expected_params: dict[str, Any]):
         """
         Test remove_first_run_params function behavior.
 
@@ -184,15 +184,14 @@ class TestFetchEvents:
         mock_response_page1 = {
             "data": [{"id": 1, "timestamp": "2023-10-26T10:00:00Z"}, {"id": 2, "timestamp": "2023-10-26T10:01:00Z"}],
             "pagination": 2,
-            "total": 4
+            "total": 4,
         }
         mock_response_page2 = {
             "data": [{"id": 3, "timestamp": "2023-10-26T10:02:00Z"}, {"id": 4, "timestamp": "2023-10-26T10:03:00Z"}],
             "pagination": 2,
-            "total": 2
+            "total": 2,
         }
-        mocker.patch.object(client, "get_events_request",
-                            side_effect=[mock_response_page1, mock_response_page2])
+        mocker.patch.object(client, "get_events_request", side_effect=[mock_response_page1, mock_response_page2])
         last_run = {"last_log_id": 0}
         events, _ = fetch_events(client, last_run)
 
@@ -202,9 +201,9 @@ class TestFetchEvents:
         first_call_args = client.get_events_request.call_args_list[0][1]  # kwargs of first call
         second_call_args = client.get_events_request.call_args_list[1][1]  # kwargs of second call
 
-        assert first_call_args['body_update'] == expected_body_1
-        assert second_call_args['body_update'] == expected_body_1
-        assert second_call_args['params_update'] == expected_params_2
+        assert first_call_args["body_update"] == expected_body_1
+        assert second_call_args["body_update"] == expected_body_1
+        assert second_call_args["params_update"] == expected_params_2
 
         assert len(events) == 4
         assert last_run == {"last_log_id": 4}

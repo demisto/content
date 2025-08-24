@@ -17,13 +17,7 @@ VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%d %H:%M"
 BASE_EVENT_BODY: dict = {}
-BASE_PARAMS: dict = {
-    "page": "0",
-    "limit": "1000",
-    "sort": "timestamp",
-    "sort_by": "asc",
-    "include_system": "false"
-}
+BASE_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc", "include_system": "false"}
 
 """ CLIENT CLASS """
 
@@ -32,15 +26,15 @@ class Client(BaseClient):
     """Client class to interact with the service API"""
 
     def __init__(
-            self,
-            base_url: str,
-            user_key: str,
-            api_key: str,
-            organization: str,
-            base_event_body: dict,
-            base_params: dict,
-            verify: bool,
-            use_proxy: bool,
+        self,
+        base_url: str,
+        user_key: str,
+        api_key: str,
+        organization: str,
+        base_event_body: dict,
+        base_params: dict,
+        verify: bool,
+        use_proxy: bool,
     ) -> None:
         """
         Prepare constructor for Client class.
@@ -78,8 +72,9 @@ class Client(BaseClient):
         params.update(params_update)
         body = self.base_event_body.copy()
         body.update(body_update)
-        return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params,
-                                  resp_type="json")
+        return self._http_request(
+            "POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params, resp_type="json"
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -97,8 +92,7 @@ def remove_first_run_params(params: dict[str, Any]) -> None:
         params.pop(key, None)
 
 
-def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_body: bool) -> List[
-    Dict]:
+def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_body: bool) -> List[Dict]:
     """
     Fetches events from the AppSentinels.ai API, handling pagination and last_run.
 
@@ -154,8 +148,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         last_log_id = new_events[-1].get("id")
         last_run["last_log_id"] = last_log_id
 
-        demisto.debug(
-            f"AppSentinels.ai fetched events with: {last_log_id=}, {pagination=}, in length: {len(new_events)}")
+        demisto.debug(f"AppSentinels.ai fetched events with: {last_log_id=}, {pagination=}, in length: {len(new_events)}")
 
         for event in new_events:
             event["_TIME"] = event.get("timestamp")
@@ -202,7 +195,7 @@ def prepare_list_output(events: List[dict[str, Any]]) -> str:
             "Category": event.get("category"),
             "Description": event.get("description"),
             "Type": event.get("type"),
-            "Time": event.get("timestamp")
+            "Time": event.get("timestamp"),
         }
         hr_outputs.append(hr_output)
 
@@ -227,7 +220,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(
-        client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_body: bool = False
+    client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_body: bool = False
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AppSentinels.ai entity records.
 
@@ -287,7 +280,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
 
 def main():
     """main function, parses params and runs command functions"""
-    demisto.debug(f"AppSentinels.ai has been called")
+    demisto.debug("AppSentinels.ai has been called")
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
