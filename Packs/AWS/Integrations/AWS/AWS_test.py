@@ -1488,7 +1488,7 @@ def test_ec2_authorize_security_group_egress_command_success(mocker):
     mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
-        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}]
+        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}],
     }
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "to_port": "000", "from_port": "000", "cidr": "cidr"}
@@ -1510,7 +1510,7 @@ def test_ec2_authorize_security_group_egress_command_with_port_range(mocker):
     mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
-        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}]
+        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}],
     }
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
@@ -1532,7 +1532,7 @@ def test_ec2_authorize_security_group_egress_command_with_ip_permissions_json(mo
     mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
-        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}]
+        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}],
     }
 
     ip_permissions = json.dumps([{"IpProtocol": "tcp", "FromPort": 000, "ToPort": 000, "IpRanges": [{"CidrIp": "CidrIp"}]}])
@@ -1634,7 +1634,7 @@ def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker)
     mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
         "Return": False,
-        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}]
+        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}],
     }
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
@@ -1655,7 +1655,7 @@ def test_ec2_authorize_security_group_egress_command_without_port(mocker):
     mock_client.authorize_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
-        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}]
+        "SecurityGroupRules": [{"SecurityGroupRuleId": "id"}],
     }
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "protocol", "cidr": "cidr"}
