@@ -46,9 +46,11 @@ class Client(BaseClient):
         return utc_now > expires_datetime
 
     def create_new_token(self, json_data: dict) -> str:
+        full_url = AUTHENTICATION_FULL_URL.replace(".com", ".eu") if ".eu" in self._base_url else AUTHENTICATION_FULL_URL
+        demisto.debug(f"create_new_token using {full_url} endpoint")
         access_token_obj = self._http_request(
             method="POST",
-            full_url=AUTHENTICATION_FULL_URL,
+            full_url=full_url,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data=json_data,
         )
@@ -64,6 +66,7 @@ class Client(BaseClient):
         set_integration_context(context={"token": token, "expires": str(expire_date)})
 
     def get_events(self, start_date: str = "", end_date: str = "", continuation_token: str = "") -> dict:
+        demisto.debug(f"Bitwarden - get-events from {start_date=} to {end_date=}")
         params = {"start": start_date, "end": end_date}
 
         if continuation_token:
@@ -116,8 +119,10 @@ def fetch_events(
             results.
     """
     last_run = demisto.getLastRun()
+    demisto.debug(f"Bitwarden - fetch-events {last_run=}")
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
+        demisto.debug("Bitwarden - No events were found.")
         return [], last_run
     unique_events = get_unique_events(events, last_run)
     recent_events = filter_events(events=events, oldest=False)
