@@ -231,9 +231,10 @@ class AzureClient:
             # Re-raise the original exception for any other errors
             raise DemistoException(f'Failed to access {resource_type} "{resource_name}": {str(e)}')
 
-    def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
+    def create_or_update_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str,
+                              resource_group_name: str):
         """
-        Create a security rule in an Azure Network Security Group.
+        Create or updating a security rule in an Azure Network Security Group.
         Args:
             security_group: Name of the network security group
             rule_name: Name of the security rule to retrieve
@@ -1144,10 +1145,39 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str) -> Dict:
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers\
                     /Microsoft.Network/networkSecurityGroups?"
-        return self.http_request(method="GET", full_url=full_url)
+        return self.http_request(method="GET", full_url=full_url).json()
+
+    def delete_rule(self, security_group_name, security_rule_name, subscription_id, resource_group_name):
+        return self.http_request(
+            "DELETE",
+            full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
+            /providers/Microsoft.Network/networkSecurityGroups/{security_group_name}/securityRules/{security_rule_name}?",
+            resp_type="response",
+        )
+
+    def list_resource_groups_request(self, subscription_id, filter_by_tag, limit) -> Dict:
+        # TODO to check if the api-version is mandatory
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups?"
+        return self.ms_client.http_request(
+            "GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit, "api-version": "2021-04-01"}
+        ).json()
+
+    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str) -> Dict:
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
+                    networkInterfaces"
+        return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS).json()
+
+    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str) -> Dict:
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
+                    publicIPAddresses"
+        return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS).json()
+
+    def list_subscriptions_request(self):
+        full_url = f"{PREFIX_URL_AZURE}subscriptions"
+        return self.ms_client.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
 
 """ HELPER FUNCTIONS """
@@ -1266,7 +1296,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
     if access:
         properties.update({"access": access})
 
-    rule = client.create_rule(
+    rule = client.create_or_update_rule(
         security_group=security_group_name,
         rule_name=security_rule_name,
         properties=properties,
@@ -1274,7 +1304,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
         resource_group_name=resource_group_name,
     )
 
-    return format_rule(rule, security_rule_name)
+    return format_rule(rule.json(), security_rule_name)
 
 
 def storage_account_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults | str:
@@ -1943,7 +1973,7 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     """
         List all network security groups.
     Args:
-        client: The MSClient
+        client: The AzureClient
         params: configuration parameters
         args: args dictionary.
 
@@ -1953,13 +1983,16 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
-    network_groups = response.json().get("value", [])
+    network_groups = response.get("value", [])
 
-    # TODO maybe to flatten "properties"?
+    # popping out the properties key as in the original command
+    for group in network_groups:
+        group.pop("properties", "")
+
     hr = tableToMarkdown("Network Security Groups", network_groups)
     return CommandResults(
         raw_response=response,
-        outputs_prefix="Azure.SecurityGroup",
+        outputs_prefix="Azure.NSGSecurityGroup",
         outputs_key_field="id",
         outputs=network_groups,
         readable_output=hr
@@ -1967,11 +2000,23 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
 
 
 def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    This command will get a rule from a security group.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The rule that was requested
+    """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     security_group_name = args.get("security_group_name", "")
     security_rule_name = args.get("security_rule_name", "")
-    # TODO to add a check
+
+    if not security_rule_name or not security_group_name:
+        return_error(f"Please provide security_group_name and security_rule_name")
+
     security_rule_list = argToList(security_rule_name)
 
     rules = [
@@ -1986,28 +2031,250 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     return format_rule(rules, security_rule_name)
 
 
-def nsg_security_rule_create_command() -> CommandResults:
-    pass
+def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name", "")
+    security_rule_name = args.get("security_rule_name", "")
+    action = args.get("action", "Allow")  # required, names as "access" in the API
+    direction = args.get("direction", "")  # required
+    priority = args.get("priority", "4096")  # required
+    protocol = args.get("protocol", "Any")  # required
+    source = args.get("source", "Any")
+    source_ports = args.get("source_ports", "*")
+    destination = args.get("destination", "Any")
+    destination_ports = args.get("destination_ports", "*")
+
+    description = args.get("description", "")
+
+    # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
+    properties = {
+        "protocol": "*" if protocol == "Any" else protocol,
+        "access": action,
+        "priority": priority,
+        "direction": direction,
+    }
+    source_ports_list = argToList(source_ports)
+    if len(source_ports_list) > 1:
+        properties["sourcePortRanges"] = source_ports_list
+    else:
+        properties["sourcePortRange"] = source_ports
+
+    dest_ports_list = argToList(destination_ports)
+    if len(dest_ports_list) > 1:
+        properties["destinationPortRanges"] = dest_ports_list
+    else:
+        properties["destinationPortRange"] = destination_ports
+
+    source_list = argToList(source)
+    if len(source_list) > 1:
+        properties["sourceAddressPrefixes"] = source_list
+    else:
+        properties["sourceAddressPrefix"] = "*" if source == "Any" else source
+
+    dest_list = argToList(destination)
+    if len(dest_list) > 1:
+        properties["destinationAddressPrefixes"] = dest_list
+    else:
+        properties["destinationAddressPrefix"] = "*" if destination == "Any" else destination
+
+    if description:
+        properties["description"] = description
+
+    rule = client.create_or_update_rule(
+        security_group=security_group_name,
+        rule_name=security_rule_name,
+        properties=properties,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+    return format_rule(rule.json(), security_rule_name)
 
 
-def nsg_security_rule_delete_command() -> CommandResults:
-    pass
+def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a rule from a security group
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    security_group_name = args.get("security_group_name")
+    security_rule_name = args.get("security_rule_name")
+    rule_deleted = client.delete_rule(
+        security_group_name=security_group_name,
+        security_rule_name=security_rule_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+    message = ""
+    if rule_deleted.status_code == 204:
+        message = f"Rule '{security_rule_name}' with resource_group_name \
+                  '{resource_group_name} and subscription id '{subscription_id}' was not found.\n\n"
+    elif rule_deleted.status_code == 200:
+        message = f"Rule '{security_rule_name}' with resource_group_name \
+                  '{resource_group_name}' and subscription id '{subscription_id}' was successfully deleted.\n\n"
+    elif rule_deleted.status_code == 202:
+        message = (f"The delete request for rule '{security_rule_name}' with resource_group_name \
+                  '{resource_group_name}' and subscription id '{subscription_id}’ \
+                   'was accepted and the operation will complete asynchronously.")
+
+    # TODO to check the results
+    return CommandResults(
+        readable_output=message
+    )
 
 
-def nsg_resource_group_list_command() -> CommandResults:
-    pass
+def nsg_subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+        Gets a list of subscriptions.
+    Args:
+        client: The microsoft client.
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+    response = client.list_subscriptions_request()
+    subscriptions = response.get("value", [])
+
+    readable_output = tableToMarkdown(
+        name="Subscriptions list",
+        t=subscriptions,
+        headers=["subscriptionId", "tenantId", "displayName", "state"],
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.NSGSubscription",
+        outputs_key_field="id",
+        outputs=subscriptions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
-def nsg_subscriptions_list_command() -> CommandResults:
-    pass
+def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all resource groups in the subscription.
+    Args:
+        client (AzureNSGClient): AzureNSG client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    filter_by_tag = azure_tag_formatter(args.get("tag")) if args.get("tag") else ""
+    limit = arg_to_number(args.get("limit", "50"))
+
+    response = client.list_resource_groups_request(subscription_id=subscription_id, filter_by_tag=filter_by_tag, limit=limit)
+    data_from_response = response.get("value", [])
+
+    readable_output = tableToMarkdown(
+        name="Resource Groups List",
+        t=data_from_response,
+        headers=["name", "location", "tags", "properties.provisioningState"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        outputs_prefix="Azure.NSGResourceGroup",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
 
 
-def nsg_network_interfaces_list_command() -> CommandResults:
-    pass
+def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all network interfaces in a resource group.
+    Args:
+        client (AzureNSGClient): AzureNSG client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = arg_to_number(args.get("limit", "50"))
+
+    response = client.list_networks_interfaces_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    data_from_response = response.get("value", [])
+
+    if not all_results:
+        data_from_response = data_from_response[:limit]
+
+    # for data in data_from_response:
+    #     reformat_data(
+    #         data,
+    #         dict_to_extract=[("properties",), ("dnsSettings",)],
+    #         list_to_extract=[
+    #             ("ipConfigurations", "name", "ipConfigurationName"),
+    #             ("ipConfigurations", "id", "ipConfigurationID"),
+    #             ("ipConfigurations", "properties", "ipConfigurationsProperties"),
+    #             ("ipConfigurationsProperties", "privateIPAddress", "ipConfigurationPrivateIPAddress"),
+    #             ("ipConfigurationsProperties", "publicIPAddress", "ipConfigurationPublicIPAddress"),
+    #             ("ipConfigurationPublicIPAddress", "id", "ipConfigurationPublicIPAddressName"),
+    #         ],
+    #     )
+    #     if vm := data.get("virtualMachine"):
+    #         data["virtualMachineId"] = vm.get("id")
+
+    readable_output = tableToMarkdown(
+        name="Network Interfaces List",
+        t=data_from_response,
+        headers=["name", "id", "provisioningState", "ipConfigurationName", "ipConfigurationID",
+                 "ipConfigurationPrivateIPAddress", "ipConfigurationPublicIPAddressName", "dnsServers", "appliedDnsServers",
+                 "internalDomainNameSuffix", "macAddress", "virtualMachineId", "location", "kind"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.NSGNetworkInterfaces",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
 
 
-def nsg_public_ip_addresses_list_command() -> CommandResults:
-    pass
+def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = arg_to_number(args.get("limit", "50"))
+
+    response = client.list_public_ip_addresses_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    data_from_response = response.get("value", [])
+    if not all_results:
+        data_from_response = data_from_response[:limit]
+
+    # for output in outputs:
+    #     reformat_data(output, dict_to_extract=[("properties",), ("dnsSettings",)])
+    #     output["etag"] = output.get("etag", "")[3:-1]
+
+    readable_output = tableToMarkdown(
+        name="Public IP Addresses List",
+        t=data_from_response,
+        headers=["name", "id", "etag", "provisioningState", "publicIPAddressVersion", "ipAddress", "domainNameLabel", "fqdn"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs_prefix="AzureNSG.PublicIPAddress",
+        outputs_key_field="id",
+        outputs=data_from_response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
 
 
 def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
