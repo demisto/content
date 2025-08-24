@@ -12,7 +12,15 @@ MOCK_API_KEY = "dummy_api_key"
 MOCK_ORGANIZATION = "dummy_org"
 EMPTY_RESPONSE = {"data": [], "pagination": 1, "total": 0}
 
-from AppSentinelsAi import Client, BASE_REQUEST_BODY, BASE_REQUEST_PARAMS, DATE_FORMAT, remove_first_run_params, fetch_events, get_events
+from AppSentinelsAi import (
+    Client,
+    BASE_REQUEST_BODY,
+    BASE_REQUEST_PARAMS,
+    DATE_FORMAT,
+    remove_first_run_params,
+    fetch_events,
+    get_events,
+)
 
 
 @pytest.fixture
