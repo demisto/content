@@ -10,37 +10,44 @@ Searches Cortex Issues.
 | Tags | Utility |
 | Cortex XSOAR Version | 5.0.0 |
 
+## Dependencies
+
+---
+This script uses the following commands and scripts.
+
+* Cortex Core - Platform
+* core-get-issues
+
 ## Inputs
 
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| id | A comma-separated list of incident IDs by which to filter the results. |
-| name | A comma-separated list of incident names by which to filter the results. |
-| status | A comma-separated list of incident statuses to filter the results by. Options: new, in_progress, and resolved. |
-| notstatus | A comma-separated list of incident statuses to exclude from the results. Options: new, in_progress, resolved. |
-| reason | A comma-separated list of incident close reasons by which to filter the results. |
-| fromdate | Filter by from date \(e.g. "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\). |
-| todate | Filter by to date \(e.g. "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\). |
-| fromclosedate | Filter by from close date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\). |
-| toclosedate | Filter by to close date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\). |
-| fromduedate | Filter by from due date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\). |
-| toduedate | Filter by to due date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\). |
-| level | Filter by Severity. |
-| owner | Filter by incident owners. |
-| details | Filter by incident details. |
-| type | Filter by incident type. |
-| query | Use free form query \(use Lucene syntax\) as filter. All other filters will be ignored when this filter is used. |
-| page | Filter by the page number. |
-| trimevents | The number of events to return from the alert JSON. The default is 0, which returns all events.<br/>Note that the count is from the head of the list, regardless of event time or other properties. |
-| size | Number of incidents per page \(per fetch\). |
-| limit | The maximum number of incidents to be returned. |
-| sort | Sort in format of field.asc,field.desc,... |
-| searchresultslabel | If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found. |
-| summarizedversion | If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false. |
-| includeinformational | When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational incidents is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational incidents, use the \`query\` argument and include this limitation within the query. Default is false. |
-| add_fields_to_summarize_context | A comma seperated list of fields to add to context when using summarized version, \(default- id,name,type,severity,status,owner,created,closed\). |
+| issue_id | The unique ID of the issue. |
+| severity | The severity of the issue. |
+| Identity_type | Account type. |
+| issue_name | The issue name. |
+| issue_source | The issue source. |
+| actor_process_image_sha256 | Initiator SHA256 actor process image. |
+| causality_actor_process_image_sha256 | CGO SHA256 hash of causality actor process image. |
+| action_process_image_sha256 | Target process SHA256 of action process image. |
+| sort_field | The field by which to sort the results. |
+| sort_order | The order in which to sort the results. |
+| offset | The first page from which we bring the issues. |
+| limit | The last page from which we bring the issues. |
+| additional_output_fields | Additional output fields. |
+| start_time | Supports epoch timestamp and simplified extended ISO format \(YYYY-MM-DDThh:mm:ss\). |
+| end_time | Supports epoch timestamp and simplified extended ISO format \(YYYY-MM-DDThh:mm:ss\). If start time is provided without end_time it will be from start_time until now. |
+| issue_category | The category of the issue. |
+| issue_domain | The domain of the issue. |
+| issue_description | The description of the issue. |
+| os_actor_process_image_sha256 | OS Parent SHA256 hash of the OS actor process image. |
+| action_file_macro_sha256 | File Macro SHA256 hash of the action file macro. |
+| status | The progress status. |
+| not_status | Not progress status. |
+| asset_ids | The assets ids related to the issue. |
+| assignee | The assignee of the issue. |
 
 ## Outputs
 
@@ -48,16 +55,22 @@ Searches Cortex Issues.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| foundIssues.id | A list of incident IDs returned from the query. | Unknown |
-| foundIssues.name | A list of incident names returned from the query. | Unknown |
-| foundIssues.severity | A list of incident severities returned from the query. | Unknown |
-| foundIssues.status | A list of incident statuses returned from the query. | Unknown |
-| foundIssues.owner | A list of incident owners returned from the query. | Unknown |
-| foundIssues.created | A list of the incident create date returned from the query. | Unknown |
-| foundIssues.closed | A list of incident close dates returned from the query. | Unknown |
-| foundIssues.labels | An array of labels per incident returned from the query. | Unknown |
-| foundIssues.details | Details of the incidents returned from the query. | Unknown |
-| foundIssues.dueDate | A list of incident due dates returned from the query. | Unknown |
-| foundIssues.phase | A list of incident phases returned from the query. | Unknown |
-| foundIssues.incidentLink | A list with links to the incidents returned from the query. | Unknown |
-| foundIssues.searchResultsLabel | The value provided in the searchresultslabel argument. | String |
+| Core.Issue.internal_id | The internal ID of the issue. | String |
+| Core.Issue.alert_source | The source of the alert. | String |
+| Core.Issue.status.progress | The progress status of the issue. | String |
+| Core.Issue.assigned_to_pretty | The pretty name of the user assigned to the issue. | String |
+| Core.Issue.assigned_to | The user assigned to the issue. | String |
+| Core.Issue.assetid | The asset ID related to the issue. | String |
+| Core.Issue.action_file_macro_sha256 | File Macro SHA256 hash of the action file macro. | String |
+| Core.Issue.os_actor_process_image_sha256 | OS Parent SHA256 hash of the OS actor process image. | String |
+| Core.Issue.alert_domain | The domain of the alert. | String |
+| Core.Issue.action_process_image_sha256 | Action process image SHA256 hash. | String |
+| Core.Issue.causality_actor_process_image_sha256 | Causality actor process image SHA256 hash. | String |
+| Core.Issue.actor_process_image_sha256 | Actor process image SHA256 hash. | String |
+| Core.Issue.source_insert_ts | The detection timestamp. | Number |
+| Core.Issue.alert_name | The name of the issue. | String |
+| Core.Issue.severity | The severity of the issue. | String |
+| Core.Issue.alert_category | The category of the issue. | String |
+| Core.Issue.alert_name | The issue name. | String |
+| Core.Issue.alert_description | The issue description. | String |
+| Core.Issue.Identity_type | The identity type of the account. | String |

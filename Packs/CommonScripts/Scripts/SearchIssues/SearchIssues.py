@@ -20,7 +20,7 @@ OUTPUT_KEYS = [
     "status.progress",
     "assetid",
     "assigned_to_pretty",
-    "assigned_to"
+    "assigned_to",
     "source_insert_ts",
 ]
 
