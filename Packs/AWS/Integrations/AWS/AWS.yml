@@ -2013,7 +2013,610 @@ script:
       type: string
     - contextPath: AWS.EC2.SecurityGroups.AccountId
       description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+      type: string  - name: aws-ec2-instances-describe
+    description: "Describes the specified instances or all instances."
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region to query instances from. Must be valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to describe. If empty, returns all accessible instances in the specified region."
+      required: false
+      isArray: true
+    - name: filters
+      description: "One or more custom filters to apply separated by ';' (e.g., name=<name>,values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
+      required: false
+      isArray: true
+    - name: next_token
+      description: "Token for pagination when retrieving large result sets. Use the InstancesNextToken value from a previous response to continue listing instances."
+      required: false
+    - name: limit
+      description: "Maximum number of instances to return in a single request. You cannot specify this parameter and the instance IDs parameter in the same request."
+      required: false
+      defaultvalue: 50
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
       type: string
+    - contextPath: AWS.EC2.Instances.ImageId
+      description: The ID of the AMI used to launch the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.State.Code
+      description: The current state of the instance as a 16-bit unsigned integer.
+      type: number
+    - contextPath: AWS.EC2.Instances.State.Name
+      description: The current state of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PrivateDnsName
+      description: The private DNS hostname name assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PrivateIpAddress
+      description: The private IPv4 address assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PublicDnsName
+      description: The public DNS name assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PublicIpAddress
+      description: The public IPv4 address assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Instances.KeyName
+      description: The name of the key pair used when the instance was launched.
+      type: string
+    - contextPath: AWS.EC2.Instances.LaunchTime
+      description: The time the instance was launched.
+      type: date
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
+      description: The Availability Zone of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Instances.Placement.Tenancy
+      description: The tenancy of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.Platform
+      description: The value is Windows for Windows instances; otherwise blank.
+      type: string
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled.
+      type: string
+    - contextPath: AWS.EC2.Instances.SubnetId
+      description: The ID of the subnet in which the instance is running.
+      type: string
+    - contextPath: AWS.EC2.Instances.VpcId
+      description: The ID of the VPC in which the instance is running.
+      type: string
+    - contextPath: AWS.EC2.Instances.Architecture
+      description: The architecture of the image.
+      type: string
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.Instances.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Instances.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.InstancesNextToken
+      description: Token to use for pagination in subsequent requests.
+      type: string
+
+  - name: aws-ec2-instances-start
+    description: "Starts an Amazon EBS-backed instance that you’ve previously stopped."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where target instances are located.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to start in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions."
+      required: true
+      isArray: true
+
+  - name: aws-ec2-instances-stop
+    description: "Stops an Amazon EBS-backed instance."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where target instances are located. Must be valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance."
+      required: true
+      isArray: true
+    - name: force
+      description: "Force stop instances without graceful shutdown. Default: false. Use with caution as it may cause data loss."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultvalue: 'False'
+    - name: hibernate
+      description: "Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs. Default: false."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultvalue: 'False'
+    - name: skip_os_shutdown
+      description: "Specifies whether to bypass the graceful OS shutdown process when the instance is stopped. Bypassing the graceful OS shutdown might result in data loss or corruption (for example, memory contents not flushed to disk or loss of in-flight IOs) or skipped shutdown scripts. Default: false."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultvalue: 'False'
+  - name: aws-ec2-instances-terminate
+    description: "Shuts down the specified instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds."
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where target instances are located. Must be valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: instance_ids
+      description: "A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated."
+      required: true
+      isArray: true
+    - name: force
+      description: "Forces the instances to terminate. The instance will first attempt a graceful shutdown, which includes flushing file system caches and metadata. If the graceful shutdown fails to complete within the timeout period, the instance shuts down forcibly without flushing the file system caches and metadata. Default: false. May cause data corruption."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultvalue: 'False'
+    - name: skip_os_shutdown
+      description: "Specifies whether to bypass the graceful OS shutdown process when the instance is terminated. Default: false."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultvalue: 'False'
+  - name: aws-ec2-instances-run
+    description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using aws-ec2-instances-run , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+    execution: true
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region where instances will be created. Must be valid AWS region identifier.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: count
+      description: "The number of instances to launch. Must be greater than 0."
+      required: true
+      defaultvalue: "1"
+    - name: image_id
+      description: "The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template."
+      required: false
+    - name: instance_type
+      description: "The instance type, for example: t2.large, t3.medium, m5.xlarge."
+      required: false
+    - name: security_group_ids
+      description: "A comma-separated list of security group IDs. Use this for VPC instances."
+      required: false
+      isArray: true
+    - name: security_groups_names
+      description: "A comma-separated list of security group names. For a nondefault VPC, you must use security group IDs instead."
+      required: false
+      isArray: true
+    - name: subnet_id
+      description: "The ID of the subnet to launch the instance into."
+      required: false
+    - name: user_data
+      description: "The user data to make available to the instance. This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation."
+      required: false
+    - name: disable_api_termination
+      description: "Indicates whether termination protection is enabled for the instance. The default is false, which means that you can terminate the instance using the Amazon EC2 console, command line tools, or API."
+      required: false
+      auto: PREDEFINED
+      defaultvalue: 'false'
+      predefined:
+      - 'True'
+      - 'False'
+    - name: iam_instance_profile_arn
+      description: "The Amazon Resource Name (ARN) of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile."
+      required: false
+    - name: iam_instance_profile_name
+      description: "The name of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile."
+      required: false
+    - name: key_name
+      description: "The name of the key pair. Warning - If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in."
+      required: false
+    - name: ebs_optimized
+      description: "Indicates whether the instance is optimized for Amazon EBS I/O."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: device_name
+      description: "The device name (for example, /dev/sdh or xvdh)."
+      required: false
+    - name: ebs_volume_size
+      description: "The size of the volume, in GiBs. You must specify either a ebs_snapshot_id or a ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
+      required: false
+    - name: ebs_volume_type
+      description: "The volume type."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - gp2
+      - gp3
+      - io1
+      - io2
+      - st1
+      - sc1
+      - standard
+    - name: ebs_iops
+      description: "The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS."
+      required: false
+    - name: ebs_delete_on_termination
+      description: "Indicates whether the EBS volume is deleted on instance termination."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: ebs_kms_key_id
+      description: "Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted."
+      required: false
+    - name: ebs_snapshot_id
+      description: "The ID of the snapshot."
+      required: false
+    - name: ebs_encrypted
+      description: "Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: launch_template_id
+      description: "The ID of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
+      required: false
+    - name: launch_template_name
+      description: "The name of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
+      required: false
+    - name: launch_template_version
+      description: "The version number of the launch template."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - '$Latest'
+      - '$Default'
+    - name: tag_specifications
+      description: "The tags to apply to the instance in JSON format. Example: [{'ResourceType': 'instance', 'Tags': [{'Key': 'Name', 'Value': 'MyInstance'}]}]"
+      required: false
+    - name: host_id
+      description: "The dedicated Host ID."
+      required: false
+    - name: enabled_monitoring
+      description: "Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled."
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultvalue: 'False'
+    outputs:
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the newly created instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.ImageId
+      description: The ID of the AMI used to launch the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.State.Code
+      description: The current state of the instance as a 16-bit unsigned integer.
+      type: number
+    - contextPath: AWS.EC2.Instances.State.Name
+      description: The current state of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PrivateDnsName
+      description: The private DNS hostname name assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PrivateIpAddress
+      description: The private IPv4 address assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PublicDnsName
+      description: The public DNS name assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.PublicIpAddress
+      description: The public IPv4 address assigned to the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.InstanceType
+      description: The instance type.
+      type: string
+    - contextPath: AWS.EC2.Instances.KeyName
+      description: The name of the key pair used when the instance was launched.
+      type: string
+    - contextPath: AWS.EC2.Instances.LaunchTime
+      description: The time the instance was launched.
+      type: date
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
+      description: The Availability Zone of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: string
+    - contextPath: AWS.EC2.Instances.Placement.Tenancy
+      description: The tenancy of the instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.Platform
+      description: The value is Windows for Windows instances; otherwise blank.
+      type: string
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled.
+      type: string
+    - contextPath: AWS.EC2.Instances.SubnetId
+      description: The ID of the subnet in which the instance is running.
+      type: string
+    - contextPath: AWS.EC2.Instances.VpcId
+      description: The ID of the VPC in which the instance is running.
+      type: string
+    - contextPath: AWS.EC2.Instances.Architecture
+      description: The architecture of the image.
+      type: string
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
+      description: The device name.
+      type: string
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs
+      description: Parameters used to automatically set up EBS volumes when the instance is launched.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: string
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: string
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: string
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: string
+    - contextPath: AWS.EC2.Instances.Tags.Key
+      description: The key of the tag.
+      type: string
+    - contextPath: AWS.EC2.Instances.Tags.Value
+      description: The value of the tag.
+      type: string
+    - contextPath: AWS.EC2.Instances.EbsOptimized
+      description: Indicates whether the instance is optimized for Amazon EBS I/O.
+      type: boolean
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SubnetId
+      description: The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Description
+      description: The description of the network interface. Applies only if creating a network interface when launching an instance.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.OwnerId
+      description: The ID of the AWS account that owns the network interface.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
+      description: The status of the network interface.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.MacAddress
+      description: The MAC address.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress
+      description: The IPv4 address of the network interface within the subnet.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName
+      description: The private DNS name.
+      type: string
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
+      description: Indicates whether to validate network traffic to or from this network interface.
+      type: boolean
+    - contextPath: AWS.EC2.ReservationId
+      description: The ID of the reservation.
+      type: string
+    - contextPath: AWS.EC2.OwnerId
+      description: The ID of the AWS account that owns the reservation.
+      type: string
+    - contextPath: AWS.EC2.ResponseMetadata.RequestId
+      description: The request ID for the run instances operation.
+      type: string
+    - contextPath: AWS.EC2.ResponseMetadata.HTTPStatusCode
+      description: The HTTP status code of the response.
+      type: number
   isfetch: false
   runonce: false
   script: '-'
