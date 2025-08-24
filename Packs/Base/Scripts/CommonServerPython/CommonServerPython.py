@@ -22,7 +22,6 @@ import urllib
 import gzip
 import ssl
 import signal
-import ipaddress
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -45,7 +44,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 48, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -2960,12 +2959,18 @@ def is_ipv6_valid(address):
 
 def is_ip_internal(ip):
     """
-    Checks if an IP address is an internal (RFC 1918) IP.
+    Checks if an IP address is an internal (RFC 1918) IP. Available from python 3
     """
-    try:
-        ip_obj = ipaddress.ip_address(ip)
-        return ip_obj.is_private
-    except ValueError:
+    if IS_PY3:
+        # pylint: disable=import-error
+        import ipaddress
+        # pylint: enable=import-error
+        try:
+            ip_obj = ipaddress.ip_address(ip)
+            return ip_obj.is_private
+        except ValueError:
+            return False
+    else:
         return False
 
 def is_ip_valid(s, accept_v6_ips=False):
