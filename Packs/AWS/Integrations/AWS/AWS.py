@@ -23,6 +23,35 @@ MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
 
 
+def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Process and extract relevant data from a single EC2 instance.
+
+    Args:
+        instance (Dict[str, Any]): Raw instance data from AWS API
+
+    Returns:
+        Dict[str, Any]: Processed instance data
+    """
+    instance_data = {
+        "InstanceId": instance["InstanceId"],
+        "ImageId": instance["ImageId"],
+        "State": instance["State"]["Name"],
+        "PublicIPAddress": instance.get("PublicIpAddress"),
+        "Type": instance["InstanceType"],
+        "LaunchDate": instance["LaunchTime"],
+        "PublicDNSName": instance["PublicDnsName"],
+        "Monitoring": instance["Monitoring"]["State"],
+    }
+    if "Tags" in instance:
+        for tag in instance["Tags"]:
+            instance_data.update({tag["Key"]: tag["Value"]})
+    if "KeyName" in instance:
+        instance_data.update({"KeyName": instance["KeyName"]})
+
+    return instance_data
+
+
 def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
@@ -78,6 +107,7 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
     return resource_ids
+
 
 def parse_filter_field(filter_string: str | None):
     """
@@ -263,6 +293,7 @@ class AWSErrorHandler:
                 pass
 
         return "unknown"
+
 
 class AWSServices(str, Enum):
     S3 = "s3"
@@ -707,7 +738,7 @@ class IAM:
 
 class EC2:
     service = AWSServices.EC2
-    
+
     @staticmethod
     def modify_instance_metadata_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -1175,62 +1206,107 @@ class EC2:
     def describe_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Retrieves detailed information about EC2 instances including status, configuration, and metadata.
-        
+
         Args:
-            args: Command arguments containing account_id, region, instance_ids, filters, etc.
-            
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing account_id, region, instance_ids, filters, etc.
+
         Returns:
             CommandResults: Formatted results with instance information
         """
-        
-    
-        return CommandResults(readable_output="")
+
+        # Build API parameters
+        kwargs = {}
+        # Add instance IDs if provided
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = argToList(instance_ids)
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        pagination_kwargs = build_pagination_kwargs(args)
+        kwargs.update(pagination_kwargs)
+
+        try:
+            print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
+            remove_nulls_from_dictionary(kwargs)
+            response = client.describe_instances(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            # Extract instances from reservations
+            data = []
+            raw_output = []
+            reservations = response.get("Reservations", [])
+            if not reservations:
+                return CommandResults(
+                    readable_output="No instances found matching the specified criteria.",
+                )
+            for reservation in reservations:
+                for instance in reservation.get("Instances", []):
+                    raw_output.append(process_instance_data(instance))
+            try:
+                output = json.loads(json.dumps(raw_output, cls=DatetimeEncoder))
+            except ValueError as e:
+                raise DemistoException(f"Could not decode/encode the raw response - {e}")
+            outputs = {
+                "AWS.EC2.Instances(val.InstanceId && val.InstanceId == obj.InstanceId)": json.loads(output),
+                "AWS.EC2(true)": {"InstancesNextToken": response.get("NextToken")},
+            }
+            return CommandResults(
+                outputs=outputs, readable_output=tableToMarkdown("AWS EC2 Instances", data), raw_response=response
+            )
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+
+        return CommandResults(readable_output="Failed to describe instances")
 
     @staticmethod
     def run_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-            Runs one or more Amazon EC2 instances.
-            
-            Args:
-                client (BotoClient): The boto3 client for EC2 service
-                args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
-                
-            Returns:
-                CommandResults: Results of the operation with instance termination information
+        Runs one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance termination information
         """
 
-    
         return CommandResults(readable_output="")
-    
+
     @staticmethod
     def stop_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-            Stops one or more Amazon EC2 instances.
-            
-            Args:
-                client (BotoClient): The boto3 client for EC2 service
-                args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
-                
-            Returns:
-                CommandResults: Results of the operation with instance termination information
+        Stops one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance termination information
         """
-        instance_ids = argToList(args.get('instance_ids', []))
-        
+        instance_ids = argToList(args.get("instance_ids", []))
+
         if not instance_ids:
             raise DemistoException("instance_ids parameter is required")
-        
+
         # Prepare termination parameters
         terminate_params = {
-            'InstanceIds': instance_ids,
-            'Force': argToBoolean(args.get('force', False)),
-            'SkipOsShutdown': argToBoolean(args.get('skip_os_shutdown', False)),
-            'Hibernate': argToBoolean(args.get('hibernate', False))
+            "InstanceIds": instance_ids,
+            "Force": argToBoolean(args.get("force", False)),
+            "SkipOsShutdown": argToBoolean(args.get("skip_os_shutdown", False)),
+            "Hibernate": argToBoolean(args.get("hibernate", False)),
         }
 
         try:
-            print_debug_logs(client,f"Stooping instances: {instance_ids}")
+            print_debug_logs(client, f"Stooping instances: {instance_ids}")
             response = client.stop_instances(**terminate_params)
-            
+
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
                 response.get("StoppingInstances")
             ):
@@ -1246,32 +1322,32 @@ class EC2:
     @staticmethod
     def terminate_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-            Terminates one or more Amazon EC2 instances.
-            
-            Args:
-                client (BotoClient): The boto3 client for EC2 service
-                args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
-                
-            Returns:
-                CommandResults: Results of the operation with instance termination information
+        Terminates one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance termination information
         """
-        
-        instance_ids = argToList(args.get('instance_ids', []))
-        
+
+        instance_ids = argToList(args.get("instance_ids", []))
+
         if not instance_ids:
             raise DemistoException("instance_ids parameter is required")
-        
+
         # Prepare termination parameters
         terminate_params = {
-            'InstanceIds': instance_ids,
-            'Force': argToBoolean(args.get('force', False)),
-            'SkipOsShutdown': argToBoolean(args.get('skip_os_shutdown', False))
+            "InstanceIds": instance_ids,
+            "Force": argToBoolean(args.get("force", False)),
+            "SkipOsShutdown": argToBoolean(args.get("skip_os_shutdown", False)),
         }
 
         try:
             print_debug_logs(client, f"Terminating instances: {instance_ids}")
             response = client.terminate_instances(**terminate_params)
-            
+
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
                 response.get("TerminatingInstances")
             ):
@@ -1284,22 +1360,21 @@ class EC2:
 
         return CommandResults(readable_output="Failed to terminate instances")
 
-        
     @staticmethod
     def start_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-            Starts one or more stopped Amazon EC2 instances.
-            
-            Args:
-                client (BotoClient): The boto3 client for EC2 service
-                args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
-                
-            Returns:
-                CommandResults: Results of the operation with instance start information
+        Starts one or more stopped Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance start information
         """
 
-        instance_ids = argToList(args.get('instance_ids', []))
-        
+        instance_ids = argToList(args.get("instance_ids", []))
+
         try:
             response = client.start_instances(InstanceIds=instance_ids)
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
@@ -1313,6 +1388,7 @@ class EC2:
             AWSErrorHandler.handle_client_error(err)
 
         return CommandResults(readable_output="")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -1754,7 +1830,6 @@ REQUIRED_ACTIONS: list[str] = [
 ]
 
 
-
 def test_module(params):
     if params.get("test_account_id"):
         iam_client, _ = get_service_client(
@@ -1916,17 +1991,17 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
     return COMMANDS_MAPPING[command](service_client, args)
 
 
-def print_debug_logs(client: BotoClient , message: str):
+def print_debug_logs(client: BotoClient, message: str):
     """
     Print debug logs with EC2 service prefix and command context.
-            
+
     Args:
         client (BotoClient): The AWS client object
         message (str): The debug message to log
     """
     service_name = client.meta.service_model.service_name
     demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
-    
+
 
 def main():  # pragma: no cover
     params = demisto.params()

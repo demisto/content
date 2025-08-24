@@ -2013,7 +2013,8 @@ script:
       type: string
     - contextPath: AWS.EC2.SecurityGroups.AccountId
       description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
-      type: string  - name: aws-ec2-instances-describe
+      type: string
+  - name: aws-ec2-instances-describe
     description: "Describes the specified instances or all instances."
     arguments:
     - name: account_id
