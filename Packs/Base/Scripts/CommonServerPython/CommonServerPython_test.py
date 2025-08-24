@@ -312,6 +312,8 @@ COMPLEX_DATA_WITH_URLS = [(
          }
     ])]
 
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
 def test_is_ip_internal():
     """
     Given:
