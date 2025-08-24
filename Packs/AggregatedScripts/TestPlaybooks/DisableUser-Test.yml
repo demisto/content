@@ -1,7 +1,7 @@
-id: DisableUser - Test
-version: 28
+id: 3e29b868-47db-4ee6-8415-d8a7cfb390a8
+version: 29
 vcShouldKeepItemLegacyProdMachine: false
-name: DisableUser - Test
+name: DisableUser - TestPlaybook
 starttaskid: "0"
 tasks:
   "0":
@@ -35,24 +35,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b072be4d-f4e5-4217-9b3e-0df08bcc9ccd
+    taskid: 5af4e506-8408-49be-9e04-25ec55f627c1
     type: title
     task:
-      id: b072be4d-f4e5-4217-9b3e-0df08bcc9ccd
+      id: 5af4e506-8408-49be-9e04-25ec55f627c1
       version: -1
       name: Case 1 - Disable by user_name Okta v2
-      description: |-
-        Test Case: Verify Idempotent User Disablement in Okta v2
-
-        Step 1: Create a new user via the Okta v2 integration.
-
-        Step 2: Disable the user created in Step 1 by username.
-
-        Expected Result: The action is successful, and the user's status is changed to disabled.
-
-        Step 3: Attempt to disable the same user again.
-
-        Expected Result: The Results fields is  failure without returning an error, but the disabled field is true.
       type: title
       iscommand: false
       brand: ""
@@ -397,20 +385,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 70431e9c-6d7a-4b26-9bcb-272fb407009a
+    taskid: 7dc7eb97-8003-4a05-a1de-b34dcbd464da
     type: title
     task:
-      id: 70431e9c-6d7a-4b26-9bcb-272fb407009a
+      id: 7dc7eb97-8003-4a05-a1de-b34dcbd464da
       version: -1
       name: Case 2 - Disable By ID Okta v2
-      description: |-
-        Test Case: Verify Idempotent User Disablement in Okta v2
-
-        Step 1: Create a new user via the Okta v2 integration.
-
-        Step 2: Disable the user created in Step 1 by id.
-
-        Expected Result: The action is successful, and the user's status is changed to disabled.
       type: title
       iscommand: false
       brand: ""
@@ -672,20 +652,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: fbdf9904-dc39-445f-8aeb-4681f25fcf3e
+    taskid: b66be76c-d54e-40ae-b489-846fe77d77fe
     type: title
     task:
-      id: fbdf9904-dc39-445f-8aeb-4681f25fcf3e
+      id: b66be76c-d54e-40ae-b489-846fe77d77fe
       version: -1
       name: Case 3 - Disable By Email Active Directory Query v2
-      description: |-
-        Test Case: Verify User Disablement in Active Directory query v2.
-
-        Step 1: Create a new user via the Active Directory query v2 integration.
-
-        Step 2: Disable the user created in Step 1 by email.
-
-        Expected Result: The action is successful, and the user's status is changed to disabled.
       type: title
       iscommand: false
       brand: ""
@@ -911,22 +883,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 298ecb61-3d54-484b-9e57-aeede5a8061b
+    taskid: 978c8499-a09a-4783-ac84-dfb612a7569d
     type: title
     task:
-      id: 298ecb61-3d54-484b-9e57-aeede5a8061b
+      id: 978c8499-a09a-4783-ac84-dfb612a7569d
       version: -1
       name: Case 4 - Disable 2 users with same username
-      description: |-
-        Test Case: Verify User Disablement in few brands with the same username
-
-        Step 1: Create a new user via the Okta v2 integration.
-
-        Step 2: Create a new user via the Active Directory Query v2 integration.
-
-        Step 3: Disable the user created by the same username.
-
-        Expected Result: The action is successful, and the user's status is changed to disabled for both brands.
       type: title
       iscommand: false
       brand: ""
@@ -1360,22 +1322,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 198d3299-5ea1-47c6-871d-7e2f373caaf4
+    taskid: 9ba20a29-36fd-4258-b5b9-1af45dd3ce7f
     type: title
     task:
-      id: 198d3299-5ea1-47c6-871d-7e2f373caaf4
+      id: 9ba20a29-36fd-4258-b5b9-1af45dd3ce7f
       version: -1
       name: Case 5 - brand filtering
-      description: |-
-        Test Case: Verify User Disablement in Okta v2 when username is available on two brands
-
-        Step 1: Create a new user via the Okta v2 integration.
-
-        Step 2: Create a new user via the Active Directory Query v2 integration.
-
-        Step 3: Disable the user created in Step 1 using only brand Okta v2.
-
-        Expected Result: The action is successful only for Okta v2.
       type: title
       iscommand: false
       brand: ""
@@ -1773,24 +1725,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 9d5182ca-85dd-485e-ad7f-d6e86e529fa7
+    taskid: b1168834-3657-4007-b1e2-c30b3e10f32f
     type: title
     task:
-      id: 9d5182ca-85dd-485e-ad7f-d6e86e529fa7
+      id: b1168834-3657-4007-b1e2-c30b3e10f32f
       version: -1
       name: Case 6 - user name, id, email from  brands
-      description: |-
-        Test Case: Verify User Disablement in Okta v2, Active Directory Query v2 and Microsoft graph.
-
-        Step 1: Create a new user via the Okta v2 integration.
-
-        Step 2: Create a new user via the Active Directory Query v2 integration.
-
-        Step 3: Create a new user via the Microsoft graph integration.
-
-        Step 4: Disable the users created Microsoft by id, Okta by username and Active by email.
-
-        Expected Result: The action is successful, and the user's status is changed to disabled for all brands.
       type: title
       iscommand: false
       brand: ""
@@ -2669,10 +2609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: d1b6a5f1-274f-4fe8-a082-54b6453ff0c1
+    taskid: f2930bea-9e70-4cb6-8505-5852e449bf71
     type: title
     task:
-      id: d1b6a5f1-274f-4fe8-a082-54b6453ff0c1
+      id: f2930bea-9e70-4cb6-8505-5852e449bf71
       version: -1
       name: Disable Same user again
       type: title
