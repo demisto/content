@@ -131,6 +131,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
     while True:
         try:
             # API call
+            demisto.debug(f"AppSentinels.ai sending http requests with arguments: {params=} {body=}")
             response_data = client.get_events_request(params_update=params, body_update=body)  # Use the client method
         except DemistoException as error:
             raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
