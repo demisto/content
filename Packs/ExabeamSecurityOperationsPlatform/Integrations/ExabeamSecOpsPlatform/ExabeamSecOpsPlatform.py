@@ -8,9 +8,14 @@ IS_XSOAR = is_xsoar()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
+
+# Fetch Incidents (XSOAR)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 
+# Fetch Events (XSIAM & Platform)
+MAX_BATCH_SIZE = 3000
+MAX_EVENTS_LIMIT = 30000
 PRODUCT = "Exabeam"
 VENDOR = "Threat Center"
 
@@ -475,6 +480,78 @@ def convert_all_timestamp_to_datestring(incident: dict) -> dict:
     return incident
 
 
+def fetch_cases_in_batches(
+    client: Client,
+    start_time: str,
+    end_time: str,
+    last_fetched_ids: list[str],
+    max_fetch: int,
+) -> tuple[list[dict], str, list[str]]:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        start_time (str): _description_
+        end_time (str): _description_
+        last_fetched_ids (list[str]): _description_
+        max_fetch (int): _description_
+
+    Returns:
+        tuple[list[dict], str, list[str]]: _description_
+    """
+    all_cases: list[dict] = []
+    all_fetched_ids = set(last_fetched_ids.copy())
+    iteration = 1
+
+    while len(all_cases) < max_fetch:
+        filter = " AND ".join(f'NOT caseId:"{case_id}"' for case_id in last_fetched_ids)
+        request_body = {
+            "limit": MAX_BATCH_SIZE,
+            "filter": filter,
+            "fields": ["*"],
+            "orderBy": ["caseCreationTimestamp ASC"],
+            "startTime": start_time,
+            "endTime": end_time,
+        }
+        demisto.debug(f"Starting {iteration=}. Searching cases using {request_body=}.")
+        response = client.case_search_request(request_body)
+
+        batch_rows = response.get("rows", [])
+        if not batch_rows:  # Empty batch indicates steam of cases has ended
+            demisto.debug("Reached the end after getting empty batch. Stopping search for cases.")
+            break
+
+        unique_batch_cases: list[dict] = []
+        for row in batch_rows:
+            case_id = row.get("caseId")
+            if case_id in all_fetched_ids:
+                demisto.debug(f"Skipping duplicate row with {case_id=}.")
+                continue
+
+            all_fetched_ids.add(case_id)
+            unique_batch_cases.append(row)
+            all_cases.append(row)
+
+            if len(all_cases) == max_fetch:
+                demisto.debug(f"Reached the desired {max_fetch=}. Stopping iterating over batch rows.")
+                break
+
+        if not unique_batch_cases:
+            demisto.debug("No new unique cases in this batch. Stopping search for cases.")
+            break
+
+        start_time, last_fetched_ids = get_last_case_time_and_ids(unique_batch_cases)
+
+        if len(batch_rows) < MAX_BATCH_SIZE:  # Partial batch indicates steam of cases has ended
+            demisto.debug(f"Got partial batch with {len(batch_rows)} rows. Finishing searching for cases.")
+            break
+
+        demisto.debug(f"Finished {iteration=}. Fetched {len(all_cases)} so far. New {start_time=} and {last_fetched_ids=}.")
+        iteration += 1
+
+    return all_cases, start_time, last_fetched_ids
+
+
 def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     """
     Filters out cases that already exist in the provided list of existing IDs.
@@ -502,6 +579,17 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
     return filtered_cases
 
 
+def get_last_case_time_and_ids(cases: list) -> tuple[str, list]:
+    if not cases:
+        raise ValueError("Cannot get last case time and IDs from empty list.")
+
+    max_timestamp = max([case.get("caseCreationTimestamp", 0) for case in cases])
+    last_case_ids = [case.get("caseId", "") for case in cases if case.get("caseCreationTimestamp", 0) == max_timestamp]
+    last_case_time = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+
+    return last_case_time, last_case_ids
+
+
 def update_last_run(cases: list, end_time: str) -> dict:
     """
     Updates the last run time and list of case IDs based on the provided cases.
@@ -516,15 +604,12 @@ def update_last_run(cases: list, end_time: str) -> dict:
             - 'last_ids': A list of case IDs where the 'caseCreationTimestamp' matches the latest timestamp exactly.
     """
     if cases:
-        max_timestamp = max(case.get("caseCreationTimestamp", 0) for case in cases)
-        list_ids = [case.get("caseId", "") for case in cases if case.get("caseCreationTimestamp", 0) == max_timestamp]
-        last_run_time = timestamp_to_datestring(max_timestamp / 1000, date_format=DATE_FORMAT)
+        last_run_time, list_ids = get_last_case_time_and_ids(cases)
     else:
         last_run_time = end_time
         list_ids = []
 
-    last_run = {"time": last_run_time, "last_ids": list_ids}
-    return last_run
+    return {"time": last_run_time, "last_ids": list_ids}
 
 
 def format_incidents(cases: list[dict]) -> list[dict]:
@@ -550,6 +635,24 @@ def format_incidents(cases: list[dict]) -> list[dict]:
             }
         )
     return incidents
+
+
+def format_events(cases: list[dict]) -> list[dict]:
+    """
+    Converts a list of cases into a list of events with formatted timestamps and `_time` field.
+
+    Args:
+        cases (list): A list of case dictionaries.
+
+    Returns:
+        list: A list event dictionaries with the `_time` field added.
+    """
+    events = []
+    for case in cases:
+        case = convert_all_timestamp_to_datestring(case)
+        case["_time"] = case["caseCreationTimestamp"]  # already formatted in DATE_FORMAT from function call above
+        events.append(case)
+    return events
 
 
 def format_record_keys(dict_list):
@@ -910,22 +1013,29 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run: dict[str, 
 
 
 def fetch_events(client: Client, params: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
-    demisto.debug("Starting to fetch events")
+    demisto.debug(f"Starting to fetch events. Got {last_run=}.")
     first_fetch = params.get("first_fetch", "3 days")
+    max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
+
     start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
-    kwargs = {
-            "filter": "",
-            "fields": "*",
-            "startTime": start_time,
-            "endTime": end_time,
-            "limit": 3000,
-    }
-    demisto.debug(f"Searching cases using args: {kwargs}.")
-    response = client.case_search_request(kwargs)
-    events = response.get("rows", [])
-    demisto.debug(f"{events=}")
-    return [], {}
-    # return fetch_incidents(client, params, last_run)
+    last_fetched_ids = last_run.get("last_ids", [])
+
+    demisto.debug(f"Starting to fetch cases in batches with {start_time=}, {end_time=}, {last_fetched_ids=}.")
+    cases, new_start_time, new_last_fetched_ids = fetch_cases_in_batches(
+        client=client,
+        start_time=start_time,
+        end_time=end_time,
+        last_fetched_ids=last_fetched_ids,
+        max_fetch=max_fetch,
+    )
+
+    next_run = {"time": new_start_time, "last_ids": new_last_fetched_ids}
+    demisto.debug(f"Fetched {len(cases)} cases in batches. Updated {next_run=}.")
+
+    events = format_events(cases)
+    demisto.debug(f"Got {len(events)} formatted events.")
+
+    return events, next_run
 
 
 def test_module(client: Client) -> str:  # pragma: no cover
