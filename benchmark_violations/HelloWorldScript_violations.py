@@ -3,10 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import time
 
-"""HelloWorld Script with Guideline Violations
-This script intentionally violates multiple XSOAR coding guidelines for benchmark testing
-"""
-
 from CommonServerUserPython import *
 from typing import Any
 
@@ -27,7 +23,6 @@ def say_hello(name: str) -> str:
 """ COMMAND FUNCTION """
 
 def say_hello_command():
-    """helloworld-say-hello command with violations"""
     
     name = demisto.args()['name'] if 'name' in demisto.args() else "World"
     
