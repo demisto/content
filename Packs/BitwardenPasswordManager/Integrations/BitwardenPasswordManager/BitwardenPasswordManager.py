@@ -14,6 +14,7 @@ AUTHENTICATION_FULL_URL = "https://identity.bitwarden.com/connect/token"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 DEFAULT_FIRST_FETCH = (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT)
 DEFAULT_END_DATE = (get_current_time() + timedelta(days=1)).strftime(DATE_FORMAT)
+LOOK_BACK = 8
 
 
 class Client(BaseClient):
@@ -120,6 +121,12 @@ def fetch_events(
     """
     last_run = demisto.getLastRun()
     demisto.debug(f"Bitwarden - fetch-events {last_run=}")
+    fetch_time = dates["start"]
+
+    dates["start"], dates["end"] = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=fetch_time, look_back=LOOK_BACK, date_format=DATE_FORMAT
+    )
+
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
         demisto.debug("Bitwarden - No events were found.")
