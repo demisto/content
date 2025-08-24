@@ -19,7 +19,7 @@ filter _raw_log ~= "Allow\:|Detect\:"
     xdm.target.ipv6 = arrayindex(regextract(parsedFields1 -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
     xdm.target.port = if(parsedFields1 -> proto = "ICMP", null, to_number(parsedFields1 -> dstPort)), //ICMP does not support using port numbers. Instead, ICMP identifier is logged as the source (srcPort) and destination port (dstPort).
     xdm.target.resource.name = parsedFields1 -> dstService,
-    xdm.target.resource.type "Destination service",
+    xdm.target.resource.type = "Destination service",
     xdm.target.interface = parsedFields1 -> dstIF,
     xdm.network.rule = parsedFields1 -> rule,
     xdm.network.http.url = json_extract_scalar(parsedFields1, "$.target"),
@@ -50,13 +50,13 @@ filter _raw_log contains "BYF"
     xdm.target.ipv6 = arrayindex(regextract(parsedFields1 -> dstIP, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
     xdm.network.http.content_type = if(parsedFields1 -> contentType = "-", null, parsedFields1 -> contentType),
     xdm.network.http.url = parsedFields1 -> url,
-    xdm.observer.action - parsedFields1 -> action, //1 is blocked, 0 is allowed
+    xdm.observer.action = parsedFields1 -> action, //1 is blocked, 0 is allowed
     xdm.network.http.url_category = if(parsedFields1 -> urlCategoryCode = "-", null, parsedFields1 -> urlCategoryCode),
     xdm.target.host.hostname = parsedFields1 -> targetHostname,
     xdm.target.user.username = parsedFields1 -> targetUser,
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK, XDM_CONST.EVENT_TAG_CLOUD);
 
-filter _raw_log not contains ("BYF", "Allow:", "Detect:")
+filter _raw_log NOT IN ("*BYF*", "*Allow:*", "*Detect:*")
 | alter
     priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"),0))
 | alter
