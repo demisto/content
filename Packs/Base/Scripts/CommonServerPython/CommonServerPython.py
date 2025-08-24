@@ -2959,7 +2959,10 @@ def is_ipv6_valid(address):
 
 def is_ip_internal(ip):
     """
-    Checks if an IP address is an internal (RFC 1918) IP. Available from python 3
+    Checks if an IP address is an internal (RFC 1918) IP, Available from python3.
+
+    :return: True if the given IP address is an internal.
+    :rtype: ``bool``
     """
     if IS_PY3:
         # pylint: disable=import-error
