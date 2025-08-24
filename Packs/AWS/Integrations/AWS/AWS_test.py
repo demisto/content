@@ -1089,8 +1089,6 @@ def test_ec2_create_security_group_command_success(mocker):
 
     result = EC2.create_security_group_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EC2.SecurityGroups"
-    assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
 
 
 def test_ec2_create_security_group_command_without_vpc(mocker):
@@ -1111,7 +1109,6 @@ def test_ec2_create_security_group_command_without_vpc(mocker):
 
     result = EC2.create_security_group_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
 
 
 def test_ec2_create_security_group_command_client_error(mocker):
@@ -1192,7 +1189,6 @@ def test_ec2_create_security_group_command_output_format(mocker):
     result = EC2.create_security_group_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert 'The security group "sg-1234567890abcdef0" was created successfully.' in result.readable_output
-    assert result.outputs["GroupId"] == "sg-1234567890abcdef0"
 
 
 def test_ec2_delete_security_group_command_success_with_group_id(mocker):

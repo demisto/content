@@ -727,9 +727,7 @@ Creates a security group.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.EC2.SecurityGroups.GroupId | string | The ID of the security group. |
+There is no context output for this command.
 
 ### aws-ec2-security-group-delete
 

@@ -1026,9 +1026,6 @@ class EC2:
                 group_id := response.get("GroupId")
             ):
                 return CommandResults(
-                    outputs_key_field="GroupId",
-                    outputs={"GroupId": group_id},
-                    outputs_prefix="AWS.EC2.SecurityGroups",
                     readable_output=f'The security group "{group_id}" was created successfully.',
                     raw_response=response,
                 )

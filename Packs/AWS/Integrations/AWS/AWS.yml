@@ -1872,10 +1872,6 @@ script:
     - name: vpc_id
       description: The ID of the VPC. Required for a nondefault VPC.
       required: false
-    outputs:
-    - contextPath: AWS.EC2.SecurityGroups.GroupId
-      description: The ID of the security group.
-      type: string
   - name: aws-ec2-security-group-delete
     execution: true
     description: Deletes a security group.
