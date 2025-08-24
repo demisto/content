@@ -8780,8 +8780,7 @@ def is_xsoar():
     :return: True iff the platform is XSOAR.
     :rtype: ``bool``
     """
-    # Set empty string as defualt to avoid 'NoneType' is not iterable error and linter warnings
-    return "xsoar" in demisto.demistoVersion().get("platform", "")
+    return "xsoar" in demisto.demistoVersion().get("platform")
 
 
 def is_xsoar_on_prem():

@@ -3,9 +3,6 @@ from CommonServerPython import *  # noqa: F401
 
 """ CONSTANTS """
 
-IS_XSIAM_OR_PLATFORM = is_xsiam() or is_platform()
-IS_XSOAR = is_xsoar()
-
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 
@@ -1099,13 +1096,13 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         elif command == "fetch-incidents":
-            disable_if_product(IS_XSIAM_OR_PLATFORM)
+            disable_if_product(is_xsiam() or is_platform())
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == "fetch-events":
-            disable_if_product(IS_XSOAR)
+            disable_if_product(is_xsoar())
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, params, last_run)
             send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)
