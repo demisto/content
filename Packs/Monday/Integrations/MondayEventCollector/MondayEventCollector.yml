@@ -41,7 +41,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Maximum number of Activity Logs per fetch
+- display: Maximum number of Activity Logs per board per fetch
   defaultvalue: 10000
   section: Collect
   name: max_activity_logs_per_fetch

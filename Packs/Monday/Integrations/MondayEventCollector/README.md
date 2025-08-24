@@ -43,7 +43,7 @@ Audit log is an advanced security feature and available on the Enterprise plan a
 | Authorization code | The code received from the redirect URL after running monday-generate-login-url command. \(needed for Activity Logs only\) | False |
 | Board IDs | Comma separated list of board IDs. \(needed for Activity Logs only\) | False |
 | Events Fetch Interval |  | False |
-| Maximum number of Activity Logs per fetch |  | False |
+| Maximum number of Activity Logs per board per fetch |  | False |
 | Audit Server URL |  | False |
 | Audit API token | In the Admin section of your account, click into the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button. | False |
 | Maximum number of Audit Logs per fetch |  | False |

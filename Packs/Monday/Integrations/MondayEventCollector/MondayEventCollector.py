@@ -36,8 +36,9 @@ USE_SSL = not PARAMS.get("insecure", False)
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-day_ms = 365 * 24 * 60 * 60 * 1000
-FETCH_TIME = 3 * day_ms             # TODO: change it to  (60 * 1000)-1 minutes, now its 3 days
+day_ms = 24 * 60 * 60 * 1000
+START_FETCH_TIME = 900 * day_ms             # TODO: change it to  (60 * 1000)-1 minutes before margin
+# START_FETCH_TIME = 60 * 1000 - 1
 
 HEADERS = {
     "Content-Type": "application/json",
@@ -92,6 +93,10 @@ def get_access_token() -> str:
     secret = params.get("secret", "")
     auth_code = params.get("auth_code", "")
     
+    if not client_id or not secret or not auth_code:
+        demisto.debug(f"{DEBUG_PREFIX}. get_access_token function: Client ID, Client secret or Authorization code is missing.")
+        raise DemistoException(f"{DEBUG_PREFIX}. get_access_token function: Client ID, Client secret or Authorization code is missing.")
+
     payload = {
         "client_id": client_id,
         "client_secret": secret,
@@ -109,7 +114,7 @@ def get_access_token() -> str:
 
         if response.status_code != 200:
             demisto.debug(f"{DEBUG_PREFIX}Failed to get access token. response status code: {response.status_code}\n{response.text}")
-            raise DemistoException(f"Failed to get access token. Status code: {response.status_code}")
+            raise DemistoException(f"{DEBUG_PREFIX}Failed to get access token. response status code: {response.status_code}\n{response.text}")
 
         access_token = response.json().get("access_token")
 
@@ -198,7 +203,7 @@ def get_remaining_audit_logs(last_run: dict) -> tuple[list, dict]:
         # TODO: check this flow
         # In case logs remaining from the last page, remove duplicate logs based on the lower bound logs set on the previous fetch.
         if not last_run.get("continuing_fetch_info"):
-            fetched_logs = remove_duplicate_logs(fetched_logs, last_run.get("lower_bound_log_id"), is_id_field_exists=False)
+            fetched_logs = remove_duplicate_logs(fetched_logs, last_run.get("lower_bound_log_id"), is_id_field_exists=False, debug_prefix=AUDIT_LOG_DEBUG_PREFIX)
         
         last_run["excess_logs_info"] = None
         return fetched_logs, last_run
@@ -290,7 +295,7 @@ def convert_17_digit_unix_time_to_ISO8601(ts, data_format: str = "%Y-%m-%dT%H:%M
     return dt
 
 
-def remove_duplicate_logs(logs: list, ids_to_remove: list, is_id_field_exists: bool) -> list:
+def remove_duplicate_logs(logs: list, ids_to_remove: list, is_id_field_exists: bool, debug_prefix: str = DEBUG_PREFIX) -> list:
     """
     Remove duplicate logs based on previous fetch.
     
@@ -315,6 +320,11 @@ def remove_duplicate_logs(logs: list, ids_to_remove: list, is_id_field_exists: b
     else:
         filtered_logs = [log for log in logs if generate_log_hash(log) not in ids_to_remove]
 
+    if not filtered_logs:
+        demisto.debug(f"{debug_prefix}No logs available for this request after removing duplicates.")
+    else:
+        demisto.debug(f"{debug_prefix}Removed {len(logs) - len(filtered_logs)} duplicate logs removed.")
+        
     return filtered_logs
 
 
@@ -382,7 +392,7 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
             start_time = subtract_epsilon_from_timestamp(last_run.get("last_timestamp"))
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}decrease the epsilon from the start_time to include logs with the exact same timestamp.\noriginal last_timestamp: {last_run.get("last_timestamp")}, after subtract epsilon: {start_time}")
         else:
-            start_time = timestamp_to_datestring(now_ms - FETCH_TIME, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
+            start_time = timestamp_to_datestring(now_ms - START_FETCH_TIME, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
         page = 1
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Starting new fetch range for Activity Logs from: {start_time} to {end_time}\nPage: {page}")
@@ -452,7 +462,7 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page={page} is the last page.")
 
         lower_bound_log_id = last_run.get("lower_bound_log_id")
-        fetched_logs = remove_duplicate_logs(fetched_logs, ids_to_remove=lower_bound_log_id, is_id_field_exists=True)
+        fetched_logs = remove_duplicate_logs(fetched_logs, ids_to_remove=lower_bound_log_id, is_id_field_exists=True, debug_prefix=ACTIVITY_LOG_DEBUG_PREFIX)
         
         last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}set lower_bound_log_id to be upper_bound_log_id: {last_run['lower_bound_log_id']}")
@@ -545,7 +555,7 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
             start_time = subtract_epsilon_from_timestamp(last_run.get("last_timestamp"))
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}decrease the epsilon from the start_time to include logs with the exact same timestamp.\noriginal last_timestamp: {last_run.get("last_timestamp")}, after subtract epsilon: {start_time}")
         else:
-            start_time = timestamp_to_datestring(now_ms - FETCH_TIME, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
+            start_time = timestamp_to_datestring(now_ms - START_FETCH_TIME, date_format="%Y-%m-%dT%H:%M:%S.%fZ")
 
         page = 1
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Starting new fetch range for Audit Logs from: {start_time} to {end_time}\nPage: {page}")
@@ -611,13 +621,7 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page={page} is the last page.")
 
             lower_bound_log_id = last_run.get("lower_bound_log_id")
-            fetched_logs_before_remove_duplicates = len(fetched_logs)
-            fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=False)
-            
-            if not fetched_logs:
-                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}No logs available for this request after removing duplicates.\n(Fetched logs before remove duplicates: {fetched_logs_before_remove_duplicates})")
-            else:
-                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Removed {fetched_logs_before_remove_duplicates - len(fetched_logs)} duplicate logs removed.")
+            fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=False, debug_prefix=AUDIT_LOG_DEBUG_PREFIX)
             total_logs.extend(fetched_logs)
     
             last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
@@ -686,7 +690,7 @@ def fetch_audit_logs(last_run: dict) -> tuple[dict, list]:
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Exception during fetch audit logs. Exception is {e!s}")
         raise DemistoException(f"{AUDIT_LOG_DEBUG_PREFIX}Exception during fetch audit logs. Exception is {e!s}")
 
-    audit_logs = add_time_field_to_audit_logs(audit_logs)
+    add_fields_to_events(audit_logs, event_type="Audit Log")
     
     return last_run, audit_logs
 
@@ -708,26 +712,9 @@ def remove_decimal_places_from_timestamp(timestamp: str) -> str:
     return base + 'Z'
 
 
-def add_time_field_to_audit_logs(logs: list) -> list:
-    for log in logs:
-        log["_time"] = arg_to_datetime(arg=log.get("timestamp")).strftime(DATE_FORMAT)
-        # timestamp_str = log.get("timestamp")
-        # log["_time"] = remove_decimal_places_from_timestamp(timestamp_str)
-    return logs
-
-
-def add_time_field_to_activity_logs(logs: list) -> list:
-    for log in logs:
-        timestamp_str = log.get("created_at")
-        converted_timestamp = convert_17_digit_unix_time_to_ISO8601(timestamp_str, DATE_FORMAT)
-        log["_time"] = converted_timestamp
-    return logs
-
-
-def initiate_activity_log_last_run(last_run: dict, board_ids:str) -> dict:
+def initiate_activity_log_last_run(last_run: dict, board_ids_list:list[str]) -> dict:
     if not last_run:
-        board_ids = [board_id.strip() for board_id in board_ids.split(',') if board_id.strip()]
-        for board_id in board_ids:
+        for board_id in board_ids_list:
             last_run[board_id] = {}
     return last_run
 
@@ -736,7 +723,7 @@ def validate_activity_log_params() -> tuple[str, list[str]]:
     demisto_params = demisto.params()
     activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
     board_ids = demisto_params.get("board_ids", "")
-    
+
     if not activity_logs_url:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}activity logs url is missing.")
         raise DemistoException("Please provide Activity logs Server URL in the integration parameters before starting to fetch activity logs.")
@@ -745,22 +732,24 @@ def validate_activity_log_params() -> tuple[str, list[str]]:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ID is missing.")
         raise DemistoException("Please provide board ID in the integration parameters before starting to fetch activity logs.")
 
-    board_ids = [board_id.strip() for board_id in board_ids.split(',') if board_id.strip()]
-    return activity_logs_url, board_ids
+    board_ids_list = [board_id.strip() for board_id in board_ids.split(',') if board_id.strip()]
+    return activity_logs_url, board_ids_list
     
 
 def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     
-    activity_logs_url, board_ids = validate_activity_log_params()
-
+    activity_logs_url, board_ids_list = validate_activity_log_params()
+    last_run = initiate_activity_log_last_run(last_run, board_ids_list)
+    
     now_ms = int(time.time() * 1000)
     activity_logs = []
     limit = ACTIVITY_LOGS_LIMIT
     
     try:
-        for board_id in board_ids:
-            demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board_id: {board_id}, last_run before fetching activity logs:\n{last_run[board_id]}")
+        for board_id in board_ids_list:
             current_board_last_run = last_run[board_id]
+            demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board_id: {board_id}, last_run before fetching activity logs:\n{current_board_last_run}")
+
             fetched_logs, updated_last_run = get_activity_logs(last_run=current_board_last_run,
                                                                  now_ms=now_ms,
                                                                  limit=limit,
@@ -775,10 +764,29 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Exception during fetch activity logs. Exception is {e!s}")
         raise DemistoException(f"{ACTIVITY_LOG_DEBUG_PREFIX}Exception during fetch activity logs. Exception is {e!s}")
 
-    activity_logs = add_time_field_to_activity_logs(activity_logs)
+    add_fields_to_events(activity_logs, event_type="Activity Log")
     
     return last_run, activity_logs
 
+def add_fields_to_events(events: List[Dict] | None, event_type: str):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    for event in events:
+        if event_type == "Audit Log":
+            create_time = arg_to_datetime(arg=event.get("timestamp"))
+            time_value = create_time.strftime(DATE_FORMAT) if create_time else None
+        else: # Activity Log
+            create_time = event.get("created_at")
+            time_value = convert_17_digit_unix_time_to_ISO8601(create_time, DATE_FORMAT) if create_time else None
+
+        event["_time"] = time_value
+        event["event_type"] = event_type
+            
 
 def fetch_events() -> tuple[dict, list]:
     """
@@ -844,8 +852,7 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             
             last_run, events = fetch_events()
-            
-            demisto.debug(f"{DEBUG_PREFIX}Sending {len(events)} events to XSIAM.")
+            demisto.debug(f"{DEBUG_PREFIX}Monday Integration Sending {len(events)} events to XSIAM.\n{events}")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"{DEBUG_PREFIX}Sent events to XSIAM successfully")
             
