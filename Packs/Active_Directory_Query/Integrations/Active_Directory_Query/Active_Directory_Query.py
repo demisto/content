@@ -1328,6 +1328,7 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     Returns:
         flags (int): The UserAccountControl flags.
     """
+    demisto.log("Active Directory restore_user")
     args = demisto.args()
 
     # default query - list all users
@@ -1384,6 +1385,7 @@ def enable_user(default_base_dn, default_page_size):
 
 
 def disable_user(default_base_dn, default_page_size):
+    demisto.log("Active Directory disable_user")
     args = demisto.args()
 
     # get user DN
@@ -1391,6 +1393,7 @@ def disable_user(default_base_dn, default_page_size):
     search_base = args.get("base-dn") or default_base_dn
     dn = user_dn(sam_account_name, search_base)
     account_options = restore_user(search_base, default_page_size)
+    demisto.log(f"Active Directory disable_user {account_options=}")
 
     # modify user
     modification = {"userAccountControl": [("MODIFY_REPLACE", (account_options | DISABLED_ACCOUNT))]}
