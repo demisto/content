@@ -8,6 +8,8 @@ from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from boto3 import Session
+import re
+
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -15,6 +17,60 @@ DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/ce
 DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
+MAX_FILTERS = 50
+MAX_FILTER_VALUES = 200
+MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
+MAX_LIMIT_VALUE = 1000
+DEFAULT_LIMIT_VALUE = 50
+
+
+def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Build pagination parameters for AWS API calls with proper validation and limits.
+
+    Args:
+        args (Dict[str, Any]): Command arguments containing pagination parameters
+
+    Returns:
+        Dict[str, Any]: Validated pagination parameters for AWS API
+
+    Raises:
+        ValueError: If limit exceeds maximum allowed value or is invalid
+    """
+    kwargs: Dict[str, Any] = {}
+
+    # Handle pagination with next_token (for continuing previous requests)
+    if next_token := args.get("next_token"):
+        if not isinstance(next_token, str) or not next_token.strip():
+            raise ValueError("next_token must be a non-empty string")
+        kwargs["NextToken"] = next_token.strip()
+        return kwargs
+
+    # Handle limit-based pagination (for new requests)
+    limit_arg = args.get("limit")
+
+    # Parse and validate limit
+    try:
+        if limit_arg is not None:
+            limit = arg_to_number(limit_arg) or DEFAULT_LIMIT_VALUE
+            if limit is None:
+                raise ValueError(f"Invalid limit value: {limit_arg}")
+        else:
+            limit = DEFAULT_LIMIT_VALUE  # Default limit
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
+
+    # Validate limit constraints
+    if limit <= 0:
+        raise ValueError("Limit must be greater than 0")
+
+    # AWS API constraints - most services have a max of 1000 items per request
+    if limit > MAX_LIMIT_VALUE:
+        demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
+        limit = MAX_LIMIT_VALUE
+
+    kwargs.update({"MaxResults": limit})
+    return kwargs
 
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
@@ -23,6 +79,203 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
     return resource_ids
+
+
+def parse_filter_field(filter_string: str | None):
+    """
+    Parses a list representation of name and values with the form of 'name=<name>,values=<values>.
+    You can specify up to 50 filters and up to 200 values per filter in a single request.
+    Filter strings can be up to 255 characters in length.
+    Args:
+        filter_list: The name and values list
+
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_FILTERS:
+        list_filters = list_filters[0:50]
+        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    regex = re.compile(
+        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for filter in list_filters:
+        match_filter = regex.match(filter)
+        if match_filter is None:
+            demisto.debug(f"could not parse filter: {filter}")
+            continue
+        if len(match_filter.group(2).split(",")) > MAX_FILTER_VALUES:
+            demisto.debug(
+                f"Number of filter values for filter {match_filter.group(1)} is larger than {MAX_FILTER_VALUES},"
+                f" parsing only first {MAX_FILTER_VALUES} values."
+            )
+            filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0 : MAX_FILTER_VALUES - 1]})
+            continue
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")})
+
+    return filters
+
+
+class AWSErrorHandler:
+    """
+    Centralized error handling for AWS boto3 client errors.
+    Provides specialized handling for permission errors and general AWS API errors.
+    """
+
+    # Permission-related error codes that should be handled specially
+    PERMISSION_ERROR_CODES = [
+        "AccessDenied",
+        "UnauthorizedOperation",
+        "Forbidden",
+        "AccessDeniedException",
+        "UnauthorizedOperationException",
+        "InsufficientPrivilegesException",
+        "NotAuthorized",
+    ]
+
+    @classmethod
+    def handle_response_error(cls, response: dict, account_id: str | None = None) -> None:
+        """
+        Handle boto3 response errors.
+
+        For permission errors, returns a structured error entry using return_error.
+        For other errors, raises DemistoException with informative error message.
+
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
+        """
+        # Create informative error message
+        detailed_error = (
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"Request Id: {response.get('ResponseMetadata',{}).get('RequestId', 'N/A')}\n"
+            f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
+        )
+
+        demisto.error(f"AWS API Error: {detailed_error}")
+        raise DemistoException(detailed_error)
+
+    @classmethod
+    def handle_client_error(cls, err: ClientError, account_id: str | None = None) -> None:
+        """
+        Handle boto3 client errors with special handling for permission issues.
+
+        For permission errors, returns a structured error entry using return_error.
+        For other errors, raises DemistoException with informative error message.
+
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
+        """
+        error_code = err.response.get("Error", {}).get("Code", "")
+        error_message = err.response.get("Error", {}).get("Message", "")
+        http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+
+        # Check if this is a permission-related error
+        if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
+            cls._handle_permission_error(err, error_code, error_message, account_id)
+        else:
+            cls._handle_general_error(err, error_code, error_message)
+
+    @classmethod
+    def _handle_permission_error(
+        cls, err: ClientError, error_code: str, error_message: str, account_id: str | None = None
+    ) -> None:
+        """
+        Handle permission-related errors by returning structured error entry.
+
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            error_code (str): The AWS error code
+            error_message (str): The AWS error message
+            account_id (str, optional): AWS account ID
+        """
+        # Get account_id from args if not provided
+        if not account_id:
+            account_id = demisto.args().get("account_id", "unknown")
+
+        action = cls._extract_action_from_message(error_message)
+        # When encountering an unauthorized error, an encoded authorization message may be returned with different
+        # encoding each time. This will create different error entries for each unauthorized error and will confuse the user.
+        # Therefore we will omit the actual encoded message.
+        demisto.info(f"Original error message: {error_message}")
+        error_entry = {
+            "account_id": account_id,
+            "message": cls.remove_encoded_authorization_message(error_message),
+            "name": action,
+        }
+        demisto.debug(f"Permission error detected: {error_entry}")
+        return_multiple_permissions_error([error_entry])
+
+    @classmethod
+    def remove_encoded_authorization_message(cls, message: str) -> str:
+        """
+        Remove encoded authorization messages from AWS error responses.
+
+        Args:
+            message (str): Original error message
+
+        Returns:
+            str: Cleaned error message without encoded authorization details
+        """
+        index = message.lower().find("encoded authorization failure message:")
+        if index != -1:  # substring found
+            return message[:index]
+        else:
+            return message
+
+    @classmethod
+    def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
+        """
+        Handle general (non-permission) errors with informative error messages.
+
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            error_code (str): The AWS error code
+            error_message (str): The AWS error message
+        """
+        # Get additional error details
+        request_id = err.response.get("ResponseMetadata", {}).get("RequestId", "N/A")
+        http_status = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode", "N/A")
+
+        # Create informative error message
+        detailed_error = (
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"Error Code: {error_code}\n"
+            f"Error Message: {error_message}\n"
+            f"HTTP Status Code: {http_status}\n"
+            f"Request ID: {request_id}"
+        )
+
+        demisto.error(f"AWS API Error: {detailed_error}")
+        raise DemistoException(detailed_error)
+
+    @classmethod
+    def _extract_action_from_message(cls, error_message: str) -> str:
+        """
+        Extract AWS permission name from error message using regex patterns.
+
+        Args:
+            error_message (str): The AWS error message
+
+        Returns:
+            str: The extracted permission name or 'unknown' if not found
+        """
+        # Sanitize input to prevent regex injection
+        if not error_message or not isinstance(error_message, str):
+            return "unknown"
+
+        for action in REQUIRED_ACTIONS:
+            try:
+                match = re.search(action, error_message, re.IGNORECASE)
+                if match and match.group(0) == action:
+                    return action
+            except re.error:
+                pass
+
+        return "unknown"
 
 
 class AWSServices(str, Enum):
@@ -631,20 +884,9 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"] = args.get("from_port", "")
+        kwargs["ToPort"] = args.get("to_port", "")
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -681,20 +923,9 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
+        kwargs["FromPort"] = args.get("from_port", "")
+        kwargs["ToPort"] = args.get("to_port", "")
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -731,18 +962,6 @@ class EC2:
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
 
-        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
-            """Parse port argument which can be a single port or range (min-max)."""
-            if not port:
-                return None, None
-
-            if "-" in port:
-                from_port, to_port = port.split("-", 1)
-                return int(from_port.strip()), int(to_port.strip())
-            else:
-                _port: int = int(port.strip())
-                return _port, _port
-
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -755,10 +974,11 @@ class EC2:
         else:
             # Simple mode: build a single rule descriptor
             proto = args.get("protocol")
-            from_port, to_port = parse_port_range(args.get("port", ""))
+            from_port = args.get("from_port", "")
+            to_port = args.get("to_port", "")
             cidr = args.get("cidr")
             ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
-
+            remove_nulls_from_dictionary(ip_perms[0])
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
@@ -777,6 +997,193 @@ class EC2:
             if code in ("InvalidGroup.NotFound", "InvalidGroupId.NotFound"):
                 raise DemistoException(f"Security group {group_id} not found.")
             raise DemistoException(f"Failed to revoke egress rule: {e}")
+
+    @staticmethod
+    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a new security group in the specified VPC or EC2-Classic.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_name (str): Name of the security group.
+                - description (str): Description of the security group.
+                - vpc_id (str, optional): VPC ID where security group will be created.
+
+        Returns:
+            CommandResults: Results of the operation with security group creation details
+        """
+        group_name = args.get("group_name")
+        description = args.get("description")
+        vpc_id = args.get("vpc_id")
+        kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id}
+        try:
+            remove_nulls_from_dictionary(kwargs)
+            response = client.create_security_group(**kwargs)
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
+                group_id := response.get("GroupId")
+            ):
+                return CommandResults(
+                    outputs_key_field="GroupId",
+                    outputs={"GroupId": group_id},
+                    outputs_prefix="AWS.EC2.SecurityGroups",
+                    readable_output=f'The security group "{group_id}" was created successfully.',
+                    raw_response=response,
+                )
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+
+        return CommandResults(readable_output="")
+
+    @staticmethod
+    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Deletes a security group.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_id (str, optional): ID of the security group to delete.
+                - group_name (str, optional): Name of the security group to delete.
+
+        Returns:
+            CommandResults: Results of the operation with deletion confirmation
+        """
+        group_id = args.get("group_id")
+        group_name = args.get("group_name")
+
+        if not group_id and not group_name:
+            raise DemistoException("Either group_id or group_name must be provided")
+
+        if group_id and group_name:
+            raise DemistoException("Cannot specify both group_id and group_name. Please provide only one.")
+
+        kwargs = {}
+
+        if group_id:
+            kwargs["GroupId"] = group_id
+        else:
+            kwargs["GroupName"] = group_name
+
+        try:
+            remove_nulls_from_dictionary(kwargs)
+            response = client.delete_security_group(**kwargs)
+            if response.get("GroupId"):
+                return CommandResults(
+                    readable_output=f"Successfully deleted security group: {response.get('GroupId')}",
+                    raw_response=response,
+                )
+            else:
+                # If group_id was not found or no GroupId in response, raise an exception
+                AWSErrorHandler.handle_response_error(response)
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+
+        return CommandResults(readable_output="")
+
+    @staticmethod
+    def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes one or more security groups in your account.
+        Returns detailed information about security groups including their rules, tags, and associated VPC information.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - group_ids (str, optional): Comma-separated list of security group IDs
+                - group_names (str, optional): Comma-separated list of security group names
+                - filters (str, optional): Custom filters to apply
+
+
+        Returns:
+            CommandResults: Results containing security group details
+        """
+        kwargs = {}
+        data = []
+        if args.get("filters") is not None:
+            kwargs.update({"Filters": parse_filter_field(args.get("filters"))})
+        if args.get("group_ids") is not None:
+            kwargs.update({"GroupIds": argToList(args.get("group_ids", []))})
+        if args.get("group_names") is not None:
+            kwargs.update({"GroupNames": argToList(args.get("group_names", []))})
+        kwargs.update(build_pagination_kwargs(args))
+        try:
+            remove_nulls_from_dictionary(kwargs)
+            response = client.describe_security_groups(**kwargs)
+
+            if len(response["SecurityGroups"]) == 0:
+                return CommandResults(readable_output="No security groups were found.")
+            for i, sg in enumerate(response["SecurityGroups"]):
+                data.append(
+                    {
+                        "Description": sg["Description"],
+                        "GroupName": sg["GroupName"],
+                        "OwnerId": sg["OwnerId"],
+                        "GroupId": sg["GroupId"],
+                        "VpcId": sg["VpcId"],
+                    }
+                )
+                if "Tags" in sg:
+                    for tag in sg["Tags"]:
+                        data[i].update({tag["Key"]: tag["Value"]})
+            output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+            outputs = {
+                "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": json.loads(output),
+                "AWS.EC2(true)": {"SecurityGroupsNextToken": response.get("NextToken")},
+            }
+            return CommandResults(
+                outputs=outputs, readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data), raw_response=response
+            )
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+
+        return CommandResults(readable_output="")
+
+    @staticmethod
+    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds the specified outbound (egress) rules to a security group.
+
+        The command supports two modes:
+        1. Simple mode: using protocol, port, and cidr arguments
+        2. Full mode: using ip_permissions for complex configurations
+        """
+
+        kwargs: Dict[str, Any] = {"GroupId": args.get("group_id")}
+        from_port = args.get("from_port", "")
+        to_port = args.get("to_port", "")
+
+        if ip_permissions := args.get("ip_permissions"):
+            try:
+                kwargs["IpPermissions"] = json.loads(ip_permissions)
+            except json.JSONDecodeError as e:
+                raise DemistoException(f"Received invalid `ip_permissions` JSON object: {e}")
+        else:
+            kwargs["IpPermissions"] = [
+                {
+                    "IpProtocol": args.get("protocol"),
+                    "FromPort": from_port,
+                    "ToPort": to_port,
+                    "IpRanges": [{"CidrIp": args.get("cidr")}],
+                }
+            ]
+
+        remove_nulls_from_dictionary(kwargs["IpPermissions"][0])
+        try:
+            response = client.authorize_security_group_egress(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+                return CommandResults(readable_output="The Security Group egress rule was authorized", raw_response=response)
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+
+        return CommandResults(readable_output="")
 
 
 class EKS:
@@ -1152,6 +1559,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-security-group-create": EC2.create_security_group_command,
+    "aws-ec2-security-group-delete": EC2.delete_security_group_command,
+    "aws-ec2-security-groups-describe": EC2.describe_security_groups_command,
+    "aws-ec2-security-group-egress-authorize": EC2.authorize_security_group_egress_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
@@ -1162,16 +1573,15 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
 }
 
 REQUIRED_ACTIONS: list[str] = [
-    "iam:PassRole",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
+    "rds:AddTagsToResource",
+    "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
@@ -1180,20 +1590,28 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
+    "s3:PutBucketPublicAccessBlock",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
+    "ec2:CreateSecurityGroup",
+    "ec2:CreateTags",
+    "ec2:DeleteSecurityGroup",
+    "ec2:DescribeInstances",
+    "ec2:DescribeSecurityGroups",
+    "ec2:AuthorizeSecurityGroupEgress",
+    "ec2:AuthorizeSecurityGroupIngress",
+    "ec2:ModifyInstanceMetadataOptions",
     "eks:UpdateClusterConfig",
+    "iam:PassRole",
     "iam:DeleteLoginProfile",
     "iam:PutUserPolicy",
     "iam:RemoveRoleFromInstanceProfile",
     "iam:UpdateAccessKey",
     "iam:GetAccountPasswordPolicy",
     "iam:UpdateAccountPasswordPolicy",
-    "s3:PutBucketPublicAccessBlock",
-    "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
 ]
 
@@ -1296,10 +1714,10 @@ def get_service_client(
     params: dict = {},
     args: dict = {},
     command: str = "",
-    session: Optional[Session] = None,
+    session: Session | None = None,
     service_name: str = "",
-    config: Optional[Config] = None,
-) -> tuple[BotoClient, Optional[Session]]:
+    config: Config | None = None,
+) -> tuple[BotoClient, Session | None]:
     """
     Create and configure a boto3 client for the specified AWS service.
 
@@ -1364,7 +1782,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
     handle_proxy()
