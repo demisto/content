@@ -1,20 +1,22 @@
-[
-    {
-        "@odata.type": "#microsoft.graph.security.articleIndicator",
-        "id": "indicator1",
-        "source": "microsoft",
-        "artifact": {
-            "@odata.type": "#microsoft.graph.security.hostname",
-            "id": "artifact1"
+{
+    "value": [
+        {
+            "@odata.type": "#microsoft.graph.security.articleIndicator",
+            "id": "indicator1",
+            "source": "microsoft",
+            "artifact": {
+                "@odata.type": "#microsoft.graph.security.hostname",
+                "id": "artifact1"
+            }
+        },
+        {
+            "@odata.type": "#microsoft.graph.security.articleIndicator",
+            "id": "indicator2",
+            "source": "microsoft",
+            "artifact": {
+                "@odata.type": "#microsoft.graph.security.hostname",
+                "id": "artifact2"
+            }
         }
-    },
-    {
-        "@odata.type": "#microsoft.graph.security.articleIndicator",
-        "id": "indicator2",
-        "source": "microsoft",
-        "artifact": {
-            "@odata.type": "#microsoft.graph.security.hostname",
-            "id": "artifact2"
-        }
-    }
-]
+    ]
+}
