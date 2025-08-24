@@ -74,9 +74,10 @@ class Client(BaseClient):
     def get_events_request(self, params_update: dict, body_update: dict) -> dict:
         """Retrieve the detections from AppSentinels.ai  API."""
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
-        params = self.base_params.copy().update(params_update)
-        body = self.base_params.copy().update(body_update)
-        # body.update(params)
+        params = self.base_params.copy()
+        params.update(params_update)
+        body = self.base_event_body.copy()
+        body.update(body_update)
         return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params,
                                   resp_type="json")
 
@@ -136,7 +137,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
     while True:
         try:
             # API call
-            response_data = client.get_events_request(params=params, body=body)  # Use the client method
+            response_data = client.get_events_request(params_update=params, body_update=body)  # Use the client method
         except DemistoException as error:
             raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
 
@@ -315,8 +316,8 @@ def main():
         events: List[dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
-            # result = test_module(client)
-            result = client.get_events_request(params_update={}, body_update={})
+            result = test_module(client)
+            # result = client.get_events_request(params_update={}, body_update={})
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
