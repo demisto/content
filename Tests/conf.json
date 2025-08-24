@@ -5866,7 +5866,8 @@
             "instance_names": [
                 "ms_graph_user_dev",
                 "active_directory_80k"
-            ]
+            ],
+            "memory_threshold": 100
         }
     ],
     "skipped_tests": {
