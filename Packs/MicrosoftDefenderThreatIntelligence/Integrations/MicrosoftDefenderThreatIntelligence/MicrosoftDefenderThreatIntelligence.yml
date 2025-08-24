@@ -60,11 +60,6 @@ configuration:
   advanced: true
   required: false
 - section: Connect
-  display: Incident type
-  name: incidentType
-  type: 13
-  required: false
-- section: Connect
   additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
