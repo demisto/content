@@ -236,6 +236,7 @@ def get_secret_metadata_command():  # pragma: no cover
         "Created": data.get("created_time"),
         "Updated": data.get("updated_time"),
         "CurrentVersion": data.get("current_version"),
+        "CustomMetadata": data.get("custom_metadata"),
     }
 
     mapped_versions = [
