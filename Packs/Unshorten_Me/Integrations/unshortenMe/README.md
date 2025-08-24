@@ -69,4 +69,3 @@ Unshortens a given URL.
         "unshortened_url": "https://www.youtube.com/"
     }
 }
-```
