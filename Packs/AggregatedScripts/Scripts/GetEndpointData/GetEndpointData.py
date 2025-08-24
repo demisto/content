@@ -973,7 +973,10 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: d
         if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
             demisto.debug(f"skipping endpoint due to failure: {endpoint}")
             continue
-        if (brand := endpoint.get("Brand").value) in endpoint_mapping:  # type: ignore[union-attr]
+        brand = endpoint.get("Brand")
+        if isinstance(brand, StrEnum):
+            brand = brand.value
+        if brand in endpoint_mapping:
             if endpoint_mapping[brand].get(endpoint[main_key]):
                 demisto.debug(f"found another value for {brand=}, where {main_key} = {endpoint[main_key]}")
                 additional_fields = {}
@@ -986,7 +989,7 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], endpoint_mapping: d
             else:
                 endpoint_mapping[brand][endpoint[main_key]] = endpoint
         else:
-            endpoint_mapping[brand] = {endpoint[main_key]: endpoint}
+            endpoint_mapping[brand] = {endpoint[main_key]: endpoint}  # type: ignore[index]
 
 
 def endpoint_mapping_to_list(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1193,7 +1196,7 @@ def main():  # pragma: no cover
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",
-                    outputs_key_field=["Brand", "ID", "Hostname"],  # TODO: , "IPAddress"],
+                    outputs_key_field=["Brand", "ID", "Hostname"],
                     outputs=endpoint_outputs_list,
                     readable_output=tableToMarkdown(
                         name="Endpoint(s) data",
