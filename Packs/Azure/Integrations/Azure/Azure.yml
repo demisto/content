@@ -1824,9 +1824,11 @@ script:
       - description: The name of the security group.
         name: security_group_name
         type: String
+        required: true
       - description: A comma-separated list of the names of the rules to get.
         isArray: true
         name: security_rule_name
+        required: true
   - name: azure-nsg-security-rule-create
     description: Create a security rule.
     outputs:
@@ -1903,6 +1905,7 @@ script:
         predefined:
           - Allow
           - Deny
+        default: "Allow"
       - description: 'The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP".'
         name: protocol
         auto: PREDEFINED
@@ -1911,16 +1914,22 @@ script:
           - TCP
           - UDP
           - ICMP
+        default: "Any"
       - description: The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any".
         name: source
+        default: "Any"
       - description: The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".
         name: priority
+        default: "4096"
       - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
         name: source_ports
+        default: "*"
       - description: The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
         name: destination
+        default: "Any"
       - description: The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
         name: destination_ports
+        default: "*"
       - description: A description to add to the rule.
         name: description
   - description: Delete a security rule.
@@ -1932,8 +1941,7 @@ script:
       - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
         name: resource_group_name
         type: String
-      - default: false
-        description: The name of the security group.
+      - description: The name of the security group.
         name: security_group_name
         required: true
       - description: The name of the rule to be deleted.
