@@ -18,10 +18,8 @@ outputs:
   description: The server full URL.
   type: String
 script: '-'
-subtype: python3
 timeout: '0'
-type: python
-dockerimage: demisto/python3:3.12.11.4417419
+type: javascript
 runas: DBotWeakRole
 tags: []
 tests:
