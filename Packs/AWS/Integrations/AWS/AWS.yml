@@ -2473,8 +2473,8 @@ script:
       predefined:
       - '$Latest'
       - '$Default'
-    - name: tag_specifications
-      description: "The tags to apply to the instance in JSON format. Example: [{'ResourceType': 'instance', 'Tags': [{'Key': 'Name', 'Value': 'MyInstance'}]}]"
+    - name: tags
+      description: "One or more tags to apply to a resource when the resource is being created. separated by ';' (e.g., key=<name>,value=<value>)."
       required: false
     - name: host_id
       description: "The dedicated Host ID."

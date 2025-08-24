@@ -17,6 +17,7 @@ DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 MAX_FILTERS = 50
+MAX_TAGS = 50
 MAX_FILTER_VALUES = 200
 MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
 MAX_LIMIT_VALUE = 1000
@@ -34,21 +35,23 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
         Dict[str, Any]: Processed instance data
     """
     instance_data = {
-        "InstanceId": instance["InstanceId"],
-        "ImageId": instance["ImageId"],
-        "State": instance["State"]["Name"],
+        "InstanceId": instance.get("InstanceId"),
+        "ImageId": instance.get("ImageId"),
+        "State": instance.get("State", {}).get("Name"),
         "PublicIPAddress": instance.get("PublicIpAddress"),
-        "Type": instance["InstanceType"],
-        "LaunchDate": instance["LaunchTime"],
-        "PublicDNSName": instance["PublicDnsName"],
-        "Monitoring": instance["Monitoring"]["State"],
+        "PrivateIpAddress": instance.get("PrivateIpAddress"),
+        "Type": instance.get("InstanceType"),
+        "LaunchDate": instance.get("LaunchTime"),
+        "PublicDNSName": instance.get("PublicDnsName"),
+        "Monitoring": instance.get("Monitoring", {}).get("State"),
+        "AvailabilityZone": instance.get("Placement", {}).get("AvailabilityZone"),
     }
     if "Tags" in instance:
         for tag in instance["Tags"]:
             instance_data.update({tag["Key"]: tag["Value"]})
     if "KeyName" in instance:
         instance_data.update({"KeyName": instance["KeyName"]})
-
+    remove_empty_elements(instance_data)
     return instance_data
 
 
@@ -125,7 +128,7 @@ def parse_filter_field(filter_string: str | None):
         list_filters = list_filters[0:50]
         demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
     regex = re.compile(
-        r"^name=([\w:.-]+),values=([\w@,.*-\/:]+)",
+        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+)",
         flags=re.I,
     )
     for filter in list_filters:
@@ -143,6 +146,34 @@ def parse_filter_field(filter_string: str | None):
         filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")})
 
     return filters
+
+
+def parse_tag_field(tags_string: str | None):
+    """
+    Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
+    You can specify up to 50 tags per resource.
+    Args:
+        tags_string: The name and value list
+    Returns:
+        A list of dicts with the form {"key": <key>, "value": <value>}
+    """
+    tags = []
+    list_tags = argToList(tags_string, separator=";")
+    if len(list_tags) > MAX_TAGS:
+        list_tags = list_tags[0:50]
+        demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
+    regex = re.compile(
+        r"^key=([\w:+-=.,_]{0,128}),value=([\w:-+=._\/@]{0,256})",
+        flags=re.I,
+    )
+    for tag in list_tags:
+        match_tag = regex.match(tag)
+        if match_tag is None:
+            demisto.debug(f"could not parse tag: {filter}")
+            continue
+        tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
+
+    return tags
 
 
 class AWSErrorHandler:
@@ -1274,13 +1305,15 @@ class EC2:
 
         Args:
             client (BotoClient): The boto3 client for EC2 service
-            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+            args (Dict[str, Any]): Command arguments containing instance configuration parameters
 
         Returns:
-            CommandResults: Results of the operation with instance termination information
-        """
+            CommandResults: Results of the operation with instance launch information
 
-        return CommandResults(readable_output="")
+        Raises:
+            DemistoException: If required parameters are missing or API call fails
+        """
+        return CommandResults(readable_output="Failed to launch instances")
 
     @staticmethod
     def stop_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
