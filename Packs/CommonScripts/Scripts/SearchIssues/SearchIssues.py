@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import dateparser
 
 OUTPUT_KEYS = [
-    "alert_id",
+    "internal_id",
     "severity",
     "Identity_type",
     "alert_name",
@@ -18,8 +18,9 @@ OUTPUT_KEYS = [
     "os_actor_process_image_sha256",
     "action_file_macro_sha256",
     "status.progress",
-    "asset_ids",
+    "assetid",
     "assigned_to_pretty",
+    "assigned_to"
     "source_insert_ts",
 ]
 

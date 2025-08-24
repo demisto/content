@@ -162,7 +162,10 @@ outputs:
   - contextPath: Core.Issue.status.progress
     description: The progress status of the issue.
     type: String
-  - contextPath: Core.Issue.assigneduser
+  - contextPath: Core.Issue.assigned_to_pretty
+    description: The pretty name of the user assigned to the issue.
+    type: String
+  - contextPath: Core.Issue.assigned_to
     description: The user assigned to the issue.
     type: String
   - contextPath: Core.Issue.assetid
@@ -203,6 +206,9 @@ outputs:
     type: String
   - contextPath: Core.Issue.alert_description
     description: The issue description.
+    type: String
+  - contextPath: Core.Issue.Identity_type
+    description: The identity type of the account.
     type: String
 
 script: "-"
