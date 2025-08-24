@@ -49,6 +49,6 @@
             "username": "dummy_username@dummy_org.com"
         }
     ],
-    "pagination": 0,
+    "pagination": 1,
     "total": 4
 }

@@ -123,7 +123,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
     elif "last_log_id" not in last_run:
         # Initial fetch: from 1 minute before now to now
         current_time = get_current_time()
-        start_time = (current_time - timedelta(days=5)).strftime(DATE_FORMAT)
+        start_time = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_time = current_time.strftime(DATE_FORMAT)
         body["from_date"] = start_time
         body["to_date"] = end_time
