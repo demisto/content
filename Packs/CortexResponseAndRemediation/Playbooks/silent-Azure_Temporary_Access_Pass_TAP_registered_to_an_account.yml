@@ -1,5 +1,7 @@
 id: silent-Azure Temporary Access Pass (TAP) registered to an account
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: silent-Azure Temporary Access Pass (TAP) registered to an account
 description: |-
   This playbook addresses the following alerts:
@@ -63,12 +65,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 381fcb09-6904-4b69-8b08-a63adfd491c5
+    taskid: c4286763-2714-4378-9b6a-2411300354d6
     type: regular
     task:
-      id: 381fcb09-6904-4b69-8b08-a63adfd491c5
+      id: c4286763-2714-4378-9b6a-2411300354d6
       version: -1
-      name: Get additional data about TAP registration
+      name: Get TAP registration information
       description: Returns additional information about the TAP, such as its start and end times, it's usage type (single sign-ins / multiple sign-ins), the user who received the TAP and more.
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -131,22 +133,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3cf6fed2-f82c-49c1-9d79-144474e85a05
+    taskid: 260958ed-d7fc-4636-9b01-f827f01a2973
     type: regular
     task:
-      id: 3cf6fed2-f82c-49c1-9d79-144474e85a05
+      id: 260958ed-d7fc-4636-9b01-f827f01a2973
       version: -1
       name: Enrich Caller IP
-      description: Enriches the external source IP of the attack to check if it's known as malicious. Skips on errors for cases where the IP address or the !ip command is empty.
-      script: '|||ip'
+      description: This script gathers ip reputation data from multiple integrations and returns an ip entity with consolidated information to the context.
+      scriptName: ip-enrichment
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
-      ip:
+      additional_fields:
+        simple: "false"
+      external_enrichment:
+        simple: "true"
+      ip_list:
         complex:
           root: alert
           accessor: hostip
@@ -228,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 1369.25,
-          "y": 1308
+          "y": 1042
         }
       }
     note: false
@@ -267,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 1369.25,
-          "y": 1184
+          "y": 923
         }
       }
     note: false
@@ -310,10 +316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6545a4bb-6ee0-4ca9-ad8b-454227ca1497
+    taskid: 23b67172-2e4f-4771-9861-688b6eda2208
     type: condition
     task:
-      id: 6545a4bb-6ee0-4ca9-ad8b-454227ca1497
+      id: 23b67172-2e4f-4771-9861-688b6eda2208
       version: -1
       name: Check IP reputation
       description: Checks if the external Source IP is malicious (DBotScore above 2).
@@ -333,33 +339,25 @@ tasks:
           left:
             value:
               complex:
-                root: DBotScore
+                root: IPEnrichment.MaxScore
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ip
-                - - operator: greaterThan
-                    left:
-                      value:
-                        simple: DBotScore.Score
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "2"
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
+                        simple: IPEnrichment.Value
                       iscontext: true
                     right:
                       value:
                         simple: alert.hostip.[0]
                       iscontext: true
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: IPEnrichment.MaxScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
             iscontext: true
           right:
             value: {}
@@ -546,7 +544,7 @@ tasks:
       {
         "position": {
           "x": 1369.25,
-          "y": 1432
+          "y": 1177
         }
       }
     note: false
@@ -585,7 +583,7 @@ tasks:
       {
         "position": {
           "x": 1369.25,
-          "y": 1557
+          "y": 1308
         }
       }
     note: false
@@ -682,102 +680,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 2fb08897-1dbb-4230-8f7c-4678cc5cc03d
-    type: regular
-    task:
-      id: 2fb08897-1dbb-4230-8f7c-4678cc5cc03d
-      version: -1
-      name: Get Azure risky users
-      description: Returns a list of all risky users and their properties.
-      script: '|||azure-risky-users-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      risk_level:
-        simple: high
-      updated_after:
-        simple: 1 day
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1369.25,
-          "y": 923
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 2b826c5b-4a0e-4cf7-b22e-3285561d4d2e
-    type: condition
-    task:
-      id: 2b826c5b-4a0e-4cf7-b22e-3285561d4d2e
-      version: -1
-      name: Check if the TAP assigner is risky
-      description: Checks if the TAP assigner user is risky in Azure.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "11"
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: AzureRiskyUsers.RiskyUser
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: AzureRiskyUsers.RiskyUser.userPrincipalName
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert.event.cloud_best_identity_match
-                      iscontext: true
-                    ignorecase: true
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value: {}
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1369.25,
-          "y": 1042
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 082ad94a-1bf7-49cc-9dce-dd824f951500
@@ -831,7 +733,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+      - "47"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -862,7 +764,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -910,54 +812,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: b3e3c5f4-fc2d-4e4d-ae3f-beae5d074aef
-    type: regular
-    task:
-      id: b3e3c5f4-fc2d-4e4d-ae3f-beae5d074aef
-      version: -1
-      name: Get user risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      limit:
-        simple: "1"
-      user_id:
-        complex:
-          root: alert
-          accessor: username
-          transformers:
-          - operator: LastArrayElement
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1836,
-          "y": 923
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 13d37a68-8193-406f-a033-723972018331
+    taskid: fe10e6d3-33e3-489b-931c-2b8f8eceeb29
     type: condition
     task:
-      id: 13d37a68-8193-406f-a033-723972018331
+      id: fe10e6d3-33e3-489b-931c-2b8f8eceeb29
       version: -1
       name: Check if the TAP assigner is risky
       description: Checks if the TAP assigner user is risky.
@@ -977,12 +837,12 @@ tasks:
           left:
             value:
               complex:
-                root: Core.RiskyUser
+                root: UserData
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.RiskyUser.risk_level
+                        simple: UserData.RiskLevel
                       iscontext: true
                     right:
                       value:
@@ -991,7 +851,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Core.RiskyUser.id
+                        simple: UserData.ID
                       iscontext: true
                     right:
                       value:
@@ -1021,10 +881,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 8f7f55c7-2400-4605-a5c7-06ed6bd486a1
+    taskid: 9b94335a-3f03-4427-9dbe-e3ca4976e80b
     type: regular
     task:
-      id: 8f7f55c7-2400-4605-a5c7-06ed6bd486a1
+      id: 9b94335a-3f03-4427-9dbe-e3ca4976e80b
       version: -1
       name: Save Core risky user result
       description: Saves a key indicating the TAP assigner is risky.
@@ -1048,7 +908,7 @@ tasks:
       {
         "position": {
           "x": 1836,
-          "y": 1184
+          "y": 1177
         }
       }
     note: false
@@ -1072,7 +932,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "46"
+      - "54"
       True Positive:
       - "40"
     separatecontext: false
@@ -1170,7 +1030,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 930
+          "y": 923
         }
       }
     note: false
@@ -1210,7 +1070,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 899,
+          "x": 900,
           "y": 1042
         }
       }
@@ -1401,14 +1261,14 @@ tasks:
     nexttasks:
       '#none#':
       - "43"
-      - "42"
+      - "51"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 953,
-          "y": 1932
+          "x": 863,
+          "y": 1938
         }
       }
     note: false
@@ -1420,13 +1280,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: cb3cb3bd-1c5e-4edf-b88a-abd866ea40c7
+    taskid: a7c5fdf6-26da-4a55-be90-33057ff1af88
     type: condition
     task:
-      id: cb3cb3bd-1c5e-4edf-b88a-abd866ea40c7
+      id: a7c5fdf6-26da-4a55-be90-33057ff1af88
       version: -1
       name: Manual - get remediation approval
-      description: "The investigation found several suspicious indicators related to the user who granted the TAP or the IP from which this TAP was granted. \n\nAs a response, the user's current session was revoked.\nReview the findings and decide on remediation actions.\n\n#### Temporary Access Pass (TAP) Information\nGranted by: `${Core.OriginalAlert.event.cloud_best_identity_match}`\n\nGranted to: `${Core.OriginalAlert.raw_abioc.event.referenced_resource_name}`\n\nTAP type: `${Core.OriginalAlert.event.tap_usage}`\n\nStart Time: `${Core.OriginalAlert.event.tap_start}`\n\nEnd Time: `${Core.OriginalAlert.event.tap_end}`\n\nTAP ID: `${Core.OriginalAlert.event.tap_id}`\n\n\n---\n\n\n#### TAP assigner Information\nInformation regarding the user who granted the TAP access.\n\nUser creation date analysis: `${.=val.Evidence && val.Evidence.UserCreatedRecently ? \"User created recently\" : \"User is not new\"}`\n\nRelated alerts in Defender 365: `${.=val.Evidence && val.Evidence.Defender365Alerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\nUser risk analysis (Core IR): `${.=val.Evidence && val.Evidence.CoreRiskyUser ? \"Risky\" : \"Not risky\"}`\n\nUser risk analysis (Azure AD): `${.=val.Evidence && val.Evidence.AzureRiskDetections ? \"Risky\" : \"Not risky\"}`\n\nNumber of TAPs granted (last 30 days): `${Core.OriginalAlert.event.provider_project_best_identity_operation_count_distinct_referenced_resource_name_azure_ad_audit_successful}`\n\n\n---\n\n\n### Caller IP Information\nIP reputation: `${.=val.Evidence && val.Evidence.MaliciousIP ? \"Malicious\" : \"Benign\"}`\n\nIP geolocation: `${Core.OriginalAlert.event.caller_ip_geolocation}`\n\n\n---\n\n\n### Suggested Analyst Response\nAfter reviewing the evidence, depending on the analyst verdict, we recommend the following response actions:\n- Manually delete the Temporary Access Pass (TAP) granted to the user in Microsoft Entra Admin Center\n- Disable the user in Azure AD"
+      description: "The investigation found several suspicious indicators related to the user who granted the TAP or the IP from which this TAP was granted. \n\nAs a response, the user's current session was revoked, as well as the TAP that was granted to them.\n\nReview the findings and decide on remediation actions.\n\n#### Temporary Access Pass (TAP) Information\nGranted by: `${Core.OriginalAlert.event.cloud_best_identity_match}`\n\nGranted to: `${Core.OriginalAlert.raw_abioc.event.referenced_resource_name}`\n\nTAP type: `${Core.OriginalAlert.event.tap_usage}`\n\nStart Time: `${Core.OriginalAlert.event.tap_start}`\n\nEnd Time: `${Core.OriginalAlert.event.tap_end}`\n\nTAP ID: `${Core.OriginalAlert.event.tap_id}`\n\n\n---\n\n\n#### TAP assigner Information\nInformation regarding the user who granted the TAP access.\n\nUser creation date analysis: `${.=val.Evidence && val.Evidence.UserCreatedRecently ? \"User created recently\" : \"User is not new\"}`\n\nRelated alerts in Defender 365: `${.=val.Evidence && val.Evidence.Defender365Alerts ? \"Alerts found for the user\" : \"Alerts not found\"}`\n\nUser risk analysis (Core IR): `${.=val.Evidence && val.Evidence.CoreRiskyUser ? \"Risky\" : \"Not risky\"}`\n\nUser risk analysis (Azure AD): `${.=val.Evidence && val.Evidence.AzureRiskDetections ? \"Risky\" : \"Not risky\"}`\n\nNumber of TAPs granted (last 30 days): `${Core.OriginalAlert.event.provider_project_best_identity_operation_count_distinct_referenced_resource_name_azure_ad_audit_successful}`\n\n\n---\n\n\n### Caller IP Information\nIP reputation: `${.=val.Evidence && val.Evidence.MaliciousIP ? \"Malicious\" : \"Benign\"}`\n\nIP geolocation: `${Core.OriginalAlert.event.caller_ip_geolocation}`\n\n\n---\n\n\n### Suggested Analyst Response\nAfter reviewing the evidence, depending on the analyst verdict, we recommend the following response actions:\n- If the TAP was not deleted automatically - manually delete the Temporary Access Pass (TAP) granted to the user in Microsoft Entra Admin Center\n- Disable the user who granted the TAP in Azure AD"
       type: condition
       iscommand: false
       brand: ""
@@ -1440,8 +1300,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 953,
-          "y": 2158
+          "x": 863,
+          "y": 2220
         }
       }
     note: false
@@ -1470,73 +1330,65 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: d755498c-440d-4fbb-91ef-9fe6bdbc74eb
+    taskid: 19980677-958b-409f-b1d8-1292f8d652a0
     type: regular
     task:
-      id: d755498c-440d-4fbb-91ef-9fe6bdbc74eb
+      id: 19980677-958b-409f-b1d8-1292f8d652a0
       version: -1
       name: Revoke user session
-      description: Revokes the current sessions of the user who granted the Temporary Access Pass in Microsoft apps.
-      script: '|||msgraph-user-session-revoke'
+      description: This script clears user sessions across multiple integrations for a list of usernames.
+      scriptName: clear-user-session
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "42"
     scriptarguments:
-      user:
-        complex:
-          root: Core.OriginalAlert.event
-          accessor: cloud_best_identity_match
-          transformers:
-          - operator: uniq
+      user_name:
+        simple: ${Core.OriginalAlert.event.cloud_best_identity_match}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 953,
-          "y": 2042
+          "x": 863,
+          "y": 2071
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 64741e8e-adce-4967-a44b-8bdf9cb64f19
+    taskid: 31a622fa-60ee-4879-95ec-367b802e0a11
     type: regular
     task:
-      id: 64741e8e-adce-4967-a44b-8bdf9cb64f19
+      id: 31a622fa-60ee-4879-95ec-367b802e0a11
       version: -1
-      name: Disable user
-      description: Disables the TAP assigner user account.
-      script: '|||msgraph-user-account-disable'
+      name: Disable the TAP granter user
+      description: This script disables users for multiple services.
+      scriptName: disable-user
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "46"
     scriptarguments:
-      user:
-        complex:
-          root: Core.OriginalAlert.event
-          accessor: cloud_best_identity_match
-          transformers:
-          - operator: uniq
+      user_name:
+        simple: ${Core.OriginalAlert.event.cloud_best_identity_match}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 953,
-          "y": 2296
+          "x": 863,
+          "y": 2367
         }
       }
     note: false
@@ -1576,7 +1428,163 @@ tasks:
       {
         "position": {
           "x": 581,
-          "y": 2435
+          "y": 2505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 698969ad-9257-43a6-8e67-5613464ce40d
+    type: regular
+    task:
+      id: 698969ad-9257-43a6-8e67-5613464ce40d
+      version: -1
+      name: Get user risk score
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
+      scriptName: get-user-data
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      user_name:
+        complex:
+          root: alert
+          accessor: username
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1836,
+          "y": 923
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 42b04122-be7b-4311-a44e-4cd5db27ca0e
+    type: regular
+    task:
+      id: 42b04122-be7b-4311-a44e-4cd5db27ca0e
+      version: -1
+      name: Delete TAP policy from granted user
+      description: Deletes a specific TAP policy. Permission:UserAuthenticationMethod.ReadWrite.All
+      script: '|||msgraph-user-tap-policy-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "52"
+      '#none#':
+      - "46"
+    scriptarguments:
+      policy_id:
+        simple: ${Core.OriginalAlert.event.tap_id}
+      user_id:
+        simple: ${Core.OriginalAlert.event.referenced_resource_name}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 1281,
+          "y": 2071
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 2e538e12-4263-4841-a13a-f69c70afc207
+    type: regular
+    task:
+      id: 2e538e12-4263-4841-a13a-f69c70afc207
+      version: -1
+      name: Manual - delete TAP policy
+      description: |+
+        Investigation has determined this Azure TAP (Temporary Access Pass) is a security risk. Revocation is required to reduce account exposure.
+
+        Review the TAP details below and delete the new authentication method that was granted to the user in Entra ID.
+
+        #### Temporary Access Pass (TAP) Information
+        Granted by: `${Core.OriginalAlert.event.cloud_best_identity_match}`
+
+        Granted to: `${Core.OriginalAlert.raw_abioc.event.referenced_resource_name}`
+
+        TAP type: `${Core.OriginalAlert.event.tap_usage}`
+
+        Start Time: `${Core.OriginalAlert.event.tap_start}`
+
+        End Time: `${Core.OriginalAlert.event.tap_end}`
+
+        TAP ID: `${Core.OriginalAlert.event.tap_id}`
+
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1519,
+          "y": 2203
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: dfad0459-d191-4d02-93ee-b513deb48c10
+    type: title
+    task:
+      id: dfad0459-d191-4d02-93ee-b513deb48c10
+      version: -1
+      name: Inconclusive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 327,
+          "y": 1938
         }
       }
     note: false
@@ -1591,10 +1599,8 @@ view: |-
     "linkLabelsPosition": {
       "13_11_#default#": 0.26,
       "19_11_#default#": 0.1,
-      "21_11_#default#": 0.2,
       "28_11_#default#": 0.11,
       "30_40_True Positive": 0.36,
-      "30_46_#default#": 0.1,
       "33_11_#default#": 0.29,
       "37_11_#default#": 0.33,
       "42_46_Skip Remediation": 0.36,
@@ -1602,7 +1608,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2332,
+        "height": 2402,
         "width": 2301,
         "x": -84,
         "y": 173
