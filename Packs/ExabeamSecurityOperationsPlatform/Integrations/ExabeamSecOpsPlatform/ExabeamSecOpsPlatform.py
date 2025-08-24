@@ -580,6 +580,17 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
 
 
 def get_last_case_time_and_ids(cases: list) -> tuple[str, list]:
+    """_summary_
+
+    Args:
+        cases (list): _description_
+
+    Raises:
+        ValueError: _description_
+
+    Returns:
+        tuple[str, list]: _description_
+    """
     if not cases:
         raise ValueError("Cannot get last case time and IDs from empty list.")
 
@@ -979,7 +990,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run: dict[str, 
     """
     demisto.debug(f"Last run before the fetch run: {last_run}")
 
-    filter_query = params.get("fetch_query", "")
+    filter_query = params.get("fetch_query")
     limit = arg_to_number(params.get("max_fetch"))
     demisto.debug(f"Fetching incidents with limit={limit}")
 
@@ -1013,6 +1024,16 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run: dict[str, 
 
 
 def fetch_events(client: Client, params: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
+    """_summary_
+
+    Args:
+        client (Client): _description_
+        params (dict[str, str]): _description_
+        last_run (dict[str, Any]): _description_
+
+    Returns:
+        tuple[list, dict]: _description_
+    """
     demisto.debug(f"Starting to fetch events. Got {last_run=}.")
     first_fetch = params.get("first_fetch", "3 days")
     max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
