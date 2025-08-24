@@ -160,7 +160,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
                 last_run["last_log_id"] = event["id"]
                 return events
 
-        if current_pagination + 1 >= pagination:
+        if pagination and current_pagination + 1 >= pagination:
             break
 
         # First run - using timestamps
