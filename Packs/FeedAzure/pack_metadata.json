@@ -11,12 +11,14 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Allow List"
+        "Allow List",
+        "Feed"
     ],
     "useCases": [],
     "keywords": [
         "Azure",
-        "Feed"
+        "Feed",
+        "Microsoft"
     ],
     "marketplaces": [
         "xsoar",
