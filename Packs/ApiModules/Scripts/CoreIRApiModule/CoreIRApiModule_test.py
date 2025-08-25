@@ -1722,8 +1722,9 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     requests_mock.post(f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files", json={"reply": {"DATA": zip_link}})
     requests_mock.get(
         f"{Core_URL}/public_api/v1/download/example-link",
-        content=b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\x00\x00"
-        b"\x00your_file.txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        content=b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
+        b".txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
         b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
         b".txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00",
         headers={"Content-Disposition": f"attachment; filename={zip_filename}"},
@@ -3280,7 +3281,7 @@ def test_list_user_groups_command(mocker):
         args (dict): A dictionary containing optional `group_names` argument.
 
     Returns:
-        None
+        None.
 
     Raises:
         AssertionError: If the expected output doesn't match the actual output.
@@ -3324,7 +3325,7 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
         data (dict): A dictionary containing a sample user group data.
 
     Returns:
-        None
+        None.
 
     Raises:
         AssertionError: If the parsing of user groups data fails.
@@ -4413,3 +4414,135 @@ def test_replace_response_names_noop():
     from CoreIRApiModule import replace_response_names
     assert replace_response_names(123) == 123
     assert replace_response_names(None) is None
+
+def test_get_cases_command_case_id_as_int(mocker):
+    """
+    Given:
+        - case_id_list as an integer
+    When:
+        - Calling get_cases_command
+    Then:
+        - client.get_incidents is called with incident_id_list as a list of string
+    """
+    from CoreIRApiModule import get_cases_command
+    client = mocker.Mock()
+    client.get_incidents.return_value = [{"case_id": "1"}]
+    mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: x)
+    mocker.patch("CoreIRApiModule.tableToMarkdown", return_value="table")
+    args = {"case_id_list": 1}
+    result = get_cases_command(client, args)
+    assert result.outputs == [{"case_id": "1"}]
+    client.get_incidents.assert_called_once()
+    assert result.readable_output.startswith("table")
+
+
+def test_get_cases_command_status_filter(mocker):
+    """
+    Given:
+        - status filter as a list
+    When:
+        - Calling get_cases_command
+    Then:
+        - client.get_incidents is called for each status
+        - Output is limited to 'limit' param
+    """
+    from CoreIRApiModule import get_cases_command
+    client = mocker.Mock()
+    # simulate two calls for two statuses
+    client.get_incidents.side_effect = [
+        [{"case_id": "1"}], [{"case_id": "2"}]
+    ]
+    mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
+    mocker.patch("CoreIRApiModule.tableToMarkdown", return_value="table")
+    args = {"status": ["new", "closed"], "limit": 1}
+    result = get_cases_command(client, args)
+    # Output is truncated by limit
+    assert result.outputs == [{"case_id": "mapped"}]
+    assert client.get_incidents.call_count == 2
+
+
+def test_get_cases_command_limit_enforced(mocker):
+    """
+    Given:
+        - limit greater than MAX_GET_INCIDENTS_LIMIT
+    When:
+        - Calling get_cases_command
+    Then:
+        - Limit is set to MAX_GET_INCIDENTS_LIMIT
+        - client.get_incidents is called with limit=MAX_GET_INCIDENTS_LIMIT
+    """
+    from CoreIRApiModule import get_cases_command, MAX_GET_INCIDENTS_LIMIT
+    client = mocker.Mock()
+    client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
+    mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
+    mocker.patch("CoreIRApiModule.tableToMarkdown", return_value="table")
+    args = {"limit": MAX_GET_INCIDENTS_LIMIT + 10, "case_id_list": "1"}
+    result = get_cases_command(client, args)
+    assert len(result.outputs) == MAX_GET_INCIDENTS_LIMIT + 1
+    client.get_incidents.assert_called_with(
+        incident_id_list=["1"],
+        lte_modification_time=None,
+        gte_modification_time=None,
+        lte_creation_time=None,
+        gte_creation_time=None,
+        sort_by_creation_time=None,
+        sort_by_modification_time=None,
+        page_number=0,
+        limit=MAX_GET_INCIDENTS_LIMIT,
+        starred=None,
+        starred_incidents_fetch_window=mocker.ANY,
+    )
+    assert "greater than" in result.readable_output
+
+
+def test_get_cases_command_no_filters_error(mocker):
+    """
+    Given:
+        - No filters provided
+    When:
+        - Calling get_cases_command
+    Then:
+        - ValueError is raised
+    """
+    from CoreIRApiModule import get_cases_command
+    client = mocker.Mock()
+    args = {}
+    with pytest.raises(ValueError, match="Specify a query for the incidents"):
+        get_cases_command(client, args)
+
+
+def test_get_cases_command_conflicting_time_filters(mocker):
+    """
+    Given:
+        - since_modification_time and gte_modification_time both set
+    When:
+        - Calling get_cases_command
+    Then:
+        - ValueError is raised
+    """
+    from CoreIRApiModule import get_cases_command
+    client = mocker.Mock()
+    args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
+    with pytest.raises(ValueError):
+        get_cases_command(client, args)
+
+
+def test_get_cases_command_mapping_and_markdown(mocker):
+    """
+    Given:
+        - Valid filter and mock data
+    When:
+        - Calling get_cases_command
+    Then:
+        - replace_response_names and tableToMarkdown are called
+    """
+    from CoreIRApiModule import get_cases_command
+    client = mocker.Mock()
+    client.get_incidents.return_value = [{"case_id": "1"}]
+    mock_replace = mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
+    mock_table = mocker.patch("CoreIRApiModule.tableToMarkdown", return_value="table")
+    args = {"case_id_list": "1"}
+    result = get_cases_command(client, args)
+    assert result.outputs == [{"case_id": "mapped"}]
+    mock_replace.assert_called_once()
+    mock_table.assert_called_once()
