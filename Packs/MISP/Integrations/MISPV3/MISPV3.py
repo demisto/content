@@ -1949,7 +1949,7 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
 
         warninglist_output = {}
         if entity := response.get("Warninglist", {}):
-            warninglist_attributes = [f"{t['type']}" for t in (entity.get("WarninglistType") or [])]
+            warninglist_attributes = [f"{t['type']}" for t in (entity.get("WarninglistType"))]
             warninglist_output = {
                 "ID": entity["id"],
                 "Name": entity["name"],
@@ -1969,7 +1969,7 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
                     "WarninglistID": entry.get("warninglist_id"),
                     "Comment": entry.get("comment"),
                 }
-                for entry in (entity["WarninglistEntry"] or [])
+                for entry in (entity["WarninglistEntry"])
             ]
 
         human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
@@ -2041,7 +2041,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                 "Default": entity["default"],
                 "Category": entity["category"],
             }
-            warninglist_output["Attributes"] = [f"{t['type']}" for t in (response.get("WarninglistType") or [])]
+            warninglist_output["Attributes"] = [f"{t['type']}" for t in (response.get("WarninglistType"))]
             warninglist_output["Entries"] = [
                 {
                     "ID": entry.get("id"),
@@ -2049,7 +2049,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                     "WarninglistID": entry.get("warninglist_id"),
                     "Comment": entry.get("comment"),
                 }
-                for entry in (response["WarninglistEntry"] or [])
+                for entry in (response["WarninglistEntry"])
             ]
 
         human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
