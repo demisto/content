@@ -20,7 +20,7 @@ configuration:
   type: 9
   section: Connect
 - display: Organization name
-  additionalinfo: The Organization name.
+  additionalinfo: The organization name.
   name: organization
   required: true
   type: 0
@@ -43,7 +43,7 @@ configuration:
   section: Collect
   required: false
   defaultvalue: "true"
-- additionalinfo: 'Maximum number of Audit Logs entries to retrieve per fetch cycle.'
+- additionalinfo: 'Maximum number of Audit Log entries to retrieve per fetch cycle.'
   display: Maximum number of audit logs per fetch
   name: max_audit_per_fetch
   required: false
@@ -84,5 +84,6 @@ script:
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2
+- platform
 tests:
 - No tests (auto formatted)
