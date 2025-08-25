@@ -37,7 +37,8 @@ alter  // extract message header fields
     xdm.source.user.username = user_name, 
     xdm.event.id = meta_sequence_id,
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
-    xdm.event.original_event_type = event_type, 
+    xdm.event.original_event_type = event_type,
+    xdm.event.type = event_type,
     xdm.event.description = event_description,
     xdm.intermediate.host.hostname = site,
     xdm.observer.name = syslog_hostname, 
@@ -427,6 +428,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | alter msg_payload = arrayindex(regextract(_raw_log, "\d+\:\d+\:\d+\:(.+)"), 0)
 | alter 
     reason = arrayindex(regextract(msg_payload, "reason\=(\S[^;]+)"), 0), // Indicates the reason for failure / action
+    login_reason = if(event_type = "login", lowercase(arrayindex(regextract(msg_payload, "reason\=(\S[^;]+)"), 0)), null), // Indicates the reason for failure / action
     status = arrayindex(regextract(msg_payload, "status\=(\S[^;]+)"), 0), // Whether the login/change/rotation attempt succeeded or failed.
     target_interface = arrayindex(regextract(msg_payload, "target\=(\S[^;]+)"), 0), // The authentication area from which the activity change attempt was made (web/api, web/appliance, web/login)
     vault_rotated_account = arrayindex(regextract(msg_payload, "account\=(\S[^;]+)"), 0) // The account username rotated.
@@ -434,9 +436,16 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.source.user.is_disabled = if(reason ~= "account disabled|account expired", to_boolean("TRUE")),
     xdm.source.user.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
     xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status ~= "fail", XDM_CONST.OUTCOME_FAILED),
-    xdm.event.outcome_reason = reason, 
+    xdm.event.outcome_reason = if(login_reason = "account disabled", "account_expired_or_disabled", login_reason = "account expired", "account_expired_or_disabled", login_reason = "user not found", "user_does_not_exist", login_reason contains "exceeded failed", "failed_login", login_reason != null, "OTHER", reason != null, reason, null),
+    xdm.event.operation_sub_type = if(event_type = "login" and authentication_method = "password", "password", event_type = "login" and authentication_method = "saml", "Generic SSO", event_type = "login" and authentication_method != null, authentication_method, null),
     xdm.logon.type = target_interface,
-    xdm.target.user.username = vault_rotated_account;
+    xdm.target.user.username = vault_rotated_account
+    xdm.source.port = if(event_type = "login", to_integer(0), null),
+    xdm.target.port = if(event_type = "login", to_integer(0), null),
+    xdm.network.ip_protocol = if(event_type = "login", XDM_CONST.IP_PROTOCOL_TCP, null),
+    xdm.event.tags = if(event_type = "login", XDM_CONST.EVENT_TAG_AUTHENTICATION, null),
+    xdm.auth.service = if(event_type = "login", "SP", null),
+    xdm.source.user.upn = if(event_type = "login", arrayindex(regextract(who, "\(([^@]+@[^@]+)\)"), 0), null);
 
 /*  Network Address Events:
     These mappings apply to the following events: network_address_added, network_address_changed, network_address_removed, network_changed 
