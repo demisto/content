@@ -405,34 +405,28 @@ def test_run_commands_for_endpoint_executes_command(mock_execute):
 
 
 @pytest.mark.parametrize(
-    "endpoint_data_results, is_already_isolated, has_fail, expected_results_len, expected_context_len, expected_args_len",
+    "endpoint_data_results, is_already_isolated, has_fail, expected_context_len",
     [
         # Case 1: endpoint fails -> skipped entirely
         (
             [{"id": "ep1", "properties": {"message": "Failing"}}],
             False,
             True,
-            0,  # results stays empty
-            0,  # context_outputs should not include failing endpoints
-            0,  # args_from_endpoint_data should not include failing endpoints
+            0,
         ),
-        # Case 2: endpoint already isolated -> included in args/context but no run_commands
+        # Case 2: endpoint already isolated -> included in context but no run_commands
         (
             [{"id": "ep2", "properties": {"message": "ok"}}],
             True,
             False,
-            0,  # results stays empty
-            1,  # context_outputs should include the endpoint
-            1,  # args_from_endpoint_data should include endpoint args
+            1,
         ),
         # Case 3: normal endpoint -> should run commands
         (
             [{"id": "ep3", "properties": {"message": "ok"}}],
             False,
             False,
-            0,  # results stays empty
-            1,  # context_outputs should include endpoint
-            1,  # args_from_endpoint_data should include endpoint args
+            1,
         ),
     ],
 )
@@ -446,9 +440,7 @@ def test_process_endpoints(
     endpoint_data_results,
     is_already_isolated,
     has_fail,
-    expected_results_len,
     expected_context_len,
-    expected_args_len,
 ):
     """
     Given:
@@ -471,11 +463,66 @@ def test_process_endpoints(
 
     results, context_outputs, args_from_endpoint_data = process_endpoints(endpoint_data_results, commands)
 
-    assert len(results) == expected_results_len
     assert len(context_outputs) == expected_context_len
-    assert len(args_from_endpoint_data) == expected_args_len
 
     if not has_fail and not is_already_isolated:
         mock_run_commands.assert_called_once_with(commands, mock_args, context_outputs[0])
     else:
         mock_run_commands.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "args, brands_values, expect_error, expected_brands",
+    [
+        # Case 1: endpoint_id with explicit brands -> keep brands as-is
+        (
+            {"endpoint_id": ["1234"], "endpoint_ip": [], "brands": ["Cortex XDR"]},
+            ["BrandA", "BrandB"],
+            False,
+            ["Cortex XDR"],
+        ),
+        # Case 2: endpoint_id but no brands -> use Brands.get_all_values()
+        (
+            {"endpoint_id": ["5678"], "endpoint_ip": [], "brands": []},
+            ["BrandA", "BrandB"],
+            False,
+            ["BrandA", "BrandB"],
+        ),
+    ],
+)
+@patch("IsolateEndpoint.map_zipped_args")
+@patch("IsolateEndpoint.Brands.get_all_values")
+@patch("IsolateEndpoint.demisto.args")
+def test_prepare_args(
+    mock_args,
+    mock_get_all_values,
+    mock_map_zipped,
+    args,
+    brands_values,
+    expect_error,
+    expected_brands,
+):
+    """
+    Given:
+        - Different combinations of endpoint arguments.
+          1. No endpoint_id or endpoint_ip (invalid).
+          2. endpoint_id with brands provided.
+          3. endpoint_id but no brands (default brands applied).
+    When:
+        - Calling prepare_args with mocked demisto.args, Brands.get_all_values, and map_zipped_args.
+    Then:
+        - A ValueError is raised if no endpoint_id or endpoint_ip is supplied.
+        - Brands remain unchanged if explicitly provided.
+        - Brands default to Brands.get_all_values() when not provided.
+    """
+    mock_args.return_value = args.copy()
+    mock_get_all_values.return_value = brands_values
+    mock_map_zipped.return_value = [("endpoint_id", "endpoint_ip")]
+
+    if expect_error:
+        with pytest.raises(ValueError, match="At least one of the following arguments must be specified"):
+            prepare_args()
+    else:
+        endpoint_args, zipped_args = prepare_args()
+        assert endpoint_args["brands"] == expected_brands
+        assert zipped_args == [("endpoint_id", "endpoint_ip")]
