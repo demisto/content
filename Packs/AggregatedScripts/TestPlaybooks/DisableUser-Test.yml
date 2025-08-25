@@ -1,5 +1,5 @@
 id: DisableUser - Test
-version: 29
+version: 31
 vcShouldKeepItemLegacyProdMachine: false
 name: DisableUser - Test
 starttaskid: "0"
@@ -2164,10 +2164,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 3c06af8f-8734-4184-b43a-3e8a57d506f7
+    taskid: a7d7ad76-ac1e-49f5-a293-9255842b4c1b
     type: title
     task:
-      id: 3c06af8f-8734-4184-b43a-3e8a57d506f7
+      id: a7d7ad76-ac1e-49f5-a293-9255842b4c1b
       version: -1
       name: Case 1 - Non existent user
       type: title
@@ -2421,6 +2421,8 @@ tasks:
     nexttasks:
       '#error#':
       - "60"
+      '#none#':
+      - "68"
     scriptarguments:
       user_id:
         simple: ${TimeNowUnix}
@@ -2443,12 +2445,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 32795079-f10b-44e6-8f0d-1922dfbad6eb
+    taskid: b80ebf8c-d900-4427-9f98-94e3359a8ac2
     type: title
     task:
-      id: 32795079-f10b-44e6-8f0d-1922dfbad6eb
+      id: b80ebf8c-d900-4427-9f98-94e3359a8ac2
       version: -1
-      name: Case 2 - Non existent brand
+      name: Case 2 - No Arguments
       type: title
       iscommand: false
       brand: ""
@@ -2560,6 +2562,8 @@ tasks:
     nexttasks:
       '#error#':
       - "64"
+      '#none#':
+      - "68"
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -2579,12 +2583,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 8dc63b06-b4c0-496a-b535-36c8023adeb3
+    taskid: 11bf340f-8439-4867-98d3-245a60c3d7d4
     type: title
     task:
-      id: 8dc63b06-b4c0-496a-b535-36c8023adeb3
+      id: 11bf340f-8439-4867-98d3-245a60c3d7d4
       version: -1
-      name: Case 3 - No Arguments
+      name: Case 3 - Non Existent Brand
       type: title
       iscommand: false
       brand: ""
@@ -2653,6 +2657,8 @@ tasks:
     nexttasks:
       '#error#':
       - "67"
+      '#none#':
+      - "68"
     scriptarguments:
       brands:
         simple: ${TimeNowUnix}
@@ -2702,13 +2708,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 469543dd-5733-437a-a0be-5c656e9c1b04
+    type: condition
+    task:
+      id: 469543dd-5733-437a-a0be-5c656e9c1b04
+      version: -1
+      name: Failure
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 9630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9630,
-        "width": 1240,
+        "height": 9650,
+        "width": 1690,
         "x": 50,
         "y": 50
       }
