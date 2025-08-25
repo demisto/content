@@ -16,8 +16,6 @@ urllib3.disable_warnings()
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%d %H:%M"
-BASE_REQUEST_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc",
-                             "include_system": "false"}
 
 """ CLIENT CLASS """
 
@@ -31,7 +29,6 @@ class Client(BaseClient):
             user_key: str,
             api_key: str,
             organization: str,
-            base_request_params: dict,
             verify: bool,
             use_proxy: bool,
     ) -> None:
@@ -45,8 +42,6 @@ class Client(BaseClient):
             user_key: The user key for AppSentinels.ai API.
             api_key: The Api key for AppSentinels.ai API - specific for every licensing.
             organization: The organization ID for AppSentinels.ai API.
-            base_request_body: The base body for the http request.
-            base_request_params: The base params for the http request.
             verify: True if verify SSL certificate is checked in integration configuration, False otherwise.
             use_proxy: True if the proxy server needs to be used, False otherwise.
         """
@@ -59,24 +54,25 @@ class Client(BaseClient):
             "Content-Type": "application/json",
         }
         self.organization = organization
-        self.base_request_params = base_request_params
         self.api_key = api_key
         self.user_key = user_key
 
-    def get_events_request(self, params_update: dict, body_update: dict) -> dict:
+    def get_events_request(self, params_update: dict, body: dict) -> dict:
         """
         Retrieve the detections from AppSentinels.ai  API.
 
         Args:
             params_update (dict): The param update to add to the base params.
-            body_update (dict): The body update to add to the base body.
+            body (dict): The body update to add to the base body.
 
         """
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
-        params = self.base_request_params.copy()
+        params = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc",
+                             "include_system": "false"}
+        # Page can be updated
         params.update(params_update)
         return self._http_request(
-            "POST", url_suffix=url_suffix, headers=self._headers, json_data=body_update.copy(), params=params,
+            "POST", url_suffix=url_suffix, headers=self._headers, json_data=body.copy(), params=params,
             resp_type="json"
         )
 
@@ -134,7 +130,7 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         try:
             # API call
             demisto.debug(f"AppSentinels.ai sending http requests with arguments: {params=} {body=}")
-            response = client.get_events_request(params_update=params, body_update=body)  # Use the client method
+            response = client.get_events_request(params_update=params, body=body)  # Use the client method
         except DemistoException as error:
             raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
 
@@ -302,7 +298,6 @@ def main():
             user_key=user_key,
             api_key=api_key,
             organization=organization,
-            base_request_params=BASE_REQUEST_PARAMS,
             verify=verify_certificate,
             use_proxy=proxy,
         )
@@ -310,7 +305,6 @@ def main():
         if command == "test-module":
             # Command made to test the integration
             result = test_module(client)
-            # result = client.get_events_request(params_update={}, body_update={})
             return_results(result)
         elif command == "fetch-events":
             last_run = demisto.getLastRun()

@@ -14,7 +14,6 @@ EMPTY_RESPONSE = {"data": [], "pagination": 1, "total": 0}
 
 from AppSentinelsAi import (
     Client,
-    BASE_REQUEST_PARAMS,
     DATE_FORMAT,
     remove_first_run_params,
     fetch_events,
@@ -34,7 +33,6 @@ def client():
         organization=MOCK_ORGANIZATION,
         verify=False,
         use_proxy=False,
-        base_request_params=BASE_REQUEST_PARAMS,
     )
 
 
@@ -113,7 +111,7 @@ class TestFetchEvents:
             "from_date": start_time,
             "to_date": end_time,
         }
-        client.get_events_request.assert_called_with(body_update=expected_body, params_update={})
+        client.get_events_request.assert_called_with(body=expected_body, params_update={})
 
         # Check _TIME and source_log_type
         for event in events:
@@ -143,7 +141,7 @@ class TestFetchEvents:
         assert last_run == {"last_log_id": mock_response_data["data"][-1]["id"]}
         client.get_events_request.assert_called_once()
         expected_body = {"last_log_id": 0}
-        client.get_events_request.assert_called_with(body_update=expected_body, params_update={})
+        client.get_events_request.assert_called_with(body=expected_body, params_update={})
 
         # Check _TIME and source_log_type
         for event in events:
@@ -207,8 +205,8 @@ class TestFetchEvents:
         first_call_args = client.get_events_request.call_args_list[0][1]  # kwargs of first call
         second_call_args = client.get_events_request.call_args_list[1][1]  # kwargs of second call
 
-        assert first_call_args["body_update"] == expected_body_1
-        assert second_call_args["body_update"] == expected_body_1
+        assert first_call_args["body"] == expected_body_1
+        assert second_call_args["body"] == expected_body_1
         assert second_call_args["params_update"] == expected_params_2
 
         assert len(events) == 4
@@ -376,4 +374,4 @@ class TestGetEvents:
         get_events(client, args)
         mock_client_get_events_request.assert_called_once()
         expected_body = {"from_date": "2025-01-14 12:00"}
-        mock_client_get_events_request.assert_called_with(body_update=expected_body, params_update={})
+        mock_client_get_events_request.assert_called_with(body=expected_body, params_update={})
