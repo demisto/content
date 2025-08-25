@@ -56,21 +56,21 @@ This script uses the following commands and scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Core.Issue.internal_id | The internal ID of the issue. | String |
-| Core.Issue.alert_source | The source of the alert. | String |
+| Core.Issue.issue_source | The source of the issue. | String |
 | Core.Issue.status.progress | The progress status of the issue. | String |
 | Core.Issue.assigned_to_pretty | The pretty name of the user assigned to the issue. | String |
 | Core.Issue.assigned_to | The user assigned to the issue. | String |
 | Core.Issue.assetid | The asset ID related to the issue. | String |
 | Core.Issue.action_file_macro_sha256 | File Macro SHA256 hash of the action file macro. | String |
 | Core.Issue.os_actor_process_image_sha256 | OS Parent SHA256 hash of the OS actor process image. | String |
-| Core.Issue.alert_domain | The domain of the alert. | String |
+| Core.Issue.issue_domain | The domain of the issue. | String |
 | Core.Issue.action_process_image_sha256 | Action process image SHA256 hash. | String |
 | Core.Issue.causality_actor_process_image_sha256 | Causality actor process image SHA256 hash. | String |
 | Core.Issue.actor_process_image_sha256 | Actor process image SHA256 hash. | String |
 | Core.Issue.source_insert_ts | The detection timestamp. | Number |
-| Core.Issue.alert_name | The name of the issue. | String |
+| Core.Issue.issue_name | The name of the issue. | String |
 | Core.Issue.severity | The severity of the issue. | String |
-| Core.Issue.alert_category | The category of the issue. | String |
-| Core.Issue.alert_name | The issue name. | String |
-| Core.Issue.alert_description | The issue description. | String |
+| Core.Issue.issue_category | The category of the issue. | String |
+| Core.Issue.issue_name | The issue name. | String |
+| Core.Issue.issue_description | The issue description. | String |
 | Core.Issue.Identity_type | The identity type of the account. | String |

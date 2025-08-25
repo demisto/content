@@ -101,7 +101,7 @@ def main():  # pragma: no cover
         return_results(CommandResults(outputs=context, outputs_prefix="Core.Issue", readable_output=human_readable))
 
     except DemistoException as error:
-        return_error(f"Error from search issuess {error}", str(error))
+        return_error(f"Failed to execute SearchIssues. Error:\n{error}", error)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

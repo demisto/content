@@ -1417,7 +1417,10 @@ def catch_and_exit_gracefully(e):
 
 
 STATUS_PROGRESS = {"New": "STATUS_010_NEW", "In Progress": "STATUS_020_UNDER_INVESTIGATION", "Resolved": "STATUS_025_RESOLVED"}
+STATUS_PROGRESS_REVERSE = {value: key for key, value in STATUS_PROGRESS.items()}
 SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
+SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
+
 
 ALERT_DOMAIN = {
     "Security": "DOMAIN_SECURITY",
@@ -3721,15 +3724,6 @@ ALERT_STATUS_TYPES = {
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
-def filter_context_fields(output_keys: list, context: list):
-    """
-    Filters only specific keys from the context dictionary based on provided output_keys.
-    """
-    filtered_context = []
-    for alert in context:
-        filtered_context.append({key: alert.get(key) for key in output_keys})
-
-    return filtered_context
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
@@ -3762,7 +3756,6 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     sort_field = args.pop("sort_field", "source_insert_ts")
     sort_order = args.pop("sort_order", "DESC")
     prefix = args.pop("integration_context_brand", "CoreApiModule")
-    output_keys = argToList(args.pop("output_keys", []))
     args.pop("integration_name", None)
     custom_filter = {}
     filter_data["sort"] = [{"FIELD": sort_field, "ORDER": sort_order}]
@@ -3819,29 +3812,41 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
 
         context.append(alert)
 
-    SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
-    STATUS_PROGRESS_REVERSE = {value: key for key, value in STATUS_PROGRESS.items()}
-
-    ALERT_OR_ISSUE = "Alert" if not is_platform() else "Issue"
-    human_readable = [
-        {
-            f"{ALERT_OR_ISSUE} ID": alert.get("internal_id"),
-            "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
-            "Name": alert.get("alert_name"),
-            "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
-            "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
-            "Category": alert.get("alert_category"),
-            "Action": alert.get("alert_action_status_readable"),
-            "Description": alert.get("alert_description"),
-            "Host IP": alert.get("agent_ip_addresses"),
-            "Host Name": alert.get("agent_hostname"),
-        }
-        for alert in context
-    ]
-
-    if output_keys:
-        context = filter_context_fields(output_keys, context)
-
+    ALERT_OR_ISSUE = "Alert"
+    if is_platform():
+        ALERT_OR_ISSUE = "Issue"
+        human_readable = [
+            {
+                "Issue ID": alert.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+                "Name": alert.get("alert_name"),
+                "Severity": SEVERITY_STATUSES_REVERSE.get(alert.get("severity")),
+                "Status": STATUS_PROGRESS_REVERSE.get(alert.get("status.progress")),
+                "Category": alert.get("alert_category"),
+                "Action": alert.get("alert_action_status_readable"),
+                "Description": alert.get("alert_description"),
+                "Host IP": alert.get("agent_ip_addresses"),
+                "Host Name": alert.get("agent_hostname"),
+            }
+            for alert in context
+        ]
+    else:
+        human_readable = [
+            {
+                "Alert ID": alert.get("internal_id"),
+                "Detection Timestamp": timestamp_to_datestring(alert.get("source_insert_ts")),
+                "Name": alert.get("alert_name"),
+                "Severity": alert.get("severity"),
+                "Status": alert.get("status.progress"),
+                "Category": alert.get("alert_category"),
+                "Action": alert.get("alert_action_status_readable"),
+                "Description": alert.get("alert_description"),
+                "Host IP": alert.get("agent_ip_addresses"),
+                "Host Name": alert.get("agent_hostname"),
+            }
+            for alert in context
+        ]
+    
     return CommandResults(
         outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
         outputs_key_field="internal_id",

@@ -156,8 +156,8 @@ outputs:
   - contextPath: Core.Issue.internal_id
     description: The internal ID of the issue.
     type: String
-  - contextPath: Core.Issue.alert_source
-    description: The source of the alert.
+  - contextPath: Core.Issue.issue_source
+    description: The source of the issue.
     type: String
   - contextPath: Core.Issue.status.progress
     description: The progress status of the issue.
@@ -177,8 +177,8 @@ outputs:
   - contextPath: Core.Issue.os_actor_process_image_sha256
     description: OS Parent SHA256 hash of the OS actor process image.
     type: String
-  - contextPath: Core.Issue.alert_domain
-    description: The domain of the alert.
+  - contextPath: Core.Issue.issue_domain
+    description: The domain of the issue.
     type: String
   - contextPath: Core.Issue.action_process_image_sha256
     description: Action process image SHA256 hash.
@@ -192,19 +192,19 @@ outputs:
   - contextPath: Core.Issue.source_insert_ts
     description: The detection timestamp.
     type: Number
-  - contextPath: Core.Issue.alert_name
+  - contextPath: Core.Issue.issue_name
     description: The name of the issue.
     type: String
   - contextPath: Core.Issue.severity
     description: The severity of the issue.
     type: String
-  - contextPath: Core.Issue.alert_category
+  - contextPath: Core.Issue.issue_category
     description: The category of the issue.
     type: String
-  - contextPath: Core.Issue.alert_name
+  - contextPath: Core.Issue.issue_name
     description: The issue name.
     type: String
-  - contextPath: Core.Issue.alert_description
+  - contextPath: Core.Issue.issue_description
     description: The issue description.
     type: String
   - contextPath: Core.Issue.Identity_type

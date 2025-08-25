@@ -298,19 +298,18 @@ script:
         - contextPath: Core.Issue.source_insert_ts
           description: The detection timestamp.
           type: Number
-        - contextPath: Core.Issue.alert_name
+        - contextPath: Core.Issue.issue_name
           description: The name of the issue.
           type: String
         - contextPath: Core.Issue.severity
           description: The severity of the issue.
           type: String
-        - contextPath: Core.Issue.alert_category
+        - contextPath: Core.Issue.issue_category
           description: The category of the issue.
           type: String
-        - contextPath: Core.Issue.alert_action_status
+        - contextPath: Core.Issue.issue_action_status
           description: |-
             The issue action. Possible values.
-
             DETECTED: detected
             DETECTED_0: detected (allowed the session)
             DOWNLOAD: detected (download)
@@ -349,13 +348,13 @@ script:
             BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
             BLOCKED_TRIGGER_4: prevented (on write).
           type: String
-        - contextPath: Core.Issue.alert_action_status_readable
+        - contextPath: Core.Issue.issue_action_status_readable
           description: The issue action.
           type: String
-        - contextPath: Core.Issue.alert_name
+        - contextPath: Core.Issue.issue_name
           description: The issue name.
           type: String
-        - contextPath: Core.Issue.alert_description
+        - contextPath: Core.Issue.issue_description
           description: The issue description.
           type: String
         - contextPath: Core.Issue.agent_ip_addresses
@@ -373,7 +372,6 @@ script:
         - contextPath: Core.Issue.starred
           description: Whether the issue is starred or not.
           type: Boolean
-
     - arguments:
         - description: Asset unique identifier.
           name: asset_id
