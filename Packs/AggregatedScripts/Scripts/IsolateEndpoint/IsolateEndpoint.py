@@ -319,7 +319,7 @@ def find_command_by_brand(commands: list[Command], brand: str):
     for command in commands:
         if command.brand == brand:
             return command
-    return
+    return None
 
 
 def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_output: dict) -> None:  # type: ignore[arg-type,union-attr]
