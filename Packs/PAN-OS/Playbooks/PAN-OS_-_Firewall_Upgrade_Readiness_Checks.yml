@@ -2576,7 +2576,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Conditional task to check if the Integration Instance type being used is Panorama then was a target device id provided.
+      description: Conditional task to check whether the Panorama integration instance type is used, and if a target device ID is provided.
       id: 4fa1bd83-bfcf-4997-8f37-d453a81b72dd
       iscommand: false
       name: If IntegrationInstanceType is Panorama, is targetDevice provided?
