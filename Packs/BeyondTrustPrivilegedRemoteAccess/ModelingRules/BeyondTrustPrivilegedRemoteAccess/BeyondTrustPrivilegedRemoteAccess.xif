@@ -442,6 +442,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.target.user.username = vault_rotated_account,
     xdm.source.port = if(event_type = "login", to_integer(0), null),
     xdm.target.port = if(event_type = "login", to_integer(0), null),
+    xdm.target.ipv4 = "",
     xdm.network.ip_protocol = if(event_type = "login", XDM_CONST.IP_PROTOCOL_TCP, null),
     xdm.event.tags = if(event_type = "login", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
     xdm.auth.service = if(event_type = "login", "SP", null),
