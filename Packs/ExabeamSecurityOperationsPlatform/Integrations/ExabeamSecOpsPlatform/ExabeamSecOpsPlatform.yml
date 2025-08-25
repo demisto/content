@@ -38,7 +38,7 @@ configuration:
     - marketplacev2
     - platform
 - display: Maximum Incidents Per Fetch
-  additionalinfo: The maximum number of Exabeam Security Operations Platform cases per fetch; capped to 30,000.
+  additionalinfo: This value should not exceed 3,000.
   name: max_fetch  # for fetch-incidents on XSOAR
   defaultvalue: 50
   type: 0
@@ -48,7 +48,7 @@ configuration:
     - marketplacev2
     - platform
 - display: Maximum Events Per Fetch
-  additionalinfo: The maximum number of Exabeam Security Operations Platform cases per fetch; capped to 30,000.
+  additionalinfo: This value should not exceed 30,000.
   name: max_events_fetch  # for fetch-events on XSIAM and PLATFORM
   defaultvalue: 30000
   type: 0
@@ -57,7 +57,7 @@ configuration:
   hidden:
     - xsoar
 - display: Fetch query
-  additionalinfo: For example key:value
+  additionalinfo: 'In the `key:value` format. For example: `NOT stage:"CLOSED"`.'
   name: fetch_query
   type: 0
   section: Collect

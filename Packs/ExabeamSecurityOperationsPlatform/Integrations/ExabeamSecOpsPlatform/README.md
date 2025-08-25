@@ -3,18 +3,20 @@ This integration was integrated and tested with version v1.0 of ExabeamSecOpsPla
 
 ## Configure Exabeam Security Operations Platform in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Client ID | True |
-| Client Secret | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  |
-| Maximum Incidents Per Fetch |  |
-| Fetch query |  |
-| Fetch incidents |  |
-| Incident type |  |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | | True |
+| Client ID | | True |
+| Client Secret | | True |
+| Trust any certificate (not secure) | | False |
+| Use system proxy settings | | False |
+| Fetch incidents | Supported on Cortex XSOAR only. | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported on Cortex XSOAR only. | False |
+| Maximum Incidents Per Fetch | Supported on Cortex XSOAR only. This value should not exceed 3,000. | False |
+| Fetch query | Supported on Cortex XSOAR only. In the `key:value`. For example: `NOT stage:"CLOSED"`. | False |
+| Incident type | Supported on Cortex XSOAR only. | False |
+| Fetch events | Supported on Cortex XSIAM and Platform only. | False |
+| Maximum Events Per Fetch | Supported on Cortex XSIAM and Platform only. This value should not exceed 30,000. | False |
 
 ## Commands
 
