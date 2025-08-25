@@ -1609,6 +1609,16 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
+    - auto: PREDEFINED
+      description: Whether to use polling.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - description: action IDs to use in polling commands. (automatically filled by polling).
+      name: action_ids
+      deprecated: true
     description: Stop the execution of a file on a machine and delete it.
     name: microsoft-atp-stop-and-quarantine-file
     outputs:
