@@ -84,9 +84,8 @@ if (indicatorsRes && indicatorsRes[0] && indicatorsRes[0]) {
     if (valuesNotFound.length == 1) {
         entries.push({
             Type: entryTypes.note,
-            HumanReadable: `Could not find ${valuesNotFound[0]} in cache`,
-            ReadableContentsFormat: formats.markdown,
-            Contents: {}
+            ReadableContentsFormat: formats.text,
+            Contents: `Could not find ${valuesNotFound[0]} in cache`
         });
 
     }
