@@ -90,4 +90,4 @@ marketplaces:
 - marketplacev2
 polling: true
 tests:
-- BlockExternalIp - Test
+- BlockExternalIP - test
