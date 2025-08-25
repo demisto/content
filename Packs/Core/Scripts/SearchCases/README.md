@@ -34,7 +34,7 @@ This script uses the following commands and scripts.
 | sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified \("asc" - ascending, "desc" - descending\). |
 | sort_by_creation_time | Sorts returned cases by the date/time that the case was created \("asc" - ascending, "desc" - descending\). |
 | page | Page number \(for pagination\). The default is 0 \(the first page\). |
-| limit | Maximum number of cases to return per page. The default and maximum is 100. |
+| limit | Maximum number of cases to return per page. The default is 45 and maximum is 100. To avoid rate limits, use a lower limit or increase the script.timeout value https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.9/Cortex-XSOAR-Administrator-Guide/Automation-Server-Configurations. |
 | status | Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. |
 | starred | Whether the case is starred \(Boolean value: true or false\). |
 | issues_limit | Maximum number of issues to return per case. The default and maximum is 1000. |
