@@ -163,7 +163,7 @@ def parse_tag_field(tags_string: str | None):
         list_tags = list_tags[0:50]
         demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
     regex = re.compile(
-        r"^key=([\w:+-=.,_]{0,128}),value=([\w:-+=._\/@]{0,256})",
+        r"^key=([\w:+\-=.,_]{0,128}),value=([\w:\-+=._\/@]{0,256})",
         flags=re.I,
     )
     for tag in list_tags:
