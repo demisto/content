@@ -5859,6 +5859,11 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "playbookID": "QuarantineFile-Test",
+            "timeout": 300,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
