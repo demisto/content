@@ -1927,7 +1927,7 @@ script:
         type: Number
       - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
         name: source_ports
-        defaultValue: *
+        defaultValue: '*'
         type: String
       - description: The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag.
         name: destination
@@ -1935,7 +1935,7 @@ script:
         type: String
       - description: The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port.
         name: destination_ports
-        defaultValue: *
+        defaultValue: '*'
         type: String
       - description: A description to add to the rule.
         name: description
