@@ -3724,8 +3724,6 @@ ALERT_STATUS_TYPES = {
 ALERT_STATUS_TYPES_REVERSE_DICT = {v: k for k, v in ALERT_STATUS_TYPES.items()}
 
 
-
-
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     """
     Get alerts by filter.
@@ -3846,7 +3844,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
             }
             for alert in context
         ]
-    
+
     return CommandResults(
         outputs_prefix=f"{prefix}.{ALERT_OR_ISSUE}",
         outputs_key_field="internal_id",
