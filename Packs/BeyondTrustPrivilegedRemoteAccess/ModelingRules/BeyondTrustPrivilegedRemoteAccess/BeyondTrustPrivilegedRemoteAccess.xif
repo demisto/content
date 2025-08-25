@@ -443,7 +443,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.source.port = if(event_type = "login", to_integer(0), null),
     xdm.target.port = if(event_type = "login", to_integer(0), null),
     xdm.network.ip_protocol = if(event_type = "login", XDM_CONST.IP_PROTOCOL_TCP, null),
-    xdm.event.tags = if(event_type = "login", XDM_CONST.EVENT_TAG_AUTHENTICATION, null),
+    xdm.event.tags = if(event_type = "login", arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION), null),
     xdm.auth.service = if(event_type = "login", "SP", null),
     xdm.source.user.upn = if(event_type = "login", arrayindex(regextract(who, "\(([^@]+@[^@]+)\)"), 0), null);
 
