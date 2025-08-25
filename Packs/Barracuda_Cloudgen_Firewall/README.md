@@ -57,7 +57,7 @@ Follow the below steps to configure the Broker VM to receive Barracuda Cloudgen 
     |:-------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|
     | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Barracuda Cloudgen Firewall).       |
     | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Barracuda Cloudgen Firewall.         |
-    | `Format`     | Enter **RAW**.                                                                                                                                      |
+    | `Format`     | Enter **RAW**.<br/>                                                                                                                                      |
     | `Vendor`     | Enter **barracuda**.                                                                                                                                |
     | `Product`    | Enter **cgfw**.
 

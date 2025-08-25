@@ -5,12 +5,12 @@ filter _raw_log ~= "Allow\:|Detect\:"
 | alter
     severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8)))
 | alter
-    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3" OR parsedFields1 -> level = "Error", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6" or parsedFields1 -> level = "Info" , XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3" OR parsedFields1 -> level = "Error", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6" or parsedFields1 -> level = "Info" , XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.observer.name = coalesce( parsedFields1 -> observerHostname2, parsedFields1 -> observerHostname1),
     xdm.observer.action = parsedFields1 -> action,
     xdm.event.type = parsedFields1 -> type,
     xdm.network.ip_protocol = if(parsedFields1 -> proto = "ICMP", XDM_CONST.IP_PROTOCOL_ICMP, parsedFields1 -> proto = "TCP", XDM_CONST.IP_PROTOCOL_TCP, parsedFields1 -> proto = "UDP", XDM_CONST.IP_PROTOCOL_UDP, parsedFields1 -> proto),
-    xdm.source.interface = if(parsedFields1 -> srcIF ="",null, parsedFields1 -> srcIF),
+    xdm.source.interface = if(parsedFields1 -> srcIF ="", null, parsedFields1 -> srcIF),
     xdm.source.ipv4 = if(is_ipv4(parsedFields1 -> srcIP) = TRUE, parsedFields1 -> srcIP),
     xdm.source.ipv6 = if(is_ipv6(parsedFields1 -> srcIP) = TRUE, parsedFields1 -> srcIP),
     xdm.source.port = if(parsedFields1 -> proto = "ICMP", null, to_integer(parsedFields1 -> srcPort)), //ICMP does not support using port numbers. Instead, ICMP identifier is logged as the source (srcPort) and destination port (dstPort).
@@ -40,7 +40,7 @@ filter _raw_log contains "BYF"
 | alter
     severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8)))
 | alter
-    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6" or parsedFields1 -> level = "Info" , XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity = "1", XDM_CONST.LOG_LEVEL_ALERT, severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6" or parsedFields1 -> level = "Info" , XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.observer.name = parsedFields1 -> hostname,
     xdm.observer.product = parsedFields1 -> programName,
     xdm.observer.vendor = "Barracuda",
