@@ -164,6 +164,7 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(
 
 MAX_GET_INCIDENTS_LIMIT = 100
 
+
 class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
@@ -401,7 +402,7 @@ class CoreClient(BaseClient):
         incidents = res.get("reply", {}).get("incidents", [])
 
         return incidents
-    
+
     def get_extra_data_for_case_id(
         self,
         request_data: dict
@@ -1426,6 +1427,7 @@ def catch_and_exit_gracefully(e):
     else:
         raise e
 
+
 def init_filter_args_options():
     array = "array"
     dropdown = "dropdown"
@@ -1786,7 +1788,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             headers=["action_id", "endpoint_id", "status", "error_description"],
         ),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
-        f'GetActionStatus(val.action_id == obj.action_id)',
+                       f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result,
     )
@@ -2173,7 +2175,7 @@ def unisolate_endpoint_command(client, args):
         else:
             return CommandResults(
                 readable_output=f"Warning: un-isolation action is pending for the following disconnected "
-                f"endpoint: {endpoint_id}.",
+                                f"endpoint: {endpoint_id}.",
                 outputs={
                     f'{args.get("integration_context_brand", "CoreApiModule")}.'
                     f'UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
@@ -2215,7 +2217,7 @@ def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandR
     return CommandResults(
         readable_output=tableToMarkdown(name="Retrieve files", t=result, headerTransform=string_to_table_header),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}'
-        f'.RetrievedFiles(val.action_id == obj.action_id)',
+                       f'.RetrievedFiles(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=reply,
     )
@@ -3217,7 +3219,7 @@ def get_scripts_command(client: CoreClient, args: Dict[str, str]) -> tuple[str, 
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk],
     )
-    scripts = copy.deepcopy(result.get("scripts")[offset : (offset + limit)])  # type: ignore
+    scripts = copy.deepcopy(result.get("scripts")[offset: (offset + limit)])  # type: ignore
     for script in scripts:
         timestamp = script.get("modification_date")
         script["modification_date_timestamp"] = timestamp
@@ -4359,6 +4361,7 @@ def get_cases_command(client, args):
     """
 
     # sometimes case id can be passed as integer from the playbook
+    hr = ""
     case_id_list = args.get("case_id_list")
     if isinstance(case_id_list, int):
         case_id_list = str(case_id_list)
@@ -4399,8 +4402,7 @@ def get_cases_command(client, args):
     page = int(args.get("page", 0))
     limit = int(args.get("limit", MAX_GET_INCIDENTS_LIMIT))
     if limit > MAX_GET_INCIDENTS_LIMIT:
-        demisto.debug(
-            f"Limit is {limit} which is greater than {MAX_GET_INCIDENTS_LIMIT}. Setting limit to {MAX_GET_INCIDENTS_LIMIT}")
+        hr += f"Limit is {limit} which is greater than {MAX_GET_INCIDENTS_LIMIT}. Setting limit to {MAX_GET_INCIDENTS_LIMIT}.\n"
         limit = MAX_GET_INCIDENTS_LIMIT
 
     # If no filters were given, return a meaningful error message
@@ -4457,20 +4459,24 @@ def get_cases_command(client, args):
         )
 
     mapped_raw_cases = replace_response_names(raw_cases)
-    
+
+    hr += tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
+        readable_output=hr,
         outputs_prefix="Core.Case",
         outputs_key_field="case_id",
         outputs=mapped_raw_cases,
         raw_response=mapped_raw_cases,
     )
-    
-def get_extra_data_for_case_id_command(client, args):
+
+
+def get_extra_data_for_case_id_command(client, args, remove_nulls_from_alerts=True):
     case_id = args.get("case_id")
     issues_limit = int(args.get("issues_limit", 1000))
     issues_limit = min(issues_limit, 1000)
     request_data = {"incident_id": case_id, "alerts_limit": issues_limit, "full_alert_fields": True}
+    if remove_nulls_from_alerts:
+        request_data["drop_nulls"] = True
     demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
     response = client.get_extra_data_for_case_id(request_data)
     mapped_response = replace_response_names(response)
@@ -4480,6 +4486,7 @@ def get_extra_data_for_case_id_command(client, args):
         outputs=mapped_response,
         raw_response=mapped_response,
     )
+
 
 def terminate_process_command(client, args) -> CommandResults:
     """
