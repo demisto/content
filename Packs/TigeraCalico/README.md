@@ -97,5 +97,4 @@ Follow these steps to configure the Broker VM to receive Tigera Calico logs.
     | `Format`     | Enter <Format>.                                                                                                                                 |
     | `Vendor`     | Enter Tigera.                                                                                                                                   |
     | `Product`    | Enter Calico.                                                                                                                                   |
-
 </~XSIAM>
