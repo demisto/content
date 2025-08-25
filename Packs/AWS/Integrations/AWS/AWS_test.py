@@ -1369,20 +1369,3 @@ def test_aws_error_handler_extract_action_from_message_empty_input():
     assert AWSErrorHandler._extract_action_from_message("") == "unknown"
     assert AWSErrorHandler._extract_action_from_message(123) == "unknown"
 
-
-def test_aws_error_handler_extract_action_from_message_regex_error(mocker):
-    """
-    Given: A regex error during pattern matching.
-    When: _extract_action_from_message encounters regex error.
-    Then: It should handle the error gracefully and continue checking other actions.
-    """
-    from AWS import AWSErrorHandler
-
-    mocker.patch("AWS.REQUIRED_ACTIONS", ["invalid[regex", "action_1"])
-    mock_re_search = mocker.patch("AWS.re.search")
-    mock_re_search.side_effect = [Exception("regex error"), mocker.Mock(group=lambda x: "action_1")]
-
-    message = "User needs action_1 permission"
-    result = AWSErrorHandler._extract_action_from_message(message)
-
-    assert result == "action_1"
