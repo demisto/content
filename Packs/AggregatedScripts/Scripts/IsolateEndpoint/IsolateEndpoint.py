@@ -333,13 +333,13 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
     command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
-    if are_there_missing_args(command, endpoint_args, endpoint_output):  # checks if there are missing args
+    if are_there_missing_args(command, endpoint_args, endpoint_output):  # type: ignore[arg-type]
         return
     mapped_args = map_args(command, endpoint_args)
     demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
-    raw_response = demisto.executeCommand(command.name, mapped_args)
+    raw_response = demisto.executeCommand(command.name, mapped_args) # type: ignore[arg-type]
     demisto.debug(f"Got raw response for execute_command {command.name} with {endpoint_args=}: {raw_response=}")
-    handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output)
+    handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output) # type: ignore[arg-type]
 
 
 def prepare_args() -> tuple[dict, list]:
