@@ -1133,7 +1133,7 @@ class EC2:
                 "AWS.EC2(true)": {"InstancesNextToken": response.get("NextToken")},
             }
             return CommandResults(
-                outputs=outputs, readable_output=tableToMarkdown("AWS EC2 Instances", data), raw_response=response
+                outputs=outputs, readable_output=tableToMarkdown("AWS EC2 Instances", output), raw_response=response
             )
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
