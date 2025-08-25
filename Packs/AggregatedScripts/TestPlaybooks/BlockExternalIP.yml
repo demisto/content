@@ -1,7 +1,6 @@
-id: BlockExternalIP - test
+id: BlockExternalIP - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: BlockExternalIP - test
+name: BlockExternalIP - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -76,6 +76,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -208,6 +209,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -334,12 +336,7 @@ tasks:
       id: 11d217b8-0314-4409-8bc7-cb9d2544b41e
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -476,6 +473,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -587,6 +585,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -614,8 +613,7 @@ tasks:
       id: d07aefa6-f22f-414c-beab-624f56122e95
       version: -1
       name: Silverline list ip objects
-      description: Gets a dynamic list of threatening IP addresses by the given list
-        type.
+      description: Gets a dynamic list of threatening IP addresses by the given list type.
       script: '|||f5-silverline-ip-objects-list'
       type: regular
       iscommand: true
@@ -693,9 +691,7 @@ tasks:
       id: eac9a0c7-89bf-42db-a9d7-e29a80c62169
       version: -1
       name: F5 Delete IP from list
-      description: Delete an existing particular threatening IP address object by
-        its object ID or by its IP address. If both id and ip are given, delete operation
-        will be done by the given object_id.
+      description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
       script: '|||f5-silverline-ip-object-delete'
       type: regular
       iscommand: true
@@ -781,7 +777,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "23"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -855,8 +851,7 @@ tasks:
       id: a37b0e4c-94ca-43f4-8563-e4a11f835bcd
       version: -1
       name: Silverline list ip objects
-      description: Gets a dynamic list of threatening IP addresses by the given list
-        type.
+      description: Gets a dynamic list of threatening IP addresses by the given list type.
       script: '|||f5-silverline-ip-objects-list'
       type: regular
       iscommand: true
@@ -885,15 +880,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4882bfa1-85fa-4f64-acd3-9ec96d519cf6
+    taskid: 6236dd4d-41d5-47e6-948b-4ef6b6ee57f9
     type: title
     task:
-      id: 4882bfa1-85fa-4f64-acd3-9ec96d519cf6
+      id: 6236dd4d-41d5-47e6-948b-4ef6b6ee57f9
       version: -1
-      name: 'Case 4: non existing IP'
+      name: 'Case 5: non existing IP'
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -903,7 +899,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3900
+          "y": 5445
         }
       }
     note: false
@@ -921,12 +917,7 @@ tasks:
       id: 39e70163-c5ee-451c-8360-420856e3873f
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -961,12 +952,7 @@ tasks:
       id: b3e882c2-7ddb-49ba-8c52-d4a47d670a81
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1064,7 +1050,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 4200
+          "y": 5755
         }
       }
     note: false
@@ -1113,7 +1099,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 4360
+          "y": 5910
         }
       }
     note: false
@@ -1134,13 +1120,14 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 4540
+          "y": 6100
         }
       }
     note: false
@@ -1158,12 +1145,7 @@ tasks:
       id: 17c54df8-cf1e-447d-8772-66abb98829af
       version: -1
       name: Clear context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1180,7 +1162,433 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 4053.75
+          "y": 5595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 32d6309b-a60d-462f-8b23-31846560d5fb
+    type: title
+    task:
+      id: 32d6309b-a60d-462f-8b23-31846560d5fb
+      version: -1
+      name: 'Case 4: Running with 2 brands'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c9c05fb9-c6c4-4573-bc50-bba8615cb922
+    type: regular
+    task:
+      id: c9c05fb9-c6c4-4573-bc50-bba8615cb922
+      version: -1
+      name: Clear context
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 02826eba-5f7c-46ec-8501-1db246c250e5
+    type: regular
+    task:
+      id: 02826eba-5f7c-46ec-8501-1db246c250e5
+      version: -1
+      name: Silverline list ip objects
+      description: Gets a dynamic list of threatening IP addresses by the given list type.
+      script: '|||f5-silverline-ip-objects-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      list_type:
+        simple: denylist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4186.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1d6cddfe-2da5-4ba8-8574-1ac496e3fa2c
+    type: condition
+    task:
+      id: 1d6cddfe-2da5-4ba8-8574-1ac496e3fa2c
+      version: -1
+      name: Is IP in the list?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: F5Silverline.IPObjectList.attributes.ip
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8/32
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4326.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: fca8b856-c903-4ab7-8bfe-2daaa6730efc
+    type: regular
+    task:
+      id: fca8b856-c903-4ab7-8bfe-2daaa6730efc
+      version: -1
+      name: F5 Delete IP from list
+      description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
+      script: '|||f5-silverline-ip-object-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      list_type:
+        simple: denylist
+      object_ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4476.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: f7c4dba4-c86f-40a7-884c-b8bf27733bfc
+    type: regular
+    task:
+      id: f7c4dba4-c86f-40a7-884c-b8bf27733bfc
+      version: -1
+      name: CIsco ASA list rules
+      description: Gets a list all rules for the supplied interface.
+      script: '|||cisco-asa-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 4aca05f3-9dce-4c3d-8a92-dac627c7cf52
+    type: condition
+    task:
+      id: 4aca05f3-9dce-4c3d-8a92-dac627c7cf52
+      version: -1
+      name: Does rule exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Dest
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 75c7cf48-2eff-47d5-8635-f1260e9a0a81
+    type: regular
+    task:
+      id: 75c7cf48-2eff-47d5-8635-f1260e9a0a81
+      version: -1
+      name: Remove rule if exist
+      description: Deletes a rule.
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      interface_type:
+        complex:
+          root: CiscoASA.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Dest
+                iscontext: true
+              right:
+                value:
+                  simple: 8.8.8.8
+          accessor: InterfaceType
+      rule_id:
+        complex:
+          root: CiscoASA.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Dest
+                iscontext: true
+              right:
+                value:
+                  simple: 8.8.8.8
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: db717f16-1656-4a6a-987a-cf390cb7b158
+    type: regular
+    task:
+      id: db717f16-1656-4a6a-987a-cf390cb7b158
+      version: -1
+      name: BlockExternalIP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      brands:
+        simple: F5Silverline,Cisco ASA
+      ip_list:
+        simple: 8.8.8.8
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5131.25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 751d580e-335c-4745-9e2f-d2eba64d1373
+    type: condition
+    task:
+      id: 751d580e-335c-4745-9e2f-d2eba64d1373
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: BlockExternalIPResults.Result
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: BlockExternalIPResults.Result
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Success
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: BlockExternalIPResults.Brand
+            iscontext: true
+          right:
+            value:
+              simple: Cisco ASA
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: BlockExternalIPResults.Brand
+            iscontext: true
+          right:
+            value:
+              simple: F5Silverline
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5280
         }
       }
     note: false
@@ -1194,15 +1602,17 @@ view: |-
   {
     "linkLabelsPosition": {
       "18_19_yes": 0.46,
-      "21_23_yes": 0.39,
       "31_32_yes": 0.5,
+      "38_39_yes": 0.52,
       "3_4_yes": 0.48,
+      "41_42_yes": 0.53,
+      "44_23_yes": 0.45,
       "7_8_yes": 0.43,
       "9_11_yes": 0.46
     },
     "paper": {
       "dimensions": {
-        "height": 4540,
+        "height": 6100,
         "width": 380,
         "x": 450,
         "y": 60
@@ -1211,3 +1621,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+description: ''

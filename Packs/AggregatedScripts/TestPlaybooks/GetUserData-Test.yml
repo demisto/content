@@ -168,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 75017505-3c69-4e64-93f2-924cd729388d
+    taskid: 550bad1f-4aa4-4dfd-ba4f-cfffd2d88ab3
     type: regular
     task:
-      id: 75017505-3c69-4e64-93f2-924cd729388d
+      id: 550bad1f-4aa4-4dfd-ba4f-cfffd2d88ab3
       version: -1
       name: GetUserData
       description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
@@ -183,12 +183,6 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      user_email:
-        complex:
-          root: ActiveDirectory.Users
-          accessor: mail
-          transformers:
-          - operator: FirstArrayElement
       user_id:
         complex:
           root: MSGraphUser
@@ -376,12 +370,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0a5258ee-25bf-46f1-af1c-2fae9180904b
+    taskid: d5ca811b-35f5-4b3a-9764-76a4e51575d4
     type: regular
     task:
-      id: 0a5258ee-25bf-46f1-af1c-2fae9180904b
+      id: d5ca811b-35f5-4b3a-9764-76a4e51575d4
       version: -1
-      name: attributesClear GetUserData results
+      name: Clear GetUserData results
       description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: DeleteContext
       type: regular
@@ -454,10 +448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 504ce62e-2e58-484a-b10e-9225b894e535
+    taskid: 1342554e-84cf-40f3-8b04-8e6a9ea1706f
     type: condition
     task:
-      id: 504ce62e-2e58-484a-b10e-9225b894e535
+      id: 1342554e-84cf-40f3-8b04-8e6a9ea1706f
       version: -1
       name: Verify Outputs
       type: condition
@@ -743,10 +737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: cb76b9ad-12ad-4603-ac0d-d58d308d82ff
+    taskid: 42ed370c-005c-4e49-9d83-07b6f10be5ee
     type: condition
     task:
-      id: cb76b9ad-12ad-4603-ac0d-d58d308d82ff
+      id: 42ed370c-005c-4e49-9d83-07b6f10be5ee
       version: -1
       name: Verify Outputs
       type: condition
