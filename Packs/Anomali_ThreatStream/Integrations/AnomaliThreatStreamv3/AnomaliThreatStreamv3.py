@@ -748,7 +748,7 @@ def ips_reputation_command(
     results = []  # type: ignore
     ips = argToList(ip, ",")
     for single_ip in ips:
-        if is_ip_internal(single_ip):
+        if is_ip_address_internal(single_ip):
             demisto.info(f"Skipping internal IP: {single_ip}")
             continue
 
