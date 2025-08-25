@@ -16,7 +16,6 @@ urllib3.disable_warnings()
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%d %H:%M"
-BASE_REQUEST_BODY: dict = {}
 BASE_REQUEST_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc",
                              "include_system": "false"}
 
@@ -32,7 +31,6 @@ class Client(BaseClient):
             user_key: str,
             api_key: str,
             organization: str,
-            base_request_body: dict,
             base_request_params: dict,
             verify: bool,
             use_proxy: bool,
@@ -61,7 +59,6 @@ class Client(BaseClient):
             "Content-Type": "application/json",
         }
         self.organization = organization
-        self.base_request_body = base_request_body
         self.base_request_params = base_request_params
         self.api_key = api_key
         self.user_key = user_key
@@ -78,10 +75,9 @@ class Client(BaseClient):
         url_suffix = f"/api/v1/{self.organization}/audit-logs"
         params = self.base_request_params.copy()
         params.update(params_update)
-        body = self.base_request_body.copy()
-        body.update(body_update)
         return self._http_request(
-            "POST", url_suffix=url_suffix, headers=self._headers, json_data=body, params=params, resp_type="json"
+            "POST", url_suffix=url_suffix, headers=self._headers, json_data=body_update.copy(), params=params,
+            resp_type="json"
         )
 
 
@@ -306,7 +302,6 @@ def main():
             user_key=user_key,
             api_key=api_key,
             organization=organization,
-            base_request_body=BASE_REQUEST_BODY,
             base_request_params=BASE_REQUEST_PARAMS,
             verify=verify_certificate,
             use_proxy=proxy,

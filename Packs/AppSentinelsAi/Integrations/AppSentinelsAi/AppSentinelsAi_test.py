@@ -14,7 +14,6 @@ EMPTY_RESPONSE = {"data": [], "pagination": 1, "total": 0}
 
 from AppSentinelsAi import (
     Client,
-    BASE_REQUEST_BODY,
     BASE_REQUEST_PARAMS,
     DATE_FORMAT,
     remove_first_run_params,
@@ -35,7 +34,6 @@ def client():
         organization=MOCK_ORGANIZATION,
         verify=False,
         use_proxy=False,
-        base_request_body=BASE_REQUEST_BODY,
         base_request_params=BASE_REQUEST_PARAMS,
     )
 
