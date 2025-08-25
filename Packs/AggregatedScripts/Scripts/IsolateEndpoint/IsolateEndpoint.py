@@ -132,20 +132,31 @@ def create_message_to_context_and_hr(
     endpoint_output["Isolated"] = "Yes" if is_isolated else "No"
 
 
-def are_there_missing_args(command: Command, args: dict) -> bool:
+def are_there_missing_args(command: Command, endpoint_args: dict, endpoint_output: dict) -> bool:
     """
     Checks if all required arguments are existing in the provided arguments.
 
     Args:
         command (Command): The command to use for checking the required arguments.
-        args (dict): A dictionary containing the provided arguments.
+        endpoint_args (dict): A dictionary containing the provided arguments.
 
     Returns:
         bool: True if all expected arguments are missing, False otherwise.
     """
     if not command.arg_mapping:  # If there are no expected args, return False
         return False
-    return all(args.get(key, "") == "" for key in command.arg_mapping.values())  # checks if *all* args are missing
+    is_missing_args = all(endpoint_args.get(key, "") == "" for key in command.arg_mapping.values())  # checks if *all* args are missing
+    if is_missing_args:
+        demisto.debug(f"Missing the next args {endpoint_args} for command.name")
+        create_message_to_context_and_hr(
+            is_isolated=False,
+            endpoint_args=endpoint_args,
+            result="Fail",
+            message=f"Missing args for {command.name}.",
+            endpoint_output=endpoint_output,
+        )
+        return True
+    return False
 
 
 def map_args(command: Command, args: dict) -> dict:
@@ -320,29 +331,8 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
     command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
-    if not command:
-        # Probably won't happen because get-endpoint-data is mapping the right brands
-        demisto.debug(f"Did not find a matching brand to run on {endpoint_args}.")
-        create_message_to_context_and_hr(
-            is_isolated=False,
-            endpoint_args=endpoint_args,
-            result="Fail",
-            message="Did not find a matching brand to execute.",
-            endpoint_output=endpoint_output,
-        )
+    if are_there_missing_args(command, endpoint_args, endpoint_output): # checks if there are missing args
         return
-    missing_args = are_there_missing_args(command, endpoint_args)  # checks if there are missing args
-    if missing_args:
-        demisto.debug(f"Missing the next args {endpoint_args} for command.name")
-        create_message_to_context_and_hr(
-            is_isolated=False,
-            endpoint_args=endpoint_args,
-            result="Fail",
-            message=f"Missing args: {missing_args} for {command.name}.",
-            endpoint_output=endpoint_output,
-        )
-        return
-
     mapped_args = map_args(command, endpoint_args)
     demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
     raw_response = demisto.executeCommand(command.name, mapped_args)
@@ -350,23 +340,27 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     handle_raw_response_results(command, raw_response, endpoint_args, endpoint_output)
 
 
+def prepare_args() -> tuple[dict, list]:
+    endpoint_args = demisto.args()
+    endpoint_ids = argToList(endpoint_args.get("endpoint_id", []))
+    endpoint_ips = argToList(endpoint_args.get("endpoint_ip", []))
+    brands_to_run = argToList(endpoint_args.get("brands", []))
+
+    if not any((endpoint_ids, endpoint_ips)):
+        raise ValueError("At least one of the following arguments must be specified: endpoint_id or endpoint_ip.")
+
+    if not brands_to_run:
+        # In case no brands selected, the default is all brands.
+        # We want to send to get-endpoint-data only the brands this script supports.
+        endpoint_args["brands"] = Brands.get_all_values()
+    zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
+    return endpoint_args, zipped_args
+
+
 def main():  # pragma: no cover
     try:
-        endpoint_args = demisto.args()
-        endpoint_ids = argToList(endpoint_args.get("endpoint_id", []))
-        endpoint_ips = argToList(endpoint_args.get("endpoint_ip", []))
-        brands_to_run = argToList(endpoint_args.get("brands", []))
-
-        if not any((endpoint_ids, endpoint_ips)):
-            raise ValueError("At least one of the following arguments must be specified: endpoint_id or endpoint_ip.")
-
-        if not brands_to_run:
-            # In case no brands selected, the default is all brands.
-            # We want to send to get-endpoint-data only the brands this script supports.
-            endpoint_args["brands"] = Brands.get_all_values()
-
+        endpoint_args, zipped_args = prepare_args()
         commands = initialize_commands()
-        zipped_args = map_zipped_args(endpoint_ids, endpoint_ips)
 
         executed_command = execute_command(command="get-endpoint-data", args=endpoint_args)
         demisto.debug(f"Got executed command from get-endpoint-data: {executed_command=}")
