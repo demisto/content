@@ -1,0 +1,12 @@
+{
+    "mock_responses": [
+        {
+            "rows": []
+        }
+    ],
+    "prev_last_fetched_ids": ["A", "B", "C"],
+    "max_fetch": 10,
+    "expected_events": [],
+    "expected_new_start_time": "2025-04-04T01:07:33Z",
+    "expected_new_last_fetched_ids": ["A", "B", "C"]
+}

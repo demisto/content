@@ -8,6 +8,11 @@ from ExabeamSecOpsPlatform import Client
 from freezegun import freeze_time
 
 
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
 class MockClient(Client):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         pass
@@ -726,3 +731,33 @@ def test_fetch_events_max_fetch_exceeded():
     # Assert that the function call raises the correct exception
     with pytest.raises(DemistoException, match=expected_error_message):
         fetch_events(mock_client, max_fetch, last_run)
+
+
+@pytest.mark.parametrize(
+    "test_data_file_name",
+    [
+        pytest.param("fetch-events-no-cases.json", id="Empty batch"),
+        pytest.param("fetch-events-partial-batch.json", id="Partial batch"),
+        pytest.param("fetch-events-max-fetch.json", id="Max fetch less than batch size"),
+        pytest.param("fetch-events-duplicate-cases.json", id="Batch with duplicates"),
+    ],
+)
+def test_get_cases_in_batches(mocker: MockerFixture, test_data_file_name: str):
+    from ExabeamSecOpsPlatform import get_cases_in_batches
+
+    test_data = util_load_json(f"test_data/{test_data_file_name}")
+
+    mock_client = MockClient("example.com", "", "", False, False)
+    mocker.patch.object(MockClient, "case_search_request", side_effect=test_data["mock_responses"])
+
+    events, start_time, last_fetched_ids = get_cases_in_batches(
+        client=mock_client,
+        start_time="2025-04-04T01:07:33Z",
+        end_time="2025-09-01T00:00:00Z",
+        last_fetched_ids=test_data["prev_last_fetched_ids"],
+        max_fetch=test_data["max_fetch"],
+    )
+
+    assert events == test_data["expected_events"]
+    assert start_time == test_data["expected_new_start_time"]
+    assert sorted(last_fetched_ids) == sorted(test_data["expected_new_last_fetched_ids"])
