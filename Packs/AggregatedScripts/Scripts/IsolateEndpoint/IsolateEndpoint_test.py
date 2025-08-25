@@ -180,17 +180,21 @@ def test_are_there_missing_args():
 
     base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
     args = {"old_key1": "value1", "old_key2": "value2"}
-    assert are_there_missing_args(base_command, args) is False
+    assert are_there_missing_args(command=base_command, endpoint_args=args, endpoint_output={}) is False
 
     base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "missing_key"}
     args = {"old_key1": "value1"}
-    assert are_there_missing_args(base_command, args) is False
+    assert are_there_missing_args(command=base_command, endpoint_args=args, endpoint_output={}) is False
 
     base_command.arg_mapping = {"new_key1": "old_key1", "new_key2": "old_key2"}
-    assert are_there_missing_args(base_command, {}) is True
+    endpoint_output = {}
+    assert are_there_missing_args(command=base_command, endpoint_args={}, endpoint_output=endpoint_output) is True
+
+    assert endpoint_output.get("Result") == "Fail"
+    assert endpoint_output.get("Message") == "Missing args for test_command."
 
     base_command.arg_mapping = {}
-    assert are_there_missing_args(base_command, {}) is False
+    assert are_there_missing_args(command=base_command, endpoint_args={}, endpoint_output={}) is False
 
 
 def test_is_endpoint_already_isolated():

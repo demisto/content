@@ -145,7 +145,9 @@ def are_there_missing_args(command: Command, endpoint_args: dict, endpoint_outpu
     """
     if not command.arg_mapping:  # If there are no expected args, return False
         return False
-    is_missing_args = all(endpoint_args.get(key, "") == "" for key in command.arg_mapping.values())  # checks if *all* args are missing
+    is_missing_args = all(
+        endpoint_args.get(key, "") == "" for key in command.arg_mapping.values()
+    )  # checks if *all* args are missing
     if is_missing_args:
         demisto.debug(f"Missing the next args {endpoint_args} for command.name")
         create_message_to_context_and_hr(
@@ -331,7 +333,7 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
     """
     demisto.debug(f"Got into the run_commands_for_endpoint command with {endpoint_args}")
     command = find_command_by_brand(commands, endpoint_args.get("endpoint_brand", ""))
-    if are_there_missing_args(command, endpoint_args, endpoint_output): # checks if there are missing args
+    if are_there_missing_args(command, endpoint_args, endpoint_output):  # checks if there are missing args
         return
     mapped_args = map_args(command, endpoint_args)
     demisto.debug(f"Executing command {command.name} with {endpoint_args=}")
