@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Bitsight Event Collector
+  id: BitSight Event Collector
   version: -1
 configuration:
 - name: base_url
@@ -11,7 +11,7 @@ configuration:
   required: true
   defaultvalue: https://api.bitsighttech.com
   type: 0
-  additionalinfo: REST API Endpoint of Bitsight server.
+  additionalinfo: REST API Endpoint of BitSight server.
   section: Connect
 - display: API Key
   name: apikey
@@ -54,9 +54,9 @@ configuration:
   required: false
   type: 19
   section: Collect
-description: Use this integration to fetch Bitsight findings as events in XSIAM.
-display: Bitsight Event Collector
-name: Bitsight Event Collector
+description: Use this integration to fetch BitSight findings as events in XSIAM.
+display: BitSight Event Collector
+name: BitSight Event Collector
 supportlevelheader: xsoar
 script:
   commands:
@@ -74,7 +74,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    description: Gets Bitsight findings events from the last 1 day (24 hours).
+    description: Gets BitSight findings events from the last 1 day (24 hours).
     name: bitsight-get-events
   runonce: false
   script: "-"
