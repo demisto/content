@@ -3524,13 +3524,74 @@ def remove_app_restriction_command(client: MsClient, args: dict):
     entry_context = {"MicrosoftATP.MachineAction(val.ID === obj.ID)": action_data}
     return human_readable, entry_context, machine_action_response
 
-
-def stop_and_quarantine_file_command(client: MsClient, args: dict):
-    """Stop execution of a file on a machine and delete it.
+@polling_function(
+    name='microsoft-atp-stop-and-quarantine-file',
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
+)
+def stop_and_quarantine_file_command_polling(client: MsClient, args: dict) -> PollResult:
+    """
+    Stops the execution of files on machines and quarantines them.
+    This command is asynchronous and will poll for completion.
 
     Returns:
          CommandResults
     """
+    CONTEXT_PENDING_MDE_ACTIONS = "mde_quarantine_pending_actions"
+    CONTEXT_COMPLETED_MDE_RESULTS = "mde_quarantine_completed_results"
+
+    # --- Check if this is the first run or a polling run ---
+    is_first_run = not demisto.get(demisto.context(), CONTEXT_PENDING_MDE_ACTIONS)
+    if is_first_run:
+        # --- First Run: Initiate all quarantine actions ---
+        demisto.debug("First run: Initiating quarantine actions.")
+        machine_ids = argToList(args.get("machine_id"))
+        file_sha1s = argToList(args.get("file_hash"))
+        comment = args.get("comment")
+
+        pending_action_ids = []
+        completed_results = []
+
+        for machine_id, file_sha1 in product(machine_ids, file_sha1s):
+            try:
+                demisto.debug(f"Initiating quarantine for file {file_sha1} on machine {machine_id}.")
+                machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
+                action_data = get_machine_action_data(machine_action_response)
+
+                if action_id := action_data.get('id'):
+                    pending_action_ids.append(action_id)
+                else:
+                    failed_result = {'machineId': machine_id, 'fileSha1': file_sha1, 'status': 'Failed',
+                                     'error': 'Could not retrieve action ID from initiation response.'}
+                    completed_results.append(failed_result)
+
+            except Exception as e:
+                demisto.error(f"Failed to initiate quarantine for file {file_sha1} on machine {machine_id}: {e}")
+                failed_result = {'machineId': machine_id, 'fileSha1': file_sha1, 'status': 'Failed', 'error': str(e)}
+                completed_results.append(failed_result)
+
+        if not pending_action_ids:
+            # All actions failed or none were requested, finish immediately.
+            return PollResult(
+                response=CommandResults(outputs=completed_results, readable_output="All quarantine actions failed to initiate."),
+                continue_to_poll=False
+            )
+
+        # Save the initial state to the context
+        demisto.setContext(CONTEXT_PENDING_MDE_ACTIONS, pending_action_ids)
+        demisto.setContext(CONTEXT_COMPLETED_MDE_RESULTS, completed_results)
+
+        # The args for the next run are static and minimal, just to trigger the polling logic.
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={'polling': True},
+            partial_result=CommandResults(
+                readable_output=f"Initiated {len(pending_action_ids)} quarantine actions. Polling for status...")
+        )
+
+    else:
+        pass
     headers = ["ID", "Type", "Requestor", "RequestorComment", "Status", "MachineID", "ComputerDNSName"]
     machine_ids = argToList(args.get("machine_id"))
     file_sha1s = argToList(args.get("file_hash"))
@@ -6286,7 +6347,7 @@ def main():  # pragma: no cover
             return_outputs(*remove_app_restriction_command(client, args))
 
         elif command == "microsoft-atp-stop-and-quarantine-file":
-            return_results(stop_and_quarantine_file_command(client, args))
+            return_results(stop_and_quarantine_file_command_polling(client, args))
 
         elif command == "microsoft-atp-list-investigations":
             return_outputs(*get_investigations_by_id_command(client, args))

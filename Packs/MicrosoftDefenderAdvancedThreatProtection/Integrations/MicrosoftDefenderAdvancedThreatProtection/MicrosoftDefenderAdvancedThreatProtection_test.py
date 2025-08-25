@@ -256,11 +256,11 @@ def test_remove_app_restriction_command(mocker):
 
 def test_stop_and_quarantine_file_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
-    from MicrosoftDefenderAdvancedThreatProtection import stop_and_quarantine_file_command
+    from MicrosoftDefenderAdvancedThreatProtection import stop_and_quarantine_file_command_polling
 
     mocker.patch.object(client_mocker, "stop_and_quarantine_file", return_value=STOP_AND_QUARANTINE_FILE_RAW_RESPONSE)
     mocker.patch.object(atp, "get_machine_action_data", return_value=MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA)
-    res = stop_and_quarantine_file_command(client_mocker, {"machine_id": "test", "file_hash": "hash"})
+    res = stop_and_quarantine_file_command_polling(client_mocker, {"machine_id": "test", "file_hash": "hash"})
     assert res[0].outputs == MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_DATA
 
 
