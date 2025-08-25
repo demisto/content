@@ -127,15 +127,13 @@ script:
         - description: The file name of the binary file. Accepts a comma-separated list.
           isArray: true
           name: actor_process_image_name
-        - description: CGO CMD. Accepts a comma-separated list.
+        - description: SHA256 Causality Graph Object command line. Accepts a comma-separated list.
           isArray: true
           name: causality_actor_process_image_command_line
-        - description: |-
-            Trimmed to 128 unicode chars during event serialization.
-            Full value reported as part of the original process event. Accepts a comma-separated list.
+        - description: Command line used by the process image initiated by the causality actor.
           isArray: true
           name: actor_process_image_command_line
-        - description: The command line of the process created. Accepts a comma-separated list.
+        - description: SHA256 The command line of the process created. Accepts a comma-separated list.
           isArray: true
           name: action_process_image_command_line
         - description: SHA256 hash of the binary file. Accepts a comma-separated list.

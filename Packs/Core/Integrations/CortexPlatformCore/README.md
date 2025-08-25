@@ -111,9 +111,9 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | time_frame | Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments. Possible values are: 60 minutes, 3 hours, 12 hours, 24 hours, 2 days, 7 days, 14 days, 30 days, custom. | Optional |
 | user_name | The name assigned to the user_id during agent runtime. Accepts a comma-separated list. | Optional |
 | actor_process_image_name | The file name of the binary file. Accepts a comma-separated list. | Optional |
-| causality_actor_process_image_command_line | CGO CMD. Accepts a comma-separated list. | Optional |
-| actor_process_image_command_line | Trimmed to 128 unicode chars during event serialization. Full value reported as part of the original process event. Accepts a comma-separated list. | Optional |
-| action_process_image_command_line | The command line of the process created. Accepts a comma-separated list. | Optional |
+| causality_actor_process_image_command_line | SHA256 Causality Graph Object command line. Accepts a comma-separated list. | Optional |
+| actor_process_image_command_line | Command line used by the process image initiated by the causality actor. Accepts a comma-separated list. | Optional |
+| action_process_image_command_line | SHA256 The command line of the process created. Accepts a comma-separated list. | Optional |
 | actor_process_image_sha256 | SHA256 hash of the binary file. Accepts a comma-separated list. | Optional |
 | causality_actor_process_image_sha256 | SHA256 hash of the binary file. Accepts a comma-separated list. | Optional |
 | action_process_image_sha256 | SHA256 of the binary file. Accepts a comma-separated list. | Optional |
