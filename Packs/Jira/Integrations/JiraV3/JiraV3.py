@@ -2064,10 +2064,6 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
     if issues := res.get("issues", []):
         issue_fields_id_to_name_mapping = res.get("names", {}) or {}
         command_results: list[CommandResults] = []
-        command_results.append(CommandResults(
-            outputs_prefix="Query",
-            outputs=res.get("nextPageToken", ""),
-            ))
         for issue in issues:
             markdown_dict, outputs = create_issue_md_and_outputs_dict(
                 issue_data=issue,
@@ -2088,6 +2084,13 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
                     raw_response=issue,
                 ),
             )
+
+        if next_page_token := res.get("nextPageToken", ""):
+            command_results.append(CommandResults(
+                outputs_prefix="Jira.Query.nextPageToken",
+                outputs=next_page_token,
+                readable_output=f"Use the next_page_token argument to fetch the next page. Next page token: {next_page_token}",
+                ))
         return command_results
     return CommandResults(readable_output="No issues matched the query.")
 

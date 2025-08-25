@@ -347,7 +347,7 @@ script:
     description: Queries Jira issues.
     name: jira-issue-query
     outputs:
-    - contextPath: Query.nextPageToken
+    - contextPath: Jira.Query.nextPageToken
       description: A token for the next page of the query if such exists.
       type: String
     - contextPath: Ticket.Id
