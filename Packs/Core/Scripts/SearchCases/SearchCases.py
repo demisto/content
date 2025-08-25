@@ -25,8 +25,8 @@ def get_cases_with_extra_data(args):
     demisto.debug(f"Calling core-get-cases, {args=}")
     cases_results = execute_command("core-get-cases", args) or []
     demisto.debug(f"After calling core-get-cases, {cases_results=}")
-    issues_limit = int(args.get("issues_limit", 1000))
-    issues_limit = min(issues_limit, 1000)
+    issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
+    args.update("issues_limit", str(issues_limit))
     final_results = []
     for case in cases_results:
         case_id = case.get("case_id")

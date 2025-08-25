@@ -162,6 +162,7 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(
     version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
 )
 
+MAX_GET_INCIDENTS_LIMIT = 100
 
 class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
@@ -304,6 +305,7 @@ class CoreClient(BaseClient):
         :param lte_modification_time_milliseconds: greater than modification time in milliseconds
         :return:
         """
+
         search_from = page_number * limit
         search_to = search_from + limit
 
@@ -388,6 +390,7 @@ class CoreClient(BaseClient):
 
         if len(filters) > 0:
             request_data["filters"] = filters
+
         res = self._http_request(
             method="POST",
             url_suffix="/incidents/get_incidents/",
@@ -4394,7 +4397,11 @@ def get_cases_command(client, args):
     sort_by_creation_time = args.get("sort_by_creation_time")
 
     page = int(args.get("page", 0))
-    limit = int(args.get("limit", 100))
+    limit = int(args.get("limit", MAX_GET_INCIDENTS_LIMIT))
+    if limit > MAX_GET_INCIDENTS_LIMIT:
+        demisto.debug(
+            f"Limit is {limit} which is greater than {MAX_GET_INCIDENTS_LIMIT}. Setting limit to {MAX_GET_INCIDENTS_LIMIT}")
+        limit = MAX_GET_INCIDENTS_LIMIT
 
     # If no filters were given, return a meaningful error message
     if not case_id_list and (
@@ -4433,6 +4440,7 @@ def get_cases_command(client, args):
 
         if len(raw_cases) > limit:
             raw_cases = raw_cases[:limit]
+
     else:
         raw_cases = client.get_incidents(
             incident_id_list=case_id_list,

@@ -37,8 +37,8 @@ args:
 - defaultValue: '0'
   description: Page number (for pagination). The default is 0 (the first page).
   name: page
-- defaultValue: '100'
-  description: Maximum number of cases to return per page. The default and maximum is 100.
+- defaultValue: '45'
+  description: Maximum number of cases to return per page. The default is 45, and maximum is 100.
   name: limit
 - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
   name: status
