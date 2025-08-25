@@ -1,4 +1,4 @@
-<~XISAM>
+<~XSIAM>
 
 ## Overview
 
@@ -53,15 +53,14 @@ Follow the below steps to configure the Broker VM to receive Barracuda Cloudgen 
 3. Click **Add New**.
 4. When configuring the Syslog Collector, set the following parameters:
 
-    | Parameter    | Value                                                                                                                                         |
-    |:-------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
-    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Barracuda Cloudgen Firewall). |
-    | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Barracuda Cloudgen Firewall.   |
-    | `Format`     | Enter **RAW**.
+    | Parameter    | Value                                                                                                                                               |
+    |:-------------|:----------------------------------------------------------------------------------------------------------------------------------------------------|
+    | `Protocol`   | Select **UDP** for the default forwarding, **TCP** or **Secure TCP** (depends on the protocol you configured in Barracuda Cloudgen Firewall).       |
+    | `Port`       | Enter the syslog service port that Cortex XSIAM Broker VM should listen on for receiving forwarded events from Barracuda Cloudgen Firewall.         |
+    | `Format`     | Enter **RAW**.                                                                                                                                      |
+    | `Vendor`     | Enter **barracuda**.                                                                                                                                |
+    | `Product`    | Enter **cgfw**.
 
-|
-    | `Vendor`     | Enter **barracuda**.                                                                                                                                 |
-    | `Product`    | Enter **cgfw**.  
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 </~XSIAM>
