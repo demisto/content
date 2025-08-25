@@ -5869,6 +5869,13 @@
             "instance_names": [
                 "ms_graph_user_dev"
             ]
+        },
+        {
+            "playbookID": "ClearUserSession - Test",
+            "integrations": ["Okta v2", "Microsoft Graph User"],
+            "instance_names": [
+                "ms_graph_user_dev"
+            ]
         }
     ],
     "skipped_tests": {
