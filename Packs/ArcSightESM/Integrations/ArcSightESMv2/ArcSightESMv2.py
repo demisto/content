@@ -157,17 +157,18 @@ def filter_entries(entries, entry_filter):
 
 def repair_malformed_json(malformed_json: str) -> str:
     """
-    Repairs a malformed JSON string by properly escaping quotes within dollar-sign ($) values.
+    Repairs a malformed JSON string by handling multiple types of JSON malformation:
+    1. Properly escaping quotes within dollar-sign ($) values
+    2. Fixing unclosed strings that cause missing comma errors
+    3. Adding missing commas between key-value pairs
 
-    This function addresses a specific issue where quotes within dollar-sign values are not
-    properly escaped, causing JSON parsing errors. It splits the input string into segments,
-    identifies dollar-sign values, and escapes inner quotes while preserving the outermost quotes.
+    This function addresses common issues with malformed API responses that cause JSON parsing errors.
 
     Args:
         malformed_json (str): The input string containing malformed JSON data.
 
     Returns:
-        str: A repaired JSON string with properly escaped quotes within dollar-sign values.
+        str: A repaired JSON string with proper JSON syntax.
 
     Example:
         >>> malformed_json = '{"$": "value "with" quotes"}, {"$": "another "quoted" value"}'
@@ -176,7 +177,45 @@ def repair_malformed_json(malformed_json: str) -> str:
         '{"$": "value \\"with\\" quotes"}, {"$": "another \\"quoted\\" value"}'
     """
 
+    def fix_unclosed_strings_and_missing_commas(text: str) -> str:
+        """Fix unclosed strings that cause missing comma errors."""
+        import re
+        
+        demisto.debug("fix_unclosed_strings_and_missing_commas: Starting JSON repair")
+        original_length = len(text)
+        
+        # Pattern to find cases where a string value appears to end abruptly and start a new key
+        patterns_to_fix = [
+            # Pattern: "key":"value...text","next_key": (missing closing quote before comma)
+            (r'("[^"]*"\s*:\s*"[^"]*)",\s*("[^"]*"\s*:)', r'\1",\2'),
+            # Pattern: "key":"value...text"next_key": (missing comma and closing quote)
+            (r'("[^"]*"\s*:\s*"[^"]*[^"\\])("[^"]*"\s*:)', r'\1",\2'),
+            # Pattern: "key":"value...text"} or "key":"value...text"] (missing closing quote at end)
+            (r'("[^"]*"\s*:\s*"[^"]*[^"\\])([}\]])', r'\1"\2'),
+        ]
+        
+        result = text
+        fixes_applied = 0
+        
+        for i, (pattern, replacement) in enumerate(patterns_to_fix):
+            before_fix = result
+            result = re.sub(pattern, replacement, result)
+            if result != before_fix:
+                fixes_applied += 1
+                demisto.debug(
+                    f"fix_unclosed_strings_and_missing_commas: Applied pattern {i+1}, fixes so far: {fixes_applied}"
+                )
+        
+        length_change = len(result) - original_length
+        demisto.debug(
+            f"fix_unclosed_strings_and_missing_commas: Completed. Applied {fixes_applied} fixes, "
+            f"length changed by {length_change} characters"
+        )
+        
+        return result
+
     def find_unescaped_quotes(json_value: str) -> List[int]:
+        """Find positions of unescaped quotes in a JSON string value."""
         quote_positions = []
         search_start = 0
         while True:
@@ -189,15 +228,28 @@ def repair_malformed_json(malformed_json: str) -> str:
             search_start = quote_pos + 1  # Move start position to just after the found index
         return quote_positions
 
-    def escape_inner_quotes(json_value, quote_indices):
-        # We need to escape all quotes except the first and last found quotes
+    def escape_inner_quotes(json_value: str, quote_indices: List[int]) -> str:
+        """Escape all quotes except the first and last found quotes in a JSON string value."""
         json_chars = list(json_value)
+        escaped_count = 0
         for i in range(1, len(quote_indices) - 1):  # Skip first and last quotes
             json_chars[quote_indices[i]] = '\\"'
+            escaped_count += 1
+        
+        if escaped_count > 0:
+            demisto.debug(f"escape_inner_quotes: Escaped {escaped_count} inner quotes")
+        
         return "".join(json_chars)
 
+    demisto.debug("repair_malformed_json: Starting comprehensive JSON repair")
+    original_length = len(malformed_json)
+    
+    # First, apply general fixes for unclosed strings and missing commas
+    repaired_json = fix_unclosed_strings_and_missing_commas(malformed_json)
+    
+    # Then apply the existing dollar-sign quote escaping logic
     # Split the text by "},{"
-    parts = malformed_json.split("},{")
+    parts = repaired_json.split("},{")
 
     modified_parts = []
     for part in parts:
@@ -217,7 +269,16 @@ def repair_malformed_json(malformed_json: str) -> str:
             modified_parts.append(part)
 
     # Join the parts back together
-    return "},{".join(modified_parts)
+    final_result = "},{".join(modified_parts)
+    
+    final_length = len(final_result)
+    length_change = final_length - original_length
+    demisto.debug(
+        f"repair_malformed_json: Completed comprehensive repair. Length changed by {length_change} characters "
+        f"(from {original_length} to {final_length})"
+    )
+    
+    return final_result
 
 
 def login():
@@ -582,6 +643,8 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
 
     query_path = "www/manager-service/rest/SecurityEventService/getSecurityEvents"
     params = {"alt": "json"}
+    # Use consistent headers like other working API calls to prevent malformed JSON responses
+    headers = {"Content-Type": "application/x-www-form-urlencoded", "Accept": "application/json"}
     json_ = {
         "sev.getSecurityEvents": {
             "sev.authToken": AUTH_TOKEN,
@@ -590,7 +653,44 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
             "sev.endMillis": end_time,
         }
     }
-    res = send_request(query_path, json=json_, params=params)
+    demisto.debug(f"get_security_events: Making request with headers={headers}, params={params}")
+    
+    # DEBUGGING TEST: Make old request first to demonstrate malformed JSON issue
+    demisto.debug("=== DEBUGGING COMPARISON: Testing old vs new request patterns ===")
+    
+    # Test 1: Old problematic request (using json= parameter without explicit headers)
+    demisto.debug("TEST 1: Making request with old pattern (json= parameter, default headers)")
+    try:
+        old_res = send_request(query_path, json=json_, params=params)  # No explicit headers - uses defaults
+        demisto.debug(f"OLD REQUEST Response Status: {old_res.status_code}")
+        demisto.debug(f"OLD REQUEST Response Length: {len(old_res.text)} characters")
+        
+        # Try to parse old response to demonstrate JSON malformation
+        try:
+            old_json = old_res.json()
+            demisto.debug("OLD REQUEST: JSON parsed successfully (unexpected!)")
+        except Exception as e:
+            demisto.debug(f"OLD REQUEST: JSON parse failed as expected - {type(e).__name__}: {str(e)[:200]}...")
+            # Show a sample of the malformed response
+            sample_response = old_res.text[:500] + "..." if len(old_res.text) > 500 else old_res.text
+            demisto.debug(f"OLD REQUEST: Malformed JSON sample: {sample_response}")
+    except Exception as e:
+        demisto.debug(f"OLD REQUEST: Request failed - {type(e).__name__}: {str(e)}")
+    
+    # Test 2: New fixed request (with explicit form-urlencoded headers)
+    demisto.debug("TEST 2: Making request with new pattern (explicit form-urlencoded headers)")
+    res = send_request(query_path, headers=headers, json=json_, params=params)
+    demisto.debug(f"NEW REQUEST Response Status: {res.status_code}")
+    demisto.debug(f"NEW REQUEST Response Length: {len(res.text)} characters")
+    
+    # Try to parse new response to demonstrate proper JSON formatting
+    try:
+        test_json = res.json()
+        demisto.debug("NEW REQUEST: JSON parsed successfully - headers fix working!")
+    except Exception as e:
+        demisto.debug(f"NEW REQUEST: JSON parse failed - {type(e).__name__}: {str(e)[:200]}...")
+    
+    demisto.debug("=== END DEBUGGING COMPARISON ===")
 
     if not res.ok:
         demisto.debug(res.text)
