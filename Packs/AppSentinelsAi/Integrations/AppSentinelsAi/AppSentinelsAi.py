@@ -16,6 +16,7 @@ urllib3.disable_warnings()
 VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%d %H:%M"
+MAX_FETCH_AUDIT_LIMIT = 5000
 
 """ CLIENT CLASS """
 
@@ -289,7 +290,7 @@ def main():
     user_key = params.get("credentials", {}).get("identifier")
     api_key = params.get("credentials", {}).get("password")
     organization = params.get("organization", "")
-    fetch_limit = arg_to_number(params.get("max_audit_per_fetch")) or None
+    fetch_limit = arg_to_number(params.get("max_audit_per_fetch")) or MAX_FETCH_AUDIT_LIMIT
     demisto.debug(f"AppSentinels.ai  - Command being called is {command}")
 
     try:

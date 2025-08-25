@@ -43,7 +43,8 @@ configuration:
   section: Collect
   required: false
   defaultvalue: "true"
-- additionalinfo: 'Maximum number of Audit Log entries to retrieve per fetch cycle.'
+- additionalinfo: 'Maximum number of Audit Log entries to retrieve per fetch cycle. default value is 5000.'
+  defaultvalue: "5000"
   display: Maximum number of audit logs per fetch
   name: max_audit_per_fetch
   required: false

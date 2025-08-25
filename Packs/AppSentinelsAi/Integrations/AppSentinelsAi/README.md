@@ -4,16 +4,16 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure AppSentinels.ai in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Your server URL |  | True |
-| User Key | The Client User key for connection with AppSentinels.ai. | True |
-| API Key | The Client API key for connection with AppSentinels.ai. | True |
-| Organization name | The organization name. | True |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Fetch events |  | False |
-| Maximum number of audit logs per fetch | Maximum number of Audit Log entries to retrieve per fetch cycle. | False |
+| **Parameter** | **Description**                                                   | **Required** |
+| --- |-------------------------------------------------------------------| --- |
+| Your server URL |                                                                   | True |
+| User Key | The Client User key for connection with AppSentinels.ai.          | True |
+| API Key | The Client API key for connection with AppSentinels.ai.           | True |
+| Organization name | The organization name.                                            | True |
+| Trust any certificate (not secure) |                                                                   | False |
+| Use system proxy settings |                                                                   | False |
+| Fetch events |                                                                   | False |
+| Maximum number of audit logs per fetch | Maximum number of Audit Log entries to retrieve per fetch cycle. default value is 5000. | False |
 
 ## Commands
 
