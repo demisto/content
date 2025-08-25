@@ -2764,14 +2764,7 @@ view: |-
     }
   }
 fromversion: 6.10.0
-contentitemexportablefields:
-  contentitemfields: {}
-system: true
-tests:
-- palo_alto_firewall_test_pb
-- palo_alto_panorama_test_pb
-- PAN-OS-panorama-topology-test-pb
-- PAN-OS URL Filtering enrichment - Test
-- PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
-- PAN-OS-firewall-topology-test-pb
-- PAN-OS Create Or Edit Rule Test
+supportedModules:
+- agentix
+marketplaces:
+- platform

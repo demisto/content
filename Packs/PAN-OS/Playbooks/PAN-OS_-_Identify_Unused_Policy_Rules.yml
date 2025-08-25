@@ -532,3 +532,5 @@ fromversion: 6.10.0
 tests:
 - PAN-OS-panorama-topology-test-pb
 - PAN-OS-firewall-topology-test-pb
+marketplaces:
+- platform
