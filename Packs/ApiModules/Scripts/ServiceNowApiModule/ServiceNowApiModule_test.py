@@ -94,7 +94,7 @@ def test_validate_and_format_private_key_valid():
     result = ServiceNowClient._validate_and_format_private_key(valid_key)
     assert result.startswith("-----BEGIN PRIVATE KEY-----")
     assert result.endswith("-----END PRIVATE KEY-----")
-    assert " " not in result  # spaces replaced
+    assert " " not in result.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "")
 
 
 def test_validate_and_format_private_key_invalid():
