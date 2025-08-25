@@ -34,11 +34,11 @@ Perform the following steps on the Tigera Calico side and then the Cortex XSIAM 
         spec:
         additionalStores:
             syslog:
-            # (Required) Syslog endpoint, in the format: protocol://host:port
+            (Required) Syslog endpoint, in the format: protocol://host:port
             endpoint: tcp://1.2.3.4:514
-            # (Optional) If messages are being truncated set this field
+            (Optional) If messages are being truncated set this field
             packetSize: 1024
-            # (Required) Types of logs to forward to syslog. Specify at least one type.
+            (Required) Types of logs to forward to syslog. Specify at least one type.
             logTypes:
             - Audit
             - DNS
@@ -56,13 +56,13 @@ Perform the following steps on the Tigera Calico side and then the Cortex XSIAM 
     spec:
     additionalStores:
         syslog:
-        # (Required) Syslog endpoint in the format: protocol://host:port
+        (Required) Syslog endpoint in the format: protocol://host:port
         endpoint: tcp://1.2.3.4:514
-        # (Optional) If messages are being truncated, set this field
+        (Optional) If messages are being truncated, set this field
         packetSize: 1024
-        # (Optional) To Configure TLS mode
+        (Optional) To Configure TLS mode
         encryption: TLS
-        # (Required) Types of logs to forward to syslog. Specify at least one option.
+        (Required) Types of logs to forward to syslog. Specify at least one option.
         logTypes:
         - Audit
         - DNS
