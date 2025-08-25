@@ -402,3 +402,80 @@ def test_run_commands_for_endpoint_executes_command(mock_execute):
     assert endpoint_output["Endpoint"] == "id1"
     assert endpoint_output["Result"] == "Success"
     assert endpoint_output["Source"] == "Brand"
+
+
+@pytest.mark.parametrize(
+    "endpoint_data_results, is_already_isolated, has_fail, expected_results_len, expected_context_len, expected_args_len",
+    [
+        # Case 1: endpoint fails -> skipped entirely
+        (
+            [{"id": "ep1", "properties": {"message": "Failing"}}],
+            False,
+            True,
+            0,  # results stays empty
+            0,  # context_outputs should not include failing endpoints
+            0,  # args_from_endpoint_data should not include failing endpoints
+        ),
+        # Case 2: endpoint already isolated -> included in args/context but no run_commands
+        (
+            [{"id": "ep2", "properties": {"message": "ok"}}],
+            True,
+            False,
+            0,  # results stays empty
+            1,  # context_outputs should include the endpoint
+            1,  # args_from_endpoint_data should include endpoint args
+        ),
+        # Case 3: normal endpoint -> should run commands
+        (
+            [{"id": "ep3", "properties": {"message": "ok"}}],
+            False,
+            False,
+            0,  # results stays empty
+            1,  # context_outputs should include endpoint
+            1,  # args_from_endpoint_data should include endpoint args
+        ),
+    ],
+)
+@patch("IsolateEndpoint.get_args_from_endpoint_data")
+@patch("IsolateEndpoint.is_endpoint_already_isolated")
+@patch("IsolateEndpoint.run_commands_for_endpoint")
+def test_process_endpoints(
+    mock_run_commands,
+    mock_is_already_isolated,
+    mock_get_args,
+    endpoint_data_results,
+    is_already_isolated,
+    has_fail,
+    expected_results_len,
+    expected_context_len,
+    expected_args_len,
+):
+    """
+    Given:
+        - A list of endpoint data results with different conditions:
+          1. Endpoint marked as failing.
+          2. Endpoint already isolated.
+          3. Normal endpoint to run commands.
+    When:
+        - Calling process_endpoints with mocked helper functions.
+    Then:
+        - Endpoints with "fail" in their message are skipped.
+        - Already isolated endpoints are added to args/context but do not run commands.
+        - Normal endpoints trigger run_commands_for_endpoint and are added to args/context.
+    """
+    mock_args = {"endpoint_id": "1234", "endpoint_message": "Fail" if has_fail else "ok"}
+    mock_get_args.return_value = mock_args
+    mock_is_already_isolated.return_value = is_already_isolated
+
+    commands = [Command(brand="BrandA", name="TestCommand", arg_mapping={})]
+
+    results, context_outputs, args_from_endpoint_data = process_endpoints(endpoint_data_results, commands)
+
+    assert len(results) == expected_results_len
+    assert len(context_outputs) == expected_context_len
+    assert len(args_from_endpoint_data) == expected_args_len
+
+    if not has_fail and not is_already_isolated:
+        mock_run_commands.assert_called_once_with(commands, mock_args, context_outputs[0])
+    else:
+        mock_run_commands.assert_not_called()

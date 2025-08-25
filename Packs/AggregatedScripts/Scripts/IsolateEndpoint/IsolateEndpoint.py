@@ -343,6 +343,14 @@ def run_commands_for_endpoint(commands: list, endpoint_args: dict, endpoint_outp
 
 
 def prepare_args() -> tuple[dict, list]:
+    """
+    Prepares and validates the script arguments for endpoint data collection.
+
+    Returns:
+        tuple[dict, list]:
+            - A dictionary containing the processed endpoint arguments, including a default list of brands if not provided.
+            - A list of zipped argument pairs combining endpoint IDs and IPs.
+    """
     endpoint_args = demisto.args()
     endpoint_ids = argToList(endpoint_args.get("endpoint_id", []))
     endpoint_ips = argToList(endpoint_args.get("endpoint_ip", []))
@@ -359,6 +367,49 @@ def prepare_args() -> tuple[dict, list]:
     return endpoint_args, zipped_args
 
 
+def process_endpoints(endpoint_data_results: list, commands: list[Command]) -> tuple[list, list, list]:
+    """
+    Processes endpoint data results and executes the appropriate commands for isolation.
+
+    Args:
+        endpoint_data_results (list): A list of endpoint data results retrieved from get-endpoint-data.
+        commands (list[Command]): A list of Command objects to run on each endpoint.
+
+    Returns:
+        tuple[list, list, list]:
+            - results (list): A list of command execution results (currently unused).
+            - context_outputs (list): A list of context output dictionaries for each processed endpoint.
+            - args_from_endpoint_data (list): A list of argument dictionaries built from the endpoint data.
+    """
+    results: list = []
+    context_outputs: list = []
+    args_from_endpoint_data: list = []
+
+    for endpoint_data in endpoint_data_results:
+        endpoint_context_output: dict = {}
+
+        endpoint_args = get_args_from_endpoint_data(endpoint_data)
+        demisto.debug(f"Running on those args {endpoint_args=} in main function")
+        # Skip the failing endpoints from get-data-endpoint
+        if "fail" in endpoint_args.get("endpoint_message", "").lower():
+            demisto.debug(f"Skipping endpoint {endpoint_args} because of a failing error from get-endpoint-data.")
+            continue
+
+        if is_endpoint_already_isolated(endpoint_data, endpoint_args, endpoint_context_output):
+            demisto.debug(f"Skipping endpoint {endpoint_args} because it is already isolated.")
+            args_from_endpoint_data.append(endpoint_args)
+            context_outputs.append(endpoint_context_output)
+            continue
+
+        demisto.debug(f"Continue isolating endpoint {endpoint_args}")
+        args_from_endpoint_data.append(endpoint_args)
+        run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output)
+
+        context_outputs.append(endpoint_context_output)
+
+    return results, context_outputs, args_from_endpoint_data
+
+
 def main():  # pragma: no cover
     try:
         endpoint_args, zipped_args = prepare_args()
@@ -369,31 +420,7 @@ def main():  # pragma: no cover
 
         endpoint_data_results = structure_endpoints_data(executed_command)
 
-        results: list = []
-        context_outputs: list = []
-        args_from_endpoint_data: list = []
-
-        for endpoint_data in endpoint_data_results:
-            endpoint_context_output: dict = {}
-
-            endpoint_args = get_args_from_endpoint_data(endpoint_data)
-            demisto.debug(f"Running on those args {endpoint_args=} in main function")
-            # Skip the failing endpoints from get-data-endpoint
-            if "fail" in endpoint_args.get("endpoint_message", "").lower():
-                demisto.debug(f"Skipping endpoint {endpoint_args} because of a failing error from get-endpoint-data.")
-                continue
-
-            if is_endpoint_already_isolated(endpoint_data, endpoint_args, endpoint_context_output):
-                demisto.debug(f"Skipping endpoint {endpoint_args} because it is already isolated.")
-                args_from_endpoint_data.append(endpoint_args)
-                context_outputs.append(endpoint_context_output)
-                continue
-
-            demisto.debug(f"Continue isolating endpoint {endpoint_args}")
-            args_from_endpoint_data.append(endpoint_args)
-            run_commands_for_endpoint(commands, endpoint_args, endpoint_context_output)
-
-            context_outputs.append(endpoint_context_output)
+        results, context_outputs, args_from_endpoint_data = process_endpoints(endpoint_data_results, commands)
 
         # comparing the executed args for isolated-endpoint with the input args
         check_missing_executed_args_in_output(zipped_args, args_from_endpoint_data, context_outputs)
