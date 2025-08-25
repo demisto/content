@@ -932,9 +932,20 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"] = arg_to_number(args.get("from_port"))
-        kwargs["ToPort"] = arg_to_number(args.get("to_port"))
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -971,9 +982,20 @@ class EC2:
         2. Full mode: using ip_permissions for complex configurations
         """
 
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
         kwargs = {"GroupId": args.get("group_id"), "IpProtocol": args.get("protocol"), "CidrIp": args.get("cidr")}
-        kwargs["FromPort"] = arg_to_number(args.get("from_port"))
-        kwargs["ToPort"] = arg_to_number(args.get("to_port"))
+        kwargs["FromPort"], kwargs["ToPort"] = parse_port_range(args.get("port", ""))
 
         if ip_permissions := args.get("ip_permissions"):
             try:
@@ -1010,6 +1032,18 @@ class EC2:
         2) Simple mode: protocol, port, cidr → build IpPermissions
         """
 
+        def parse_port_range(port: str) -> tuple[Optional[int], Optional[int]]:
+            """Parse port argument which can be a single port or range (min-max)."""
+            if not port:
+                return None, None
+
+            if "-" in port:
+                from_port, to_port = port.split("-", 1)
+                return int(from_port.strip()), int(to_port.strip())
+            else:
+                _port: int = int(port.strip())
+                return _port, _port
+
         group_id = args.get("group_id")
         ip_permissions_arg = args.get("ip_permissions")
 
@@ -1022,20 +1056,17 @@ class EC2:
         else:
             # Simple mode: build a single rule descriptor
             proto = args.get("protocol")
-            from_port = arg_to_number(args.get("from_port"))
-            to_port = arg_to_number(args.get("to_port"))
+            from_port, to_port = parse_port_range(args.get("port", ""))
             cidr = args.get("cidr")
-            ip_perms = [
-                {"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}] if cidr else None}
-            ]
-            remove_nulls_from_dictionary(ip_perms[0])
+            ip_perms = [{"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}]}]
+
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
             resp = client.revoke_security_group_egress(**kwargs)
             status = resp.get("Return")
             if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
-                return CommandResults(readable_output="Egress rule revoked successfully.", raw_response=resp)
+                return CommandResults(readable_output="Egress rule revoked successfully.")
             else:
                 # If no exception but Return is False, AWS may report unknown perms
                 unknown = resp.get("UnknownIpPermissions")
