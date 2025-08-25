@@ -25,8 +25,8 @@
 
   return {
       Type: entryTypes.note,
-      Contents: ec,
-      ContentsFormat: formats.json,
+      Contents: server_url,
+      ContentsFormat: formats.note,
       HumanReadable: server_url,
       ReadableContentsFormat: formats.markdown,
       EntryContext: ec
