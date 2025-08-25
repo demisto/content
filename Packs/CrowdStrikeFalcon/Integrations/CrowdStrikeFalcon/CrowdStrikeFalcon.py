@@ -569,7 +569,7 @@ def http_request(
     :return: Returns the http request response json
     :rtype: ``dict``
     """
-    if get_token_flag:
+    if get_token_flag:  
         token = get_token()
         headers["Authorization"] = f"Bearer {token}"
         retries = 0
