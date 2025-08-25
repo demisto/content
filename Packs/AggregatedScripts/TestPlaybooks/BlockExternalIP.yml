@@ -1,7 +1,7 @@
-id: ea5a9475-7914-444f-8f64-d8a75aee12c2
-version: 16
+id: BlockExternalIP - test
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: BlockExternalIP
+name: BlockExternalIP - test
 starttaskid: "0"
 tasks:
   "0":
@@ -16,14 +16,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 40
+          "y": 60
         }
       }
     note: false
@@ -476,6 +476,9 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -492,108 +495,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 46715dea-4dd5-4ce1-b1b2-b40dd205f4d5
-    type: regular
-    task:
-      id: 46715dea-4dd5-4ce1-b1b2-b40dd205f4d5
-      version: -1
-      name: Pan-OS list address groups
-      description: Returns a list of address groups.
-      script: '|||pan-os-list-address-groups'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1966.25
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3d8c53e9-6292-4211-8e54-6510b161b6c3
-    type: condition
+    taskid: de336cc5-bb93-492e-8845-4b16e04fc444
+    type: regular
     task:
-      id: 3d8c53e9-6292-4211-8e54-6510b161b6c3
+      id: de336cc5-bb93-492e-8845-4b16e04fc444
       version: -1
-      name: Does "Blocked IPs - XSIAM" exist?
-      type: condition
+      name: Get Timestamp
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "15"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Panorama.AddressGroups.Name
-            iscontext: true
-          right:
-            value:
-              simple: Blocked IPs - XSIAM
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2126.25
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 98a5df17-5931-470b-813c-149f807c8c0a
-    type: regular
-    task:
-      id: 98a5df17-5931-470b-813c-149f807c8c0a
-      version: -1
-      name: Remove address group
-      description: Deletes an address group.
-      script: '|||pan-os-delete-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
       '#none#':
-      - "24"
-    scriptarguments:
-      name:
-        simple: Blocked IPs - XSIAM
+      - "15"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2316.25
+          "y": 2120
         }
       }
     note: false
@@ -605,10 +530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 9352597d-2742-45f5-86d2-d9c06cdfef10
+    taskid: db0e0d0f-0092-4e35-9e76-d473430e3524
     type: regular
     task:
-      id: 9352597d-2742-45f5-86d2-d9c06cdfef10
+      id: db0e0d0f-0092-4e35-9e76-d473430e3524
       version: -1
       name: BlockExternalIP
       description: The script blocks a list of IP addresses in supported integrations.
@@ -618,12 +543,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "29"
     scriptarguments:
+      address_group:
+        simple: test-${TimeNowUnix}
       brands:
         simple: Panorama
       ip_list:
         simple: 8.8.8.8
+      rule_name:
+        simple: test-${TimeNowUnix}
+      tag:
+        simple: test-${TimeNowUnix}
     results:
     - push_job_id
     - commit_job_id
@@ -635,7 +566,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2486.25
+          "y": 2290
         }
       }
     note: false
@@ -658,14 +589,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "28"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 2640
+          "y": 2658.75
         }
       }
     note: false
@@ -677,10 +608,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 732c944f-479f-4d03-ba7a-c493c88a1e40
+    taskid: d07aefa6-f22f-414c-beab-624f56122e95
     type: regular
     task:
-      id: 732c944f-479f-4d03-ba7a-c493c88a1e40
+      id: d07aefa6-f22f-414c-beab-624f56122e95
       version: -1
       name: Silverline list ip objects
       description: Gets a dynamic list of threatening IP addresses by the given list
@@ -701,7 +632,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2790
+          "y": 2970
         }
       }
     note: false
@@ -744,7 +675,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2950
+          "y": 3110
         }
       }
     note: false
@@ -783,7 +714,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3100
+          "y": 3260
         }
       }
     note: false
@@ -827,7 +758,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3250
+          "y": 3410
         }
       }
     note: false
@@ -906,7 +837,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3570
+          "y": 3730
         }
       }
     note: false
@@ -942,7 +873,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3416.25
+          "y": 3576.25
         }
       }
     note: false
@@ -954,10 +885,250 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 7008644b-7f96-4263-9657-61d2a2bd8600
+    taskid: 4882bfa1-85fa-4f64-acd3-9ec96d519cf6
     type: title
     task:
-      id: 7008644b-7f96-4263-9657-61d2a2bd8600
+      id: 4882bfa1-85fa-4f64-acd3-9ec96d519cf6
+      version: -1
+      name: 'Case 4: non existing IP'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 39e70163-c5ee-451c-8360-420856e3873f
+    type: regular
+    task:
+      id: 39e70163-c5ee-451c-8360-420856e3873f
+      version: -1
+      name: Clear context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1953.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: b3e882c2-7ddb-49ba-8c52-d4a47d670a81
+    type: regular
+    task:
+      id: b3e882c2-7ddb-49ba-8c52-d4a47d670a81
+      version: -1
+      name: Clear context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2823.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8986ea6d-7fb7-498f-baaa-3e5f1276ac72
+    type: condition
+    task:
+      id: 8986ea6d-7fb7-498f-baaa-3e5f1276ac72
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: f8a59e6b-38cf-46db-87b3-d1c0a281dc34
+    type: regular
+    task:
+      id: f8a59e6b-38cf-46db-87b3-d1c0a281dc34
+      version: -1
+      name: BlockExternalIP
+      description: The script blocks a list of IP addresses in supported integrations.
+      scriptName: block-external-ip
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      ip_list:
+        simple: non-existing-ip-list
+    results:
+    - push_job_id
+    - commit_job_id
+    - panorama_responses
+    - executed_brands
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 85f1bfb4-0b04-43ed-baef-ca14be36f8dd
+    type: condition
+    task:
+      id: 85f1bfb4-0b04-43ed-baef-ca14be36f8dd
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: BlockExternalIPResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BlockExternalIPResults.Result
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: cc3a766b-e87c-4dc1-85dd-a3d9fd50ee62
+    type: title
+    task:
+      id: cc3a766b-e87c-4dc1-85dd-a3d9fd50ee62
       version: -1
       name: Finish
       type: title
@@ -969,7 +1140,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3730
+          "y": 4540
         }
       }
     note: false
@@ -979,36 +1150,37 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: 5f60b4b1-f622-47b2-a6c3-5d8b1a0edb60
+  "33":
+    id: "33"
+    taskid: 17c54df8-cf1e-447d-8772-66abb98829af
     type: regular
     task:
-      id: 5f60b4b1-f622-47b2-a6c3-5d8b1a0edb60
+      id: 17c54df8-cf1e-447d-8772-66abb98829af
       version: -1
-      name: Untitled Task
-      description: Commits a configuration to the Palo Alto firewall or Panorama,
-        validates if a commit was successful if using polling="true" otherwise does
-        not validate if the commit was successful. Committing to Panorama does not
-        push the configuration to the firewalls. To push the configuration, run the
-        panorama-push-to-device-group command.
-      script: '|||pan-os-commit'
+      name: Clear context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "30"
     scriptarguments:
-      polling:
-        simple: "true"
+      all:
+        simple: "yes"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 2386.25
+          "x": 450,
+          "y": 4053.75
         }
       }
     note: false
@@ -1021,19 +1193,19 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "13_14_yes": 0.54,
       "18_19_yes": 0.46,
       "21_23_yes": 0.39,
+      "31_32_yes": 0.5,
       "3_4_yes": 0.48,
       "7_8_yes": 0.43,
       "9_11_yes": 0.46
     },
     "paper": {
       "dimensions": {
-        "height": 3750,
-        "width": 780,
+        "height": 4540,
+        "width": 380,
         "x": 450,
-        "y": 40
+        "y": 60
       }
     }
   }
