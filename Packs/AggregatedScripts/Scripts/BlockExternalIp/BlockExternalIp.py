@@ -884,6 +884,7 @@ def main():  # pragma: no cover
                     )
             else:
                 results.append(CommandResults(readable_output=f"The brand {brand} isn't enabled."))  # type: ignore
+                executed_brands.append(brand)
         if POLLING:
             demisto.debug(f"Updating the executed_brands {executed_brands=}")
             demisto.setContext("executed_brands", str(executed_brands))
