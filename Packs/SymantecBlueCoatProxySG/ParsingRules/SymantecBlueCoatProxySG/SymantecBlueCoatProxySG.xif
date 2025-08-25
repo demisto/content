@@ -1,4 +1,4 @@
-[INGEST:vendor="symantec", product="bluecoatproxysg", target_dataset="symantec_bluecoatproxysg_raw", no_hit=keep, content_id="symantecbluecoatproxysg"]
+[INGEST:vendor="symantec", product="bluecoatproxysg", target_dataset="symantec_bluecoatproxysg_raw", no_hit=keep]
 //Timestamp parsing
 filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}\s\d{2}\:\d{2}\:\d{2}"
 | alter
