@@ -1,0 +1,154 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: SpiderSilk
+  version: -1
+configuration:
+- additionalinfo: Base URL of the SpiderSilk API.
+  defaultvalue: https://api.spidersilk.com/client/v1
+  display: Base URL
+  name: base_url
+  required: true
+  type: 0
+- additionalinfo: Your SpiderSilk API key (will be used as a Bearer token).
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Fetch credentials reported in the last X hours (e.g., 0.5 to 168). Used for manual fetch and as default for first fetch.
+  defaultvalue: '24'
+  display: Hours Since Reports Created (for reported_since parameter)
+  name: reported_since_hours
+  required: true
+  type: 0
+- additionalinfo: When fetching incidents for the first time, look back this many hours (e.g., 0.5 to 168). Uses 'Hours Since Reports Created' if empty.
+  defaultvalue: '24'
+  display: First Fetch Lookback (Hours)
+  name: first_fetch_hours
+  required: false
+  type: 0
+- additionalinfo: The maximum number of credential incidents to fetch in a single fetch-incidents run.
+  defaultvalue: '100'
+  display: Maximum Incidents to Fetch per Run
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Skip certificate validation.
+  defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Use XSOAR system proxy settings.
+  defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Fetches dark web credentials, threats, assets, and other threat intelligence from the SpiderSilk API.
+display: SpiderSilk
+name: SpiderSilk
+script:
+  commands:
+  - arguments: []
+    description: Tests API connectivity and authentication using the /stats endpoint.
+    name: test-module
+  - arguments: []
+    description: Fetches dark web credential exposures as incidents from the /darkweb_credentials endpoint.
+    name: fetch-incidents
+  - arguments:
+    - description: Number of hours since reports have been created (e.g., 0.5 to 168).
+      name: reported_since_hours
+    - defaultValue: '50'
+      description: Maximum number of credentials to return per page.
+      name: limit
+    - defaultValue: '1'
+      description: Page number for pagination.
+      name: page
+    description: Retrieve the information of the Darkweb credentials associated to the Company profile.
+    name: spidersilk-get-darkweb-credentials
+  - arguments:
+    - defaultValue: '50'
+      name: limit
+    - defaultValue: '1'
+      name: page
+    description: Retrieve the information of the Darkweb reports associated to the Company profile.
+    name: spidersilk-get-darkweb-reports
+  - arguments:
+    - description: The UUID of the darkweb report.
+      name: uuid
+      required: true
+    description: Retrieve the information of the darkweb by its uuid.
+    name: spidersilk-get-darkweb-report-details
+  - arguments:
+    - description: The UUID of the darkweb report to update.
+      name: uuid
+      required: true
+    - description: The integer ID of the new status.
+      name: status_id
+      required: true
+    - description: An optional comment for the status change.
+      name: comment
+    description: Change status of the darkweb.
+    name: spidersilk-update-darkweb-report-status
+  - arguments:
+    - defaultValue: '50'
+      name: limit
+    - defaultValue: '1'
+      name: page
+    - description: Number of hours since threats were updated.
+      name: updated_since
+    description: Retrieve the information of the threats associated to the Company profile.
+    name: spidersilk-get-threats
+  - arguments:
+    - description: The UUID of the threat.
+      name: uuid
+      required: true
+    description: Retrieve the information of the threat by its uuid.
+    name: spidersilk-get-threat-details
+  - arguments:
+    - description: The UUID of the threat to update.
+      name: uuid
+      required: true
+    - description: The integer ID of the new status.
+      name: status_id
+      required: true
+    - description: An optional comment for the status change.
+      name: comment
+    description: Change status of the threat.
+    name: spidersilk-update-threat-status
+  - arguments:
+    - defaultValue: '50'
+      name: limit
+    - defaultValue: '1'
+      name: page
+    description: Retrieve the information of the assets associated to the Company profile.
+    name: spidersilk-get-assets
+  - arguments:
+    - description: The ID of the asset (e.g., 10b95cb930bf4bc79bfdf21173e7781f).
+      name: asset_id
+      required: true
+    description: Retrieve the information of the asset by its Id.
+    name: spidersilk-get-asset-details
+  dockerimage: xsoar-registry.pan.dev/demisto/python3:3.10.13.83255
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

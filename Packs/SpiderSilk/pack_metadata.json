@@ -1,0 +1,21 @@
+{
+    "name": "SpiderSilk",
+    "description": "Fetches dark web credentials, threats, assets, and other threat intelligence from the SpiderSilk API.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ahmed Wael ElSherif",
+    "url": "",
+    "email": "",
+    "created": "2025-08-25T06:57:46Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "awn1"
+    ]
+}
