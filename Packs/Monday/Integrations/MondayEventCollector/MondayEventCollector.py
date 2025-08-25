@@ -141,12 +141,54 @@ def test_connection() -> CommandResults:
     client_id = params.get("client_id", "")
     secret = params.get("secret", "")
     auth_code = params.get("auth_code", "")
+    audit_token = params.get("audit_token", "")
+    audit_logs_url = params.get("audit_logs_url", "")
     
-    if not client_id or not secret or not auth_code:
-        return CommandResults(readable_output="Please provide Client ID, Secret and Authorization Code in the integration parameters before running monday-auth-test.")
+    activity_logs_missing_params = ""
+    audit_logs_missing_params = ""
+
+    try:
+        # Try to test connection in the Authorization Code flow mode for activity logs.
+        if client_id and secret:
+            integration_context = get_integration_context()
+            access_token = integration_context.get("access_token", "")
+            if access_token or auth_code:
+                
+                now_ms = int(time.time() * 1000)
+                activity_logs_url = params.get("activity_logs_url", "https://api.monday.com")
+                board_ids = params.get("board_ids", "")
+                board_ids_list = [board_id.strip() for board_id in board_ids.split(',') if board_id.strip()] if board_ids else []
+                
+                if board_ids_list:
+                    # All parameters are provided for activity logs, test fetch single activity log.
+                    get_activity_logs(last_run={},
+                                      now_ms=now_ms,
+                                      limit=1,
+                                      board_id=board_ids_list[0],
+                                      activity_logs_url=activity_logs_url
+                                      )
+                    return CommandResults(readable_output='✅ Test connection success for activity logs.')
+                else:
+                    activity_logs_missing_params = "Board IDs"
+            else:
+                activity_logs_missing_params = "Authorization code"
+        else:
+            activity_logs_missing_params = "Client ID and Client secret"
+
+
+        if audit_token and audit_logs_url:
+            # All parameters are provided for audit logs, test fetch single audit log.
+            get_audit_logs(last_run={}, now_ms=now_ms, limit=1)
+            return CommandResults(readable_output='✅ Test connection success for audit logs.')
+        else:
+            audit_logs_missing_params = "Audit API token and Audit Server URL"
+        
+        return CommandResults(readable_output=f"Please provide {activity_logs_missing_params} to test connection for activity logs or {audit_logs_missing_params} to test connection for audit logs.")
     
-    get_access_token() # exception on failure
-    return CommandResults(readable_output='✅ Success!')
+    except Exception as e:
+        demisto.debug(f"{DEBUG_PREFIX}Error testing connection: {str(e)}")
+        raise DemistoException(f"Error testing connection: {str(e)}")
+
 
 
 def get_remaining_audit_logs(last_run: dict) -> tuple[list, dict]:
@@ -521,16 +563,16 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
     Returns:
         tuple: (last_run, logs) where last_run is the updated state and logs are the fetched logs.
     """
-    
+
     demisto_params = demisto.params()
-    
+
     audit_logs_url = demisto_params.get("audit_logs_url", "")
     audit_token = demisto_params.get("audit_token", "")
-    
+
     if not audit_token or not audit_logs_url:
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Audit API token or Audit Server URL parameters are missing.")
         raise DemistoException("Please provide Audit API token and Audit Server URL in the integration parameters for fetch audit logs.")
-    
+
     remaining_logs = 0
     fetched_logs = []
     
@@ -719,26 +761,17 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list:list[str]) -> 
     return last_run
 
 
-def validate_activity_log_params() -> tuple[str, list[str]]:
+
+def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     demisto_params = demisto.params()
     activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
     board_ids = demisto_params.get("board_ids", "")
-
-    if not activity_logs_url:
-        demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}activity logs url is missing.")
-        raise DemistoException("Please provide Activity logs Server URL in the integration parameters before starting to fetch activity logs.")
     
     if not board_ids:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ID is missing.")
         raise DemistoException("Please provide board ID in the integration parameters before starting to fetch activity logs.")
-
+    
     board_ids_list = [board_id.strip() for board_id in board_ids.split(',') if board_id.strip()]
-    return activity_logs_url, board_ids_list
-    
-
-def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
-    
-    activity_logs_url, board_ids_list = validate_activity_log_params()
     last_run = initiate_activity_log_last_run(last_run, board_ids_list)
     
     now_ms = int(time.time() * 1000)
