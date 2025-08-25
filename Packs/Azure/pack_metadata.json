@@ -13,7 +13,8 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "platform"
+        "platform",
+        "xsoar"
     ],
     "supportedModules": [
         "C1",

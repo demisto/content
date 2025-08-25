@@ -1161,7 +1161,7 @@ class AzureClient:
     def list_resource_groups_request(self, subscription_id, filter_by_tag, limit) -> Dict:
         # TODO to check if the api-version is mandatory
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups?"
-        return self.ms_client.http_request(
+        return self.http_request(
             "GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit, "api-version": "2021-04-01"}
         ).json()
 
@@ -1176,8 +1176,11 @@ class AzureClient:
         return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS).json()
 
     def list_subscriptions_request(self):
-        full_url = f"{PREFIX_URL_AZURE}subscriptions"
-        return self.ms_client.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
+        return self.http_request(
+            method="GET", full_url="https://management.azure.com/subscriptions?api-version=2020-01-01"
+        )
+        # full_url = f"{PREFIX_URL_AZURE}subscriptions"
+        # return self.http_request(method="GET", full_url=full_url, params={"api-version": "2020-01-01"})
 
 
 """ HELPER FUNCTIONS """
