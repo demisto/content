@@ -15,7 +15,7 @@ Provides data normalization capabilities:
 Mapping of Tigera Calico Events, Audit and Traffic.
  
 ### Supported timestamp formats
-Timestamp parsing is available for the MMM dd HH:MM:SS format.
+Timestamp parsing is based on `start_time` second epoch timestamp.
  
 ***
  
