@@ -1368,4 +1368,3 @@ def test_aws_error_handler_extract_action_from_message_empty_input():
     assert AWSErrorHandler._extract_action_from_message(None) == "unknown"
     assert AWSErrorHandler._extract_action_from_message("") == "unknown"
     assert AWSErrorHandler._extract_action_from_message(123) == "unknown"
-
