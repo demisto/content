@@ -1328,7 +1328,7 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     Returns:
         flags (int): The UserAccountControl flags.
     """
-    demisto.log("Active Directory restore_user")
+    demisto.debug("Active Directory restore_user")
     args = demisto.args()
 
     # default query - list all users
@@ -1342,10 +1342,16 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     attributes = list(set(DEFAULT_PERSON_ATTRIBUTES))
 
     entries = search_with_paging(query, default_base_dn, attributes=attributes, size_limit=0, page_size=page_size)
-    demisto.log(f"Active Directory restore_user {entries=}")
-    if entries.get("flat"):
-        demisto.log(f"Active Directory restore_user flat={entries.get('flat')}")
-        return entries.get("flat")[0].get("userAccountControl")[0]
+    demisto.debug(f"Active Directory restore_user {entries=}")
+    try:
+        if entries.get("flat"):
+            demisto.debug(f"Active Directory restore_user flat={entries.get('flat')}")
+            flat = entries.get("flat")[0]
+            if flat.get("userAccountControl"):
+                demisto.debug(f"Active Directory restore_user userAccountControl={flat.get('userAccountControl')}")
+                return flat.get("userAccountControl")[0]
+    except IndexError as e:
+        demisto.debug(f"raised an error: {e}")
     return 0
 
 
@@ -1385,7 +1391,7 @@ def enable_user(default_base_dn, default_page_size):
 
 
 def disable_user(default_base_dn, default_page_size):
-    demisto.log("Active Directory disable_user")
+    demisto.debug("Active Directory disable_user")
     args = demisto.args()
 
     # get user DN
@@ -1393,7 +1399,7 @@ def disable_user(default_base_dn, default_page_size):
     search_base = args.get("base-dn") or default_base_dn
     dn = user_dn(sam_account_name, search_base)
     account_options = restore_user(search_base, default_page_size)
-    demisto.log(f"Active Directory disable_user {account_options=}")
+    demisto.debug(f"Active Directory disable_user {account_options=}")
 
     # modify user
     modification = {"userAccountControl": [("MODIFY_REPLACE", (account_options | DISABLED_ACCOUNT))]}
