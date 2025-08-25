@@ -1,8 +1,8 @@
 from collections.abc import Callable
 from itertools import zip_longest
 from typing import Any
-from copy import deepcopy
 from enum import StrEnum
+from copy import deepcopy
 
 
 from CommonServerPython import *
@@ -197,19 +197,20 @@ def get_endpoint_not_found(
         list[dict[str, Any]]: A list of endpoint dictionaries for endpoints that were not found,
                                 or an empty list if all endpoints were found.
     """
-    endpoints_args = (
-            [{"type": "endpoint_id", "value": eid} for eid in endpoint_ids]
-            + [{"type": "endpoint_ip", "value": eip} for eip in endpoint_ips]
-            + [{"type": "endpoint_hostname", "value": ehn} for ehn in endpoint_hostnames]
+    zipped_args = list(
+        zip_longest(
+            endpoint_args.get("endpoint_id", "").split(","),
+            endpoint_args.get("endpoint_ip", "").split(","),
+            endpoint_args.get("endpoint_hostname", "").split(","),
+            fillvalue="",
         )
-        
-    
-    endpoints_not_found_list = get_endpoints_not_found_list(endpoints, endpoints_args)
+    )
+    endpoints_not_found_list = get_endpoints_not_found_list(endpoints, zipped_args)
 
     # Logic to identify "not found" scenarios:
     # 1. If command's human-readable output explicitly indicates 'no entries' (global not found).
     # 2. Or, if some endpoints were found but fewer than requested (partial not found for some inputs).
-    if command.not_found_checker in human_readable or (endpoints and (len(endpoints) < len(endpoints_args))):
+    if command.not_found_checker in human_readable or (endpoints and (len(endpoints) < len(zipped_args))):
         return [
             create_endpoint(
                 endpoint_not_found, {"ID": "ID", "Hostname": "Hostname", "IPAddress": "IPAddress"}, command.brand, False, {}, True
@@ -580,7 +581,7 @@ def initialize_commands(
 
 
 def run_single_args_commands(
-    endpoints_args,
+    zipped_args,
     single_args_commands,
     command_runner: EndpointCommandRunner,
     verbose: bool,
@@ -603,14 +604,13 @@ def run_single_args_commands(
     """
     endpoint_outputs_list = []
     command_results_list = []
-    for current_args in endpoints_args:
-        endpoint_args = {current_args["type"]: current_args["value"]}
+    for endpoint_id, endpoint_ip, endpoint_hostname in zipped_args:
         single_endpoint_readable_outputs: list[CommandResults] = []
 
         for command in single_args_commands:
             readable_outputs, endpoint_output = command_runner.run_command(
                 command=command,
-                endpoint_args=endpoint_args,
+                endpoint_args={"endpoint_id": endpoint_id, "endpoint_ip": endpoint_ip, "endpoint_hostname": endpoint_hostname},
             )
 
             if endpoint_output:
@@ -653,22 +653,17 @@ def run_list_args_commands(
     """
     multiple_endpoint_outputs = []
     multiple_endpoint_readable_outputs: list[CommandResults] = []
+    command_args = {"endpoint_id": ",".join(endpoint_id), "endpoint_ip": ",".join(endpoint_ips), "endpoint_hostname": ",".join(endpoint_hostnames)}
 
     for command in list_args_commands:
-        readable_outputs, endpoint_output = command_runner.run_command(
-            command,
-            {
-                "endpoint_id": ",".join(endpoint_id),
-                "endpoint_ip": ",".join(endpoint_ips),
-                "endpoint_hostname": ",".join(endpoint_hostnames),
-            },
-        )
+        for arg_type, arg in command_args.items():
+            readable_outputs, endpoint_output = command_runner.run_command(command, {arg_type: arg})
 
-        if endpoint_output:
-            multiple_endpoint_outputs.extend(endpoint_output)
-            add_endpoint_to_mapping(endpoint_output, endpoint_mapping, command.main_key)
-        if verbose:
-            multiple_endpoint_readable_outputs.extend(readable_outputs)
+            if endpoint_output:
+                multiple_endpoint_outputs.extend(endpoint_output)
+                add_endpoint_to_mapping(endpoint_output, endpoint_mapping, command.main_key)
+            if verbose:
+                multiple_endpoint_readable_outputs.extend(readable_outputs)
 
     return multiple_endpoint_outputs, multiple_endpoint_readable_outputs
 
@@ -1028,61 +1023,36 @@ def get_extended_hostnames_set(mapped_endpoints: dict[str, Any]) -> set[str]:
     return hostnames
 
 
-def is_query_found(query: dict[str, str], found_ids: set[str], found_ips: set[str], found_hostnames: set[str]) -> bool:
-    """
-    Checks if a query's value was found in the collected result sets.
-
-    Args:
-        query (dict): A dictionary with 'type' and 'value' for the query.
-        found_ids (set): A set of all endpoint IDs found.
-        found_ips (set): A set of all endpoint IPs found.
-        found_hostnames (set): A set of all endpoint hostnames found.
-
-    Returns:
-        bool: True if the query value was found, False otherwise.
-    """
-    query_type = query.get("type")
-    query_value = query.get("value")
-
-    if not query_value:
-        return True  # Treat empty queries as "found" to ignore them
-
-    if query_type == "endpoint_id" and query_value in found_ids:
-        return True
-    elif query_type == "endpoint_ip" and query_value in found_ips:
-        return True
-    elif query_type == "endpoint_hostname" and query_value in found_hostnames:
-        return True
-
-    return False
-
-
-def get_endpoints_not_found_list(
-    endpoints: list[dict[str, Any]], individual_queries: list[dict[str, str]]
-) -> list[dict[str, str]]:
+def get_endpoints_not_found_list(endpoints: list[dict[str, Any]], zipped_args: list[tuple]) -> list[dict[str, str]]:
     """
     Identify endpoints not found in the provided endpoints.
+
+    Args:
+        endpoints (list of dict): List of endpoint dictionaries with 'Hostname', 'ID', and 'IPAddress' keys.
+        zipped_args (list of tuple): List of tuples, each containing (endpoint_id, endpoint_ip, endpoint_hostname).
+
+    Returns:
+        list of dict: List of dictionaries with 'Key' for endpoints not found, containing comma-separated endpoint_id, endpoint_ip
+        and endpoint_hostname.
     """
     endpoints_not_found = []
-    found_hostnames = set()
-    found_ids = set()
-    found_ips = set()
-
+    hostnames = set()
+    ids = set()
+    ips = set()
     for endpoint in endpoints:
-        if endpoint.get("Message") == COMMAND_FAILED_MSG:
+        if endpoint["Message"] == COMMAND_FAILED_MSG:
             continue
-        found_hostnames.update(to_list(endpoint.get("Hostname")))
-        found_ids.update(to_list(endpoint.get("ID")))
-        found_ips.update(to_list(endpoint.get("IPAddress")))
+        hostnames_list = to_list(endpoint.get("Hostname"))
+        ids_list = to_list(endpoint.get("ID"))
+        ips_list = to_list(endpoint.get("IPAddress"))
+        hostnames.update(hostnames_list)
+        ids.update(ids_list)
+        ips.update(ips_list)
 
-    key_map = {"endpoint_id": "ID", "endpoint_ip": "IPAddress", "endpoint_hostname": "Hostname"}
-
-    for query in individual_queries:
-        if not is_query_found(query, found_ids, found_ips, found_hostnames):
-            query_type = query["type"]
-            query_value = query["value"]
-            endpoints_not_found.append({key_map[query_type]: query_value})
-
+    for endpoint_id, endpoint_ip, endpoint_hostname in zipped_args:
+        if endpoint_id not in ids and endpoint_ip not in ips and endpoint_hostname not in hostnames:
+            endpoint_not_found = filter_empty_values({"ID": endpoint_id, "Hostname": endpoint_hostname, "IPAddress": endpoint_ip})
+            endpoints_not_found.append(endpoint_not_found)
     return endpoints_not_found
 
 
@@ -1185,11 +1155,13 @@ def main():  # pragma: no cover
         generic_command = get_generic_command(single_args_commands)
         create_using_brand_argument_to_generic_command(brands_to_run, generic_command, module_manager)
 
-        endpoints_args = (
-            [{"type": "endpoint_id", "value": eid} for eid in endpoint_ids]
-            + [{"type": "endpoint_ip", "value": eip} for eip in endpoint_ips]
-            + [{"type": "endpoint_hostname", "value": ehn} for ehn in endpoint_hostnames]
-        )
+        # Create a list of tuples for each identifier type, keeping other fields empty
+        id_tuples = [(eid, "", "") for eid in endpoint_ids if eid]
+        ip_tuples = [("", eip, "") for eip in endpoint_ips if eip]
+        hostname_tuples = [("", "", ehn) for ehn in endpoint_hostnames if ehn]
+
+        # Combine the lists into the final zipped_args list
+        zipped_args = id_tuples + ip_tuples + hostname_tuples
 
         endpoint_outputs_list_commands, command_results_list_commands = run_list_args_commands(
             list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose, endpoint_mapping
@@ -1199,19 +1171,17 @@ def main():  # pragma: no cover
 
         if extended_hostnames_set := get_extended_hostnames_set(endpoint_mapping):
             demisto.debug(f"got extended hostnames set: {extended_hostnames_set}")
-            # Find hostnames that are genuinely new and not already in our query list.
-            new_hostnames_to_query = extended_hostnames_set - set(endpoint_hostnames)
-            demisto.debug(f"Adding newly discovered hostnames to the query list: {new_hostnames_to_query}")
-            for hostname in new_hostnames_to_query:
-                endpoints_args.append({"type": "endpoint_hostname", "value": hostname})
+            hostnames_to_run = set(endpoint_hostnames).union(extended_hostnames_set)
+            demisto.debug(f"got total of hostnames to run: {hostnames_to_run}")
+            zipped_args = list(zip_longest(endpoint_ids, endpoint_ips, hostnames_to_run, fillvalue=""))
 
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
-            endpoints_args, single_args_commands, command_runner, verbose, endpoint_mapping
+            zipped_args, single_args_commands, command_runner, verbose, endpoint_mapping
         )
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
 
-        if endpoints_not_found_list := get_endpoints_not_found_list(endpoint_outputs_list, endpoints_args):
+        if endpoints_not_found_list := get_endpoints_not_found_list(endpoint_outputs_list, zipped_args):
             command_results_list.append(
                 CommandResults(
                     readable_output=tableToMarkdown(
