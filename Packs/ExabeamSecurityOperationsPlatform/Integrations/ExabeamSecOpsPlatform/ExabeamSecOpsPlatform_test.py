@@ -3,25 +3,7 @@ from datetime import datetime, timezone
 
 import pytest
 from CommonServerPython import CommandResults, DemistoException
-from ExabeamSecOpsPlatform import (
-    Client,
-    _parse_group_by,
-    case_search_command,
-    context_table_delete_command,
-    context_table_list_command,
-    convert_all_timestamp_to_datestring,
-    event_search_command,
-    fetch_incidents,
-    format_case,
-    generic_search_command,
-    get_date,
-    get_limit,
-    get_last_case_time_and_ids,
-    process_string,
-    table_record_list_command,
-    transform_dicts,
-    transform_string,
-)
+from ExabeamSecOpsPlatform import Client
 from freezegun import freeze_time
 
 
@@ -45,6 +27,8 @@ def test_event_search_command_success(mocker):
         It should search for logs using the Exabeam client and return a CommandResults object containing
         the search results in both structured and human-readable formats.
     """
+    from ExabeamSecOpsPlatform import event_search_command
+
     # Mock the response from the client's search_request method
     mock_response = {
         "rows": [
@@ -111,6 +95,8 @@ def test_event_search_command_failure(mocker):
     THEN:
         It should raise a DemistoException.
     """
+    from ExabeamSecOpsPlatform import event_search_command
+
     # Mocking the client to simulate a response with errors
     client = MockClient("", "", "", False, False)
     mocker.patch.object(client, "event_search_request", return_value={"errors": {"message": "Error occurred"}})
@@ -138,6 +124,8 @@ def test_get_date(mocker):
     THEN:
         it should return the date part of the provided time string in the 'YYYY-MM-DD' format.
     """
+    from ExabeamSecOpsPlatform import get_date
+
     time = "2024.05.01T14:00:00"
     expected_result = "2024-05-01T14:00:00Z"
 
@@ -159,6 +147,8 @@ def test_transform_string(input_str, expected_output):
     THEN:
         It should transform the input string according to the specified rules.
     """
+    from ExabeamSecOpsPlatform import transform_string
+
     assert transform_string(input_str) == expected_output
 
 
@@ -181,6 +171,8 @@ def test_process_string(input_str, expected_output):
         It should correctly process the input string, splitting it based on logical operators and transforming each part using
         the 'transform_string' function.
     """
+    from ExabeamSecOpsPlatform import process_string
+
     assert process_string(input_str) == expected_output
 
 
@@ -239,6 +231,8 @@ def test_get_limit(args, expected_output):
         otherwise, it should return 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, it should return 50 as the default limit.
     """
+    from ExabeamSecOpsPlatform import get_limit
+
     assert get_limit(args) == expected_output
 
 
@@ -254,6 +248,8 @@ def test_parse_group_by():
         it should return a parsed dictionary with non-empty elements based on the provided titles;
         empty elements should be removed.
     """
+    from ExabeamSecOpsPlatform import _parse_group_by
+
     entry = {
         "Id": "123",
         "Vendor": "Vendor X",
@@ -386,6 +382,8 @@ def test_get_new_token(mocker, expected_response, expected_token):
     ],
 )
 def test_case_search_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
+    from ExabeamSecOpsPlatform import case_search_command
+
     client = MockClient("", "", "", False, False)
     mocker.patch.object(client, "case_search_request", return_value=mock_response)
     mocker.patch.object(client, "get_case_request", return_value=mock_response)
@@ -437,6 +435,8 @@ def test_case_search_request(mocker):
     ],
 )
 def test_context_table_list_command(mocker, args, mock_response, expected_outputs, expected_readable_output):
+    from ExabeamSecOpsPlatform import context_table_list_command
+
     client = MockClient("example.com", "", "", False, False)
 
     if "table_id" in args:
@@ -471,6 +471,8 @@ def test_context_table_list_command(mocker, args, mock_response, expected_output
     ],
 )
 def test_context_table_delete_command(mocker, args, mock_response, expected_output):
+    from ExabeamSecOpsPlatform import context_table_delete_command
+
     client = MockClient("example.com", "", "", False, False)
     mock_delete = mocker.patch.object(client, "delete_context_table", return_value=mock_response)
 
@@ -496,6 +498,8 @@ def test_context_table_delete_command(mocker, args, mock_response, expected_outp
     ],
 )
 def test_table_record_list_command(mocker, args, mock_response, expected_output):
+    from ExabeamSecOpsPlatform import table_record_list_command
+
     client = MockClient("example.com", "", "", False, False)
     mock_get = mocker.patch.object(client, "get_table_record_list", return_value=mock_response)
 
@@ -534,6 +538,8 @@ def test_table_record_list_command(mocker, args, mock_response, expected_output)
     ],
 )
 def test_generic_search_command(mocker, args, item_type, mock_response, expected_output, expected_prefix):
+    from ExabeamSecOpsPlatform import generic_search_command
+
     client = MockClient("example.com", "", "", False, False)
 
     if f"{item_type}_id" in args:
@@ -566,6 +572,8 @@ def test_generic_search_command(mocker, args, item_type, mock_response, expected
     ],
 )
 def test_transform_dicts(dict_input, dict_expected):
+    from ExabeamSecOpsPlatform import transform_dicts
+
     result = transform_dicts(dict_input)
     assert result == dict_expected
 
@@ -588,11 +596,15 @@ def test_transform_dicts(dict_input, dict_expected):
     ],
 )
 def test_convert_all_timestamp_to_datestring(attributes_input: dict, key_suffix: str, expected_output: dict):
+    from ExabeamSecOpsPlatform import convert_all_timestamp_to_datestring
+
     result = convert_all_timestamp_to_datestring(attributes_input, key_suffix=key_suffix)
     assert result == expected_output
 
 
 def test_last_case_time_and_ids():
+    from ExabeamSecOpsPlatform import get_last_case_time_and_ids
+
     formatted_cases = [
         {"caseId": "A", "_time": "2025-01-01T00:00:00Z"},
         {"caseId": "B", "_time": "2025-01-01T01:01:00Z"},
@@ -606,6 +618,8 @@ def test_last_case_time_and_ids():
 
 
 def test_format_case():
+    from ExabeamSecOpsPlatform import format_case
+
     raw_case = {"caseId": "A", "caseCreationTimestamp": 1672531200000000}
 
     formatted_case = format_case(raw_case)
@@ -651,6 +665,8 @@ def test_format_case():
     ],
 )
 def test_fetch_incidents(mocker, mock_response, params, last_run, expected_incidents, expected_last_run):
+    from ExabeamSecOpsPlatform import fetch_incidents
+
     client = MockClient("example.com", "", "", False, False)
 
     mocker.patch("ExabeamSecOpsPlatform.case_search_command", return_value=mock_response)

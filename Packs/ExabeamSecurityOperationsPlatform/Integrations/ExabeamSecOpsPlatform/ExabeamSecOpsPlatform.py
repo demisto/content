@@ -1022,7 +1022,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     return incidents, last_run
 
 
-def fetch_events(client: Client, params: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
+def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tuple[list, dict]:
     """_summary_
 
     Args:
@@ -1030,14 +1030,19 @@ def fetch_events(client: Client, params: dict[str, str], last_run: dict[str, Any
         params (dict[str, str]): _description_
         last_run (dict[str, Any]): _description_
 
+    Raises:
+        DemistoException: If `max_fetch` is higher than `MAX_EVENTS_LIMIT`.
+
     Returns:
         tuple[list, dict]: _description_
     """
-    demisto.debug(f"Starting to fetch events. Got {last_run=}.")
-    first_fetch = params.get("first_fetch", "3 days")
-    max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
+    demisto.debug(f"Starting to fetch events with {max_fetch=}. Got {last_run=}.")
 
-    start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
+    # Validate max fetch
+    if max_fetch > MAX_EVENTS_LIMIT:
+        raise DemistoException(f"The maximum number of events per fetch cannot exceed {MAX_EVENTS_LIMIT}.")
+
+    start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch="1 minute ago", date_format=DATE_FORMAT)
     last_fetched_ids = last_run.get("last_ids", [])
 
     demisto.debug(f"Starting to fetch cases in batches with {start_time=}, {end_time=}, {last_fetched_ids=}.")
@@ -1055,7 +1060,7 @@ def fetch_events(client: Client, params: dict[str, str], last_run: dict[str, Any
     return events, next_run
 
 
-def test_module(client: Client) -> str:  # pragma: no cover
+def test_module(client: Client, params: dict[str, Any]) -> str:  # pragma: no cover
     """test function
 
     Args:
@@ -1067,6 +1072,8 @@ def test_module(client: Client) -> str:  # pragma: no cover
 
     """
     if client.access_token and generic_search_command(client, {}, "case"):
+        if params.get("isFetchEvents", False):
+            fetch_events(client, max_fetch=1, last_run={})
         return "ok"
     else:
         raise DemistoException("Access Token Generation Failure.")
@@ -1094,7 +1101,7 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f"Command being called is {command}")
 
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client, params))
         elif command == "fetch-incidents":
             disable_if_product(is_xsiam() or is_platform())
             last_run = demisto.getLastRun()
@@ -1103,8 +1110,9 @@ def main() -> None:  # pragma: no cover
             demisto.incidents(incidents)
         elif command == "fetch-events":
             disable_if_product(is_xsoar())
+            max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
             last_run = demisto.getLastRun()
-            events, next_run = fetch_events(client, params, last_run)
+            events, next_run = fetch_events(client, max_fetch, last_run)
             send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)
             demisto.setLastRun(next_run)
         elif command == "exabeam-platform-event-search":
