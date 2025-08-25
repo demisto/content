@@ -5859,6 +5859,16 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "playbookID": "GetUserData - Test",
+            "integrations": [
+                "Microsoft Graph User",
+                "AWS - IAM"
+            ],
+            "instance_names": [
+                "ms_graph_user_dev"
+            ]
         }
     ],
     "skipped_tests": {
