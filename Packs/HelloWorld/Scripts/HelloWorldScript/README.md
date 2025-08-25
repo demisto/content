@@ -1,5 +1,7 @@
 Hello World Script
 
+<img src="/absolute/path/to/image.png" alt="Example Image"><br>
+
 ## Script Data
 
 ---
@@ -16,7 +18,8 @@ Hello World Script
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| name | Hello command \- prints hello to anyone. |
+| alertID | |
+| UserName | |
 
 ## Outputs
 
@@ -24,22 +27,26 @@ Hello World Script
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| HelloWorld.hello | Should be Hello \*\*something\*\* here. | String |
+| hello.world.result | | String |
 
 ## Script Example
 
-```!HelloWorldScript name=DBot```
+```!HelloWorldScript alertID=123456```
 
 ## Context Example
 
 ```
 {
-    "HelloWorld": {
-        "hello": "Hello DBot"
+    "hello": {
+        "world": {
+            "result": "Hello 123456"
+        }
     }
 }
 ```
 
 ## Human Readable Output
 
-## Hello DBot
+<div>This is content with <unclosed <br> tags and raw < > characters</div>
+
+## Hello 123456
