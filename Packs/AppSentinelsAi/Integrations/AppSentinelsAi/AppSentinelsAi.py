@@ -17,7 +17,8 @@ VENDOR = "AppSentinels"
 PRODUCT = "AppSentinels"
 DATE_FORMAT = "%Y-%m-%d %H:%M"
 BASE_REQUEST_BODY: dict = {}
-BASE_REQUEST_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc", "include_system": "false"}
+BASE_REQUEST_PARAMS: dict = {"page": "0", "limit": "1000", "sort": "timestamp", "sort_by": "asc",
+                             "include_system": "false"}
 
 """ CLIENT CLASS """
 
@@ -26,15 +27,15 @@ class Client(BaseClient):
     """Client class to interact with the service API"""
 
     def __init__(
-        self,
-        base_url: str,
-        user_key: str,
-        api_key: str,
-        organization: str,
-        base_request_body: dict,
-        base_request_params: dict,
-        verify: bool,
-        use_proxy: bool,
+            self,
+            base_url: str,
+            user_key: str,
+            api_key: str,
+            organization: str,
+            base_request_body: dict,
+            base_request_params: dict,
+            verify: bool,
+            use_proxy: bool,
     ) -> None:
         """
         Prepare constructor for Client class.
@@ -99,7 +100,8 @@ def remove_first_run_params(params: dict[str, Any]) -> None:
         params.pop(key, None)
 
 
-def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_body: bool) -> List[Dict]:
+def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_body: bool) -> List[
+    Dict]:
     """
     Fetches events from the AppSentinels.ai API, handling pagination and last_run.
 
@@ -118,45 +120,40 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
     body: Dict[str, Any] = {}  # Initialize body
 
     # Determine the fetch params
+
     if use_last_run_as_body:
         body.update(last_run)
-        demisto.debug(f"AppSentinels.ai Fetching with {body=}")
+
     elif "last_log_id" not in last_run:
         # Initial fetch: from one minute ago to now
         current_time = get_current_time()
-        start_time = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
-        end_time = current_time.strftime(DATE_FORMAT)
-        body["from_date"] = start_time
-        body["to_date"] = end_time
-        demisto.debug(f"AppSentinels.ai Fetching events from date={start_time} to date={end_time}.")
+        body.update({"from_date": (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT),
+                     "to_date": current_time.strftime(DATE_FORMAT)})
+
     else:
         # Subsequent fetches: use last_log_id
-        last_log_id_last_run = last_run["last_log_id"]
-        body["last_log_id"] = last_log_id_last_run
-        demisto.debug(f"AppSentinels.ai Fetching with: {last_log_id_last_run=}")
+        body["last_log_id"] = last_run["last_log_id"]
 
     while True:
         try:
             # API call
             demisto.debug(f"AppSentinels.ai sending http requests with arguments: {params=} {body=}")
-            response_data = client.get_events_request(params_update=params, body_update=body)  # Use the client method
+            response = client.get_events_request(params_update=params, body_update=body)  # Use the client method
         except DemistoException as error:
             raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
 
-        if not response_data or not response_data.get("data"):
-            demisto.debug("No Audit logs returned from API.")
-            break  # Exit loop if no data
-
-        new_events = response_data.get("data", [])
+        new_events = response.get("data") if response else []
 
         if not new_events:
+            demisto.debug("AppSentinels.ai: No Audit logs returned from API.")
             break
 
-        pagination = response_data.get("pagination")
+        pagination = response.get("pagination")
         last_log_id = new_events[-1].get("id")
         last_run["last_log_id"] = last_log_id
 
-        demisto.debug(f"AppSentinels.ai fetched events with: {last_log_id=}, {pagination=}, in length: {len(new_events)}")
+        demisto.debug(
+            f"AppSentinels.ai fetched events with: {last_log_id=}, {pagination=}, in length: {len(new_events)}")
 
         for event in new_events:
             event["_TIME"] = event.get("timestamp")
@@ -228,7 +225,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(
-    client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_body: bool = False
+        client: Client, last_run: dict, fetch_limit: int | None = None, use_last_run_as_body: bool = False
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AppSentinels.ai entity records.
 
