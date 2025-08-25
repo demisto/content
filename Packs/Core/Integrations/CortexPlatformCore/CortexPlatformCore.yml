@@ -109,7 +109,7 @@ script:
             - AI Security Posture
         - auto: PREDEFINED
 
-          description: Supports relative times or "custom" time option. If you choose the "custom" option, you should use start_time and end_time arguments.
+          description: Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
           name: time_frame
           predefined:
             - 60 minutes
@@ -206,13 +206,13 @@ script:
             - prevented (terminated the session and sent a tcp reset to the client)
             - prevented (terminated the session and sent a tcp reset to the server)
             - prevented (on write)
-        - description: The local IP address for the connection. Accepts a comma-separated list.
+        - description: The local port for the connection. Accepts a comma-separated list.
           isArray: true
           name: action_local_port
         - description: The remote port for the connection. Accepts a comma-separated list.
           isArray: true
           name: action_remote_port
-        - description: The hostname connected to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list.
+        - description: The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. Accepts a comma-separated list.
           isArray: true
           name: dst_action_external_hostname
         - defaultValue: source_insert_ts
@@ -225,17 +225,17 @@ script:
             - DESC
             - ASC
         - defaultValue: "0"
-          description: The first page from which we bring the issues.
+          description: The first page number to retrieve issues from.
           name: offset
         - defaultValue: "50"
-          description: The last page from which we bring the issues.
+          description: The last page number to retrieve issues from.
           name: limit
-        - description: Relevant when "time_frame" argument is "custom". Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: start_time
-        - description: Relevant when "time_frame" argument is "custom". Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+        - description: Relevant when the time_frame argument is set to custom. Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
           name: end_time
         - auto: PREDEFINED
-          description: Whether the issue is starred or not.
+          description: Whether the issue is starred.
           name: starred
           predefined:
             - "true"
@@ -280,7 +280,7 @@ script:
             - In Progress
             - Resolved
           auto: PREDEFINED
-        - description: The assets ids related to the issue. Accepts a comma-separated list.
+        - description: The assets IDs related to the issue. Accepts a comma-separated list.
           isArray: true
           name: asset_ids
         - description: The assignee of the issue. Accepts a comma-separated list.
@@ -309,7 +309,7 @@ script:
           type: String
         - contextPath: Core.Issue.issue_action_status
           description: |-
-            The issue action. Possible values.
+            The issue action status. Possible values.
             DETECTED: detected
             DETECTED_0: detected (allowed the session)
             DOWNLOAD: detected (download)
@@ -349,7 +349,7 @@ script:
             BLOCKED_TRIGGER_4: prevented (on write).
           type: String
         - contextPath: Core.Issue.issue_action_status_readable
-          description: The issue action.
+          description: The issue action status in readable format.
           type: String
         - contextPath: Core.Issue.issue_name
           description: The issue name.
@@ -370,7 +370,7 @@ script:
           description: The MITRE attack technique.
           type: String
         - contextPath: Core.Issue.starred
-          description: Whether the issue is starred or not.
+          description: Whether the issue is starred.
           type: Boolean
     - arguments:
         - description: Asset unique identifier.
