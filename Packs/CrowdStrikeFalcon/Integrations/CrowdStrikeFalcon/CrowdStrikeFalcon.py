@@ -341,6 +341,8 @@ CS_FALCON_INCIDENT_INCOMING_ARGS = [
     "tags",
     "hosts.hostname",
     "incident_id",
+    "assigned_to_uid",
+    "assigned_to_name",
 ]
 
 MIRROR_DIRECTION_DICT = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
