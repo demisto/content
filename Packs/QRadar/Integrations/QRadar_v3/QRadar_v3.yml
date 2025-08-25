@@ -3119,6 +3119,107 @@ script:
     description: |
       Executes a deployment.
       Potentially harmful: This API command executes any waiting system deployments in QRadar within the same deployment type and hosts defined.
+  - name: qradar-system-diagnostics
+    description: Run comprehensive system diagnostics for the QRadar integration including configuration validation, connectivity tests, context analysis, and performance metrics.
+    outputs:
+    - contextPath: QRadar.SystemDiagnostics.overall_status
+      description: Overall health status of the integration (HEALTHY, WARNING, UNHEALTHY, ERROR).
+      type: String
+    - contextPath: QRadar.SystemDiagnostics.timestamp
+      description: Timestamp when diagnostics were run.
+      type: String
+    - contextPath: QRadar.SystemDiagnostics.correlation_id
+      description: Correlation ID for tracking the diagnostic operation.
+      type: String
+    - contextPath: QRadar.SystemDiagnostics.system_health.validations
+      description: Detailed validation results for different system components.
+      type: Unknown
+    - contextPath: QRadar.SystemDiagnostics.performance_metrics
+      description: Performance-related metrics and configuration.
+      type: Unknown
+    - contextPath: QRadar.SystemDiagnostics.context_analysis
+      description: Analysis of integration context size and health.
+      type: Unknown
+  - name: qradar-context-inspect
+    description: Inspect the current integration context state including size, keys, mirroring data, and health status.
+    outputs:
+    - contextPath: QRadar.ContextInspection.context_size_bytes
+      description: Size of the integration context in bytes.
+      type: Number
+    - contextPath: QRadar.ContextInspection.context_keys
+      description: List of keys present in the integration context.
+      type: Unknown
+    - contextPath: QRadar.ContextInspection.context_health
+      description: Health status of the integration context (HEALTHY, WARNING).
+      type: String
+    - contextPath: QRadar.ContextInspection.mirroring_info
+      description: Information about mirroring operations and status.
+      type: Unknown
+    - contextPath: QRadar.ContextInspection.fetch_info
+      description: Information about fetch operations and samples.
+      type: Unknown
+  - name: qradar-connectivity-test
+    description: Test API connectivity with detailed diagnostics including response times and endpoint availability.
+    outputs:
+    - contextPath: QRadar.ConnectivityTest.overall_status
+      description: Overall connectivity status (SUCCESS, PARTIAL, ERROR).
+      type: String
+    - contextPath: QRadar.ConnectivityTest.endpoint_results
+      description: Detailed results for each tested endpoint.
+      type: Unknown
+    - contextPath: QRadar.ConnectivityTest.timestamp
+      description: Timestamp when connectivity test was performed.
+      type: String
+    - contextPath: QRadar.ConnectivityTest.correlation_id
+      description: Correlation ID for tracking the test operation.
+      type: String
+  - name: qradar-generate-mock-data
+    description: Generate mock data for testing different scenarios including offenses, events, assets, and reference sets.
+    arguments:
+    - name: data_type
+      description: Type of mock data to generate.
+      auto: PREDEFINED
+      predefined:
+      - offense
+      - events
+      - assets
+      - reference_set
+      - scenario
+      defaultValue: offense
+    - name: count
+      description: Number of items to generate (default is 1).
+      defaultValue: '1'
+    - name: scenario
+      description: Test scenario name when data_type is 'scenario'.
+      auto: PREDEFINED
+      predefined:
+      - high_volume_offenses
+      - complex_offense_with_events
+      - mirroring_scenario
+      - error_conditions
+    - name: offense_id
+      description: Offense ID to associate with events (when data_type is 'events').
+    - name: name
+      description: Name for reference set (when data_type is 'reference_set').
+    outputs:
+    - contextPath: QRadar.MockData
+      description: Generated mock data based on the specified type and parameters.
+      type: Unknown
+  - name: qradar-self-test
+    description: Run self-test functions to validate integration health and configuration with comprehensive checks.
+    outputs:
+    - contextPath: QRadar.SelfTest.overall_status
+      description: Overall self-test status (HEALTHY, WARNING, UNHEALTHY, ERROR).
+      type: String
+    - contextPath: QRadar.SelfTest.validations
+      description: Detailed validation results for different integration components.
+      type: Unknown
+    - contextPath: QRadar.SelfTest.timestamp
+      description: Timestamp when self-test was performed.
+      type: String
+    - contextPath: QRadar.SelfTest.correlation_id
+      description: Correlation ID for tracking the self-test operation.
+      type: String
 
   script: '-'
   type: python
