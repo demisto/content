@@ -38,12 +38,12 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
                                 handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
                                 WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
-                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                DBotScoreType, DBotScoreReliability, Common, ExecutionMetrics,
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
-                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
+                                censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
-                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout
+                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_internal
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -311,6 +311,24 @@ COMPLEX_DATA_WITH_URLS = [(
           }
          }
     ])]
+
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+def test_is_ip_internal():
+    """
+    Given:
+        - A set of valid IP addresses including both private and public IPs.
+    When:
+        - Calling is_ip_internal on each IP address.
+    Then:
+        - Assert that the function returns True for private/internal IPs.
+        - Assert that the function returns False for public/external IPs.
+    """
+    assert is_ip_internal('10.0.0.1') == True
+    assert is_ip_internal('127.0.0.1') == True
+    assert is_ip_internal('8.8.8.8') == False # Google DNS
+    assert is_ip_internal('1.1.1.1') == False # Cloudflare DNS
+
 
 
 class TestTableToMarkdown:
@@ -3754,15 +3772,37 @@ class TestReturnOutputs:
         assert 'text' == results['ContentsFormat']
 
 
-def test_argToBoolean():
-    assert argToBoolean('true') is True
-    assert argToBoolean('yes') is True
-    assert argToBoolean('TrUe') is True
-    assert argToBoolean(True) is True
-
-    assert argToBoolean('false') is False
-    assert argToBoolean('no') is False
-    assert argToBoolean(False) is False
+@pytest.mark.parametrize(
+    "input_value,expected_result",
+    [
+        # True values
+        pytest.param('true', True, id='string_true_lowercase'),
+        pytest.param('yes', True, id='string_yes_lowercase'),
+        pytest.param('TrUe', True, id='string_true_mixed_case'),
+        pytest.param(True, True, id='boolean_true'),
+        pytest.param('y', True, id='string_y_lowercase'),
+        pytest.param('Y', True, id='string_y_uppercase'),
+        pytest.param('t', True, id='string_t_lowercase'),
+        pytest.param('T', True, id='string_t_uppercase'),
+        pytest.param('on', True, id='string_on_lowercase'),
+        pytest.param('ON', True, id='string_on_uppercase'),
+        pytest.param('1', True, id='string_one'),
+        
+        # False values
+        pytest.param('false', False, id='string_false_lowercase'),
+        pytest.param('no', False, id='string_no_lowercase'),
+        pytest.param(False, False, id='boolean_false'),
+        pytest.param('n', False, id='string_n_lowercase'),
+        pytest.param('N', False, id='string_n_uppercase'),
+        pytest.param('f', False, id='string_f_lowercase'),
+        pytest.param('F', False, id='string_f_uppercase'),
+        pytest.param('off', False, id='string_off_lowercase'),
+        pytest.param('OFF', False, id='string_off_uppercase'),
+        pytest.param('0', False, id='string_zero'),
+    ]
+)
+def test_argToBoolean(input_value, expected_result):
+    assert argToBoolean(input_value) is expected_result
 
 
 batch_params = [
