@@ -67,35 +67,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 2e3d4459-3321-4f44-a434-6793f58653b0
-    type: regular
-    task:
-      id: 2e3d4459-3321-4f44-a434-6793f58653b0
-      version: -1
-      name: Okta list users
-      description: Lists users in your organization.
-      script: '|||okta-list-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -660,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: c2f81a51-f886-42fd-bc25-5f991fce1e64
