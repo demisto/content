@@ -14,7 +14,6 @@ AUTHENTICATION_FULL_URL = "https://identity.bitwarden.com/connect/token"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 DEFAULT_FIRST_FETCH = (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT)
 DEFAULT_END_DATE = (get_current_time() + timedelta(days=1)).strftime(DATE_FORMAT)
-LOOK_BACK = 8
 
 
 class Client(BaseClient):
@@ -22,9 +21,10 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, client_id: str, client_secret: str, look_back: int):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.token = self.login(client_id, client_secret)
+        self.look_back=look_back
 
     def login(self, client_id: str, client_secret: str) -> str:
         integration_context = get_integration_context()
@@ -124,9 +124,9 @@ def fetch_events(
     fetch_time = dates.get("start") or DEFAULT_FIRST_FETCH
 
     dates["start"], dates["end"] = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=fetch_time, look_back=LOOK_BACK, date_format=DATE_FORMAT
+        last_run=last_run, first_fetch=fetch_time, look_back=client.look_back, date_format=DATE_FORMAT
     )
-
+    demisto.debug(f"Bitwarden - fetch-events start={dates.get('start')} end={dates.get('end')}")
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
         demisto.debug("Bitwarden - No events were found.")
@@ -234,12 +234,14 @@ def main() -> None:  # pragma: no cover
     max_events_per_fetch = arg_to_number(demisto_params.get("max_fetch_events")) or DEFAULT_MAX_FETCH
     verify_certificate = not demisto_params.get("insecure", False)
     proxy = demisto_params.get("proxy", False)
+    look_back = arg_to_number(demisto_params.get("look_back")) or 0
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url, verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
+            base_url=base_url, verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy,
+            look_back=look_back,
         )
         args = demisto.args()
         if command == "test-module":
