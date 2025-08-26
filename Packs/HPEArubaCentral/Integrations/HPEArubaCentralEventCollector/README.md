@@ -67,3 +67,20 @@ There is no context output for this command.
 >|  |  | There are no RADIUS servers configured. | 64:e8:00:00:37:00 | SG00J002CL | SWITCH | RADIUS | 0b72cc8c-7ddb-1234-99a6-6669b3cf2a31 | 003 - 2021 Standard NAC | false | NEFNT-O00001-ANSW03P2 | {'id': 125, 'name': 'Corp_IT_Operations'} | Informational | 434 | {'id': 18, 'name': 'NE FNTG 01 - 3008'} | 1726358400000 |
 >|  |  | Mac Authentication failed for client b0:5c:da:9f:00:00 against server , 0.0.0.0.  Failure reason: Missing Radius Server configuration | 64:e8:00:00:37:00 | SG00JQ000L | SWITCH | | 450000c6-1234-4000-9c88-a162979ea016 | 003 - 2021 Standard NAC | false | NEFNT-O00001-ANSW03P2 | {'id': 125, 'name': 'Corp_IT_Operations'} | Minor | 43025 | {'id': 158, 'name': 'NE FNTG 01 - 300820'} | 1726358400000 |
 >|  |  | There are no RADIUS servers configured. | 64:e8:00:00:37:00 | SG00JQ000L | SWITCH | RADIUS | 9bba8889-5aee-1234-808e-dda306e108b7 | 003 - 2021 Standard NAC | false | NEFNT-O00001-ANSW03P2 | {'id': 125, 'name': 'Corp_IT_Operations'} | Informational | 436 | {'id': 15, 'name': 'NE FNTG 01 - 3020'} | 1726358401000 |
+
+### aruba-auth-test
+
+***
+An alternative command for test-module due to Aruba's API limitations.
+
+#### Base Command
+
+`aruba-auth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
