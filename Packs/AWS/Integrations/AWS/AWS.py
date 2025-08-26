@@ -232,8 +232,7 @@ class AWSErrorHandler:
             f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
         )
 
-        demisto.error(f"AWS API Error: {detailed_error}")
-        raise DemistoException(detailed_error)
+        return_error(detailed_error)
 
     @classmethod
     def handle_client_error(cls, err: ClientError, account_id: str | None = None) -> None:
@@ -248,7 +247,7 @@ class AWSErrorHandler:
         error_code = err.response.get("Error", {}).get("Code", "")
         error_message = err.response.get("Error", {}).get("Message", "")
         http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-
+        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
         # Check if this is a permission-related error
         if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
             cls._handle_permission_error(err, error_code, error_message, account_id)
@@ -322,7 +321,7 @@ class AWSErrorHandler:
         )
 
         demisto.error(f"AWS API Error: {detailed_error}")
-        raise DemistoException(detailed_error)
+        return_error(detailed_error)
 
     @classmethod
     def _extract_action_from_message(cls, error_message: str) -> str:
