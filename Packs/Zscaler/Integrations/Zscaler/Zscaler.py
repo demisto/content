@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import base64
 
 
 """ GLOBAL VARS """
@@ -7,18 +8,64 @@ ADD = "ADD_TO_LIST"
 REMOVE = "REMOVE_FROM_LIST"
 INTEGRATION_NAME = "Zscaler"
 SUSPICIOUS_CATEGORIES = ["SUSPICIOUS_DESTINATION", "SPYWARE_OR_ADWARE"]
-CLOUD_NAME = demisto.params()["cloud"]
-USERNAME = demisto.params()["credentials"]["identifier"]
-PASSWORD = demisto.params()["credentials"]["password"]
+
+# Get all authentication parameters
+oauth_creds = demisto.params().get("oauth_credentials", {})
+CLIENT_ID = oauth_creds.get("identifier") if oauth_creds else None
+CLIENT_SECRET = oauth_creds.get("password") if oauth_creds else None
+CLOUD_NAME = demisto.params().get("cloud", "")
+ORG_ID = demisto.params().get("org_id", "")
+API_ROLE = demisto.params().get("api_role", "")
+
+# Basic Auth parameters
+USERNAME = demisto.params().get("credentials", {}).get("identifier", "")
+PASSWORD = demisto.params().get("credentials", {}).get("password", "")
 API_KEY = str(demisto.params().get("creds_key", {}).get("password", "")) or str(demisto.params().get("key", ""))
-if not API_KEY:
-    raise Exception("API Key is missing. Please provide an API Key.")
-BASE_URL = CLOUD_NAME + "/api/v1"
+
+# Validate required Cloud Name for both authentication methods
+if not CLOUD_NAME:
+    raise Exception("Cloud Name is required.")
+
+# Check which authentication parameters are provided
+oauth_fields = [CLIENT_ID, CLIENT_SECRET, ORG_ID, API_ROLE]
+basic_fields = [USERNAME, PASSWORD, API_KEY]
+
+oauth_provided = [bool(field) for field in oauth_fields]
+basic_provided = [bool(field) for field in basic_fields]
+
+oauth_complete = all(oauth_provided)
+basic_complete = all(basic_provided)
+oauth_partial = any(oauth_provided) and not oauth_complete
+basic_partial = any(basic_provided) and not basic_complete
+
+# Validate authentication configuration
+if (oauth_complete or oauth_partial) and (basic_complete or basic_partial):
+    raise Exception("Cannot mix OAuth 2.0 and Basic Auth parameters. Please use only one authentication method.")
+elif oauth_complete:
+    IS_OAUTH = True
+    OAUTH_TOKEN_URL = "https://localhost:9031/as/token.oauth2"  #TODO fix here!!
+    demisto.debug("Using OAuth 2.0 authentication.")
+elif basic_complete:
+    IS_OAUTH = False
+    demisto.debug("Using Basic Auth. OAuth 2.0 is recommended for enhanced security.")
+elif oauth_partial:
+    missing_oauth = [name for name, provided in zip(['Client ID', 'Client Secret', 'Org ID', 'API Role'], oauth_provided) if not provided]
+    raise Exception(f"OAuth 2.0 authentication is incomplete. Missing: {', '.join(missing_oauth)}.")
+elif basic_partial:
+    missing_basic = [name for name, provided in zip(['Username', 'Password', 'API Key'], basic_provided) if not provided]
+    raise Exception(f"Basic Auth is incomplete. Missing: {', '.join(missing_basic)}.")
+else:
+    raise Exception("No authentication parameters provided. Please configure either OAuth 2.0 or Basic Auth.")
+
+BASE_URL = f"{CLOUD_NAME}/api/v1"
+
 USE_SSL = not demisto.params().get("insecure", False)
 PROXY = demisto.params().get("proxy", True)
 REQUEST_TIMEOUT = int(demisto.params().get("requestTimeout", 15))
 DEFAULT_HEADERS = {"content-type": "application/json"}
 SESSION_ID_KEY = "session_id"
+OAUTH_TOKEN_KEY = "oauth_token"
+OAUTH_EXPIRES_KEY = "oauth_expires"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
     401: "Session is not authenticated or timed out",
@@ -92,11 +139,22 @@ def error_handler(res):
 
 
 def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
+    # Prepare headers by merging default headers with custom headers
+    request_headers = DEFAULT_HEADERS.copy()
+    if headers:
+        request_headers.update(headers)
+    
+    # Add OAuth Bearer token if using OAuth authentication
+    if IS_OAUTH:
+        access_token = get_valid_oauth_token()
+        request_headers["Authorization"] = f"Bearer {access_token}"
+    
     time_sensitive = is_time_sensitive()
     demisto.debug(f"{time_sensitive=}")
     retries = 0 if time_sensitive else 3
     status_list_to_retry = None if time_sensitive else [429]
     timeout = 2 if time_sensitive else REQUEST_TIMEOUT
+    
     try:
         res = generic_http_request(
             method=method,
@@ -104,8 +162,7 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
             timeout=timeout,
             verify=USE_SSL,
             proxy=PROXY,
-            client_headers=DEFAULT_HEADERS,
-            headers=headers,
+            headers=request_headers,
             url_suffix=url_suffix,
             data=data or {},
             ok_codes=(200, 204),
@@ -115,6 +172,37 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type="json"):
             resp_type=resp_type,
         )
 
+    except AuthorizationError as e:
+        # For OAuth, try refreshing the token once on auth error
+        if IS_OAUTH:
+            demisto.debug("OAuth token may be expired, attempting to refresh")
+            try:
+                # Force fetch a new OAuth token from server
+                access_token = fetch_oauth_token()
+                if access_token:
+                    request_headers["Authorization"] = f"Bearer {access_token}"
+                # Retry the request with new token
+                res = generic_http_request(
+                    method=method,
+                    server_url=BASE_URL,
+                    timeout=timeout,
+                    verify=USE_SSL,
+                    proxy=PROXY,
+                    client_headers=DEFAULT_HEADERS,
+                    headers=request_headers,
+                    url_suffix=url_suffix,
+                    data=data or {},
+                    ok_codes=(200, 204),
+                    error_handler=error_handler,
+                    retries=retries,
+                    status_list_to_retry=status_list_to_retry,
+                    resp_type=resp_type,
+                )
+            except Exception as retry_error:
+                LOG(f"Zscaler request failed even after token refresh: {retry_error}")
+                raise retry_error
+        else:
+            raise e
     except Exception as e:
         LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
         LOG(e)
@@ -134,9 +222,158 @@ def validate_urls(urls):
 """ FUNCTIONS """
 
 
+def fetch_oauth_token():
+    """
+    Fetch OAuth 2.0 access token from Zscaler authorization server
+    """
+    demisto.debug("[DEBUG] Starting OAuth token fetch process")
+    demisto.debug(f"[DEBUG] OAuth token URL: {OAUTH_TOKEN_URL}")
+    demisto.debug(f"[DEBUG] Cloud name: {CLOUD_NAME}")
+    demisto.debug(f"[DEBUG] Organization ID: {ORG_ID}")
+    demisto.debug(f"[DEBUG] API Role: {API_ROLE}")
+    demisto.debug(f"[DEBUG] Client ID: {CLIENT_ID[:10]}...")
+    demisto.debug(f"[DEBUG] Client Secret: {'*' * 10}...")
+    
+    # Prepare Basic Auth header for client credentials
+    credentials = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+    demisto.debug(f"[DEBUG] Generated Basic Auth credentials: {credentials[:20]}...")
+    
+    headers = {
+        "Authorization": f"Basic {credentials}",
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    #TODO if fails, considre using "content-type": "application/json"
+    demisto.debug(f"[DEBUG] Request headers: {dict(headers)}")
+    
+    # Construct scope in the format: {cloud_name}::{org_id}::{api_role}
+    scope = f"{CLOUD_NAME}::{ORG_ID}::{API_ROLE}"
+    demisto.debug(f"[DEBUG] OAuth scope: {scope}")
+    
+    data = {
+        "grant_type": "client_credentials",
+        "scope": scope
+    }
+    demisto.debug(f"[DEBUG] Request data: {data}")
+    
+    try:
+        demisto.debug("[DEBUG] Making OAuth token request...")
+        result = generic_http_request(
+            method="POST",
+            server_url=OAUTH_TOKEN_URL,
+            timeout=REQUEST_TIMEOUT,
+            verify=USE_SSL,
+            proxy=PROXY,
+            headers=headers,
+            data=data,
+            ok_codes=(200,),
+            resp_type="json"
+        )
+        demisto.debug(f"[DEBUG] OAuth token response: {result}")
+        
+        access_token = result.get("access_token")
+        expires_in = result.get("expires_in", 3600)  # fallback default  to 1 hour
+        
+        demisto.debug(f"[DEBUG] Access token received: {access_token[:20] if access_token else 'None'}...")
+        demisto.debug(f"[DEBUG] Token expires in: {expires_in} seconds")
+        
+        if not access_token:
+            demisto.debug("[DEBUG] No access_token in OAuth response")
+            raise Exception("Failed to retrieve access token from OAuth response")
+        
+        # Store token and expiration time in integration context
+        expires_at = time.time() + expires_in
+        demisto.debug(f"[DEBUG] Current time: {time.time()}")
+        demisto.debug(f"[DEBUG] Token will expire at: {expires_at}")
+        
+        ctx = get_integration_context() or {}
+        ctx[OAUTH_TOKEN_KEY] = access_token
+        ctx[OAUTH_EXPIRES_KEY] = expires_at
+        set_integration_context(ctx)
+        
+        demisto.debug(f"[DEBUG] Token stored in integration context successfully")
+        demisto.debug(f"Successfully retrieved OAuth token, expires in {expires_in} seconds")
+        return access_token
+        
+    except Exception as e:
+        demisto.debug(f"[DEBUG] Failed to retrieve OAuth token: {str(e)}")
+        demisto.debug(f"[DEBUG] Exception type: {type(e).__name__}")
+        import traceback
+        demisto.debug(f"[DEBUG] Full traceback: {traceback.format_exc()}")
+        raise Exception(f"OAuth authentication failed: {str(e)}")
+
+
+def is_oauth_token_expired():
+    """
+    Check if the current OAuth token is expired or about to expire (within 60 seconds)
+    """
+    ctx = get_integration_context() or {}
+    expires_at = ctx.get(OAUTH_EXPIRES_KEY, 0)
+    current_time = time.time()
+    
+    demisto.debug(f"[DEBUG] Checking token expiration")
+    demisto.debug(f"[DEBUG] Current time: {current_time}")
+    demisto.debug(f"[DEBUG] Token expires at: {expires_at}")
+    demisto.debug(f"[DEBUG] Time until expiration: {expires_at - current_time} seconds")
+    
+    # Consider token expired if it expires within the next 60 seconds
+    is_expired = current_time >= (expires_at - 60)
+    demisto.debug(f"[DEBUG] Token is expired: {is_expired}")
+    return is_expired
+
+
+def get_valid_oauth_token():
+    """
+    Get a valid OAuth token, refreshing if necessary
+    """
+    demisto.debug("[DEBUG] Getting valid OAuth token")
+    ctx = get_integration_context() or {}
+    access_token = ctx.get(OAUTH_TOKEN_KEY)
+    
+    demisto.debug(f"[DEBUG] Current token from context: {access_token[:20] if access_token else 'None'}...")
+    
+    if not access_token:
+        demisto.debug("[DEBUG] No access token found, fetching new one")
+        return fetch_oauth_token()
+    elif is_oauth_token_expired():
+        demisto.debug("[DEBUG] OAuth token expired, fetching new one")
+        return fetch_oauth_token()
+    else:
+        demisto.debug("[DEBUG] Using existing valid token")
+        return access_token
+
+
 def login():
     """
-    Try to use integration context if available and valid, otherwise create new session
+    Authenticate with Zscaler using the selected authentication method
+    """
+    if IS_OAUTH:
+        return oauth_login()
+    else:
+        return basic_auth_login()
+
+
+def oauth_login():
+    """
+    OAuth 2.0 authentication flow
+    """
+    demisto.debug("[DEBUG] Starting OAuth login process")
+    try:
+        token = get_valid_oauth_token()
+        demisto.debug(f"[DEBUG] Successfully obtained OAuth token: {token[:20]}...")
+        demisto.debug("[DEBUG] Testing OAuth authentication with test_module()")
+        result = test_module()
+        demisto.debug(f"[DEBUG] OAuth authentication test result: {result}")
+        return result
+    except Exception as e:
+        demisto.debug(f"[DEBUG] OAuth authentication failed: {str(e)}")
+        import traceback
+        demisto.debug(f"[DEBUG] OAuth login traceback: {traceback.format_exc()}")
+        raise
+
+
+def basic_auth_login():
+    """
+    Legacy Basic Auth authentication (deprecated)
     """
     cmd_url = "/authenticatedSession"
 
@@ -163,7 +400,7 @@ def login():
     add_sensitive_log_strs(key)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
-    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
+    result = http_request("POST", cmd_url, json_data, resp_type="response")
     auth = result.headers["Set-Cookie"]
     ctx[SESSION_ID_KEY] = DEFAULT_HEADERS["cookie"] = auth[: auth.index(";")]
     set_integration_context(ctx)
@@ -172,12 +409,12 @@ def login():
 
 def activate_changes():
     cmd_url = "/status/activate"
-    return http_request("POST", cmd_url, None, DEFAULT_HEADERS)
+    return http_request("POST", cmd_url, None)
 
 
 def logout():
     cmd_url = "/authenticatedSession"
-    return http_request("DELETE", cmd_url, None, DEFAULT_HEADERS)
+    return http_request("DELETE", cmd_url, None)
 
 
 def blacklist_url(url):
@@ -186,7 +423,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
+    http_request("POST", cmd_url, json_data, resp_type="response")
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
@@ -207,7 +444,7 @@ def unblacklist_url(url):
 
     data = {"blacklistUrls": urls_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
+    http_request("POST", cmd_url, json_data, resp_type="response")
     list_of_urls = ""
     for url in urls_to_unblacklist:
         list_of_urls += "- " + url + "\n"
@@ -219,7 +456,7 @@ def blacklist_ip(ip):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": ips_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
+    http_request("POST", cmd_url, json_data, resp_type="response")
     list_of_ips = ""
     for ip in ips_to_blacklist:
         list_of_ips += "- " + ip + "\n"
@@ -238,7 +475,7 @@ def unblacklist_ip(ip):
         raise Exception("Given IP addresses are not blacklisted.")
     data = {"blacklistUrls": ips_to_unblacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="response")
+    http_request("POST", cmd_url, json_data, resp_type="response")
     list_of_ips = ""
     for ip in ips_to_unblacklist:
         list_of_ips += "- " + ip + "\n"
@@ -255,7 +492,7 @@ def whitelist_url(url):
 
     whitelist_urls["whitelistUrls"] += urls_to_whitelist
     json_data = json.dumps(whitelist_urls)
-    http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("PUT", cmd_url, json_data)
     list_of_urls = ""
     for url in urls_to_whitelist:
         list_of_urls += "- " + url + "\n"
@@ -279,7 +516,7 @@ def unwhitelist_url(url):
     # List comprehension to remove requested URLs from the whitelist
     whitelist_urls["whitelistUrls"] = [x for x in whitelist_urls["whitelistUrls"] if x not in urls_to_unwhitelist]
     json_data = json.dumps(whitelist_urls)
-    http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("PUT", cmd_url, json_data)
     list_of_urls = ""
     for url in whitelist_urls:
         list_of_urls += "- " + url + "\n"
@@ -296,7 +533,7 @@ def whitelist_ip(ip):
 
     whitelist_ips["whitelistUrls"] += ips_to_whitelist
     json_data = json.dumps(whitelist_ips)
-    http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("PUT", cmd_url, json_data)
     list_of_ips = ""
     for ip in ips_to_whitelist:
         list_of_ips += "- " + ip + "\n"
@@ -320,7 +557,7 @@ def unwhitelist_ip(ip):
     # List comprehension to remove requested IPs from the whitelist
     whitelist_ips["whitelistUrls"] = [x for x in whitelist_ips["whitelistUrls"] if x not in ips_to_unwhitelist]
     json_data = json.dumps(whitelist_ips)
-    http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("PUT", cmd_url, json_data)
     list_of_ips = ""
     for ip in ips_to_unwhitelist:
         list_of_ips += "- " + ip + "\n"
@@ -372,7 +609,7 @@ def get_blacklist_command(args):
 
 def get_blacklist():
     cmd_url = "/security/advanced"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type="content")
+    result = http_request("GET", cmd_url, None, resp_type="content")
     return json.loads(result)
 
 
@@ -398,7 +635,7 @@ def get_whitelist_command():
 
 def get_whitelist():
     cmd_url = "/security"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type="content")
+    result = http_request("GET", cmd_url, None, resp_type="content")
     return json.loads(result)
 
 
@@ -542,7 +779,7 @@ def lookup_request(ioc, multiple=True):
         ioc_list = [ioc]
     ioc_list = [url.replace("https://", "").replace("http://", "") for url in ioc_list]
     json_data = json.dumps(ioc_list)
-    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type="content")
+    response = http_request("POST", cmd_url, json_data, resp_type="content")
     return response
 
 
@@ -839,7 +1076,7 @@ def activate_command():
 
 
 def test_module():
-    http_request("GET", "/status", None, DEFAULT_HEADERS)
+    http_request("GET", "/status", None)
     return "ok"
 
 
@@ -934,7 +1171,7 @@ def set_user_command(args):
     params = json.loads(args.get("user"))
     cmd_url = f"/users/{userId}"
 
-    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS, resp_type="response")
+    response = http_request("PUT", cmd_url, json.dumps(params), resp_type="response")
     responseJson = response.json()
     if response.status_code == 200:
         entry = {
@@ -971,7 +1208,7 @@ def create_ip_destination_group(args: dict):
         "isNonEditable": args.get("is_non_editable", False),
     }
     cmd_url = "/ipDestinationGroups"
-    response = http_request("POST", cmd_url, data=json.dumps(payload), headers=DEFAULT_HEADERS)
+    response = http_request("POST", cmd_url, data=json.dumps(payload))
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),
@@ -1147,7 +1384,7 @@ def edit_ip_destination_group(args: dict):
 
     cmd_url = f"/ipDestinationGroups/{ip_group_id}"
     json_data = json.dumps(payload)
-    response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
+    response = http_request("PUT", cmd_url, json_data)
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),
@@ -1168,7 +1405,7 @@ def delete_ip_destination_groups(args: dict):
     ip_group_ids = argToList(args.get("ip_group_id", ""))
     for ip_group_id in ip_group_ids:
         cmd_url = f"/ipDestinationGroups/{ip_group_id}"
-        _ = http_request("DELETE", cmd_url, None, DEFAULT_HEADERS)
+        _ = http_request("DELETE", cmd_url, None)
     markdown = "### IP Destination Group {} deleted successfully".format(",".join(ip_group_ids))
 
     results = CommandResults(

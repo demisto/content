@@ -6,17 +6,39 @@ commonfields:
   id: Zscaler
   version: -1
 configuration:
+- display: Client ID (OAuth 2.0)
+  name: oauth_credentials
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Client Secret (OAuth 2.0)
+  additionalinfo: OAuth 2.0 Client ID and Secret from ZIA Admin Portal.
 - display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
   name: cloud
   required: true
   type: 0
   section: Connect
-- display: Username
-  name: credentials
-  required: true
-  type: 9
+  additionalinfo: Your Zscaler cloud instance (e.g. https://zsapi.zscalertwo.net).
+- name: org_id
+  type: 0
   section: Connect
-- name: creds_key
+  required: false
+  display: Org ID (OAuth 2.0)
+  additionalinfo: OAuth 2.0 Organization ID from ZIA Admin Portal.
+- display: API Role (OAuth 2.0)
+  name: api_role
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: OAuth 2.0 API role from ZIA Admin Portal.
+- additionalinfo: Basic Auth username.
+  display: Username (Basic Auth)
+  name: credentials
+  type: 9
+  required: false
+- additionalinfo: API key for Basic Auth.
+  display: API Key (Basic Auth)
+  name: creds_key
   type: 9
   displaypassword: API Key
   hiddenusername: true
