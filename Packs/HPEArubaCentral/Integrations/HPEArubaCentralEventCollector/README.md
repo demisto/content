@@ -71,7 +71,7 @@ There is no context output for this command.
 ### aruba-auth-test
 
 ***
-An alternative command for test-module due to Aruba's API limitations.
+An alternative command for testing an instance due to Aruba's API limitations.
 
 #### Base Command
 

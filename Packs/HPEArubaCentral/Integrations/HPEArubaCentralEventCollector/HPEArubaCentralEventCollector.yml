@@ -91,11 +91,11 @@ script:
     description: Gets events from Aruba Central.
     execution: false
     name: aruba-central-get-events
-  - description: An alternative command for test-module due to Aruba's API limitations.
+  - description: An alternative command for testing an instance due to Aruba's API limitations.
     name: aruba-auth-test
     execution: false
     deprecated: false
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   runonce: false
   script: '-'
