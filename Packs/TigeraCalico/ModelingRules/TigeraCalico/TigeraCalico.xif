@@ -15,7 +15,7 @@ alter
      xdm.source.host.device_category = tigera_secure -> source_type,
      xdm.source.cloud.source_type = arraystring(json_extract_scalar_array(tigera_secure , "$.source_labels.labels"), ", "),
      xdm.target.ipv4 = if(tigera_secure ~= "(?:\d{1,3}\.){3}\d{1,3}", dest_ip ),
-     xdm.target.ipv6 = if(tigera_secure ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", dest_ip)
+     xdm.target.ipv6 = if(tigera_secure ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}", dest_ip),
      xdm.target.host.hostname = tigera_secure -> dest_name,
      xdm.target.resource.value = tigera_secure -> dest_namespace,
      xdm.target.port = to_integer(tigera_secure -> dest_port),
