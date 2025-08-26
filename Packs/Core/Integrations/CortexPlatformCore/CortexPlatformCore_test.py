@@ -250,12 +250,16 @@ def test_core_get_issues_command_with_output_keys(mocker):
 
     # Mock demisto functions with output_keys parameter
     mocker.patch.object(demisto, "command", return_value="core-get-issues")
-    mocker.patch.object(demisto, "args", return_value={
-        "issue_id": "12345",
-        "issue_status": "open",
-        "issue_priority": "high",
-        "output_keys": "issue_id,issue_status,issue_description"
-    })
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "issue_id": "12345",
+            "issue_status": "open",
+            "issue_priority": "high",
+            "output_keys": "issue_id,issue_status,issue_description",
+        },
+    )
     mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
 
     # Create mock CommandResults with alert data that should be converted to issue data
@@ -270,7 +274,7 @@ def test_core_get_issues_command_with_output_keys(mocker):
                 "alert_severity": "critical",
                 "alert_timestamp": "2023-10-01T10:00:00Z",
                 "user_name": "john",
-                "internal_field": "should_be_filtered_out"
+                "internal_field": "should_be_filtered_out",
             },
             {
                 "alert_id": "67890",
@@ -280,8 +284,8 @@ def test_core_get_issues_command_with_output_keys(mocker):
                 "alert_severity": "low",
                 "alert_timestamp": "2023-10-01T11:00:00Z",
                 "user_name": "jane",
-                "internal_field": "should_be_filtered_out"
-            }
+                "internal_field": "should_be_filtered_out",
+            },
         ],
         readable_output="Test alert output",
         raw_response={"alert_id": "12345"},
@@ -290,7 +294,7 @@ def test_core_get_issues_command_with_output_keys(mocker):
     # Mock get_alerts_by_filter_command to return our mock CommandResults
     mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
     mock_return_results = mocker.patch("CortexPlatformCore.return_results")
-    
+
     # Execute the main function
     main()
 
@@ -312,7 +316,7 @@ def test_core_get_issues_command_with_output_keys(mocker):
 
     # Verify the outputs were transformed back from alert to issue format
     assert len(returned_command_results.outputs) == 2
-    
+
     # Check first alert/issue
     first_issue = returned_command_results.outputs[0]
     assert "issue_id" in first_issue
@@ -321,18 +325,18 @@ def test_core_get_issues_command_with_output_keys(mocker):
     assert first_issue["issue_id"] == "12345"
     assert first_issue["issue_status"] == "open"
     assert first_issue["issue_description"] == "Test alert"
-    
+
     # Verify that only the specified output_keys are present (after transformation to issue format)
     expected_keys = {"issue_id", "issue_status", "issue_description"}
     assert set(first_issue.keys()) == expected_keys
-    
+
     # Verify fields that should be filtered out are not present
     assert "issue_priority" not in first_issue
     assert "issue_severity" not in first_issue
     assert "issue_timestamp" not in first_issue
     assert "user_name" not in first_issue
     assert "internal_field" not in first_issue
-    
+
     # Check second alert/issue
     second_issue = returned_command_results.outputs[1]
     assert "issue_id" in second_issue
@@ -341,10 +345,10 @@ def test_core_get_issues_command_with_output_keys(mocker):
     assert second_issue["issue_id"] == "67890"
     assert second_issue["issue_status"] == "closed"
     assert second_issue["issue_description"] == "Another test alert"
-    
+
     # Verify that only the specified output_keys are present
     assert set(second_issue.keys()) == expected_keys
-    
+
     # Verify alert keys are not present in the final outputs
     assert "alert_id" not in first_issue
     assert "alert_status" not in first_issue
