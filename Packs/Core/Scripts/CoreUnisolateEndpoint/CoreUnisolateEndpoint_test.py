@@ -10,7 +10,7 @@ def test_main(mocker: MockerFixture):
     Assert:
         Ensure `execute_polling_command` is called once with the correct command name and args.
     """
-    from Packs.Core.Scripts.CoreUnisolateEndpoint.CoreUnisolateEndpoint import main
+    from CoreUnisolateEndpoint import main
 
     args = {"k": "v"}
     mocker.patch("CoreUnisolateEndpoint.demisto.args", return_value=args)
@@ -20,4 +20,3 @@ def test_main(mocker: MockerFixture):
 
     assert mock_execute_polling_command.call_count == 1
     assert mock_execute_polling_command.call_args[0] == ("core-unisolate-endpoint", args)
-    pass

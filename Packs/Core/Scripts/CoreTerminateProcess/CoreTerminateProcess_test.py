@@ -10,7 +10,7 @@ def test_main(mocker: MockerFixture):
     Assert:
         Ensure `execute_polling_command` is called once with the correct command name and args.
     """
-    from Packs.Core.Scripts.CoreTerminateProcess.CoreTerminateProcess import main
+    from CoreTerminateProcess import main
 
     args = {"k": "v"}
     mocker.patch("CoreTerminateProcess.demisto.args", return_value=args)
