@@ -300,7 +300,7 @@ def main() -> None:
 
     params = demisto.params()
     base_url = params.get('base_url')
-    api_key_details = params.get('api_key')
+    api_key_details = params.get("credentials", {}).get("password")
     api_key = api_key_details.get('password') if isinstance(api_key_details, dict) else api_key_details
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
