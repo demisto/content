@@ -26,6 +26,21 @@ ignore=LO107
 [file:layoutscontainer-Identity_Analytics_Alerts.json]
 ignore=LO107
 
+[file:CoreQuarantineFiles.yml]
+ignore=SC105
+
+[file:CoreTerminateCausality.yml]
+ignore=SC105
+
+[file:CoreIsolateEndpoint.yml]
+ignore=SC105
+
+[file:CoreTerminateProcess.yml]
+ignore=SC105
+
+[file:CoreUnisolateEndpoint.yml]
+ignore=SC105
+
 [known_words]
 xsiam
 coreirapimodule
