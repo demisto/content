@@ -6,7 +6,7 @@ filter _raw_log ~= "Allow\:|Detect\:"
     severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8)))
 | alter
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3" OR parsedFields1 -> level = "Error", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6" or parsedFields1 -> level = "Info" , XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
-    xdm.observer.name = coalesce( parsedFields1 -> observerHostname2, parsedFields1 -> observerHostname1),
+    xdm.observer.name = coalesce(parsedFields1 -> observerHostname2, parsedFields1 -> observerHostname1),
     xdm.observer.action = parsedFields1 -> action,
     xdm.event.type = parsedFields1 -> type,
     xdm.network.ip_protocol = if(parsedFields1 -> proto = "ICMP", XDM_CONST.IP_PROTOCOL_ICMP, parsedFields1 -> proto = "TCP", XDM_CONST.IP_PROTOCOL_TCP, parsedFields1 -> proto = "UDP", XDM_CONST.IP_PROTOCOL_UDP, parsedFields1 -> proto),
