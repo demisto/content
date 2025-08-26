@@ -1122,6 +1122,7 @@ def test_ec2_create_security_group_command_client_error(mocker):
 
     mock_client = mocker.Mock()
     demisto_results = mocker.patch("AWS.demisto.results")
+    mocker.patch("AWS.demisto.error")
     error_response = {"Error": {"Code": "InvalidGroup.Duplicate", "Message": "The security group already exists"}}
     mock_client.create_security_group.side_effect = ClientError(error_response, "CreateSecurityGroup")
 
@@ -1296,6 +1297,7 @@ def test_ec2_delete_security_group_command_group_not_found(mocker):
 
     mock_client = mocker.Mock()
     mocker.patch.object(demisto, "error")
+    mocker.patch("AWS.demisto.error")
     demisto_results = mocker.patch("AWS.demisto.results")
     error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "The security group does not exist"}}
     mock_client.delete_security_group.side_effect = ClientError(error_response, "DeleteSecurityGroup")
@@ -1656,6 +1658,7 @@ def test_ec2_authorize_security_group_egress_command_invalid_group_id(mocker):
     from botocore.exceptions import ClientError
 
     mock_client = mocker.Mock()
+    mocker.patch("AWS.demisto.error")
     demisto_results = mocker.patch("AWS.demisto.results")
     error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "InvalidGroup.NotFound"}}
     mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
@@ -1687,6 +1690,7 @@ def test_ec2_authorize_security_group_egress_command_duplicate_rule(mocker):
     from botocore.exceptions import ClientError
 
     mock_client = mocker.Mock()
+    mocker.patch("AWS.demisto.error")
     demisto_results = mocker.patch("AWS.demisto.results")
     error_response = {"Error": {"Code": "InvalidPermission.Duplicate", "Message": "InvalidPermission.Duplicate"}}
     mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
