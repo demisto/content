@@ -5883,6 +5883,11 @@
             "instance_names": [
                 "panorama_instance_security_team"
             ]
+        },
+        {
+            "playbookID": "QuarantineFile-Test",
+            "timeout": 300,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
