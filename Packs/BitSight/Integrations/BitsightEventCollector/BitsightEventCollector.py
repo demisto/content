@@ -15,8 +15,8 @@ PRODUCT = "Bitsight"
 BITSIGHT_DATE_FORMAT = "%Y-%m-%d"  # TODO can this be improved?
 DEFAULT_MAX_FETCH = 1000
 # Lookback windows
-FETCH_EVENTS_LOOKBACK_HOURS = 1  # scheduled fetch window
-GET_EVENTS_LOOKBACK_DAYS = 1     # bitsight-get-events window TODO mantion in the ymk the other command in the integration, for specific date range
+FETCH_EVENTS_LOOKBACK_HOURS = 1
+GET_EVENTS_LOOKBACK_DAYS = 1
 
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
@@ -89,6 +89,9 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     Returns:
         list[dict[str, Any]]: A list of event dictionaries suitable for pushing to XSIAM.
+        
+    Raises:
+        ValueError: If a finding is missing both first_seen and firstSeen fields.
     """
     events: list[dict[str, Any]] = []
     for f in findings:
@@ -100,9 +103,15 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
             try:
                 dt = datetime.strptime(first_seen, BITSIGHT_DATE_FORMAT)
                 event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-            except Exception:
+            except Exception as e:
+                demisto.debug(f"Failed to parse first_seen date '{first_seen}' for finding {f.get('id', 'unknown')}: {e}")
                 event["_time"] = first_seen
-                # TODO: no raise? or log? add logs all over....
+        else:
+            finding_id = f.get('id', 'unknown')
+            raise ValueError(
+                f"No first_seen date found for finding {finding_id}. "
+                "All findings must have a first_seen or firstSeen field."
+            )
         events.append(event)
     return events
 
@@ -189,7 +198,6 @@ def bitsight_get_events_command(client: Client, guid: str, limit: int, should_pu
     title = "Bitsight Findings Events (pushed)" if should_push else "Bitsight Findings Events"
     if should_push:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-        demisto.setLastRun(new_last_run)
     return CommandResults(readable_output=tableToMarkdown(title, events, removeNull=True))
 
 

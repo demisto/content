@@ -17,6 +17,7 @@
         "marketplacev2",
         "platform"
     ],
+    "defaultDataSource": "BitSight Event Collector",
     "supportedModules": [
         "X1",
         "X3",

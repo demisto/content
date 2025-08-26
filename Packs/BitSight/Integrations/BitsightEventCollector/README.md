@@ -1,6 +1,6 @@
 Use this integration to fetch BitSight security findings as events in Cortex XSIAM. This is important for organizations that wish to integrate BitSight programmatically into their security operations.
 
-When configured as a fetching integration, it will continuously fetch new findings from the current time forward. The manual `bitsight-get-events` command fetches findings from the last 1 day (24 hours).
+When configured as a fetching integration, it will continuously fetch new findings starting from 1 hour back. The manual `bitsight-get-events` command fetches findings from the last 1 day (24 hours).
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -9,7 +9,7 @@ This is the default integration for this content pack when configured by the Dat
 | Parameter | Description | Required | Default Value |
 | --- | --- | --- | --- |
 | Server URL | REST API Endpoint of BitSight server. | True | https://api.bitsighttech.com |
-| API Key | BitSight API token (Basic Auth, token as username, blank password). | True | - |
+| API Key | BitSight API token. | True | - |
 | Company's GUID | Optional. If provided, findings for this company and its subsidiaries will be collected. If omitted, the collector attempts to use `myCompany.guid`. | False | - |
 | Trust any certificate (not secure) |  | False | - |
 | Use system proxy settings |  | False | - |
