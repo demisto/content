@@ -108,6 +108,7 @@ configuration:
   name: remote_api
   required: false
   type: 8
+  section: Collect
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
@@ -6456,7 +6457,7 @@ script:
       description: JSON data of edits to be made {"is_public":false,"circles":[12866]}.
     name: threatstream-edit-classification
     description: Edit the values for observable that have been cloned.
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.4592568
   runonce: false
   script: '-'
   subtype: python3
