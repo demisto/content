@@ -33,8 +33,8 @@ INDICATOR_TYPE_MAPPING = {
     "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    "malicious_behavior": "", # Todo add the correct type
-    "malicious behavior": "", # Todo add the correct type
+    "malicious_behavior": "",  # Todo add the correct type
+    "malicious behavior": "",  # Todo add the correct type
 }
 
 
@@ -64,6 +64,11 @@ class Client(BaseClient):
         Returns:
             API response as dictionary
         """
+        if indicator_type.lower() == "url":
+            # URL-encode the indicator value to handle special characters safely in the API request
+            # Example: "http://example.com/path?param=value" becomes "http%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue"
+            indicator_value = urllib.parse.quote(indicator_value, safe="")
+
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 
         response = self._http_request(method="GET", url_suffix=endpoint, timeout=60)
@@ -141,7 +146,7 @@ def create_relationships(
     """
     relationships: list[EntityRelationship] = []
 
-    if not any([create_relationships, threat_objects]):
+    if not create_relationships or not threat_objects:
         demisto.debug(f"Skipping create_relationships as {create_relationships} and {threat_objects=}")
         return relationships
 
@@ -166,6 +171,7 @@ def create_relationships(
 
     return relationships
 
+
 def create_indicators_from_relationships(relationship: dict[str, Any]) -> CommandResults:
     """
     Create indicators from relationship
@@ -179,11 +185,11 @@ def create_indicators_from_relationships(relationship: dict[str, Any]) -> Comman
     indicator_name = relationship["name"]
     indicator_type = relationship["threat_object_class"]
     score = VERDICT_TO_SCORE.get(relationship["verdict"].lower() or "unknown")
-    
+
     if not any([indicator_name, indicator_type]):
         demisto.debug(f"Skipping create_indicators_from_relationships for {indicator_name=}, {indicator_type=}, {score=}")
         return
-        
+
     dbot_score = create_dbot_score(
         indicator=indicator_name,
         indicator_type=indicator_type,
@@ -207,13 +213,14 @@ def create_indicators_from_relationships(relationship: dict[str, Any]) -> Comman
             value=indicator_name,
             dbot_score=dbot_score,
             data={"value": indicator_name},
-            context_prefix=indicator_type.capitalize()
+            context_prefix=indicator_type.capitalize(),
         )
-    
+
     command_results = CommandResults(
         indicator=indicator,
     )
     return_results(command_results)
+
 
 def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
     """
@@ -230,7 +237,7 @@ def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
         "indicator_type": response.get("indicator_type", ""),
         "counts": response.get("counts", []),
         "verdict": response.get("verdict", "unknown"),
-        "verdict_category": response.get("verdict_category", []),
+        "verdict_category": [item.get("value") for item in response.get("verdict_category", [])],
         "first_seen": response.get("first_seen", ""),
         "last_seen": response.get("last_seen", ""),
         "seen_by": response.get("source", []),
@@ -257,7 +264,7 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
         "SeenBy": response_data["seen_by"],
-        "EnrichedThreatObjectAssociation": response_data["relationships"]
+        "EnrichedThreatObjectAssociation": response_data["relationships"],
     }
 
 
@@ -292,14 +299,16 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
         create_indicators_from_relationships(response_data["relationships"])
-    
+
     # Create context data
     context_data = create_context_data(response_data)
 
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for IP: {ip}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
@@ -335,10 +344,12 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     dbot_score = create_dbot_score(domain, DBotScoreType.DOMAIN, response_data["verdict"], client.reliability)
 
     # Create Domain indicator
-    domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score, tags=response_data["tags"])
+    domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
     # Create relationships
-    relationships = create_relationships(domain, FeedIndicatorType.Domain, response_data["tags"], create_relationships_flag)
+    relationships = create_relationships(
+        domain, FeedIndicatorType.Domain, response_data["relationships"], create_relationships_flag
+    )
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
@@ -350,7 +361,9 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for Domain: {domain}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
@@ -389,7 +402,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     url_indicator = Common.URL(url=url, dbot_score=dbot_score)
 
     # Create relationships
-    relationships = create_relationships(url, FeedIndicatorType.URL, response_data["tags"], create_relationships_flag)
+    relationships = create_relationships(url, FeedIndicatorType.URL, response_data["relationships"], create_relationships_flag)
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
@@ -401,7 +414,9 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for URL: {url}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
@@ -445,7 +460,9 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
     # Create relationships
-    relationships = create_relationships(file_hash, FeedIndicatorType.File, response_data["tags"], create_relationships_flag)
+    relationships = create_relationships(
+        file_hash, FeedIndicatorType.File, response_data["relationships"], create_relationships_flag
+    )
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
@@ -457,7 +474,9 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         f"Unit 42 Intelligence results for File: {file_hash}",
         context_data,
-        headers=["Value", "Verdict", "VerdictCategory", "FirstSeen", "LastSeen"],
+        headers=["Value", "Verdict", "VerdictCategory", "SeenBy", "FirstSeen", "LastSeen"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
     return CommandResults(
