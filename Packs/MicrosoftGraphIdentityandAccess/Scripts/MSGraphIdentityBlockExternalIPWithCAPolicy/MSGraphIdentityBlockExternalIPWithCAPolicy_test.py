@@ -164,8 +164,3 @@ def test_block_ip_main_existing_location(mocker):
 def test_block_ip_main_private_ip():
     with pytest.raises(Exception, match="appears to be internal/private"):
         block_external_ip_with_ca_policy_main_logic("192.168.1.1", "loc", "policy")
-
-
-def test_block_ip_main_missing_ip():
-    with pytest.raises(Exception, match="Missing required argument"):
-        block_external_ip_with_ca_policy_main_logic(None, "loc", "policy")

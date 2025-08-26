@@ -20,7 +20,6 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
         dict[str, Any]: Parsed contents of the command result.
     """
     res = demisto.executeCommand(command, args)
-    # Fix: Ensure the function raises and exits if the response is invalid or empty
     if not res:
         raise DemistoException(f"{error_message_prefix}: Empty response for {command}.")
     if not isinstance(res, list) or not res:  # res is now guaranteed not None, check if it's an empty list or not a list
@@ -64,10 +63,10 @@ def resolve_app_object_id(app_name: str) -> str:
 
     demisto.info(f"[DEBUG] Service principal list response: {json.dumps(res, indent=2)[:1000]}")
 
-    apps: list[Any] = []  # Change 2: Use lowercase 'list' instead of 'List'
+    apps: list[Any] = []
     if isinstance(res, dict):
         apps = res.get("MSGraphApplication", [])
-    elif isinstance(res, list):  # Change 3: Use lowercase 'list'
+    elif isinstance(res, list):
         apps = res
     else:
         demisto.info(f"[DEBUG] Unexpected service principal list structure: {res}")
@@ -131,7 +130,6 @@ def _parse_error_message(res: dict[str, Any]) -> str:
         return f"Error extracting error message: {str(ex)}"
 
 
-# Change 4: Use X | Y for type annotations (originally str | None)
 def resolve_user_object_id(identifier: str) -> str | None:
     """
     Resolves a UPN or GUID to a user object ID in Azure AD.
@@ -150,7 +148,6 @@ def resolve_user_object_id(identifier: str) -> str | None:
     return user.get("id")
 
 
-# Change 5: Use X | Y for type annotations (originally str | None)
 def get_policy_name(app_name: str, policy_name: str | None) -> str:
     """
     Returns the full policy name. Uses default format if policy_name is not provided.
@@ -165,7 +162,6 @@ def get_policy_name(app_name: str, policy_name: str | None) -> str:
     return policy_name or f"{DEFAULT_POLICY_NAME_PREFIX} - {app_name}"
 
 
-# Change 6: Use X | Y for type annotations (originally dict[str, Any] | None)
 def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
     """
     Retrieves an existing Conditional Access policy by display name.
@@ -185,7 +181,7 @@ def fetch_policy_by_name(policy_name: str) -> dict[str, Any] | None:
         raise DemistoException(f"Failed to list CA policies: {_parse_error_message(res[0])}")
 
     contents = res[0].get("Contents", {})
-    if isinstance(contents, list):  # Change 7: Use lowercase 'list'
+    if isinstance(contents, list):
         policies = contents
     elif isinstance(contents, dict):
         policies = contents.get("value", [])
@@ -259,9 +255,8 @@ def main():
     """
     try:
         args = demisto.args()
-        username = args.get("username")
+        username = args["username"]
         app_name = args.get("app_name", "UnknownApp")
-        # Change 8: ensure policy_name argument is passed to get_policy_name
         policy_name = get_policy_name(app_name, args.get("policy_name"))
 
         user_id = resolve_user_object_id(username)

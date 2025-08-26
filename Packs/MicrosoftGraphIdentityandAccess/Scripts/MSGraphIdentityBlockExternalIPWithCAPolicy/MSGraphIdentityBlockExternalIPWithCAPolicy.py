@@ -246,8 +246,6 @@ def block_external_ip_with_ca_policy_main_logic(ip: str, named_location_name: st
         DemistoException: If the input IP is missing, private, or if any Azure AD operation fails.
     """
     result_message = ""
-    if not ip:
-        raise DemistoException("Missing required argument: 'ip'.")
     if is_private_ip(ip):
         raise DemistoException(f"The IP {ip} appears to be internal/private and will not be blocked.")
     named_location = get_named_ip_location(named_location_name)
