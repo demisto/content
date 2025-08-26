@@ -1128,22 +1128,13 @@ class EC2:
                         data[i].update({tag["Key"]: tag["Value"]})
             output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
 
-            metadata = (
-                "Run the following command to retrieve the next batch of incidents:\n"
-                f"!aws-ec2-security-groups-describe "
-                f"account_id={args.get('account_id')} "
-                f"region={args.get('region')} "
-                f"next_token={response.get('NextToken')}"
-                if response.get("NextToken")
-                else None
-            )
             outputs = {
                 "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": json.loads(output),
                 "AWS.EC2(true)": {"SecurityGroupsNextToken": response.get("NextToken")},
             }
             return CommandResults(
                 outputs=outputs,
-                readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data, metadata=metadata, removeNull=True),
+                readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data, removeNull=True),
                 raw_response=response,
             )
         except ClientError as err:
