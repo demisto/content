@@ -38,8 +38,7 @@ def get_azure_command_error_details(res: dict[str, Any]) -> str:
     Extracts a readable error message from an Azure command result.
     This function attempts to parse the 'Contents' field of a command result for
     structured JSON error information (e.g., from MS Graph API calls).
-    If no
-    structured error is found, it falls back to the raw contents or a generic message.
+    If no structured error is found, it falls back to the raw contents or a generic message.
     Args:
         res (dict[str, Any]): The result object from a command, typically res[0] from executeCommand.
     Returns:

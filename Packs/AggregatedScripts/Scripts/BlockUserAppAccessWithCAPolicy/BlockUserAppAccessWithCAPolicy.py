@@ -24,7 +24,6 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
         raise DemistoException(f"{error_message_prefix}: Empty response for {command}.")
     if not isinstance(res, list) or not res:  # res is now guaranteed not None, check if it's an empty list or not a list
         raise DemistoException(f"{error_message_prefix}: Invalid command result structure (not a list) for {command}.")
-    # Fix for previous error: Explicitly check for None, not just falsy.
     if res[0] is None:  # Check if the first element of the list is explicitly None
         raise DemistoException(f"{error_message_prefix}: Empty first element in command result for {command}.")
 
@@ -233,8 +232,7 @@ def update_policy(policy: dict[str, Any], user_id: str) -> str:
     if user_id in existing_users:
         return f"User is already blocked in policy '{policy.get('displayName')}'. No action taken."
 
-    # Using list() for safety, though set() conversion prevents duplicates effectively
-    updated_users = list(set(existing_users + [user_id]))  # prevent duplicates
+    updated_users = existing_users.append(user_id)
     policy_id = policy.get("id")
 
     patch_payload = {"conditions": {"users": {"includeUsers": updated_users}}}
@@ -256,8 +254,8 @@ def main():
     try:
         args = demisto.args()
         username = args["username"]
-        app_name = args.get("app_name", "UnknownApp")
-        policy_name = get_policy_name(app_name, args.get("policy_name"))
+        app_name = args["app_name"]
+        policy_name = get_policy_name(app_name, args["policy_name"])
 
         user_id = resolve_user_object_id(username)
         if not user_id:

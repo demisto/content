@@ -2,11 +2,8 @@ import pytest
 from CommonServerPython import DemistoException  # Removed CommandResults
 import json
 
-# Import the module itself. This is the correct approach.
 import BlockUserAppAccessWithCAPolicy
 
-# No need for 'from BlockUserAppAccessWithCAPolicy import (...)' anymore.
-# All functions will now be called using the module prefix: BlockUserAppAccessWithCAPolicy.function_name
 
 SCRIPT_NAME = "BlockUserAppAccessWithCAPolicy"
 
@@ -183,8 +180,6 @@ def test__parse_error_message_unexpected_exception(mocker):
 
     # Simulate an unexpected exception *within* the parsing logic itself.
     # For example, if raw_contents is an object that raises an error when converted to string or loaded as JSON.
-    # A simple way to trigger the 'except Exception as ex' block is to pass a mock
-    # that causes an exception when str() is called on it implicitly or explicitly.
     class UnstringifiableObject:
         def __str__(self):
             raise ValueError("Forced str() conversion error")
