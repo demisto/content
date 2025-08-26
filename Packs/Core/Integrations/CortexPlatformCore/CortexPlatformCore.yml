@@ -108,7 +108,6 @@ script:
             - Vulnerability Policy
             - AI Security Posture
         - auto: PREDEFINED
-
           description: Supports relative or custom time options. If you choose custom, use the start_time and end_time arguments.
           name: time_frame
           predefined:
@@ -310,9 +309,6 @@ script:
           type: String
         - contextPath: Core.Issue.issue_action_status_readable
           description: The issue action status in readable format.
-          type: String
-        - contextPath: Core.Issue.issue_name
-          description: The issue name.
           type: String
         - contextPath: Core.Issue.issue_description
           description: The issue description.

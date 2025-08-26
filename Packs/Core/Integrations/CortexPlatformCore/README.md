@@ -157,7 +157,6 @@ Multiple filter arguments will be concatenated using the AND operator, while arg
 | Core.Issue.issue_category | String | The category of the issue. |
 | Core.Issue.issue_action_status | String | The issue action status. |
 | Core.Issue.issue_action_status_readable | String | The issue action status in readable format. |
-| Core.Issue.issue_name | String | The issue name. |
 | Core.Issue.issue_description | String | The issue description. |
 | Core.Issue.agent_ip_addresses | String | The host IP address. |
 | Core.Issue.agent_hostname | String | The hostname. |
