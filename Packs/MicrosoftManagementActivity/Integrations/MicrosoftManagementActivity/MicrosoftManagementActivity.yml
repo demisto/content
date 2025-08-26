@@ -177,7 +177,7 @@ configuration:
   advanced: true
   required: false
 - display: Operations to fetch
-  additionalinfo: 'A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. Important: this field is case-sensitive.'
+  additionalinfo: 'Important: this field is case-sensitive. A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched.'
   name: operations_filter
   type: 0
   section: Collect
