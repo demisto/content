@@ -23,6 +23,8 @@ DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 HR_DATE_TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 HUMAN_READABLE_DATE_TIME_FORMAT = "%b %d, %Y at %I:%M:%S %p"
 USER_ACCESS_HYPERLINK = "{}sonar/user_intelligence?redirected_user_id={}"
+EVENT_HYPERLINK = '{}events/details/{}?clusterUuid="{}"'
+THREAT_MONITORING_HYPERLINK = "{}radar/threat_monitoring/{}"
 
 DEFAULT_IS_FETCH = False
 MAX_FETCH_MIN = 1
@@ -3478,6 +3480,11 @@ def fetch_events(client: PolarisClient, last_run: dict, params: dict, max_fetch:
         activity_nodes = activity_connection.get("nodes", [])
         processed_incident = process_activity_nodes(activity_nodes, processed_incident)
 
+        base_url = str(client._baseurl).removesuffix("api")
+        activity_series_id = node.get("activitySeriesId", "")
+        cluster_id = node.get("cluster", {}).get("id", "")
+        processed_incident["incident_link"] = EVENT_HYPERLINK.format(base_url, activity_series_id, cluster_id)
+
         # Map Severity Level
         severity = node.get("severity", "")
         if severity == "Critical" or severity == "Warning":
@@ -3609,6 +3616,9 @@ def fetch_threat_monitoring_objects(
             "severity": incident_severity,
         }
         processed_incident.update(node)
+
+        base_url = str(client._baseurl).removesuffix("api")
+        processed_incident["incident_link"] = THREAT_MONITORING_HYPERLINK.format(base_url, node.get("objectFid", ""))
 
         incidents.append(
             {

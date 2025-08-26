@@ -1456,4 +1456,4 @@ outputs:
   description: The results of the IOC scan.
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 6.0.0
