@@ -1,4 +1,4 @@
-from CommonServerPython import CommandResults, DemistoException
+from CommonServerPython import DemistoException
 from HPEArubaCentralEventCollector import main, Client
 import pytest
 import demistomock as demisto
@@ -392,6 +392,7 @@ def test_test_module():
     - Demisto Exception should be raised
     """
     from HPEArubaCentralEventCollector import test_module
+
     with pytest.raises(DemistoException):
         test_module()
 
