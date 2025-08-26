@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 import urllib3
 import requests
 import json
@@ -272,7 +271,7 @@ def main():
                 if "credentials" in creds and creds["credentials"]["name"]:
                     auth = (creds["credentials"]["user"], creds["credentials"]["password"])
                 # Creds configured in integration instance
-                elif "credentials" not in creds:
+                else:
                     auth = (creds["identifier"], creds["password"])
             else:
                 auth = None
