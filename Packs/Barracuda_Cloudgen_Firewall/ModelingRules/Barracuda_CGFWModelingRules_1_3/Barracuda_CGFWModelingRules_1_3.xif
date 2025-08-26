@@ -1,4 +1,4 @@
-[MODEL: dataset="barracuda_cgfw_raw"]
+[MODEL: dataset="barracuda_sf_raw"]
 filter _raw_log ~= "Allow\:|Detect\:"
 | alter
     priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>"),0))
