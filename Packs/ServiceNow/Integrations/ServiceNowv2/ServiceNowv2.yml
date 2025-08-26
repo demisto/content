@@ -11,6 +11,11 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: Username/Client ID
+  name: credentials
+  type: 9
+  required: false
+  section: Connect
 - additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
@@ -21,12 +26,6 @@ configuration:
   display: Use JWT Authentication
   name: use_jwt
   type: 8
-  required: false
-  section: Connect
-- display: Username/Client ID/JWT Audience (aud)
-  displaypassword: Password/Client Secret
-  name: credentials
-  type: 9
   required: false
   section: Connect
 - displaypassword: Private key
@@ -42,12 +41,6 @@ configuration:
   section: Connect
 - display: sub
   name: sub
-  type: 0
-  required: false
-  section: Connect
-- additionalinfo: If not set, Client ID will be used.
-  display: iss (Issuer)
-  name: iss
   type: 0
   required: false
   section: Connect
