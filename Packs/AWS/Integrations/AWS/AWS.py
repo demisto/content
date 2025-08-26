@@ -1130,7 +1130,10 @@ class EC2:
 
             metadata = (
                 "Run the following command to retrieve the next batch of incidents:\n"
-                f"!aws-ec2-security-groups-describe next_token={response.get('NextToken')}"
+                f"!aws-ec2-security-groups-describe "
+                f"account_id={args.get('account_id')} "
+                f"region={args.get('region')} "
+                f"next_token={response.get('NextToken')}"
                 if response.get("NextToken")
                 else None
             )
