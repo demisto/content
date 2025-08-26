@@ -289,13 +289,13 @@ def main():
             return_results(test_module(client, params.get("guid")))
 
         elif command == "fetch-events":
-            max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
+            max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
             guid = resolve_guid(client, None, params.get("guid"))
             last_run = demisto.getLastRun() or {}
             # Hardcode a 1-hour window for scheduled fetch: [now-1hour, now]
             start_ts, end_ts = time_window(hours=FETCH_EVENTS_LOOKBACK_HOURS)
             events, new_last_run = fetch_events(
-                client, guid=guid, max_fetch=int(max_fetch), last_run=last_run, start_time=start_ts, end_time=end_ts
+                client, guid=guid, max_fetch=max_fetch, last_run=last_run, start_time=start_ts, end_time=end_ts
             )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
@@ -304,7 +304,7 @@ def main():
 
         elif command == "bitsight-get-events":
             should_push = argToBoolean(args.get("should_push_events", "false"))
-            limit = arg_to_number(args.get("limit", 100))
+            limit = arg_to_number(args.get("limit")) or 100
             guid = resolve_guid(client, args.get("guid"), params.get("guid"))
             return_results(bitsight_get_events_command(client, guid, limit, should_push))
 
