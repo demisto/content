@@ -268,7 +268,7 @@ def main():
     base_url = params.get("base_url") or "https://api.bitsighttech.com"
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    api_key = params.get("apikey", "")
+    api_key = params.get("apikey", {}).get("password") or ""
 
     demisto.debug(f"Command being called is {command}")
 
