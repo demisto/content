@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from math import floor
 from typing import Any
 
@@ -257,18 +257,118 @@ def incident_for_lookup(incident: dict) -> dict:
         else None,
     }
 
-def signal_for_lookup(signal: dict) -> dict:
+def flatten_json_attributes(data: dict, prefix: str = "", max_depth: int = 3, current_depth: int = 0) -> dict:
     """
-    Returns a dictionary with selected security signal information.
+    Dynamically flatten nested JSON structure into key-value pairs.
+    
+    Args:
+        data (Dict): The JSON data to flatten
+        prefix (str): Current prefix for nested keys
+        max_depth (int): Maximum depth to traverse (prevents infinite loops)
+        current_depth (int): Current depth level
+        
+    Returns:
+        Dict: Flattened key-value pairs
+    """
+    flattened = {}
+    
+    if current_depth >= max_depth:
+        return flattened
+        
+    for key, value in data.items():
+        new_key = f"{prefix}.{key}" if prefix else key
+        
+        if isinstance(value, dict) and value:
+            # Recursively flatten nested objects
+            nested_flattened = flatten_json_attributes(value, new_key, max_depth, current_depth + 1)
+            flattened.update(nested_flattened)
+        elif isinstance(value, list) and value:
+            # Handle lists - extract first few items or summarize
+            if len(value) <= 3:
+                for i, item in enumerate(value):
+                    if isinstance(item, dict):
+                        nested_flattened = flatten_json_attributes(item, f"{new_key}[{i}]", max_depth, current_depth + 1)
+                        flattened.update(nested_flattened)
+                    else:
+                        flattened[f"{new_key}[{i}]"] = str(item)
+            else:
+                # For large lists, show first few and indicate truncation
+                flattened[new_key] = f"[{len(value)} items: {', '.join(str(v) for v in value[:3])}{'...' if len(value) > 3 else ''}]"
+        elif isinstance(value, str) and value:
+            flattened[new_key] = value
+        elif value is not None:
+            flattened[new_key] = str(value)
+            
+    return flattened
+
+
+def signal_for_lookup_dynamic(signal: dict) -> dict:
+    """
+    Returns a comprehensive dictionary with all available security signal information using dynamic extraction.
+    Similar to how Splunk handles JSON data - extracts all fields dynamically.
 
     Args:
         signal (Dict): A dictionary representing a security signal.
 
     Returns:
-        Dict: A dictionary containing the following keys.
+        Dict: A dictionary containing dynamically extracted fields.
+    """
+    # Start with basic signal info
+    result = {
+        "ID": str(signal.get("id", "")),
+        "Type": str(signal.get("type", ""))
+    }
+    
+    # Get all attributes and flatten them
+    attributes = signal.get("attributes", {})
+    if attributes:
+        flattened_attributes = flatten_json_attributes(attributes)
+        result.update(flattened_attributes)
+    
+    # Format timestamp if it exists
+    if "timestamp" in result:
+        try:
+            result["Timestamp (Formatted)"] = datetime.fromisoformat(result["timestamp"]).strftime(UI_DATE_FORMAT)
+        except (ValueError, TypeError):
+            pass
+    
+    # Special handling for tags - both as list and as parsed key-value pairs
+    if "tags" in result and isinstance(attributes.get("tags"), list):
+        tags = attributes.get("tags", [])
+        result["Tags (List)"] = tags
+        # Parse tags into key-value pairs (Splunk-like behavior)
+        tag_dict = {}
+        for tag in tags:
+            if isinstance(tag, str) and ":" in tag:
+                key, value = tag.split(":", 1)
+                tag_dict[f"tag.{key}"] = value
+        result.update(tag_dict)
+    
+    # Add any relationships or other top-level fields
+    for key in ["relationships", "links", "meta"]:
+        if key in signal:
+            flattened_extra = flatten_json_attributes({key: signal[key]}, max_depth=2)
+            result.update(flattened_extra)
+    
+    return result
+
+
+def signal_for_lookup(signal: dict) -> dict:
+    """
+    Returns a dictionary with security signal information - now with enhanced dynamic extraction.
+    This version provides both the essential fields (for backward compatibility) 
+    and comprehensive dynamic extraction (like Splunk).
+
+    Args:
+        signal (Dict): A dictionary representing a security signal.
+
+    Returns:
+        Dict: A dictionary containing essential and dynamically extracted fields.
     """
     attributes = signal.get("attributes", {})
-    return {
+    
+    # Essential fields for backward compatibility
+    essential_fields = {
         "ID": str(signal.get("id")),
         "Message": str(attributes.get("message", "")),
         "Timestamp": datetime.fromisoformat(attributes.get("timestamp", "")).strftime(UI_DATE_FORMAT)
@@ -279,27 +379,90 @@ def signal_for_lookup(signal: dict) -> dict:
         "Status": str(attributes.get("status", "")),
         "Rule Name": str(attributes.get("rule", {}).get("name", "")),
         "Rule ID": str(attributes.get("rule", {}).get("id", "")),
-        "Tag" : {t[0]: t[1] for t in filter(lambda x: len(x) == 2, map(lambda x: x.split(':', 1), attributes.get("tags", [])))},
-        "Tags": attributes.get("tags", []),
         "Source": str(attributes.get("source", "")),
         "Service": str(attributes.get("service", "")),
         "Host": str(attributes.get("host", "")),
         "Assignee": str(attributes.get("assignee", "")),
+        "Tags": attributes.get("tags", []),
     }
+    
+    # Get comprehensive dynamic extraction
+    dynamic_fields = signal_for_lookup_dynamic(signal)
+    
+    # Merge essential and dynamic fields (essential fields take precedence for conflicts)
+    result = dynamic_fields.copy()
+    result.update(essential_fields)
+    
+    return result
 
 
-def log_for_lookup(log: dict) -> dict:
+def log_for_lookup_dynamic(log: dict) -> dict:
     """
-    Returns a dictionary with selected log information.
+    Returns a comprehensive dictionary with all available log information using dynamic extraction.
+    Similar to how Splunk handles JSON data - extracts all fields dynamically.
 
     Args:
         log (Dict): A dictionary representing a log entry.
 
     Returns:
-        Dict: A dictionary containing the following keys.
+        Dict: A dictionary containing dynamically extracted fields.
+    """
+    # Start with basic log info
+    result = {
+        "ID": str(log.get("id", "")),
+        "Type": str(log.get("type", ""))
+    }
+    
+    # Get all attributes and flatten them
+    attributes = log.get("attributes", {})
+    if attributes:
+        flattened_attributes = flatten_json_attributes(attributes)
+        result.update(flattened_attributes)
+    
+    # Format timestamp if it exists
+    if "timestamp" in result:
+        try:
+            result["Timestamp (Formatted)"] = datetime.fromisoformat(result["timestamp"]).strftime(UI_DATE_FORMAT)
+        except (ValueError, TypeError):
+            pass
+    
+    # Special handling for tags - both as list and as parsed key-value pairs
+    if "tags" in result and isinstance(attributes.get("tags"), list):
+        tags = attributes.get("tags", [])
+        result["Tags (List)"] = tags
+        # Parse tags into key-value pairs (Splunk-like behavior)
+        tag_dict = {}
+        for tag in tags:
+            if isinstance(tag, str) and ":" in tag:
+                key, value = tag.split(":", 1)
+                tag_dict[f"tag.{key}"] = value
+        result.update(tag_dict)
+    
+    # Add any relationships or other top-level fields
+    for key in ["relationships", "links", "meta"]:
+        if key in log:
+            flattened_extra = flatten_json_attributes({key: log[key]}, max_depth=2)
+            result.update(flattened_extra)
+    
+    return result
+
+
+def log_for_lookup(log: dict) -> dict:
+    """
+    Returns a dictionary with log information - now with enhanced dynamic extraction.
+    This version provides both the essential fields (for backward compatibility) 
+    and comprehensive dynamic extraction (like Splunk).
+
+    Args:
+        log (Dict): A dictionary representing a log entry.
+
+    Returns:
+        Dict: A dictionary containing essential and dynamically extracted fields.
     """
     attributes = log.get("attributes", {})
-    return {
+    
+    # Essential fields for backward compatibility
+    essential_fields = {
         "ID": str(log.get("id")),
         "Message": str(attributes.get("message", "")),
         "Timestamp": datetime.fromisoformat(attributes.get("timestamp", "")).strftime(UI_DATE_FORMAT)
@@ -309,9 +472,17 @@ def log_for_lookup(log: dict) -> dict:
         "Host": str(attributes.get("host", "")),
         "Source": str(attributes.get("source", "")),
         "Status": str(attributes.get("status", "")),
-        "Tag" : {t[0]: t[1] for t in filter(lambda x: len(x) == 2, map(lambda x: x.split(':', 1), attributes.get("tags", [])))},
         "Tags": attributes.get("tags", []),
     }
+    
+    # Get comprehensive dynamic extraction
+    dynamic_fields = log_for_lookup_dynamic(log)
+    
+    # Merge essential and dynamic fields (essential fields take precedence for conflicts)
+    result = dynamic_fields.copy()
+    result.update(essential_fields)
+    
+    return result
 
 
 def logs_search_query(args: dict) -> str:
@@ -1643,7 +1814,7 @@ def add_utc_offset(dt_str: str):
         str: A string representing the input datetime with a UTC offset, in ISO format (YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00)
     """
     dt = datetime.fromisoformat(dt_str)
-    dt_with_offset = dt.replace(tzinfo=UTC)
+    dt_with_offset = dt.replace(tzinfo=timezone.utc)
     return dt_with_offset.isoformat()
 
 
