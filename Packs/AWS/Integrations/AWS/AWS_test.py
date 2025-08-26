@@ -1627,6 +1627,7 @@ def test_ec2_authorize_security_group_egress_command_security_group_not_found(mo
 
     mock_client = mocker.Mock()
     demisto_results = mocker.patch("AWS.demisto.results")
+    mocker.patch("AWS.demisto.error")
     error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "InvalidGroup.NotFound"}}
     mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
 
