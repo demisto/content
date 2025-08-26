@@ -1,7 +1,7 @@
 import json
 from datetime import datetime, date
 from http import HTTPStatus
-
+import demistomock as demisto
 import pytest
 
 from CommonServerPython import CommandResults, DemistoException
@@ -2082,7 +2082,7 @@ def test_parse_tag_field_with_mixed_valid_and_invalid_tags():
     assert result == [{"Key": "Key1", "Value": "Value1"}, {"Key": "Key2", "Value": "Value2"}]
 
 
-def test_parse_tag_field_with_empty_value():
+def test_parse_tag_field_with_empty_value(mocker):
     """
     Given: A tag string with empty value part.
     When: parse_tag_field processes the input with empty value.
@@ -2090,8 +2090,9 @@ def test_parse_tag_field_with_empty_value():
     """
     from AWS import parse_tag_field
 
+    mocker.patch.object(demisto, "debug")
     result = parse_tag_field("key=Key1,value=")
-    assert result == [{"Key": "Name", "Value": ""}]
+    assert result == [{"Key": "Key1", "Value": ""}]
 
 
 def test_parse_tag_field_with_special_characters_in_key():
@@ -2178,7 +2179,7 @@ def test_parse_tag_field_with_exactly_fifty_tags(mocker):
     """
     from AWS import parse_tag_field
 
-    mock_debug = mocker.patch("demisto.debug")
+    mock_debug = mocker.patch.object(demisto, "debug")
 
     tags_string = ";".join([f"key=Key{i},value=Value{i}" for i in range(50)])
     result = parse_tag_field(tags_string)
@@ -2197,7 +2198,7 @@ def test_parse_tag_field_with_more_than_fifty_tags(mocker):
     """
     from AWS import parse_tag_field
 
-    mock_debug = mocker.patch("demisto.debug")
+    mock_debug = mocker.patch.object(demisto, "debug")
 
     tags_string = ";".join([f"key=Key{i},value=Value{i}" for i in range(55)])
     result = parse_tag_field(tags_string)
@@ -2229,7 +2230,7 @@ def test_parse_tag_field_with_extra_whitespace():
     from AWS import parse_tag_field
 
     result = parse_tag_field("  key=Key1,value=Value1  ")
-    assert result == []
+    assert result == [{"Key": "Key1", "Value": "Value1"}]
 
 
 def test_parse_tag_field_with_numeric_keys_and_values():
@@ -2252,7 +2253,7 @@ def test_parse_tag_field_debug_logging_for_invalid_tag(mocker):
     """
     from AWS import parse_tag_field
 
-    mock_debug = mocker.patch("demisto.debug")
+    mock_debug = mocker.patch.object(demisto, "debug")
 
     invalid_tag = "invalid-format"
     result = parse_tag_field(invalid_tag)
