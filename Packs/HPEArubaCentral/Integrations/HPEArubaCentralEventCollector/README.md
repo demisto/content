@@ -71,7 +71,7 @@ There is no context output for this command.
 ### aruba-auth-test
 
 ***
-An alternative command for testing an instance due to Aruba's API limitations.
+Use this command to test the connectivity of the HPE Aruba Central instance.
 
 #### Base Command
 

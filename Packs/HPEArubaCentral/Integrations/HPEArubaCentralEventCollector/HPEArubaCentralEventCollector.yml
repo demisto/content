@@ -91,7 +91,7 @@ script:
     description: Gets events from Aruba Central.
     execution: false
     name: aruba-central-get-events
-  - description: An alternative command for testing an instance due to Aruba's API limitations.
+  - description: Use this command to test the connectivity of the HPE Aruba Central instance.
     name: aruba-auth-test
     execution: false
     deprecated: false
