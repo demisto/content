@@ -13,7 +13,7 @@ RETURN_ERROR_TARGET = "MailSenderNew.return_error"
         ("test-before\ntest-after", "test-after", "foo=baz"),
         ("test-before\ntest-after", "test-after", "foo=baz"),
         ("\xd7\xa2\xd7\x91\xd7\xa8\xd7\x99\xd7\xaa", "=?utf-8?", "foo=baz"),
-        # non-ascii char utf-8 encoded
+        # non-ascii  char utf-8 encoded
         ("עברית", "=?utf-8?", "foo=baz"),
     ],
 )  # noqa: E124
