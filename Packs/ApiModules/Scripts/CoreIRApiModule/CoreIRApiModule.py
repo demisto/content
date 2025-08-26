@@ -4472,7 +4472,7 @@ def get_cases_command(client, args):
 
 def get_extra_data_for_case_id_command(client, args, remove_nulls_from_alerts=True):
     case_id = args.get("case_id")
-    issues_limit = min(int(args.get("issues_limit", 1000)))
+    issues_limit = min(int(args.get("issues_limit", 1000)),1000)
     request_data = {"incident_id": case_id, "alerts_limit": issues_limit, "full_alert_fields": True}
     if remove_nulls_from_alerts:
         request_data["drop_nulls"] = True
