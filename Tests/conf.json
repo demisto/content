@@ -5715,6 +5715,10 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "IsolateEndpoint - Testplaybook",
+            "integrations": "CrowdstrikeFalcon"
+        },
+        {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
