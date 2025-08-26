@@ -19,7 +19,6 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 
 ## Configure Prisma Cloud Compute in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch incidents |  | False |
@@ -33,7 +32,6 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 | Incident type |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Incidents Fetch Interval |  | False |
-
 
 ## Configure Prisma Cloud Compute User Roles
 
@@ -84,60 +82,60 @@ Get information about the hosts and their profile events. This command supports 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | A comma-separated list of profile (hostname) IDs. For example, !prisma-cloud-compute-profile-host-list hostname="*149*,*257*". | Optional | 
-| limit | The maximum number of hosts and their profile events to return. Must be between 1-50. Default is 15. | Optional | 
-| offset | The offset by which to begin listing hosts and their profile events. Default is 0. | Optional | 
+| hostname | A comma-separated list of profile (hostname) IDs. For example, !prisma-cloud-compute-profile-host-list hostname="*149*,*257*". | Optional |
+| limit | The maximum number of hosts and their profile events to return. Must be between 1-50. Default is 15. | Optional |
+| offset | The offset by which to begin listing hosts and their profile events. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.ProfileHost._id | String | The profile ID \(hostname\). | 
-| PrismaCloudCompute.ProfileHost.accountID | String | The cloud account ID associated with the profile. | 
-| PrismaCloudCompute.ProfileHost.apps.listeningPorts.command | String | The command that triggered the connection. | 
-| PrismaCloudCompute.ProfileHost.apps.listeningPorts.modified | Date | The timestamp of when the event occurred. | 
-| PrismaCloudCompute.ProfileHost.apps.listeningPorts.port | Number | The listening port number. | 
-| PrismaCloudCompute.ProfileHost.apps.listeningPorts.processPath | String | The path to the process that uses the port. | 
-| PrismaCloudCompute.ProfileHost.apps.name | String | The app name. | 
-| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.command | String | The command that triggered the connection. | 
-| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.country | String | The country ISO code for the given IP address. | 
-| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.ip | String | The IP address captured over this port. | 
-| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.modified | Date | The timestamp of when the event occurred. | 
-| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.port | Number | The outgoing port number. | 
-| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.processPath | String | The path to the process that uses the port. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.command | String | The executed command. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.md5 | String | The process binary MD5 sum. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.modified | Boolean | Whether the process binary was modified after the container started. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.path | String | The process binary path. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.ppath | String | The parent process path. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.time | Date | The time in which the process was added. If the process was modified, time is the modification time. | 
-| PrismaCloudCompute.ProfileHost.apps.processes.user | String | The username of the user who started the process. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.command | String | The executed command. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.md5 | String | The process binary MD5 sum. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.modified | Boolean | Whether the process binary was modified after the container started. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.path | String | The process binary path. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.ppath | String | The parent process path. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.time | Date | The time in which the process was added. If the process was modified, time is the modification time. | 
-| PrismaCloudCompute.ProfileHost.apps.startupProcess.user | String | The username of the user who started the process. | 
-| PrismaCloudCompute.ProfileHost.collections | String | A list of collections to which this profile applies. | 
-| PrismaCloudCompute.ProfileHost.created | Date | The profile creation time. | 
-| PrismaCloudCompute.ProfileHost.hash | Number | The uint32 hash associated with the profile. | 
-| PrismaCloudCompute.ProfileHost.labels | String | The labels associated with the profile. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.command | String | The executed command. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.country | String | The SSH client's country of origin. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.ip | String | The connection client IP address. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.loginTime | Date | The SSH login time. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.md5 | String | The process binary MD5 sum. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.modified | Boolean | Whether the process binary was modified after the container started. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.path | String | The process binary path. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.ppath | String | The parent process path. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.time | Date | The time in which the process was added. If the process was modified, time is the modification time. | 
-| PrismaCloudCompute.ProfileHost.sshEvents.user | String | The username of the user who started the process. | 
-| PrismaCloudCompute.ProfileHost.time | Date | The last time this profile was modified. | 
-| PrismaCloudCompute.ProfileHost.geoip.countries.code | String | The country code of the computer that accessed the host. | 
-| PrismaCloudCompute.ProfileHost.geoip.countries.ip | String | The IP address of the computer that accessed the host. | 
-| PrismaCloudCompute.ProfileHost.geoip.countries.modified | Date | The last time the IP address associated with this country accessed the host console. | 
-| PrismaCloudCompute.ProfileHost.geoip.modified | Date | The last time any of the country IP addresses accessed the host console. | 
+| PrismaCloudCompute.ProfileHost._id | String | The profile ID \(hostname\). |
+| PrismaCloudCompute.ProfileHost.accountID | String | The cloud account ID associated with the profile. |
+| PrismaCloudCompute.ProfileHost.apps.listeningPorts.command | String | The command that triggered the connection. |
+| PrismaCloudCompute.ProfileHost.apps.listeningPorts.modified | Date | The timestamp of when the event occurred. |
+| PrismaCloudCompute.ProfileHost.apps.listeningPorts.port | Number | The listening port number. |
+| PrismaCloudCompute.ProfileHost.apps.listeningPorts.processPath | String | The path to the process that uses the port. |
+| PrismaCloudCompute.ProfileHost.apps.name | String | The app name. |
+| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.command | String | The command that triggered the connection. |
+| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.country | String | The country ISO code for the given IP address. |
+| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.ip | String | The IP address captured over this port. |
+| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.modified | Date | The timestamp of when the event occurred. |
+| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.port | Number | The outgoing port number. |
+| PrismaCloudCompute.ProfileHost.apps.outgoingPorts.processPath | String | The path to the process that uses the port. |
+| PrismaCloudCompute.ProfileHost.apps.processes.command | String | The executed command. |
+| PrismaCloudCompute.ProfileHost.apps.processes.md5 | String | The process binary MD5 sum. |
+| PrismaCloudCompute.ProfileHost.apps.processes.modified | Boolean | Whether the process binary was modified after the container started. |
+| PrismaCloudCompute.ProfileHost.apps.processes.path | String | The process binary path. |
+| PrismaCloudCompute.ProfileHost.apps.processes.ppath | String | The parent process path. |
+| PrismaCloudCompute.ProfileHost.apps.processes.time | Date | The time in which the process was added. If the process was modified, time is the modification time. |
+| PrismaCloudCompute.ProfileHost.apps.processes.user | String | The username of the user who started the process. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.command | String | The executed command. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.md5 | String | The process binary MD5 sum. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.modified | Boolean | Whether the process binary was modified after the container started. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.path | String | The process binary path. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.ppath | String | The parent process path. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.time | Date | The time in which the process was added. If the process was modified, time is the modification time. |
+| PrismaCloudCompute.ProfileHost.apps.startupProcess.user | String | The username of the user who started the process. |
+| PrismaCloudCompute.ProfileHost.collections | String | A list of collections to which this profile applies. |
+| PrismaCloudCompute.ProfileHost.created | Date | The profile creation time. |
+| PrismaCloudCompute.ProfileHost.hash | Number | The uint32 hash associated with the profile. |
+| PrismaCloudCompute.ProfileHost.labels | String | The labels associated with the profile. |
+| PrismaCloudCompute.ProfileHost.sshEvents.command | String | The executed command. |
+| PrismaCloudCompute.ProfileHost.sshEvents.country | String | The SSH client's country of origin. |
+| PrismaCloudCompute.ProfileHost.sshEvents.ip | String | The connection client IP address. |
+| PrismaCloudCompute.ProfileHost.sshEvents.loginTime | Date | The SSH login time. |
+| PrismaCloudCompute.ProfileHost.sshEvents.md5 | String | The process binary MD5 sum. |
+| PrismaCloudCompute.ProfileHost.sshEvents.modified | Boolean | Whether the process binary was modified after the container started. |
+| PrismaCloudCompute.ProfileHost.sshEvents.path | String | The process binary path. |
+| PrismaCloudCompute.ProfileHost.sshEvents.ppath | String | The parent process path. |
+| PrismaCloudCompute.ProfileHost.sshEvents.time | Date | The time in which the process was added. If the process was modified, time is the modification time. |
+| PrismaCloudCompute.ProfileHost.sshEvents.user | String | The username of the user who started the process. |
+| PrismaCloudCompute.ProfileHost.time | Date | The last time this profile was modified. |
+| PrismaCloudCompute.ProfileHost.geoip.countries.code | String | The country code of the computer that accessed the host. |
+| PrismaCloudCompute.ProfileHost.geoip.countries.ip | String | The IP address of the computer that accessed the host. |
+| PrismaCloudCompute.ProfileHost.geoip.countries.modified | Date | The last time the IP address associated with this country accessed the host console. |
+| PrismaCloudCompute.ProfileHost.geoip.modified | Date | The last time any of the country IP addresses accessed the host console. |
 
 ### prisma-cloud-compute-profile-container-list
 
@@ -561,6 +559,7 @@ ci
     }
 }
 ```
+
 ### prisma-cloud-compute-profile-container-hosts-list
 
 ***
@@ -574,16 +573,16 @@ Get the hosts where a specific container is running.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Container profile ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command. | Required | 
-| limit | The maximum number of hosts to return. Must be between 1-50. Default is 50. | Optional | 
-| offset | The offset by which to begin listing hosts of the container. Default is 0. | Optional | 
+| id | Container profile ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command. | Required |
+| limit | The maximum number of hosts to return. Must be between 1-50. Default is 50. | Optional |
+| offset | The offset by which to begin listing hosts of the container. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.ProfileContainerHost.containerID | String | The container ID. | 
-| PrismaCloudCompute.ProfileContainerHost.hostsIDs | String | The list of hosts where this container is running. | 
+| PrismaCloudCompute.ProfileContainerHost.containerID | String | The container ID. |
+| PrismaCloudCompute.ProfileContainerHost.hostsIDs | String | The list of hosts where this container is running. |
 
 #### Human Readable Output
 >
@@ -617,6 +616,7 @@ operator
 There is no context output for this command.
 
 #### Command Example
+
 ### prisma-cloud-compute-profile-container-forensic-list
 
 ***
@@ -630,44 +630,43 @@ Get runtime forensics data for a specific container on a specific. host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The container ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command. | Required | 
-| collections | The collections scoping the query. | Optional | 
-| hostname | The hostname for which data should be fetched. Can be retrieved from the "prisma-cloud-compute-hosts-list" command. | Required | 
-| incident_id | A comma-separated list of incident IDs if the request type is an incident. | Optional | 
-| limit | The maximum number of forensics data records to return. Must be between 1-50. Default is 20. | Optional | 
-| offset | The offset by which to begin listing records from. Default is 0. | Optional | 
+| id | The container ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command. | Required |
+| collections | The collections scoping the query. | Optional |
+| hostname | The hostname for which data should be fetched. Can be retrieved from the "prisma-cloud-compute-hosts-list" command. | Required |
+| incident_id | A comma-separated list of incident IDs if the request type is an incident. | Optional |
+| limit | The maximum number of forensics data records to return. Must be between 1-50. Default is 20. | Optional |
+| offset | The offset by which to begin listing records from. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.ContainerForensic.containerID | String | The container ID. | 
-| PrismaCloudCompute.ContainerForensic.hostname | String | The hostname. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.allPorts | Boolean | Whether all listening ports are allowed. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.attack | String | The event attack type. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.category | String | The incident category. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.command | String | The event command. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.containerId | String | The event container ID. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.dstIP | String | The destination IP address of the connection. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.dstPort | String | The destination port. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.dstProfileID | String | The profile ID of the connection destination. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.effect | String | The runtime audit effect. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.listeningStartTime | Date | The port listening start time. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.message | String | The runtime audit message. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.networkCollectionType | String | The type of the network collection method. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.outbound | Boolean | Whether the port is outbound. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.path | String | The event path. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.pid | Number | The event process ID. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.port | Number | The listening port. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.ppid | Number | The event parent process ID. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.process | String | The event process description. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.srcIP | String | The source IP address of the connection. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.srcProfileID | String | The profile ID of the connection source. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.static | Boolean | Whether the event was added to the profile without behavioral indications. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.type | String | The event type. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.timestamp | Date | The event timestamp. | 
-| PrismaCloudCompute.ContainerForensic.Forensics.user | String | The event user. | 
-
+| PrismaCloudCompute.ContainerForensic.containerID | String | The container ID. |
+| PrismaCloudCompute.ContainerForensic.hostname | String | The hostname. |
+| PrismaCloudCompute.ContainerForensic.Forensics.allPorts | Boolean | Whether all listening ports are allowed. |
+| PrismaCloudCompute.ContainerForensic.Forensics.attack | String | The event attack type. |
+| PrismaCloudCompute.ContainerForensic.Forensics.category | String | The incident category. |
+| PrismaCloudCompute.ContainerForensic.Forensics.command | String | The event command. |
+| PrismaCloudCompute.ContainerForensic.Forensics.containerId | String | The event container ID. |
+| PrismaCloudCompute.ContainerForensic.Forensics.dstIP | String | The destination IP address of the connection. |
+| PrismaCloudCompute.ContainerForensic.Forensics.dstPort | String | The destination port. |
+| PrismaCloudCompute.ContainerForensic.Forensics.dstProfileID | String | The profile ID of the connection destination. |
+| PrismaCloudCompute.ContainerForensic.Forensics.effect | String | The runtime audit effect. |
+| PrismaCloudCompute.ContainerForensic.Forensics.listeningStartTime | Date | The port listening start time. |
+| PrismaCloudCompute.ContainerForensic.Forensics.message | String | The runtime audit message. |
+| PrismaCloudCompute.ContainerForensic.Forensics.networkCollectionType | String | The type of the network collection method. |
+| PrismaCloudCompute.ContainerForensic.Forensics.outbound | Boolean | Whether the port is outbound. |
+| PrismaCloudCompute.ContainerForensic.Forensics.path | String | The event path. |
+| PrismaCloudCompute.ContainerForensic.Forensics.pid | Number | The event process ID. |
+| PrismaCloudCompute.ContainerForensic.Forensics.port | Number | The listening port. |
+| PrismaCloudCompute.ContainerForensic.Forensics.ppid | Number | The event parent process ID. |
+| PrismaCloudCompute.ContainerForensic.Forensics.process | String | The event process description. |
+| PrismaCloudCompute.ContainerForensic.Forensics.srcIP | String | The source IP address of the connection. |
+| PrismaCloudCompute.ContainerForensic.Forensics.srcProfileID | String | The profile ID of the connection source. |
+| PrismaCloudCompute.ContainerForensic.Forensics.static | Boolean | Whether the event was added to the profile without behavioral indications. |
+| PrismaCloudCompute.ContainerForensic.Forensics.type | String | The event type. |
+| PrismaCloudCompute.ContainerForensic.Forensics.timestamp | Date | The event timestamp. |
+| PrismaCloudCompute.ContainerForensic.Forensics.user | String | The event user. |
 
 ### prisma-cloud-compute-custom-feeds-malware-add
 
@@ -701,7 +700,6 @@ There is no context output for this command.
 >
 >Successfully updated the custom md5 malware feeds
 
-
 ### cve
 
 ***
@@ -719,6 +717,7 @@ devOps
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+
 ### prisma-cloud-compute-host-forensic-list
 
 ***
@@ -732,36 +731,36 @@ Get forensics on a specific host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The host ID. Can be retrieved from the "prisma-cloud-compute-hosts-list" command. | Required | 
-| collections | A comma-separated list of collections. | Optional | 
-| incident_id | A comma-separated list of incident IDs in case the request type is an incident. | Optional | 
-| limit | The maximum number of forensics data records to return. Must be between 1-50. Default is 20. | Optional | 
-| offset | The offset by which to begin listing host forensics from. Default is 0. | Optional | 
+| id | The host ID. Can be retrieved from the "prisma-cloud-compute-hosts-list" command. | Required |
+| collections | A comma-separated list of collections. | Optional |
+| incident_id | A comma-separated list of incident IDs in case the request type is an incident. | Optional |
+| limit | The maximum number of forensics data records to return. Must be between 1-50. Default is 20. | Optional |
+| offset | The offset by which to begin listing host forensics from. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.HostForensic.Forensics.app | String | The application associated with the event. | 
-| PrismaCloudCompute.HostForensic.Forensics.attack | String | The event attack type. | 
-| PrismaCloudCompute.HostForensic.Forensics.category | String | The incident category. | 
-| PrismaCloudCompute.HostForensic.Forensics.command | String | The event command. | 
-| PrismaCloudCompute.HostForensic.Forensics.country | String | The country associated with the event. | 
-| PrismaCloudCompute.HostForensic.Forensics.effect | String | The runtime audit effect. | 
-| PrismaCloudCompute.HostForensic.Forensics.interactive | Boolean | Whether the event is interactive. | 
-| PrismaCloudCompute.HostForensic.Forensics.ip | String | The IP address associated with the event. | 
-| PrismaCloudCompute.HostForensic.Forensics.listeningStartTime | Date | The listening port start time. | 
-| PrismaCloudCompute.HostForensic.Forensics.message | String | The runtime audit message. | 
-| PrismaCloudCompute.HostForensic.Forensics.path | String | The event path. | 
-| PrismaCloudCompute.HostForensic.Forensics.pid | Number | The event process ID. | 
-| PrismaCloudCompute.HostForensic.Forensics.port | Number | The listening port. | 
-| PrismaCloudCompute.HostForensic.Forensics.ppath | String | The event parent path. | 
-| PrismaCloudCompute.HostForensic.Forensics.ppid | Number | The event parent process ID. | 
-| PrismaCloudCompute.HostForensic.Forensics.process | String | The event process. | 
-| PrismaCloudCompute.HostForensic.Forensics.timestamp | Date | The event timestamp. | 
-| PrismaCloudCompute.HostForensic.Forensics.type | String | The event type. | 
-| PrismaCloudCompute.HostForensic.Forensics.user | String | The event user. | 
-| PrismaCloudCompute.HostForensic.hostID | String | The host ID that was analyzed. | 
+| PrismaCloudCompute.HostForensic.Forensics.app | String | The application associated with the event. |
+| PrismaCloudCompute.HostForensic.Forensics.attack | String | The event attack type. |
+| PrismaCloudCompute.HostForensic.Forensics.category | String | The incident category. |
+| PrismaCloudCompute.HostForensic.Forensics.command | String | The event command. |
+| PrismaCloudCompute.HostForensic.Forensics.country | String | The country associated with the event. |
+| PrismaCloudCompute.HostForensic.Forensics.effect | String | The runtime audit effect. |
+| PrismaCloudCompute.HostForensic.Forensics.interactive | Boolean | Whether the event is interactive. |
+| PrismaCloudCompute.HostForensic.Forensics.ip | String | The IP address associated with the event. |
+| PrismaCloudCompute.HostForensic.Forensics.listeningStartTime | Date | The listening port start time. |
+| PrismaCloudCompute.HostForensic.Forensics.message | String | The runtime audit message. |
+| PrismaCloudCompute.HostForensic.Forensics.path | String | The event path. |
+| PrismaCloudCompute.HostForensic.Forensics.pid | Number | The event process ID. |
+| PrismaCloudCompute.HostForensic.Forensics.port | Number | The listening port. |
+| PrismaCloudCompute.HostForensic.Forensics.ppath | String | The event parent path. |
+| PrismaCloudCompute.HostForensic.Forensics.ppid | Number | The event parent process ID. |
+| PrismaCloudCompute.HostForensic.Forensics.process | String | The event process. |
+| PrismaCloudCompute.HostForensic.Forensics.timestamp | Date | The event timestamp. |
+| PrismaCloudCompute.HostForensic.Forensics.type | String | The event type. |
+| PrismaCloudCompute.HostForensic.Forensics.user | String | The event user. |
+| PrismaCloudCompute.HostForensic.hostID | String | The host ID that was analyzed. |
 
 | PrismaCloudCompute.DefenderDetails.tasClusterID | String | The ID used to identify the TAS cluster of the defender. Typically will be the cloud controller API address |
 | PrismaCloudCompute.DefenderDetails.type | String | The type of the defender \(registry scanner/kubernetes node/etc...\). |
@@ -968,6 +967,7 @@ There is no context output for this command.
 >|Name|Description|Owner|Modified|
 >|---|---|---|---|
 >| All | System - all resources collection | system | September 02, 2021 11:05:06 AM |
+>
 ### prisma-cloud-compute-custom-feeds-ip-remove
 
 ***
@@ -981,11 +981,12 @@ Remove a list of IPs from the system's block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of custom IP addresses to remove from the banned IPs list. For example ip=1.1.1.1,2.2.2.2. | Required | 
+| ip | A comma-separated list of custom IP addresses to remove from the banned IPs list. For example ip=1.1.1.1,2.2.2.2. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command Example
 
 ```!prisma-cloud-compute-container-namespace-list limit=3```
@@ -1063,6 +1064,7 @@ vulnerabilityManager
 | PrismaCloudCompute.ReportsImagesScan.complianceRiskScore | Number | Compliance risk score for the image. |
 | PrismaCloudCompute.ReportsImagesScan.creationTime | Date | Date/time when the image was created. |
 | PrismaCloudCompute.ReportsImagesScan.distro | String | Full name of the distribution. |
+
 ### prisma-cloud-compute-custom-feeds-malware-add
 
 ***
@@ -1076,8 +1078,8 @@ Add custom MD5 malware hashes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name that will be attached to the MD5 records. | Required | 
-| md5 | A comma-separated list of MD5 hashes to be added. | Required | 
+| name | The name that will be attached to the MD5 records. | Required |
+| md5 | A comma-separated list of MD5 hashes to be added. | Required |
 
 #### Context Output
 
@@ -1095,6 +1097,7 @@ There is no context output for this command.
 | PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore | Number | Image's CVE risk score. |
 | PrismaCloudCompute.ReportsImagesScan.wildFireUsage | Unknown | The Wildfire usage stats. The period for the usage varies with the context. |
 | PrismaCloudCompute.ReportsImagesScan.complianceIssuesCount | Number | Number of compliance issues. |
+
 ### cve
 
 ***
@@ -1108,22 +1111,22 @@ Get information about the CVEs in the system. Will return a maximum of 50 record
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Deprecated. Use the `cve` argument instead. | Optional | 
-| cve | A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546. | Optional | 
+| cve_id | Deprecated. Use the `cve` argument instead. | Optional |
+| cve | A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE, for example: CVE-2015-1653. | 
-| CVE.CVSS | String | The CVSS of the CVE, for example: 10.0. | 
-| CVE.Modified | Date | The timestamp of when the CVE was last modified. | 
-| CVE.Description | String | A description of the CVE. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| CVE.ID | String | The ID of the CVE, for example: CVE-2015-1653. |
+| CVE.CVSS | String | The CVSS of the CVE, for example: 10.0. |
+| CVE.Modified | Date | The timestamp of when the CVE was last modified. |
+| CVE.Description | String | A description of the CVE. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
                 "sha256:25f89c88aa30915565de42481044fdc3edcde2edcd88c32098b16adbe09c65ec", 
                 "sha256:607e311316ef7ea1437fe4b8f7a6f04f9a61b0f21e2d4ee0611c05bd1d245ff7", 
@@ -1181,6 +1184,7 @@ Get information about the CVEs in the system. Will return a maximum of 50 record
             "complianceDistribution": {
                 "high": 1, 
                 "total": 1, 
+
 ### prisma-cloud-compute-defenders-list
 
 ***
@@ -1194,38 +1198,38 @@ Retrieve a list of defenders and their information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster | The cluster name by which to scope the query. | Optional | 
-| hostname | Name of a specific defender to retrieve. | Optional | 
-| type | Indicates the defender types to return (e.g., docker, dockerWindows, cri, etc.). | Optional | 
-| connected | Indicates whether to return only connected defenders (true) or disconnected defenders (false). Possible values are: true, false. | Optional | 
-| limit | The maximum number of defender records to return. Default is 20. | Optional | 
-| offset | The offset number by which to begin listing defenders and their information. Default is 0. | Optional | 
+| cluster | The cluster name by which to scope the query. | Optional |
+| hostname | Name of a specific defender to retrieve. | Optional |
+| type | Indicates the defender types to return (e.g., docker, dockerWindows, cri, etc.). | Optional |
+| connected | Indicates whether to return only connected defenders (true) or disconnected defenders (false). Possible values are: true, false. | Optional |
+| limit | The maximum number of defender records to return. Default is 20. | Optional |
+| offset | The offset number by which to begin listing defenders and their information. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.DefenderDetails.category | String | The category of the defender type \(host/container/serverless\). Range of acceptable values: container, host, serverless, appEmbedded. | 
-| PrismaCloudCompute.DefenderDetails.certificateExpiration | Date | The client's certificate expiry time. | 
-| PrismaCloudCompute.DefenderDetails.cloudMetadata | Unknown | The cloud provider metadata of the host. | 
-| PrismaCloudCompute.DefenderDetails.cluster | String | The provided cluster name. \(Fallback is the internal IP address\). | 
-| PrismaCloudCompute.DefenderDetails.clusterID | String | The unique ID generated for each daemon set and used to group defenders by clusters. Note - Kubernetes does not provide a cluster name as part of its API. | 
-| PrismaCloudCompute.DefenderDetails.compatibleVersion | Boolean | Whether the defender has a compatible version for communication \(e.g., request logs\). | 
-| PrismaCloudCompute.DefenderDetails.connected | Boolean | Whether the defender is connected. | 
-| PrismaCloudCompute.DefenderDetails.features | Unknown | The features that are enabled in the defender such as listener type. | 
-| PrismaCloudCompute.DefenderDetails.firewallProtection | Unknown | The firewall protection status of the app embedded defenders. | 
-| PrismaCloudCompute.DefenderDetails.fqdn | String | The fully qualified domain name used in audit alerts to identify specific hosts. | 
-| PrismaCloudCompute.DefenderDetails.hostname | String | The defender hostname. | 
-| PrismaCloudCompute.DefenderDetails.lastModified | Date | The last time the defender connectivity was modified. | 
-| PrismaCloudCompute.DefenderDetails.port | Number | The communication port between the defender and the console. | 
-| PrismaCloudCompute.DefenderDetails.proxy | Unknown | The proxy options of the defender. | 
-| PrismaCloudCompute.DefenderDetails.remoteLoggingSupported | Boolean | Whether the defender logs can be retrieved remotely. | 
-| PrismaCloudCompute.DefenderDetails.remoteMgmtSupported | Boolean | Whether the defender can be remotely managed \(upgrade, restart\). | 
-| PrismaCloudCompute.DefenderDetails.status | Unknown | The feature status of the defender. | 
-| PrismaCloudCompute.DefenderDetails.systemInfo | Unknown | The system information of the defender host. | 
-| PrismaCloudCompute.DefenderDetails.tasClusterID | String | The ID used to identify the TAS cluster of the defender. Typically will be the cloud controller API address. | 
-| PrismaCloudCompute.DefenderDetails.type | String | The type of the defender \(registry scanner/kubernetes node/etc...\). | 
-| PrismaCloudCompute.DefenderDetails.version | String | The agent version. | 
+| PrismaCloudCompute.DefenderDetails.category | String | The category of the defender type \(host/container/serverless\). Range of acceptable values: container, host, serverless, appEmbedded. |
+| PrismaCloudCompute.DefenderDetails.certificateExpiration | Date | The client's certificate expiry time. |
+| PrismaCloudCompute.DefenderDetails.cloudMetadata | Unknown | The cloud provider metadata of the host. |
+| PrismaCloudCompute.DefenderDetails.cluster | String | The provided cluster name. \(Fallback is the internal IP address\). |
+| PrismaCloudCompute.DefenderDetails.clusterID | String | The unique ID generated for each daemon set and used to group defenders by clusters. Note - Kubernetes does not provide a cluster name as part of its API. |
+| PrismaCloudCompute.DefenderDetails.compatibleVersion | Boolean | Whether the defender has a compatible version for communication \(e.g., request logs\). |
+| PrismaCloudCompute.DefenderDetails.connected | Boolean | Whether the defender is connected. |
+| PrismaCloudCompute.DefenderDetails.features | Unknown | The features that are enabled in the defender such as listener type. |
+| PrismaCloudCompute.DefenderDetails.firewallProtection | Unknown | The firewall protection status of the app embedded defenders. |
+| PrismaCloudCompute.DefenderDetails.fqdn | String | The fully qualified domain name used in audit alerts to identify specific hosts. |
+| PrismaCloudCompute.DefenderDetails.hostname | String | The defender hostname. |
+| PrismaCloudCompute.DefenderDetails.lastModified | Date | The last time the defender connectivity was modified. |
+| PrismaCloudCompute.DefenderDetails.port | Number | The communication port between the defender and the console. |
+| PrismaCloudCompute.DefenderDetails.proxy | Unknown | The proxy options of the defender. |
+| PrismaCloudCompute.DefenderDetails.remoteLoggingSupported | Boolean | Whether the defender logs can be retrieved remotely. |
+| PrismaCloudCompute.DefenderDetails.remoteMgmtSupported | Boolean | Whether the defender can be remotely managed \(upgrade, restart\). |
+| PrismaCloudCompute.DefenderDetails.status | Unknown | The feature status of the defender. |
+| PrismaCloudCompute.DefenderDetails.systemInfo | Unknown | The system information of the defender host. |
+| PrismaCloudCompute.DefenderDetails.tasClusterID | String | The ID used to identify the TAS cluster of the defender. Typically will be the cloud controller API address. |
+| PrismaCloudCompute.DefenderDetails.type | String | The type of the defender \(registry scanner/kubernetes node/etc...\). |
+| PrismaCloudCompute.DefenderDetails.version | String | The agent version. |
 
             "vulnerabilityRiskScore": 12282000, 
             "history": [
@@ -1246,6 +1250,7 @@ Retrieve a list of defenders and their information.
         }
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -1446,6 +1451,7 @@ vulnerabilityManager
 | all_results | Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. More than 1,500 results will slow down the process. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
+
 ### prisma-cloud-compute-container-namespace-list
 
 ***
@@ -1459,15 +1465,15 @@ Get the containers namespaces names.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster | A comma-separated list of cluster names to filter the results by. | Optional | 
-| collections | A comma-separated list of collections to filter the results by. Can be retrieved from the "prisma-cloud-compute-collections-list" command. | Optional | 
-| limit | The maximum number of namespace name records to return. Default is 50. | Optional | 
+| cluster | A comma-separated list of cluster names to filter the results by. | Optional |
+| collections | A comma-separated list of collections to filter the results by. Can be retrieved from the "prisma-cloud-compute-collections-list" command. | Optional |
+| limit | The maximum number of namespace name records to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.RadarContainerNamespace | String | The names of the container namespaces. | 
+| PrismaCloudCompute.RadarContainerNamespace | String | The names of the container namespaces. |
 
 ```!prisma-cloud-compute-hosts-scan-list hostname=host123 compact=false limit_stats=2```
 
@@ -2091,6 +2097,7 @@ Download the Defender logs.
 | PrismaCloudCompute.Defenders.Logs.Level | String | The log level. |
 | PrismaCloudCompute.Defenders.Logs.Log | String | The log message. |
 | PrismaCloudCompute.Defenders.Logs.Time | Date | The time of the log. |
+
 ### prisma-cloud-compute-hosts-scan-list
 
 ***
@@ -2104,71 +2111,71 @@ Get hosts scan report. The report includes vulnerabilities, compliance issues, b
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| clusters | A comma-separated list of cluster names to filter the results by. | Optional | 
-| compact | Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata). Possible values are: true, false. Default is true. | Optional | 
-| distro | A comma-separated list of operating system distros to filter the results by. | Optional | 
-| fields | A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag. | Optional | 
-| hostname | A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command. | Optional | 
-| provider | A comma-separated list of cloud providers to filter the results by. | Optional | 
-| compliance_ids | A comma-separated list of compliance IDs to filter the results by. | Optional | 
-| limit_record | The maximum number of scan host records to return. Default is 10. | Optional | 
-| limit_stats | The maximum number of compliance/vulnerability records to return. Default is 10. | Optional | 
-| offset | The offset by which to begin listing host scan results. Default is 0. | Optional | 
-| all_results | Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time. Possible values are: true, false. Default is false. | Optional | 
+| clusters | A comma-separated list of cluster names to filter the results by. | Optional |
+| compact | Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata). Possible values are: true, false. Default is true. | Optional |
+| distro | A comma-separated list of operating system distros to filter the results by. | Optional |
+| fields | A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag. | Optional |
+| hostname | A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command. | Optional |
+| provider | A comma-separated list of cloud providers to filter the results by. | Optional |
+| compliance_ids | A comma-separated list of compliance IDs to filter the results by. | Optional |
+| limit_record | The maximum number of scan host records to return. Default is 10. | Optional |
+| limit_stats | The maximum number of compliance/vulnerability records to return. Default is 10. | Optional |
+| offset | The offset by which to begin listing host scan results. Default is 0. | Optional |
+| all_results | Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.ReportHostScan._id | String | The host identifier \(host ID or hostname\). | 
-| PrismaCloudCompute.ReportHostScan.allCompliance | Unknown | The data regarding passed compliance checks. | 
-| PrismaCloudCompute.ReportHostScan.appEmbedded | Boolean | Whether this image was scanned by an app-embedded defender. | 
-| PrismaCloudCompute.ReportHostScan.applications | Unknown | Products in the image. | 
-| PrismaCloudCompute.ReportHostScan.binaries | Unknown | Binaries in the image. | 
-| PrismaCloudCompute.ReportHostScan.cloudMetadata | Unknown | The metadata for an instance running in a cloud provider \(AWS/GCP/Azure\). | 
-| PrismaCloudCompute.ReportHostScan.clusters | String | Cluster names. | 
-| PrismaCloudCompute.ReportHostScan.collections | String | Collections to which this result applies. | 
-| PrismaCloudCompute.ReportHostScan.complianceDistribution | Unknown | The number of vulnerabilities per type. | 
-| PrismaCloudCompute.ReportHostScan.complianceIssues | Unknown | Number of compliance issues. | 
-| PrismaCloudCompute.ReportHostScan.complianceRiskScore | Number | Compliance risk score for the image. | 
-| PrismaCloudCompute.ReportHostScan.creationTime | Date | Date/time when the image was created. | 
-| PrismaCloudCompute.ReportHostScan.distro | String | Full name of the distribution. | 
-| PrismaCloudCompute.ReportHostScan.ecsClusterName | String | Elastic Container Service \(ECS\) cluster name. | 
-| PrismaCloudCompute.ReportHostScan.err | String | Description of an error that occurred during image health scan. | 
-| PrismaCloudCompute.ReportHostScan.externalLabels | Unknown | Kubernetes external labels of all containers running this image. | 
-| PrismaCloudCompute.ReportHostScan.firewallProtection | Unknown | The status of the Web-Application and API Security \(WAAS\) protection. | 
-| PrismaCloudCompute.ReportHostScan.firstScanTime | Date | Date/time when this image was first scanned \(preserved during version updates\). | 
-| PrismaCloudCompute.ReportHostScan.history | Unknown | Docker image history. | 
-| PrismaCloudCompute.ReportHostScan.hostDevices | String | Map from host network device name to IP address. | 
-| PrismaCloudCompute.ReportHostScan.hostname | String | Name of the host that was scanned. | 
-| PrismaCloudCompute.ReportHostScan.hosts | Unknown | A fast index for image scan results metadata per host. | 
-| PrismaCloudCompute.ReportHostScan.image | Unknown | A container image. | 
-| PrismaCloudCompute.ReportHostScan.installedProducts | Unknown | Data regarding products running in the environment. | 
-| PrismaCloudCompute.ReportHostScan.instances | Unknown | Details about each occurrence of the image \(tag \+ host\). | 
-| PrismaCloudCompute.ReportHostScan.k8sClusterAddr | String | Endpoint of the Kubernetes API server. | 
-| PrismaCloudCompute.ReportHostScan.namespaces | String | Kubernetes namespaces of all the containers running this image. | 
-| PrismaCloudCompute.ReportHostScan.osDistro | String | Name of the operating system distribution. | 
-| PrismaCloudCompute.ReportHostScan.osDistroRelease | String | Operating system distribution release. | 
-| PrismaCloudCompute.ReportHostScan.osDistroVersion | String | Operating system distribution version. | 
-| PrismaCloudCompute.ReportHostScan.packageManager | Boolean | Whether the package manager is installed for the operating system. | 
-| PrismaCloudCompute.ReportHostScan.packages | Unknown | The packages that exist in the image. | 
-| PrismaCloudCompute.ReportHostScan.repoDigests | String | Digests of the image. Used for content trust \(notary\). Has one digest per tag. | 
-| PrismaCloudCompute.ReportHostScan.repoTag | Unknown | An image repository and its associated tag or registry digest. | 
-| PrismaCloudCompute.ReportHostScan.riskFactors | Unknown | Maps of the existence of vulnerability risk factors. | 
-| PrismaCloudCompute.ReportHostScan.scanID | String | Scan ID. | 
-| PrismaCloudCompute.ReportHostScan.scanTime | Date | Date/time of the last scan of the image. | 
-| PrismaCloudCompute.ReportHostScan.scanVersion | String | Defender version that published the image. | 
-| PrismaCloudCompute.ReportHostScan.startupBinaries | Unknown | Binaries that are expected to run when the container is created from this image. | 
-| PrismaCloudCompute.ReportHostScan.tags | Unknown | Tags associated with the given image. | 
-| PrismaCloudCompute.ReportHostScan.topLayer | String | SHA256 of the image's last layer that is the last element of the Layers field. | 
-| PrismaCloudCompute.ReportHostScan.trustStatus | String | The trust status for an image. | 
-| PrismaCloudCompute.ReportHostScan.type | Unknown | The scanning type performed. | 
-| PrismaCloudCompute.ReportHostScan.vulnerabilities | Unknown | CVE vulnerabilities of the host. | 
-| PrismaCloudCompute.ReportHostScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. | 
-| PrismaCloudCompute.ReportHostScan.vulnerabilityDistribution | Unknown | The number of vulnerabilities per type. | 
-| PrismaCloudCompute.ReportHostScan.vulnerabilityRiskScore | Number | Image's CVE risk score. | 
-| PrismaCloudCompute.ReportHostScan.wildFireUsage | Unknown | The Wildfire usage stats. The period for the usage varies with the context. | 
-| PrismaCloudCompute.ReportHostScan.complianceIssuesCount | Unknown | Number of compliance issues. | 
+| PrismaCloudCompute.ReportHostScan._id | String | The host identifier \(host ID or hostname\). |
+| PrismaCloudCompute.ReportHostScan.allCompliance | Unknown | The data regarding passed compliance checks. |
+| PrismaCloudCompute.ReportHostScan.appEmbedded | Boolean | Whether this image was scanned by an app-embedded defender. |
+| PrismaCloudCompute.ReportHostScan.applications | Unknown | Products in the image. |
+| PrismaCloudCompute.ReportHostScan.binaries | Unknown | Binaries in the image. |
+| PrismaCloudCompute.ReportHostScan.cloudMetadata | Unknown | The metadata for an instance running in a cloud provider \(AWS/GCP/Azure\). |
+| PrismaCloudCompute.ReportHostScan.clusters | String | Cluster names. |
+| PrismaCloudCompute.ReportHostScan.collections | String | Collections to which this result applies. |
+| PrismaCloudCompute.ReportHostScan.complianceDistribution | Unknown | The number of vulnerabilities per type. |
+| PrismaCloudCompute.ReportHostScan.complianceIssues | Unknown | Number of compliance issues. |
+| PrismaCloudCompute.ReportHostScan.complianceRiskScore | Number | Compliance risk score for the image. |
+| PrismaCloudCompute.ReportHostScan.creationTime | Date | Date/time when the image was created. |
+| PrismaCloudCompute.ReportHostScan.distro | String | Full name of the distribution. |
+| PrismaCloudCompute.ReportHostScan.ecsClusterName | String | Elastic Container Service \(ECS\) cluster name. |
+| PrismaCloudCompute.ReportHostScan.err | String | Description of an error that occurred during image health scan. |
+| PrismaCloudCompute.ReportHostScan.externalLabels | Unknown | Kubernetes external labels of all containers running this image. |
+| PrismaCloudCompute.ReportHostScan.firewallProtection | Unknown | The status of the Web-Application and API Security \(WAAS\) protection. |
+| PrismaCloudCompute.ReportHostScan.firstScanTime | Date | Date/time when this image was first scanned \(preserved during version updates\). |
+| PrismaCloudCompute.ReportHostScan.history | Unknown | Docker image history. |
+| PrismaCloudCompute.ReportHostScan.hostDevices | String | Map from host network device name to IP address. |
+| PrismaCloudCompute.ReportHostScan.hostname | String | Name of the host that was scanned. |
+| PrismaCloudCompute.ReportHostScan.hosts | Unknown | A fast index for image scan results metadata per host. |
+| PrismaCloudCompute.ReportHostScan.image | Unknown | A container image. |
+| PrismaCloudCompute.ReportHostScan.installedProducts | Unknown | Data regarding products running in the environment. |
+| PrismaCloudCompute.ReportHostScan.instances | Unknown | Details about each occurrence of the image \(tag \+ host\). |
+| PrismaCloudCompute.ReportHostScan.k8sClusterAddr | String | Endpoint of the Kubernetes API server. |
+| PrismaCloudCompute.ReportHostScan.namespaces | String | Kubernetes namespaces of all the containers running this image. |
+| PrismaCloudCompute.ReportHostScan.osDistro | String | Name of the operating system distribution. |
+| PrismaCloudCompute.ReportHostScan.osDistroRelease | String | Operating system distribution release. |
+| PrismaCloudCompute.ReportHostScan.osDistroVersion | String | Operating system distribution version. |
+| PrismaCloudCompute.ReportHostScan.packageManager | Boolean | Whether the package manager is installed for the operating system. |
+| PrismaCloudCompute.ReportHostScan.packages | Unknown | The packages that exist in the image. |
+| PrismaCloudCompute.ReportHostScan.repoDigests | String | Digests of the image. Used for content trust \(notary\). Has one digest per tag. |
+| PrismaCloudCompute.ReportHostScan.repoTag | Unknown | An image repository and its associated tag or registry digest. |
+| PrismaCloudCompute.ReportHostScan.riskFactors | Unknown | Maps of the existence of vulnerability risk factors. |
+| PrismaCloudCompute.ReportHostScan.scanID | String | Scan ID. |
+| PrismaCloudCompute.ReportHostScan.scanTime | Date | Date/time of the last scan of the image. |
+| PrismaCloudCompute.ReportHostScan.scanVersion | String | Defender version that published the image. |
+| PrismaCloudCompute.ReportHostScan.startupBinaries | Unknown | Binaries that are expected to run when the container is created from this image. |
+| PrismaCloudCompute.ReportHostScan.tags | Unknown | Tags associated with the given image. |
+| PrismaCloudCompute.ReportHostScan.topLayer | String | SHA256 of the image's last layer that is the last element of the Layers field. |
+| PrismaCloudCompute.ReportHostScan.trustStatus | String | The trust status for an image. |
+| PrismaCloudCompute.ReportHostScan.type | Unknown | The scanning type performed. |
+| PrismaCloudCompute.ReportHostScan.vulnerabilities | Unknown | CVE vulnerabilities of the host. |
+| PrismaCloudCompute.ReportHostScan.vulnerabilitiesCount | Number | Total number of vulnerabilities. |
+| PrismaCloudCompute.ReportHostScan.vulnerabilityDistribution | Unknown | The number of vulnerabilities per type. |
+| PrismaCloudCompute.ReportHostScan.vulnerabilityRiskScore | Number | Image's CVE risk score. |
+| PrismaCloudCompute.ReportHostScan.wildFireUsage | Unknown | The Wildfire usage stats. The period for the usage varies with the context. |
+| PrismaCloudCompute.ReportHostScan.complianceIssuesCount | Unknown | Number of compliance issues. |
 
                         }
                     ],
@@ -2372,6 +2379,7 @@ Get hosts scan report. The report includes vulnerabilities, compliance issues, b
         ]
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -2623,26 +2631,26 @@ Get the list of Prisma Cloud Compute vulnerabilities resources.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535. | Optional | 
-| limit | The maximum number of records of impacted hosts/images to return. Default is 50. | Optional | 
-| offset | The offset by which to begin listing impacted hosts/images records. Default is 0. | Optional | 
-| resourceType | ResourceType is the single resource type to return vulnerability data for. Possible values are: container, image, host, function, codeRepo, registryImage. | Optional | 
+| cve | A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535. | Optional |
+| limit | The maximum number of records of impacted hosts/images to return. Default is 50. | Optional |
+| offset | The offset by which to begin listing impacted hosts/images records. Default is 0. | Optional |
+| resourceType | ResourceType is the single resource type to return vulnerability data for. Possible values are: container, image, host, function, codeRepo, registryImage. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.VulnerabilitiesImpactedResource._id | String | Id is the CVE ID \(index for the impacted resources\). | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.codeRepos | Array | CodeRepos is a list of impacted code repositories. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount | integer | CodeReposCount is the total impacted code repositories count. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.functions | Array | Functions is a map between function id to its details. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.functionsCount | integer | FunctionsCount is the total impacted functions count. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts | Array | Hosts is the list of impacted hosts. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.hostsCount | integer | HostsCount is the total impacted hosts count. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.images | Array | Images is the list of impacted hosts. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.imagesCount | integer | ImagesCount is the total impacted images count. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImages | Array | RegistryImages is a list of impacted registry images. | 
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImagesCount | integer | RegistryImagesCount is the total impacted registry images count. | 
+| PrismaCloudCompute.VulnerabilitiesImpactedResource._id | String | Id is the CVE ID \(index for the impacted resources\). |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.codeRepos | Array | CodeRepos is a list of impacted code repositories. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount | integer | CodeReposCount is the total impacted code repositories count. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.functions | Array | Functions is a map between function id to its details. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.functionsCount | integer | FunctionsCount is the total impacted functions count. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts | Array | Hosts is the list of impacted hosts. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.hostsCount | integer | HostsCount is the total impacted hosts count. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.images | Array | Images is the list of impacted hosts. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.imagesCount | integer | ImagesCount is the total impacted images count. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImages | Array | RegistryImages is a list of impacted registry images. |
+| PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImagesCount | integer | RegistryImagesCount is the total impacted registry images count. |
 
                         "total": 12
                     },
@@ -2798,6 +2806,7 @@ Get the list of Prisma Cloud Compute vulnerabilities resources.
         ]
     }
 }
+
 ```
 
 #### Human Readable Output
@@ -3423,6 +3432,7 @@ Download a zip of all Defender logs.
 
 * Do not use the reset last run button as it will cause incidents duplications to the instance.
 * In case you pressed reset last run button and you get duplicated incidents, run **prisma-cloud-compute-unstuck-fetch-stream** command.
+
 ### prisma-cloud-compute-unstuck-fetch-stream
 
 ***
@@ -3440,6 +3450,7 @@ Use this command to unstuck the fetch stream in case it's getting duplicated inc
 #### Context Output
 
 There is no context output for this command.
+
 ### prisma-cloud-compute-ci-scan-results-list
 
 ***
@@ -3453,87 +3464,88 @@ Retrieves all scan reports for images scanned by the Jenkins plugin or twistcli.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_ids | A comma-separated list of cloud account IDs to filter the result by. | Optional | 
-| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional | 
-| region | A comma-separated list of regions to scope the query by. | Optional | 
-| scan_id | Scan ID used in the image layers fetch. | Optional | 
-| image_id | Image ID of scanned image. | Optional | 
-| job_name | A comma-separated list of Jenkins job names. | Optional | 
-| search | Retrieves the result for a search term. | Optional | 
-| pass | Indicates whether to filter on passed scans (true) or not (false). Possible values are: true, false. Default is true. | Optional | 
-| scan_time_to | Filters results by end datetime. Based on scan time. | Optional | 
-| scan_time_from | Filters results by start datetime. Based on scan time. | Optional | 
-| limit | The maximum number of CI scan results to return. Must be between 1-50. Default is 50. | Optional | 
-| offset | The offset by which to begin listing CI scan results. Default is 0. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
-| verbose | Whether to retrieve all fields of each scan result. When used with the "all_results" argument, it may return a lot of results in a file. Possible values are: true, false. Default is false. | Optional | 
+| account_ids | A comma-separated list of cloud account IDs to filter the result by. | Optional |
+| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional |
+| region | A comma-separated list of regions to scope the query by. | Optional |
+| scan_id | Scan ID used in the image layers fetch. | Optional |
+| image_id | Image ID of scanned image. | Optional |
+| job_name | A comma-separated list of Jenkins job names. | Optional |
+| search | Retrieves the result for a search term. | Optional |
+| pass | Indicates whether to filter on passed scans (true) or not (false). Possible values are: true, false. Default is true. | Optional |
+| scan_time_to | Filters results by end datetime. Based on scan time. | Optional |
+| scan_time_from | Filters results by start datetime. Based on scan time. | Optional |
+| limit | The maximum number of CI scan results to return. Must be between 1-50. Default is 50. | Optional |
+| offset | The offset by which to begin listing CI scan results. Default is 0. | Optional |
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often. Possible values are: true, false. Default is false. | Optional |
+| verbose | Whether to retrieve all fields of each scan result. When used with the "all_results" argument, it may return a lot of results in a file. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.CIScan._id | String | The scan ID. | 
-| PrismaCloudCompute.CIScan.time | String | The scan time. | 
-| PrismaCloudCompute.CIScan.pass | Boolean | Whether the scan passed. | 
-| PrismaCloudCompute.CIScan.vulnFailureSummary | String | Vulnerability scan failure summary. | 
-| PrismaCloudCompute.CIScan.version | String | The scan version. | 
-| PrismaCloudCompute.CIScan.entityInfo._id | String | The scanned entity ID. | 
-| PrismaCloudCompute.CIScan.entityInfo.type | String | The scanned entity type. | 
-| PrismaCloudCompute.CIScan.entityInfo.hostname | String | The scanned entity hostname. | 
-| PrismaCloudCompute.CIScan.entityInfo.scanTime | String | The entity scan time. | 
-| PrismaCloudCompute.CIScan.entityInfo.binaries | Unknown | Binaries in the scanned entity. | 
-| PrismaCloudCompute.CIScan.entityInfo.Secrets | Unknown | Secrets found in the scanned entity. | 
-| PrismaCloudCompute.CIScan.entityInfo.startupBinaries | Unknown | Startup binaries in the scanned entity. | 
-| PrismaCloudCompute.CIScan.entityInfo.osDistro | String | The OS distribution. | 
-| PrismaCloudCompute.CIScan.entityInfo.osDistroVersion | String | The OS distribution version. | 
-| PrismaCloudCompute.CIScan.entityInfo.osDistroRelease | String | The OS distribution release. | 
-| PrismaCloudCompute.CIScan.entityInfo.distro | String | The distribution. | 
-| PrismaCloudCompute.CIScan.entityInfo.packages | Unknown | Packages in the scanned entity. | 
-| PrismaCloudCompute.CIScan.entityInfo.files | Unknown | Files in the scanned entity. | 
-| PrismaCloudCompute.CIScan.entityInfo.packageManager | Boolean | The package manager. | 
-| PrismaCloudCompute.CIScan.entityInfo.applications | Unknown | Applications in the scanned entity. | 
-| PrismaCloudCompute.CIScan.entityInfo.isARM64 | Boolean | Whether the scanned entity is ARM64. | 
-| PrismaCloudCompute.CIScan.entityInfo.packageCorrelationDone | Boolean | Whether package correlation was done. | 
-| PrismaCloudCompute.CIScan.entityInfo.redHatNonRPMImage | Boolean | Whether it is a RedHat non-RPM image. | 
-| PrismaCloudCompute.CIScan.entityInfo.foundSecrets | Unknown | Whether secrets were found. | 
-| PrismaCloudCompute.CIScan.entityInfo.secretScanMetrics | Unknown | Secret scan metrics. | 
-| PrismaCloudCompute.CIScan.entityInfo.image | Unknown | The scanned image. | 
-| PrismaCloudCompute.CIScan.entityInfo.history | Unknown | The image history. | 
-| PrismaCloudCompute.CIScan.entityInfo.id | String | The entity ID. | 
-| PrismaCloudCompute.CIScan.entityInfo.complianceIssues | Unknown | Compliance issues found. | 
-| PrismaCloudCompute.CIScan.entityInfo.allCompliance | Unknown | All compliance data. | 
-| PrismaCloudCompute.CIScan.entityInfo.vulnerabilities | Unknown | Vulnerabilities found. | 
-| PrismaCloudCompute.CIScan.entityInfo.repoTag | Unknown | Repository tag. | 
-| PrismaCloudCompute.CIScan.entityInfo.tags | Unknown | Image tags. | 
-| PrismaCloudCompute.CIScan.entityInfo.repoDigests | Unknown | Repository digests. | 
-| PrismaCloudCompute.CIScan.entityInfo.creationTime | String | Image creation time. | 
-| PrismaCloudCompute.CIScan.entityInfo.pushTime | String | Image push time. | 
-| PrismaCloudCompute.CIScan.entityInfo.vulnerabilitiesCount | Number | Number of vulnerabilities found. | 
-| PrismaCloudCompute.CIScan.entityInfo.complianceIssuesCount | Number | Number of compliance issues found. | 
-| PrismaCloudCompute.CIScan.entityInfo.vulnerabilityDistribution | Unknown | Vulnerability distribution data. | 
-| PrismaCloudCompute.CIScan.entityInfo.complianceDistribution | Unknown | Compliance distribution data. | 
-| PrismaCloudCompute.CIScan.entityInfo.vulnerabilityRiskScore | Number | Vulnerability risk score. | 
-| PrismaCloudCompute.CIScan.entityInfo.complianceRiskScore | Number | Compliance risk score. | 
-| PrismaCloudCompute.CIScan.entityInfo.layers | Unknown | Image layers data. | 
-| PrismaCloudCompute.CIScan.entityInfo.topLayer | String | Top image layer data. | 
-| PrismaCloudCompute.CIScan.entityInfo.riskFactors | Unknown | Risk factors data. | 
-| PrismaCloudCompute.CIScan.entityInfo.labels | Unknown | Image labels. | 
-| PrismaCloudCompute.CIScan.entityInfo.installedProducts | Unknown | Installed products data. | 
-| PrismaCloudCompute.CIScan.entityInfo.scanVersion | String | The scan version. | 
-| PrismaCloudCompute.CIScan.entityInfo.scanBuildDate | String | The scan build date. | 
-| PrismaCloudCompute.CIScan.entityInfo.firstScanTime | String | First scan time. | 
-| PrismaCloudCompute.CIScan.entityInfo.cloudMetadata | Unknown | Cloud metadata. | 
-| PrismaCloudCompute.CIScan.entityInfo.instances | Unknown | Instance data. | 
-| PrismaCloudCompute.CIScan.entityInfo.hosts | Unknown | Host data. | 
-| PrismaCloudCompute.CIScan.entityInfo.err | String | Error data. | 
-| PrismaCloudCompute.CIScan.entityInfo.collections | Unknown | Collection data. | 
-| PrismaCloudCompute.CIScan.entityInfo.scanID | Number | The scan ID. | 
-| PrismaCloudCompute.CIScan.entityInfo.trustStatus | String | Trust status data. | 
-| PrismaCloudCompute.CIScan.entityInfo.firewallProtection | Unknown | Firewall protection data. | 
-| PrismaCloudCompute.CIScan.entityInfo.appEmbedded | Boolean | Whether app is embedded. | 
-| PrismaCloudCompute.CIScan.entityInfo.wildFireUsage | Unknown | WildFire usage data. | 
-| PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether it is an agentless scan. | 
-| PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime | String | Malware analyzed time. | 
+| PrismaCloudCompute.CIScan._id | String | The scan ID. |
+| PrismaCloudCompute.CIScan.time | String | The scan time. |
+| PrismaCloudCompute.CIScan.pass | Boolean | Whether the scan passed. |
+| PrismaCloudCompute.CIScan.vulnFailureSummary | String | Vulnerability scan failure summary. |
+| PrismaCloudCompute.CIScan.version | String | The scan version. |
+| PrismaCloudCompute.CIScan.entityInfo._id | String | The scanned entity ID. |
+| PrismaCloudCompute.CIScan.entityInfo.type | String | The scanned entity type. |
+| PrismaCloudCompute.CIScan.entityInfo.hostname | String | The scanned entity hostname. |
+| PrismaCloudCompute.CIScan.entityInfo.scanTime | String | The entity scan time. |
+| PrismaCloudCompute.CIScan.entityInfo.binaries | Unknown | Binaries in the scanned entity. |
+| PrismaCloudCompute.CIScan.entityInfo.Secrets | Unknown | Secrets found in the scanned entity. |
+| PrismaCloudCompute.CIScan.entityInfo.startupBinaries | Unknown | Startup binaries in the scanned entity. |
+| PrismaCloudCompute.CIScan.entityInfo.osDistro | String | The OS distribution. |
+| PrismaCloudCompute.CIScan.entityInfo.osDistroVersion | String | The OS distribution version. |
+| PrismaCloudCompute.CIScan.entityInfo.osDistroRelease | String | The OS distribution release. |
+| PrismaCloudCompute.CIScan.entityInfo.distro | String | The distribution. |
+| PrismaCloudCompute.CIScan.entityInfo.packages | Unknown | Packages in the scanned entity. |
+| PrismaCloudCompute.CIScan.entityInfo.files | Unknown | Files in the scanned entity. |
+| PrismaCloudCompute.CIScan.entityInfo.packageManager | Boolean | The package manager. |
+| PrismaCloudCompute.CIScan.entityInfo.applications | Unknown | Applications in the scanned entity. |
+| PrismaCloudCompute.CIScan.entityInfo.isARM64 | Boolean | Whether the scanned entity is ARM64. |
+| PrismaCloudCompute.CIScan.entityInfo.packageCorrelationDone | Boolean | Whether package correlation was done. |
+| PrismaCloudCompute.CIScan.entityInfo.redHatNonRPMImage | Boolean | Whether it is a RedHat non-RPM image. |
+| PrismaCloudCompute.CIScan.entityInfo.foundSecrets | Unknown | Whether secrets were found. |
+| PrismaCloudCompute.CIScan.entityInfo.secretScanMetrics | Unknown | Secret scan metrics. |
+| PrismaCloudCompute.CIScan.entityInfo.image | Unknown | The scanned image. |
+| PrismaCloudCompute.CIScan.entityInfo.history | Unknown | The image history. |
+| PrismaCloudCompute.CIScan.entityInfo.id | String | The entity ID. |
+| PrismaCloudCompute.CIScan.entityInfo.complianceIssues | Unknown | Compliance issues found. |
+| PrismaCloudCompute.CIScan.entityInfo.allCompliance | Unknown | All compliance data. |
+| PrismaCloudCompute.CIScan.entityInfo.vulnerabilities | Unknown | Vulnerabilities found. |
+| PrismaCloudCompute.CIScan.entityInfo.repoTag | Unknown | Repository tag. |
+| PrismaCloudCompute.CIScan.entityInfo.tags | Unknown | Image tags. |
+| PrismaCloudCompute.CIScan.entityInfo.repoDigests | Unknown | Repository digests. |
+| PrismaCloudCompute.CIScan.entityInfo.creationTime | String | Image creation time. |
+| PrismaCloudCompute.CIScan.entityInfo.pushTime | String | Image push time. |
+| PrismaCloudCompute.CIScan.entityInfo.vulnerabilitiesCount | Number | Number of vulnerabilities found. |
+| PrismaCloudCompute.CIScan.entityInfo.complianceIssuesCount | Number | Number of compliance issues found. |
+| PrismaCloudCompute.CIScan.entityInfo.vulnerabilityDistribution | Unknown | Vulnerability distribution data. |
+| PrismaCloudCompute.CIScan.entityInfo.complianceDistribution | Unknown | Compliance distribution data. |
+| PrismaCloudCompute.CIScan.entityInfo.vulnerabilityRiskScore | Number | Vulnerability risk score. |
+| PrismaCloudCompute.CIScan.entityInfo.complianceRiskScore | Number | Compliance risk score. |
+| PrismaCloudCompute.CIScan.entityInfo.layers | Unknown | Image layers data. |
+| PrismaCloudCompute.CIScan.entityInfo.topLayer | String | Top image layer data. |
+| PrismaCloudCompute.CIScan.entityInfo.riskFactors | Unknown | Risk factors data. |
+| PrismaCloudCompute.CIScan.entityInfo.labels | Unknown | Image labels. |
+| PrismaCloudCompute.CIScan.entityInfo.installedProducts | Unknown | Installed products data. |
+| PrismaCloudCompute.CIScan.entityInfo.scanVersion | String | The scan version. |
+| PrismaCloudCompute.CIScan.entityInfo.scanBuildDate | String | The scan build date. |
+| PrismaCloudCompute.CIScan.entityInfo.firstScanTime | String | First scan time. |
+| PrismaCloudCompute.CIScan.entityInfo.cloudMetadata | Unknown | Cloud metadata. |
+| PrismaCloudCompute.CIScan.entityInfo.instances | Unknown | Instance data. |
+| PrismaCloudCompute.CIScan.entityInfo.hosts | Unknown | Host data. |
+| PrismaCloudCompute.CIScan.entityInfo.err | String | Error data. |
+| PrismaCloudCompute.CIScan.entityInfo.collections | Unknown | Collection data. |
+| PrismaCloudCompute.CIScan.entityInfo.scanID | Number | The scan ID. |
+| PrismaCloudCompute.CIScan.entityInfo.trustStatus | String | Trust status data. |
+| PrismaCloudCompute.CIScan.entityInfo.firewallProtection | Unknown | Firewall protection data. |
+| PrismaCloudCompute.CIScan.entityInfo.appEmbedded | Boolean | Whether app is embedded. |
+| PrismaCloudCompute.CIScan.entityInfo.wildFireUsage | Unknown | WildFire usage data. |
+| PrismaCloudCompute.CIScan.entityInfo.agentless | Boolean | Whether it is an agentless scan. |
+| PrismaCloudCompute.CIScan.entityInfo.malwareAnalyzedTime | String | Malware analyzed time. |
+
 ### prisma-cloud-compute-trusted-images-list
 
 ***
@@ -3552,22 +3564,23 @@ Returns the trusted registries, repositories, and images. Maps to the image tabl
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.TrustedImage.policy.enabled | Boolean | Whether the trusted image policy is enabled. | 
-| PrismaCloudCompute.TrustedImage.policy._id | String | The ID of the trusted image policy. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.name | String | The name of the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.allowedGroups | Unknown | The allowed groups for the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.effect | String | The effect of the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.modified | Date | The last modified timestamp for the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.previousName | String | The previous name of the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.owner | String | The owner of the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.disabled | Boolean | Whether the trusted image rule is disabled. | 
-| PrismaCloudCompute.TrustedImage.policy.rules.collections | Unknown | The collections for the trusted image rule. | 
-| PrismaCloudCompute.TrustedImage.groups.modified | Date | The last modified timestamp for the trusted image group. | 
-| PrismaCloudCompute.TrustedImage.groups.owner | String | The owner of the trusted image group. | 
-| PrismaCloudCompute.TrustedImage.groups.name | String | The name of the trusted image group. | 
-| PrismaCloudCompute.TrustedImage.groups.previousName | String | The previous name of the trusted image group. | 
-| PrismaCloudCompute.TrustedImage.groups._id | String | The ID of the trusted image group. | 
-| PrismaCloudCompute.TrustedImage.groups.images | Unknown | The images in the trusted image group. | 
+| PrismaCloudCompute.TrustedImage.policy.enabled | Boolean | Whether the trusted image policy is enabled. |
+| PrismaCloudCompute.TrustedImage.policy._id | String | The ID of the trusted image policy. |
+| PrismaCloudCompute.TrustedImage.policy.rules.name | String | The name of the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.policy.rules.allowedGroups | Unknown | The allowed groups for the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.policy.rules.effect | String | The effect of the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.policy.rules.modified | Date | The last modified timestamp for the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.policy.rules.previousName | String | The previous name of the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.policy.rules.owner | String | The owner of the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.policy.rules.disabled | Boolean | Whether the trusted image rule is disabled. |
+| PrismaCloudCompute.TrustedImage.policy.rules.collections | Unknown | The collections for the trusted image rule. |
+| PrismaCloudCompute.TrustedImage.groups.modified | Date | The last modified timestamp for the trusted image group. |
+| PrismaCloudCompute.TrustedImage.groups.owner | String | The owner of the trusted image group. |
+| PrismaCloudCompute.TrustedImage.groups.name | String | The name of the trusted image group. |
+| PrismaCloudCompute.TrustedImage.groups.previousName | String | The previous name of the trusted image group. |
+| PrismaCloudCompute.TrustedImage.groups._id | String | The ID of the trusted image group. |
+| PrismaCloudCompute.TrustedImage.groups.images | Unknown | The images in the trusted image group. |
+
 ### prisma-cloud-compute-container-scan-results-list
 
 ***
@@ -3581,57 +3594,58 @@ Retrieves container scan reports. Maps to Monitor > Compliance > Containers in t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| collections | A comma-separated list of collection names that you have defined in Prisma Cloud Compute. | Optional | 
-| account_ids | A comma-separated list of cloud account IDs. | Optional | 
-| clusters | A comma-separated list of clusters to filter by. | Optional | 
-| namespaces | A comma-separated list of namespaces to filter by. | Optional | 
-| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional | 
-| region | A comma-separated list of regions to scope the query by. | Optional | 
-| container_ids | A comma-separated list of container IDs to retrieve details for. | Optional | 
-| profile_id | A comma-separated list of runtime profile IDs to filter by. | Optional | 
-| image_name | A comma-separated list of image names to filter by. | Optional | 
-| image_id | A comma-separated list of image IDs to filter by. | Optional | 
-| hostname | A comma-separated list of hostnames to filter by. | Optional | 
-| compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional | 
-| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional | 
-| search | Term to search for. | Optional | 
-| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
-| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
-| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional | 
+| collections | A comma-separated list of collection names that you have defined in Prisma Cloud Compute. | Optional |
+| account_ids | A comma-separated list of cloud account IDs. | Optional |
+| clusters | A comma-separated list of clusters to filter by. | Optional |
+| namespaces | A comma-separated list of namespaces to filter by. | Optional |
+| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional |
+| region | A comma-separated list of regions to scope the query by. | Optional |
+| container_ids | A comma-separated list of container IDs to retrieve details for. | Optional |
+| profile_id | A comma-separated list of runtime profile IDs to filter by. | Optional |
+| image_name | A comma-separated list of image names to filter by. | Optional |
+| image_id | A comma-separated list of image IDs to filter by. | Optional |
+| hostname | A comma-separated list of hostnames to filter by. | Optional |
+| compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional |
+| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional |
+| search | Term to search for. | Optional |
+| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional |
+| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional |
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.ContainersScanResults._id | String | The container scan ID. | 
-| PrismaCloudCompute.ContainersScanResults.hostname | String | The container hostname. | 
-| PrismaCloudCompute.ContainersScanResults.scanTime | Date | The container scan time. | 
-| PrismaCloudCompute.ContainersScanResults.collections | Unknown | The collections the container belongs to. | 
-| PrismaCloudCompute.ContainersScanResults.firewallProtection | Unknown | Firewall protection data. | 
-| PrismaCloudCompute.ContainersScanResults.csa | Boolean | Container security assessment data. | 
-| PrismaCloudCompute.ContainersScanResults.info.name | String | The container name. | 
-| PrismaCloudCompute.ContainersScanResults.info.profileID | String | The profile ID. | 
-| PrismaCloudCompute.ContainersScanResults.info.infra | Boolean | Whether the container is infrastructure. | 
-| PrismaCloudCompute.ContainersScanResults.info.id | String | The container ID. | 
-| PrismaCloudCompute.ContainersScanResults.info.ImageID | String | The container image ID. | 
-| PrismaCloudCompute.ContainersScanResults.info.image | String | The container image. | 
-| PrismaCloudCompute.ContainersScanResults.info.imageName | String | The container image name. | 
-| PrismaCloudCompute.ContainersScanResults.info.app | String | The container application name. | 
-| PrismaCloudCompute.ContainersScanResults.info.namespace | String | The container namespace. | 
-| PrismaCloudCompute.ContainersScanResults.info.cluster | String | The container cluster name. | 
-| PrismaCloudCompute.ContainersScanResults.info.clusterType | String | The container cluster type. | 
-| PrismaCloudCompute.ContainersScanResults.info.externalLabels | Unknown | Container external labels. | 
-| PrismaCloudCompute.ContainersScanResults.info.complianceIssues | Unknown | Compliance issues found. | 
-| PrismaCloudCompute.ContainersScanResults.info.allCompliance | Unknown | All compliance data. | 
-| PrismaCloudCompute.ContainersScanResults.info.complianceIssuesCount | Number | Number of compliance issues. | 
-| PrismaCloudCompute.ContainersScanResults.info.complianceRiskScore | Number | Compliance risk score. | 
-| PrismaCloudCompute.ContainersScanResults.info.complianceDistribution | Unknown | Compliance issue distribution. | 
-| PrismaCloudCompute.ContainersScanResults.info.processes | Unknown | Container processes data. | 
-| PrismaCloudCompute.ContainersScanResults.info.network | Unknown | Network data. | 
-| PrismaCloudCompute.ContainersScanResults.info.labels | Unknown | Container labels. | 
-| PrismaCloudCompute.ContainersScanResults.info.installedProducts | Unknown | Installed products data. | 
-| PrismaCloudCompute.ContainersScanResults.info.cloudMetadata | Unknown | Cloud metadata. | 
-| PrismaCloudCompute.ContainersScanResults.info.startTime | Date | Container start time. | 
+| PrismaCloudCompute.ContainersScanResults._id | String | The container scan ID. |
+| PrismaCloudCompute.ContainersScanResults.hostname | String | The container hostname. |
+| PrismaCloudCompute.ContainersScanResults.scanTime | Date | The container scan time. |
+| PrismaCloudCompute.ContainersScanResults.collections | Unknown | The collections the container belongs to. |
+| PrismaCloudCompute.ContainersScanResults.firewallProtection | Unknown | Firewall protection data. |
+| PrismaCloudCompute.ContainersScanResults.csa | Boolean | Container security assessment data. |
+| PrismaCloudCompute.ContainersScanResults.info.name | String | The container name. |
+| PrismaCloudCompute.ContainersScanResults.info.profileID | String | The profile ID. |
+| PrismaCloudCompute.ContainersScanResults.info.infra | Boolean | Whether the container is infrastructure. |
+| PrismaCloudCompute.ContainersScanResults.info.id | String | The container ID. |
+| PrismaCloudCompute.ContainersScanResults.info.ImageID | String | The container image ID. |
+| PrismaCloudCompute.ContainersScanResults.info.image | String | The container image. |
+| PrismaCloudCompute.ContainersScanResults.info.imageName | String | The container image name. |
+| PrismaCloudCompute.ContainersScanResults.info.app | String | The container application name. |
+| PrismaCloudCompute.ContainersScanResults.info.namespace | String | The container namespace. |
+| PrismaCloudCompute.ContainersScanResults.info.cluster | String | The container cluster name. |
+| PrismaCloudCompute.ContainersScanResults.info.clusterType | String | The container cluster type. |
+| PrismaCloudCompute.ContainersScanResults.info.externalLabels | Unknown | Container external labels. |
+| PrismaCloudCompute.ContainersScanResults.info.complianceIssues | Unknown | Compliance issues found. |
+| PrismaCloudCompute.ContainersScanResults.info.allCompliance | Unknown | All compliance data. |
+| PrismaCloudCompute.ContainersScanResults.info.complianceIssuesCount | Number | Number of compliance issues. |
+| PrismaCloudCompute.ContainersScanResults.info.complianceRiskScore | Number | Compliance risk score. |
+| PrismaCloudCompute.ContainersScanResults.info.complianceDistribution | Unknown | Compliance issue distribution. |
+| PrismaCloudCompute.ContainersScanResults.info.processes | Unknown | Container processes data. |
+| PrismaCloudCompute.ContainersScanResults.info.network | Unknown | Network data. |
+| PrismaCloudCompute.ContainersScanResults.info.labels | Unknown | Container labels. |
+| PrismaCloudCompute.ContainersScanResults.info.installedProducts | Unknown | Installed products data. |
+| PrismaCloudCompute.ContainersScanResults.info.cloudMetadata | Unknown | Cloud metadata. |
+| PrismaCloudCompute.ContainersScanResults.info.startTime | Date | Container start time. |
+
 ### prisma-cloud-compute-hosts-list
 
 ***
@@ -3645,39 +3659,40 @@ Returns minimal information that includes hostname, distro, distro-release, coll
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| collections | A comma-separated list of collection names that you have defined in Prisma Cloud Compute. | Optional | 
-| account_ids | A comma-separated list of cloud account IDs. | Optional | 
-| clusters | A comma-separated list of clusters to filter by. | Optional | 
-| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional | 
-| region | A comma-separated list of regions to scope the query by. | Optional | 
-| hostname | A comma-separated list of hostnames to filter by. | Optional | 
-| compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional | 
-| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional | 
-| search | Term to search for. | Optional | 
-| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional | 
-| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional | 
+| collections | A comma-separated list of collection names that you have defined in Prisma Cloud Compute. | Optional |
+| account_ids | A comma-separated list of cloud account IDs. | Optional |
+| clusters | A comma-separated list of clusters to filter by. | Optional |
+| resource_ids | A comma-separated list of resource IDs to scope the query by. | Optional |
+| region | A comma-separated list of regions to scope the query by. | Optional |
+| hostname | A comma-separated list of hostnames to filter by. | Optional |
+| compliance_ids | A comma-separated list of compliance IDs to filter by. | Optional |
+| agentless | Whether to filter by agentless scans. Possible values are: true, false. | Optional |
+| search | Term to search for. | Optional |
+| limit | The maximum number of container scan reports to return. Must be between 1-50. Default is 50. | Optional |
+| offset | The offset by which to begin listing container scan reports. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaCloudCompute.Hosts._id | String | The host ID. | 
-| PrismaCloudCompute.Hosts.type | String | The host type. | 
-| PrismaCloudCompute.Hosts.hostname | String | The host hostname. | 
-| PrismaCloudCompute.Hosts.scanTime | Date | The host scan time. | 
-| PrismaCloudCompute.Hosts.Secrets | Unknown | Secrets found on the host. | 
-| PrismaCloudCompute.Hosts.osDistro | String | The OS distribution. | 
-| PrismaCloudCompute.Hosts.osDistroVersion | String | The OS distribution version. | 
-| PrismaCloudCompute.Hosts.osDistroRelease | String | The OS distribution release. | 
-| PrismaCloudCompute.Hosts.distro | String | The host distribution. | 
-| PrismaCloudCompute.Hosts.foundSecrets | Boolean | Whether secrets were found. | 
-| PrismaCloudCompute.Hosts.vulnerabilitiesCount | Number | Number of vulnerabilities found. | 
-| PrismaCloudCompute.Hosts.complianceIssuesCount | Number | Number of compliance issues found. | 
-| PrismaCloudCompute.Hosts.vulnerabilityRiskScore | Number | The host's vulnerability risk score. | 
-| PrismaCloudCompute.Hosts.complianceRiskScore | Number | The host's compliance risk score. | 
-| PrismaCloudCompute.Hosts.riskFactors | Unknown | Risk factors for the host. | 
-| PrismaCloudCompute.Hosts.collections | Unknown | The collections the host belongs to. | 
-| PrismaCloudCompute.Hosts.agentless | Boolean | Whether the host was scanned agentlessly. | 
+| PrismaCloudCompute.Hosts._id | String | The host ID. |
+| PrismaCloudCompute.Hosts.type | String | The host type. |
+| PrismaCloudCompute.Hosts.hostname | String | The host hostname. |
+| PrismaCloudCompute.Hosts.scanTime | Date | The host scan time. |
+| PrismaCloudCompute.Hosts.Secrets | Unknown | Secrets found on the host. |
+| PrismaCloudCompute.Hosts.osDistro | String | The OS distribution. |
+| PrismaCloudCompute.Hosts.osDistroVersion | String | The OS distribution version. |
+| PrismaCloudCompute.Hosts.osDistroRelease | String | The OS distribution release. |
+| PrismaCloudCompute.Hosts.distro | String | The host distribution. |
+| PrismaCloudCompute.Hosts.foundSecrets | Boolean | Whether secrets were found. |
+| PrismaCloudCompute.Hosts.vulnerabilitiesCount | Number | Number of vulnerabilities found. |
+| PrismaCloudCompute.Hosts.complianceIssuesCount | Number | Number of compliance issues found. |
+| PrismaCloudCompute.Hosts.vulnerabilityRiskScore | Number | The host's vulnerability risk score. |
+| PrismaCloudCompute.Hosts.complianceRiskScore | Number | The host's compliance risk score. |
+| PrismaCloudCompute.Hosts.riskFactors | Unknown | Risk factors for the host. |
+| PrismaCloudCompute.Hosts.collections | Unknown | The collections the host belongs to. |
+| PrismaCloudCompute.Hosts.agentless | Boolean | Whether the host was scanned agentlessly. |
+
 ### prisma-cloud-compute-archive-audit-incident
 
 ***
@@ -3691,12 +3706,13 @@ Acknowledges an incident and moves it to an archived state.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | Incident ID. | Required | 
-| action | Action for the command. archive - incident will be archived, unarchive - incident will be unarchived. Possible values are: archive, unarchive. Default is archive. | Optional | 
+| incident_id | Incident ID. | Required |
+| action | Action for the command. archive - incident will be archived, unarchive - incident will be unarchived. Possible values are: archive, unarchive. Default is archive. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### prisma-cloud-compute-custom-feeds-malware-remove
 
 ***
