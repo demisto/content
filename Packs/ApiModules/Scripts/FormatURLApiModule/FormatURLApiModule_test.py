@@ -504,6 +504,39 @@ class TestFormatURL:
         """
         assert URLFormatter(url_).__str__() == expected
 
+    @pytest.mark.parametrize(
+        "part, inside_brackets, expected_part, expected_brackets",
+        [
+            ("example.com',", 1, "example.com", 0),  # Remove single quote and comma
+            ("test.com')", 1, "test.com", 0),  # Remove single quote and closing parenthesis
+            ("site.com']", 1, "site.com", 0),  # Remove single quote and closing square bracket
+            ("normal.com", 1, "normal.com", 1),  # No trailing chars to remove
+            ("example.com,", 0, "example.com,", 0),  # comma in the end and inside_brackets is 0, no change
+            ("example.com'", 0, "example.com'", 0),  # single quote in the end and inside_brackets is 0, no change
+            ("example.com',", 0, "example.com',", 0),  # single quote and comma in the end and inside_brackets is 0, no change
+            ("test.com)", 0, "test.com)", 0),  # closing parenthesis in the end and inside_brackets is 0, no change
+            ("test.com]", 0, "test.com]", 0),  # closing square bracket in the end and inside_brackets is 0, no change
+            ("site.com.", 1, "site.com.", 1),  # Period not in removal list
+            ("", 1, "", 1),  # Empty string
+        ],
+    )
+    def test_remove_trailing_bracket_and_comma_from_part(self, part, inside_brackets, expected_part, expected_brackets):
+        """
+        Given:
+        - A URL part string and inside_brackets counter.
+
+        When:
+        - Executing remove_trailing_bracket_and_comma_from_part function.
+
+        Then:
+        - Ensure trailing brackets and commas are removed correctly and inside_brackets is decremented.
+        """
+        from FormatURLApiModule import remove_trailing_bracket_and_comma_from_part
+
+        result_part, result_brackets = remove_trailing_bracket_and_comma_from_part(part, inside_brackets)
+        assert result_part == expected_part
+        assert result_brackets == expected_brackets
+
     def test_url_class(self):
         url = URLType("https://www.test.com")
 

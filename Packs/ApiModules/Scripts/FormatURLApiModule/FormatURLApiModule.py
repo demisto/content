@@ -935,7 +935,7 @@ def remove_trailing_bracket_and_comma_from_part(part: str, inside_brackets: int)
     """
     Removes trailing bracket and commas from a part of a URL.
     """
-    if part.endswith(",") and inside_brackets:
+    if part.endswith((",", ")", "]")) and inside_brackets:
         # This Fixes the edge case of catching a separator comma in a part when extracting from a list.
         part = part[:-2]  # We remove the last 2 chars which are a comma and a quote or a bracket.
         inside_brackets -= 1
