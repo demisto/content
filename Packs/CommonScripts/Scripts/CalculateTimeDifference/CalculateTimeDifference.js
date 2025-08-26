@@ -46,7 +46,7 @@
 
       return {
           Type: entryTypes.note,
-          Contents: ec,
+          Contents: Number(mins),
           ContentsFormat: formats.json,
           HumanReadable: `Calculated Time Difference: ${mins} minutes.`,
           ReadableContentsFormat: formats.markdown,
