@@ -1609,8 +1609,8 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    - auto: PREDEFINED
-      description: Whether to use polling.
+    - description: Whether to use polling.
+      auto: PREDEFINED
       defaultValue: 'false'
       name: polling
       predefined:

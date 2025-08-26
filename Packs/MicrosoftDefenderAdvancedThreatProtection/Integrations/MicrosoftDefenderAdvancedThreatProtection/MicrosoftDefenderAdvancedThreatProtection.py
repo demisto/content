@@ -3530,7 +3530,7 @@ def remove_app_restriction_command(client: MsClient, args: dict):
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
     requires_polling_arg=True, # If user provides polling arg as false, dont poll
 )
-def stop_and_quarantine_file_command_polling(client: MsClient, args: dict) -> PollResult:
+def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
     """
     Stops the execution of files on machines and quarantines them.
     This command is asynchronous and will poll for completion.
@@ -3569,7 +3569,8 @@ def stop_and_quarantine_file_command_polling(client: MsClient, args: dict) -> Po
                 demisto.debug(f"Initiating quarantine for file {file_sha1} on machine {machine_id}.")
                 machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
                 context_output = get_machine_action_data(machine_action_response)
-                action_ids.append(context_output.get('id'))
+                demisto.debug(f"Successfully initiated quarantine for file {file_sha1} on machine {machine_id}. The context output is: {context_output}")
+                action_ids.append(context_output.get('ID'))
 
             except Exception as e:
                 demisto.error(f"Failed to initiate quarantine for file {file_sha1} on machine {machine_id}: {e}")
@@ -3613,6 +3614,7 @@ def stop_and_quarantine_file_command_polling(client: MsClient, args: dict) -> Po
         demisto.debug(f"Initiated {len(action_ids)} quarantine actions. Polling for status...")
 
         if len(action_ids) == 0:
+            demisto.debug("No quarantine actions were initiated. Polling is disabled.")
             continue_to_poll = False
         else:
             continue_to_poll = True
@@ -3630,14 +3632,18 @@ def stop_and_quarantine_file_command_polling(client: MsClient, args: dict) -> Po
     else:
         demisto.debug("Polling for status of quarantine actions...")
         completed_results = []
-
+        demisto.debug(f"Polling for status of {len(argToList(args.get('action_ids')))}.")
         for action_id in argToList(args.get("action_ids")):
-            machine_action_response = get_machine_action_by_id_command(client, {"id": action_id})
+            demisto.debug(f"Polling for status of action {action_id}.")
+            _, _ , machine_action_response = get_machine_action_by_id_command(client, {"id": action_id})
+            demisto.debug(f"Successfully polled for status of action {action_id}. The response is: {machine_action_response}")
             context_output = get_machine_action_data(machine_action_response)
             if context_output.get("status") in ["Succeeded", "Failed", "Cancelled", "TimeOut"]:
+                demisto.debug(f"Successfully polled for status of action {action_id}. The context output is: {context_output}")
                 completed_results.append(context_output)
 
         if len(completed_results) == len(argToList(args.get("action_ids"))):
+            demisto.debug("All quarantine actions have completed. Polling is disabled.")
             continue_to_poll = False
         else:
             continue_to_poll = True
@@ -6381,7 +6387,7 @@ def main():  # pragma: no cover
             return_outputs(*remove_app_restriction_command(client, args))
 
         elif command == "microsoft-atp-stop-and-quarantine-file":
-            return_results(stop_and_quarantine_file_command_polling(client, args))
+            return_results(stop_and_quarantine_file_command_polling(args, client))
 
         elif command == "microsoft-atp-list-investigations":
             return_outputs(*get_investigations_by_id_command(client, args))
