@@ -35,7 +35,7 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 """ COMMAND FUNCTIONS """
-SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]  # noqa: RUF001 
+SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]  # noqa: RUF001
 
 
 def test_module(client: AWSClient):

@@ -5036,7 +5036,7 @@ def test_list_channels(mocker):
         "### Channels list for None with filter None\n"
         "|Created|Creator|ID|Name|Purpose|\n|---|---|---|---|---|\n"
         "| 1666361240 | spengler | C0475674L3Z | general | This is the "
-        "one channel that will always include everyone. It's a great "
+        "one channel that will always include everyone. It’s a great "  # noqa: RUF001
         "spot for announcements and team-wide conversations. |\n"
     )
     mocker.patch.object(SlackV3, "send_slack_request_sync", side_effect=[slack_response_mock, {"user": js.loads(USERS)[0]}])

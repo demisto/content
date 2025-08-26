@@ -2,6 +2,9 @@ category: Utilities
 commonfields:
   id: AWS - System Manager
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - display: AWS Default Region
   name: defaultRegion
