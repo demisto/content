@@ -306,45 +306,7 @@ script:
           description: The category of the issue.
           type: String
         - contextPath: Core.Issue.issue_action_status
-          description: |-
-            The issue action status. Possible values.
-            DETECTED: detected
-            DETECTED_0: detected (allowed the session)
-            DOWNLOAD: detected (download)
-            DETECTED_19: detected (forward)
-            POST_DETECTED: detected (post detected)
-            PROMPT_ALLOW: detected (prompt allow)
-            DETECTED_4: detected (raised an issue)
-            REPORTED: detected (reported)
-            REPORTED_TRIGGER_4: detected (on write)
-            SCANNED: detected (scanned)
-            DETECTED_23: detected (sinkhole)
-            DETECTED_18: detected (syncookie sent)
-            DETECTED_21: detected (wildfire upload failure)
-            DETECTED_20: detected (wildfire upload success)
-            DETECTED_22: detected (wildfire upload skip)
-            DETECTED_MTH: detected (xdr managed threat hunting)
-            BLOCKED_25: prevented (block)
-            BLOCKED: prevented (blocked)
-            BLOCKED_14: prevented (block-override)
-            BLOCKED_5: prevented (blocked the url)
-            BLOCKED_6: prevented (blocked the ip)
-            BLOCKED_13: prevented (continue)
-            BLOCKED_1: prevented (denied the session)
-            BLOCKED_8: prevented (dropped all packets)
-            BLOCKED_2: prevented (dropped the session)
-            BLOCKED_3: prevented (dropped the session and sent a tcp reset)
-            BLOCKED_7: prevented (dropped the packet)
-            BLOCKED_16: prevented (override)
-            BLOCKED_15: prevented (override-lockout)
-            BLOCKED_26: prevented (post detected)
-            PROMPT_BLOCK: prevented (prompt block)
-            BLOCKED_17: prevented (random-drop)
-            BLOCKED_24: prevented (silently dropped the session with an icmp unreachable message to the host or application)
-            BLOCKED_9: prevented (terminated the session and sent a tcp reset to both sides of the connection)
-            BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
-            BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
-            BLOCKED_TRIGGER_4: prevented (on write).
+          description: The issue action status.
           type: String
         - contextPath: Core.Issue.issue_action_status_readable
           description: The issue action status in readable format.
