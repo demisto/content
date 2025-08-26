@@ -1116,9 +1116,9 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
-    [PSObject]GetMessageTraceV2([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
+    [PSObject]GetMessageTraceList([string[]]$sender_address, [string[]]$recipient_address, [string]$from_ip, [string]$to_ip, [string[]]$message_id,
         [string]$message_trace_id, [string]$start_date, [string]$end_date, [string[]]$status, [string]$subject, [string]$subject_filter_type,
-        [string]$starting_recipient_address, [int32]$result_size) {
+        [string]$starting_recipient_address, [int32]$limit) {
         $response = ""
         try {
             # Establish session to remote
@@ -1164,8 +1164,8 @@ class ExchangeOnlinePowershellV3Client
             if ($starting_recipient_address) {
                 $cmd_params.StartingRecipientAddress = $starting_recipient_address
             }
-            if ($result_size) {
-                $cmd_params.ResultSize = $result_size
+            if ($limit) {
+                $cmd_params.ResultSize = $limit
             }
 
             $response = Get-MessageTraceV2 @cmd_params
@@ -1243,8 +1243,8 @@ class ExchangeOnlinePowershellV3Client
             The starting_recipient_address parameter is used with the end_date parameter to query subsequent data for partial results while avoiding duplication.
             Query subsequent data by taking the Recipient address and Received Time values of the last record of the partial results and using them as the values for the starting_recipient_address and end_date parameters respectively in the next query.
 
-            .PARAMETER result_size
-            The result_size parameter specifies the maximum number of results to return.
+            .PARAMETER limit
+            The limit parameter specifies the maximum number of results to return.
             A valid value is from 1 to 5000. The default value is 1000.
 
             .OUTPUTS
@@ -2373,16 +2373,16 @@ function GetMessageTraceCommand([ExchangeOnlinePowershellV3Client]$client, [hash
     return $human_readable, $entry_context, $raw_response
 }
 
-function GetMessageTraceV2Command([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
+function GetMessageTraceListCommand([ExchangeOnlinePowershellV3Client]$client, [hashtable]$kwargs) {
     # Parse arguments
     $sender_address = ArgToList $kwargs.sender_address
     $recipient_address = ArgToList $kwargs.recipient_address
     $message_id = ArgToList $kwargs.message_id
     $status = ArgToList $kwargs.status
 
-    $raw_response = $client.GetMessageTraceV2($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $message_id,
+    $raw_response = $client.GetMessageTraceList($sender_address, $recipient_address, $kwargs.from_ip, $kwargs.to_ip, $message_id,
         $kwargs.message_trace_id, $kwargs.start_date, $kwargs.end_date, $status, $kwargs.subject, $kwargs.subject_filter_type,
-        $kwargs.starting_recipient_address, $kwargs.result_size)
+        $kwargs.starting_recipient_address, $kwargs.limit)
 
     $entry_context = ParseMessageTraceToEntryContext $raw_response
     if ($entry_context.($script:MESSAGE_TRACE_ENTRY_CONTEXT)) {
@@ -2736,8 +2736,8 @@ function Main
             "$script:COMMAND_PREFIX-message-trace-get" {
                 ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-message-trace-get-v2" {
-                ($human_readable, $entry_context, $raw_response) = GetMessageTraceV2Command $exo_client $command_arguments
+            "$script:COMMAND_PREFIX-message-trace-list" {
+                ($human_readable, $entry_context, $raw_response) = GetMessageTraceListCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-federation-trust-get" {
                 ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments

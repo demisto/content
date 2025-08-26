@@ -820,14 +820,14 @@ script:
         name: subject_filter_type
       - description: The starting_recipient_address parameter is used with the end_date parameter to query subsequent data for partial results while avoiding duplication. Query subsequent data by taking the Recipient address and Received Time values of the last record of the partial results and using them as the values for the starting_recipient_address and end_date parameters respectively in the next query.
         name: starting_recipient_address
-      - description: The result_size parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000.
-        name: result_size
+      - description: The limit parameter specifies the maximum number of results to return. A valid value is from 1 to 5000. The default value is 1000.
+        name: limit
     description: 'Searches message data for the last 90 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 
         If you enter a start date that is older than 90 days, you will receive an error and the command will return no results.
 
         This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
-    name: ews-message-trace-get-v2
+    name: ews-message-trace-list
     outputs:
       - contextPath: EWS.MessageTrace.FromIP
         description: The public IP address of the SMTP email server that sent the message.
