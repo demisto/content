@@ -149,7 +149,8 @@ def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, u
         demisto.debug(f"AppSentinels.ai fetched events with: {last_log_id=}, {pagination=}, in length: {len(new_events)}")
 
         for event in new_events:
-            event["_TIME"] = event.get("timestamp")
+            timestamp = event.get("timestamp", "").split(".")[0]
+            event["_TIME"] = event["timestamp"] = timestamp
             event["source_log_type"] = "auditlog"
 
             events.append(event)

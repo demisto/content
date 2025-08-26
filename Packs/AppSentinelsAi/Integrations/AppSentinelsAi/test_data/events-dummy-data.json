@@ -31,7 +31,7 @@
             "description": "Users Events: Resolved",
             "id": 3,
             "rbac_id": "dummy_rbac_id",
-            "timestamp": "2025-08-14T06:25:47.723135\"",
+            "timestamp": "2025-08-14T06:25:47.723135",
             "type": "user",
             "user_info": "dummy_user_info",
             "username": "dummy_username@dummy_org.com"
