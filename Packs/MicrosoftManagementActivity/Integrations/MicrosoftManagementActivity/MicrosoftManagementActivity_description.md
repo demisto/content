@@ -51,7 +51,7 @@ Follow one of these steps for authentication based on Azure Managed Identities:
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
-### Fetch incidents
+### Fetch Alerts
 
 The **operations to fetch** parameter is case-sensitive. For example, `DlpRuleMatch` and `DLPRuleMatch` are treated as distinct operations that retrieve information from different workloads.
 
