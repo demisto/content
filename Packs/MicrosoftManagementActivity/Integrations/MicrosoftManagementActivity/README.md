@@ -25,7 +25,6 @@ There are two application authentication methods available:
 
 ## Configure Microsoft Management Activity API (O365 Azure Events) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Base URL |  | False |
@@ -49,7 +48,6 @@ There are two application authentication methods available:
 | Record types to fetch | A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched. | False |
 | Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
 | Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. This field is case-insensitive. | False |
-
 
 ## Commands
 
