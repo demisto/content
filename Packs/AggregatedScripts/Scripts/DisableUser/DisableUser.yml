@@ -27,7 +27,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: This script disables users for multiple services. 
+comment: This script disables users for multiple services.
 commonfields:
   id: disable-user
   version: -1
