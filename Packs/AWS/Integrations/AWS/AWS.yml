@@ -20,7 +20,7 @@ configuration:
 - display: Role Session Name
   name: role_session_name
   type: 0
-  defaultvalue: cortex-session
+  defaultValue: cortex-session
   section: Connect
   advanced: true
   additionalinfo: Role session name to be used for authentication
@@ -57,7 +57,7 @@ configuration:
   advanced: true
   required: false
   additionalinfo: "The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or the read and connect timeouts separated by a comma (for example 60,10). Default is 60,10."
-  defaultvalue: 60,10
+  defaultValue: 60,10
 - display: Retries
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   name: retries
@@ -65,7 +65,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  defaultvalue: 5
+  defaultValue: 5
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
@@ -1981,17 +1981,17 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      defaultvalue: 'False'
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     - name: hibernate
       description: "Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs. Default: false."
       required: false
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      defaultvalue: 'False'
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
   - name: aws-ec2-instances-terminate
     description: "Shuts down the specified instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds."
     execution: true
@@ -2087,7 +2087,7 @@ script:
     - name: count
       description: "The number of instances to launch. Must be greater than 0."
       required: true
-      defaultvalue: "1"
+      defaultValue: "1"
     - name: image_id
       description: "The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template."
       required: false
@@ -2112,10 +2112,10 @@ script:
       description: "Indicates whether termination protection is enabled for the instance. The default is false, which means that you can terminate the instance using the Amazon EC2 console, command line tools, or API."
       required: false
       auto: PREDEFINED
-      defaultvalue: 'false'
+      defaultValue: 'false'
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - name: iam_instance_profile_arn
       description: "The Amazon Resource Name (ARN) of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile."
       required: false
@@ -2130,8 +2130,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - name: device_name
       description: "The device name (for example, /dev/sdh or xvdh). If the argument is given, ebs arguments must also be specified."
       required: false
@@ -2158,8 +2158,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     - name: ebs_kms_key_id
       description: "Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted."
       required: false
@@ -2197,9 +2197,9 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - 'True'
-      - 'False'
-      defaultvalue: 'False'
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     outputs:
     - contextPath: AWS.EC2.Instances.InstanceId
       description: The ID of the newly created instance.
