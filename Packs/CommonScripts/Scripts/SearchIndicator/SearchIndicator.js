@@ -55,7 +55,7 @@ var ec = {
 return {
     Type: entryTypes.note,
     ReadableContentsFormat: formats.markdown,
-    Contents: res,
+    Contents: filteredIndicators,
     ContentsFormat: formats.json,
     HumanReadable: tableToMarkdown("Indicators Found", filteredIndicators, headers),
     EntryContext: ec,
