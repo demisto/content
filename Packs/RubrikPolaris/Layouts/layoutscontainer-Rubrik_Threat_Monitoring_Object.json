@@ -771,10 +771,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_demotest",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_description",
                         "isVisible": true
                     },
