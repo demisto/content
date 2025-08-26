@@ -2498,7 +2498,11 @@ def test_get_modified_remote_data_command_add_comment(mocker):
 
 
 def test_get_modified_remote_data_command(mocker):
-    updated_incidet_review = {"rule_id": "id", "event_id": "id", "last_modified_timestamp": "1737547610.56",}
+    updated_incidet_review = {
+        "rule_id": "id",
+        "event_id": "id",
+        "last_modified_timestamp": "1737547610.56",
+    }
     service = mocker.patch.object(client, "Service")
     func_call_kwargs = {
         "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
@@ -4340,7 +4344,6 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
         - Ensure the event from the second run is skipped because its key (event_id:timestamp) is already in the cache.
     """
     from SplunkPy import get_modified_remote_data_command
-    
 
     test_id = "event_123"
     timestamp = "1737547610.49"
@@ -4355,11 +4358,13 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     }
 
     # Mock Splunk API responses
-    incident_review_response = [{
-        "rule_id": test_id,
-        "last_modified_timestamp": timestamp,
-        "event_id": test_id,
-    }]
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+        }
+    ]
 
     # === First Run: Process and cache the event ===
     mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
@@ -4368,7 +4373,7 @@ def test_get_modified_remote_data_skips_cached_events(mocker):
     mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
     set_context_mock = mocker.patch("SplunkPy.set_integration_context")
     extensive_log_mock = mocker.patch("SplunkPy.extensive_log")
-    
+
     get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
     results = demisto.results.call_args[0][0][0]["Contents"]
 
