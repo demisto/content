@@ -1321,6 +1321,7 @@ def test_aws_error_handler_handle_general_error_missing_metadata(mocker):
     mocker.patch("AWS.demisto.command", return_value="test-command")
     mocker.patch("AWS.demisto.args", return_value={})
     demisto_results = mocker.patch("AWS.demisto.results")
+    mocker.patch("AWS.demisto.error")
 
     error_response = {"Error": {"Code": "TestError", "Message": "Test message"}, "ResponseMetadata": {}}
     client_error = ClientError(error_response, "test-operation")
