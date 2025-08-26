@@ -2,8 +2,8 @@
 alter
     tmp_tigera_start_time = arrayindex(regextract(_raw_log ,"({.*})"), 0)
 | alter 
-    epoch_length = len(tmp_tigera_start_time -> start_time)
-| filter epoch_length = 10
+    tmp_epoch_length = len(tmp_tigera_start_time -> start_time)
+| filter tmp_epoch_length = 10
 | alter
     _time = to_timestamp(to_integer(tmp_tigera_start_time -> start_time), "SECONDS")
 | fields - tmp_*;
