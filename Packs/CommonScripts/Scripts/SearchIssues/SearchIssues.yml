@@ -210,7 +210,7 @@ outputs:
   - contextPath: Core.Issue.Identity_type
     description: The identity type of the account.
     type: String
-
+isInternal: true
 script: "-"
 subtype: python3
 tags:
