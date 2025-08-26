@@ -40,14 +40,16 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     kwargs: Dict[str, Any] = {}
 
     # Handle pagination with next_token (for continuing previous requests)
+    limit_arg = args.get("limit")
     if next_token := args.get("next_token"):
         if not isinstance(next_token, str) or not next_token.strip():
             raise ValueError("next_token must be a non-empty string")
         kwargs["NextToken"] = next_token.strip()
+        if limit_arg is not None:
+            kwargs["MaxResults"] = min(int(limit_arg), MAX_LIMIT_VALUE)
         return kwargs
 
     # Handle limit-based pagination (for new requests)
-    limit_arg = args.get("limit")
 
     # Parse and validate limit
     try:
@@ -976,7 +978,12 @@ class EC2:
             resp = client.revoke_security_group_egress(**kwargs)
             status = resp.get("Return")
             if resp.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200 and status:
-                return CommandResults(readable_output="Egress rule revoked successfully.", raw_response=resp)
+                readable_output = (
+                    "Egress rule revoked successfully."
+                    if resp.get("RevokedSecurityGroupRules")
+                    else "No egress rules were revoked."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=resp)
             else:
                 # If no exception but Return is False, AWS may report unknown perms
                 unknown = resp.get("UnknownIpPermissions")
@@ -1097,7 +1104,9 @@ class EC2:
             kwargs.update({"GroupIds": argToList(args.get("group_ids", []))})
         if args.get("group_names") is not None:
             kwargs.update({"GroupNames": argToList(args.get("group_names", []))})
-        kwargs.update(build_pagination_kwargs(args))
+        # Can't add limit when specify GroupIds or GroupNames
+        if not args.get("group_ids") and not args.get("group_names"):
+            kwargs.update(build_pagination_kwargs(args))
         try:
             remove_nulls_from_dictionary(kwargs)
             response = client.describe_security_groups(**kwargs)
@@ -1118,12 +1127,21 @@ class EC2:
                     for tag in sg["Tags"]:
                         data[i].update({tag["Key"]: tag["Value"]})
             output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
+
+            metadata = (
+                "Run the following command to retrieve the next batch of incidents:\n"
+                f"!aws-ec2-security-groups-describe next_token={response.get('NextToken')}"
+                if response.get("NextToken")
+                else None
+            )
             outputs = {
                 "AWS.EC2.SecurityGroups(val.GroupId && val.GroupId == obj.GroupId)": json.loads(output),
                 "AWS.EC2(true)": {"SecurityGroupsNextToken": response.get("NextToken")},
             }
             return CommandResults(
-                outputs=outputs, readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data), raw_response=response
+                outputs=outputs,
+                readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data, metadata=metadata, removeNull=True),
+                raw_response=response,
             )
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err)

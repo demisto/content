@@ -716,6 +716,7 @@ def test_ec2_revoke_security_group_egress_command_success(mocker):
     mock_client.revoke_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
+        "RevokedSecurityGroupRules": [{"SecurityGroupRuleId": "SecurityGroupRuleId"}],
     }
 
     args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "40", "to_port": "443", "cidr": "0.0.0.0/0"}
@@ -737,6 +738,7 @@ def test_ec2_revoke_security_group_egress_command_with_ip_permissions(mocker):
     mock_client.revoke_security_group_egress.return_value = {
         "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "Return": True,
+        "RevokedSecurityGroupRules": [{"SecurityGroupRuleId": "SecurityGroupRuleId"}],
     }
 
     ip_permissions = json.dumps([{"IpProtocol": "tcp", "FromPort": 80, "ToPort": 80, "IpRanges": [{"CidrIp": "0.0.0.0/0"}]}])
