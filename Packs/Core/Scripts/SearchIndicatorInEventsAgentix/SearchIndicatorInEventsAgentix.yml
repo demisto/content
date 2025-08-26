@@ -19,7 +19,7 @@ args:
     defaultValue: xdr_data
     description: The dataset for the search. By default, this is "xdr_data".
   - name: query_name
-    required: true
+    required: true 
     description: The name to use for the query results. Find the query results under this name in the War Room context.
 outputs:
   - contextPath: PaloAltoNetworksXQL
@@ -29,6 +29,7 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
+isInternal: true
 tests:
 - No tests (auto formatted)
 marketplaces:
