@@ -1081,16 +1081,22 @@ def test_aws_error_handler_handle_response_error_with_request_id(mocker):
 
     mocker.patch("AWS.demisto.command", return_value="test-command")
     mocker.patch("AWS.demisto.args", return_value={"arg1": "value1"})
-    mock_demisto_error = mocker.patch("AWS.demisto.error")
+    demisto_results = mocker.patch("AWS.demisto.results")
 
     response = {"ResponseMetadata": {"RequestId": "RequestId", "HTTPStatusCode": 400}}
 
-    with pytest.raises(DemistoException) as exc_info:
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_response_error(response, "accountID")
 
-    assert "Request Id: RequestId" in str(exc_info.value)
-    assert "HTTP Status Code: 400" in str(exc_info.value)
-    mock_demisto_error.assert_called_once()
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing:"
+            " test-command with arguments: {'arg1': 'value1'}\nRequest Id: RequestId\nHTTP Status Code: 400",
+            "EntryContext": None,
+        }
+    )
 
 
 def test_aws_error_handler_handle_response_error_missing_metadata(mocker):
@@ -1103,15 +1109,22 @@ def test_aws_error_handler_handle_response_error_missing_metadata(mocker):
 
     mocker.patch("AWS.demisto.command", return_value="test-command")
     mocker.patch("AWS.demisto.args", return_value={})
-    mocker.patch("AWS.demisto.error")
+    demisto_results = mocker.patch("AWS.demisto.results")
 
     response = {}
 
-    with pytest.raises(DemistoException) as exc_info:
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_response_error(response)
 
-    assert "Request Id: N/A" in str(exc_info.value)
-    assert "HTTP Status Code: N/A" in str(exc_info.value)
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing: test-command with arguments: {}"
+            "\nRequest Id: N/A\nHTTP Status Code: N/A",
+            "EntryContext": None,
+        }
+    )
 
 
 def test_aws_error_handler_handle_client_error_access_denied(mocker):
@@ -1204,6 +1217,7 @@ def test_aws_error_handler_handle_client_error_general_error(mocker):
     mocker.patch("AWS.demisto.command", return_value="test-command")
     mocker.patch("AWS.demisto.args", return_value={"param": "value"})
     mocker.patch("AWS.demisto.error")
+    demisto_results = mocker.patch("AWS.demisto.results")
 
     error_response = {
         "Error": {"Code": "InvalidParameterValue", "Message": "The parameter value is invalid"},
@@ -1211,12 +1225,21 @@ def test_aws_error_handler_handle_client_error_general_error(mocker):
     }
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException) as exc_info:
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
-    assert "Error Code: InvalidParameterValue" in str(exc_info.value)
-    assert "Error Message: The parameter value is invalid" in str(exc_info.value)
-    assert "Request ID: RequestId" in str(exc_info.value)
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing:"
+            " test-command with arguments: {'param': 'value'}\n"
+            "Error Code: InvalidParameterValue\nError Message: "
+            "The parameter value is invalid\nHTTP Status Code: 400\n"
+            "Request ID: RequestId",
+            "EntryContext": None,
+        }
+    )
 
 
 def test_aws_error_handler_handle_permission_error_no_account_id(mocker):
@@ -1297,16 +1320,25 @@ def test_aws_error_handler_handle_general_error_missing_metadata(mocker):
 
     mocker.patch("AWS.demisto.command", return_value="test-command")
     mocker.patch("AWS.demisto.args", return_value={})
-    mocker.patch("AWS.demisto.error")
+    demisto_results = mocker.patch("AWS.demisto.results")
 
     error_response = {"Error": {"Code": "TestError", "Message": "Test message"}, "ResponseMetadata": {}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException) as exc_info:
+    with pytest.raises(SystemExit):
         AWSErrorHandler._handle_general_error(client_error, "TestError", "Test message")
 
-    assert "Request ID: N/A" in str(exc_info.value)
-    assert "HTTP Status Code: N/A" in str(exc_info.value)
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing:"
+            " test-command with arguments: {}\n"
+            "Error Code: TestError\n"
+            "Error Message: Test message\nHTTP Status Code: N/A\nRequest ID: N/A",
+            "EntryContext": None,
+        }
+    )
 
 
 def test_aws_error_handler_extract_action_from_message_valid_action(mocker):
