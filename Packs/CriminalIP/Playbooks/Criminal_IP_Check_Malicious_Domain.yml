@@ -1,7 +1,7 @@
-id: CriminalIPCheckMaliciousDomain
+id: Criminal_IP_Check_Malicious_Domain
 version: -1
 fromversion: 6.0.0
-name: CriminalIPCheckMaliciousDomain
+name: Criminal_IP_Check_Malicious_Domain
 description: |-
   Performs Quick, Lite, and Full scans in sequence in Criminal IP to determine whether the input domain is malicious or not. If a determination cannot be made from the Quick scan, a Lite scan is performed. Similarly, if a determination cannot be made from the Lite scan, a Full scan is performed to make a determination. Additionally, if a Full scan is conducted, an overview report of notable findings is compiled through domain-full-scan-make-email-body and sent via email.
   For this purpose, the user needs to fill in the arguments for the #43 send-mail command.

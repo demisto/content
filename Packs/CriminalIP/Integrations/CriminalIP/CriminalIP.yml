@@ -50,8 +50,536 @@ script:
       default: true
       type: String
     outputs:
-    - contextPath: CriminalIP.IP
-      description: Returns search results. For detailed information, see /v1/asset/ip/report.
+    - contextPath: CriminalIP.IP.status
+      description: Status Code
+      type: Number
+    - contextPath: CriminalIP.IP.ip
+      description: Queried IP Address
+      type: String
+    - contextPath: CriminalIP.IP.issues
+      description: List of Detected Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.issues.is_vpn
+      description: VPN Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_cloud
+      description: Cloud Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_tor
+      description: Tor Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_proxy
+      description: Proxy Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_hosting
+      description: Hosting Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_mobile
+      description: Mobile Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_darkweb
+      description: Darkweb Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_scanner
+      description: Scanner Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_snort
+      description: Snort Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.issues.is_anonymous_vpn
+      description: Anonymous VPN Detection
+      type: Boolean
+    - contextPath: CriminalIP.IP.score
+      description: Score Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.score.inbound
+      description: Inbound Score
+      type: String
+    - contextPath: CriminalIP.IP.score.outbound
+      description: Outbound Score
+      type: String
+    - contextPath: CriminalIP.IP.user_search_count
+      description: User Query Count
+      type: Number
+    - contextPath: CriminalIP.IP.protected_ip
+      description: Detected Real IP
+      type: Unknown
+    - contextPath: CriminalIP.IP.protected_ip.count
+      description: Count of Detected Real IP
+      type: Number
+    - contextPath: CriminalIP.IP.protected_ip.data
+      description: List of Detected Real IPs
+      type: Unknown
+    - contextPath: CriminalIP.IP.protected_ip.data.ip_address
+      description: Real IP Address
+      type: String
+    - contextPath: CriminalIP.IP.protected_ip.data.confirmed_time
+      description: Real IP Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.domain
+      description: Detected Domains
+      type: Unknown
+    - contextPath: CriminalIP.IP.domain.count
+      description: Count of Detected Domains
+      type: Number
+    - contextPath: CriminalIP.IP.domain.data
+      description: List of Detected Domains
+      type: Unknown
+    - contextPath: CriminalIP.IP.domain.data.domain
+      description: Domain Name
+      type: String
+    - contextPath: CriminalIP.IP.domain.data.ip_type
+      description: Domain IP Type
+      type: String
+    - contextPath: CriminalIP.IP.domain.data.registrar
+      description: Domain Registrar
+      type: String
+    - contextPath: CriminalIP.IP.domain.data.create_date
+      description: Domain Creation Date
+      type: Date
+    - contextPath: CriminalIP.IP.domain.data.confirmed_time
+      description: Domain Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.domain.data.email
+      description: Domain Email
+      type: String
+    - contextPath: CriminalIP.IP.whois
+      description: Detected Whois Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.whois.count
+      description: Count of Detected Whois Records
+      type: Number
+    - contextPath: CriminalIP.IP.whois.data
+      description: List of Detected Whois Records
+      type: Unknown
+    - contextPath: CriminalIP.IP.whois.data.as_name
+      description: AS Name
+      type: String
+    - contextPath: CriminalIP.IP.whois.data.as_no
+      description: AS Number
+      type: Number
+    - contextPath: CriminalIP.IP.whois.data.city
+      description: City
+      type: String
+    - contextPath: CriminalIP.IP.whois.data.region
+      description: Region
+      type: String
+    - contextPath: CriminalIP.IP.whois.data.org_name
+      description: Organization Name
+      type: String
+    - contextPath: CriminalIP.IP.whois.data.postal_code
+      description: Postal Code
+      type: String
+    - contextPath: CriminalIP.IP.whois.data.longitude
+      description: Longitude
+      type: Number
+    - contextPath: CriminalIP.IP.whois.data.latitude
+      description: Latitude
+      type: Number
+    - contextPath: CriminalIP.IP.whois.data.org_country_code
+      description: Country Code
+      type: String
+    - contextPath: CriminalIP.IP.whois.data.confirmed_time
+      description: Whois Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.hostname
+      description: Detected Hostname Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.hostname.count
+      description: Count of Detected Hostnames
+      type: Number
+    - contextPath: CriminalIP.IP.hostname.data
+      description: List of Detected Hostnames
+      type: Unknown
+    - contextPath: CriminalIP.IP.hostname.data.domain_name_rep
+      description: Hostname Main Domain
+      type: String
+    - contextPath: CriminalIP.IP.hostname.data.domain_name_full
+      description: Hostname Domain
+      type: String
+    - contextPath: CriminalIP.IP.hostname.data.confirmed_time
+      description: Hostname Detection Date
+      type: String
+    - contextPath: CriminalIP.IP.ids
+      description: Detected IDS Rule Records
+      type: Unknown
+    - contextPath: CriminalIP.IP.ids.count
+      description: Count of Detected IDS Rules
+      type: Number
+    - contextPath: CriminalIP.IP.ids.data
+      description: List of Detected IDS Rules
+      type: Unknown
+    - contextPath: CriminalIP.IP.ids.data.classification
+      description: IDS Classification
+      type: String
+    - contextPath: CriminalIP.IP.ids.data.url
+      description: IDS URL
+      type: String
+    - contextPath: CriminalIP.IP.ids.data.message
+      description: IDS Message
+      type: String
+    - contextPath: CriminalIP.IP.ids.data.confirmed_time
+      description: IDS Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.ids.data.source_system
+      description: IDS Source System
+      type: String
+    - contextPath: CriminalIP.IP.vpn
+      description: Detected VPN Detection Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.vpn.count
+      description: Count of Detected VPN Records
+      type: Number
+    - contextPath: CriminalIP.IP.vpn.data
+      description: List of Detected VPN Records
+      type: Unknown
+    - contextPath: CriminalIP.IP.vpn.data.vpn_name
+      description: VPN Name
+      type: String
+    - contextPath: CriminalIP.IP.vpn.data.vpn_url
+      description: VPN URL
+      type: String
+    - contextPath: CriminalIP.IP.vpn.data.vpn_source_url
+      description: VPN Source URL
+      type: String
+    - contextPath: CriminalIP.IP.vpn.data.socket_type
+      description: VPN Socket Type
+      type: String
+    - contextPath: CriminalIP.IP.vpn.data.confirmed_time
+      description: VPN Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.anonymous_vpn
+      description: Detected Anonymous VPN Detection Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.anonymous_vpn.count
+      description: Count of Detected Anonymous VPN Records
+      type: Number
+    - contextPath: CriminalIP.IP.anonymous_vpn.data
+      description: List of Detected Anonymous VPN Records
+      type: Unknown
+    - contextPath: CriminalIP.IP.anonymous_vpn.data.vpn_name
+      description: Anonymous VPN Name
+      type: String
+    - contextPath: CriminalIP.IP.anonymous_vpn.data.vpn_url
+      description: Anonymous VPN URL
+      type: String
+    - contextPath: CriminalIP.IP.anonymous_vpn.data.vpn_source_url
+      description: Anonymous VPN Source URL
+      type: String
+    - contextPath: CriminalIP.IP.anonymous_vpn.data.socket_type
+      description: Anonymous VPN Socket Type
+      type: String
+    - contextPath: CriminalIP.IP.anonymous_vpn.data.confirmed_time
+      description: Anonymous VPN Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.webcam
+      description: Detected Webcam Record Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.webcam.count
+      description: Count of Detected Webcam Records
+      type: Number
+    - contextPath: CriminalIP.IP.webcam.data
+      description: List of Detected Webcam Records
+      type: Unknown
+    - contextPath: CriminalIP.IP.webcam.data.image_path
+      description: Webcam Image Path
+      type: String
+    - contextPath: CriminalIP.IP.webcam.data.cam_url
+      description: Webcam Cam URL
+      type: String
+    - contextPath: CriminalIP.IP.webcam.data.country
+      description: Webcam Country
+      type: String
+    - contextPath: CriminalIP.IP.webcam.data.city
+      description: Webcam City
+      type: String
+    - contextPath: CriminalIP.IP.webcam.data.open_port_no
+      description: Webcam Port
+      type: Number
+    - contextPath: CriminalIP.IP.webcam.data.manufacturer
+      description: Webcam Manufacturer
+      type: String
+    - contextPath: CriminalIP.IP.webcam.data.confirmed_time
+      description: Webcam Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.honeypot
+      description: Access Records Detected from Honeypot
+      type: Unknown
+    - contextPath: CriminalIP.IP.honeypot.count
+      description: Count of Access Records Detected from Honeypot
+      type: Number
+    - contextPath: CriminalIP.IP.honeypot.data
+      description: List of Access Records Detected from Honeypot
+      type: Unknown
+    - contextPath: CriminalIP.IP.honeypot.data.ip_address
+      description: Honeypot Access IP
+      type: String
+    - contextPath: CriminalIP.IP.honeypot.data.log_date
+      description: Honeypot Access Log Date
+      type: String
+    - contextPath: CriminalIP.IP.honeypot.data.dst_port
+      description: Honeypot Access Port
+      type: Number
+    - contextPath: CriminalIP.IP.honeypot.data.message
+      description: Honeypot Access Message
+      type: String
+    - contextPath: CriminalIP.IP.honeypot.data.user_agent
+      description: Honeypot Access User Agent
+      type: String
+    - contextPath: CriminalIP.IP.honeypot.data.protocol_type
+      description: Honeypot Access Protocol
+      type: String
+    - contextPath: CriminalIP.IP.honeypot.data.confirmed_time
+      description: Honeypot Access Date
+      type: Date
+    - contextPath: CriminalIP.IP.ip_category
+      description: Detected IP Category Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.ip_category.count
+      description: Count of Detected IP Categories
+      type: Number
+    - contextPath: CriminalIP.IP.ip_category.data
+      description: List of Detected IP Categories
+      type: Unknown
+    - contextPath: CriminalIP.IP.ip_category.data.detect_source
+      description: IP Category Detection Source
+      type: String
+    - contextPath: CriminalIP.IP.ip_category.data.type
+      description: IP Category Classification Type
+      type: String
+    - contextPath: CriminalIP.IP.ip_category.data.detect_info
+      description: Additional IP Category Detection Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.ip_category.data.detect_info.md5
+      description: Detected MISP Data MD5 Hash
+      type: String
+    - contextPath: CriminalIP.IP.ip_category.data.detect_info.domain
+      description: Detected MISP Data Domain Value
+      type: String
+    - contextPath: CriminalIP.IP.ip_category.data.confirmed_time
+      description: IP Category Data Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.port
+      description: Detected Port Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.port.count
+      description: Count of Detected Ports
+      type: Number
+    - contextPath: CriminalIP.IP.port.data
+      description: List of Detected Ports
+      type: Unknown
+    - contextPath: CriminalIP.IP.port.data.app_name
+      description: Service Identified on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.confirmed_time
+      description: Port Detection Date
+      type: Date
+    - contextPath: CriminalIP.IP.port.data.banner
+      description: Port Banner
+      type: String
+    - contextPath: CriminalIP.IP.port.data.app_version
+      description: Service Version Detected on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.open_port_no
+      description: Port Number
+      type: Number
+    - contextPath: CriminalIP.IP.port.data.port_status
+      description: Port Status
+      type: String
+    - contextPath: CriminalIP.IP.port.data.protocol
+      description: Protocol Detected on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.socket
+      description: Port Socket Type
+      type: String
+    - contextPath: CriminalIP.IP.port.data.tags
+      description: List of Tags Detected on Port
+      type: Unknown
+    - contextPath: CriminalIP.IP.port.data.dns_names
+      description: DNS Names Detected on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.sdn_common_name
+      description: SDN Common Name Detected on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.jarm_hash
+      description: Jarm Hash Detected on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.ssl_info_raw
+      description: SSL Info Detected on Port
+      type: String
+    - contextPath: CriminalIP.IP.port.data.technologies
+      description: List of Technology Stacks Detected on Port
+      type: Unknown
+    - contextPath: CriminalIP.IP.port.data.technologies.tech_name
+      description: Technology Stack Name
+      type: String
+    - contextPath: CriminalIP.IP.port.data.technologies.tech_version
+      description: Technology Stack Version
+      type: String
+    - contextPath: CriminalIP.IP.port.data.technologies.tech_logo_url
+      description: Technology Stack Logo URL
+      type: String
+    - contextPath: CriminalIP.IP.port.data.is_vulnerability
+      description: Vulnerability Detection on Port
+      type: Boolean
+    - contextPath: CriminalIP.IP.vulnerability
+      description: Detected Vulnerability Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.count
+      description: Count of Detected Vulnerabilities
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data
+      description: List of Detected Vulnerabilities
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.cve_id
+      description: CVE ID
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.cve_description
+      description: CVE Description
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.cvssv2_vector
+      description: CVSS v2 Vector
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.cvssv2_score
+      description: CVSS v2 Score
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data.cvssv3_vector
+      description: CVSS v3 Vector
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.cvssv3_score
+      description: CVSS v3 Score
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data.list_cwe
+      description: Associated CWE List
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.list_cwe.cve_id
+      description: CVE ID
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_cwe.cwe_id
+      description: CWE ID
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data.list_cwe.cwe_name
+      description: CWE Name
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_cwe.cwe_description
+      description: CWE Description
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb
+      description: Associated EDB List
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.cve_id
+      description: CVE ID
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.edb_id
+      description: EDB ID
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.type
+      description: EDB Type
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.platform
+      description: EDB Platform
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.verify_code
+      description: EDB Verification Code
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.title
+      description: EDB Name
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_edb.confirmed_time
+      description: EDB Date
+      type: Date
+    - contextPath: CriminalIP.IP.vulnerability.data.app_name
+      description: Vulnerability Service Name
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.app_version
+      description: Vulnerability Service Version
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.open_port_no_list
+      description: Port Information Where Vulnerability Exists
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.open_port_no_list.TCP
+      description: List of Vulnerable TCP Ports
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.open_port_no_list.UDP
+      description: List of Vulnerable UDP Ports
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.have_more_ports
+      description: Whether More Than 5 Vulnerable Ports Exist
+      type: Boolean
+    - contextPath: CriminalIP.IP.vulnerability.data.open_port_no
+      description: Port Information Where Vulnerability Exists
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.open_port_no.port
+      description: Port Number
+      type: Number
+    - contextPath: CriminalIP.IP.vulnerability.data.open_port_no.socket
+      description: Port Socket Type
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child
+      description: Associated Vulnerability Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.app_name
+      description: Associated Vulnerability Service Name
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.app_version
+      description: Associated Vulnerability Service Version
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.vendor
+      description: Associated Vulnerability Service Vendor
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.type
+      description: Associated Vulnerability Classification Type
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.is_vuln
+      description: Vulnerability Presence
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.target_hw
+      description: Associated Vulnerability Target Hardware
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.target_sw
+      description: Associated Vulnerability Target Software
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.update
+      description: Associated Vulnerability Update Information
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.list_child.edition
+      description: Associated Vulnerability Edition Information
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.vendor
+      description: Vulnerability Service Vendor
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.type
+      description: Vulnerability Classification Type
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.is_vuln
+      description: Vulnerability Presence
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.target_hw
+      description: Vulnerability Target Hardware
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.target_sw
+      description: Vulnerability Target Software
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.update
+      description: Vulnerability Update Information
+      type: String
+    - contextPath: CriminalIP.IP.vulnerability.data.edition
+      description: Vulnerability Edition Information
+      type: String
+    - contextPath: CriminalIP.IP.mobile
+      description: Mobile Identification Information
+      type: Unknown
+    - contextPath: CriminalIP.IP.mobile.count
+      description: Count of Mobile Identification Records
+      type: Number
+    - contextPath: CriminalIP.IP.mobile.data
+      description: List of Mobile Identification Records
+      type: Unknown
+    - contextPath: CriminalIP.IP.mobile.data.broadband
+      description: Mobile Broadband
+      type: String
+    - contextPath: CriminalIP.IP.mobile.data.organization
+      description: Mobile Organization
       type: String
 
   - name: criminal-ip-check-malicious-ip

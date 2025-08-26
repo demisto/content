@@ -1,59 +1,329 @@
-# -*- coding: utf-8 -*-
-
-import json
+import pytest
 from freezegun import freeze_time
-import CriminalIP  # 같은 폴더의 통합 모듈 (CriminalIP.py)
 
-BASE_URL = CriminalIP.BASE_URL
+import CriminalIP  # the module under test
+
+# Define BASE_URL locally for testing instead of referencing CriminalIP.BASE_URL
+BASE_URL = "https://api.criminalip.io"
 
 
 def make_client():
-    # 실제 네트워크는 requests_mock이 가로채므로 verify/proxies는 의미 없음
-    return CriminalIP.CipApi(BASE_URL, api_key="DUMMY", verify=False, proxies={}, timeout=5)
+    """
+    Create a Client instance.
+    The Client inherits from BaseClient, so we follow its init signature.
+    """
+    return CriminalIP.Client(
+        base_url=BASE_URL,
+        verify=False,
+        proxy=False,
+        headers={"x-api-key": "DUMMY"},
+    )
 
 
-def test_ip_report_ok(requests_mock):
-    """
-    /v1/asset/ip/report 엔드포인트를 모킹하고,
-    criminal-ip-ip-report 명령의 실제 함수(get_ip_report)를 호출해 결과(raw_response)를 확인한다.
-    """
-    mocked_json = {
-        "score": {"inbound": "Safe", "outbound": "Safe"},
-        "protected_ip": {"count": 0, "data": []},
-        "issues": {}
+# ---------------------- get_ip_report ----------------------
+
+
+def test_get_ip_report_ok(requests_mock):
+    client = make_client()
+    ip = "8.8.8.8"
+
+    url = f"{BASE_URL}/v1/asset/ip/report"
+    requests_mock.get(url, json={"status": 200, "ip": ip, "score": {"inbound": "low"}}, status_code=200)
+
+    res = CriminalIP.get_ip_report(client, {"ip": ip})
+    assert hasattr(res, "raw_response")
+    assert res.raw_response["ip"] == ip
+    assert res.outputs_prefix == "CriminalIP.IP"
+
+
+def test_get_ip_report_404(requests_mock):
+    client = make_client()
+    ip = "0.0.0.0"
+
+    url = f"{BASE_URL}/v1/asset/ip/report"
+    requests_mock.get(url, json={"detail": "not found"}, status_code=404)
+
+    with pytest.raises(Exception):
+        CriminalIP.get_ip_report(client, {"ip": ip})
+
+
+# ---------------------- check_malicious_ip ----------------------
+
+
+def test_check_malicious_ip_true_by_score_and_protected(requests_mock):
+    client = make_client()
+    ip = "1.2.3.4"
+
+    url = f"{BASE_URL}/v1/asset/ip/report"
+    mock = {
+        "status": 200,
+        "ip": ip,
+        "score": {"inbound": "Dangerous", "outbound": "Critical"},
+        "protected_ip": {"count": 1, "data": [{"ip_address": "9.9.9.9"}]},
+        "issues": {"is_proxy": False, "is_vpn": False},
     }
-    requests_mock.get(f"{BASE_URL}/v1/asset/ip/report", json=mocked_json)
+    requests_mock.get(url, json=mock, status_code=200)
 
-    cip = make_client()
-    res = CriminalIP.get_ip_report(cip, {"ip": "8.8.8.8"})
-
-    # CommandResults 형태 여부 대신 핵심 필드만 검증
-    assert res.raw_response == mocked_json
-    assert "Criminal IP - IP Report" in res.readable_output
+    res = CriminalIP.check_malicious_ip(client, {"ip": ip})
+    assert "Malicious: True" in res.readable_output
+    assert res.outputs["malicious"] is True
+    assert res.outputs["real_ip_list"][0]["ip_address"] == "9.9.9.9"
 
 
-@freeze_time("2025-08-11 12:00:00")
-def test_check_last_scan_date_recent(requests_mock):
-    """
-    /v1/domain/reports 응답을 최근(7일 이내) 스캔이 있는 것으로 모킹하고,
-    check_last_scan_date 로직이 scanned=True 및 scan_id 반환하는지 확인한다.
-    """
-    mocked_json = {
+def test_check_malicious_ip_false_all_clear(requests_mock):
+    client = make_client()
+    ip = "8.8.8.8"
+
+    url = f"{BASE_URL}/v1/asset/ip/report"
+    mock = {
+        "status": 200,
+        "ip": ip,
+        "score": {"inbound": "low", "outbound": "low"},
+        "protected_ip": {"count": 0, "data": []},
+        "issues": {"is_proxy": False, "is_vpn": False, "is_tor": False},
+    }
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.check_malicious_ip(client, {"ip": ip})
+    assert "Malicious: False" in res.readable_output
+    assert res.outputs["malicious"] is False
+
+
+def test_check_malicious_ip_true_by_issue_flag(requests_mock):
+    client = make_client()
+    ip = "5.6.7.8"
+
+    url = f"{BASE_URL}/v1/asset/ip/report"
+    mock = {
+        "status": 200,
+        "ip": ip,
+        "score": {"inbound": "low", "outbound": "low"},
+        "protected_ip": {"count": 0, "data": []},
+        "issues": {"is_tor": True},  # any True flag means malicious
+    }
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.check_malicious_ip(client, {"ip": ip})
+    assert res.outputs["malicious"] is True
+
+
+# ---------------------- check_last_scan_date ----------------------
+
+
+@freeze_time("2025-08-22 12:00:00")
+def test_check_last_scan_date_found_within_7_days(requests_mock):
+    client = make_client()
+    domain = "example.com"
+
+    url = f"{BASE_URL}/v1/domain/reports"
+    # recent scan (4 days ago)
+    mock = {"data": {"reports": [{"scan_id": "SCAN-NEW", "reg_dtime": "2025-08-18T10:00:00Z"}]}}
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.check_last_scan_date(client, {"domain": domain})
+    assert res.outputs["scanned"] is True
+    assert res.outputs["scan_id"] == "SCAN-NEW"
+
+
+@freeze_time("2025-08-22 12:00:00")
+def test_check_last_scan_date_not_found_or_old(requests_mock):
+    client = make_client()
+    domain = "example.com"
+
+    url = f"{BASE_URL}/v1/domain/reports"
+    # old scan (older than 7 days)
+    mock = {"data": {"reports": [{"scan_id": "SCAN-OLD", "reg_dtime": "2025-07-01T00:00:00Z"}]}}
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.check_last_scan_date(client, {"domain": domain})
+    assert res.outputs["scanned"] is False
+    assert res.outputs["scan_id"] in ["", "SCAN-OLD"]
+
+
+def test_check_last_scan_date_no_reports(requests_mock):
+    client = make_client()
+    domain = "no-report.com"
+
+    url = f"{BASE_URL}/v1/domain/reports"
+    requests_mock.get(url, json={"data": {"reports": []}}, status_code=200)
+
+    res = CriminalIP.check_last_scan_date(client, {"domain": domain})
+    assert res.readable_output == "No scan result"
+    assert res.outputs["scanned"] is False
+    assert res.outputs["scan_id"] == ""
+
+
+# ---------------------- domain quick/lite/full scan ----------------------
+
+
+def test_domain_quick_scan(requests_mock):
+    client = make_client()
+    domain = "example.com"
+
+    url = f"{BASE_URL}/v1/domain/quick/hash/view"
+    requests_mock.get(url, json={"status": 200, "domain": domain}, status_code=200)
+
+    raw = client.domain_quick_scan(domain)
+    assert raw["domain"] == domain
+
+
+def test_domain_lite_scan_start(requests_mock):
+    client = make_client()
+    domain = "example.com"
+
+    url = f"{BASE_URL}/v1/domain/lite/scan"
+    requests_mock.get(url, json={"status": 200, "scan_id": "LITE-1"}, status_code=200)
+
+    raw = client.domain_lite_scan(domain)
+    assert raw["scan_id"] == "LITE-1"
+
+
+def test_domain_lite_scan_status(requests_mock):
+    client = make_client()
+    scan_id = "LITE-1"
+
+    url = f"{BASE_URL}/v1/domain/lite/progress"
+    requests_mock.get(url, json={"status": 200, "scan_id": scan_id, "progress": 55}, status_code=200)
+
+    raw = client.domain_lite_scan_status(scan_id)
+    assert raw["progress"] == 55
+
+
+def test_domain_lite_scan_result(requests_mock):
+    client = make_client()
+    scan_id = "LITE-1"
+
+    url = f"{BASE_URL}/v1/domain/lite/report/{scan_id}"
+    requests_mock.get(url, json={"status": 200, "scan_id": scan_id, "findings": {}}, status_code=200)
+
+    raw = client.domain_lite_scan_result(scan_id)
+    assert raw["scan_id"] == scan_id
+
+
+def test_domain_full_scan_start(requests_mock):
+    client = make_client()
+    domain = "example.com"
+
+    url = f"{BASE_URL}/v1/domain/scan"
+    requests_mock.post(url, json={"status": 200, "scan_id": "FULL-1"}, status_code=200)
+
+    raw = client.domain_full_scan(domain)
+    assert raw["scan_id"] == "FULL-1"
+
+
+def test_domain_full_scan_status(requests_mock):
+    client = make_client()
+    scan_id = "FULL-1"
+
+    url = f"{BASE_URL}/v1/domain/status/{scan_id}"
+    requests_mock.get(url, json={"status": 200, "scan_id": scan_id, "state": "running"}, status_code=200)
+
+    raw = client.domain_full_scan_status(scan_id)
+    assert raw["state"] == "running"
+
+
+def test_domain_full_scan_result(requests_mock):
+    client = make_client()
+    scan_id = "FULL-1"
+
+    url = f"{BASE_URL}/v2/domain/report/{scan_id}"
+    requests_mock.get(url, json={"status": 200, "data": {"summary": {"risks": 2}}}, status_code=200)
+
+    raw = client.domain_full_scan_result(scan_id)
+    assert raw["data"]["summary"]["risks"] == 2
+
+
+# ---------------------- make_email_body ----------------------
+
+
+@freeze_time("2025-08-22 12:00:00")
+def test_make_email_body_with_findings(requests_mock):
+    client = make_client()
+    domain = "example.com"
+    scan_id = "FULL-1"
+
+    url = f"{BASE_URL}/v2/domain/report/{scan_id}"
+    mock = {"data": {"summary": {"punycode": True, "dga_score": 9, "newborn_domain": "2025-08-10T00:00:00Z"}}}
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.make_email_body(client, {"domain": domain, "scan_id": scan_id})
+    assert "Domain example.com scan summary:" in res.readable_output
+    assert res.outputs["body"] != ""
+
+
+@freeze_time("2025-08-22 12:00:00")
+def test_make_email_body_no_findings(requests_mock):
+    client = make_client()
+    domain = "example.com"
+    scan_id = "FULL-1"
+
+    url = f"{BASE_URL}/v2/domain/report/{scan_id}"
+    mock = {"data": {"summary": {"punycode": False, "dga_score": 3}}}
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.make_email_body(client, {"domain": domain, "scan_id": scan_id})
+    assert res.readable_output == "No suspicious element"
+    assert res.outputs["body"] == ""
+
+
+# ---------------------- micro_asm ----------------------
+
+
+@freeze_time("2025-08-22 12:00:00")
+def test_micro_asm_with_findings(requests_mock):
+    client = make_client()
+    domain = "example.com"
+    scan_id = "FULL-2"
+
+    url = f"{BASE_URL}/v2/domain/report/{scan_id}"
+    mock = {
         "data": {
-            "count": 1,
-            "reports": [
-                {
-                    "reg_dtime": "2025-08-10 09:00:00",  # 고정 시간 기준으로 7일 이내
-                    "scan_id": "SCAN123"
-                }
-            ]
+            "certificates": [{"valid_to": "2025-09-05T00:00:00Z"}],  # expiring soon
+            "network_logs": {
+                "abuse_record": {"critical": 1, "dangerous": 0},
+                "data": [{"url": "http://bad.host/payload.exe"}],
+            },
         }
     }
-    requests_mock.get(f"{BASE_URL}/v1/domain/reports", json=mocked_json)
+    requests_mock.get(url, json=mock, status_code=200)
 
-    cip = make_client()
-    res = CriminalIP.check_last_scan_date(cip, {"domain": "example.com"})
+    res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
+    assert "===== example.com =====" in res.readable_output
+    assert "Certificate expiring soon" in res.readable_output
+    assert "Abuse records" in res.readable_output
+    assert "Found .exe URL in logs" in res.readable_output
+    assert res.outputs["result"] != ""
 
-    assert res.outputs["scanned"] is True
-    assert res.outputs["scan_id"] == "SCAN123"
-    assert "Scan result in 7 days." in res.readable_output
+
+@freeze_time("2025-08-22 12:00:00")
+def test_micro_asm_no_findings(requests_mock):
+    client = make_client()
+    domain = "example.com"
+    scan_id = "FULL-3"
+
+    url = f"{BASE_URL}/v2/domain/report/{scan_id}"
+    mock = {
+        "data": {
+            "certificates": [{"valid_to": "2026-01-01T00:00:00Z"}],
+            "network_logs": {"abuse_record": {"critical": 0, "dangerous": 0}, "data": []},
+        }
+    }
+    requests_mock.get(url, json=mock, status_code=200)
+
+    res = CriminalIP.micro_asm(client, {"domain": domain, "scan_id": scan_id})
+    assert res.readable_output == "No suspicious element"
+    assert res.outputs["result"] == ""
+
+
+# ---------------------- smoke: client.domain_reports ----------------------
+
+
+def test_domain_reports(requests_mock):
+    client = make_client()
+    domain = "example.com"
+
+    url = f"{BASE_URL}/v1/domain/reports"
+    requests_mock.get(url, json={"data": {"reports": [{"scan_id": "S1"}]}}, status_code=200)
+
+    raw = client.domain_reports(domain)
+    assert "reports" in raw.get("data", {})
