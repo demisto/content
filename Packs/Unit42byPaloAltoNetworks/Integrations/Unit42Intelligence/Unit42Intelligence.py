@@ -53,7 +53,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.reliability = reliability
 
-    def lookup_indicator(self, indicator_type: str, indicator_value: str) -> dict[str, Any]:
+    def lookup_indicator(self, indicator_type: str, indicator_value: str) -> requests.Response:
         """
         Lookup an indicator in Unit 42 Intelligence
 
@@ -62,7 +62,7 @@ class Client(BaseClient):
             indicator_value: Value of the indicator
 
         Returns:
-            API response as dictionary
+            requests.Response object
         """
         if indicator_type.lower() == "url":
             # URL-encode the indicator value to handle special characters safely in the API request
@@ -71,9 +71,7 @@ class Client(BaseClient):
 
         endpoint = LOOKUP_ENDPOINT.format(indicator_type=indicator_type, indicator_value=indicator_value)
 
-        response = self._http_request(method="GET", url_suffix=endpoint, timeout=60)
-
-        return response
+        return self._http_request(method="GET", url_suffix=endpoint, ok_codes=(200, 404), resp_type="response")
 
 
 def test_module(client: Client) -> str:
@@ -112,7 +110,7 @@ def create_dbot_score(
     Returns:
         DBotScore object
     """
-    score = VERDICT_TO_SCORE.get(verdict.lower() or "unknown", Common.DBotScore.NONE)
+    score: int = VERDICT_TO_SCORE.get(verdict.lower() or "unknown", Common.DBotScore.NONE)
 
     # Add malicious description if the verdict is malicious
     malicious_description = None
@@ -172,7 +170,7 @@ def create_relationships(
     return relationships
 
 
-def create_indicators_from_relationships(relationship: dict[str, Any]) -> CommandResults:
+def create_indicators_from_relationships(relationship: dict[str, Any]):
     """
     Create indicators from relationship
 
@@ -184,20 +182,21 @@ def create_indicators_from_relationships(relationship: dict[str, Any]) -> Comman
     """
     indicator_name = relationship["name"]
     indicator_type = relationship["threat_object_class"]
-    score = VERDICT_TO_SCORE.get(relationship["verdict"].lower() or "unknown")
+    verdict = relationship.get("verdict", "unknown")
 
     if not any([indicator_name, indicator_type]):
-        demisto.debug(f"Skipping create_indicators_from_relationships for {indicator_name=}, {indicator_type=}, {score=}")
+        demisto.debug(f"Skipping create_indicators_from_relationships for {indicator_name=}, {indicator_type=}, {verdict=}")
         return
 
     dbot_score = create_dbot_score(
         indicator=indicator_name,
         indicator_type=indicator_type,
-        verdict=score,
+        verdict=verdict,
     )
     # Retrieve the indicator type from the mapping dictionary based on the relationship type
     indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, "Indicator")
     # Create indicator based on type
+    indicator: Common.IP | Common.Domain | Common.URL | Common.File | Common.CustomIndicator | None = None
     if indicator_type == "IP":
         indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
     elif indicator_type == "Domain":
@@ -205,7 +204,7 @@ def create_indicators_from_relationships(relationship: dict[str, Any]) -> Comman
     elif indicator_type == "URL":
         indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
     elif indicator_type == "File":
-        indicator = Common.File(ha256=indicator_name, dbot_score=dbot_score)
+        indicator = Common.File(sha256=indicator_name, dbot_score=dbot_score)
     else:
         # Create custom indicator for unknown types
         indicator = Common.CustomIndicator(
@@ -285,7 +284,10 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     response = client.lookup_indicator("ip", ip)
 
-    response_data = extract_response_data(response)
+    if response.status_code == 404:
+        return CommandResults(readable_output="Indicator not found")
+
+    response_data = extract_response_data(response.json())
 
     # Create DBotScore
     dbot_score = create_dbot_score(ip, DBotScoreType.IP, response_data["verdict"], client.reliability)
@@ -337,8 +339,11 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("domain", domain)
+    
+    if response.status_code == 404:
+        return CommandResults(readable_output="Indicator not found")
 
-    response_data = extract_response_data(response)
+    response_data = extract_response_data(response.json())
 
     # Create DBotScore
     dbot_score = create_dbot_score(domain, DBotScoreType.DOMAIN, response_data["verdict"], client.reliability)
@@ -393,7 +398,10 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     response = client.lookup_indicator("url", url)
 
-    response_data = extract_response_data(response)
+    if response.status_code == 404:
+        return CommandResults(readable_output="Indicator not found")
+
+    response_data = extract_response_data(response.json())
 
     # Create DBotScore
     dbot_score = create_dbot_score(url, DBotScoreType.URL, response_data["verdict"], client.reliability)
@@ -445,8 +453,11 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("filehash_sha256", file_hash)
+    
+    if response.status_code == 404:
+        return CommandResults(readable_output="Indicator not found")
 
-    response_data = extract_response_data(response)
+    response_data = extract_response_data(response.json())
 
     # Create DBotScore
     dbot_score = create_dbot_score(file_hash, DBotScoreType.FILE, response_data["verdict"], client.reliability)

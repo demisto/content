@@ -62,7 +62,10 @@ def test_ip_command_malicious(client, mocker):
         ],
     }
 
-    mocker.patch.object(client, "lookup_indicator", return_value=mock_response)
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
 
     args = {"ip": "1.2.3.4", "create_relationships": True}
     result = ip_command(client, args)
@@ -99,7 +102,10 @@ def test_domain_command_benign(client, mocker):
         "threat_object_association": [],
     }
 
-    mocker.patch.object(client, "lookup_indicator", return_value=mock_response)
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
 
     args = {"domain": "example.com", "create_relationships": True}
     result = domain_command(client, args)
@@ -135,7 +141,10 @@ def test_url_command_suspicious(client, mocker):
         "threat_object_association": [{"name": "Phishing Campaign 2023", "threat_object_class": "campaign"}],
     }
 
-    mocker.patch.object(client, "lookup_indicator", return_value=mock_response)
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
 
     args = {"url": "http://malicious.example.com", "create_relationships": True}
     result = url_command(client, args)
@@ -173,7 +182,11 @@ def test_file_command_malicious(client, mocker):
         "threat_object_association": [{"name": "Zeus", "threat_object_class": "malware_family"}],
     }
 
-    mocker.patch.object(client, "lookup_indicator", return_value=mock_response)
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
     args = {"file": test_hash, "create_relationships": True}
     result = file_command(client, args)
 
@@ -194,11 +207,12 @@ def test_test_module_success(client, mocker):
     Then:
         - Returns 'ok' indicating successful connection
     """
-    mock_response = {"verdict": "benign", "verdict_category": "legitimate"}
-
-    mocker.patch.object(client, "lookup_indicator", return_value=mock_response)
-
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 200
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+    
     result = test_module(client)
+    
     assert result == "ok"
 
 
@@ -215,7 +229,88 @@ def test_test_module_failure(client, mocker):
     mocker.patch.object(client, "lookup_indicator", side_effect=Exception("API Error"))
 
     result = test_module(client)
+    
     assert "Test failed" in result
+
+
+def test_ip_command_404(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A mock API response with 404 status code
+    When:
+        - Running ip_command
+    Then:
+        - Returns CommandResults with 'Indicator not found' message
+    """
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 404
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"ip": "1.2.3.4", "create_relationships": True}
+    result = ip_command(client, args)
+
+    assert result.readable_output == "Indicator not found"
+
+
+def test_domain_command_404(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A mock API response with 404 status code
+    When:
+        - Running domain_command
+    Then:
+        - Returns CommandResults with 'Indicator not found' message
+    """
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 404
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"domain": "example.com", "create_relationships": True}
+    result = domain_command(client, args)
+
+    assert result.readable_output == "Indicator not found"
+
+
+def test_url_command_404(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A mock API response with 404 status code
+    When:
+        - Running url_command
+    Then:
+        - Returns CommandResults with 'Indicator not found' message
+    """
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 404
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"url": "http://example.com", "create_relationships": True}
+    result = url_command(client, args)
+
+    assert result.readable_output == "Indicator not found"
+
+
+def test_file_command_404(client, mocker):
+    """
+    Given:
+        - A Unit42Intelligence client
+        - A mock API response with 404 status code
+    When:
+        - Running file_command
+    Then:
+        - Returns CommandResults with 'Indicator not found' message
+    """
+    mock_response_obj = mocker.Mock()
+    mock_response_obj.status_code = 404
+    mocker.patch.object(client, "lookup_indicator", return_value=mock_response_obj)
+
+    args = {"file": "a" * 64, "create_relationships": True}
+    result = file_command(client, args)
+
+    assert result.readable_output == "Indicator not found"
 
 
 def test_client_initialization():
@@ -613,7 +708,11 @@ def test_file_hash_detection():
     # Test MD5
     import unittest.mock
 
-    with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response):
+    mock_response_obj = unittest.mock.Mock()
+    mock_response_obj.status_code = 200
+    mock_response_obj.json.return_value = mock_response
+
+    with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response_obj):
         args = {"file": md5_hash, "create_relationships": True}
         result = file_command(client, args)
         assert result.indicator.md5 == md5_hash
@@ -621,7 +720,7 @@ def test_file_hash_detection():
         assert result.indicator.sha256 is None
 
     # Test SHA1
-    with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response):
+    with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response_obj):
         args = {"file": sha1_hash, "create_relationships": True}
         result = file_command(client, args)
         assert result.indicator.md5 is None
@@ -629,7 +728,7 @@ def test_file_hash_detection():
         assert result.indicator.sha256 is None
 
     # Test SHA256
-    with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response):
+    with unittest.mock.patch.object(client, "lookup_indicator", return_value=mock_response_obj):
         args = {"file": sha256_hash, "create_relationships": True}
         result = file_command(client, args)
         assert result.indicator.md5 is None
