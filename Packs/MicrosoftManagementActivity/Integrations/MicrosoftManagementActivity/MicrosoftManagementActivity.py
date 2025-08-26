@@ -214,7 +214,7 @@ class Client(BaseClient):
             url_suffix=self.suffix_template.format(self.tenant_id, start_or_stop_suffix),
             headers=headers,
             params=params,
-            ok_codes=(200, 201, 202, 203, 204), 
+            ok_codes=(200, 201, 202, 203, 204),
             return_empty_response=True,
         )
 
@@ -388,7 +388,9 @@ def does_record_match_filters(record, filter_accepted_record_type_ids, filter_ac
     record_matches_workloads_filter = not should_filter_by_workloads or record.get("Workload") in filter_accepted_workloads
 
     should_filter_by_operations = filter_accepted_operations is not None
-    record_matches_operations_filter = not should_filter_by_operations or record.get("Operation").lower() in filter_accepted_operations
+    record_matches_operations_filter = (
+        not should_filter_by_operations or record.get("Operation").lower() in filter_accepted_operations
+    )
 
     return record_matches_record_type_filter and record_matches_workloads_filter and record_matches_operations_filter
 
