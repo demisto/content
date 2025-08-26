@@ -31,7 +31,9 @@
     ],
     "keywords": [
         "adaptive cyber protection",
-        "apt"
+        "apt",
+        "xdr",
+        "cortex"
     ],
     "dependencies": {
         "ServiceNow": {

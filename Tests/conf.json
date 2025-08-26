@@ -3260,7 +3260,7 @@
             "playbookID": "Bluecat Address Manager test"
         },
         {
-            "integrations": "MailListener - POP3 Beta",
+            "integrations": "MailListener - POP3",
             "playbookID": "MailListener-POP3 - Test"
         },
         {
@@ -5859,6 +5859,11 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "playbookID": "QuarantineFile-Test",
+            "timeout": 300,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
