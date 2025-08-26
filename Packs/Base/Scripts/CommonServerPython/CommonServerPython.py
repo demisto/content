@@ -2957,7 +2957,7 @@ def is_ipv6_valid(address):
         return False
     return True
 
-def is_ip_internal(ip):
+def is_ip_address_internal(ip):
     """
     Checks if an IP address is an internal (RFC 1918) IP, Available from python3.
 
