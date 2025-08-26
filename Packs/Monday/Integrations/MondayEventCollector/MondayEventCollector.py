@@ -26,7 +26,7 @@ AUTH_URL = "https://auth.monday.com/oauth2/token"
 MAX_AUDIT_LOGS_PER_PAGE = 1000
 MAX_ACTIVITY_LOGS_PER_PAGE = 10000
 
-# Integration limit
+# Integration limit - yml file
 MAX_AUDIT_LOGS_PER_FETCH = 5000
 MAX_ACTIVITY_LOGS_PER_FETCH = 10000
 
@@ -44,12 +44,6 @@ HEADERS = {
     "Content-Type": "application/json",
     "Accept": "application/json"
 }
-
-AUDIT_LOGS_LIMIT = min(MAX_AUDIT_LOGS_PER_FETCH, int(PARAMS.get("max_audit_logs_per_fetch", 5000)))
-AUDIT_LOGS_PER_PAGE = min(MAX_AUDIT_LOGS_PER_PAGE, AUDIT_LOGS_LIMIT) # must stay the same during all the fetch audit logs runs.
-
-ACTIVITY_LOGS_LIMIT = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(PARAMS.get("max_activity_logs_per_fetch", 10000)))
-ACTIVITY_LOGS_PER_PAGE = min(MAX_ACTIVITY_LOGS_PER_PAGE, ACTIVITY_LOGS_LIMIT) # must stay the same during all the fetch activity logs runs.
 
 # Debug prefixes - used for logging
 AUDIT_LOG_DEBUG_PREFIX = "Audit Logs- MondayEventCollector Debug Message:\n"
@@ -146,7 +140,7 @@ def test_connection() -> CommandResults:
     
     activity_logs_missing_params = ""
     audit_logs_missing_params = ""
-
+    now_ms = int(time.time() * 1000)
     try:
         # Try to test connection in the Authorization Code flow mode for activity logs.
         if client_id and secret:
@@ -154,7 +148,6 @@ def test_connection() -> CommandResults:
             access_token = integration_context.get("access_token", "")
             if access_token or auth_code:
                 
-                now_ms = int(time.time() * 1000)
                 activity_logs_url = params.get("activity_logs_url", "https://api.monday.com")
                 board_ids = params.get("board_ids", "")
                 board_ids_list = [board_id.strip() for board_id in board_ids.split(',') if board_id.strip()] if board_ids else []
@@ -178,7 +171,7 @@ def test_connection() -> CommandResults:
 
         if audit_token and audit_logs_url:
             # All parameters are provided for audit logs, test fetch single audit log.
-            get_audit_logs(last_run={}, now_ms=now_ms, limit=1)
+            get_audit_logs(last_run={}, now_ms=now_ms, limit=1, logs_per_page=1)
             return CommandResults(readable_output='✅ Test connection success for audit logs.')
         else:
             audit_logs_missing_params = "Audit API token and Audit Server URL"
@@ -191,7 +184,7 @@ def test_connection() -> CommandResults:
 
 
 
-def get_remaining_audit_logs(last_run: dict) -> tuple[list, dict]:
+def get_remaining_audit_logs(last_run: dict, logs_per_page: int) -> tuple[list, dict]:
     """
     Fetch remaining audit logs from Monday based on configuration.
     Called only if the user set the audit logs limit to be bigger than 1,000,
@@ -219,7 +212,7 @@ def get_remaining_audit_logs(last_run: dict) -> tuple[list, dict]:
     params = {
         "filters": time_filter,
         "page": page,
-        "per_page": AUDIT_LOGS_PER_PAGE
+        "per_page": logs_per_page
     }
     
     headers = {
@@ -493,10 +486,12 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page=1, newest log timestamp: {newest_log_timestamp}, set upper_bound_log_id: {last_run['upper_bound_log_id']}")
 
         else:
-            newest_log_timestamp = ""
-            last_run["upper_bound_log_id"] = None
-            last_run["lower_bound_log_id"] = None # TODO: check about it, it think this is a mistake, only rest upper_bound_log_id is enough
-            demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page=1, no logs available for this time range, set upper_bound_log_id and lower_bound_log_id to None")
+            demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page=1, no logs available for this time range.")
+            return [], last_run
+            # newest_log_timestamp = ""
+            # last_run["upper_bound_log_id"] = None
+            # # last_run["lower_bound_log_id"] = None # TODO: check about it, it think this is a mistake, only rest upper_bound_log_id is enough
+            # demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page=1, no logs available for this time range, set upper_bound_log_id and lower_bound_log_id to None")
 
 
     # last page reached when the response contains no activity logs.
@@ -506,7 +501,7 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
         lower_bound_log_id = last_run.get("lower_bound_log_id")
         fetched_logs = remove_duplicate_logs(fetched_logs, ids_to_remove=lower_bound_log_id, is_id_field_exists=True, debug_prefix=ACTIVITY_LOG_DEBUG_PREFIX)
         
-        last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
+        last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id").copy() # The upper bound log id is the lower bound in the next fetch
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}set lower_bound_log_id to be upper_bound_log_id: {last_run['lower_bound_log_id']}")
         
         # If it's a continuing fetch, the last_timestamp is already saved from the first fetch run.
@@ -550,7 +545,7 @@ def subtract_epsilon_from_timestamp(timestamp_str, epsilon_ms=1):
     
     
 
-def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]:
+def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int) -> tuple[dict, list]:
     """
     Fetch audit logs from Monday based on configuration.
     
@@ -619,7 +614,7 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
         params = {
             "filters": time_filter,
             "page": page,
-            "per_page": AUDIT_LOGS_PER_PAGE
+            "per_page": logs_per_page
         }
         
         remaining_logs = limit - len(total_logs)
@@ -651,10 +646,12 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
                 demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page=1, newest log timestamp: {newest_log_timestamp}, set upper_bound_log_id: {last_run['upper_bound_log_id']}")
 
             else:
-                newest_log_timestamp = ""
-                last_run["upper_bound_log_id"] = None
-                last_run["lower_bound_log_id"] = None   # TODO: check about it
-                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page=1, no logs available for this time range, set upper_bound_log_id and lower_bound_log_id to None")
+                demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page=1, no logs available for this time range.")
+                return [], last_run
+                # newest_log_timestamp = ""
+                # last_run["upper_bound_log_id"] = None
+                # # last_run["lower_bound_log_id"] = None   # TODO: check about it
+                # demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page=1, no logs available for this time range, set upper_bound_log_id and lower_bound_log_id to None")
 
 
         # last page reached, next_page = None, meaning there are no more logs to fetch.
@@ -666,7 +663,7 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int) -> tuple[dict, list]
             fetched_logs = remove_duplicate_logs(fetched_logs, lower_bound_log_id, is_id_field_exists=False, debug_prefix=AUDIT_LOG_DEBUG_PREFIX)
             total_logs.extend(fetched_logs)
     
-            last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id") # The upper bound log id is the lower bound in the next fetch
+            last_run["lower_bound_log_id"] = last_run.get("upper_bound_log_id").copy() # The upper bound log id is the lower bound in the next fetch
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}set lower_bound_log_id to be upper_bound_log_id: {last_run['lower_bound_log_id']}")
             
             # If it's a continuing fetch, the last_timestamp is already saved from the first fetch run.
@@ -713,19 +710,24 @@ def fetch_audit_logs(last_run: dict) -> tuple[dict, list]:
     
     now_ms = int(time.time() * 1000)
     audit_logs = []
-    limit = AUDIT_LOGS_LIMIT
+    params = demisto.params()
+
+    limit = min(MAX_AUDIT_LOGS_PER_FETCH, int(params.get("max_audit_logs_per_fetch", 5000)))
+    logs_per_page = min(MAX_AUDIT_LOGS_PER_PAGE, limit)
+    
     try:
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}last_run before fetching audit logs: {last_run}")
         
         # Handle fetching remaining logs from previous fetch
         if last_run.get("excess_logs_info"):
-            excess_logs, last_run = get_remaining_audit_logs(last_run)
+            excess_logs, last_run = get_remaining_audit_logs(last_run, logs_per_page)
+            limit_before_fetch = limit
             audit_logs.extend(excess_logs)
             limit -= len(excess_logs)
-            demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Fetched {len(excess_logs)} excess audit logs, limit changes from {AUDIT_LOGS_LIMIT} to {limit}")
+            demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Fetched {len(excess_logs)} excess audit logs, limit changes from {limit_before_fetch} to {limit}")
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}last_run after fetching remaining audit logs: {last_run}")
 
-        fetched_logs, last_run = get_audit_logs(last_run=last_run, now_ms=now_ms, limit=limit)
+        fetched_logs, last_run = get_audit_logs(last_run=last_run, now_ms=now_ms, limit=limit, logs_per_page=logs_per_page)
         audit_logs.extend(fetched_logs)
     
     except Exception as e:
@@ -776,7 +778,7 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     
     now_ms = int(time.time() * 1000)
     activity_logs = []
-    limit = ACTIVITY_LOGS_LIMIT
+    limit = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(demisto_params.get("max_activity_logs_per_fetch", 10000)))
     
     try:
         for board_id in board_ids_list:
