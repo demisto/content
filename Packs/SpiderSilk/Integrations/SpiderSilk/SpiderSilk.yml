@@ -10,10 +10,11 @@ configuration:
   required: true
   type: 0
 - additionalinfo: Your SpiderSilk API key (will be used as a Bearer token).
-  display: API Key
-  name: api_key
+  displaypassword: API Key
+  name: credentials
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
 - additionalinfo: Fetch credentials reported in the last X hours (e.g., 0.5 to 168). Used for manual fetch and as default for first fetch.
   defaultvalue: '24'
   display: Hours Since Reports Created (for reported_since parameter)
