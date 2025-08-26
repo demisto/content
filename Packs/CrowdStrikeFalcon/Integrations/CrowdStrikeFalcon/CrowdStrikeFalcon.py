@@ -1140,7 +1140,7 @@ def init_rtr_single_session(host_id: str, queue_offline: bool = False) -> str:
 def init_rtr_batch_session(host_ids: list, offline=False) -> str:
     """
     Start a session with one or more hosts
-    :param host_ids: List of host agent ID’s to initialize a RTR session on.
+    :param host_ids: List of host agent ID's to initialize a RTR session on.
     :return: The session batch ID to execute the command on
     """
     endpoint_url = "/real-time-response/combined/batch-init-session/v1"
@@ -1254,7 +1254,7 @@ def run_batch_get_cmd(
       Batch executes `get` command across hosts to retrieve files.
       After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
 
-    :param host_ids: List of host agent ID’s to run RTR command on.
+    :param host_ids: List of host agent ID's to run RTR command on.
     :param file_path: Full path to the file that is to be retrieved from each host in the batch.
     :param optional_hosts: List of a subset of hosts we want to run the command on.
                            If this list is supplied, only these hosts will receive the command.
@@ -2155,7 +2155,7 @@ def behavior_to_entry_context(behavior):
 
 def get_username_uuid(username: str):
     """
-    Obtain CrowdStrike user’s UUId by email.
+    Obtain CrowdStrike user's UUId by email.
     :param username: Username to get UUID of.
     :return: The user UUID
     """
@@ -4604,7 +4604,7 @@ def enrich_groups(all_group_ids) -> dict[str, Any]:
 
 def get_status(device_ids):
     """
-    Get the online status for one or more hosts by specifying each host’s unique ID (up to 100 max).
+    Get the online status for one or more hosts by specifying each host's unique ID (up to 100 max).
     The status can be online, offline, or unknown.
     Args:
         device_ids: list of device ids.
@@ -4615,7 +4615,7 @@ def get_status(device_ids):
     state_data = {}
     batch_size = 100
     for i in range(0, len(device_ids), batch_size):
-        batch = device_ids[i : i + batch_size]
+        batch = device_ids[i: i + batch_size]
         raw_res = http_request("GET", "/devices/entities/online-state/v1", params={"ids": batch})
         for res in raw_res.get("resources"):
             state = res.get("state", "")
@@ -5897,7 +5897,8 @@ def rtr_general_command_on_hosts(
     General function to run RTR commands depending on the given command.
     """
     batch_id = init_rtr_batch_session(host_ids, offline)
-    response = get_session_function(batch_id, command_type=command, full_command=full_command, host_ids=host_ids, timeout=timeout)  # type:ignore
+    response = get_session_function(batch_id, command_type=command, full_command=full_command,
+                                    host_ids=host_ids, timeout=timeout)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
 
     human_readable = tableToMarkdown(f"{INTEGRATION_NAME} {command} command on host {host_ids[0]}:", output, headers="Stdout")

@@ -1551,7 +1551,7 @@ def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: byte
         tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
         bytes, mime type), and the str is the mime type to upload with the file.
     """
-    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # guess_type can return a None mime type if the type can't be guessed (missing or unknown suffix). In this case, we should use
     # a default mime type
     mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or "application-type"
     demisto.debug(f"In create_files_to_upload {mime_type_to_upload=}")

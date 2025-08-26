@@ -326,6 +326,12 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+- display: Incident type
+  name: incidentType
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  type: 8
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -5174,10 +5180,9 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.4257568
+  dockerimage: demisto/py3-tools:1.0.0.4649374
   isfetch: true
   isfetch:marketplacev2: false
-  isfetch:platform: false
   isfetchevents: true
   ismappable: true
   isremotesyncin: true

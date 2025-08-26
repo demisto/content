@@ -612,7 +612,7 @@ def add_user_command(
     :param password: The password that the user will use to log on for the first time.
     :param change_password_on_the_next_logon: Whether or not the user must change their password from the second
         log on onward.
-    :param password_never_expires: Whether the user’s password will not expire unless they decide
+    :param password_never_expires: Whether the user's password will not expire unless they decide
         to change it.
     :param vault_authorization: The user permissions.
     :param description: Notes and comments.
@@ -620,8 +620,8 @@ def add_user_command(
     :param first_name: The user's first name.
     :param last_name: The user's last name.
     :param enable_user: Whether the user will be enabled upon creation.
-    :param profession: The user’s profession.
-    :param distinguished_name: The user’s distinguished name.
+    :param profession: The user's profession.
+    :param distinguished_name: The user's distinguished name.
     :param location: The location in the vault where the user will be created.
     :return: CommandResults
     """
@@ -682,7 +682,7 @@ def update_user_command(
     :param expiry_date: The date when the user expires as timestamp.
     :param change_password_on_the_next_logon: Whether or not the user must change their password from the second
         log on onward.
-    :param password_never_expires: Whether the user’s password will not expire unless they decide
+    :param password_never_expires: Whether the user's password will not expire unless they decide
         to change it.
     :param vault_authorization: The user permissions.
     :param description: Notes and comments.
@@ -690,8 +690,8 @@ def update_user_command(
     :param first_name: The user's first name.
     :param last_name: The user's last name.
     :param enable_user: Whether the user will be enabled upon creation.
-    :param profession: The user’s profession.
-    :param distinguished_name: The user’s distinguished name.
+    :param profession: The user's profession.
+    :param distinguished_name: The user's distinguished name.
     :param location: The location in the vault where the user will be created.
     :return: CommandResults
     """
@@ -784,7 +784,7 @@ def activate_user_command(
 def get_list_safes_command(
     client: Client,
 ):
-    """Returns information about all of the user’s Safes in the vault.
+    """Returns information about all of the user's Safes in the vault.
     :param client: The client object with an access token
     :return: CommandResults
     """
@@ -943,7 +943,7 @@ def add_safe_member_command(
     :param member_name: The name of the user to add as a Safe member.
     :param requests_authorization_level: Requests authorization level, can be 0/1/2.
     :param membership_expiration_date: MM|DD|YY or empty if there is no expiration date.
-    :param permissions: User’s permissions in the safe.
+    :param permissions: User's permissions in the safe.
     :param search_in: Search for the member in the vault or domain.
     :return: CommandResults
     """
@@ -969,7 +969,7 @@ def update_safe_member_command(
     :param member_name: Member name that will be updated.
     :param requests_authorization_level: Requests authorization level, can be 0/1/2.
     :param membership_expiration_date: MM|DD|YY or empty if there is no expiration date.
-    :param permissions: User’s permissions in the safe.
+    :param permissions: User's permissions in the safe.
     :return: CommandResults
     """
     permissions_list = argToList(permissions)
@@ -993,7 +993,7 @@ def delete_safe_member_command(
     """Remove a specific member from a safe.
     :param client: The client object with an access token
     :param safe_name: Name of the safe to which the safe member belongs.
-    :param member_name: The name of the safe member to delete from the safe’s list of members.
+    :param member_name: The name of the safe member to delete from the safe's list of members.
     :return: CommandResults
     """
     # the response should be an empty string, if an error raised it would be catch in the main block

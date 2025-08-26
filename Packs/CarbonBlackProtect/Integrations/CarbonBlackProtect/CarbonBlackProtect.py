@@ -1182,7 +1182,7 @@ def update_file_rule(
     :param report_only: True if this has a report-only ban
     :param reputation_approvals_enabled: True if reputation approvals are enabled for this file
     :param force_installer: True if this file is forced to act as installer
-    :param force_not_installer: True if this file is forced to act as ‘not installer'
+    :param force_not_installer: True if this file is forced to act as 'not installer'
     :param policy_ids: List of IDs of policies where this rule applies.
     :param platform_flags: Set of platform flags where this file rule will be valid
     :return: Result json of the request
