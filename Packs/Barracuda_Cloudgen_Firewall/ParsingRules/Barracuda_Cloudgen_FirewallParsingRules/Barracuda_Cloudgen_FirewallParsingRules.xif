@@ -1,4 +1,4 @@
-[INGEST:vendor="barracuda", product="sf", target_dataset="barracuda_sf_raw", no_hit=keep]
+[INGEST:vendor="barracuda", product="cgfw", target_dataset="barracuda_cgfw_raw", no_hit=keep]
 filter _raw_log ~= "^.*(\d{10})\s.*BYF" OR _raw_log ~= "\S{3}\s+\S+\s\d{2}\:\d{2}\:\d{2}"
 | alter
     tmp_time1_get_epoch = arraystring(regextract(_raw_log, "^.*(\d{10})\s.*BYF"), ""),
