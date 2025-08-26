@@ -485,17 +485,18 @@ def get_cases_in_batches(
     last_fetched_ids: list[str],
     max_fetch: int,
 ) -> tuple[list[dict], str, list[str]]:
-    """_summary_
+    """
+    Gets cases up to `max_fetch` in batches of up to `MAX_BATCH_SIZE` between the `start_time` and `end_time`
 
     Args:
-        client (Client): _description_
-        start_time (str): _description_
-        end_time (str): _description_
-        last_fetched_ids (list[str]): _description_
-        max_fetch (int): _description_
+        client (Client): API client instance.
+        start_time (str): The starting date and time for searching cases in `DATE_FORMAT`.
+        end_time (str): The end date and time for searching cases in `DATE_FORMAT`.
+        last_fetched_ids (list[str]): The list of existing case IDs to check against.
+        max_fetch (int): The maximum number of unique fetched cases.
 
     Returns:
-        tuple[list[dict], str, list[str]]: _description_
+        tuple[list[dict], str, list[str]]: Unique fetched cases, new start time, and last fetched case IDs.
     """
     all_cases: list[dict] = []
     all_fetched_ids = set(last_fetched_ids.copy())
@@ -580,16 +581,17 @@ def filter_existing_cases(cases: list[dict], ids_exists: list[str]) -> list:
 
 
 def get_last_case_time_and_ids(formatted_cases: list) -> tuple[str, list]:
-    """_summary_
+    """
+    Gets the maximum `_time` value from all formatted cases along with the IDs of cases with this `_time` value.
 
     Args:
-        cases (list): _description_
+        formatted_cases (list): A list of cases formatted as XSIAM events with `_time` value in the `DATE_FORMAT`.
 
     Raises:
-        ValueError: _description_
+        ValueError: If the list of cases is empty.
 
     Returns:
-        tuple[str, list]: _description_
+        tuple[str, list]: Maximum `_time` value, list of IDs of cases with this `_time` value.
     """
     if not formatted_cases:
         raise ValueError("Cannot get last case time and IDs from empty list.")
@@ -1022,19 +1024,20 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     return incidents, last_run
 
 
-def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tuple[list, dict]:
-    """_summary_
+def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tuple[list[dict], dict]:
+    """
+    Validates the `max_fetch` value, fetches events in batches, and updates the last run.
 
     Args:
-        client (Client): _description_
-        params (dict[str, str]): _description_
-        last_run (dict[str, Any]): _description_
+        client (Client): API client instance.
+        max_fetch (int): The maximum number of cases to fetch as events. Must not be greater than `MAX_EVENTS_LIMIT.`
+        last_run (dict[str, Any]): Last run object from previous fetch.
 
     Raises:
         DemistoException: If `max_fetch` is higher than `MAX_EVENTS_LIMIT`.
 
     Returns:
-        tuple[list, dict]: _description_
+        tuple[list[dict], dict]: List of cases formatted as events, updated last run object.
     """
     demisto.debug(f"Starting to fetch events with {max_fetch=}. Got {last_run=}.")
 
