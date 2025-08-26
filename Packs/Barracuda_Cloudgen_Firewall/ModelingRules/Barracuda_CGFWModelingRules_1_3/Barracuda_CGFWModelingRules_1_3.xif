@@ -42,8 +42,6 @@ filter _raw_log contains "BYF"
 | alter
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity = "1", XDM_CONST.LOG_LEVEL_ALERT, severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4" OR parsedFields1 -> level = "Warning", XDM_CONST.LOG_LEVEL_WARNING, severity = "5" OR parsedFields1 -> level = "Notice", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6" or parsedFields1 -> level = "Info" , XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
     xdm.observer.name = parsedFields1 -> hostname,
-    xdm.observer.product = parsedFields1 -> programName,
-    xdm.observer.vendor = "Barracuda",
     xdm.source.ipv4 = if(is_ipv4(parsedFields1 -> srcIP) = TRUE, parsedFields1 -> srcIP),
     xdm.source.ipv6 = if(is_ipv6(parsedFields1 -> srcIP) = TRUE, parsedFields1 -> srcIP),
     xdm.target.ipv4 = if(is_ipv4(parsedFields1 -> dstIP) = TRUE, parsedFields1 -> dstIP),
