@@ -51,3 +51,8 @@ Follow one of these steps for authentication based on Azure Managed Identities:
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
+### Fetch incidents
+
+The integration fetches incidents based on the content types, record types, and workloads specified in the integration instance settings.
+When specifying the **operations to fetch**, it's crucial to use the correct capitalization, as this parameter is case-sensitive. For example, `DlpRuleMatch` and `DLPRuleMatch` are treated as distinct operations that retrieve information from different workloads.
+To ensure you target the correct workload, always verify the operation name in the official documentation—we recommend copying the value directly from the source to prevent errors. This behavior is detailed in Microsoft's [technical blog](https://techcommunity.microsoft.com/blog/microsoftsentinelblog/ingest-office-365-dlp-events-into-azure-sentinel/1031820) and this related [Splunk portal article](https://splunk.my.site.com/customer/s/article/Email-data-model-was-not-populated-with-the-management-activity-logs-of-splunk-addon-for-o365).
