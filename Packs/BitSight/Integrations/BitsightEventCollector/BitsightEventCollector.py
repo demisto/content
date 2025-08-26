@@ -89,7 +89,7 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
     Returns:
         list[dict[str, Any]]: A list of event dictionaries suitable for pushing to XSIAM.
-        
+
     Raises:
         ValueError: If a finding is missing both first_seen and firstSeen fields.
     """
@@ -107,10 +107,9 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 demisto.debug(f"Failed to parse first_seen date '{first_seen}' for finding {f.get('id', 'unknown')}: {e}")
                 event["_time"] = first_seen
         else:
-            finding_id = f.get('id', 'unknown')
+            finding_id = f.get("id", "unknown")
             raise ValueError(
-                f"No first_seen date found for finding {finding_id}. "
-                "All findings must have a first_seen or firstSeen field."
+                f"No first_seen date found for finding {finding_id}. " "All findings must have a first_seen or firstSeen field."
             )
         events.append(event)
     return events
@@ -229,6 +228,7 @@ def test_module(client: Client, guid: str | None) -> str:
 
 
 """ HELPER FUNCTIONS """
+
 
 def time_window(*, hours: int | None = None, days: int | None = None) -> tuple[int, int]:
     """Return a [start_ts, end_ts] window ending at now using hours or days back.
