@@ -2,7 +2,7 @@
     "name": "TruSTAR (Deprecated)",
     "description": "Deprecated. Not supported since TrueSTAR was acquired by Splunk, No available replacement.",
     "support": "community",
-    "currentVersion": "2.1.24",
+    "currentVersion": "2.1.25",
     "author": "TruSTAR",
     "url": "https://www.trustar.co",
     "email": "support@trustar.co",

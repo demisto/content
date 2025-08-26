@@ -2,7 +2,7 @@
     "name": "Cisco AppDynamics",
     "description": "AppDynamics enables you to automate incident management, gain real-time performance metrics, and optimize applications to meet business needs moment to moment. ",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
