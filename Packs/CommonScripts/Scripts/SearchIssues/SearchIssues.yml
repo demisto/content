@@ -1,137 +1,226 @@
 args:
-- default: true
-  description: A comma-separated list of issues IDs by which to filter the results.
-  isArray: true
-  name: id
-- description: A comma-separated list of issues names by which to filter the results.
-  isArray: true
-  name: name
-- description: 'A comma-separated list of issues statuses to filter the results by. Options:  New, In Progress, Resolved.'
-  isArray: true
-  name: status
-- description: 'A comma-separated list of issues statuses to exclude from the results. Options: New, In Progress, Resolved.'
-  isArray: true
-  name: notstatus
-- description: A comma-separated list of issues close reasons by which to filter the results.
-  isArray: true
-  name: reason
-- description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: fromdate
-- description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: todate
-- description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: fromclosedate
-- description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: toclosedate
-- description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: fromduedate
-- description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z).
-  name: toduedate
-- description: Filter by Severity.
-  isArray: true
-  name: level
-- description: Filter by issues owners.
-  isArray: true
-  name: owner
-- description: Filter by issues details.
-  name: details
-- description: Filter by issues type.
-  isArray: true
-  name: type
-- description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
-  name: query
-- description: Filter by the page number.
-  name: page
-  deprecated: true
-- description: |-
-    The number of events to return from the alert JSON. The default is 0, which returns all events.
-    Note that the count is from the head of the list, regardless of event time or other properties.
-  name: trimevents
-  hidden: true
-- description: Number of issuess per page (per fetch).
-  name: size
-  deprecated: true
-- description: The maximum number of issuess to be returned.
-  name: limit
-  defaultValue: '100'
-- description: Sort in format of field.asc,field.desc,...
-  name: sort
-- description: If provided, the value of this argument will be set under the searchResultsLabel context key for each issues found.
-  name: searchresultslabel
-- description: If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false.
-  name: summarizedversion
-  auto: PREDEFINED
-  predefined:
-  - "false"
-  - "true"
-- description: When the value is set to 'True', informational severity alerts will return as part of the results. The ‘fromdate’ and ‘todate’ arguments must be provided to use this argument. The maximum value currently supported for the 'fromdate' argument to retrieve informational issuess is 5 hours. If a value greater than this is provided, it will be adjusted to 5 hours ago. To retrieve only informational issuess, use the `query` argument and include this limitation within the query. Default is false.
-  name: includeinformational
-  auto: PREDEFINED
-  predefined:
-  - "false"
-  - "true"
-  defaultValue: "false"
-  hidden: true
-  hidden:marketplacev2: false
-- description: A comma seperated list of fields to add to context when using summarized version, (default- id,name,type,severity,status,owner,created,closed).
-  name: add_fields_to_summarize_context
-comment:
-  Searches Cortex Issues.
+  - description: The unique ID of the issue.
+    isArray: true
+    name: issue_id
+  - auto: PREDEFINED
+    description: The severity of the issue.
+    isArray: true
+    name: severity
+    predefined:
+      - low
+      - medium
+      - high
+      - critical
+  - auto: PREDEFINED
+    description: Account type.
+    isArray: true
+    name: Identity_type
+    predefined:
+      - ANONYMOUS
+      - APPLICATION
+      - COMPUTE
+      - FEDERATED_IDENTITY
+      - SERVICE
+      - SERVICE_ACCOUNT
+      - TEMPORARY_CREDENTIALS
+      - TOKEN
+      - UNKNOWN
+      - USER
+  - description: The issue name.
+    isArray: true
+    name: issue_name
+  - description: The issue source.
+    isArray: true
+    name: issue_source
+    predefined:
+      - XDR Agent
+      - XDR Analytics
+      - XDR Analytics BIOC
+      - PAN NGFW
+      - XDR BIOC
+      - XDR IOC
+      - Threat Intelligence
+      - XDR Managed Threat Hunting
+      - Correlation
+      - Prisma Cloud
+      - Prisma Cloud Compute
+      - ASM
+      - IoT Security
+      - Custom Alert
+      - Health
+      - SaaS Attachments
+      - Attack Path
+      - Cloud Network Analyzer
+      - IaC Scanner
+      - CAS Secret Scanner
+      - CI/CD Risks
+      - CLI Scanner
+      - CIEM Scanner
+      - API Traffic Monitor
+      - API Posture Scanner
+      - Agentless Disk Scanner
+      - Kubernetes Scanner
+      - Compute Policy
+      - CSPM Scanner
+      - CAS CVE Scanner
+      - CAS License Scanner
+      - Secrets Scanner
+      - SAST Scanner
+      - Data Policy
+      - Attack Surface Test
+      - Package Operational Risk
+      - Vulnerability Policy
+      - AI Security Posture
+  - description: Initiator SHA256 actor process image.
+    isArray: true
+    name: actor_process_image_sha256
+  - description: CGO SHA256 hash of causality actor process image.
+    isArray: true
+    name: causality_actor_process_image_sha256
+  - description: Target process SHA256 of action process image.
+    isArray: true
+    name: action_process_image_sha256
+  - defaultValue: source_insert_ts
+    description: The field by which to sort the results.
+    isArray: true
+    name: sort_field
+  - auto: PREDEFINED
+    description: The order in which to sort the results.
+    name: sort_order
+    predefined:
+      - DESC
+      - ASC
+  - defaultValue: "0"
+    description: The first page from which we bring the issues.
+    isArray: true
+    name: offset
+  - defaultValue: "50"
+    description: The last page from which we bring the issues.
+    isArray: true
+    name: limit
+  - description: Additional output fields.
+    isArray: true
+    name: additional_output_fields
+  - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
+    name: start_time
+  - description: Supports epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). If start time is provided without end_time it will be from start_time until now.
+    name: end_time
+  - description: The category of the issue.
+    isArray: true
+    name: issue_category
+  - description: The domain of the issue.
+    isArray: true
+    name: issue_domain
+    predefined:
+      - Health
+      - Hunting
+      - IT
+      - Posture
+      - Security
+  - description: The description of the issue.
+    isArray: true
+    name: issue_description
+  - description: OS Parent SHA256 hash of the OS actor process image.
+    isArray: true
+    name: os_actor_process_image_sha256
+  - description: File Macro SHA256 hash of the action file macro.
+    isArray: true
+    name: action_file_macro_sha256
+  - description: The progress status.
+    isArray: true
+    name: status
+    predefined:
+      - New
+      - In Progress
+      - Resolved
+  - description: Not progress status.
+    isArray: true
+    name: not_status
+    predefined:
+      - New
+      - In Progress
+      - Resolved
+  - description: The assets ids related to the issue.
+    isArray: true
+    name: asset_ids
+  - description: The assignee of the issue.
+    isArray: true
+    name: assignee
+comment: Searches Cortex Issues.
 commonfields:
   id: SearchIssuesAgentix
   version: -1
 enabled: true
 name: SearchIssuesAgentix
 outputs:
-- contextPath: foundIssues.id
-  description: A list of issues IDs returned from the query.
-  type: Unknown
-- contextPath: foundIssues.name
-  description: A list of issues names returned from the query.
-  type: Unknown
-- contextPath: foundIssues.severity
-  description: A list of issues severities returned from the query.
-  type: Unknown
-- contextPath: foundIssues.status
-  description: A list of issues statuses returned from the query.
-  type: Unknown
-- contextPath: foundIssues.owner
-  description: A list of issues owners returned from the query.
-  type: Unknown
-- contextPath: foundIssues.created
-  description: A list of the issues create date returned from the query.
-  type: Unknown
-- contextPath: foundIssues.closed
-  description: A list of issues close dates returned from the query.
-  type: Unknown
-- contextPath: foundIssues.labels
-  description: An array of labels per issues returned from the query.
-  type: Unknown
-- contextPath: foundIssues.details
-  description: Details of the issuess returned from the query.
-  type: Unknown
-- contextPath: foundIssues.dueDate
-  description: A list of issues due dates returned from the query.
-  type: Unknown
-- contextPath: foundIssues.phase
-  description: A list of issues phases returned from the query.
-  type: Unknown
-- contextPath: foundIssues.issueLink
-  description: A list with links to the issuess returned from the query.
-  type: Unknown
-- contextPath: foundIssues.searchResultsLabel
-  description: The value provided in the searchresultslabel argument.
-  type: String
-script: '-'
+  - contextPath: Core.Issue.internal_id
+    description: The internal ID of the issue.
+    type: String
+  - contextPath: Core.Issue.issue_source
+    description: The source of the issue.
+    type: String
+  - contextPath: Core.Issue.status.progress
+    description: The progress status of the issue.
+    type: String
+  - contextPath: Core.Issue.assigned_to_pretty
+    description: The pretty name of the user assigned to the issue.
+    type: String
+  - contextPath: Core.Issue.assigned_to
+    description: The user assigned to the issue.
+    type: String
+  - contextPath: Core.Issue.assetid
+    description: The asset ID related to the issue.
+    type: String
+  - contextPath: Core.Issue.action_file_macro_sha256
+    description: File Macro SHA256 hash of the action file macro.
+    type: String
+  - contextPath: Core.Issue.os_actor_process_image_sha256
+    description: OS Parent SHA256 hash of the OS actor process image.
+    type: String
+  - contextPath: Core.Issue.issue_domain
+    description: The domain of the issue.
+    type: String
+  - contextPath: Core.Issue.action_process_image_sha256
+    description: Action process image SHA256 hash.
+    type: String
+  - contextPath: Core.Issue.causality_actor_process_image_sha256
+    description: Causality actor process image SHA256 hash.
+    type: String
+  - contextPath: Core.Issue.actor_process_image_sha256
+    description: Actor process image SHA256 hash.
+    type: String
+  - contextPath: Core.Issue.source_insert_ts
+    description: The detection timestamp.
+    type: Number
+  - contextPath: Core.Issue.issue_name
+    description: The name of the issue.
+    type: String
+  - contextPath: Core.Issue.severity
+    description: The severity of the issue.
+    type: String
+  - contextPath: Core.Issue.issue_category
+    description: The category of the issue.
+    type: String
+  - contextPath: Core.Issue.issue_name
+    description: The issue name.
+    type: String
+  - contextPath: Core.Issue.issue_description
+    description: The issue description.
+    type: String
+  - contextPath: Core.Issue.Identity_type
+    description: The identity type of the account.
+    type: String
+
+script: "-"
 subtype: python3
 tags:
-- Utility
-timeout: '0'
+  - Utility
+timeout: "0"
 type: python
 dockerimage: demisto/python3:3.12.8.3720084
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
   - platform
 supportedModules:

@@ -10,6 +10,43 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 
 
+def issue_to_alert(args) -> dict:
+    for key in list(args.keys()):
+        if "issue" in key:
+            alert_key = key.replace("issue", "alert")
+            args[alert_key] = args.pop(key)
+
+    return args
+
+
+def alert_to_issue(outputs):
+    """
+    Convert alert dictionary keys to issue keys by replacing 'alert' with 'issue'
+
+    Args:
+        args (dict): Dictionary containing alert keys
+
+    Returns:
+        dict: Dictionary with keys converted to issue format
+    """
+    for key in list(outputs.keys()):
+        if "alert" in key:
+            issue_key = key.replace("alert", "issue")
+            outputs[issue_key] = outputs.pop(key)
+    return outputs
+
+
+def filter_context_fields(output_keys: list, context: list):
+    """
+    Filters only specific keys from the context dictionary based on provided output_keys.
+    """
+    filtered_context = []
+    for alert in context:
+        filtered_context.append({key: alert.get(key) for key in output_keys})
+
+    return filtered_context
+
+
 class Client(CoreClient):
     def test_module(self):
         """
@@ -73,7 +110,7 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    base_url = "/api/webapp/data-platform"
+    base_url = "/api/webapp/public_api/v1"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
@@ -97,7 +134,24 @@ def main():  # pragma: no cover
             demisto.results("ok")
 
         elif command == "core-get-asset-details":
+            client._base_url = "/api/webapp/data-platform"
             return_results(get_asset_details_command(client, args))
+
+        elif command == "core-get-issues":
+            # replace all dict keys that contain issue with alert
+            args = issue_to_alert(args)
+            # Extract output_keys before calling get_alerts_by_filter_command
+            output_keys = argToList(args.pop("output_keys", []))
+            issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
+            # Apply output_keys filtering if specified
+            if output_keys and issues_command_results.outputs:
+                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)
+
+            # Convert alert keys to issue keys
+            if issues_command_results.outputs:
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]
+
+            return_results(issues_command_results)
 
     except Exception as err:
         demisto.error(traceback.format_exc())
