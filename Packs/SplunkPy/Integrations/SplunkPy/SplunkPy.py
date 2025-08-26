@@ -1852,7 +1852,7 @@ def get_modified_remote_data_command(
     # 3. This cache is stored in the integration context and loaded at the start of the next run.
     # 4. Any fetched event whose key exists in the cache is skipped as a duplicate.
     integration_context = get_integration_context()
-    processed_events_cache = set(integration_context.get('processed_events_cache', []))
+    processed_events_cache = set(integration_context.get("processed_mirror_in_events_cache", []))
     demisto.debug(f"Loaded {len(processed_events_cache)} processed events from cache.")
 
     # Build the query with the 60-second look-behind buffer.
@@ -1886,7 +1886,7 @@ def get_modified_remote_data_command(
         # Create a unique key for the event and check against the cache of previously processed events.
         event_key = f"{notable_id}:{last_modified}"
         if event_key in processed_events_cache:
-            demisto.debug(f"mirror-in: Skipping already processed event: {event_key}")
+            extensive_log(f"mirror-in: Skipping already processed event: {event_key}")
             continue
 
         # This is a new event. Add it to the map for processing and to the cache for the next run.
@@ -1909,7 +1909,7 @@ def get_modified_remote_data_command(
             )
 
     # Persist the cache of events processed in this run for the next iteration.
-    integration_context['processed_events_cache'] = list(current_run_processed_events)
+    integration_context["processed_mirror_in_events_cache"] = list(current_run_processed_events)
     set_integration_context(integration_context)
 
     if modified_notables_map:
