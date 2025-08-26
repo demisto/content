@@ -917,7 +917,7 @@ def get_refresh_token_from_auth_code_param() -> str:
     refresh_prefix = "refresh_token:"
     if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
         demisto.debug("Using refresh token set as auth_code")
-        return AUTH_CODE[len(refresh_prefix):]
+        return AUTH_CODE[len(refresh_prefix) :]
     return ""
 
 
@@ -1132,11 +1132,7 @@ def integration_health():
         mirrored_channels_human_readable = "No mirrored channels."
 
     hr = adi_health_human_readable + mirrored_channels_human_readable
-    result = CommandResults(
-        readable_output=hr,
-        entry_type=EntryType.NOTE,
-        content_format=EntryFormat.JSON
-    )
+    result = CommandResults(readable_output=hr, entry_type=EntryType.NOTE, content_format=EntryFormat.JSON)
     return_results(result)
 
 
@@ -1882,13 +1878,13 @@ def chat_message_list_command():
     hr = [get_message_human_readable(message) for message in messages_data]
     result = CommandResults(
         readable_output=tableToMarkdown(f'Messages list in "{chat}" chat:', hr, url_keys=["webUrl"], removeNull=True)
-                        + (
-                            f"\nThere are more results than shown. "
-                            f"For more data please enter the next_link argument:\n "
-                            f"next_link={next_link}"
-                            if next_link
-                            else ""
-                        ),
+        + (
+            f"\nThere are more results than shown. "
+            f"For more data please enter the next_link argument:\n "
+            f"next_link={next_link}"
+            if next_link
+            else ""
+        ),
         outputs_key_field="chatId",
         outputs={
             "MicrosoftTeams(true)": {"MessageListNextLink": next_link},
@@ -1960,11 +1956,11 @@ def chat_list_command():
             ],
             headerTransform=lambda h: CHAT_SPECIAL_MARKDOWN_HEADERS.get(h, pascalToSpace(h)),
         )
-                        + (
-                            f"\nThere are more results than shown. For more data please enter the next_link argument:\n next_link={next_link}"
-                            if next_link
-                            else ""
-                        ),
+        + (
+            f"\nThere are more results than shown. For more data please enter the next_link argument:\n next_link={next_link}"
+            if next_link
+            else ""
+        ),
         outputs_key_field="chatId",
         outputs={
             "MicrosoftTeams(true)": {"ChatListNextLink": next_link},
@@ -2559,8 +2555,8 @@ def mirror_investigation():
         conversation: dict = {
             "type": "message",
             "text": f"This channel was created to mirror [incident {investigation_id}]({warroom_link}) "
-                    f"between Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, "
-                    f"you need to mention the Demisto Bot in the message.",
+            f"between Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, "
+            f"you need to mention the Demisto Bot in the message.",
         }
         send_message_request(service_url, channel_id, conversation)
         mirrored_channels.append(
@@ -3364,12 +3360,12 @@ def validate_auth_code_flow_params(command: str = ""):
         elif AUTH_TYPE != AUTHORIZATION_CODE_FLOW:
             raise DemistoException(
                 err + "you must set the 'Authentication Type' parameter to 'Authorization Code' in "
-                      "the integration configuration."
+                "the integration configuration."
             )
         else:  # not all([AUTH_CODE, REDIRECT_URI]):
             raise DemistoException(
                 err + "you must provide both 'Application redirect URI' and 'Authorization code' in "
-                      "the integration configuration for the Authorization Code flow."
+                "the integration configuration for the Authorization Code flow."
             )
 
 
