@@ -139,10 +139,8 @@ class AWSErrorHandler:
     def handle_response_error(cls, response: dict, account_id: str | None = None) -> None:
         """
         Handle boto3 response errors.
-
         For permission errors, returns a structured error entry using return_error.
         For other errors, raises DemistoException with informative error message.
-
         Args:
             err (ClientError): The boto3 ClientError exception
             account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
@@ -154,17 +152,14 @@ class AWSErrorHandler:
             f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
         )
 
-        demisto.error(f"AWS API Error: {detailed_error}")
-        raise DemistoException(detailed_error)
+        return_error(detailed_error)
 
     @classmethod
     def handle_client_error(cls, err: ClientError, account_id: str | None = None) -> None:
         """
         Handle boto3 client errors with special handling for permission issues.
-
         For permission errors, returns a structured error entry using return_error.
         For other errors, raises DemistoException with informative error message.
-
         Args:
             err (ClientError): The boto3 ClientError exception
             account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
@@ -172,7 +167,7 @@ class AWSErrorHandler:
         error_code = err.response.get("Error", {}).get("Code", "")
         error_message = err.response.get("Error", {}).get("Message", "")
         http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-
+        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
         # Check if this is a permission-related error
         if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
             cls._handle_permission_error(err, error_code, error_message, account_id)
@@ -185,7 +180,6 @@ class AWSErrorHandler:
     ) -> None:
         """
         Handle permission-related errors by returning structured error entry.
-
         Args:
             err (ClientError): The boto3 ClientError exception
             error_code (str): The AWS error code
@@ -213,10 +207,8 @@ class AWSErrorHandler:
     def remove_encoded_authorization_message(cls, message: str) -> str:
         """
         Remove encoded authorization messages from AWS error responses.
-
         Args:
             message (str): Original error message
-
         Returns:
             str: Cleaned error message without encoded authorization details
         """
@@ -230,7 +222,6 @@ class AWSErrorHandler:
     def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
         """
         Handle general (non-permission) errors with informative error messages.
-
         Args:
             err (ClientError): The boto3 ClientError exception
             error_code (str): The AWS error code
@@ -250,16 +241,14 @@ class AWSErrorHandler:
         )
 
         demisto.error(f"AWS API Error: {detailed_error}")
-        raise DemistoException(detailed_error)
+        return_error(detailed_error)
 
     @classmethod
     def _extract_action_from_message(cls, error_message: str) -> str:
         """
         Extract AWS permission name from error message using regex patterns.
-
         Args:
             error_message (str): The AWS error message
-
         Returns:
             str: The extracted permission name or 'unknown' if not found
         """
