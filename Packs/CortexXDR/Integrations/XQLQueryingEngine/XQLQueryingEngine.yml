@@ -3,7 +3,7 @@ sectionorder:
 - Collect
 category: Endpoint
 commonfields:
-  id: Cortex XDR - XQL Query Engine
+  id: Cortex XDR - XQL Query Engine - No Polling
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -37,8 +37,8 @@ configuration:
   advanced: true
   required: false
 description: Cortex XDR - XQL Query Engine enables you to run XQL queries on your data sources.
-display: Cortex XDR - XQL Query Engine
-name: Cortex XDR - XQL Query Engine
+display: Cortex XDR - XQL Query Engine - No Polling
+name: Cortex XDR - XQL Query Engine - No Polling
 script:
   commands:
   - arguments:
@@ -70,6 +70,13 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
+    - description: Whether to use polling for this command.
+      name: is_polling
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      defaultValue: 'true'
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
       When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
