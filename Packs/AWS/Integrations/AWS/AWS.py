@@ -24,6 +24,30 @@ MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
 
 
+def serialize_response_with_datetime_encoding(response: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Serialize AWS API response with proper datetime encoding for JSON compatibility.
+
+    Args:
+        response (Dict[str, Any]): Raw AWS API response containing datetime objects
+
+    Returns:
+        Dict[str, Any]: Serialized response with datetime objects converted to strings
+
+    Raises:
+        DemistoException: If serialization fails
+    """
+    try:
+        # Use DatetimeEncoder to handle datetime objects
+        serialized_json = json.dumps(response, cls=DatetimeEncoder)
+        return json.loads(serialized_json)
+    except (ValueError, TypeError) as e:
+        demisto.error(f"Failed to serialize response with datetime encoding: {str(e)}")
+    except Exception as e:
+        demisto.error(f"Unexpected error during response serialization: {str(e)}")
+    return response
+
+
 def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
     """
     Process and extract relevant data from a single EC2 instance.
@@ -51,7 +75,7 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
             instance_data.update({tag["Key"]: tag["Value"]})
     if "KeyName" in instance:
         instance_data.update({"KeyName": instance["KeyName"]})
-    remove_empty_elements(instance_data)
+    instance_data = remove_empty_elements(instance_data)
     return instance_data
 
 
@@ -162,14 +186,12 @@ def parse_tag_field(tags_string: str | None):
     if len(list_tags) > MAX_TAGS:
         list_tags = list_tags[0:50]
         demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
-    regex = re.compile(
-        r"^key=([\w:+\-=.,_]{0,128}),value=([\w:\-+=._\/@]{0,256})",
-        flags=re.I,
-    )
+    # According to the AWS Tag restrictions docs.
+    regex = re.compile(r"^key=([a-zA-Z0-9\s+\-=._:/@]{1,128}),value=(.{0,256})$", flags=re.UNICODE)
     for tag in list_tags:
         match_tag = regex.match(tag)
         if match_tag is None:
-            demisto.debug(f"could not parse tag: {filter}")
+            demisto.debug(f"could not parse tag: {tag}")
             continue
         tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
 
@@ -1106,34 +1128,33 @@ class EC2:
         kwargs.update(pagination_kwargs)
 
         try:
-            print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
+            # print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
             remove_nulls_from_dictionary(kwargs)
             response = client.describe_instances(**kwargs)
-
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-
+            response = serialize_response_with_datetime_encoding(response)
             # Extract instances from reservations
-            data = []
-            raw_output = []
             reservations = response.get("Reservations", [])
             if not reservations:
                 return CommandResults(
                     readable_output="No instances found matching the specified criteria.",
                 )
+            readable_outputs = []
+            instances_list = []
             for reservation in reservations:
+                instances_list.extend(reservation.get("Instances", []))
                 for instance in reservation.get("Instances", []):
-                    raw_output.append(process_instance_data(instance))
-            try:
-                output = json.loads(json.dumps(raw_output, cls=DatetimeEncoder))
-            except ValueError as e:
-                raise DemistoException(f"Could not decode/encode the raw response - {e}")
+                    readable_outputs.append(process_instance_data(instance))
             outputs = {
-                "AWS.EC2.Instances(val.InstanceId && val.InstanceId == obj.InstanceId)": json.loads(output),
+                "AWS.EC2.Instances(val.InstanceId && val.InstanceId == obj.InstanceId)": instances_list,
                 "AWS.EC2(true)": {"InstancesNextToken": response.get("NextToken")},
             }
+
             return CommandResults(
-                outputs=outputs, readable_output=tableToMarkdown("AWS EC2 Instances", output), raw_response=response
+                outputs=outputs,
+                readable_output=tableToMarkdown("AWS EC2 Instances", readable_outputs, removeNull=True),
+                raw_response=response,
             )
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
@@ -1155,6 +1176,129 @@ class EC2:
         Raises:
             DemistoException: If required parameters are missing or API call fails
         """
+
+        # Validate required parameters
+        count = arg_to_number(args.get("count", 1))
+        if not count or count <= 0:
+            raise DemistoException("count parameter must be a positive integer")
+
+        # Build base parameters
+        kwargs: Dict[str, Any] = {"MinCount": count, "MaxCount": count}
+        # Handle image specification - either direct AMI ID or launch template
+        image_id = args.get("image_id")
+        launch_template_id = args.get("launch_template_id")
+        launch_template_name = args.get("launch_template_name")
+
+        if launch_template_id or launch_template_name:
+            # Using launch template
+            launch_template = {}
+            if launch_template_id:
+                launch_template["LaunchTemplateId"] = launch_template_id
+            elif launch_template_name:
+                launch_template["LaunchTemplateName"] = launch_template_name
+
+            if launch_template_version := args.get("launch_template_version"):
+                launch_template["Version"] = launch_template_version
+
+            kwargs["LaunchTemplate"] = launch_template
+
+            # Image ID is optional when using launch template
+            if image_id:
+                kwargs["ImageId"] = image_id
+        else:
+            # Direct AMI specification
+            kwargs["ImageId"] = image_id
+
+        # Add optional basic parameters
+        if instance_type := args.get("instance_type"):
+            kwargs["InstanceType"] = instance_type
+
+        if key_name := args.get("key_name"):
+            kwargs["KeyName"] = key_name
+
+        if subnet_id := args.get("subnet_id"):
+            kwargs["SubnetId"] = subnet_id
+
+        # Handle security groups
+        if security_group_ids := args.get("security_group_ids"):
+            kwargs["SecurityGroupIds"] = argToList(security_group_ids)
+
+        if security_groups_names := args.get("security_groups_names"):
+            kwargs["SecurityGroups"] = argToList(security_groups_names)
+
+        # Handle user data with base64 encoding
+        if user_data := args.get("user_data"):
+            kwargs["UserData"] = user_data
+
+        # Handle boolean parameters
+        kwargs["DisableApiTermination"] = arg_to_bool_or_none(args.get("disable_api_termination"))
+        kwargs["EbsOptimized"] = arg_to_bool_or_none(args.get("ebs_optimized"))
+
+        # Handle IAM instance profile
+        kwargs["IamInstanceProfile"] = {
+            "Arn": args.get("iam_instance_profile_arn"),
+            "Name": args.get("iam_instance_profile_name"),
+        }
+
+        ebs_config = {}
+        ebs_config["VolumeSize"] = arg_to_number(args.get("ebs_volume_size"))
+        ebs_config["SnapshotId"] = args.get("ebs_snapshot_id")
+        ebs_config["VolumeType"] = args.get("ebs_volume_type")
+        ebs_config["Iops"] = arg_to_number(args.get("ebs_iops"))
+        ebs_config["DeleteOnTermination"] = arg_to_bool_or_none(args.get("ebs_delete_on_termination"))
+        ebs_config["KmsKeyId"] = args.get("ebs_kms_key_id")
+        ebs_config["Encrypted"] = arg_to_bool_or_none(args.get("ebs_encrypted"))
+        remove_nulls_from_dictionary(ebs_config)
+        kwargs["BlockDeviceMappings"] = [{"DeviceName": args.get("device_name"), "Ebs": ebs_config}]
+        kwargs["Monitoring"] = {"Enabled": arg_to_bool_or_none(args.get("enabled_monitoring"))}
+        kwargs["Placement"] = {"HostId": args.get("host_id")}
+
+        tags = args.get("tags")
+        if tags:
+            kwargs["TagSpecifications"] = [{"ResourceType": "instance", "Tags": parse_tag_field(tags)}]
+
+        try:
+            # Remove null values to clean up API call
+            kwargs = remove_empty_elements(kwargs)
+
+            response = client.run_instances(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            response = serialize_response_with_datetime_encoding(response)
+            instances = response.get("Instances", [])
+            if not instances:
+                return CommandResults(readable_output="No instances were launched.")
+
+            # Format output data
+            instances_data = []
+            for instance in instances:
+                instances_data.append(process_instance_data(instance))
+            readable_output = tableToMarkdown(
+                f"Launched {len(instances)} EC2 Instance(s)",
+                instances_data,
+                headers=[
+                    "InstanceId",
+                    "ImageId",
+                    "State",
+                    "Type",
+                    "PublicIPAddress",
+                    "PrivateIpAddress",
+                    "LaunchDate",
+                    "AvailabilityZone",
+                    "PublicDNSName",
+                    "Monitoring",
+                ],
+                headerTransform=string_to_table_header,
+                removeNull=True,
+            )
+            return CommandResults(
+                outputs_prefix="AWS.EC2.Instances", outputs=instances, readable_output=readable_output, raw_response=response
+            )
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+
         return CommandResults(readable_output="Failed to launch instances")
 
     @staticmethod
@@ -1178,7 +1322,6 @@ class EC2:
         terminate_params = {
             "InstanceIds": instance_ids,
             "Force": argToBoolean(args.get("force", False)),
-            "SkipOsShutdown": argToBoolean(args.get("skip_os_shutdown", False)),
             "Hibernate": argToBoolean(args.get("hibernate", False)),
         }
 
@@ -1186,10 +1329,13 @@ class EC2:
             print_debug_logs(client, f"Stooping instances: {instance_ids}")
             response = client.stop_instances(**terminate_params)
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
-                response.get("StoppingInstances")
-            ):
-                return CommandResults(readable_output="The instances have been stopped successfully", raw_response=response)
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                readable_output = (
+                    "The instances have been stopped successfully."
+                    if response.get("StoppingInstances")
+                    else "No instances were stopped."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=response)
             else:
                 AWSErrorHandler.handle_response_error(response)
 
@@ -1219,18 +1365,19 @@ class EC2:
         # Prepare termination parameters
         terminate_params = {
             "InstanceIds": instance_ids,
-            "Force": argToBoolean(args.get("force", False)),
-            "SkipOsShutdown": argToBoolean(args.get("skip_os_shutdown", False)),
         }
 
         try:
             print_debug_logs(client, f"Terminating instances: {instance_ids}")
             response = client.terminate_instances(**terminate_params)
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
-                response.get("TerminatingInstances")
-            ):
-                return CommandResults(readable_output="The instances have been terminated successfully", raw_response=response)
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                readable_output = (
+                    "The instances have been terminated successfully"
+                    if response.get("TerminatingInstances")
+                    else "No instances were terminated."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=response)
             else:
                 AWSErrorHandler.handle_response_error(response)
 
@@ -1256,10 +1403,13 @@ class EC2:
 
         try:
             response = client.start_instances(InstanceIds=instance_ids)
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
-                response.get("StartingInstances")
-            ):
-                return CommandResults(readable_output="The instances have been started successfully", raw_response=response)
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                readable_output = (
+                    "The instances have been started successfully"
+                    if response.get("StartingInstances")
+                    else "No instances were started."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=response)
             else:
                 AWSErrorHandler.handle_response_error(response)
 

@@ -702,3 +702,206 @@ Adds or removes permission settings for the specified snapshot. Note: snapshots 
 #### Context Output
 
 There is no context output for this command.
+
+### aws-ec2-instances-describe
+
+***
+Describes the specified instances or all instances.
+
+#### Base Command
+
+`aws-ec2-instances-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region to query instances from. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to describe. If empty, returns all accessible instances in the specified region. | Optional |
+| filters | One or more custom filters to apply separated by ';' (e.g., name=&lt;name&gt;,values=&lt;values&gt;).You can specify up to 50 filters and up to 200 values per filter in a single request. | Optional |
+| next_token | Token for pagination when retrieving large result sets. Use the InstancesNextToken value from a previous response to continue listing instances. | Optional |
+| limit | Maximum number of instances to return in a single request. You cannot specify this parameter and the instance IDs parameter in the same request. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | string | The ID of the instance. |
+| AWS.EC2.Instances.ImageId | string | The ID of the AMI used to launch the instance. |
+| AWS.EC2.Instances.State.Code | number | The current state of the instance as a 16-bit unsigned integer. |
+| AWS.EC2.Instances.State.Name | string | The current state of the instance. |
+| AWS.EC2.Instances.PrivateDnsName | string | The private DNS hostname name assigned to the instance. |
+| AWS.EC2.Instances.PrivateIpAddress | string | The private IPv4 address assigned to the instance. |
+| AWS.EC2.Instances.PublicDnsName | string | The public DNS name assigned to the instance. |
+| AWS.EC2.Instances.PublicIpAddress | string | The public IPv4 address assigned to the instance. |
+| AWS.EC2.Instances.InstanceType | string | The instance type. |
+| AWS.EC2.Instances.KeyName | string | The name of the key pair used when the instance was launched. |
+| AWS.EC2.Instances.LaunchTime | date | The time the instance was launched. |
+| AWS.EC2.Instances.Placement.AvailabilityZone | string | The Availability Zone of the instance. |
+| AWS.EC2.Instances.Placement.GroupName | string | The name of the placement group the instance is in. |
+| AWS.EC2.Instances.Placement.Tenancy | string | The tenancy of the instance. |
+| AWS.EC2.Instances.Platform | string | The value is Windows for Windows instances; otherwise blank. |
+| AWS.EC2.Instances.Monitoring.State | string | Indicates whether detailed monitoring is enabled. |
+| AWS.EC2.Instances.SubnetId | string | The ID of the subnet in which the instance is running. |
+| AWS.EC2.Instances.VpcId | string | The ID of the VPC in which the instance is running. |
+| AWS.EC2.Instances.Architecture | string | The architecture of the image. |
+| AWS.EC2.Instances.SecurityGroups.GroupName | string | The name of the security group. |
+| AWS.EC2.Instances.SecurityGroups.GroupId | string | The ID of the security group. |
+| AWS.EC2.Instances.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Instances.Tags.Value | string | The value of the tag. |
+| AWS.EC2.InstancesNextToken | string | Token to use for pagination in subsequent requests. |
+
+### aws-ec2-instances-start
+
+***
+Starts an Amazon EBS-backed instance that you’ve previously stopped.
+
+#### Base Command
+
+`aws-ec2-instances-start`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region where target instances are located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to start in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instances-stop
+
+***
+Stops an Amazon EBS-backed instance.
+
+#### Base Command
+
+`aws-ec2-instances-stop`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region where target instances are located. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance. | Required |
+| force | Force stop instances without graceful shutdown. Default: false. Use with caution as it may cause data loss. Possible values are: True, False. | Optional |
+| hibernate | Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs. Default: false. Possible values are: True, False. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instances-terminate
+
+***
+Shuts down the specified instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
+
+#### Base Command
+
+`aws-ec2-instances-terminate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region where target instances are located. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| instance_ids | A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-ec2-instances-run
+
+***
+Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using aws-ec2-instances-run , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+
+#### Base Command
+
+`aws-ec2-instances-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region where instances will be created. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| count | The number of instances to launch. Must be greater than 0. | Required |
+| image_id | The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template. | Optional |
+| instance_type | The instance type, for example: t2.large, t3.medium, m5.xlarge. | Optional |
+| security_group_ids | A comma-separated list of security group IDs. Use this for VPC instances. If you don’t specify a security group ID, we use the default security group for the VPC. | Optional |
+| security_groups_names | A comma-separated list of security group names. For a nondefault VPC, you must use security group IDs instead. | Optional |
+| subnet_id | The ID of the subnet to launch the instance into. If you don’t specify a subnet ID, we choose a default subnet from your default VPC for you. If you don’t have a default VPC, you must specify a subnet ID in the request. | Optional |
+| user_data | The user data to make available to the instance. This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation. | Optional |
+| disable_api_termination | Indicates whether termination protection is enabled for the instance. The default is false, which means that you can terminate the instance using the Amazon EC2 console, command line tools, or API. Possible values are: True, False. | Optional |
+| iam_instance_profile_arn | The Amazon Resource Name (ARN) of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile. | Optional |
+| iam_instance_profile_name | The name of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile. | Optional |
+| key_name | The name of the key pair. Warning - If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in. | Optional |
+| ebs_optimized | Indicates whether the instance is optimized for Amazon EBS I/O. Possible values are: True, False. | Optional |
+| device_name | The device name (for example, /dev/sdh or xvdh). If the argument is given, ebs arguments must also be specified. | Optional |
+| ebs_volume_size | The size of the volume, in GiBs. You must specify either a ebs_snapshot_id or a ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size. | Optional |
+| ebs_volume_type | The volume type. Possible values are: gp2, gp3, io1, io2, st1, sc1, standard. | Optional |
+| ebs_iops | The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS. | Optional |
+| ebs_delete_on_termination | Indicates whether the EBS volume is deleted on instance termination. Possible values are: True, False. | Optional |
+| ebs_kms_key_id | Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted. | Optional |
+| ebs_snapshot_id | The ID of the snapshot. | Optional |
+| ebs_encrypted | Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot. Possible values are: true, false. | Optional |
+| launch_template_id | The ID of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
+| launch_template_name | The name of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
+| launch_template_version | The launch template version number, $Latest, or $Default. Possible values are: $Latest, $Default. | Optional |
+| tags | One or more tags to apply to a resource when the resource is being created. separated by ';' (e.g., key=&lt;name&gt;,value=&lt;value&gt;). | Optional |
+| host_id | The dedicated Host ID. | Optional |
+| enabled_monitoring | Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled. Possible values are: True, False. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Instances.InstanceId | string | The ID of the newly created instance. |
+| AWS.EC2.Instances.ImageId | string | The ID of the AMI used to launch the instance. |
+| AWS.EC2.Instances.State.Code | number | The current state of the instance as a 16-bit unsigned integer. |
+| AWS.EC2.Instances.State.Name | string | The current state of the instance. |
+| AWS.EC2.Instances.PrivateDnsName | string | The private DNS hostname name assigned to the instance. |
+| AWS.EC2.Instances.PrivateIpAddress | string | The private IPv4 address assigned to the instance. |
+| AWS.EC2.Instances.PublicDnsName | string | The public DNS name assigned to the instance. |
+| AWS.EC2.Instances.PublicIpAddress | string | The public IPv4 address assigned to the instance. |
+| AWS.EC2.Instances.InstanceType | string | The instance type. |
+| AWS.EC2.Instances.KeyName | string | The name of the key pair used when the instance was launched. |
+| AWS.EC2.Instances.LaunchTime | date | The time the instance was launched. |
+| AWS.EC2.Instances.Placement.AvailabilityZone | string | The Availability Zone of the instance. |
+| AWS.EC2.Instances.Placement.GroupName | string | The name of the placement group the instance is in. |
+| AWS.EC2.Instances.Placement.Tenancy | string | The tenancy of the instance. |
+| AWS.EC2.Instances.Platform | string | The value is Windows for Windows instances; otherwise blank. |
+| AWS.EC2.Instances.Monitoring.State | string | Indicates whether detailed monitoring is enabled. |
+| AWS.EC2.Instances.SubnetId | string | The ID of the subnet in which the instance is running. |
+| AWS.EC2.Instances.VpcId | string | The ID of the VPC in which the instance is running. |
+| AWS.EC2.Instances.Architecture | string | The architecture of the image. |
+| AWS.EC2.Instances.BlockDeviceMappings.DeviceName | string | The device name. |
+| AWS.EC2.Instances.BlockDeviceMappings.Ebs | Dictionary | Parameters used to automatically set up EBS volumes when the instance is launched. |
+| AWS.EC2.Instances.SecurityGroups.GroupName | string | The name of the security group. |
+| AWS.EC2.Instances.SecurityGroups.GroupId | string | The ID of the security group. |
+| AWS.EC2.Instances.IamInstanceProfile.Arn | string | The Amazon Resource Name \(ARN\) of the instance profile. |
+| AWS.EC2.Instances.IamInstanceProfile.Id | string | The ID of the instance profile. |
+| AWS.EC2.Instances.Tags.Key | string | The key of the tag. |
+| AWS.EC2.Instances.Tags.Value | string | The value of the tag. |
+| AWS.EC2.Instances.EbsOptimized | boolean | Indicates whether the instance is optimized for Amazon EBS I/O. |
+| AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId | string | The ID of the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.SubnetId | string | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
+| AWS.EC2.Instances.NetworkInterfaces.VpcId | string | The ID of the VPC. |
+| AWS.EC2.Instances.NetworkInterfaces.Description | string | The description of the network interface. Applies only if creating a network interface when launching an instance. |
+| AWS.EC2.Instances.NetworkInterfaces.OwnerId | string | The ID of the AWS account that owns the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Status | string | The status of the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.MacAddress | string | The MAC address. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress | string | The IPv4 address of the network interface within the subnet. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName | string | The private DNS name. |
+| AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck | boolean | Indicates whether to validate network traffic to or from this network interface. |
+| AWS.EC2.ReservationId | string | The ID of the reservation. |
+| AWS.EC2.OwnerId | string | The ID of the AWS account that owns the reservation. |
+| AWS.EC2.ResponseMetadata.RequestId | string | The request ID for the run instances operation. |
+| AWS.EC2.ResponseMetadata.HTTPStatusCode | number | The HTTP status code of the response. |
