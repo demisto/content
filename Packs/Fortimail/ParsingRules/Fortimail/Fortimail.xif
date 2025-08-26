@@ -4,6 +4,8 @@ alter
 | alter
     _time = parse_timestamp("%Y-%m-%d %k:%M:%S", tmp_unite_date_time)
 | fields -tmp_unite_date_time;
+
+
 [RULE: Log_Sample_v2]
 alter 
     tmp_date = arrayindex(regextract(_raw_log, "date\=(\d{4}\-\d{2}\-\d{2})"),0),
@@ -28,8 +30,14 @@ alter
 | alter
     parsed_fields = regexcapture(tmp_values, tmp_obj_struct)
 | fields -tmp*;
-[INGEST:vendor="fortinet", product="fortimail", target_dataset="fortinet_fortimail_raw", no_hit=keep]
+
+
+[INGEST:vendor="fortinet", product="fortimail", target_dataset="fortinet_fortimail_raw", no_hit=drop]
 filter len(Message) > 0
 | call Log_Sample_v1;
+
 filter _raw_log ~= "\w+\=\d{4}\-\d{2}\-\d{2}\s\w+\=\d{2}\:\d{2}\:\d{2}\.\d+\s\w+\=[A-Za-z0-9]+"
 | call Log_Sample_v2;
+
+filter _raw_log !~= "\w+\=\d{4}\-\d{2}\-\d{2}\s\w+\=\d{2}\:\d{2}\:\d{2}\.\d+\s\w+\=[A-Za-z0-9]+" and (len(Message) = 0 or Message = null)
+| alter _time = _insert_time; 
