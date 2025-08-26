@@ -143,13 +143,15 @@ def main():  # pragma: no cover
             # Extract output_keys before calling get_alerts_by_filter_command
             output_keys = argToList(args.pop("output_keys", []))
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
+            # Convert alert keys to issue keys
+            if issues_command_results.outputs:
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]
+                    
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
                 issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)
 
-            # Convert alert keys to issue keys
-            if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]
+
 
             return_results(issues_command_results)
 

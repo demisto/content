@@ -232,3 +232,120 @@ def test_filter_context_fields():
     ]
 
     assert expected_result == filtered_data
+
+
+def test_core_get_issues_command_with_output_keys(mocker):
+    """
+    GIVEN:
+        A mocked get_alerts_by_filter_command that returns a CommandResults object with alert data
+        and output_keys argument is provided to filter specific fields.
+    WHEN:
+        The core-get-issues command is executed with output_keys parameter.
+    THEN:
+        Arguments are transformed from issue to alert format, get_alerts_by_filter_command is called,
+        outputs are transformed back from alert to issue format, filtered by output_keys, and results are returned.
+    """
+    from CortexPlatformCore import main
+    from CommonServerPython import CommandResults
+
+    # Mock demisto functions with output_keys parameter
+    mocker.patch.object(demisto, "command", return_value="core-get-issues")
+    mocker.patch.object(demisto, "args", return_value={
+        "issue_id": "12345",
+        "issue_status": "open",
+        "issue_priority": "high",
+        "output_keys": "issue_id,issue_status,issue_description"
+    })
+    mocker.patch.object(demisto, "params", return_value={"proxy": False, "insecure": False, "timeout": "120"})
+
+    # Create mock CommandResults with alert data that should be converted to issue data
+    mock_command_results = CommandResults(
+        outputs_prefix="Core.Issue",
+        outputs=[
+            {
+                "alert_id": "12345",
+                "alert_status": "open",
+                "alert_priority": "high",
+                "alert_description": "Test alert",
+                "alert_severity": "critical",
+                "alert_timestamp": "2023-10-01T10:00:00Z",
+                "user_name": "john",
+                "internal_field": "should_be_filtered_out"
+            },
+            {
+                "alert_id": "67890",
+                "alert_status": "closed",
+                "alert_priority": "medium",
+                "alert_description": "Another test alert",
+                "alert_severity": "low",
+                "alert_timestamp": "2023-10-01T11:00:00Z",
+                "user_name": "jane",
+                "internal_field": "should_be_filtered_out"
+            }
+        ],
+        readable_output="Test alert output",
+        raw_response={"alert_id": "12345"},
+    )
+
+    # Mock get_alerts_by_filter_command to return our mock CommandResults
+    mock_get_alerts = mocker.patch("CortexPlatformCore.get_alerts_by_filter_command", return_value=mock_command_results)
+    mock_return_results = mocker.patch("CortexPlatformCore.return_results")
+    
+    # Execute the main function
+    main()
+
+    # Verify that get_alerts_by_filter_command was called with transformed arguments
+    mock_get_alerts.assert_called_once()
+    called_args = mock_get_alerts.call_args[0][1]  # Get the args parameter
+
+    # Verify the arguments were transformed from issue to alert format and output_keys was removed
+    assert "alert_id" in called_args
+    assert "alert_status" in called_args
+    assert "alert_priority" in called_args
+    assert "output_keys" not in called_args  # Should be removed from args passed to get_alerts_by_filter_command
+    assert called_args["alert_id"] == "12345"
+    assert called_args["alert_status"] == "open"
+    assert called_args["alert_priority"] == "high"
+
+    # Get the CommandResults object that was passed to return_results
+    returned_command_results = mock_return_results.call_args[0][0]
+
+    # Verify the outputs were transformed back from alert to issue format
+    assert len(returned_command_results.outputs) == 2
+    
+    # Check first alert/issue
+    first_issue = returned_command_results.outputs[0]
+    assert "issue_id" in first_issue
+    assert "issue_status" in first_issue
+    assert "issue_description" in first_issue
+    assert first_issue["issue_id"] == "12345"
+    assert first_issue["issue_status"] == "open"
+    assert first_issue["issue_description"] == "Test alert"
+    
+    # Verify that only the specified output_keys are present (after transformation to issue format)
+    expected_keys = {"issue_id", "issue_status", "issue_description"}
+    assert set(first_issue.keys()) == expected_keys
+    
+    # Verify fields that should be filtered out are not present
+    assert "issue_priority" not in first_issue
+    assert "issue_severity" not in first_issue
+    assert "issue_timestamp" not in first_issue
+    assert "user_name" not in first_issue
+    assert "internal_field" not in first_issue
+    
+    # Check second alert/issue
+    second_issue = returned_command_results.outputs[1]
+    assert "issue_id" in second_issue
+    assert "issue_status" in second_issue
+    assert "issue_description" in second_issue
+    assert second_issue["issue_id"] == "67890"
+    assert second_issue["issue_status"] == "closed"
+    assert second_issue["issue_description"] == "Another test alert"
+    
+    # Verify that only the specified output_keys are present
+    assert set(second_issue.keys()) == expected_keys
+    
+    # Verify alert keys are not present in the final outputs
+    assert "alert_id" not in first_issue
+    assert "alert_status" not in first_issue
+    assert "alert_description" not in first_issue
