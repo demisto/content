@@ -5868,6 +5868,11 @@
                 "active_directory_80k"
             ],
             "memory_threshold": 100
+        },
+        {
+            "playbookID": "QuarantineFile-Test",
+            "timeout": 300,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
