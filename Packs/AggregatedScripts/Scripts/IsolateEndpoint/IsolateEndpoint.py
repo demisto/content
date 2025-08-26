@@ -389,7 +389,7 @@ def process_endpoints(endpoint_data_results: list, commands: list[Command]) -> t
         endpoint_context_output: dict = {}
 
         endpoint_args = get_args_from_endpoint_data(endpoint_data)
-        demisto.debug(f"Running on those args {endpoint_args=} in main function")
+        demisto.debug(f"Running with args {endpoint_args=}")
         # Skip the failing endpoints from get-data-endpoint
         if "fail" in endpoint_args.get("endpoint_message", "").lower():
             demisto.debug(f"Skipping endpoint {endpoint_args} because of a failing error from get-endpoint-data.")
@@ -416,7 +416,7 @@ def main():  # pragma: no cover
         commands = initialize_commands()
 
         executed_command = execute_command(command="get-endpoint-data", args=endpoint_args)
-        demisto.debug(f"Got executed command from get-endpoint-data: {executed_command=}")
+        demisto.debug(f"Response from get-endpoint-data: {executed_command=}")
 
         endpoint_data_results = structure_endpoints_data(executed_command)
 
