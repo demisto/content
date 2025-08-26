@@ -43,7 +43,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, safe_sleep, get_server_config, b64_decode,
                                 get_engine_base_url, is_integration_instance_running_on_engine, find_and_remove_sensitive_text, stringEscapeMD,
-                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_internal
+                                execute_polling_command, QuickActionPreview, MirrorObject, get_pack_version, ExecutionTimeout, is_ip_address_internal
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -314,20 +314,20 @@ COMPLEX_DATA_WITH_URLS = [(
 
 
 @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
-def test_is_ip_internal():
+def test_is_ip_address_internal():
     """
     Given:
         - A set of valid IP addresses including both private and public IPs.
     When:
-        - Calling is_ip_internal on each IP address.
+        - Calling is_ip_address_internal on each IP address.
     Then:
         - Assert that the function returns True for private/internal IPs.
         - Assert that the function returns False for public/external IPs.
     """
-    assert is_ip_internal('10.0.0.1') == True
-    assert is_ip_internal('127.0.0.1') == True
-    assert is_ip_internal('8.8.8.8') == False # Google DNS
-    assert is_ip_internal('1.1.1.1') == False # Cloudflare DNS
+    assert is_ip_address_internal('10.0.0.1') == True
+    assert is_ip_address_internal('127.0.0.1') == True
+    assert is_ip_address_internal('8.8.8.8') == False # Google DNS
+    assert is_ip_address_internal('1.1.1.1') == False # Cloudflare DNS
 
 
 
