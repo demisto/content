@@ -2187,6 +2187,13 @@ script:
       isArray: true
       name: action_id
       deprecated: true
+    - description: Whether to use polling for this command.
+      name: is_polling
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+      defaultValue: 'true'
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
     name: xdr-file-retrieve
     outputs:

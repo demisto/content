@@ -1337,6 +1337,9 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
 
 def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
     return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
+    demisto.debug(f"File details retrieved: {return_entry}")
+    demisto.debug(f"File results retrieved: {file_results}")
+    
     demisto.results(return_entry)
     if file_results:
         demisto.results(file_results)
@@ -1674,29 +1677,86 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == "xdr-file-retrieve":
-            polling = run_polling_command(
-                client=client,
-                args=args,
-                cmd="xdr-file-retrieve",
-                command_function=retrieve_files_command,
-                command_decision_field="action_id",
-                results_function=action_status_get_command,
-                polling_field="status",
-                polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
-            )
-            raw = polling.raw_response
-            # raw is the response returned by the get-action-status
-            if polling.scheduled_command:
-                return_results(polling)
-                return
-            status = raw[0].get("status")  # type: ignore
-            if status == "COMPLETED_SUCCESSFULLY":
-                file_details_results(client, args, True)
-            else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
-                polling.outputs_prefix = (
-                    f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)'
+            def polling_flow():
+                polling = run_polling_command(
+                    client=client,
+                    args=args,
+                    cmd="xdr-file-retrieve",
+                    command_function=retrieve_files_command,
+                    command_decision_field="action_id",
+                    results_function=action_status_get_command,
+                    polling_field="status",
+                    polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
                 )
-                return_results(polling)
+                raw = polling.raw_response
+                # raw is the response returned by the get-action-status
+                if polling.scheduled_command:
+                    return_results(polling)
+                    return
+                status = raw[0].get("status")  # type: ignore
+                if status == "COMPLETED_SUCCESSFULLY":
+                    file_details_results(client, args, True)
+                else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
+                    polling.outputs_prefix = (
+                        f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)'
+                    )
+                    return_results(polling)
+
+            def non_polling_flow():
+                demisto.debug("Entering non-polling file retrieval flow")
+                command_results = retrieve_files_command(client, args)
+                raw_response = command_results.raw_response 
+                demisto.debug(f"Initial raw response from retrieve_files_command: {raw_response}")
+                
+                action_id = raw_response.get('action_id')
+
+                import time
+                interval_in_seconds = 30
+                timeout_in_seconds = int(args.get("timeout_in_seconds", 600))
+                
+                start_time = time.time()
+                status = None
+                while time.time() - start_time < timeout_in_seconds:
+                    demisto.debug("Checking file retrieval status...")
+                    status_results = action_status_get_command(client, {"action_id": action_id})
+                    if status_results and status_results.raw_response:
+                        demisto.debug(f"status results from get action status: {status_results.to_context()}")
+                        demisto.debug(f"Status results raw response from get action status: {status_results.raw_response}")
+                        status = status_results.raw_response[0].get('status')
+
+                        if status not in ["PENDING", "IN_PROGRESS", "PENDING_ABORT"]:
+                            demisto.debug(f"File retrieval status is complete. exiting. Status = : {status}")
+                            break
+                        demisto.debug(f"Status is not final, sleeping")
+                        # Wait before next status check
+                    else:
+                        demisto.debug("Status still not retrieved, will try again")
+                    time.sleep(interval_in_seconds)
+                
+                demisto.debug("Completed busy-wait")
+                
+                if status == "COMPLETED_SUCCESSFULLY":
+                    demisto.debug("Status is COMPLETED_SUCCESSFULLY, retrieving file details")
+                    args.update({"action_id": action_id})
+                    return file_details_results(client, args, True)
+                else: 
+                    demisto.debug(f"Status is not COMPLETED_SUCCESSFULLY. Current status: {status}")
+                    status_results.outputs_prefix = (
+                        f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)'
+                    )
+                    return_results(status_results)
+      
+                
+
+
+
+
+            is_polling = argToBoolean(args.get("is_polling", True))
+            if is_polling:
+                return polling_flow()
+            else:
+                return non_polling_flow()
+
 
         elif command == "xdr-retrieve-file-details":
             file_details_results(client, args, False)
