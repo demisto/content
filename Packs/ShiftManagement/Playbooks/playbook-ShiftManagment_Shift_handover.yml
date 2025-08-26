@@ -1,8 +1,8 @@
-id: silent-Shift handover
+id: Shift handover
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: silent-Shift handover
+name: Shift handover
 description: |-
   This playbook is used to set up shift handover meetings with all the accompanying processes such as creating an online meeting, creating a notification in a integrated chat app (for example Slack), creating a SOC manager briefing, and creating a display of the active incidents, team members who are on-call, and team members who are out of the office.
   By modifying the playbook inputs you can decide whether to activate the Assign Active Incidents to Next Shift and whether a user who is out of the office will be taken into consideration.
@@ -1655,5 +1655,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.0.0
