@@ -66,6 +66,11 @@ def client(mocker, mock_params):
     )
 
 
+def util_load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
 def test_update_security_rule_command(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update a security rule.
@@ -2037,3 +2042,330 @@ def test_get_monitor_log_profile_error_handling(mocker, client):
         subscription_id=subscription_id,
         resource_group_name=None,
     )
+
+
+def test_format_rule():
+    """
+    Given: rule data and rule name
+    Then: Command outputs is returned as expected and flattens the `properties` field.
+
+    """
+    from Azure import format_rule
+
+    rule = util_load_json("test_data/get_rule_response.json")
+    cr = format_rule(rule_json=rule, security_rule_name="RuleName")
+    assert cr.raw_response["name"] == "wow"
+    assert cr.raw_response["sourceAddressPrefix"] == "3.2.3.2"
+    assert "### Rules RuleName" in cr.readable_output
+
+
+def test_nsg_public_ip_addresses_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_public_ip_addresses_response.json file.
+    When: nsg_public_ip_addresses_list_command is called
+          1. With a limit of 2 (all_results=False).
+          2. With all_results=True.
+    Then:
+          1. It should return only 2 results when limited.
+          2. It should return all results when all_results=True.
+          3. The results should contain expected fields such as name, id, fqdn.
+    """
+    from Azure import nsg_public_ip_addresses_list_command
+    mock_response = util_load_json("test_data/list_public_ip_addresses_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_public_ip_addresses_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+
+    # giving a limit
+    args = {"limit": "2", "all_results": "false"}
+    result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AzureNSG.PublicIPAddress"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert "name" in result.outputs[0]
+    assert "id" in result.outputs[0]
+
+    # no limit
+    args = {"all_results": "true"}
+    result_all: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
+
+    assert isinstance(result_all, CommandResults)
+    assert len(result_all.outputs) == len(mock_response["value"])
+    fqdn_values = [out.get("fqdn") for out in result_all.outputs if "fqdn" in out]
+
+    assert "testlbl.westus.cloudapp.azure.com" in fqdn_values
+    assert any(val for val in fqdn_values if val and val.endswith("sysgen.cloudapp.azure.com"))
+
+
+def test_nsg_network_interfaces_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_networks_interfaces_response.json file.
+    When: nsg_network_interfaces_list_command is called
+          1. With a limit of 1 (all_results=False).
+          2. With all_results=True.
+    Then:
+          1. It should return only 1 result when limited.
+          2. It should return all results when all_results=True.
+          3. The results should contain expected fields such as name, id, ipConfigurationName, and virtualMachineId.
+    """
+    from Azure import nsg_network_interfaces_list_command
+
+    mock_response = util_load_json("test_data/list_networks_interfaces_response.json")
+
+    # Mock client
+    mock_client = mocker.Mock()
+    mock_client.list_networks_interfaces_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+
+    # --- Case 1: with limit=1 ---
+    args = {"limit": "1", "all_results": "false"}
+    result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+    first = result.outputs[0]
+    assert first["name"] == "test-nic"
+    assert "ipConfigurationName" in first
+    assert "ipConfigurationID" in first
+    assert "ipConfigurationPrivateIPAddress" in first
+    assert "ipConfigurationPublicIPAddressName" in first
+    assert "virtualMachineId" in first
+
+    # --- Case 2: with all_results=True ---
+    args = {"all_results": "true"}
+    result_all: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
+
+    assert isinstance(result_all, CommandResults)
+    assert len(result_all.outputs) == len(mock_response["value"])
+
+    nic_names = [nic["name"] for nic in result_all.outputs]
+    assert "test-nic" in nic_names
+    assert "test-nic2" in nic_names
+
+
+def test_nsg_resource_group_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_resource_groups_response.json file.
+    When: nsg_resource_group_list_command is called
+          1. With a limit of 1.
+          2. Without limit (default).
+    Then:
+          1. It should respect the limit argument.
+          2. It should return the resource group data with expected fields.
+    """
+    from Azure import nsg_resource_group_list_command
+
+    mock_response = util_load_json("test_data/list_resource_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_groups_request.return_value = {"value": [mock_response]}
+
+    params = {"subscription_id": "subscription1"}
+
+    # --- Case 1: with limit=1 ---
+    args = {"limit": "1"}
+    result: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGResourceGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+
+    first = result.outputs[0]
+    assert first["name"] == "resourceGroup1"
+    assert first["location"] == "centralus"
+    assert "tags" in first
+    assert "properties" in first
+    assert first["properties"]["provisioningState"] == "Succeeded"
+
+    # --- Case 2: no limit (default) ---
+    args = {}
+    result_default: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
+
+    assert isinstance(result_default, CommandResults)
+    assert len(result_default.outputs) == 1
+    assert result_default.outputs[0]["id"] == "/subscriptions/subscription1/resourceGroups/resourceGroup1"
+
+
+def test_nsg_subscriptions_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_subscriptions_response.json file.
+    When: nsg_subscriptions_list_command is called.
+    Then:
+          1. It should return the subscription data with expected fields.
+          2. The outputs_prefix, outputs_key_field, and raw_response should be correct.
+    """
+    from Azure import nsg_subscriptions_list_command
+
+    mock_response = util_load_json("test_data/list_subscriptions_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_subscriptions_request.return_value = mock_response
+
+    args = {}
+    params = {}
+
+    # Call the command
+    result: CommandResults = nsg_subscriptions_list_command(mock_client, params, args)
+
+    # Basic assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGSubscription"
+    assert result.outputs_key_field == "id"
+    assert result.raw_response == mock_response
+
+    # Check subscription data
+    assert len(result.outputs) == len(mock_response["value"])
+    subscription = result.outputs[0]
+    assert subscription["subscriptionId"] == "subscription_id1"
+    assert subscription["displayName"] == "SubscriptionName"
+    assert subscription["state"] == "Enabled"
+    assert subscription["id"] == "/subscriptions/subscription_id1"
+
+
+def test_nsg_security_rule_create_command(mocker):
+    """
+    Given: An Azure client mock and arguments for creating a security rule.
+    When: nsg_security_rule_create_command is called.
+    Then:
+        1. It should call create_or_update_rule with correct properties.
+        2. The returned CommandResults should include the created rule data.
+    """
+    from Azure import nsg_security_rule_create_command
+
+    mock_response = util_load_json("test_data/create_or_update_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.create_or_update_rule.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {
+        "security_group_name": "testnsg",
+        "security_rule_name": "rule1",
+        "action": "Deny",
+        "direction": "Outbound",
+        "priority": 100,
+        "protocol": "Any",
+        "source": "10.0.0.0/8",
+        "destination": "11.0.0.0/8",
+        "destination_ports": "8080",
+    }
+
+    result: CommandResults = nsg_security_rule_create_command(mock_client, params, args)
+
+    # --- Check the properties passed to create_or_update_rule ---
+    expected_properties = {
+        "protocol": "*",
+        "access": "Deny",
+        "priority": 100,
+        "direction": "Outbound",
+        "sourcePortRange": "*",
+        "destinationPortRange": "8080",
+        "sourceAddressPrefix": "10.0.0.0/8",
+        "destinationAddressPrefix": "11.0.0.0/8",
+    }
+
+    mock_client.create_or_update_rule.assert_called_once_with(
+        security_group="testnsg",
+        rule_name="rule1",
+        properties=expected_properties,
+        subscription_id="subid",
+        resource_group_name="rg1",
+    )
+
+    # --- Check the returned CommandResults ---
+    assert isinstance(result, CommandResults)
+    assert result.outputs["name"] == "rule1"
+    assert result.outputs["properties"]["access"] == "Deny"
+    assert result.outputs["properties"]["protocol"] == "*"
+    assert result.outputs["properties"]["destinationPortRange"] == "8080"
+
+
+def test_nsg_security_rule_get_command(mocker):
+    """
+    Given: An Azure client mock and a security rule JSON.
+    When: nsg_security_rule_get_command is called.
+    Then:
+        1. It should call client.get_rule with correct arguments.
+        2. The data returned from client.get_rule should be passed to format_rule.
+    """
+    from Azure import nsg_security_rule_get_command
+
+    mock_rule = util_load_json("test_data/get_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.get_rule.return_value = mock_rule
+
+    mock_format_rule = mocker.patch("Azure.format_rule", side_effect=lambda x, y: x)
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"security_group_name": "testnsg", "security_rule_name": "wow"}
+
+    result = nsg_security_rule_get_command(mock_client, params, args)
+
+    # Check that get_rule was called correctly
+    mock_client.get_rule.assert_called_once_with(
+        security_group="testnsg",
+        rule_name="wow",
+        subscription_id="subid",
+        resource_group_name="rg1",
+    )
+
+    # Check that format_rule received the correct data
+    mock_format_rule.assert_called_once()
+    called_args, called_kwargs = mock_format_rule.call_args
+    assert called_args[0] == [mock_rule]  # list of rules
+    assert called_args[1] == "wow"        # rule_name argument
+
+    # The result should be what format_rule returned
+    assert result == [mock_rule]
+
+
+def test_nsg_security_groups_list_command(mocker):
+    """
+    Given: An Azure client mock and the list_network_secuirty_groups_response.json file.
+    When: nsg_security_groups_list_command is called.
+    Then:
+        1. It should call client.list_network_security_groups with correct parameters.
+        2. The 'properties' key should be removed from outputs.
+        3. The CommandResults should have correct outputs and readable_output.
+    """
+    from Azure import nsg_security_groups_list_command
+
+    mock_response = util_load_json("test_data/list_network_security_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_network_security_groups.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {}
+
+    result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
+
+    mock_client.list_network_security_groups.assert_called_once_with(
+        subscription_id="subid",
+        resource_group_name="rg1"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_response["value"])
+
+    # The 'properties' key should be removed
+    for group in result.outputs:
+        assert "properties" not in group
+        assert "name" in group
+        assert "id" in group
+        assert "location" in group
+
+    # The readable_output should contain the NSG names
+    for group in result.outputs:
+        assert group["name"] in result.readable_output
