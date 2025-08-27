@@ -82,27 +82,26 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
 def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
-
     Args:
         args (Dict[str, Any]): Command arguments containing pagination parameters
-
     Returns:
         Dict[str, Any]: Validated pagination parameters for AWS API
-
     Raises:
         ValueError: If limit exceeds maximum allowed value or is invalid
     """
     kwargs: Dict[str, Any] = {}
 
     # Handle pagination with next_token (for continuing previous requests)
+    limit_arg = args.get("limit")
     if next_token := args.get("next_token"):
         if not isinstance(next_token, str) or not next_token.strip():
             raise ValueError("next_token must be a non-empty string")
         kwargs["NextToken"] = next_token.strip()
+        if limit_arg is not None:
+            kwargs["MaxResults"] = min(int(limit_arg), MAX_LIMIT_VALUE)
         return kwargs
 
     # Handle limit-based pagination (for new requests)
-    limit_arg = args.get("limit")
 
     # Parse and validate limit
     try:
