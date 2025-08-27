@@ -5886,7 +5886,8 @@
             "integrations": ["F5Silverline", "Cisco ASA", "Panorama"],
             "instance_names": [
                 "panorama_instance_security_team"
-            ]
+            ],
+            "timeout": 600
         },
         {
             "playbookID": "DisableUser - Test",
