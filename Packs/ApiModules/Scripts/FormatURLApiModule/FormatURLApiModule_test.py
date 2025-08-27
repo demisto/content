@@ -507,9 +507,9 @@ class TestFormatURL:
     @pytest.mark.parametrize(
         "part, inside_brackets, expected_part, expected_brackets",
         [
-            ("example.com',", 1, "example.com", 0),  # Remove single quote and comma
-            ("test.com')", 1, "test.com", 0),  # Remove single quote and closing parenthesis
-            ("site.com']", 1, "site.com", 0),  # Remove single quote and closing square bracket
+            ("example.com',", 1, "example.co", 0),  # Remove last 2 chars (m and ') when ending with comma
+            ("test.com')", 1, "test.com", 0),  # Remove single quote only
+            ("site.com']", 1, "site.com", 0),  # Remove single quote only
             ("normal.com", 1, "normal.com", 1),  # No trailing chars to remove
             ("example.com,", 0, "example.com,", 0),  # comma in the end and inside_brackets is 0, no change
             ("example.com'", 0, "example.com'", 0),  # single quote in the end and inside_brackets is 0, no change
@@ -518,22 +518,25 @@ class TestFormatURL:
             ("test.com]", 0, "test.com]", 0),  # closing square bracket in the end and inside_brackets is 0, no change
             ("site.com.", 1, "site.com.", 1),  # Period not in removal list
             ("", 1, "", 1),  # Empty string
+            ("example.com\"", 1, "example.com", 0),  # Remove double quote
         ],
     )
-    def test_remove_trailing_bracket_and_comma_from_part(self, part, inside_brackets, expected_part, expected_brackets):
+    def test_remove_trailing_bracket_and_redundant_characters_from_part(
+        self, part, inside_brackets, expected_part, expected_brackets
+    ):
         """
         Given:
         - A URL part string and inside_brackets counter.
 
         When:
-        - Executing remove_trailing_bracket_and_comma_from_part function.
+        - Executing remove_trailing_bracket_and_redundant_characters_from_part function.
 
         Then:
-        - Ensure trailing brackets and commas are removed correctly and inside_brackets is decremented.
+        - Ensure trailing brackets and redundant characters are removed correctly and inside_brackets is decremented.
         """
-        from FormatURLApiModule import remove_trailing_bracket_and_comma_from_part
+        from FormatURLApiModule import remove_trailing_bracket_and_redundant_characters_from_part
 
-        result_part, result_brackets = remove_trailing_bracket_and_comma_from_part(part, inside_brackets)
+        result_part, result_brackets = remove_trailing_bracket_and_redundant_characters_from_part(part, inside_brackets)
         assert result_part == expected_part
         assert result_brackets == expected_brackets
 

@@ -374,7 +374,7 @@ class URLCheck:
             path += char
 
         if self.check_done(index):
-            path, self.inside_brackets = remove_trailing_bracket_and_comma_from_part(path, self.inside_brackets)
+            path, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(path, self.inside_brackets)
             self.url.path = path
             self.output += path
             return
@@ -402,7 +402,7 @@ class URLCheck:
             index, char = self.check_valid_character(index)
             query += char
 
-        query, self.inside_brackets = remove_trailing_bracket_and_comma_from_part(query, self.inside_brackets)
+        query, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(query, self.inside_brackets)
 
         self.url.query = query
         self.output += query
@@ -428,7 +428,7 @@ class URLCheck:
             index, char = self.check_valid_character(index)
             fragment += char
 
-        fragment, self.inside_brackets = remove_trailing_bracket_and_comma_from_part(fragment, self.inside_brackets)
+        fragment, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(fragment, self.inside_brackets)
 
         self.url.fragment = fragment
         self.output += fragment
@@ -931,12 +931,18 @@ def parse_mixed_ip(ip_str: str) -> int:
     return numerical_ip
 
 
-def remove_trailing_bracket_and_comma_from_part(part: str, inside_brackets: int) -> tuple[str, int]:
+def remove_trailing_bracket_and_redundant_characters_from_part(part: str, inside_brackets: int) -> tuple[str, int]:
     """
-    Removes trailing bracket and commas from a part of a URL.
+    Removes trailing bracket and redundant characters from a part of a URL.
     """
-    if part.endswith((",", ")", "]")) and inside_brackets:
+    if part.endswith(",") and inside_brackets:
         # This Fixes the edge case of catching a separator comma in a part when extracting from a list.
         part = part[:-2]  # We remove the last 2 chars which are a comma and a quote or a bracket.
         inside_brackets -= 1
+
+    elif part.endswith(("'", '"')) and inside_brackets:
+        # This Fixes the edge case of catching a redundant single or double quote in a part when extracting from a list.
+        part = part[:-1]  # We remove the last char which is a quote.
+        inside_brackets -= 1
+
     return part, inside_brackets
