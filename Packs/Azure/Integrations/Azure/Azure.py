@@ -1357,7 +1357,7 @@ def update_security_rule_command(client: AzureClient, params: dict, args: dict) 
         resource_group_name=resource_group_name,
     )
 
-    return format_rule(rule.json(), security_rule_name)
+    return format_rule(rule, security_rule_name)
 
 
 def storage_account_update_command(client: AzureClient, params: dict, args: dict) -> CommandResults | str:
