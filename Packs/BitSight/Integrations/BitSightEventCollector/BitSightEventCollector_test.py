@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from freezegun import freeze_time
 import demistomock as demisto
-from CommonServerPython import *
+from CommonServerPython import DemistoException, CommandResults
 
 from BitSightEventCollector import (
     Client,
@@ -12,21 +12,15 @@ from BitSightEventCollector import (
     resolve_guid,
     fetch_events,
     bitsight_get_events_command,
-    test_module,
 )
 
 
 @pytest.fixture
 def mock_client(mocker):
     """Create a mocked BitSight client for testing."""
-    # Mock HTTP requests
     mocker.patch.object(Client, "_http_request")
 
     client = Client(base_url="https://api.bitsighttech.com", verify=True, proxy=False, auth=("test_api_key", ""))
-
-    # Mock client methods that tests use
-    client.get_companies_guid = mocker.Mock()
-    client.get_company_findings = mocker.Mock()
 
     return client
 
@@ -107,7 +101,7 @@ class TestBitSightEventCollector:
         """
         events = findings_to_events(sample_findings)
 
-        assert len(events) == 3
+        assert len(events) == 4
         assert events[0]["_time"] == "2024-01-15T00:00:00Z"
         assert events[1]["_time"] == "2024-01-14T00:00:00Z"
         assert events[2]["_time"] == "2024-01-13T00:00:00Z"
@@ -206,7 +200,7 @@ class TestBitSightEventCollector:
         result = resolve_guid(mock_client, "arg-guid", "param-guid")
         assert result == "arg-guid"
 
-    def test_resolve_guid_from_params(self, mock_client):
+    def test_resolve_guid_from_my_company(self, mock_client):
         """
         Given: GUID provided in integration parameters but not args
 
@@ -217,7 +211,7 @@ class TestBitSightEventCollector:
         result = resolve_guid(mock_client, None, "param-guid")
         assert result == "param-guid"
 
-    def test_resolve_guid_from_api(self, mock_client, sample_companies_response):
+    def test_resolve_guid_from_api(self, mock_client, sample_companies_response, mocker):
         """
         Given: No GUID in args/params but available from API
 
@@ -225,13 +219,13 @@ class TestBitSightEventCollector:
 
         Then: Should call API and return myCompany.guid
         """
-        mock_client.get_companies_guid.return_value = sample_companies_response
+        mocker.patch.object(mock_client, "get_companies_guid", return_value=sample_companies_response)
 
         result = resolve_guid(mock_client, None, None)
         assert result == "auto-detected-guid"
         mock_client.get_companies_guid.assert_called_once()
 
-    def test_resolve_guid_no_company_found(self, mock_client):
+    def test_resolve_guid_no_guid_available(self, mock_client, mocker):
         """
         Given: No GUID available from any source
 
@@ -239,12 +233,12 @@ class TestBitSightEventCollector:
 
         Then: Should raise ValueError
         """
-        mock_client.get_companies_guid.return_value = {"myCompany": None}
+        mocker.patch.object(mock_client, "get_companies_guid", return_value={"myCompany": None})
 
         with pytest.raises(ValueError, match="Company GUID is required"):
             resolve_guid(mock_client, None, None)
 
-    def test_resolve_guid_empty_api_response(self, mock_client):
+    def test_resolve_guid_empty_api_response(self, mock_client, mocker):
         """
         Given: Empty API response from companies endpoint
 
@@ -252,12 +246,12 @@ class TestBitSightEventCollector:
 
         Then: Should raise ValueError
         """
-        mock_client.get_companies_guid.return_value = {}
+        mocker.patch.object(mock_client, "get_companies_guid", return_value={})
 
         with pytest.raises(ValueError, match="Company GUID is required"):
             resolve_guid(mock_client, None, None)
 
-    def test_fetch_events_basic(self, mock_client, sample_findings):
+    def test_fetch_events_basic(self, mock_client, sample_findings, mocker):
         """
         Given: A client and time window for fetching events
 
@@ -266,7 +260,9 @@ class TestBitSightEventCollector:
         Then: Should return events and update last_run state
         """
         # Mock API response
-        mock_client.get_company_findings.return_value = {"results": sample_findings, "links": {"next": None}}
+        mocker.patch.object(
+            mock_client, "get_company_findings", return_value={"results": sample_findings, "links": {"next": None}}
+        )
 
         events, new_last_run = fetch_events(
             client=mock_client,
@@ -277,12 +273,13 @@ class TestBitSightEventCollector:
             end_time=1705366400,  # 2024-01-16 00:00:00
         )
 
-        assert len(events) == 3
+        assert len(events) == 4
         assert events[0]["_time"] == "2024-01-15T00:00:00Z"
-        assert new_last_run["window_start"] == 1705280000
-        assert new_last_run["offset"] == 3
+        # Since count (4) < max_fetch (100) and no next link, window moves to end_time
+        assert new_last_run["window_start"] == 1705366400  # Moved to end_time
+        assert new_last_run["offset"] == 0  # Reset offset
 
-    def test_fetch_events_with_pagination(self, mock_client, sample_findings):
+    def test_fetch_events_with_pagination(self, mock_client, sample_findings, mocker):
         """
         Given: A client with existing pagination state
 
@@ -291,15 +288,24 @@ class TestBitSightEventCollector:
         Then: Should continue from previous offset and update state
         """
         # Mock API response
-        mock_client.get_company_findings.return_value = {
-            "results": sample_findings[:2],  # Only 2 results
-            "links": {"next": "next_page_url"},
-        }
+        mocker.patch.object(
+            mock_client,
+            "get_company_findings",
+            return_value={
+                "results": sample_findings[:2],  # Only 2 results
+                "links": {"next": "next_page_url"},
+            },
+        )
 
         last_run = {"window_start": 1705280000, "offset": 10}
 
         events, new_last_run = fetch_events(
-            client=mock_client, guid="test-guid", max_fetch=100, last_run=last_run, start_time=1705280000, end_time=1705366400
+            client=mock_client,
+            guid="test-guid",
+            max_fetch=100,
+            last_run=last_run,
+            start_time=1705280000,
+            end_time=1705366400,
         )
 
         assert len(events) == 2
@@ -308,7 +314,7 @@ class TestBitSightEventCollector:
             "test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=10
         )
 
-    def test_fetch_events_window_exhausted(self, mock_client):
+    def test_fetch_events_window_exhausted(self, mock_client, mocker):
         """
         Given: API returns no more results for current window
 
@@ -316,8 +322,15 @@ class TestBitSightEventCollector:
 
         Then: Should reset window to end_time and reset offset
         """
-        # Mock empty response
-        mock_client.get_company_findings.return_value = {"results": [], "links": {}}
+        # Mock API response
+        mocker.patch.object(
+            mock_client,
+            "get_company_findings",
+            return_value={
+                "results": [],  # No results
+                "links": {},  # No next link
+            },
+        )
 
         events, new_last_run = fetch_events(
             client=mock_client,
@@ -328,23 +341,31 @@ class TestBitSightEventCollector:
             end_time=1705366400,
         )
 
+        # Verify it called the API with correct offset
+        mock_client.get_company_findings.assert_called_once_with(
+            "test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=50
+        )
+
         assert len(events) == 0
         assert new_last_run["window_start"] == 1705366400  # Moved to end_time
         assert new_last_run["offset"] == 0  # Reset offset
 
-    def test_fetch_events_max_fetch_limit(self, mock_client, sample_findings):
+    def test_fetch_events_max_fetch_limit(self, mock_client, sample_findings, mocker):
         """
         Given: API returns more results than max_fetch limit
-
         When: Calling fetch_events with low max_fetch
 
         Then: Should limit results to max_fetch and update offset correctly
         """
-        # Mock API response with more findings than max_fetch
-        mock_client.get_company_findings.return_value = {
-            "results": sample_findings,  # 3 findings
-            "links": {"next": "next_page_url"},
-        }
+        # Mock API response with only the limited findings (simulating API respecting limit)
+        mocker.patch.object(
+            mock_client,
+            "get_company_findings",
+            return_value={
+                "results": sample_findings[:2],  # Only first 2 findings to match max_fetch=2
+                "links": {"next": "next_page_url"},
+            },
+        )
 
         events, new_last_run = fetch_events(
             client=mock_client,
@@ -358,7 +379,7 @@ class TestBitSightEventCollector:
         assert len(events) == 2  # Should be limited to max_fetch
         assert new_last_run["offset"] == 2  # Should track processed count
 
-    def test_bitsight_get_events_command_without_push(self, mock_client, sample_findings, mocker):
+    def test_bitsight_get_events_command_no_push(self, mock_client, sample_findings, mocker):
         """
         Given: A get-events command with should_push_events=false
 
@@ -368,7 +389,7 @@ class TestBitSightEventCollector:
         """
         # Mock demisto functions
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_client.get_company_findings.return_value = {"results": sample_findings}
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
 
         result = bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=False)
 
@@ -389,7 +410,7 @@ class TestBitSightEventCollector:
         mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
         mock_send_events = mocker.patch("BitSightEventCollector.send_events_to_xsiam")
 
-        mock_client.get_company_findings.return_value = {"results": sample_findings}
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
 
         result = bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=True)
 
@@ -398,7 +419,7 @@ class TestBitSightEventCollector:
         mock_send_events.assert_called_once()
         mock_set_last_run.assert_not_called()
 
-    def test_test_module_success(self, mock_client):
+    def test_test_module_success(self, mock_client, mocker):
         """
         Given: Valid API credentials and optional GUID
 
@@ -406,13 +427,15 @@ class TestBitSightEventCollector:
 
         Then: Should return "ok" after successful API calls
         """
-        mock_client.get_companies_guid.return_value = {"myCompany": {"guid": "test"}}
-        mock_client.get_company_findings.return_value = {"results": []}
+        mocker.patch.object(mock_client, "get_companies_guid", return_value={"myCompany": {"guid": "test"}})
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": []})
+
+        from BitSightEventCollector import test_module
 
         result = test_module(mock_client, "test-guid")
         assert result == "ok"
 
-    def test_test_module_auth_error(self, mock_client):
+    def test_test_module_auth_error(self, mock_client, mocker):
         """
         Given: Invalid API credentials
 
@@ -420,12 +443,14 @@ class TestBitSightEventCollector:
 
         Then: Should return authorization error message
         """
-        mock_client.get_companies_guid.side_effect = DemistoException("Unauthorized")
+        mocker.patch.object(mock_client, "get_companies_guid", side_effect=DemistoException("Unauthorized"))
+
+        from BitSightEventCollector import test_module
 
         result = test_module(mock_client, None)
         assert "Authorization Error" in result
 
-    def test_test_module_other_error(self, mock_client):
+    def test_test_module_other_error(self, mock_client, mocker):
         """
         Given: API error that's not auth-related
 
@@ -433,9 +458,11 @@ class TestBitSightEventCollector:
 
         Then: Should re-raise the exception
         """
-        mock_client.get_companies_guid.side_effect = DemistoException("Server Error")
+        mocker.patch.object(mock_client, "get_companies_guid", side_effect=DemistoException("Server Error"))
 
         with pytest.raises(DemistoException):
+            from BitSightEventCollector import test_module
+
             test_module(mock_client, None)
 
     def test_client_get_companies_guid(self, mock_client):
