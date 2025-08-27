@@ -1710,6 +1710,9 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
     if not is_ip_valid(ip, True):
         raise ValueError(MESSAGES["INVALID_IP_ADDRESS"].format(ip))
 
+    if is_ip_address_internal(ip):
+        return CommandResults(readable_output=f"Skipping internal IP: {ip}")
+
     if is_ipv6_valid(ip):
         response = client.get_indicator(ip, "ipv6")
     else:
