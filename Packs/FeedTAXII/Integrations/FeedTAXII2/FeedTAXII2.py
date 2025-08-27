@@ -110,7 +110,7 @@ def filter_previously_fetched_indicators(indicators: list, last_run: dict) -> li
 
 
 def fetch_indicators_command(
-    client,
+    client: "Taxii2FeedClient",
     initial_interval,
     limit,
     last_run_ctx,
@@ -127,6 +127,13 @@ def fetch_indicators_command(
     """
     if initial_interval:
         initial_interval, _ = parse_date_range(initial_interval, date_format=TAXII_TIME_FORMAT)
+
+    # Set reduced limit to avoid timeouts when pulling samples when creating a new indicator mapper or classifier
+    if demisto.callingContext.get("context", {}).get("IsSampling", False):
+        limit = 20
+        demisto.debug(f"Running in sampling mode. Setting reduced {limit=}.")
+    else:
+        demisto.debug(f"Running in regular fetching mode. Keeping specified {limit=}.")
 
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if client.collection_to_fetch else None
 
