@@ -7,15 +7,47 @@ type: python
 subtype: python3
 tags:
 - enhancement
-comment: A context script for hash entities.
+comment: Look up file hash reputation(s) using the universal `!file` command across enabled integrations. Supports MD5, SHA1 and SHA256, single or multiple values.
 enabled: true
 args:
 - name: file
   required: true
   default: true
-  description: File hash to look up - supports MD5, SHA1 and SHA256.
+  isArray: true
+  description: One or more file hashes (MD5/SHA1/SHA256). Accepts array, CSV, or newline-separated values.
 scripttarget: 0
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.12.8.3296088
+outputs:
+- contextPath: File
+  description: File object with enriched fields.
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: DBotScore
+  description: DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The tested indicator.
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
 tests:
-- No tests (auto formatted)
+- File Enrichment - File reputation
