@@ -2258,12 +2258,11 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
         )
     elif rule_deleted.status_code == 202:
         message = (
-            f"The delete request for rule {security_rule_name} with resource_group_name"
+            f"The delete request for rule {security_rule_name} with resource group "
             f"{resource_group_name} and subscription id {subscription_id} "
             f"was accepted and the operation will complete asynchronously."
         )
 
-    # TODO to check the results
     return CommandResults(readable_output=message)
 
 
