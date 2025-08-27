@@ -437,6 +437,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
     xdm.source.user.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
     xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status ~= "fail", XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = if(login_reason = "account disabled", "account_expired_or_disabled", login_reason = "account expired", "account_expired_or_disabled", login_reason = "user not found", "user_does_not_exist", login_reason contains "exceeded failed", "failed_login", login_reason != null, "OTHER", reason != null, reason, login_reason = null and reason = null and event_type = "login", "Successful login", null),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
     xdm.event.operation_sub_type = if(event_type = "login" and authentication_method = "password", "password", event_type = "login" and authentication_method = "saml", "Generic SSO", event_type = "login" and authentication_method != null, authentication_method, null),
     xdm.logon.type = target_interface,
     xdm.target.user.username = vault_rotated_account,
