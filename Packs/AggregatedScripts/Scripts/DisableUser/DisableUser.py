@@ -312,7 +312,7 @@ def main():
             return_results(
                 CommandResults(
                     outputs_prefix="DisableUser",
-                    outputs_key_field="UserProfile.Email",
+                    outputs_key_field=["UserProfile.Email", "UserProfile.ID", "UserProfile.Username", "Disabled", "Instance"],
                     outputs=outputs,
                     readable_output=tableToMarkdown(
                         "Disable User",
