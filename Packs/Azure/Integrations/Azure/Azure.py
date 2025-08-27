@@ -60,6 +60,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
+    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -95,6 +96,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DocumentDB/databaseAccounts/write",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
+    "Microsoft.Network/publicIPAddresses/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -1145,10 +1147,10 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def list_network_security_groups(self, subscription_id: str, resource_group_name: str) -> Dict:
-        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers\
-                    /Microsoft.Network/networkSecurityGroups?"
-        return self.http_request(method="GET", full_url=full_url).json()
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Network/networkSecurityGroups?")
+        return self.http_request(method="GET", full_url=full_url)
 
     def delete_rule(self, security_group_name, security_rule_name, subscription_id, resource_group_name):
         return self.http_request(
@@ -1158,32 +1160,75 @@ class AzureClient:
             resp_type="response",
         )
 
-    def list_resource_groups_request(self, subscription_id, filter_by_tag, limit) -> Dict:
-        # TODO to check if the api-version is mandatory
+    def list_resource_groups_request(self, subscription_id, filter_by_tag, limit):
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups?"
         return self.http_request(
-            "GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit, "api-version": "2021-04-01"}
-        ).json()
+            "GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit}
+        )
 
-    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str) -> Dict:
-        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
-                    networkInterfaces"
-        return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS).json()
+    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
+        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                    f"providers/Microsoft.Network/networkInterfaces")
+        return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
-    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str) -> Dict:
-        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/Microsoft.Network/\
-                    publicIPAddresses"
-        return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS).json()
+    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
+        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+                    f"providers/Microsoft.Network/publicIPAddresses")
+        return self.http_request("GET", full_url=full_url)
 
     def list_subscriptions_request(self):
-        return self.http_request(
-            method="GET", full_url="https://management.azure.com/subscriptions?api-version=2020-01-01"
-        )
-        # full_url = f"{PREFIX_URL_AZURE}subscriptions"
-        # return self.http_request(method="GET", full_url=full_url, params={"api-version": "2020-01-01"})
+        return self.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}")
 
 
 """ HELPER FUNCTIONS """
+
+
+def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
+    """
+    reformat data by extract nested dict {'key1': 'value1', 'key2': {'key3': 'value3'},
+    the changes is on the sent data.
+
+    Args:
+        data (Dict): nested dict
+        inner_dict_key (str): the key to extract by
+        fields (List, optional): specific fields from the inner dict to extract. Defaults to [].
+    """
+    inner_dict = data.get(inner_dict_key, {})
+    for key in inner_dict:
+        if not fields or key in fields:
+            data[key] = inner_dict.get(key)
+
+
+def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = "") -> None:
+    """
+    reformat data: from {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']},
+    the changes is on the sent data.
+
+    Args:
+        data (Dict): dict with list of dict that contains the same 'property_name' field
+        list_key (str): the key of the list
+        property_name (str): the property to extract
+        field_name (str, optional): new name for the dict key
+    """
+    properties = [item[property_name] for item in data.get(list_key, []) if property_name in item]
+    if properties:
+        data[field_name or property_name] = properties
+
+
+def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []) -> None:
+    """
+    reformat the sent data using extract_inner_dict and extract_list
+
+    Args:
+        data (Dict): data to reformat
+        dict_to_extract (List, optional): keys of inner dict to extract to outter dict. Defaults to [].
+        list_to_extract (List, optional): keys of inner list to extract to outter dict. Defaults to [].
+    """
+    for data_to_extract in dict_to_extract:
+        extract_inner_dict(data, *data_to_extract)
+
+    for data_to_extract in list_to_extract:
+        extract_list(data, *data_to_extract)
 
 
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -2092,7 +2137,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
         resource_group_name=resource_group_name,
     )
 
-    return format_rule(rule.json(), security_rule_name)
+    return format_rule(rule, security_rule_name)
 
 
 def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -2213,21 +2258,21 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
     if not all_results:
         data_from_response = data_from_response[:limit]
 
-    # for data in data_from_response:
-    #     reformat_data(
-    #         data,
-    #         dict_to_extract=[("properties",), ("dnsSettings",)],
-    #         list_to_extract=[
-    #             ("ipConfigurations", "name", "ipConfigurationName"),
-    #             ("ipConfigurations", "id", "ipConfigurationID"),
-    #             ("ipConfigurations", "properties", "ipConfigurationsProperties"),
-    #             ("ipConfigurationsProperties", "privateIPAddress", "ipConfigurationPrivateIPAddress"),
-    #             ("ipConfigurationsProperties", "publicIPAddress", "ipConfigurationPublicIPAddress"),
-    #             ("ipConfigurationPublicIPAddress", "id", "ipConfigurationPublicIPAddressName"),
-    #         ],
-    #     )
-    #     if vm := data.get("virtualMachine"):
-    #         data["virtualMachineId"] = vm.get("id")
+    for data in data_from_response:
+        reformat_data(
+            data,
+            dict_to_extract=[("properties",), ("dnsSettings",)],
+            list_to_extract=[
+                ("ipConfigurations", "name", "ipConfigurationName"),
+                ("ipConfigurations", "id", "ipConfigurationID"),
+                ("ipConfigurations", "properties", "ipConfigurationsProperties"),
+                ("ipConfigurationsProperties", "privateIPAddress", "ipConfigurationPrivateIPAddress"),
+                ("ipConfigurationsProperties", "publicIPAddress", "ipConfigurationPublicIPAddress"),
+                ("ipConfigurationPublicIPAddress", "id", "ipConfigurationPublicIPAddressName"),
+            ],
+        )
+        if vm := data.get("virtualMachine"):
+            data["virtualMachineId"] = vm.get("id")
 
     readable_output = tableToMarkdown(
         name="Network Interfaces List",
