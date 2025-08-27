@@ -366,7 +366,9 @@ class PychromeEventHandler:
         request_url = kwargs.get("request", {}).get("url", "")
 
         if any(value in request_url for value in BLOCKED_URLS):
-            demisto.info(f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}")
+            demisto.info(
+                f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+            )
             self.tab.Fetch.enable()
             demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
@@ -806,7 +808,9 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
         demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if not tab_ready_event.wait(navigation_timeout):
-            return_error(f"Rasterize failed to navigate to the specified path due to a timeout.\n{path=}")
+            return_error(
+                f"Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds.\n{path=}"
+            )
 
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
