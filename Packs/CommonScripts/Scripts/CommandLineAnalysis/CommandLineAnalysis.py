@@ -1303,7 +1303,7 @@ def main():
     """
     args = demisto.args()
     command_lines = argToList(args.get("command_line", []), separator=" , ")
-    custom_patterns = argToList(args.get("custom_patterns", []))
+    custom_patterns = argToList(args.get("custom_patterns", []), separator=" , ")
     readable_output = ""
 
     # Analyze each command line
