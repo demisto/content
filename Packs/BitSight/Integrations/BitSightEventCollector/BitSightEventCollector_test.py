@@ -23,11 +23,11 @@ def mock_client(mocker):
     mocker.patch.object(Client, "_http_request")
 
     client = Client(base_url="https://api.bitsighttech.com", verify=True, proxy=False, auth=("test_api_key", ""))
-    
+
     # Mock client methods that tests use
     client.get_companies_guid = mocker.Mock()
     client.get_company_findings = mocker.Mock()
-    
+
     return client
 
 
