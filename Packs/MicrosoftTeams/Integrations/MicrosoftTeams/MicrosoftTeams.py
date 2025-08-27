@@ -1108,7 +1108,7 @@ def integration_health():
 
     api_health_output: list = [{"Bot Framework API Health": bot_framework_api_health, "Graph API Health": graph_api_health}]
 
-    adi_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
+    api_health_human_readable: str = tableToMarkdown("Microsoft API Health", api_health_output)
 
     mirrored_channels_output = []
     integration_context: dict = get_integration_context()
@@ -1131,8 +1131,8 @@ def integration_health():
     else:
         mirrored_channels_human_readable = "No mirrored channels."
 
-    hr = adi_health_human_readable + mirrored_channels_human_readable
-    result = CommandResults(readable_output=hr, entry_type=EntryType.NOTE, content_format=EntryFormat.JSON)
+    res = api_health_human_readable + mirrored_channels_human_readable
+    result = CommandResults(raw_response= res, readable_output=res, entry_type=EntryType.NOTE, content_format=EntryFormat.JSON)
     return_results(result)
 
 
