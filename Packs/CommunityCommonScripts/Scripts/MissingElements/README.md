@@ -1,4 +1,4 @@
-This script return missing elements from an input list.
+Returns the list of missing elements from an input list of integers.
 
 e.g. [12,14,16] -> [13,15]
 
@@ -17,7 +17,7 @@ e.g. [12,14,16] -> [13,15]
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | An input list. |
+| value | An input list of integers. |
 | start | Start of the range. |
 | end | End of the range. |
 
@@ -27,4 +27,4 @@ e.g. [12,14,16] -> [13,15]
 
 | **Path** | **Description** |
 | --- | --- |
-| MissingElements.output | Missing elements from input list. |
+| MissingElements.output | The missing elements from the input list of integers. |

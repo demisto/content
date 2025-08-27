@@ -7,14 +7,14 @@ type: python
 tags:
 - Utilities
 comment: |-
-  This script return missing elements from an input list.
+  Returns the list of missing elements from an input list of integers.
 
   e.g. [12,14,16] -> [13,15].
 enabled: true
 args:
 - name: value
   required: true
-  description: An input list.
+  description: An input list of integers.
   isArray: true
 - name: start
   description: Start of the range.
@@ -22,7 +22,7 @@ args:
   description: End of the range.
 outputs:
 - contextPath: MissingElements.output
-  description: Missing elements from input list.
+  description: The missing elements from the input list of integers.
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4508456

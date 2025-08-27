@@ -25,12 +25,12 @@ def sanitize_input(value: Any, start: Optional[Any], end: Optional[Any]) -> tupl
 
     # Convert start and end to integers if provided
     try:
-        start = int(start) if start is not None else None
+        start = int(start) if start else None
     except ValueError:
         return_error("Start value must be an integer.")
 
     try:
-        end = int(end) if end is not None else None
+        end = int(end) if end else None
     except ValueError:
         return_error("End value must be an integer.")
 
