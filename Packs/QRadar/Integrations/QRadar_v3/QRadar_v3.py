@@ -15,7 +15,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-urllib3.disable_warnings()   # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 """ ADVANCED GLOBAL PARAMETERS """
 
