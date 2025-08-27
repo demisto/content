@@ -1151,35 +1151,33 @@ class AzureClient:
     def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Network/networkSecurityGroups?"
+            f"/providers/Microsoft.Network/networkSecurityGroups"
         )
         return self.http_request(method="GET", full_url=full_url)
 
     def delete_rule(self, security_group_name, security_rule_name, subscription_id, resource_group_name):
-        return self.http_request(
-            "DELETE",
-            full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
-            /providers/Microsoft.Network/networkSecurityGroups/{security_group_name}/securityRules/{security_rule_name}?",
-            resp_type="response",
-        )
+        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
+                    f"/securityRules/{security_rule_name}")
+        return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
 
     def list_resource_groups_request(self, subscription_id, filter_by_tag, limit):
-        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups?"
-        return self.http_request("GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+        full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
+        return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
 
     def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/networkInterfaces"
         )
-        return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
+        return self.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
     def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/publicIPAddresses"
         )
-        return self.http_request("GET", full_url=full_url)
+        return self.http_request(method="GET", full_url=full_url)
 
     def list_subscriptions_request(self):
         return self.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}")
