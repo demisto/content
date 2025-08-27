@@ -1039,6 +1039,8 @@ tasks:
     scriptarguments:
       ip_list:
         simple: non-existing-ip-list
+      brands:
+        simple: F5Silverline,Cisco ASA
     results:
     - push_job_id
     - commit_job_id
