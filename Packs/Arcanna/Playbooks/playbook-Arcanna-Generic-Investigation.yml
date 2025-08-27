@@ -1,5 +1,7 @@
 id: Arcanna-Generic-Investigation
 version: -1
+deprecated: true
+hidden: true
 name: Arcanna-Generic-Investigation
 description: |-
   Playbook takes incident data and sends it to Arcanna.Ai for ML inference and automated decision. Once decision is retrieved, manual input ( in this case )
