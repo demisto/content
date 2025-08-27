@@ -38,7 +38,6 @@ alter  // extract message header fields
     xdm.event.id = meta_sequence_id,
     xdm.event.log_level = if(syslog_severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, syslog_severity = "1", XDM_CONST.LOG_LEVEL_ALERT, syslog_severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, syslog_severity = "3", XDM_CONST.LOG_LEVEL_ERROR, syslog_severity = "4", XDM_CONST.LOG_LEVEL_WARNING, syslog_severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, syslog_severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, syslog_severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, syslog_severity),
     xdm.event.original_event_type = event_type,
-    xdm.event.type = event_type,
     xdm.event.description = event_description,
     xdm.intermediate.host.hostname = site,
     xdm.observer.name = syslog_hostname, 
@@ -435,6 +434,7 @@ alter  event_type = arrayindex(regextract(_raw_log, "event\=([^;]+)"), 0)
 | alter
     xdm.source.user.is_disabled = if(reason ~= "account disabled|account expired", to_boolean("TRUE")),
     xdm.source.user.is_password_expired = if(reason ~= "change password", to_boolean("TRUE")),
+    xdm.event.type = if(event_type = "login", "authentication", null),
     xdm.event.outcome = if(status = "success", XDM_CONST.OUTCOME_SUCCESS, status ~= "fail", XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = if(login_reason = "account disabled", "account_expired_or_disabled", login_reason = "account expired", "account_expired_or_disabled", login_reason = "user not found", "user_does_not_exist", login_reason contains "exceeded failed", "failed_login", login_reason != null, "OTHER", reason != null, reason, login_reason = null and reason = null and event_type = "login", "Successful login", null),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
