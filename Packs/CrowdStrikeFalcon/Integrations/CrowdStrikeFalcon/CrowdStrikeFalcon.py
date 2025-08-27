@@ -7558,7 +7558,7 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     resolve_detections_request(
         ids=ids,
         update_status=update_status,
-        assign_to_name=assign_to_name,
+        assign_to_user_id=assign_to_name,
         assign_to_uuid=assign_to_uuid,
         unassign=unassign,
         append_comment=append_comment,
