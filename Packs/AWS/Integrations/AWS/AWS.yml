@@ -2133,7 +2133,7 @@ script:
       - 'true'
       - 'false'
     - name: device_name
-      description: "The device name (for example, /dev/sdh or xvdh). If the argument is given, ebs arguments must also be specified."
+      description: "The device name (for example, /dev/sdh or xvdh). If the argument is given, EBS arguments must also be specified."
       required: false
     - name: ebs_volume_size
       description: "The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
