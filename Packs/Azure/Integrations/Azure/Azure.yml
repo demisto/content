@@ -1763,9 +1763,11 @@ script:
       - name: subscription_id
         description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         type: String
+        required: true
       - name: resource_group_name
         description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
         type: String
+        required: true
   - name: azure-nsg-security-rule-get
     description: Get a specific rule.
     outputs:
@@ -1818,9 +1820,11 @@ script:
       - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         name: subscription_id
         type: String
+        required: true
       - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
         name: resource_group_name
         type: String
+        required: true
       - description: The name of the security group.
         name: security_group_name
         type: String
@@ -1881,9 +1885,11 @@ script:
       - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         name: subscription_id
         type: String
+        required: true
       - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
         name: resource_group_name
         type: String
+        required: true
       - description: 'The name of the security group.'
         name: security_group_name
         required: true
@@ -1945,9 +1951,11 @@ script:
       - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         name: subscription_id
         type: String
+        required: true
       - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
         name: resource_group_name
         type: String
+        required: true
       - description: The name of the security group.
         name: security_group_name
         required: true
@@ -1999,6 +2007,7 @@ script:
       - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         name: subscription_id
         type: String
+        required: true
       - name: limit
         description: Limit on the number of resource groups to return.
         defaultValue: 50
@@ -2092,9 +2101,11 @@ script:
       - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
         name: resource_group_name
         type: String
+        required: true
       - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         name: subscription_id
         type: String
+        required: true
       - name: limit
         description: The maximum number of records to return.
         defaultValue: 50
@@ -2137,9 +2148,11 @@ script:
       - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
         name: resource_group_name
         type: String
+        required: true
       - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
         name: subscription_id
         type: String
+        required: true
       - name: limit
         description: The maximum number of records to return.
         defaultValue: 50
