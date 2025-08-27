@@ -1,0 +1,40 @@
+[
+    {
+        "iocs": [
+            {
+                "value": "CVE-2023-1001",
+                "indicator_type": "CVE",
+                "insightCache": {
+                    "scores": {
+                        "brand1": {
+                            "score": 2,
+                            "context": {
+                                "CVE(obj.ID == val.ID)": {
+                                    "ID": "CVE-2023-1001",
+                                    "CVSS": 7.5,
+                                    "Published": "2023-01-01T00:00:00Z"
+                                }
+                            }
+                        },
+                        "brand2": {
+                            "score": 2,
+                            "context": {
+                                "CVE(obj.ID == val.ID)": {
+                                    "ID": "CVE-2023-1001",
+                                    "CVSS": 7.8,
+                                    "Published": "2023-01-02T00:00:00Z"
+                                },
+                                "DBotScore": {
+                                    "Indicator": "CVE-2023-1001",
+                                    "Score": 2,
+                                    "Vendor": "brand2",
+                                    "Type": "cve"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+]
