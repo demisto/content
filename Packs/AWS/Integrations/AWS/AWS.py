@@ -1122,8 +1122,9 @@ class EC2:
         if filters_arg := args.get("filters"):
             kwargs["Filters"] = parse_filter_field(filters_arg)
 
-        pagination_kwargs = build_pagination_kwargs(args)
-        kwargs.update(pagination_kwargs)
+        if not instance_ids:
+            pagination_kwargs = build_pagination_kwargs(args)
+            kwargs.update(pagination_kwargs)
 
         try:
             # print_debug_logs(client, f"Describing instances with parameters: {kwargs}")

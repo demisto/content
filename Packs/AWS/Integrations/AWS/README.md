@@ -706,7 +706,7 @@ There is no context output for this command.
 ### aws-ec2-instances-describe
 
 ***
-Describes the specified instances or all instances.
+Describes specified instances or all instances.
 
 #### Base Command
 
@@ -717,7 +717,7 @@ Describes the specified instances or all instances.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region to query instances from. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| region | The AWS region to query instances from. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | instance_ids | A comma-separated list of instance IDs to describe. If empty, returns all accessible instances in the specified region. | Optional |
 | filters | One or more custom filters to apply separated by ';' (e.g., name=&lt;name&gt;,values=&lt;values&gt;).You can specify up to 50 filters and up to 200 values per filter in a single request. | Optional |
 | next_token | Token for pagination when retrieving large result sets. Use the InstancesNextToken value from a previous response to continue listing instances. | Optional |
@@ -738,10 +738,10 @@ Describes the specified instances or all instances.
 | AWS.EC2.Instances.InstanceType | string | The instance type. |
 | AWS.EC2.Instances.KeyName | string | The name of the key pair used when the instance was launched. |
 | AWS.EC2.Instances.LaunchTime | date | The time the instance was launched. |
-| AWS.EC2.Instances.Placement.AvailabilityZone | string | The Availability Zone of the instance. |
+| AWS.EC2.Instances.Placement.AvailabilityZone | string | The availability zone of the instance. |
 | AWS.EC2.Instances.Placement.GroupName | string | The name of the placement group the instance is in. |
 | AWS.EC2.Instances.Placement.Tenancy | string | The tenancy of the instance. |
-| AWS.EC2.Instances.Platform | string | The value is Windows for Windows instances; otherwise blank. |
+| AWS.EC2.Instances.Platform | string | The platform the instance uses. The value is Windows for Windows instances; otherwise, blank. |
 | AWS.EC2.Instances.Monitoring.State | string | Indicates whether detailed monitoring is enabled. |
 | AWS.EC2.Instances.SubnetId | string | The ID of the subnet in which the instance is running. |
 | AWS.EC2.Instances.VpcId | string | The ID of the VPC in which the instance is running. |
@@ -755,7 +755,7 @@ Describes the specified instances or all instances.
 ### aws-ec2-instances-start
 
 ***
-Starts an Amazon EBS-backed instance that you’ve previously stopped.
+Starts an Amazon EBS-backed instance that was previously stopped.
 
 #### Base Command
 
@@ -767,7 +767,7 @@ Starts an Amazon EBS-backed instance that you’ve previously stopped.
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region where target instances are located. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| instance_ids | A comma-separated list of instance IDs to start in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions. | Required |
+| instance_ids | A comma-separated list of instance IDs to start, in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions. | Required |
 
 #### Context Output
 
@@ -787,10 +787,10 @@ Stops an Amazon EBS-backed instance.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region where target instances are located. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| region | The AWS region where target instances are located. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | instance_ids | A comma-separated list of instance IDs to stop. Must be in 'running' or 'pending' state. User must have stop permissions for each instance. | Required |
-| force | Force stop instances without graceful shutdown. Default: false. Use with caution as it may cause data loss. Possible values are: True, False. | Optional |
-| hibernate | Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs. Default: false. Possible values are: True, False. | Optional |
+| force | Force stop instances without graceful shutdown. Default: false. Use with caution, as it may cause data loss. Possible values are: True, False. | Optional |
+| hibernate | Hibernates the instance if the instance was enabled for hibernation at launch. Default: false. If the instance cannot hibernate successfully, a normal shutdown occurs. Possible values are: True, False. | Optional |
 
 #### Context Output
 
@@ -799,7 +799,7 @@ There is no context output for this command.
 ### aws-ec2-instances-terminate
 
 ***
-Shuts down the specified instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
+Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error.
 
 #### Base Command
 
@@ -810,7 +810,7 @@ Shuts down the specified instances. This operation is idempotent; if you termina
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region where target instances are located. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| region | The AWS region where target instances are located. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | instance_ids | A comma-separated list of instance IDs to terminate. If you specify multiple instances and the request fails (for example, because of a single incorrect instance ID), none of the instances are terminated. | Required |
 
 #### Context Output
@@ -820,7 +820,7 @@ There is no context output for this command.
 ### aws-ec2-instances-run
 
 ***
-Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using aws-ec2-instances-run , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
 
 #### Base Command
 
@@ -831,30 +831,30 @@ Launches the specified number of instances using an AMI for which you have permi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
-| region | The AWS region where instances will be created. Must be valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| region | The AWS region where instances will be created. Must be a valid AWS region identifier. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | count | The number of instances to launch. Must be greater than 0. | Required |
 | image_id | The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template. | Optional |
 | instance_type | The instance type, for example: t2.large, t3.medium, m5.xlarge. | Optional |
 | security_group_ids | A comma-separated list of security group IDs. Use this for VPC instances. If you don’t specify a security group ID, we use the default security group for the VPC. | Optional |
 | security_groups_names | A comma-separated list of security group names. For a nondefault VPC, you must use security group IDs instead. | Optional |
-| subnet_id | The ID of the subnet to launch the instance into. If you don’t specify a subnet ID, we choose a default subnet from your default VPC for you. If you don’t have a default VPC, you must specify a subnet ID in the request. | Optional |
+| subnet_id | The ID of the subnet to launch the instance into. If you don't choose a subnet, we will use a default one from your default VPC. If you don't have a default VPC, you must specify a subnet ID yourself in the request. | Optional |
 | user_data | The user data to make available to the instance. This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation. | Optional |
 | disable_api_termination | Indicates whether termination protection is enabled for the instance. The default is false, which means that you can terminate the instance using the Amazon EC2 console, command line tools, or API. Possible values are: True, False. | Optional |
 | iam_instance_profile_arn | The Amazon Resource Name (ARN) of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile. | Optional |
 | iam_instance_profile_name | The name of the instance profile. Both iam_instance_profile_arn and iam_instance_profile_name are required if you would like to associate an instance profile. | Optional |
 | key_name | The name of the key pair. Warning - If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in. | Optional |
 | ebs_optimized | Indicates whether the instance is optimized for Amazon EBS I/O. Possible values are: True, False. | Optional |
-| device_name | The device name (for example, /dev/sdh or xvdh). If the argument is given, ebs arguments must also be specified. | Optional |
-| ebs_volume_size | The size of the volume, in GiBs. You must specify either a ebs_snapshot_id or a ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size. | Optional |
+| device_name | The device name (for example, /dev/sdh or xvdh). If the argument is given, EBS arguments must also be specified. | Optional |
+| ebs_volume_size | The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size. | Optional |
 | ebs_volume_type | The volume type. Possible values are: gp2, gp3, io1, io2, st1, sc1, standard. | Optional |
 | ebs_iops | The number of I/O operations per second (IOPS). For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned for the volume. For gp2 volumes, this represents the baseline performance of the volume and the rate at which the volume accumulates I/O credits for bursting. This parameter is required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS. | Optional |
 | ebs_delete_on_termination | Indicates whether the EBS volume is deleted on instance termination. Possible values are: True, False. | Optional |
 | ebs_kms_key_id | Identifier (key ID, key alias, ID ARN, or alias ARN) for a user-managed CMK under which the EBS volume is encrypted. | Optional |
 | ebs_snapshot_id | The ID of the snapshot. | Optional |
 | ebs_encrypted | Indicates whether the encryption state of an EBS volume is changed while being restored from a backing snapshot. Possible values are: true, false. | Optional |
-| launch_template_id | The ID of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
-| launch_template_name | The name of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
-| launch_template_version | The launch template version number, $Latest, or $Default. Possible values are: $Latest, $Default. | Optional |
+| launch_template_id | The ID of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
+| launch_template_name | The name of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both. | Optional |
+| launch_template_version | The launch template version number, $Latest, or $Default. | Optional |
 | tags | One or more tags to apply to a resource when the resource is being created. separated by ';' (e.g., key=&lt;name&gt;,value=&lt;value&gt;). | Optional |
 | host_id | The dedicated Host ID. | Optional |
 | enabled_monitoring | Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled. Possible values are: True, False. | Optional |
@@ -874,10 +874,10 @@ Launches the specified number of instances using an AMI for which you have permi
 | AWS.EC2.Instances.InstanceType | string | The instance type. |
 | AWS.EC2.Instances.KeyName | string | The name of the key pair used when the instance was launched. |
 | AWS.EC2.Instances.LaunchTime | date | The time the instance was launched. |
-| AWS.EC2.Instances.Placement.AvailabilityZone | string | The Availability Zone of the instance. |
+| AWS.EC2.Instances.Placement.AvailabilityZone | string | The availability zone of the instance. |
 | AWS.EC2.Instances.Placement.GroupName | string | The name of the placement group the instance is in. |
 | AWS.EC2.Instances.Placement.Tenancy | string | The tenancy of the instance. |
-| AWS.EC2.Instances.Platform | string | The value is Windows for Windows instances; otherwise blank. |
+| AWS.EC2.Instances.Platform | string | The platform the instance uses. The value is Windows for Windows instances; otherwise, blank. |
 | AWS.EC2.Instances.Monitoring.State | string | Indicates whether detailed monitoring is enabled. |
 | AWS.EC2.Instances.SubnetId | string | The ID of the subnet in which the instance is running. |
 | AWS.EC2.Instances.VpcId | string | The ID of the VPC in which the instance is running. |

@@ -1748,13 +1748,13 @@ script:
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
   - name: aws-ec2-instances-describe
-    description: "Describes the specified instances or all instances."
+    description: "Describes specified instances or all instances."
     arguments:
     - name: account_id
       description: The AWS account ID.
       required: true
     - name: region
-      description: The AWS region to query instances from. Must be valid AWS region identifier.
+      description: The AWS region to query instances from. Must be a valid AWS region identifier.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1840,7 +1840,7 @@ script:
       description: The time the instance was launched.
       type: date
     - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
-      description: The Availability Zone of the instance.
+      description: The availability zone of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.Placement.GroupName
       description: The name of the placement group the instance is in.
@@ -1849,7 +1849,7 @@ script:
       description: The tenancy of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.Platform
-      description: The value is Windows for Windows instances; otherwise blank.
+      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
       type: string
     - contextPath: AWS.EC2.Instances.Monitoring.State
       description: Indicates whether detailed monitoring is enabled.
@@ -1880,7 +1880,7 @@ script:
       type: string
 
   - name: aws-ec2-instances-start
-    description: "Starts an Amazon EBS-backed instance that you’ve previously stopped."
+    description: "Starts an Amazon EBS-backed instance that was previously stopped."
     execution: true
     arguments:
     - name: account_id
@@ -1924,7 +1924,7 @@ script:
       - me-central-1
       - sa-east-1
     - name: instance_ids
-      description: "A comma-separated list of instance IDs to start in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions."
+      description: "A comma-separated list of instance IDs to start, in i-xxxxxxxxx format. Must be in 'stopped' state and user must have permissions."
       required: true
       isArray: true
 
@@ -1936,7 +1936,7 @@ script:
       description: The AWS account ID.
       required: true
     - name: region
-      description: The AWS region where target instances are located. Must be valid AWS region identifier.
+      description: The AWS region where target instances are located. Must be a valid AWS region identifier.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1977,7 +1977,7 @@ script:
       required: true
       isArray: true
     - name: force
-      description: "Force stop instances without graceful shutdown. Default: false. Use with caution as it may cause data loss."
+      description: "Force stop instances without graceful shutdown. Default: false. Use with caution, as it may cause data loss."
       required: false
       auto: PREDEFINED
       predefined:
@@ -1985,7 +1985,7 @@ script:
       - 'false'
       defaultValue: 'false'
     - name: hibernate
-      description: "Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs. Default: false."
+      description: "Hibernates the instance if the instance was enabled for hibernation at launch. Default: false. If the instance cannot hibernate successfully, a normal shutdown occurs."
       required: false
       auto: PREDEFINED
       predefined:
@@ -1993,14 +1993,14 @@ script:
       - 'false'
       defaultValue: 'false'
   - name: aws-ec2-instances-terminate
-    description: "Shuts down the specified instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds."
+    description: "Shuts down specified instances. This operation is idempotent; you can terminate an instance multiple times without causing an error."
     execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.
       required: true
     - name: region
-      description: The AWS region where target instances are located. Must be valid AWS region identifier.
+      description: The AWS region where target instances are located. Must be a valid AWS region identifier.
       required: true
       auto: PREDEFINED
       predefined:
@@ -2041,14 +2041,14 @@ script:
       required: true
       isArray: true
   - name: aws-ec2-instances-run
-    description: Launches the specified number of instances using an AMI for which you have permissions. You can create a launch template , which is a resource that contains the parameters to launch an instance. When you launch an instance using aws-ec2-instances-run , you can specify the launch template instead of specifying the launch parameters. An instance is ready for you to use when its in the running state. You can check the state of your instance using aws-ec2-instances-describe.
+    description: Launches a specified number of instances using an AMI you have access to. You can save time by creating a launch template containing your parameters and using the template instead of entering the parameters each time. An instance is ready for you to use when it is in the running state. You can check the state of your instance using aws-ec2-instances-describe.
     execution: true
     arguments:
     - name: account_id
       description: The AWS account ID.
       required: true
     - name: region
-      description: The AWS region where instances will be created. Must be valid AWS region identifier.
+      description: The AWS region where instances will be created. Must be a valid AWS region identifier.
       required: true
       auto: PREDEFINED
       predefined:
@@ -2103,7 +2103,7 @@ script:
       required: false
       isArray: true
     - name: subnet_id
-      description: "The ID of the subnet to launch the instance into. If you don’t specify a subnet ID, we choose a default subnet from your default VPC for you. If you don’t have a default VPC, you must specify a subnet ID in the request."
+      description: "The ID of the subnet to launch the instance into. If you don't choose a subnet, we will use a default one from your default VPC. If you don't have a default VPC, you must specify a subnet ID yourself in the request."
       required: false
     - name: user_data
       description: "The user data to make available to the instance. This value will be base64 encoded automatically. Do not base64 encode this value prior to performing the operation."
@@ -2136,7 +2136,7 @@ script:
       description: "The device name (for example, /dev/sdh or xvdh). If the argument is given, ebs arguments must also be specified."
       required: false
     - name: ebs_volume_size
-      description: "The size of the volume, in GiBs. You must specify either a ebs_snapshot_id or a ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
+      description: "The size of the volume, in GiBs. You must specify either an ebs_snapshot_id or an ebs_volume_size. If you specify a snapshot, the default is the snapshot size. You can specify a volume size that is equal to or larger than the snapshot size."
       required: false
     - name: ebs_volume_type
       description: "The volume type."
@@ -2174,18 +2174,14 @@ script:
       - 'true'
       - 'false'
     - name: launch_template_id
-      description: "The ID of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
+      description: "The ID of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
       required: false
     - name: launch_template_name
-      description: "The name of the launch template. The launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
+      description: "The name of the launch template to use to launch the instances. Any parameters that you specify in the command override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both."
       required: false
     - name: launch_template_version
       description: "The launch template version number, $Latest, or $Default."
       required: false
-      auto: PREDEFINED
-      predefined:
-      - '$Latest'
-      - '$Default'
     - name: tags
       description: "One or more tags to apply to a resource when the resource is being created. separated by ';' (e.g., key=<name>,value=<value>)."
       required: false
@@ -2235,7 +2231,7 @@ script:
       description: The time the instance was launched.
       type: date
     - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
-      description: The Availability Zone of the instance.
+      description: The availability zone of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.Placement.GroupName
       description: The name of the placement group the instance is in.
@@ -2244,7 +2240,7 @@ script:
       description: The tenancy of the instance.
       type: string
     - contextPath: AWS.EC2.Instances.Platform
-      description: The value is Windows for Windows instances; otherwise blank.
+      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
       type: string
     - contextPath: AWS.EC2.Instances.Monitoring.State
       description: Indicates whether detailed monitoring is enabled.
