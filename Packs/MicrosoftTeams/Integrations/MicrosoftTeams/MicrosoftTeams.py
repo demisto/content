@@ -1132,8 +1132,7 @@ def integration_health():
         mirrored_channels_human_readable = "No mirrored channels."
 
     res = api_health_human_readable + mirrored_channels_human_readable
-    result = CommandResults(raw_response= res, readable_output=res, entry_type=EntryType.NOTE, content_format=EntryFormat.JSON)
-    return_results(result)
+    return_results(CommandResults(raw_response=res, readable_output=res, entry_type=EntryType.NOTE, content_format=EntryFormat.MARKDOWN))
 
 
 def validate_auth_header(headers: dict) -> bool:
