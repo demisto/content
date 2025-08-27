@@ -239,7 +239,7 @@ script:
       name: record_types_filter
     - description: A comma-separated list of the workloads to fetch. Content records with a workload that isn't specified will not be fetched. If this field is left empty, all workloads will be fetched.
       name: workloads_filter
-    - description: A comma-separated list of the operations to fetch. Content records with an operation that isn't specified will not be fetched. If this field is left empty, all operations will be fetched.
+    - description: Important, this field is case-sensitive. A comma-separated list of the operations to fetch. Content records with an operation that isn't specified will not be fetched. If this field is left empty, all operations will be fetched.
       name: operations_filter
     - description: The timeout (in seconds) for the content requesting HTTP call. Default is the value provided as an integration parameter.
       name: timeout
