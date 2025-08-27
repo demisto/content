@@ -8,13 +8,28 @@
     "url": "https://success.trendmicro.com",
     "email": "integrations@trendmicro.com",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Endpoint",
+        "Vulnerability Management"
     ],
-    "tags": [],
+    "tags": [
+        "Alerts",
+        "Incident Response",
+        "MITRE ATT&CK",
+        "Email"
+
+    ],
     "created": "2022-01-06T09:00:00Z",
-    "useCases": [],
+    "useCases": [
+        "Malware",
+        "Network Security"
+    ],
     "keywords": [
-        "xdr"
+        "xdr",
+        "cloud",
+        "AI",
+        "Identity"
+
     ],
     "devEmail": [
         "integrations@trendmicro.com"

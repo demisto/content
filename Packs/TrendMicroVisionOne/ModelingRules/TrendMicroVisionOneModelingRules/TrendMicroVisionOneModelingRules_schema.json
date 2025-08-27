@@ -307,6 +307,74 @@
       "behaviorCat": {
           "type":"string",
          "is_array":false
+      },
+      "modelId": {
+         "type":"string",
+         "is_array":false
+      },
+      "modelType": {
+         "type":"string",
+         "is_array":false
+      },
+      "investigationResult": {
+         "type":"string",
+         "is_array":false
+      },
+      "malName": {
+         "type":"string",
+         "is_array":false
+      },
+      "smac": {
+         "type":"string",
+         "is_array":false
+      },
+      "senderGUID": {
+         "type":"string",
+         "is_array":false
+      },
+      "shost": {
+         "type":"string",
+         "is_array":false
+      },
+      "sOSName": {
+         "type":"string",
+         "is_array":false
+      },
+      "vLANId": {
+         "type":"string",
+         "is_array":false
+      },
+      "dmac": {
+         "type":"string",
+         "is_array":false
+      },
+      "dOSName": {
+         "type":"string",
+         "is_array":false
+      },
+      "compressedFileSize": {
+         "type":"int",
+         "is_array":false
+      },
+      "filePathName": {
+         "type":"string",
+         "is_array":false
+      },
+      "appGroup": {
+         "type":"string",
+         "is_array":false
+      },
+      "overSsl": {
+         "type":"string",
+         "is_array":false
+      },
+      "ruleName": {
+         "type":"string",
+         "is_array":false
+      },
+      "status": {
+         "type":"string",
+         "is_array":false
       }
    }
 }
