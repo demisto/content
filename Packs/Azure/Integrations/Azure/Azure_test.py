@@ -2071,6 +2071,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
           3. The results should contain expected fields such as name, id, fqdn.
     """
     from Azure import nsg_public_ip_addresses_list_command
+
     mock_response = util_load_json("test_data/list_public_ip_addresses_response.json")
 
     mock_client = mocker.Mock()
@@ -2116,7 +2117,6 @@ def test_nsg_network_interfaces_list_command(mocker):
 
     mock_response = util_load_json("test_data/list_networks_interfaces_response.json")
 
-    # Mock client
     mock_client = mocker.Mock()
     mock_client.list_networks_interfaces_request.return_value = mock_response
 
@@ -2208,11 +2208,9 @@ def test_nsg_subscriptions_list_command(mocker):
 
     mock_client = mocker.Mock()
     mock_client.list_subscriptions_request.return_value = mock_response
-
     args = {}
     params = {}
 
-    # Call the command
     result: CommandResults = nsg_subscriptions_list_command(mock_client, params, args)
 
     # Basic assertions
@@ -2322,7 +2320,7 @@ def test_nsg_security_rule_get_command(mocker):
     mock_format_rule.assert_called_once()
     called_args, called_kwargs = mock_format_rule.call_args
     assert called_args[0] == [mock_rule]  # list of rules
-    assert called_args[1] == "wow"        # rule_name argument
+    assert called_args[1] == "wow"  # rule_name argument
 
     # The result should be what format_rule returned
     assert result == [mock_rule]
@@ -2349,10 +2347,7 @@ def test_nsg_security_groups_list_command(mocker):
 
     result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
 
-    mock_client.list_network_security_groups.assert_called_once_with(
-        subscription_id="subid",
-        resource_group_name="rg1"
-    )
+    mock_client.list_network_security_groups.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.NSGSecurityGroup"
