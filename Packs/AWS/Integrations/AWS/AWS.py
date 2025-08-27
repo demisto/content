@@ -1349,7 +1349,7 @@ REQUIRED_ACTIONS: list[str] = [
 
 def print_debug_logs(client: BotoClient, message: str):
     """
-    Print debug logs with EC2 service prefix and command context.
+    Print debug logs with service prefix and command context.
     Args:
         client (BotoClient): The AWS client object
         message (str): The debug message to log
