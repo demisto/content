@@ -9,7 +9,7 @@ tags:
 comment: |-
   This script return missing elements from an input list.
 
-  e.g. [12,14,16] -> [13,15]
+  e.g. [12,14,16] -> [13,15].
 enabled: true
 args:
 - name: value
@@ -27,3 +27,6 @@ scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.11.4508456
 runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
