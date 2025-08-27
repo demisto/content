@@ -95,7 +95,7 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     events: list[dict[str, Any]] = []
     for f in findings:
-        event = dict(f)  # keep original keys
+        event = dict(f)
         # Set XSIAM time field to first_seen
         first_seen = f.get("first_seen") or f.get("firstSeen")
         if first_seen:
@@ -215,7 +215,6 @@ def test_module(client: Client, guid: str | None) -> str:
     """
     # Validate credentials and, if guid provided, that findings endpoint is reachable
     try:
-        # simple call to companies to validate auth
         client.get_companies_guid()
         if guid:
             start, end = time_window(days=1)
