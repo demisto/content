@@ -357,8 +357,14 @@ def test_fetch_indicators_command(mocker):
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
     assert client_outputs[0] == {
-        "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": None, "tags": []},
-        "rawJSON": {"Name": "192.168.0.1", "a": "3", "type": "IP", "value": "192.168.0.1"},
+        "fields": {
+            "recordedfutureevidencedetails": [],
+            "recordedfutureriskscore": None,
+            "tags": [],
+            "recordedfuturefeedthreatassessment": "",
+            "fieldrecordedfutureriskrules": "",
+        },
+        "rawJSON": {},
         "score": 0,
         "type": "IP",
         "value": "192.168.0.1",
@@ -379,7 +385,9 @@ def test_fetch_indicators_risk_threshold_command(mocker):
      - Verify the fetch does not returns indicators with lower score than the threshold.
     """
     indicator_type = "ip"
-    client = Client(indicator_type=indicator_type, api_token="dummytoken", services=["fusion"], risk_score_threshold=40)
+    client = Client(
+        indicator_type=indicator_type, api_token="dummytoken", services=["fusion"], risk_score_threshold=40, performance=False
+    )
     mocker.patch("FeedRecordedFuture.Client.build_iterator")
     mocker.patch(
         "FeedRecordedFuture.Client.get_batches_from_file",
@@ -389,7 +397,13 @@ def test_fetch_indicators_risk_threshold_command(mocker):
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
     assert client_outputs[0] == {
-        "fields": {"recordedfutureevidencedetails": [], "recordedfutureriskscore": "80", "tags": []},
+        "fields": {
+            "recordedfutureevidencedetails": [],
+            "recordedfutureriskscore": "80",
+            "tags": [],
+            "recordedfuturefeedthreatassessment": "Malicious",
+            "fieldrecordedfutureriskrules": "",
+        },
         "rawJSON": {
             "Criticality Label": "Malicious",
             "Name": "192.168.0.1",

@@ -2,7 +2,6 @@ Use the Anomali ThreatStream Feed Integration to fetch indicators from the Anoma
 
 ## Configure Anomali ThreatStream Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators | Enable this checkbox to automatically pull indicators from the Anomali ThreatStream at regular intervals. |  |
@@ -37,18 +36,22 @@ Gets indicators from the feed. This command is mainly used for testing and debug
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The indicator type to analyze. If not selected, indicators from all types are retrieved. Possible values are: domain, ip, md5, url, email. | Optional | 
-| limit | Maximum number of objects to return. Default is 10. | Optional | 
-| sort_by | Sort the records in descending order according to the Created or Modified Time. Possible values are: Created Time, Modified Time. Default is Modified Time. | Optional | 
+| indicator_type | The indicator type to analyze. If not selected, indicators from all types are retrieved. Possible values are: domain, ip, md5, url, email. | Optional |
+| limit | Maximum number of objects to return. Default is 10. | Optional |
+| sort_by | Sort the records in descending order according to the Created or Modified Time. Possible values are: Created Time, Modified Time. Default is Modified Time. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!threatstream-feed-get-indicators indicator_type="domain" limit="5" sort_by="Created Time"```
+
 #### Human Readable Output
 
->### Indicators from Anomali ThreatStream Feed:
+>### Indicators from Anomali ThreatStream Feed
+>
 >|Source|ThreatStreamID|Domain|Modified|Confidence|Creation|Tags|TrafficLightProtocol|
 >|---|---|---|---|---|---|---|---|
 >| Demisto | 440576095 | my.domainnn_test.com | 2023-12-24T00:00:05.890Z | 50 | 2023-06-20T08:07:33.841Z | ***values***: tag3452, tag23452 |  |

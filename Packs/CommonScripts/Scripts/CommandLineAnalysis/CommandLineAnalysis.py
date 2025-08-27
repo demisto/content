@@ -92,7 +92,6 @@ AMSI = [
 
 LATERAL_MOVEMENT = [
     r"\\\\[a-zA-Z0-9_.-]+\\C\$\b",
-    r"\b(?:cmd(?:\.exe)?)\s+(?=.*\/q)(?=.*\/c).*?((?:1>\s?.*?)?\s*2>&1)\b",
     r"\bcopy\s+\\\\[a-zA-Z0-9_.-]+\\[a-zA-Z0-9$]+\b",
     r"\bmstsc(\.exe)?",
     r"\bnet use \\\\.*\\IPC\$\b",
@@ -225,6 +224,8 @@ SUSPICIOUS_COMMAND_PATTERNS = [
     r"\s*\<NUL\b",
     r"wevtutil\s+cl\b",
     r"(?i)opacity=0\.0[0-9]?\d*",
+    r"(?i)\b(?P<filename>cmd[.]exe)[\"']?(?P<flags>(?:\s+/[qc])+)\b",
+    r"(?i)\b(?:2>&1)\b",  # T1564: Hide Artifacts, T1059: Command and Scripting Interpreter
 ]
 
 
@@ -1275,7 +1276,7 @@ def analyze_command_line(command_line: str, custom_patterns: list[str] | None = 
     for check_name, check in checks.items():
         results["analysis"]["original"][check_name] = check(parsed_command_line)
 
-    results["analysis"]["custom_patterns"] = (
+    results["analysis"]["original"]["custom_patterns"] = (
         check_custom_patterns(parsed_command_line, custom_patterns) if custom_patterns else []
     )
 

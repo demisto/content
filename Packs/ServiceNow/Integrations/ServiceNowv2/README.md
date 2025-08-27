@@ -1177,9 +1177,40 @@ Uploads a file to the specified ticket.
 
 #### Command Example
 
-```!servicenow-upload-file id=id file_id=123@456 file_name=test_file```
+```!servicenow-upload-file id="{TicketID}" ticket_type="incident" file_id="123@456"```
+
+#### Context Example
+
+```json
+{
+    "ServiceNow": {
+        "Ticket": {
+            "File": {
+                "Filename": "test.txt",
+                "Link": "https://{ServerURL}/api/now/attachment/{SystemID}/file",
+                "SystemID": "{SystemID}"
+            },
+            "ID": "{TicketID}"
+        }
+    },
+    "Ticket": {
+        "File": {
+            "Filename": "test.txt",
+            "Link": "https://{TicketID}/api/now/attachment/{SystemID}/file",
+            "SystemID": "{SystemID}"
+        },
+        "ID": "{TicketID}"
+    }
+}
+```
 
 #### Human Readable Output
+
+>### File uploaded successfully to ticket {TICKET ID}
+>
+>|Download link|Filename|System ID|
+>|---|---|---|
+>| https:<span>//</span>{ServerURL}/api/now/attachment/{SystemID}/file | test.txt | {SystemID} |
 
 ### servicenow-delete-file
 
