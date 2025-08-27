@@ -138,7 +138,8 @@ def append_email_signature(html_body: str) -> str:
         "getList", {"listName": list_name}, extract_contents=False, fail_on_error=False
     )
     if not is_succeed:
-        error_message = get_error(email_signature_result)
+        # If not is_succeed, email_signature_result is an error message
+        error_message = email_signature_result
         demisto.debug(
             f"Error occurred while trying to load the `{list_name}` list. No signature added to email. Error: {error_message}."
         )
@@ -432,6 +433,7 @@ def send_new_email(
     """
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
+    context_html_body = append_email_signature(context_html_body)
 
     send_new_mail_request(
         incident_id,
@@ -592,14 +594,23 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             attachment_name = attachment.get("name", "")
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
-            is_succeed, _ = execute_command(
-                "core-api-post",
-                {"uri": f"/incident/remove/{incident_id}", "body": file_data},
-                extract_contents=False,
-                fail_on_error=False,
-            )
-            if not is_succeed:
-                demisto.debug("Failed to remove attachment")
+
+            max_retries = 4
+            for attempt in range(max_retries):
+                is_succeed, res_body = execute_command(
+                    "core-api-post",
+                    {"uri": f"/incident/remove/{incident_id}", "body": file_data},
+                    extract_contents=False,
+                    fail_on_error=False,
+                )
+
+                if is_succeed:
+                    break
+
+                status = "retrying..." if attempt < max_retries - 1 else "giving up."
+                demisto.debug(
+                    f"Attempt {attempt + 1}/{max_retries} failed to remove attachment, {status} API response body: {res_body}"
+                )
 
             if not isinstance(files, list):
                 files = [files]
@@ -1081,6 +1092,12 @@ def single_thread_reply(
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, context_html_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
+
+        # Get the custom email signature, if set, append signature to email body and context body
+        reply_html_body = append_email_signature(reply_html_body)
+        context_html_body = append_email_signature(context_html_body)
+
+        # Send the email reply
         result = validate_email_sent(
             incident_id,
             email_subject,
@@ -1444,6 +1461,10 @@ def multi_thread_reply(
             # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
             reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
+            # Get the custom email signature, if set, append signature to email body and context body
+            reply_html_body = append_email_signature(reply_html_body)
+            context_html_body = append_email_signature(context_html_body)
+
             # Send the email reply
             result = validate_email_sent(
                 incident_id,
@@ -1472,7 +1493,6 @@ def multi_thread_reply(
                 subject_with_id = reply_subject
 
             # Store message details in context entry
-            context_html_body = append_email_signature(context_html_body)
             create_thread_context(
                 reply_code,
                 final_email_cc,
