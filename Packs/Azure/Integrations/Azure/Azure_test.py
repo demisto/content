@@ -97,7 +97,7 @@ def test_update_security_rule_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "get_rule", return_value=rule_response)
-    mocker.patch.object(client, "create_rule", return_value=rule_response)
+    mocker.patch.object(client, "create_or_update_rule", return_value=rule_response)
 
     # Call the function
     args = {
@@ -1437,7 +1437,7 @@ def test_azure_client_create_policy_assignment(mocker, client):
 def test_azure_client_create_rule_success(mocker, client):
     """
     Given: An Azure client and valid rule creation parameters.
-    When: The create_rule method is called.
+    When: The create_or_update_rule method is called.
     Then: The function should make the correct API call with rule properties and return the response.
     """
     # Setup mock response
@@ -1475,7 +1475,7 @@ def test_azure_client_create_rule_success(mocker, client):
     }
 
     # Call the function
-    result = client.create_rule(
+    result = client.create_or_update_rule(
         security_group="test-sg",
         rule_name="test-rule",
         properties=properties,
@@ -1500,7 +1500,7 @@ def test_azure_client_create_rule_success(mocker, client):
 def test_azure_client_create_rule_with_complex_properties(mocker, client):
     """
     Given: An Azure client and complex rule properties with multiple ports and addresses.
-    When: The create_rule method is called.
+    When: The create_or_update_rule method is called.
     Then: The function should handle complex properties correctly.
     """
     # Setup mock response
@@ -1538,7 +1538,7 @@ def test_azure_client_create_rule_with_complex_properties(mocker, client):
     }
 
     # Call the function
-    result = client.create_rule(
+    result = client.create_or_update_rule(
         security_group="test-sg",
         rule_name="complex-rule",
         properties=properties,
@@ -2281,9 +2281,9 @@ def test_nsg_security_rule_create_command(mocker):
     # --- Check the returned CommandResults ---
     assert isinstance(result, CommandResults)
     assert result.outputs["name"] == "rule1"
-    assert result.outputs["properties"]["access"] == "Deny"
-    assert result.outputs["properties"]["protocol"] == "*"
-    assert result.outputs["properties"]["destinationPortRange"] == "8080"
+    assert result.outputs["access"] == "Deny"
+    assert result.outputs["protocol"] == "*"
+    assert result.outputs["destinationPortRange"] == "8080"
 
 
 def test_nsg_security_rule_get_command(mocker):
