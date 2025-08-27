@@ -233,8 +233,9 @@ class AzureClient:
             # Re-raise the original exception for any other errors
             raise DemistoException(f'Failed to access {resource_type} "{resource_name}": {str(e)}')
 
-    def create_or_update_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str,
-                              resource_group_name: str):
+    def create_or_update_rule(
+        self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str
+    ):
         """
         Create or updating a security rule in an Azure Network Security Group.
         Args:
@@ -1148,8 +1149,10 @@ class AzureClient:
         )
 
     def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
-        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Network/networkSecurityGroups?")
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/networkSecurityGroups?"
+        )
         return self.http_request(method="GET", full_url=full_url)
 
     def delete_rule(self, security_group_name, security_rule_name, subscription_id, resource_group_name):
@@ -1162,23 +1165,21 @@ class AzureClient:
 
     def list_resource_groups_request(self, subscription_id, filter_by_tag, limit):
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups?"
-        return self.http_request(
-            "GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit}
-        )
+        return self.http_request("GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
 
     def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
-        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
-                    f"providers/Microsoft.Network/networkInterfaces")
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/networkInterfaces"
+        )
         return self.http_request("GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
     def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
-        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
-                    f"providers/Microsoft.Network/publicIPAddresses")
-        def util_load_json(path):
-            with open(path, encoding="utf-8") as f:
-                return json.loads(f.read())
-        return util_load_json("test_data/list_public_ip_addresses_response.json")
-        # return self.http_request("GET", full_url=full_url)
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
+            f"providers/Microsoft.Network/publicIPAddresses"
+        )
+        return self.http_request("GET", full_url=full_url)
 
     def list_subscriptions_request(self):
         return self.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}")
@@ -2047,7 +2048,7 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
         outputs_prefix="Azure.NSGSecurityGroup",
         outputs_key_field="id",
         outputs=network_groups,
-        readable_output=hr
+        readable_output=hr,
     )
 
 
@@ -2067,7 +2068,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     security_rule_name = args.get("security_rule_name", "")
 
     if not security_rule_name or not security_group_name:
-        return_error(f"Please provide security_group_name and security_rule_name")
+        return_error("Please provide security_group_name and security_rule_name")
 
     security_rule_list = argToList(security_rule_name)
 
@@ -2171,14 +2172,12 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
         message = f"Rule '{security_rule_name}' with resource_group_name \
                   '{resource_group_name}' and subscription id '{subscription_id}' was successfully deleted.\n\n"
     elif rule_deleted.status_code == 202:
-        message = (f"The delete request for rule '{security_rule_name}' with resource_group_name \
+        message = f"The delete request for rule '{security_rule_name}' with resource_group_name \
                   '{resource_group_name}' and subscription id '{subscription_id}’ \
-                   'was accepted and the operation will complete asynchronously.")
+                   'was accepted and the operation will complete asynchronously."
 
     # TODO to check the results
-    return CommandResults(
-        readable_output=message
-    )
+    return CommandResults(readable_output=message)
 
 
 def nsg_subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -2281,9 +2280,22 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
     readable_output = tableToMarkdown(
         name="Network Interfaces List",
         t=data_from_response,
-        headers=["name", "id", "provisioningState", "ipConfigurationName", "ipConfigurationID",
-                 "ipConfigurationPrivateIPAddress", "ipConfigurationPublicIPAddressName", "dnsServers", "appliedDnsServers",
-                 "internalDomainNameSuffix", "macAddress", "virtualMachineId", "location", "kind"],
+        headers=[
+            "name",
+            "id",
+            "provisioningState",
+            "ipConfigurationName",
+            "ipConfigurationID",
+            "ipConfigurationPrivateIPAddress",
+            "ipConfigurationPublicIPAddressName",
+            "dnsServers",
+            "appliedDnsServers",
+            "internalDomainNameSuffix",
+            "macAddress",
+            "virtualMachineId",
+            "location",
+            "kind",
+        ],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
