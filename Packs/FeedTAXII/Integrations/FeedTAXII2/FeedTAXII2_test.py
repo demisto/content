@@ -140,9 +140,9 @@ class TestFetchIndicators:
         assert len(indicators) == len(CORTEX_IOCS_1)
         assert last_run.get(mock_client.collections[1]) == "test"
 
-    def test_multi_with_sampling(self, mocker):
+    def test_single_with_sampling(self, mocker):
         """
-        Scenario: Test multi collection fetch of samples.
+        Scenario: Test single collection fetch of samples.
 
         Given:
         - collection to fetch is set to None
@@ -159,9 +159,8 @@ class TestFetchIndicators:
         mock_client.collections = [MockCollection(1, "a")]
         mocker.patch("FeedTAXII2.demisto.callingContext", return_value={"context": {"IsSampling": True}})
 
-        last_run = {mock_client.collections[0]: "test"}
         mock_client_build_iterator = mocker.patch.object(mock_client, "build_iterator", side_effect=[CORTEX_IOCS_1])
-        fetch_indicators_command(mock_client, "1 day", limit=1000, last_run_ctx=last_run)
+        fetch_indicators_command(mock_client, "1 day", limit=1000, last_run_ctx={})
 
         assert mock_client_build_iterator.call_args[0][0] == 20  # reduced samples limit
 
