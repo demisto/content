@@ -1,0 +1,15 @@
+{
+  "name": "rule1",
+  "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/testnsg/securityRules/rule1",
+  "properties": {
+    "provisioningState": "Succeeded",
+    "protocol": "*",
+    "sourcePortRange": "*",
+    "destinationPortRange": "8080",
+    "sourceAddressPrefix": "10.0.0.0/8",
+    "destinationAddressPrefix": "11.0.0.0/8",
+    "access": "Deny",
+    "priority": 100,
+    "direction": "Outbound"
+  }
+}

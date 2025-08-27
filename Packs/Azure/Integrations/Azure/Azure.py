@@ -1174,7 +1174,11 @@ class AzureClient:
     def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
         full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
                     f"providers/Microsoft.Network/publicIPAddresses")
-        return self.http_request("GET", full_url=full_url)
+        def util_load_json(path):
+            with open(path, encoding="utf-8") as f:
+                return json.loads(f.read())
+        return util_load_json("test_data/list_public_ip_addresses_response.json")
+        # return self.http_request("GET", full_url=full_url)
 
     def list_subscriptions_request(self):
         return self.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}")
@@ -2301,13 +2305,14 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     limit = arg_to_number(args.get("limit", "50"))
 
     response = client.list_public_ip_addresses_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
+    demisto.debug(f"Response from API {response}")
     data_from_response = response.get("value", [])
     if not all_results:
         data_from_response = data_from_response[:limit]
 
-    # for output in outputs:
-    #     reformat_data(output, dict_to_extract=[("properties",), ("dnsSettings",)])
-    #     output["etag"] = output.get("etag", "")[3:-1]
+    for output in data_from_response:
+        reformat_data(output, dict_to_extract=[("properties",), ("dnsSettings",)])
+        output["etag"] = output.get("etag", "")[3:-1]  # cleans up the tag, remove the "W/" prefix
 
     readable_output = tableToMarkdown(
         name="Public IP Addresses List",
