@@ -140,6 +140,31 @@ class TestFetchIndicators:
         assert len(indicators) == len(CORTEX_IOCS_1)
         assert last_run.get(mock_client.collections[1]) == "test"
 
+    def test_multi_with_sampling(self, mocker):
+        """
+        Scenario: Test multi collection fetch of samples.
+
+        Given:
+        - collection to fetch is set to None
+        - limit is 1000
+        - initial interval is `1 day`
+
+        When:
+        - fetch_indicators_command is called
+
+        Then:
+        - fetch up to 20 indicators based on the reduced limit when fetching samples.
+        """
+        mock_client = Taxii2FeedClient(url="", collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+        mock_client.collections = [MockCollection(1, "a")]
+        mocker.patch("FeedTAXII2.demisto.callingContext", return_value={"context": {"IsSampling": True}})
+
+        last_run = {mock_client.collections[0]: "test"}
+        mock_client_build_iterator = mocker.patch.object(mock_client, "build_iterator", side_effect=[CORTEX_IOCS_1])
+        fetch_indicators_command(mock_client, "1 day", limit=1000, last_run_ctx=last_run)
+
+        assert mock_client_build_iterator.call_args[0][0] == 20  # reduced samples limit
+
 
 def test_get_collections_function():
     mock_client = Taxii2FeedClient(url="", collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
