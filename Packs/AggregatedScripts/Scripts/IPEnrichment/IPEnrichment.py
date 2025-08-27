@@ -60,7 +60,7 @@ def ip_enrichment_script(
                 args={"ip_address": ip_list},
                 command_type=CommandType.INTERNAL,
                 brand="Cortex Core - IR",
-                context_output_mapping={"Core.AnalyticsPrevalence.Ip":"Core.AnalyticsPrevalence.Ip"},
+                context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
             ),
         ]
     )

@@ -85,6 +85,7 @@ class Indicator:
             - If "Score" is one of the keys, the final indicator will be enriched with MaxScore, MaxVerdict.
             - If "CVSS" is one of the keys, the final indicator will be enriched with MaxCVSS, MaxCVSSRating.
     """
+
     type: str
     value_field: str
     context_path_prefix: str
@@ -516,7 +517,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         demisto.debug("Starting aggregated command main loop.")
         context_builder = ContextBuilder(self.indicator, self.final_context_path)
-        
+
         # 1. Execute batch commands
         demisto.debug("Step 1: Executing batch commands.")
         commands_to_execute = self.prepare_commands(self.external_enrichment)
@@ -527,7 +528,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         else:
             demisto.debug("No commands to execute.")
             batch_results = []
-        
+
         # 2. Process batch results
         demisto.debug("Step 2: Processing batch results.")
         commands_context, reputation_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(
@@ -535,7 +536,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         )
         context_builder.add_reputation_context(reputation_context, batch_dbot, priority=2)
         context_builder.add_other_commands_results(commands_context)
-        
+
         # 3. Prepare commands and get TIM results
         demisto.debug("Step 3: querying TIM.")
         tim_context, tim_dbot, tim_entries = self.get_indicators_from_tim()
@@ -558,7 +559,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Filters the initial command list based on execution policies.
         If external_enrichment is True, all commands will be executed.
         If external_enrichment is False, only internal commands will be executed.
-        If brands is not empty, external_enrichment will be overridden and only commands 
+        If brands is not empty, external_enrichment will be overridden and only commands
         that are in the brands list will be executed.
         Args:
             external_enrichment (bool): Flag to determine if external commands should run.
@@ -691,7 +692,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 dbot_scores.extend(parsed_dbot)
 
         return tim_context, dbot_scores
-    
+
     def create_tim_indicator(self, ioc: ContextResult) -> dict[str, Any]:
         """
         Creates a TIM indicator from the given IOC.
@@ -707,14 +708,15 @@ class ReputationAggregatedCommand(AggregatedCommand):
         if not value:
             demisto.debug("No value found in TIM result")
             return {}
-        indicators_context[value]["TIM"].append({
-            self.indicator.value_field: value,
-            "Brand": "TIM",
-            "Score": score,
-            "Verdict": DBOT_SCORE_TO_VERDICT.get(score),
-        })
+        indicators_context[value]["TIM"].append(
+            {
+                self.indicator.value_field: value,
+                "Brand": "TIM",
+                "Score": score,
+                "Verdict": DBOT_SCORE_TO_VERDICT.get(score),
+            }
+        )
         return indicators_context
-        
 
     def process_batch_results(
         self,
@@ -799,16 +801,16 @@ class ReputationAggregatedCommand(AggregatedCommand):
                   str, The human readable of the result.
                   EntryResult]: The entry result of the result.
         """
-        indicator_args = ",".join(
-            str(v) for v in flatten_list(command.args.values())
-            ) if isinstance(command.args, dict) else command.args
-        
+        indicator_args = (
+            ",".join(str(v) for v in flatten_list(command.args.values())) if isinstance(command.args, dict) else command.args
+        )
+
         result_entry = EntryResult(
-            command_name = command.name,
-            args = indicator_args,
-            brand = brand,
-            status = Status.SUCCESS,
-            message = "",
+            command_name=command.name,
+            args=indicator_args,
+            brand=brand,
+            status=Status.SUCCESS,
+            message="",
         )
         hr_output = ""
         command_context: ContextResult = {}
@@ -929,7 +931,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             indicator_value = indicator_data.get(self.indicator.value_field)
             demisto.debug(f"Parsing indicator: {indicator_value}")
             mapped_indicator = self.map_command_context(indicator_data, self.indicator.context_output_mapping, is_indicator=True)
-            
+
             if "Score" in self.indicator.context_output_mapping:
                 mapped_indicator["Score"] = effective_score
                 mapped_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(effective_score, "Unknown")
@@ -1153,8 +1155,9 @@ def extract_cvss_score(value) -> float:
             return score
     except (TypeError, ValueError):
         pass
-    
+
     return None
+
 
 def extract_cvss_rating(value) -> str | None:
     """
@@ -1178,6 +1181,7 @@ def extract_cvss_rating(value) -> str | None:
 
     return None
 
+
 def convert_cvss_score_to_rating(score: float) -> str:
     """
     Given a CVSS numeric score (0.0 - 10.0),
@@ -1192,6 +1196,7 @@ def convert_cvss_score_to_rating(score: float) -> str:
             return rating
 
     return "Unknown"
+
 
 def remove_empty_elements_with_exceptions(d, exceptions: set[str] = None):
     """

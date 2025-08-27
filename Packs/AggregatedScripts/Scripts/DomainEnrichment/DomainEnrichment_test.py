@@ -108,7 +108,6 @@ def test_domain_enrichment_script_end_to_end(mocker):
     assert domain_result is not None
     assert len(domain_result["Results"]) == 3  # brand1 (from batch) + brand2 (from TIM) + TIM Itself
 
-
     # The brand1 result should be from the BATCH (Score: 3), not TIM (Score: 1)
     brand1_result = next(r for r in domain_result["Results"] if r["Brand"] == "brand1")
     assert brand1_result["Score"] == 3
@@ -127,7 +126,7 @@ def test_domain_enrichment_script_end_to_end(mocker):
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
     assert len(dbot_scores) == 3  # 1 from TIM, 2 from Batch
     assert {s["Vendor"] for s in dbot_scores} == {"brand1", "brand2", "brand3"}
-    
+
     # 4. TIM Score Updated
     tim_result = next(r for r in domain_result["Results"] if r["Brand"] == "TIM")
     assert tim_result["Score"] == 3

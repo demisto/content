@@ -24,19 +24,12 @@ def cve_enrichment_script(cve_list, external_enrichment=False, verbose=False, en
     """
     Enriches CVE data with information from various integrations
     """
-    indicator_mapping = {"ID": "ID",
-                         "Brand": "Brand",
-                         "CVSS": "CVSS",
-                         "Description": "Description",
-                         "Published": "Published"}
+    indicator_mapping = {"ID": "ID", "Brand": "Brand", "CVSS": "CVSS", "Description": "Description", "Published": "Published"}
 
-    cve_indicator = Indicator(type="cve",
-                              value_field="ID",
-                              context_path_prefix="CVE(",
-                              context_output_mapping=indicator_mapping)
+    cve_indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping=indicator_mapping)
 
     commands: list[Command] = [ReputationCommand(indicator=cve_indicator, data=data) for data in cve_list]
-    
+
     cve_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands,
         verbose=verbose,
@@ -53,6 +46,7 @@ def cve_enrichment_script(cve_list, external_enrichment=False, verbose=False, en
 
 
 """ MAIN FUNCTION """
+
 
 def main():  # pragma: no cover
     args = demisto.args()

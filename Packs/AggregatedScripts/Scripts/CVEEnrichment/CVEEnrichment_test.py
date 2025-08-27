@@ -120,7 +120,7 @@ def test_cve_enrichment_script_end_to_end(mocker):
     assert len(cve2_result["Results"]) == 1
     assert cve2_result["Results"][0]["Brand"] == "brand3"
     assert cve2_result["Results"][0]["CVSS"] == 5.3
-    
+
     # The max CVSS should be 9.8 (from brand1)
     assert cve_result["MaxCVSS"] == 9.8
     # The max severity should be "Critical"

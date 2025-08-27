@@ -1,4 +1,3 @@
-import json
 import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes
@@ -56,7 +55,9 @@ def make_dbot(indicator, vendor, score):
 # =================================================================================================
 # == Global Mocks & Fixtures
 # =================================================================================================
-default_indicator = Indicator(type="indicator", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={"Score": "Score"})
+default_indicator = Indicator(
+    type="indicator", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={"Score": "Score"}
+)
 
 
 @pytest.fixture
@@ -221,55 +222,27 @@ def test_is_debug_various(input_val, expected):
     """
     assert is_debug_entry(input_val) is expected
 
-@pytest.mark.parametrize("data, exceptions, expected", [
-    # --- Case 1: simple dict with None, empty list, empty dict ---
-    (
-        {"a": None, "b": [], "c": {}, "d": 1},
-        None,
-        {"d": 1}
-    ),
-    # --- Case 2: keep None if key in exceptions ---
-    (
-        {"a": None, "b": [], "c": {}, "d": 1},
-        {"a"},
-        {"a": None, "d": 1}
-    ),
-    # --- Case 3: nested dict with empty values ---
-    (
-        {"outer": {"inner1": None, "inner2": []}, "x": "val"},
-        None,
-        {"x": "val"}
-    ),
-    # --- Case 4: nested dict with exceptions ---
-    (
-        {"outer": {"inner1": None, "inner2": []}, "x": "val"},
-        {"inner1"},
-        {"outer": {"inner1": None}, "x": "val"}
-    ),
-    # --- Case 5: list of dicts ---
-    (
-        [{"a": None}, {"b": 2}, {}, []],
-        None,
-        [{"b": 2}]
-    ),
-    # --- Case 6: list of dicts with exceptions ---
-    (
-        [{"a": None}, {"b": 2}, {}, []],
-        {"a"},
-        [{"a": None}, {"b": 2}]
-    ),
-    # --- Case 7: deeply nested structures ---
-    (
-        {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"},
-        None,
-        {"keep": "ok"}
-    ),
-    (
-        {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"},
-        {"lvl3"},
-        {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"}
-    ),
-])
+
+@pytest.mark.parametrize(
+    "data, exceptions, expected",
+    [
+        # --- Case 1: simple dict with None, empty list, empty dict ---
+        ({"a": None, "b": [], "c": {}, "d": 1}, None, {"d": 1}),
+        # --- Case 2: keep None if key in exceptions ---
+        ({"a": None, "b": [], "c": {}, "d": 1}, {"a"}, {"a": None, "d": 1}),
+        # --- Case 3: nested dict with empty values ---
+        ({"outer": {"inner1": None, "inner2": []}, "x": "val"}, None, {"x": "val"}),
+        # --- Case 4: nested dict with exceptions ---
+        ({"outer": {"inner1": None, "inner2": []}, "x": "val"}, {"inner1"}, {"outer": {"inner1": None}, "x": "val"}),
+        # --- Case 5: list of dicts ---
+        ([{"a": None}, {"b": 2}, {}, []], None, [{"b": 2}]),
+        # --- Case 6: list of dicts with exceptions ---
+        ([{"a": None}, {"b": 2}, {}, []], {"a"}, [{"a": None}, {"b": 2}]),
+        # --- Case 7: deeply nested structures ---
+        ({"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"}, None, {"keep": "ok"}),
+        ({"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"}, {"lvl3"}, {"lvl1": {"lvl2": {"lvl3": None}}, "keep": "ok"}),
+    ],
+)
 def test_remove_empty_elements_with_exceptions(data, exceptions, expected):
     """
     Given:
@@ -282,18 +255,22 @@ def test_remove_empty_elements_with_exceptions(data, exceptions, expected):
     """
     result = remove_empty_elements_with_exceptions(data, exceptions)
     assert result == expected
-    
-@pytest.mark.parametrize("cvss_input, expected_score", [
-    (7.5, 7.5),
-    ("8.2", 8.2),
-    (0, 0.0),
-    ({"Score": 9.1}, 9.1),
-    ("Critical", None),
-    ({"Score":"Critical"}, None),
-    ("N/A", None),
-    ("garbage", None),
-    (None, None),
-])
+
+
+@pytest.mark.parametrize(
+    "cvss_input, expected_score",
+    [
+        (7.5, 7.5),
+        ("8.2", 8.2),
+        (0, 0.0),
+        ({"Score": 9.1}, 9.1),
+        ("Critical", None),
+        ({"Score": "Critical"}, None),
+        ("N/A", None),
+        ("garbage", None),
+        (None, None),
+    ],
+)
 def test_extract_cvss_score(cvss_input, expected_score):
     """
     Given:
@@ -305,17 +282,21 @@ def test_extract_cvss_score(cvss_input, expected_score):
     """
     assert extract_cvss_score(cvss_input) == expected_score
 
-@pytest.mark.parametrize("score, expected_rating", [
-    (0.0, "None"),
-    (3.5, "Low"),
-    (4.0, "Medium"),
-    (6.9, "Medium"),
-    (7.5, "High"),
-    (9.0, "Critical"),
-    (10.0, "Critical"),
-    (-1.0, "Unknown"),
-    (11.0, "Unknown"),
-])
+
+@pytest.mark.parametrize(
+    "score, expected_rating",
+    [
+        (0.0, "None"),
+        (3.5, "Low"),
+        (4.0, "Medium"),
+        (6.9, "Medium"),
+        (7.5, "High"),
+        (9.0, "Critical"),
+        (10.0, "Critical"),
+        (-1.0, "Unknown"),
+        (11.0, "Unknown"),
+    ],
+)
 def test_convert_cvss_score_to_rating(score, expected_rating):
     """
     Given:
@@ -326,27 +307,30 @@ def test_convert_cvss_score_to_rating(score, expected_rating):
         - It should return the correct severity string or 'Unknown' if out of bounds.
     """
     assert convert_cvss_score_to_rating(score) == expected_rating
-    
-    
-@pytest.mark.parametrize("cvss_input, expected_rating", [
-    # Numeric values → mapped to rating
-    (0.0, "None"),
-    (2.5, "Low"),
-    (7.0, "High"),
-    (9.8, "Critical"),
-    # Dict with nested score
-    ({"Score": 5.5}, "Medium"),
-    ({"Score": "9.9"}, "Critical"),
-    # Textual severity strings
-    ("high", "High"),
-    ("Critical", "Critical"),
-    ("medium", "Medium"),
-    ("none", "None"),
-    # Special/invalid
-    ("N/A", None),
-    ("garbage", None),
-    (None, None),
-])
+
+
+@pytest.mark.parametrize(
+    "cvss_input, expected_rating",
+    [
+        # Numeric values → mapped to rating
+        (0.0, "None"),
+        (2.5, "Low"),
+        (7.0, "High"),
+        (9.8, "Critical"),
+        # Dict with nested score
+        ({"Score": 5.5}, "Medium"),
+        ({"Score": "9.9"}, "Critical"),
+        # Textual severity strings
+        ("high", "High"),
+        ("Critical", "Critical"),
+        ("medium", "Medium"),
+        ("none", "None"),
+        # Special/invalid
+        ("N/A", None),
+        ("garbage", None),
+        (None, None),
+    ],
+)
 def test_extract_cvss_rating(cvss_input, expected_rating):
     """
     Given:
@@ -357,7 +341,8 @@ def test_extract_cvss_rating(cvss_input, expected_rating):
         - It should return the correct severity string or None if invalid.
     """
     assert extract_cvss_rating(cvss_input) == expected_rating
-    
+
+
 # -------------------------------------------------------------------------------------------------
 # -- Level 2: Core Class Units (Command)
 # -------------------------------------------------------------------------------------------------
@@ -451,7 +436,7 @@ def test_add_other_commands_results():
         (
             {"indicator1": {"brandA": [{"batch": "data"}]}},
             {},
-            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown",  "Results": [{"batch": "data"}]}],
+            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"batch": "data"}]}],
         ),
         # Case 2: TIM only
         (
@@ -524,20 +509,24 @@ def test_build_merges_dbot_scores_correctly(batch_dbot, tim_dbot, expected_outpu
 
     assert sorted(final_context[Common.DBotScore.CONTEXT_PATH], key=sort_key) == sorted(expected_output, key=sort_key)
 
-@pytest.mark.parametrize("results, expected_tim_score", [
-    (
-        [{"Score": 5, "Brand": "TIM"}, {"Score": 8, "Brand": "brandA"}, {"Score": 3, "Brand": "TIM"}],
-        5 # The max score from results where Brand is "TIM"
-    ),
-    (
-        [{"Score": 8, "Brand": "brandA"}, {"Score": 9, "Brand": "brandB"}],
-        0 # No TIM results, so should default to 0
-    ),
-    (
-        [],
-        0 # Empty results, should default to 0
-    ),
-])
+
+@pytest.mark.parametrize(
+    "results, expected_tim_score",
+    [
+        (
+            [{"Score": 5, "Brand": "TIM"}, {"Score": 8, "Brand": "brandA"}, {"Score": 3, "Brand": "TIM"}],
+            5,  # The max score from results where Brand is "TIM"
+        ),
+        (
+            [{"Score": 8, "Brand": "brandA"}, {"Score": 9, "Brand": "brandB"}],
+            0,  # No TIM results, so should default to 0
+        ),
+        (
+            [],
+            0,  # Empty results, should default to 0
+        ),
+    ],
+)
 def test_build_calculates_tim_score_correctly(results, expected_tim_score):
     """
     Given:
@@ -548,19 +537,17 @@ def test_build_calculates_tim_score_correctly(results, expected_tim_score):
         - The final indicator should have a TIMScore calculated only from results where the brand is "TIM".
     """
     indicator_with_score = Indicator(
-        type="test",
-        value_field="ID",
-        context_path_prefix="Test(",
-        context_output_mapping={"Score": "Score"}
+        type="test", value_field="ID", context_path_prefix="Test(", context_output_mapping={"Score": "Score"}
     )
     builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
-    batch_context = {"indicator1": {"brandX": results}} # Brand doesn't matter, structure does
+    batch_context = {"indicator1": {"brandX": results}}  # Brand doesn't matter, structure does
     builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
 
     final_context = builder.build()
 
     final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
-    assert final_indicator.get("TIMScore",0) == expected_tim_score
+    assert final_indicator.get("TIMScore", 0) == expected_tim_score
+
 
 @pytest.mark.parametrize(
     "results, expected_max, expected_verdict",
@@ -616,22 +603,19 @@ def test_build_assembles_all_context_types():
     assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "brandA"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
-    
+
+
 import pytest
+
 
 @pytest.mark.parametrize(
     "results, expected_max_cvss, expected_max_severity",
     [
         (
             # Case 1: mixed numeric + textual + dict + N/A
-            [
-                {"CVSS": 7.5},
-                {"CVSS": "High"},
-                {"CVSS": {"Score": 9.8}},
-                {"CVSS": "N/A"}
-            ],
+            [{"CVSS": 7.5}, {"CVSS": "High"}, {"CVSS": {"Score": 9.8}}, {"CVSS": "N/A"}],
             9.8,  # MaxCVSS From All numerical
-            "Critical"  # MaxSeverity From All
+            "Critical",  # MaxSeverity From All
         ),
         (
             # Case 2: only textual ratings
@@ -641,7 +625,7 @@ import pytest
                 {"CVSS": "High"},
             ],
             None,  # no numeric scores
-            "High"
+            "High",
         ),
         (
             # Case 3: invalid values
@@ -651,9 +635,9 @@ import pytest
                 {"CVSS": None},
             ],
             None,  # no numeric
-            None   # no valid rating
+            None,  # no valid rating
         ),
-    ]
+    ],
 )
 def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expected_max_severity):
     """
@@ -665,12 +649,7 @@ def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expecte
         - MaxCVSS should reflect the highest numeric score (or None if absent).
         - MaxSeverity should reflect the highest severity rating (or None if none valid).
     """
-    indicator = Indicator(
-        type="cve",
-        value_field="ID",
-        context_path_prefix="CVE(",
-        context_output_mapping={"CVSS": "CVSS"}
-    )
+    indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
     builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
 
     batch_context = {"CVE-TEST": {"brandA": results}}
@@ -682,7 +661,6 @@ def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expecte
     assert final_indicator["MaxCVSS"] == expected_max_cvss
     assert final_indicator["MaxSeverity"] == expected_max_severity
 
-    
 
 # -------------------------------------------------------------------------------------------------
 # -- Level 4: Base Module Logic (AggregatedCommandAPIModule)
@@ -1301,4 +1279,3 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
         module.raise_non_enabled_brands_error(entries)
     except DemistoException:
         pytest.fail("raise_non_enabled_brands_error raised an exception unexpectedly.")
-
