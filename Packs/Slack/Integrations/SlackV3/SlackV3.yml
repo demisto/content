@@ -406,7 +406,6 @@ script:
       description: The email address of the user.
       type: String
   - description: Returns the integration context as a file. Use this command for debug purposes only.
-    hidden: true
     name: slack-get-integration-context
   - arguments:
     - description: The channel containing the message.
