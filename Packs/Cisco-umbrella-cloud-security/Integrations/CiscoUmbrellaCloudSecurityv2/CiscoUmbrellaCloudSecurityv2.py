@@ -7,7 +7,6 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 
-BASE_URL = "https://api.umbrella.com"
 
 INTEGRATION_COMMAND_PREFIX = "umbrella"
 DESTINATION = "destination"
@@ -882,7 +881,8 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     command: str = demisto.command()
-
+    base_url = params["baseURL"]
+    
     api_key: str = params["credentials"]["identifier"]
     api_secret: str = params["credentials"]["password"]
     verify_certificate: bool = not params.get("insecure", False)
@@ -910,8 +910,9 @@ def main() -> None:
     }
 
     try:
+        
         client = Client(
-            base_url=BASE_URL,
+            base_url=base_url,
             api_key=api_key,
             api_secret=api_secret,
             verify=verify_certificate,
