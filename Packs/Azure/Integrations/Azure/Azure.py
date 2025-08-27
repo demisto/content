@@ -2166,16 +2166,22 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
 
     message = ""
     if rule_deleted.status_code == 204:
-        message = (f"Rule {security_rule_name} with resource_group_name "
-                   f"{resource_group_name} and subscription id {subscription_id} was not found.")
+        message = (
+            f"Rule {security_rule_name} with resource_group_name "
+            f"{resource_group_name} and subscription id {subscription_id} was not found."
+        )
     elif rule_deleted.status_code == 200:
-        message = (f"Rule {security_rule_name} with resource_group_name "
-                   f"{resource_group_name} and subscription id {subscription_id}"
-                   f" was successfully deleted.")
+        message = (
+            f"Rule {security_rule_name} with resource_group_name "
+            f"{resource_group_name} and subscription id {subscription_id}"
+            f" was successfully deleted."
+        )
     elif rule_deleted.status_code == 202:
-        message = (f"The delete request for rule {security_rule_name} with resource_group_name"
-                   f"{resource_group_name} and subscription id {subscription_id} "
-                   f"was accepted and the operation will complete asynchronously.")
+        message = (
+            f"The delete request for rule {security_rule_name} with resource_group_name"
+            f"{resource_group_name} and subscription id {subscription_id} "
+            f"was accepted and the operation will complete asynchronously."
+        )
 
     # TODO to check the results
     return CommandResults(readable_output=message)
