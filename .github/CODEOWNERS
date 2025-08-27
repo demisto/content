@@ -15,7 +15,7 @@
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @jlevypaloalto
+/Packs/PAN-OS/Integrations/ @lironcohen272
 
 # Important Integrations
 /Packs/QRadar/Integrations/QRadar_v3/* @jbabazadeh
@@ -26,7 +26,7 @@
 /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
-/Packs/rasterize/Integrations/rasterize/* @ilaredo
+/Packs/rasterize/Integrations/rasterize/* @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
@@ -54,25 +54,25 @@
 /Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 # SDK Related
-.pre-commit-config_template.yaml @SamuelFain @YuvHayun
-validation_config.toml @YuvHayun
+.pre-commit-config_template.yaml @SamuelFain @YuvHayun @yedidyacohenpalo
+validation_config.toml @YuvHayun @yedidyacohenpalo
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @tcarmeli1
-/Packs/Core/Integrations/ @tcarmeli1
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @tcarmeli1
+/Packs/CortexXDR/Integrations/ @jlevypaloalto
+/Packs/Core/Integrations/ @jlevypaloalto
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
 
 # TIM Related
-/Packs/TAXIIServer/Integrations/* @MLainer1
-/Packs/FeedTAXII/Integrations/* @MLainer1
-/Packs/EDL/Integrations/* @MLainer1
-/Packs/FeedJSON/Integrations/* @MLainer1
-/Packs/FeedMitreAttackv2/* @MLainer1
-/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MLainer1
-/Packs/ApiModules/Scripts/NGINXApiModule/* @MLainer1
+/Packs/TAXIIServer/Integrations/* @MosheEichler
+/Packs/FeedTAXII/Integrations/* @MosheEichler
+/Packs/EDL/Integrations/* @MosheEichler
+/Packs/FeedJSON/Integrations/* @MosheEichler
+/Packs/FeedMitreAttackv2/* @MosheEichler
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MosheEichler
+/Packs/ApiModules/Scripts/NGINXApiModule/* @MosheEichler
 
 # ML scripts
 /Packs/ML/ @jlevypaloalto

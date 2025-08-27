@@ -2,8 +2,10 @@ import pytest
 import json
 import re
 from datetime import datetime, timedelta
+
+from pytest_mock import MockerFixture
 from CommonServerPython import parse_date_range, DemistoException
-from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST
+from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST, STANDARD_TOKEN_URL, FEDRAMP_TOKEN_URL
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
     (1582210145000000, False, "2020-02-20T14:49:05"),
@@ -247,16 +249,16 @@ def test_query_gp_logs_command():
     """
     from CortexDataLake import query_gp_logs_command
 
-    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_gp_logs.json')
-    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_gp_logs_xformed.json')
+    cdl_records = load_test_data("./test_data/test_query_logs_command_transform_results_gp_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_command_transform_results_gp_logs_xformed.json")
 
-    class MockClient():
+    class MockClient:
         def query_loggings(self, query, page_number=None, page_size=None):
             return cdl_records, []
 
-    _, results_xform, _ = query_gp_logs_command({'limit': '1', 'start_time': '1970-01-01 00:00:00'}, MockClient())
+    _, results_xform, _ = query_gp_logs_command({"limit": "1", "start_time": "1970-01-01 00:00:00"}, MockClient())
 
-    assert results_xform == {'CDL.Logging.GlobalProtect': cdl_records_xform}
+    assert results_xform == {"CDL.Logging.GlobalProtect": cdl_records_xform}
 
 
 class TestPagination:
@@ -272,16 +274,19 @@ class TestPagination:
             assert page_number is not None
             return [], []
 
-    @pytest.mark.parametrize("command_function", [
-        "query_logs_command",
-        "get_critical_logs_command",
-        "get_social_applications_command",
-        "search_by_file_hash_command",
-        "query_threat_logs_command",
-        "query_url_logs_command",
-        "query_file_data_command",
-        "query_gp_logs_command"
-    ])
+    @pytest.mark.parametrize(
+        "command_function",
+        [
+            "query_logs_command",
+            "get_critical_logs_command",
+            "get_social_applications_command",
+            "search_by_file_hash_command",
+            "query_threat_logs_command",
+            "query_url_logs_command",
+            "query_file_data_command",
+            "query_gp_logs_command",
+        ],
+    )
     def test_command_pagination(self, command_function):
         """
         Given:
@@ -450,3 +455,54 @@ class TestBackoffStrategy:
             assert ans is not None
         else:
             assert ans is None
+
+
+@pytest.mark.parametrize(
+    "configured_reg_id_url, license_field_url, expected_result",
+    [
+        pytest.param(
+            "test_id_custom@https://custom.test.com/api",
+            "https://tenant.paloaltonetworks.com",
+            ("https://custom.test.com/api", "test_id_custom", False),
+            id="Custom URL in params. License field URL NOT used for token URL",
+        ),
+        pytest.param(
+            "test_id_fr",
+            "https://fr-tenant.federal.paloaltonetworks.com",
+            (FEDRAMP_TOKEN_URL, "test_id_fr", True),
+            id="No custom URL, FedRAMP tenant URL with a 'http(s)' scheme",
+        ),
+        pytest.param(
+            "test_id_std",
+            "https://std-tenant.paloaltonetworks.com",
+            (STANDARD_TOKEN_URL, "test_id_std", False),
+            id="No custom URL, a standard tenant URL with a scheme",
+        ),
+        pytest.param(
+            "test_id_fr_nohost",
+            "fr-tenant.federal.paloaltonetworks.com",
+            (FEDRAMP_TOKEN_URL, "test_id_fr_nohost", True),
+            id="No custom URL, FedRAMP tenant URL WITHOUT 'http(s)' scheme",
+        ),
+        pytest.param(
+            "test_id_std_nohost",
+            "std-tenant.paloaltonetworks.com",
+            (STANDARD_TOKEN_URL, "test_id_std_nohost", False),
+            id="No custom URL, standard tenant URL WITHOUT 'http(s)' scheme",
+        ),
+    ],
+)
+def test_extract_client_args(mocker: MockerFixture, configured_reg_id_url: str, license_field_url: str, expected_result: tuple):
+    """
+    Given:
+        - Configured "Registration ID" param value.
+    When:
+        - Calling `extract_client_args`.
+    Then:
+        - Assert returned token retrieval URL, the registration ID, and FedRAMP status are as expected.
+    """
+    from CortexDataLake import demisto, extract_client_args
+
+    mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    result = extract_client_args(configured_reg_id_url)
+    assert result == expected_result

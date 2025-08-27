@@ -640,6 +640,7 @@ tests:
 - no tests
 fromversion: 6.10.0
 supportedModules:
+- X0
 - X1
 - X3
 - X5

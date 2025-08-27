@@ -557,3 +557,124 @@ def test_tc_add_indicator_command_with_description(mocker):
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
     assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]["data"]
+
+
+def test_tc_add_cidr_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with CIDR indicator type
+    When:
+        - Adding a CIDR indicator
+    Then:
+        - The request contains the Block field with the CIDR value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"tags": [], "indicator": "192.168.0.0/24", "indicatorType": "CIDR"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["Block"] == "192.168.0.0/24"
+
+
+def test_tc_add_url_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with URL indicator type
+    When:
+        - Adding a URL indicator
+    Then:
+        - The request contains the text field with the URL value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "https://example.com", "indicatorType": "URL"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["text"] == "https://example.com"
+
+
+def test_tc_add_host_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with Host indicator type
+    When:
+        - Adding a Host indicator
+    Then:
+        - The request contains the hostName field with the domain value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "example.com", "indicatorType": "Host"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["hostName"] == "example.com"
+
+
+def test_tc_add_email_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with EmailAddress indicator type
+    When:
+        - Adding an EmailAddress indicator
+    Then:
+        - The request contains the address field with the email value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "user@example.com", "indicatorType": "EmailAddress"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["address"] == "user@example.com"
+
+
+def test_tc_add_file_indicator_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with File indicator type
+    When:
+        - Adding a File indicator with MD5 hash
+    Then:
+        - The request contains the md5 field with the hash value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(client, {"indicator": "d41d8cd98f00b204e9800998ecf8427e", "indicatorType": "File"})
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["md5"] == "d41d8cd98f00b204e9800998ecf8427e"
+
+
+def test_tc_add_file_indicator_with_hash_type_command(mocker):
+    """
+    Given:
+        - arguments for the tc-add-indicator command with File indicator type and SHA256 hash type
+    When:
+        - Adding a File indicator with SHA256 hash
+    Then:
+        - The request contains the sha256 field with the hash value
+    """
+    import ThreatConnectV3
+
+    res = mocker.patch.object(Client, "make_request", return_value={})
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=([], []))
+    tc_add_indicator_command(
+        client,
+        {
+            "indicator": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "indicatorType": "File",
+            "hashType": "sha256",
+        },
+    )
+    # Verifying if the client.make_request method was called with the expected arguments
+    call_args = json.loads(res.call_args[1]["payload"])
+    assert call_args["sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"

@@ -1,0 +1,17 @@
+{
+    "raw_response": [
+        {
+            "propertyId": 12345,
+            "propertyName": "Test Property"
+        }
+    ],
+    "human_readable": "### Akamai WAF - list datastream active properties command\n|propertyId|propertyName|\n|---|---|\n| 12345 | Test Property |\n",
+    "context_entry": {
+        "Akamai.DataStream.Group": [
+            {
+                "propertyId": 12345,
+                "propertyName": "Test Property"
+            }
+        ]
+    }
+}

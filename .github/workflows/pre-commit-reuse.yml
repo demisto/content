@@ -5,7 +5,7 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       checks: write
       pull-requests: write
@@ -60,8 +60,16 @@ jobs:
           echo "In packwise branch, pre commit with ignore flag."
           demisto-sdk pre-commit -g --mode=packwise --show-diff-on-failure --verbose
         else
-          echo "Not in docker auto update branch, pre commit on CI mode."
-          demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
+          echo "Not in docker auto update or packwise branch, pre-commit on CI mode."
+          echo "GITHUB_ACTIONS is: ${GITHUB_ACTIONS:-unset}"
+
+          if [[ "$GITHUB_ACTIONS" == "true" ]]; then
+            echo "Detected GitHub Actions"
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=check_private_packs
+          else
+            echo "Not in GitHub Actions mode"
+            demisto-sdk pre-commit -g --validate --show-diff-on-failure --verbose --mode=ci
+          fi
         fi
 
     - name: "Check coverage.xml exists"

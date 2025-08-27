@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Updated the CVE risk labels score to be compatible with the new Recorded Future score for more info see https://support.recordedfuture.com/hc/en-us/articles/115000894468-Vulnerability-Risk-Rules"
+}

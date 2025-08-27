@@ -18,6 +18,7 @@ configuration:
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - defaultvalue: "1000"
   display: Maximum number of Alerts to fetch.
   name: alerts_max_fetch

@@ -1,0 +1,1 @@
+Note: Support for this Pack was moved to Partner starting August 25, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.

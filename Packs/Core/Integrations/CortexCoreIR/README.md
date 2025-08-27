@@ -3447,3 +3447,58 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 >|---|---|
 >| 123456 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: a1b2c3d4<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> ***_vendor***: PANW<br/> ***_product***: XDR agent<br/> ***_is_cardable***: true |
 >| 123457 | **-** ***Logon_Type***: 7<br/> ***User_Name***: xsoar<br/> ***Domain***: WIN10X64<br/> ***Source_IP***: 1.1.1.1<br/> ***Process_Name***: C:\Windows\System32\svchost.exe<br/> ***Host_Name***: WIN10X64<br/> ***Raw_Message***: An account was successfully logged on. ***_time***: 165298280000<br/> ***555555***: ghijk<br/> ***222222***: 165298280000<br/> ***333333***: abcdef<br/> ***111111***: 15<br/> ***444444***: 1<br/> ***insert_timestamp***: 165298280001<br/> **
+
+### core-block-ip
+
+***
+Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
+Note: This action is only supported on XDR Agent version 8.9 and above.
+
+#### Base Command
+
+`core-block-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint_list | List of agent IDs that support the operation. | Required |
+| addresses | List of IPv6 or IPv4 addresses to be added to the blocklist. | Required |
+| duration | Number of minutes to block (Max 518,400). The default is 300. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.ip_block_results | List | List of dictionaries each holds 3 fileds: ip_address, endpoint_id, reason. |
+
+#### Context Example
+
+```
+{
+    "Core.ip_block_results": [
+        {
+            "reason": "Success",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "1234"
+        },
+        {
+            "reason": "Failure: Endpoint Disconnected",
+            "ip_address": "1.1.1.1"
+            "endpoint_id": "12345"
+        },
+        {
+            "reason": "Failure: Unknown error",
+            "ip_address": "2.2.2.2"
+            "endpoint_id": "1234"
+        }
+    ]
+}
+```
+
+##### Human Readable Output
+
+|Reason|endpoint_id|ip_address|
+|---|---|---|
+| Success | AAA | 1.1.1.1 |
+| Failure: Endpoint Disconnected | AAA | 2.2.2.2 |

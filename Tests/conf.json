@@ -94,7 +94,7 @@
         },
         {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
-            "integrations": "LOLBAS Feed",
+            "integrations": ["LOLBAS Feed", "Cortex Core - IR"],
             "timeout": 600
         },
         {
@@ -3260,7 +3260,7 @@
             "playbookID": "Bluecat Address Manager test"
         },
         {
-            "integrations": "MailListener - POP3 Beta",
+            "integrations": "MailListener - POP3",
             "playbookID": "MailListener-POP3 - Test"
         },
         {
@@ -5715,6 +5715,10 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "IsolateEndpoint - Testplaybook",
+            "integrations": "CrowdstrikeFalcon"
+        },
+        {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
@@ -5859,6 +5863,11 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "playbookID": "QuarantineFile-Test",
+            "timeout": 300,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {

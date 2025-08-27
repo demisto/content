@@ -1,0 +1,64 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"RF Classic Alert"
+	],
+	"caseInsensitive": true,
+	"cliName": "rfentities",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Name",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "name",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Type",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "type",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 490
+		}
+	],
+	"content": true,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"editForm": true,
+	"group": 0,
+	"hidden": false,
+	"id": "incident_rfentities",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "RF Entities",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

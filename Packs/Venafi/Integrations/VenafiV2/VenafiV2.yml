@@ -2,6 +2,9 @@ category: IT Services
 commonfields:
   id: VenafiTLSProtect
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: "https://ao-tlspd.dev.ven-eco.com"
   display: Server URL (e.g., https://192.168.0.1)
@@ -24,10 +27,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Retrieves information about certificates stored in Venafi.
 display: Venafi TLS Protect
 name: VenafiTLSProtect

@@ -106,6 +106,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When 'Mark fetched emails as read' is enabled and emails are fetched by modification time, emails will be re-fetched in the next cycle after being marked as read (due to metadata changes). This is expected behavior.
 - display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
   type: 0

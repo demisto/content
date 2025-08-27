@@ -1,0 +1,21 @@
+{
+	"defaultIncidentType": "RF Playbook Alert",
+	"description": "Classifies Recorded Future classic and playbook alerts.",
+	"feed": false,
+	"id": "RF - Classifier",
+	"keyTypeMap": {
+		"classic-alert": "RF Classic Alert",
+		"code_repo_leakage": "RF Data Leakage on Code Repo Playbook Alert",
+		"cyber_vulnerability": "RF Vulnerability Playbook Alert",
+		"domain_abuse": "RF Domain Abuse Playbook Alert",
+		"geopolitics_facility": "RF Facility Risk Playbook Alert",
+		"third_party_risk": "RF Third-Party Cyber Playbook Alert"
+	},
+	"name": "RF - Classifier",
+	"transformer": {
+		"simple": "subtype"
+	},
+	"type": "classification",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

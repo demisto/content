@@ -2,6 +2,7 @@ import json
 
 import demistomock as demisto  # noqa: F401
 import pytest
+
 from Akamai_WAF import Client
 from CommonServerPython import *  # noqa: F401
 
@@ -390,6 +391,343 @@ def test_list_cps_active_certificates_command(mocker, akamai_waf_client):
 
     human_readable, context_entry, raw_response = list_cps_active_certificates_command(
         client=akamai_waf_client, contract_id=contract_id
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_datastream_groups_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A client.
+    When:
+        - running the command list_datastream_groups_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_datastream_groups_command
+
+    test_data = util_load_json("test_data/list_datastream_groups_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get("https://hostname/datastream-config-api/v2/log/groups", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_datastream_groups_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_get_client_lists_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A client.
+    When:
+        - running the command get_client_lists_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import get_client_lists_command
+
+    test_data = util_load_json("test_data/get_client_lists_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get("https://hostname/client-list/v1/lists", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = get_client_lists_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_patch_datastream_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A stream_id, a path, a value, and a value_to_json flag.
+    When:
+        - running the command patch_datastream_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import patch_datastream_command
+
+    stream_id = 12345
+    path = "/streamName"
+    value = "New Stream Name"
+    value_to_json = "no"
+
+    test_data = util_load_json("test_data/patch_datastream_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.patch(
+        f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}?activate=true",
+        json=expected_raw_response,
+    )
+
+    human_readable, context_entry, raw_response = patch_datastream_command(
+        client=akamai_waf_client,
+        stream_id=stream_id,
+        path=path,
+        value=value,
+        value_to_json=value_to_json,
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_delete_datastream_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A stream_id.
+    When:
+        - running the command delete_datastream_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import delete_datastream_command
+
+    stream_id = 12345
+
+    test_data = util_load_json("test_data/delete_datastream_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.delete(f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}", status_code=204)
+
+    human_readable, context_entry, raw_response = delete_datastream_command(client=akamai_waf_client, stream_id=stream_id)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_datastreams_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A group_id.
+    When:
+        - running the command list_datastreams_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_datastreams_command
+
+    group_id = 12345
+
+    test_data = util_load_json("test_data/list_datastreams_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get("https://hostname/datastream-config-api/v2/log/streams", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_datastreams_command(client=akamai_waf_client, group_id=group_id)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_generic_api_call_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A url_suffix and a method.
+    When:
+        - running the command generic_api_call_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import generic_api_call_command
+
+    url_suffix = "/test"
+    method = "GET"
+
+    test_data = util_load_json("test_data/generic_api_call_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get(f"https://hostname/{url_suffix.strip('/')}", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = generic_api_call_command(
+        client=akamai_waf_client, url_suffix=url_suffix, method=method
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_idam_properties_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A client.
+    When:
+        - running the command list_idam_properties_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_idam_properties_command
+
+    test_data = util_load_json("test_data/list_idam_properties_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get("https://hostname/identity-management/v3/user-admin/properties", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_idam_properties_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_datastream_properties_bygroup_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A group_id.
+    When:
+        - running the command list_datastream_properties_bygroup_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_datastream_properties_bygroup_command
+
+    group_id = 12345
+
+    test_data = util_load_json("test_data/list_datastream_properties_bygroup_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get(f"https://hostname/datastream-config-api/v2/log/groups/{group_id}/properties", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_datastream_properties_bygroup_command(
+        client=akamai_waf_client, group_id=group_id
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_toggle_datastream_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A stream_id and an option.
+    When:
+        - running the command toggle_datastream_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import toggle_datastream_command
+
+    stream_id = 12345
+    option = "deactivate"
+
+    test_data = util_load_json("test_data/toggle_datastream_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.post(f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}/{option}", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = toggle_datastream_command(
+        client=akamai_waf_client, stream_id=stream_id, option=option
+    )
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_get_datastream_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A stream_id.
+    When:
+        - running the command get_datastream_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import get_datastream_command
+
+    stream_id = 12345
+
+    test_data = util_load_json("test_data/get_datastream_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get(f"https://hostname/datastream-config-api/v2/log/streams/{stream_id}", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = get_datastream_command(client=akamai_waf_client, stream_id=stream_id)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_list_edgehostname_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A contract_id.
+    When:
+        - running the command list_edgehostname_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import list_edgehostname_command
+
+    contract_id = "ctr_1-23456"
+
+    test_data = util_load_json("test_data/list_edgehostname_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.get(f"https://hostname/papi/v1/edgehostnames?contractId={contract_id}", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = list_edgehostname_command(client=akamai_waf_client, contract_id=contract_id)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_new_datastream_command(requests_mock, akamai_waf_client):
+    """
+    Given:
+        - A stream_name, group_id, contract_id, properties, and dataset_fields.
+    When:
+        - running the command new_datastream_command.
+    Then:
+        - The returned values (human_readable, context_entry, raw_response) are correct.
+    """
+    from Akamai_WAF import new_datastream_command
+
+    group_id = 12345
+    contract_id = "ctr_1-23456"
+    properties = "67890"
+    stream_name = "Test Stream"
+    dataset_fields = "1,2,3"
+
+    test_data = util_load_json("test_data/new_datastream_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    requests_mock.post("https://hostname/datastream-config-api/v2/log/streams", json=expected_raw_response)
+
+    human_readable, context_entry, raw_response = new_datastream_command(
+        client=akamai_waf_client,
+        stream_name=stream_name,
+        group_id=group_id,
+        contract_id=contract_id,
+        properties=properties,
+        dataset_fields=dataset_fields,
     )
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
