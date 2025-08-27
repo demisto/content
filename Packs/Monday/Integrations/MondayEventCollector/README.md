@@ -11,7 +11,7 @@ To use this integration, the following permissions are required on the Monday.co
 can be accessed using the OAuth [method](https://developer.monday.com/apps/docs/choosing-auth#method-2-using-oauth-to-issue-access-tokens).
 
 Create your Monday app [guidelines](https://developer.monday.com/apps/docs/create-an-app#creating-an-app-in-the-developer-center) and make sure the needed permissions are granted for the app registration:
-Required scope - boards:read 
+Required scope - boards:read
 The Redirect URI - https://localhost.
 
 Enter your Client ID and Client Secret in the instance parameter fields.

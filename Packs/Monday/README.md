@@ -18,7 +18,9 @@ The Monday Event Collector integration provides comprehensive event collection c
 ## Supported Event Types
 
 ### Activity Logs
+
 Activity logs capture user interactions and operational activities within Monday.com workspaces:
+
 - Board creation, updates, and deletions
 - Item and column modifications
 - User login and authentication events
@@ -26,7 +28,9 @@ Activity logs capture user interactions and operational activities within Monday
 - File uploads and sharing activities
 
 ### Audit Logs
+
 Audit logs provide detailed security and administrative event tracking:
+
 - Administrative actions and configuration changes
 - User permission modifications
 - Security policy updates
