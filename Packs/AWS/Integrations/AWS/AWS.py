@@ -39,17 +39,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     kwargs: Dict[str, Any] = {}
 
-    # Handle pagination with next_token (for continuing previous requests)
     limit_arg = args.get("limit")
-    if next_token := args.get("next_token"):
-        if not isinstance(next_token, str) or not next_token.strip():
-            raise ValueError("next_token must be a non-empty string")
-        kwargs["NextToken"] = next_token.strip()
-        if limit_arg is not None:
-            kwargs["MaxResults"] = min(int(limit_arg), MAX_LIMIT_VALUE)
-        return kwargs
-
-    # Handle limit-based pagination (for new requests)
 
     # Parse and validate limit
     try:
@@ -70,6 +60,15 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     if limit > MAX_LIMIT_VALUE:
         demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
         limit = MAX_LIMIT_VALUE
+
+    # Handle pagination with next_token (for continuing previous requests)
+    if next_token := args.get("next_token"):
+        if not isinstance(next_token, str) or not next_token.strip():
+            raise ValueError("next_token must be a non-empty string")
+        kwargs["NextToken"] = next_token.strip()
+        if limit_arg is not None:
+            kwargs["MaxResults"] = limit
+        return kwargs
 
     kwargs.update({"MaxResults": limit})
     return kwargs
@@ -108,14 +107,12 @@ def parse_filter_field(filter_string: str | None):
         if match_filter is None:
             demisto.debug(f"could not parse filter: {filter}")
             continue
-        if len(match_filter.group(2).split(",")) > MAX_FILTER_VALUES:
-            demisto.debug(
-                f"Number of filter values for filter {match_filter.group(1)} is larger than {MAX_FILTER_VALUES},"
-                f" parsing only first {MAX_FILTER_VALUES} values."
-            )
-            filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0 : MAX_FILTER_VALUES - 1]})
-            continue
-        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")})
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
 
     return filters
 
@@ -1113,7 +1110,7 @@ class EC2:
 
             if len(response["SecurityGroups"]) == 0:
                 return CommandResults(readable_output="No security groups were found.")
-            for i, sg in enumerate(response["SecurityGroups"]):
+            for _, sg in enumerate(response["SecurityGroups"]):
                 data.append(
                     {
                         "Description": sg["Description"],
@@ -1121,11 +1118,9 @@ class EC2:
                         "OwnerId": sg["OwnerId"],
                         "GroupId": sg["GroupId"],
                         "VpcId": sg["VpcId"],
+                        "tags": sg.get("Tags"),
                     }
                 )
-                if "Tags" in sg:
-                    for tag in sg["Tags"]:
-                        data[i].update({tag["Key"]: tag["Value"]})
             output = json.dumps(response["SecurityGroups"], cls=DatetimeEncoder)
 
             outputs = {

@@ -1914,3 +1914,42 @@ def test_parse_filter_field_with_colon_in_value():
     result = parse_filter_field("name=instance-state-name,values=running:active,stopped:inactive")
     expected = [{"Name": "instance-state-name", "Values": ["running:active", "stopped:inactive"]}]
     assert result == expected
+
+
+def test_parse_filter_more_then_200_values():
+    """
+    Given: A filter string with more than 200 values in a single filter.
+    When: parse_filter_field function processes the input with excessive values.
+    Then: It should raise DemistoException indicating too many values in filter.
+    """
+    from AWS import parse_filter_field
+
+    # Create a filter with 51 values (exceeding the 50 value limit)
+    values = ",".join([f"value{i}" for i in range(2011)])
+    filter_string = f"name=test-filter,values={values}"
+    result = parse_filter_field(filter_string)
+    assert len(result) == 1
+    assert result[0]["Name"] == "test-filter"
+    assert len(result[0]["Values"]) == 200
+    assert result[0]["Values"][0] == "value0"
+    assert result[0]["Values"][199] == "value199"
+
+
+def test_parse_filter_exactly_200_values():
+    """
+    Given: A filter string with exactly 50 values in a single filter.
+    When: parse_filter_field function processes the input with 50 values.
+    Then: It should successfully parse the filter without raising an exception.
+    """
+    from AWS import parse_filter_field
+
+    # Create a filter with exactly 50 values (at the limit)
+    values = ",".join([f"value{i}" for i in range(200)])
+    filter_string = f"name=test-filter,values={values}"
+
+    result = parse_filter_field(filter_string)
+    assert len(result) == 1
+    assert result[0]["Name"] == "test-filter"
+    assert len(result[0]["Values"]) == 200
+    assert result[0]["Values"][0] == "value0"
+    assert result[0]["Values"][199] == "value199"
