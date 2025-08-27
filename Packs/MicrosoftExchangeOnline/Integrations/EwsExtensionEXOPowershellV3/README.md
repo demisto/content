@@ -1207,7 +1207,7 @@ This command returns a maximum of 1,000,000 results, and will timeout on very la
 >| 1/3/2021 6:14:14 AM | 8.8.8.8 | 0 | xxx | xxxx | microsoft.com | 1/3/2021 4:45:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:14:14 AM | Delivered | Test mail |
 >| 1/3/2021 6:15:14 AM | 8.8.8.8 | 1 | xxx | xxxx | microsoft.com | 1/3/2021 4:46:36 AM | xsoar@dev.microsoft.com | xsoar@dev.onmicrosoft.com | 6975 | 1/1/2021 6:15:14 AM | Delivered | Test mail |
 
-### ews-message-trace-get-v2
+### ews-message-trace-list
 
 ***
 You can use this cmdlet to search message data for the last 90 days. If you run this cmdlet without any parameters, only data from the last 48 hours is returned.
@@ -1216,7 +1216,7 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 
 #### Base Command
 
-`ews-message-trace-get-v2`
+`ews-message-trace-get-list`
 
 #### Input
 
@@ -1242,22 +1242,18 @@ This command returns a maximum of 5,000 results. If your data exceeds the result
 | --- | --- | --- |
 | EWS.MessageTrace.FromIP | String | The public IP address of the SMTP email server that sent the message. |
 | EWS.MessageTrace.ToIP | String | The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank. |
-| EWS.MessageTrace.Index | Number | Message index in pagination. \(Index starts from 0\) |
 | EWS.MessageTrace.MessageId | String | Message-ID header field of the message. |
 | EWS.MessageTrace.MessageTraceId | String | Message trace ID of the message. |
-| EWS.MessageTrace.Organization | String | Message trace organization source. |
 | EWS.MessageTrace.Received | Date | Message receive time. |
 | EWS.MessageTrace.RecipientAddress | String | Message recipients address. |
 | EWS.MessageTrace.SenderAddress | String | Message sender address. |
 | EWS.MessageTrace.Size | Number | Message size in bytes. |
-| EWS.MessageTrace.StartDate | Date | Message trace start date. |
-| EWS.MessageTrace.EndDate | Date | Message trace end date. |
 | EWS.MessageTrace.Status | String | Message status. |
 | EWS.MessageTrace.Subject | String | Message subject. |
 
 #### Command Example
 
-```!ews-message-trace-get-v2```
+```!ews-message-trace-list```
 
 #### Context Example
 

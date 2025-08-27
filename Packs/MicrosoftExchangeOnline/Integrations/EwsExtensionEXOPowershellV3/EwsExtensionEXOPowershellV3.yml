@@ -733,12 +733,13 @@ script:
       - Expanded
       - Quarantined
       - FilteredAsSpam
-    description: 'Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
+    description: '(Deprecated) Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
 
       If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
 
       This command returns a maximum of 1,000,000 results, and will timeout on very large queries. If your query returns too many results, consider splitting it up using shorter start_date and end_date intervals.'
     name: ews-message-trace-get
+    deprecated: true
     outputs:
     - contextPath: EWS.MessageTrace.FromIP
       description: The public IP address of the SMTP email server that sent the message.
