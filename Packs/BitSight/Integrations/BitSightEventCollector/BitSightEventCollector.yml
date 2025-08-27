@@ -17,7 +17,7 @@ configuration:
   name: apikey
   required: true
   type: 9
-  hiddenusername: true
+  hiddenpassword: true
   section: Connect
 - additionalinfo: Optional. GUID of the company. If provided, findings for this company and its subsidiaries will be collected.
   display: Company's GUID

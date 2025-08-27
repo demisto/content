@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 VENDOR = "Bitsight"
 PRODUCT = "Bitsight"
 
-BITSIGHT_DATE_FORMAT = "%Y-%m-%d"  # TODO can this be improved?
+BITSIGHT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_MAX_FETCH = 1000
 # Lookback windows
 FETCH_EVENTS_LOOKBACK_HOURS = 1
