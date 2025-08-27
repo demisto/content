@@ -1,5 +1,6 @@
-Arcanna integration for using the power of AI in SOC
-This integration was integrated and tested with version 1.45.1 of Arcanna.AI
+# Arcanna integration for using the power of AI in SOC
+
+This integration was integrated and tested with version 1.63.2 of Arcanna.AI
 
 ## Configure Arcanna.AI in Cortex
 
@@ -50,16 +51,16 @@ There are no input arguments for this command.
     "Arcanna": {
         "Jobs": [
             {
-                "data_type": "",
                 "job_id": 1201,
-                "status": "STARTED",
-                "title": "dev1"
+                "status": "ENABLED",
+                "title": "dev1",
+                "last_processed_timestamp": "2025-07-24T15:51:01.731058+00:00"
             },
             {
-                "data_type": "",
                 "job_id": 1202,
-                "status": "STARTED",
-                "title": "marian-demo"
+                "status": "ENABLED",
+                "title": "marian-demo",
+                "last_processed_timestamp": "2025-07-23T13:50:01.351058+00:00"
             }
         ]
     }
@@ -70,10 +71,10 @@ There are no input arguments for this command.
 
 >### Arcanna Jobs
 >
->|job_id|title|data_type|status|
+>|job_id|title|status|last_processed_timestamp|
 >|---|---|---|---|
->| 1201 | dev1 |  | STARTED |
->| 1202 | marian-demo |  | STARTED |
+>| 1201 | dev1 | ENABLED | 2025-07-24T15:51:01.731058+00:00 |
+>| 1202 | marian-demo | ENABLED | 2025-07-23T13:50:01.351058+00:00 |
 
 ### arcanna-send-event
 
@@ -88,20 +89,21 @@ Sends a raw event to Arcanna
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | An Arcanna running job_id. | Optional |
+| job_id | An Arcanna running job_id. | Required |
 | event_json | json event for arcanna to inference. | Required |
 | title | event title. | Required |
 | severity | event severity. | Optional |
+| id_value | event id. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.event_id | Number | Arcanna event id |
-| Arcanna.Event.status | String | Arcanna ingestion status |
-| Arcanna.Event.ingest_timestamp | date | Arcanna ingestion timestamp |
-| Arcanna.Event.error_message | String | Arcanna error message if any |
-| Arcanna.Event.job_id | Number | An Arcanna Job id used for sending. |
+| Arcanna.SendEventDetails.event_id | Number | Arcanna event id |
+| Arcanna.SendEventDetails.status | String | Arcanna ingestion status |
+| Arcanna.SendEventDetails.ingest_timestamp | date | Arcanna ingestion timestamp |
+| Arcanna.SendEventDetails.error_message | String | Arcanna error message if any |
+| Arcanna.SendEventDetails.job_id | Number | An Arcanna Job id used for sending. |
 
 #### Command Example
 
@@ -112,12 +114,12 @@ Sends a raw event to Arcanna
 ```json
 {
     "Arcanna": {
-        "Event": {
+        "SendEventDetails": {
             "error_message": "",
             "event_id": "12023636421762",
             "ingest_timestamp": "2021-09-02T09:46:22.363642Z",
             "job_id": 1202,
-            "status": "Pending inference"
+            "status": "pending_inference"
         }
     }
 }
@@ -125,7 +127,14 @@ Sends a raw event to Arcanna
 
 #### Human Readable Output
 
->## {'event_id': '12023636421762', 'job_id': 1202, 'ingest_timestamp': '2021-09-02T09:46:22.363642Z', 'status': 'Pending inference', 'error_message': ''}
+>### Arcanna Send Event
+>
+>| | |
+>|-|-|
+>| event_id | 12023636421762 |
+>| ingest_timestamp | 2021-09-02T09:46:22.363642Z |
+>| status | pending_inference |
+>| job_id | 1202 |
 
 ### arcanna-trigger-train
 
@@ -158,14 +167,23 @@ Trigger AI Train for specified Arcanna.ai Job.
 
 ```json
 {
-  "status": "OK",
-  "error_message": ""
+    "Arcanna": {
+        "Train": {
+           "status": "OK",
+            "error_message": ""
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
-> ## Arcanna trigger train results: {'status': 'OK', 'error_message': ''}
+>### Arcanna.ai training outcome
+>
+>| | |
+>|-|-|
+>| status | OK |
+
 
 ### arcanna-get-decision-set
 
@@ -180,13 +198,13 @@ Retrieve avaiable decision points for specified AI Job.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to use for exporting event. | Required |
+| job_id | Job ID to use for exporting decision set. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.decision_set | List | Available decisions for specified AI Job. |
+| Arcanna.GetDecisionSet.decision_set | List | Available decisions for specified AI Job. |
 
 #### Command Example
 
@@ -196,13 +214,24 @@ Retrieve avaiable decision points for specified AI Job.
 
 ```json
 {
-  "decision_set": ["Drop", "Escalate"]
+    "Arcanna": {
+        "GetDecisionSet": {
+			"decision_set": {
+				"decision_set": ["Drop", "Escalate"]
+			}
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
-> ## Arcanna get decision set results: {'decision_set': ['Drop','Escalate']}
+>### Arcanna Get Decision Set
+>
+>| **decision_set** |
+>| --- |
+>| Drop |
+>| Escalate |
 
 ### arcanna-export-event
 
@@ -224,7 +253,7 @@ Export full event with metadata from Arcanna.ai based on specified Job ID and Ev
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.arcanna_event | unknown | Full export for specified event. |
+| Arcanna.RawEvent.arcanna_event | unknown | Full export for specified event. |
 
 #### Command Example
 
@@ -234,18 +263,26 @@ Export full event with metadata from Arcanna.ai based on specified Job ID and Ev
 
 ```json
 {
-  "result": "Escalate with Priority",
-  "metadata": {
-    "id": "12011938471583",
-    ...
-  }
-  ... 
+    "Arcanna": {
+        "RawEvent": {
+			"arcanna_event": {
+				...
+			}
+			"event_id": "615471",
+			"ingest_timestamp": "2025-07-14T20:34:06.946556Z",
+			"status": "OK"
+        }
+    }
 }
 ```
 
 #### Human Readable Output
 
-> ## Arcanna export event results: {'result': 'Escalate with Priority', 'metadata': {'id': '12011938471583', .. }, ..}
+>### Arcanna Raw Event
+>
+>| **arcanna_event** | **status** | **ingest_timestamp** | **event_id** |
+>| --- | --- | --- | --- |
+>| ... | OK | 2025-07-14T20:34:06.946556Z | 615471 |
 
 ### arcanna-get-event-status
 
@@ -260,43 +297,47 @@ Retrieves Arcanna Inference result.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Arcanna Job Id. | Optional |
+| job_id | Arcanna Job Id. | Required |
 | event_id | Arcanna generated unique event id. | Required |
+| polling | Run until specified or until result is valid. | Optional |
+| interval | Polling interval. | Optional |
+| timeout | Total time allowed for polling. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.event_id | String | Arcanna event id |
-| Arcanna.Event.ingest_timestamp | String | Arcanna ingestion timestamp. |
-| Arcanna.Event.result | String | Arcanna event  result |
-| Arcanna.Event.error_message | String | Arcanna error message if any. |
-| Arcanna.Event.status | String | Arcanna event status. |
-| Arcanna.Event.result_label | String | Arcanna event result label |
-| Arcanna.Event.is_duplicated | boolean | Deprecated. Arcanna signalling if event is duplicated by another alert. |
-| Arcanna.Event.confidence_level | Number | Deprecated. Arcanna ML confidence_level |
-| Arcanna.Event.confidence_score | Number | Arcanna ML confidence_score |
-| Arcanna.Event.bucket_state | String | Flag to indicate the current event's state in the AI Model |
-| Arcanna.Event.outlier | boolean | Arcanna signalling if event is an outlier based on historical data |
+| Arcanna.GetEventDetails.event_id | String | Arcanna event id |
+| Arcanna.GetEventDetails.ingest_timestamp | String | Arcanna ingestion timestamp. |
+| Arcanna.GetEventDetails.result | String | Arcanna event result |
+| Arcanna.GetEventDetails.error_message | String | Arcanna error message if any. |
+| Arcanna.GetEventDetails.status | String | Arcanna event status. |
+| Arcanna.GetEventDetails.result_label | String | Arcanna event result label |
+| Arcanna.GetEventDetails.is_duplicated | boolean | Deprecated. Arcanna signalling if event is duplicated by another alert. |
+| Arcanna.GetEventDetails.confidence_level | Number | Deprecated. Arcanna ML confidence_level |
+| Arcanna.GetEventDetails.confidence_score | Number | Arcanna ML confidence_score |
+| Arcanna.GetEventDetails.bucket_state | String | Flag to indicate the current event's state in the AI Model |
+| Arcanna.GetEventDetails.outlier | boolean | Arcanna signalling if event is an outlier based on historical data |
 
 #### Command Example
 
-```!arcanna-get-event-status job_id="1201" event_id="12011938471583"```
+```!arcanna-get-event-status job_id="1208" event_id="615471" polling="true" interval="10" timeout="60"```
 
 #### Context Example
 
 ```json
 {
     "Arcanna": {
-        "Event": {
-            "confidence_score": 0.9999464750289917,
+        "GetEventDetails": {
+            "confidence_score": 98.3,
             "error_message": null,
-            "event_id": "12011938471583",
-            "ingest_timestamp": "2021-08-26T12:53:47.193847Z",
-            "result": "escalate_alert",
+            "event_id": "615471",
+            "ingest_timestamp": "2025-07-14T20:34:06.946556Z",
+            "result": "class_0",
             "result_label": "Escalate",
-            "outlier": False
-            "status": "OK"
+            "outlier": false,
+            "status": "OK",
+			"bucket_state" : "in_knowledge_base"
         }
     }
 }
@@ -304,7 +345,18 @@ Retrieves Arcanna Inference result.
 
 #### Human Readable Output
 
->## {'event_id': '12011938471583', 'ingest_timestamp': '2021-08-26T12:53:47.193847Z', 'status': 'OK', 'confidence_score': 0.9999464750289917, 'result': 'escalate_alert', 'result_label': 'Escalate', 'outlier': False, 'error_message': None}
+>### Arcanna Get Event Status
+>
+>| | |
+>|-|-|
+>| event_id | 615471 |
+>| ingest_timestamp | 2025-07-14T20:34:06.946556Z |
+>| status | OK |
+>| error_message | n/a |
+>| bucket_state | in_knowledge_base |
+>| confidence_score | 98.3 |
+>| outlier | false |
+>| result_label | Escalate |
 
 ### arcanna-send-event-feedback
 
@@ -319,31 +371,30 @@ Send Arcanna feedback for a previous inferred event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | An Arcanna job id. | Optional |
+| job_id | An Arcanna job id. | Required |
 | event_id | An Arcanna event id. | Required |
 | feedback | An Arcanna feedback label. | Required |
 | username | A username providing the feedback. | Required |
-| decision_set | List of possible decisions to be used as feedback values. | Required |
 | closing_notes | Deprecated. Prior used for audit. | Optional |
-| label | Deprecated. Replaced by `feedback`. | Required |
+| label | Deprecated. Replaced by `feedback`. | Optional |
 | indicators | Deprecated. Prior used for metadata. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arcanna.Event.feedback_status | String | An Arcanna feedback status response. |
+| Arcanna.SendEventFeedback.status | String | An Arcanna feedback status response. |
 
 #### Command Example
 
-```!arcanna-send-event-feedback job_id="1201" event_id="12011938471583" feedback="Escalate with Priority" username="dbot"```
+```!arcanna-send-event-feedback job_id="1208" event_id="615471" feedback="Escalate" username="admin"```
 
 #### Context Example
 
 ```json
 {
     "Arcanna": {
-        "Event": {
+        "SendEventFeedback": {
             "status": "updated"
         }
     }
@@ -352,4 +403,8 @@ Send Arcanna feedback for a previous inferred event.
 
 #### Human Readable Output
 
-> ## Arcanna send event feedback results: {'status': 'updated'}
+>### Arcanna Send Event Feedback
+>
+>| | |
+>|-|-|
+>| status | updated |
