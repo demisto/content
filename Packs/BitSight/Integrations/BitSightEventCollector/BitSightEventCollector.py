@@ -303,7 +303,7 @@ def main():
 
         elif command == "bitsight-get-events":
             should_push = argToBoolean(args.get("should_push_events", "false"))
-            limit = arg_to_number(args.get("limit")) or 100
+            limit = arg_to_number(args.get("limit")) or 5
             guid = resolve_guid(client, args.get("guid"), params.get("guid"))
             return_results(bitsight_get_events_command(client, guid, limit, should_push))
 

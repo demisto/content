@@ -34,7 +34,7 @@ Gets findings as events from BitSight Event Collector. The command fetches findi
 
 | Argument Name | Description | Required | Default Value |
 | --- | --- | --- | --- |
-| limit | The number of events to return. | Optional | 100 |
+| limit | The number of events to return. | Optional | 5 |
 | guid | Override the Company GUID for this command only. | Optional | - |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | Required | false |
 

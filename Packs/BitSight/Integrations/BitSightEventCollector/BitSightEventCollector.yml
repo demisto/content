@@ -64,16 +64,16 @@ script:
   - arguments:
     - description: The number of events to return.
       name: limit
-      defaultValue: 100
+      defaultValue: 5
     - description: Optional. Override the Company GUID to collect for this command only.
       name: guid
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Set this argument to true in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
       required: true
     description: Gets BitSight findings events from the last 2 days (48 hours).
     name: bitsight-get-events
