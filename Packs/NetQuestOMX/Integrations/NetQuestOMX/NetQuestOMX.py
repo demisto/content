@@ -265,7 +265,7 @@ def address_list_create_command(client: Client, args: dict) -> CommandResults:
 def address_list_rename_command(client: Client, args: dict) -> CommandResults:
     """
     This function only meant to change the name of the list.
-    Nothing else. If we try to give as a new_name, an existing list name, it will fail, and we’ll get an error.
+    Nothing else. If we try to give as a new_name, an existing list name, it will fail, and we'll get an error.
 
     Returns:
         A CommandResults containing a success indication or a DemistoException.

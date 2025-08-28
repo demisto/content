@@ -332,7 +332,7 @@ def test_actions_get_alert_images_fetches_only_missing(
         raising=True,
     )
 
-    # Context already contains 1.png – derived from "img:1"
+    # Context already contains 1.png - derived from "img:1"
     context_with_one_image = {"File": [{"Name": "1.png"}]}
     monkeypatch.setattr(demisto, "context", lambda: context_with_one_image)
 

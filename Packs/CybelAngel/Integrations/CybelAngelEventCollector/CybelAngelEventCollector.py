@@ -21,7 +21,7 @@ PRODUCT = "platform"
 
 class EventType:
     """
-    This class defines a CybelAngel API Event – used to dynamically store
+    This class defines a CybelAngel API Event - used to dynamically store
     per-type settings for fetching and deduplicating events.
     """
 
@@ -42,7 +42,7 @@ class EventType:
             id_key (Union[str, List[str]]): Key or list of keys used to uniquely identify an event.
             ascending_order         (bool): Events sorted by ascending/descending order after returning from get function.
             time_field               (str): Field name in the event used for timestamp mapping (`_time`).
-            source_log_type          (str): Value to assign to each event’s `source_log_type` field in XSIAM.
+            source_log_type          (str): Value to assign to each event's `source_log_type` field in XSIAM.
             default_max_fetch        (int): Default max_fetch limit.
         """
         self.name = name
@@ -242,7 +242,7 @@ class Client(BaseClient):
         Fetch domain-watchlist events from CybelAngel, handling pagination when more than `limit` events exist.
         API return in descending order, in order the fetch the oldeset we fetch the whole time interval first.
 
-        CybelAngel’s API returns events in descending order by detection date.
+        CybelAngel's API returns events in descending order by detection date.
         In order the fetch the first 'limit' events we do as follow:
         1. Requests up to `limit` events.
         2. If the API reports more events exists, requests the remaining events using `skip`/`limit`.

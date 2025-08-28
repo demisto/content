@@ -74,7 +74,7 @@ def _calculate_dbot_score(severity: int) -> int:
     return dbot_score
 
 
-def _get_malware_family(data: list, fundamental_client: Client):    # pragma: no cover
+def _get_malware_family(data: list, fundamental_client: Client):  # pragma: no cover
     malware_family = []
     res = fundamental_client.threat_indicator_search(url_suffix="/v0/malware_family", data={"key.values": data})
     if res.get("total_size"):
@@ -89,7 +89,7 @@ def _get_malware_family(data: list, fundamental_client: Client):    # pragma: no
 
 def _extract_analysis_info(
     res: dict, dbot_score_type: str, reliability: DBotScoreReliability, fundamental_client: Client
-) -> List[dict]:    # pragma: no cover
+) -> List[dict]:  # pragma: no cover
     """
     Extract context data from http-response and create corresponding DBotScore.
     If response is empty, return empty context and a none for DBotScore object
@@ -164,7 +164,7 @@ def _extract_analysis_info(
     return analysis_results
 
 
-def _check_returned_results(res: dict) -> List[str]:    # pragma: no cover
+def _check_returned_results(res: dict) -> List[str]:  # pragma: no cover
     """
     Checks which indicator values were found in the iDefense database.
     Args:
@@ -180,7 +180,7 @@ def _check_returned_results(res: dict) -> List[str]:    # pragma: no cover
     return returned_values
 
 
-def _check_no_match_values(all_inputs: list, res: list) -> List[str]:   # pragma: no cover
+def _check_no_match_values(all_inputs: list, res: list) -> List[str]:  # pragma: no cover
     """
     Args:
         all_inputs: all indicator values received from the user
@@ -543,7 +543,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
         elif indicator_type.lower() == "threat_group":  # pragma: no cover
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, "ACTI Indicator Query", dbot_score, desc, reliability)
             indicator = Common.CustomIndicator("ACTI Threat Group", indicator_value, dbot, analysis_info, "ACTI_ThreatGroup")
-            if relationships:   # pragma: no cover
+            if relationships:  # pragma: no cover
                 filtered_relationship = acti_create_relationship(indicator_value, "threat_group", relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_GROUP_URL + res.get("uuid", "")
@@ -554,7 +554,7 @@ def fundamental_uuid_command(client: Client, args: dict, reliability: DBotScoreR
                 filtered_relationship = acti_create_relationship(indicator_value, "threat_actor", relationships)
                 indicator.to_context()["relationships"] = filtered_relationship
             result_link = THREAT_ACTOR_URL + res.get("uuid", "")
-        elif indicator_type.lower() == "threat_campaign":   # pragma: no cover
+        elif indicator_type.lower() == "threat_campaign":  # pragma: no cover
             dbot = Common.DBotScore(indicator_value, DBotScoreType.CUSTOM, "ACTI Indicator Query", dbot_score, desc, reliability)
             indicator = Common.CustomIndicator(
                 "ACTI Threat Campaign", indicator_value, dbot, analysis_info, "ACTI_ThreatCampaign"
@@ -738,7 +738,7 @@ def getThreatReport_command(doc_search_client: Client, args: dict, reliability: 
             raise e
 
 
-def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):   # pragma: no cover
+def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):  # pragma: no cover
     """ """
     threat_types = Res.get("threat_types", "")
     uuid = Res.get("uuid", "")
