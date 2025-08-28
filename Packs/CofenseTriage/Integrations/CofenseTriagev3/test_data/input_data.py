@@ -114,7 +114,7 @@ check_fetch_incident_configuration_args = [
 
 list_reporter_cmd_arg = [
     ({"reputation_score": "test"}, '"test" is not a valid number'),
-    ({"vip": "0"}, MESSAGES["INVALID_BOOLEAN"]),
+    ({"vip": "2"}, MESSAGES["INVALID_BOOLEAN"]),
 ]
 
 list_comment_cmd_arg = [({"body_format": "csv"}, MESSAGES["BODY_FORMAT"])]
