@@ -31,6 +31,12 @@ configuration:
   section: Connect
   required: false
   additionalinfo: OAuth 2.0 API role from ZIA Admin Portal.
+- display: OAuth Token URL (OAuth 2.0)
+  name: oauth_token_url
+  type: 0
+  section: Connect
+  required: false
+  additionalinfo: 'OAuth 2.0 token endpoint URL. Examples: Zscaler OneAPI: https://your-vanity.zslogin.net/oauth2/v1/token | External providers: https://your-domain.okta.com/oauth2/default/v1/token (Okta), https://login.microsoftonline.com/tenant-id/oauth2/v2.0/token (Azure AD)'
 - additionalinfo: Basic Auth username.
   display: Username (Basic Auth)
   name: credentials

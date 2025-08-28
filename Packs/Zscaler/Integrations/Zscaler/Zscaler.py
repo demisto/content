@@ -21,13 +21,14 @@ API_ROLE = demisto.params().get("api_role", "")
 USERNAME = demisto.params().get("credentials", {}).get("identifier", "")
 PASSWORD = demisto.params().get("credentials", {}).get("password", "")
 API_KEY = str(demisto.params().get("creds_key", {}).get("password", "")) or str(demisto.params().get("key", ""))
+OAUTH_TOKEN_URL = demisto.params().get("oauth_token_url", "")
 
 # Validate required Cloud Name for both authentication methods
 if not CLOUD_NAME:
     raise Exception("Cloud Name is required.")
 
 # Check which authentication parameters are provided
-oauth_fields = [CLIENT_ID, CLIENT_SECRET, ORG_ID, API_ROLE]
+oauth_fields = [CLIENT_ID, CLIENT_SECRET, ORG_ID, API_ROLE, OAUTH_TOKEN_URL]
 basic_fields = [USERNAME, PASSWORD, API_KEY]
 
 oauth_provided = [bool(field) for field in oauth_fields]
@@ -43,13 +44,13 @@ if (oauth_complete or oauth_partial) and (basic_complete or basic_partial):
     raise Exception("Cannot mix OAuth 2.0 and Basic Auth parameters. Please use only one authentication method.")
 elif oauth_complete:
     IS_OAUTH = True
-    OAUTH_TOKEN_URL = "https://localhost:9031/as/token.oauth2"  #TODO fix here!!
-    demisto.debug("Using OAuth 2.0 authentication.")
+    demisto.debug(f"Using OAuth 2.0 authentication with URL: {OAUTH_TOKEN_URL}")
 elif basic_complete:
     IS_OAUTH = False
     demisto.debug("Using Basic Auth. OAuth 2.0 is recommended for enhanced security.")
 elif oauth_partial:
-    missing_oauth = [name for name, provided in zip(['Client ID', 'Client Secret', 'Org ID', 'API Role'], oauth_provided) if not provided]
+    oauth_field_names = ['Client ID', 'Client Secret', 'Org ID', 'API Role', 'OAuth Token URL']
+    missing_oauth = [name for name, provided in zip(oauth_field_names, oauth_provided) if not provided]
     raise Exception(f"OAuth 2.0 authentication is incomplete. Missing: {', '.join(missing_oauth)}.")
 elif basic_partial:
     missing_basic = [name for name, provided in zip(['Username', 'Password', 'API Key'], basic_provided) if not provided]
