@@ -28,8 +28,11 @@ SCOPE_BY_CONNECTION = {
 SCOPE_AZURE = "https://management.azure.com/.default"
 
 PERMISSIONS_TO_COMMANDS = {
+    "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list"],
     "Microsoft.Network/networkSecurityGroups/securityRules/read": ["azure-nsg-security-rule-update"],
     "Microsoft.Network/networkSecurityGroups/securityRules/write": ["azure-nsg-security-rule-update"],
+    "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
+    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": ["azure-storage-blob-service-properties-set"],
@@ -60,12 +63,16 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
-    "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
+    "Microsoft.Resources/subscriptions/read": ["azure-nsg-subscriptions-list"],
+    "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
+    "Microsoft.Network/networkSecurityGroups/read",
     "Microsoft.Network/networkSecurityGroups/securityRules/read",
     "Microsoft.Network/networkSecurityGroups/securityRules/write",
+    "Microsoft.Network/networkInterfaces/read",
+    "Microsoft.Network/publicIPAddresses/read",
     "Microsoft.Storage/storageAccounts/read",
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
@@ -96,7 +103,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.DocumentDB/databaseAccounts/write",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
-    "Microsoft.Network/publicIPAddresses/read",
+    "Microsoft.Resources/subscriptions/read",
+    "Microsoft.Resources/subscriptions/resourceGroups/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
