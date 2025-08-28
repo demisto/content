@@ -2235,8 +2235,8 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    security_group_name = args.get("security_group_name")
-    security_rule_name = args.get("security_rule_name")
+    security_group_name = args.get("security_group_name", "")
+    security_rule_name = args.get("security_rule_name", "")
     rule_deleted = client.delete_rule(
         security_group_name=security_group_name,
         security_rule_name=security_rule_name,
@@ -2304,7 +2304,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     filter_by_tag = azure_tag_formatter(args.get("tag")) if args.get("tag") else ""
-    limit = arg_to_number(args.get("limit", "50"))
+    limit = args.get("limit", "50")
 
     response = client.list_resource_groups_request(subscription_id=subscription_id, filter_by_tag=filter_by_tag, limit=limit)
     data_from_response = response.get("value", [])
