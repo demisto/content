@@ -837,6 +837,7 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
+
   - name: aws-eks-describe-cluster
     description: Describes an Amazon EKS cluster.
     arguments:
@@ -847,26 +848,26 @@ script:
       description: The name of the cluster to describe.
       required: true
       isArray: false
-    - auto: PREDEFINED
-      description: The AWS Region. If not specified, the configured region will be used.
-      name: region
+    - name: region
+      description: 'The AWS Region. If not specified, the configured region will be used.'
+      auto: PREDEFINED
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
     outputs:
     - contextPath: AWS.EKS.DescribeCluster.name
       description: The name of your cluster.
@@ -991,15 +992,15 @@ script:
       required: true
       isArray: false
     - name: principal_arn
-      description: The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.
+      description: 'The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.'
       required: true
       isArray: false
     - name: policy_arn
-      description: The ARN of the AccessPolicy that you’re associating.
+      description: 'The ARN of the AccessPolicy that you’re associating.'
       required: true
       isArray: false
     - name: type
-      description: The scope type of an access policy.
+      description: 'The scope type of an access policy.'
       required: true
       isArray: false
       auto: PREDEFINED
@@ -1007,29 +1008,30 @@ script:
       - cluster
       - namespace
     - name: namespaces
-      description: A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.
+      description: 'A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.'
       required: false
+
       isArray: false
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the configured region will be used.
       name: region
       predefined:
-        - us-east-1
-        - us-east-2
-        - us-west-1
-        - us-west-2
-        - ca-central-1
-        - eu-west-1
-        - eu-central-1
-        - eu-west-2
-        - ap-northeast-1
-        - ap-northeast-2
-        - ap-southeast-1
-        - ap-southeast-2
-        - ap-south-1
-        - sa-east-1
-        - eu-north-1
-        - eu-west-3
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
     outputs:
     - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
       description: The name of your cluster.
@@ -1054,7 +1056,7 @@ script:
       type: String
 
   - name: aws-rds-db-cluster-modify
-    description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+    description: "Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1167,6 +1169,7 @@ script:
       description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
       required: false
 
+
   - name: aws-rds-db-instance-modify
     description: "Modifies an Amazon RDS DB instance. Allows changing various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters."
     arguments:
@@ -1210,6 +1213,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
@@ -1237,6 +1241,7 @@ script:
     - name: backup_retention_period
       description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
       required: false
+
     - name: enable_iam_database_authentication
       description: 'Weather to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
       required: false
@@ -1266,7 +1271,7 @@ script:
       - 'true'
       - 'false'
   - name: aws-rds-db-snapshot-attribute-modify
-    description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
+    description: 'Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.'
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -1308,6 +1313,7 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
+
     - name: db_snapshot_identifier
       description: 'The identifier for the DB snapshot to modify the attributes for.'
       required: true
@@ -1320,10 +1326,8 @@ script:
       isArray: true
     - name: values_to_remove
       description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
-      isArray: true
       required: false
-
-
+      isArray: true
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
     arguments:
@@ -1443,7 +1447,6 @@ script:
     - name: ip_permissions
       description: 'The sets of IP permissions to authorize, in JSON format. Use this for complex rule configurations or when authorizing multiple rules. Cannot be used together with protocol/port/cidr arguments.'
       required: false
-
   - name: aws-ec2-security-group-egress-revoke
     description: 'Removes the specified outbound (egress) rules from the specified security group.'
     arguments:
@@ -1502,8 +1505,8 @@ script:
       required: false
     - name: ip_permissions
       description: 'The sets of IP permissions to revoke, in JSON format. Use this for complex rule configurations or when revoking multiple rules. Cannot be used together with protocol/port/cidr arguments.'
-      required: false
 
+      required: false
   - name: aws-ec2-snapshot-attribute-modify
     description: 'Adds or removes permission settings for the specified snapshot. Note: snapshots encrypted with the AWS-managed default key (alias/aws/ebs) cannot be shared—use unencrypted snapshots or those encrypted with a customer-managed KMS key to allow permission modifications.'
     arguments:
@@ -1577,11 +1580,11 @@ script:
   - name: aws-ec2-instance-attribute-modify
     description: Modifies the specified attribute of the specified instance. You can specify only one attribute at a time.
     arguments:
-    - name: account_id
-      description: The AWS account ID.
+    - description: The AWS account ID.
+      name: account_id
       required: true
-    - name: region
-      description: The AWS region.
+    - description: The AWS region.
+      name: region
       required: true
       auto: PREDEFINED
       predefined:
@@ -1617,17 +1620,16 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
-    - name: instance_id
-      description: 'The ID of the instance.'
+    - description: The ID of the instance.
+      name: instance_id
       required: true
-    - name: disable_api_stop
-      description: Whether an instance is enabled for stop protection.
+    - description: Whether an instance is enabled for stop protection.
+      name: disable_api_stop
       predefined:
       - 'true'
       - 'false'
-    - name: groups
-      description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+    - description: "A comma-separated list of security groups to replace the instance's current security groups. You must specify the ID of at least one security group, even if it’s just the default security group for the VPC."
+      name: groups
     - name: attribute
       description: 'The name of the attribute to modify. Possible values: sourceDestCheck, groupSet, ebsOptimized, sriovNetSupport, enaSupport, enclaveOptions, disableApiStop.'
       predefined:
@@ -1693,7 +1695,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -1712,25 +1713,24 @@ script:
       - 'add'
       - 'remove'
     - name: user_ids
-      isArray: true
       description: 'The AWS account IDs to add to or remove from the list of users that have launch permissions for the AMI.'
       required: false
-    - name: user_groups
       isArray: true
+    - name: user_groups
       description: 'The user groups to add to or remove from the list of user groups that have launch permissions for the AMI.'
       required: false
+      isArray: true
     - name: description
       description: 'A new description for the AMI.'
       required: false
-
   - name: aws-ec2-instance-metadata-options-modify
     description: Modify the EC2 instance metadata parameters on a running or stopped instance.
     arguments:
-    - description: The AWS account ID.
-      name: account_id
+    - name: account_id
+      description: The AWS account ID.
       required: true
-    - description: The AWS region.
-      name: region
+    - name: region
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1766,9 +1766,10 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - description: The ID of the instance.
-      name: instance_id
+    - name: instance_id
+      description: 'The ID of the instance.'
       required: true
+
     - description: Whether IMDSv2 is required.
       auto: PREDEFINED
       name: http_tokens
@@ -2184,13 +2185,12 @@ script:
       - me-central-1
       - sa-east-1
     description: Updates the containerInsights setting of an ECS cluster.
-
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.4677855
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.
