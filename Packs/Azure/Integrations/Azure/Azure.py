@@ -29,10 +29,14 @@ SCOPE_AZURE = "https://management.azure.com/.default"
 
 PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/networkSecurityGroups/read": ["azure-nsg-security-groups-list"],
-    "Microsoft.Network/networkSecurityGroups/securityRules/read": ["azure-nsg-security-rule-update",
-                                                                   "azure-nsg-security-rule-create"],
-    "Microsoft.Network/networkSecurityGroups/securityRules/write": ["azure-nsg-security-rule-update",
-                                                                    "azure-nsg-security-rule-create"],
+    "Microsoft.Network/networkSecurityGroups/securityRules/read": [
+        "azure-nsg-security-rule-update",
+        "azure-nsg-security-rule-create",
+    ],
+    "Microsoft.Network/networkSecurityGroups/securityRules/write": [
+        "azure-nsg-security-rule-update",
+        "azure-nsg-security-rule-create",
+    ],
     "Microsoft.Network/networkSecurityGroups/securityRules/delete": ["azure-nsg-security-rule-delete"],
     "Microsoft.Network/networkInterfaces/read": ["azure-nsg-network-interfaces-list"],
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
