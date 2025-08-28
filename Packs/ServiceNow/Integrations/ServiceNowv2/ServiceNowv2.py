@@ -3343,7 +3343,7 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
-    is_custom_close = ((parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta)) and close_custom_state
+    is_custom_close : bool = ((parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta)) and close_custom_state
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
     parsed_args = pre_process_close_incident_args(parsed_args, closure_case, ticket_type, close_custom_state)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
