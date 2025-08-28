@@ -1287,41 +1287,6 @@ def test_add_endpoint_to_mapping_skips_unsuccessful():
     assert mapping == {}
 
 
-def test_endpoint_mapping_to_list_merges_all():
-    """
-    Given:
-        A dictionary of endpoint mappings with multiple brands and IDs.
-    When:
-        The endpoint_mapping_to_list function is called with the endpoint mapping.
-    Then:
-        It should return a list of all endpoints merged from the mapping.
-    """
-    mapped = {
-        "BrandA": {
-            1: {"id": 1, "Brand": "BrandA"},
-            2: {"id": 2, "Brand": "BrandA"},
-        },
-        "brand2": {
-            3: {"id": 3, "Brand": "BrandB"},
-        },
-    }
-    result = endpoint_mapping_to_list(mapped)
-    ids = {ep["id"] for ep in result}
-    assert ids == {1, 2, 3}
-
-
-def test_endpoint_mapping_to_list_empty():
-    """
-    Given:
-        An empty endpoint mapping.
-    When:
-        The endpoint_mapping_to_list function is called with an empty mapping.
-    Then:
-        It should return an empty list.
-    """
-    assert endpoint_mapping_to_list({}) == []
-
-
 def test_get_generic_command_returns_correct_command():
     """
     Given:

@@ -12,6 +12,7 @@ COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
 IRRISKLEVEL = {"LOW": 0, "MED": 1, "HIGH": 2, 0: "LOW", 1: "MED", 2: "HIGH"}
 
+
 class Brands(StrEnum):
     """
     Enum representing different integration brands.
@@ -32,6 +33,7 @@ class Brands(StrEnum):
         """
         return [member.value for member in cls]
 
+
 class Command:
     def __init__(
         self,
@@ -45,7 +47,6 @@ class Command:
         additional_args: dict = None,
         prepare_args_mapping: Callable[[dict[str, str]], dict[str, str]] | None = None,
         post_processing: Callable[[Any, list[dict[str, Any]], dict[str, str]], list[dict[str, Any]]] | None = None,
-        
     ):
         """
         Initialize a MappedCommand object.
@@ -659,7 +660,7 @@ def run_list_args_commands(
                 add_endpoint_to_mapping(endpoint_output, ir_mapping)
             else:
                 multiple_endpoint_outputs.extend(endpoint_output)
-            
+
         if verbose:
             multiple_endpoint_readable_outputs.extend(readable_outputs)
 
@@ -954,39 +955,19 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
     return endpoints
 
 
-def endpoint_mapping_to_list(mapped_endpoints: dict[str, Any]) -> list[dict[str, Any]]:
-    """
-    Merges the endpoint mappings into a list of endpoint dictionaries.
-
-    Args:
-        mapped_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
-
-    Returns:
-        list[dict[str, Any]]: List of merged endpoint dictionaries.
-    """
-    merged_endpoints = []
-    for brand in mapped_endpoints.values():
-        for endpoint in brand.values():
-            merged_endpoints.append(endpoint)
-    return merged_endpoints
-
-
-def get_extended_hostnames_set(mapped_endpoints: dict[str, Any]) -> set[str]:
+def get_extended_hostnames_set(Ir_endpoints: dict[str, Any]) -> set[str]:
     """
     Retrieves a set of extended hostnames from the endpoint mappings.
 
     Args:
-        mapped_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
+        Ir_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
 
     Returns:
         set[str]: Set of extended hostnames.
     """
     hostnames = set()
-    xdr_brands = set(mapped_endpoints.keys()).intersection({Brands.CORTEX_XDR_IR.value, Brands.CORTEX_CORE_IR.value})
-    demisto.debug(f"getting hostnames for brands: {xdr_brands}")
-    for brand in xdr_brands:
-        for endpoint in mapped_endpoints[brand].values():
-            hostnames.add(endpoint["Hostname"])
+    for endpoint in Ir_endpoints.values():
+        hostnames.add(endpoint["Hostname"])
     return hostnames
 
 
@@ -1092,7 +1073,7 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
 
     joined_brands = ",".join(brands_to_run_for_generic_command)
     generic_command.create_additional_args({"using-brand": joined_brands})
-    
+
 
 def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
     """
@@ -1107,7 +1088,7 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[st
             demisto.debug(f"skipping endpoint due to failure: {endpoint}")
             continue
         ir_mapping[endpoint["ID"]] = endpoint
-    
+
 
 def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
     """
@@ -1124,8 +1105,9 @@ def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict
         for ir_endpoint in ir_mapping.values():
             if ir_endpoint["Hostname"] == endpoint["Hostname"]:
                 if "RiskLevel" in endpoint:
-                    endpoint["RiskLevel"] = IRRISKLEVEL[max(IRRISKLEVEL[endpoint["RiskLevel"]] ,
-                                                            IRRISKLEVEL[ir_endpoint["RiskLevel"]])]
+                    endpoint["RiskLevel"] = IRRISKLEVEL[
+                        max(IRRISKLEVEL[endpoint["RiskLevel"]], IRRISKLEVEL[ir_endpoint["RiskLevel"]])
+                    ]
                 else:
                     endpoint["RiskLevel"] = ir_endpoint["RiskLevel"]
 
