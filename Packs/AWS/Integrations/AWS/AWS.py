@@ -1280,6 +1280,28 @@ class CloudTrail:
         except Exception as e:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
+    @staticmethod
+    def describe_trails_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves descriptions of the specified trail or all trails in the account.
+
+        Args:
+            client (BotoClient): The boto3 client for CloudTrail service
+            args (Dict[str, Any]): Command arguments including trail names (optional)
+
+        Returns:
+            CommandResults: Detailed information about CloudTrail trails
+        """
+        trail_names = argToList(args.get("trail_names", []))
+        include_shadow_trails = arg_to_bool_or_none(args.get("include_shadow_trails", False))
+        kwargs = {"trailNameList": trail_names, "includeShadowTrails": include_shadow_trails}
+        remove_nulls_from_dictionary(kwargs)
+
+        return CommandResults(
+            outputs_prefix="AWS.CloudTrail.Trails",
+            outputs_key_field="TrailARN",
+        )
+
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
@@ -1308,6 +1330,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
