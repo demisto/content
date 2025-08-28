@@ -1656,7 +1656,7 @@ script:
       description: Details of the next-gen projects the issue type is available in.
       type: Object
     - contextPath: Jira.IssueType.Scope.type
-      description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
+      description: 'test The type of scope. Valid values: PROJECT, TEMPLATE.'
       type: String
     - contextPath: Jira.IssueType.Scope.project
       description: The project the item has scope in.

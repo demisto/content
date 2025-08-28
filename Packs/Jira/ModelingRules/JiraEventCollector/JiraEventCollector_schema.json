@@ -13,6 +13,7 @@
       "is_array": false
     },
     "authorAccountId": {
+
       "type": "string",
       "is_array": false
     },
