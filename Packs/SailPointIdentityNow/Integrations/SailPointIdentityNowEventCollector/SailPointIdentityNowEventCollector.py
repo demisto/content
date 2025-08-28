@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, UTC
 
 import demistomock as demisto
 import urllib3
@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "sailpoint"
 PRODUCT = "identitynow"
-CURRENT_TIME_STR = datetime.now().strftime(DATE_FORMAT)
+CURRENT_TIME_STR = datetime.now(tz=UTC).strftime(DATE_FORMAT)
 
 """ CLIENT CLASS """
 
@@ -129,6 +129,7 @@ def test_module(client: Client) -> str:
         fetch_events(
             client=client,
             limit=1,
+            look_back=0,
             last_run={},
         )
 
@@ -158,22 +159,29 @@ def get_events(client: Client, from_date: str, from_id: str | None, limit: int =
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, limit: int, last_run: dict) -> tuple[Dict, List[Dict]]:
+def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> tuple[Dict, List[Dict]]:
     """
     Fetches events from the SailPoint IdentityNow API
     Args:
         client: Client object with the API client
-        last_run: Dict containing the last run data
+        look_back: Look back timedelta in minutes
         limit: Maximum number of events to fetch per call
+        last_run: Dict containing the last run data
     Returns:
         Tuple with the next run data and the list of events fetched
     """
     # currently the API fails fetching events by id, so we are fetching by date only.
     # Once the issue is resolved, we just need to uncomment the commented lines,
     # and remove the dedup function and last_fetched_ids from everywhere..
-    demisto.debug(f"Starting fetch_events with last_run: {last_run}.")
+    demisto.debug(f"Starting fetch up to {limit} events with last_run: {last_run} and look_back: {look_back}.")
     # last_fetched_id = last_run.get('prev_id')
-    last_fetched_creation_date = last_run.get("prev_date", CURRENT_TIME_STR)
+    last_fetched_creation_date, _ = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=CURRENT_TIME_STR,
+        look_back=look_back,
+        date_format=DATE_FORMAT,
+        time_field_name="prev_date",
+    )
     last_fetched_ids: list = last_run.get("last_fetched_ids", [])
 
     all_events = []
@@ -202,7 +210,7 @@ def fetch_events(client: Client, limit: int, last_run: dict) -> tuple[Dict, List
             )
             remaining_events_to_fetch -= len(events)
             demisto.debug(f"{remaining_events_to_fetch} events are left to fetch in the next calls.")
-            last_fetched_ids = get_last_fetched_ids(events)
+            last_fetched_ids = get_last_fetched_ids(events, look_back=look_back)
             all_events.extend(events)
         else:
             # to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
@@ -237,10 +245,12 @@ def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
     deduped_events = [event for event in events if event["id"] not in last_fetched_ids_set]
 
     demisto.debug(f"Done deduping. Number of events after deduping: {len(deduped_events)}")
+    for number, event in enumerate(deduped_events, start=1):  # For debugging custom version, remove before marketplace release!
+        demisto.debug(f"New event {number} of {len(deduped_events)}: {event}")
     return deduped_events
 
 
-def get_last_fetched_ids(events: List[Dict]) -> List[str]:
+def get_last_fetched_ids(events: List[Dict], look_back: int = 0) -> List[str]:
     """
     Gets the ids of the last fetched events
     Args:
@@ -248,8 +258,19 @@ def get_last_fetched_ids(events: List[Dict]) -> List[str]:
     Returns:
         List of the last fetched ids
     """
-    last_creation_date = events[-1]["created"]
-    return [event["id"] for event in events if event["created"] == last_creation_date]
+    if not look_back:
+        return [event["id"] for event in events if event["created"] == events[-1]["created"]]
+
+    last_fetched_ids: list[str] = []
+    last_creation_date = arg_to_datetime(events[-1]["created"], required=True)
+    look_back_last_creation_date = last_creation_date - timedelta(minutes=look_back)  # type: ignore
+
+    for event in events:
+        created_date_time = arg_to_datetime(event["created"], required=True)
+        if look_back_last_creation_date <= created_date_time <= last_creation_date:  # type: ignore
+            last_fetched_ids.append(event["id"])
+
+    return last_fetched_ids
 
 
 def add_time_and_status_to_events(events: List[Dict]) -> None:
@@ -290,6 +311,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     fetch_limit = arg_to_number(params.get("limit")) or 50000
+    fetch_look_back = arg_to_number(params.get("look_back")) or 0
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -320,6 +342,7 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 limit=fetch_limit,
+                look_back=fetch_look_back,
                 last_run=last_run,
             )
 
