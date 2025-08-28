@@ -5157,7 +5157,7 @@ def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResul
 
 def qradar_log_source_create_command(client: Client, args: dict) -> CommandResults:
     """
-    Creates a log source.
+    Creates  a log source.
     Possible arguments:
     - name: Required. The unique name of the log source.
     - sending_ip: The ip of the system which the log source is associated to, or fed by.
