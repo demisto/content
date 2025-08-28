@@ -27,7 +27,7 @@ def jira_base_client_mock(username: str = "", api_key: str = "", pat: str = "") 
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(
-        base_url="dummy_url",
+        base_url="https://dummy_url",
         proxy=False,
         verify=False,
         callback_url="dummy_callback",
@@ -194,7 +194,7 @@ CREATE_ISSUE_QUERY_CASES = [
         "some_jql_string",
         None,
         None,
-        {"jql": "some_jql_string", "startAt": 0, "maxResults": 50},
+        {"jql": "some_jql_string", "nextPageToken": "", "maxResults": 50},
     ),
     (
         "some_jql_string",
@@ -1945,6 +1945,69 @@ class TestJiraIssueQueryField:
         for expected_command_result, command_result in zip(expected_command_results, command_results):
             assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
             assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_uses_new_endpoint(self, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query
+        Then
+            - Validate that the new endpoint is used and the command returns the expected output.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_base_client_mock(username="user", api_key="key")
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_url/rest/api/999/search/jql", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at(self, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `start_at` argument
+        Then
+            - Validate that the old endpoint is used
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_base_client_mock(username="user", api_key="key")
+        issue_query_raw_response = util_load_json("test_data/get_issue_query_test/raw_response.json")
+        expected_command_results = util_load_json("test_data/get_issue_query_test/parsed_result.json")
+        requests_mock.get("https://dummy_url/rest/api/999/search", json=issue_query_raw_response)
+
+        command_results = issue_query_command(client=client, args={"start_at": "10", "fields": "watches,rank"})
+        command_results = command_results if isinstance(command_results, list) else [command_results]
+        for expected_command_result, command_result in zip(expected_command_results, command_results):
+            assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
+            assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
+
+    def test_issue_query_command_with_start_at_fail(self, requests_mock):
+        """
+        Given:
+            - A Jira client
+        When
+            - When calling the jira-issue-query, with the `start_at` argument
+            - The old endpoint is no longer available.
+        Then
+            - Validate that the old endpoint is used
+            - Validate that the custom error message is raised for 410 Gone.
+        """
+        from JiraV3 import issue_query_command
+
+        client = jira_base_client_mock(username="user", api_key="key")
+        requests_mock.get("https://dummy_url/rest/api/999/search", status_code=410)
+
+        with pytest.raises(DemistoException, match="The start_at argument is no longer supported in this Jira instance."):
+            issue_query_command(client=client, args={"start_at": "10"})
 
 
 class TestJiraAddUrlLink:
