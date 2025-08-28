@@ -2098,7 +2098,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert len(result_all.outputs) == len(mock_response["value"])
     fqdn_values = [out.get("fqdn") for out in result_all.outputs if "fqdn" in out]
 
-    assert "testlbl.westus.cloudapp.azure.com" in fqdn_values
+    assert any(val == "testlbl.westus.cloudapp.azure.com" for val in fqdn_values)
     assert any(val for val in fqdn_values if val and val.endswith("sysgen.cloudapp.azure.com"))
 
 
