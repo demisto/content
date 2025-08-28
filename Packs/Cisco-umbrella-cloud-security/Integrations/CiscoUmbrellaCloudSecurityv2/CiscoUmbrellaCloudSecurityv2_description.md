@@ -14,5 +14,6 @@ It offers real-time reporting, integrates with other Cisco solutions for layered
     | API Secret | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Base URL | True |
 
 4. Click **Test** to validate the connection.
