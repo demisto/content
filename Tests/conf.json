@@ -5865,6 +5865,32 @@
             "playbookID": "CybelAngel Test Playbook"
         },
         {
+            "playbookID": "GetUserData - Test",
+            "integrations": [
+                "Microsoft Graph User",
+                "AWS - IAM"
+            ],
+            "instance_names": [
+                "ms_graph_user_dev"
+            ]
+        },
+        {
+            "playbookID": "ClearUserSession - Test",
+            "integrations": ["Okta v2", "Microsoft Graph User"],
+            "instance_names": [
+                "ms_graph_user_dev"
+            ]
+        },
+        {
+            "playbookID": "DisableUser - Test",
+            "integrations": ["Okta v2", "Microsoft Graph User", "Active Directory Query v2"],
+            "instance_names": [
+                "ms_graph_user_dev",
+                "active_directory_80k"
+            ],
+            "memory_threshold": 100
+        },
+        {
             "playbookID": "QuarantineFile-Test",
             "timeout": 300,
             "fromversion": "6.10.0"
