@@ -702,3 +702,177 @@ Adds or removes permission settings for the specified snapshot. Note: snapshots 
 #### Context Output
 
 There is no context output for this command.
+### aws-eks-describe-cluster
+
+***
+Describes an Amazon EKS cluster.
+
+#### Base Command
+
+`aws-eks-describe-cluster`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| cluster_name | The name of the cluster to describe. | Required | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EKS.DescribeCluster.name | String | The name of your cluster. | 
+| AWS.EKS.DescribeCluster.arn | String | The Amazon Resource Name \(ARN\) of the cluster. | 
+| AWS.EKS.DescribeCluster.createdAt | String | The creation date of the object. | 
+| AWS.EKS.DescribeCluster.version | String | The Kubernetes server version for the cluster. | 
+| AWS.EKS.DescribeCluster.endpoint | String | The endpoint for your Kubernetes API server. | 
+| AWS.EKS.DescribeCluster.roleArn | String | The Amazon Resource Name \(ARN\) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.subnetIds | List | The subnets associated with your cluster. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.securityGroupIds | List | The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.clusterSecurityGroupId | String | The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.vpcId | String | The VPC associated with your cluster. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPublicAccess | Boolean | Whether the public API server endpoint is enabled. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPrivateAccess | Boolean | This parameter indicates whether the Amazon EKS private API server endpoint is enabled. | 
+| AWS.EKS.DescribeCluster.resourcesVpcConfig.publicAccessCidrs | List | The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint. | 
+| AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv4Cidr | String | The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from. | 
+| AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. | 
+| AWS.EKS.DescribeCluster.kubernetesNetworkConfig.ipFamily | String | The IP family used to assign Kubernetes Pod and Service objects IP addresses. | 
+| AWS.EKS.DescribeCluster.logging.clusterLogging | Object | The cluster control plane logging configuration for your cluster. | 
+| AWS.EKS.DescribeCluster.identity | Object | The identity provider information for the cluster. | 
+| AWS.EKS.DescribeCluster.status | String | The current status of the cluster. | 
+| AWS.EKS.DescribeCluster.certificateAuthority.data | String | The Base64-encoded certificate data required to communicate with your cluster. | 
+| AWS.EKS.DescribeCluster.clientRequestToken | String | A unique, case-sensitive identifier that you provide to ensure the idempotency of the request. | 
+| AWS.EKS.DescribeCluster.platformVersion | String | The platform version of your Amazon EKS cluster. | 
+| AWS.EKS.DescribeCluster.tags | Object | A dictionary containing metadata for categorization and organization. | 
+| AWS.EKS.DescribeCluster.encryptionConfig.resources | List | Specifies the resources to be encrypted. The only supported value is secrets. | 
+| AWS.EKS.DescribeCluster.encryptionConfig.provider | Object | Key Management Service \(KMS\) key. | 
+| AWS.EKS.DescribeCluster.connectorConfig.activationId | String | A unique ID associated with the cluster for registration purposes. | 
+| AWS.EKS.DescribeCluster.connectorConfig.activationCode | String | A unique code associated with the cluster for registration purposes. | 
+| AWS.EKS.DescribeCluster.connectorConfig.activationExpiry | String | The expiration time of the connected cluster. | 
+| AWS.EKS.DescribeCluster.connectorConfig.provider | String | The cluster’s cloud service provider. | 
+| AWS.EKS.DescribeCluster.connectorConfig.roleArn | String | The Amazon Resource Name \(ARN\) of the role to communicate with services from the connected Kubernetes cluster. | 
+| AWS.EKS.DescribeCluster.id | String | The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
+| AWS.EKS.DescribeCluster.health.issues | List | An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
+| AWS.EKS.DescribeCluster.outpostConfig.outpostArns | Object | An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
+| AWS.EKS.DescribeCluster.outpostConfig.controlPlaneInstanceType | String | The Amazon EC2 instance type used for the control plane. | 
+| AWS.EKS.DescribeCluster.outpostConfig.controlPlanePlacement | Object | An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost. | 
+| AWS.EKS.DescribeCluster.accessConfig.bootstrapClusterCreatorAdminPermissions | Boolean | Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time. | 
+| AWS.EKS.DescribeCluster.accessConfig.authenticationMode | String | The current authentication mode of the cluster. | 
+### aws-eks-associate-access-policy
+
+***
+Associates an access policy and its scope to an access entry.
+
+#### Base Command
+
+`aws-eks-associate-access-policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| cluster_name | The name of the cluster for which to create an access entry. | Required | 
+| principal_arn | The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to. | Required | 
+| policy_arn | The ARN of the AccessPolicy that you’re associating. | Required | 
+| type | The scope type of an access policy. Possible values are: cluster, namespace. | Required | 
+| namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EKS.AssociatedAccessPolicy.clusterName | String | The name of your cluster. | 
+| AWS.EKS.AssociatedAccessPolicy.principalArn | String | The ARN of the IAM principal for the AccessEntry. | 
+| AWS.EKS.AssociatedAccessPolicy.policyArn | String | The ARN of the AccessPolicy. | 
+| AWS.EKS.AssociatedAccessPolicy.accessScope.type | String | The scope type of an access policy. | 
+| AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces | String | A Kubernetes namespace that an access policy is scoped to. | 
+| AWS.EKS.AssociatedAccessPolicy.associatedAt | String | The date and time the AccessPolicy was associated with an AccessEntry. | 
+| AWS.EKS.AssociatedAccessPolicy.modifiedAt | String | The date and time for the last modification to the object. | 
+### aws-ec2-create-snapshot
+
+***
+Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
+
+#### Base Command
+
+`aws-ec2-create-snapshot`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| volume_id | The ID of the EBS volume. | Required | 
+| description | A description for the snapshot. | Optional | 
+| tags | The tags to apply to the snapshot during creation. | Optional | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.EC2.Snapshots.DataEncryptionKeyId | string | The data encryption key identifier for the snapshot. | 
+| AWS.EC2.Snapshots.Description | string | The description for the snapshot. | 
+| AWS.EC2.Snapshots.Encrypted | number | Indicates whether the snapshot is encrypted. | 
+| AWS.EC2.Snapshots.KmsKeyId | string | The full ARN of the AWS Key Management Service \(AWS KMS\) customer master key \(CMK\) that was used to protect the volume encryption key for the parent volume. | 
+| AWS.EC2.Snapshots.OwnerId | string | The AWS account ID of the EBS snapshot owner. | 
+| AWS.EC2.Snapshots.Progress | string | The progress of the snapshot, as a percentage. | 
+| AWS.EC2.Snapshots.SnapshotId | string | The ID of the snapshot. | 
+| AWS.EC2.Snapshots.StartTime | date | The time stamp when the snapshot was initiated. | 
+| AWS.EC2.Snapshots.State | string | The snapshot state. | 
+| AWS.EC2.Snapshots.StateMessage | string | this field displays error state details to help you diagnose why the error occurred. | 
+| AWS.EC2.Snapshots.VolumeId | string | The ID of the volume that was used to create the snapshot. | 
+| AWS.EC2.Snapshots.VolumeSize | number | The size of the volume, in GiB. | 
+| AWS.EC2.Snapshots.OwnerAlias | string | Value from an Amazon-maintained list of snapshot owners. | 
+| AWS.EC2.Snapshots.Tags.Key | string | The key of the tag. | 
+| AWS.EC2.Snapshots.Tags.Value | string | The value of the tag. | 
+| AWS.EC2.Snapshots.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. | 
+### aws-ec2-modify-snapshot-permission
+
+***
+Adds or removes permission settings for the specified snapshot.
+
+#### Base Command
+
+`aws-ec2-modify-snapshot-permission`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| snapshot_id | The ID of the EBS snapshot. | Required | 
+| operation_type | The operation type, add or remove. Possible values are: add, remove. | Required | 
+| group_names | CSV of security group names. This parameter can be used only when UserIds not provided. | Optional | 
+| user_ids | CSV of AWS account IDs. This parameter can be used only when groupNames not provided. | Optional | 
+| dry_run | Checks whether you have the required permissions for the action, without actually making the request, and provides an error response. Possible values are: True, False. | Optional | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-ecs-update-cluster-settings
+
+***
+Updates the containerInsights setting of an ECS cluster.
+
+#### Base Command
+
+`aws-ecs-update-cluster-settings`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required | 
+| cluster_name | The name of the cluster. | Required | 
+| value | The value of the containerInsights setting to update. Possible values are: enabled, disabled, enhanced. | Required | 
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

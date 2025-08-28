@@ -942,7 +942,10 @@ class EC2:
             CommandResults: Results of the snapshot creation operation
         """
 
-        def parse_tag_field(tags_str):
+        def parse_tag_field(tags_str: str) -> list[dict[str, str]]:
+            """
+            Parse tag field from string to list of dictionaries.
+            """
             tags = []
             regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
             for f in tags_str.split(";"):
@@ -960,7 +963,7 @@ class EC2:
         if args.get("description") is not None:
             kwargs.update({"Description": args.get("description")})
         if args.get("tags") is not None:
-            kwargs.update({"TagSpecifications": [{"ResourceType": "snapshot", "Tags": parse_tag_field(args.get("tags"))}]})
+            kwargs.update({"TagSpecifications": [{"ResourceType": "snapshot", "Tags": parse_tag_field(args.get("tags", ""))}]})
 
         response = client.create_snapshot(**kwargs)
 
