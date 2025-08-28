@@ -10,7 +10,7 @@ from CommonServerPython import *
 
 COMMAND_SUCCESS_MSG = "Command successful"
 COMMAND_FAILED_MSG = "Command failed - no endpoint found"
-
+IRRISKLEVEL = {"LOW": 0, "MED": 1, "HIGH": 2, 0: "LOW", 1: "MED", 2: "HIGH"}
 
 class Brands(StrEnum):
     """
@@ -31,7 +31,6 @@ class Brands(StrEnum):
         Returns a list of all string values defined in the Enum.
         """
         return [member.value for member in cls]
-
 
 class Command:
     def __init__(
@@ -604,7 +603,7 @@ def run_single_args_commands(
 
             if endpoint_output:
                 if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
-                    add_endpoint_to_mapping(endpoint_output, ir_mapping)
+                    update_endpoint_in_mapping(endpoint_output, ir_mapping)
                 else:
                     endpoint_outputs_list.extend(endpoint_output)
                 single_endpoint_readable_outputs.extend(readable_outputs)
@@ -1093,6 +1092,42 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
 
     joined_brands = ",".join(brands_to_run_for_generic_command)
     generic_command.create_additional_args({"using-brand": joined_brands})
+    
+
+def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
+    """
+    Adds endpoints to the endpoint mapping.
+    Args:
+        endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
+        endpoint_mapping (dict[str, Any]): A dictionary of endpoint mappings.
+        main_key (str): The main key to use for the endpoint mapping.
+    """
+    for endpoint in endpoints:
+        if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
+            demisto.debug(f"skipping endpoint due to failure: {endpoint}")
+            continue
+        ir_mapping[endpoint["ID"]] = endpoint
+    
+
+def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
+    """
+    Adds endpoints to the endpoint mapping.
+    Args:
+        endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
+        endpoint_mapping (dict[str, Any]): A dictionary of endpoint mappings.
+        main_key (str): The main key to use for the endpoint mapping.
+    """
+    for endpoint in endpoints:
+        if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
+            demisto.debug(f"skipping endpoint due to failure: {endpoint}")
+            continue
+        for ir_endpoint in ir_mapping.values():
+            if ir_endpoint["Hostname"] == endpoint["Hostname"]:
+                if "RiskLevel" in endpoint:
+                    endpoint["RiskLevel"] = IRRISKLEVEL[max(IRRISKLEVEL[endpoint["RiskLevel"]] ,
+                                                            IRRISKLEVEL[ir_endpoint["RiskLevel"]])]
+                else:
+                    endpoint["RiskLevel"] = ir_endpoint["RiskLevel"]
 
 
 """ MAIN FUNCTION """
@@ -1140,6 +1175,11 @@ def main():  # pragma: no cover
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
             zipped_args, single_args_commands, command_runner, verbose, ir_mapping
         )
+
+        demisto.debug("preparing to convert endpoint mapping to list.")
+        command_results_single_commands.extend(list(ir_mapping.values()))
+        demisto.debug(f"endpoint mapping to list prepared, got {len(endpoint_outputs_list)} endpoints.")
+
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
 
@@ -1153,9 +1193,6 @@ def main():  # pragma: no cover
                 )
             )
         if endpoint_outputs_list:
-            demisto.debug("preparing to convert endpoint mapping to list.")
-            endpoint_outputs_list = endpoint_mapping_to_list(ir_mapping)
-            demisto.debug(f"endpoint mapping to list prepared, got {len(endpoint_outputs_list)} endpoints.")
             command_results_list.append(
                 CommandResults(
                     outputs_prefix="EndpointData",
