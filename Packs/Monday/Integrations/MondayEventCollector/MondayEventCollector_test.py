@@ -122,11 +122,10 @@ class TestGetAuditLogs:
         mock_client.get_audit_logs_request.return_value = mock_response_page2.json()
         mock_client.reset_mock()
 
-        # Use the last_run received from the previous fetch
         previous_last_timestamp = result_last_run["last_timestamp"]
         previous_upper_bound_log_id = result_last_run["upper_bound_log_id"]
-        continuing_last_run = result_last_run
 
+        continuing_last_run = result_last_run
         result_logs_2, result_last_run_2 = get_audit_logs(
             continuing_last_run, now_ms, limit, limit, client=mock_client
         )
@@ -137,17 +136,14 @@ class TestGetAuditLogs:
         timestamps = [log["timestamp"] for log in result_logs_2]
         assert timestamps == sorted(timestamps, reverse=True)
 
-        # Validate last_run state after continuing fetch
-        assert (
-            result_last_run_2["last_timestamp"] == previous_last_timestamp
-        )  # last_timestamp does not change until new fetch starts (page=1)
-        assert (
-            result_last_run_2["upper_bound_log_id"] == previous_upper_bound_log_id
-        )  # upper_bound_log_id does not change until new fetch starts (page=1)
-        assert result_last_run_2["continuing_fetch_info"] is None  # No more pages available
-        assert (
-            result_last_run_2["upper_bound_log_id"] == result_last_run_2["lower_bound_log_id"]
-        )  # on the last page, upper_bound_log_id set to lower_bound_log_id for the next fetch
+        # last_timestamp does not change until new fetch starts (page=1)
+        assert (result_last_run_2["last_timestamp"] == previous_last_timestamp)
+        # upper_bound_log_id does not change until new fetch starts (page=1)
+        assert (result_last_run_2["upper_bound_log_id"] == previous_upper_bound_log_id)
+        # No more pages available
+        assert result_last_run_2["continuing_fetch_info"] is None
+        # on the last page, upper_bound_log_id set to lower_bound_log_id for the next fetch
+        assert (result_last_run_2["upper_bound_log_id"] == result_last_run_2["lower_bound_log_id"])
 
         # Validate API call parameters
         assert mock_client.get_audit_logs_request.call_count == 1
@@ -187,9 +183,7 @@ class TestGetAuditLogs:
         mock_client.get_audit_logs_request.return_value = mock_response_page1_new_fetch.json()
         mock_client.reset_mock()
 
-        # Use the last_run received from the previous fetch
         new_fetch_last_run = result_last_run_2
-
         result_logs_3, result_last_run_3 = get_audit_logs(
             new_fetch_last_run, now_ms, limit, limit, client=mock_client
         )
@@ -207,22 +201,21 @@ class TestGetAuditLogs:
         expected_new_account_ids = {101, 102, 103, 104, 105, 106}
         assert result_account_ids == expected_new_account_ids
 
-        # Validate new last_run state
-        assert (
-            result_last_run_3["last_timestamp"] == page1_logs_new_fetch[0]["timestamp"]
-        )  # last_timestamp should be the newest timestamp
-        assert result_last_run_3["continuing_fetch_info"] is None  # No more pages
+        # last_timestamp should be the newest timestamp
+        assert (result_last_run_3["last_timestamp"] == page1_logs_new_fetch[0]["timestamp"])
+        # No more pages
+        assert result_last_run_3["continuing_fetch_info"] is None
 
         # Validate API call
         assert mock_client.get_audit_logs_request.call_count == 1
         call_args_3 = mock_client.get_audit_logs_request.call_args[0]
-        assert call_args_3[1] == 1  # page parameter - New fetch starts from page 1
-        assert call_args_3[2] == limit  # logs_per_page parameter
+        assert call_args_3[1] == 1
+        assert call_args_3[2] == limit
 
         # Verify start_time filter includes epsilon adjustment
-        time_filter_arg = call_args_3[0]  # time_filter is the first argument
-        filters = ast.literal_eval(time_filter_arg)  # Parse the JSON string
-        assert filters["start_time"] == subtract_epsilon_from_timestamp(last_timestamp)  # Should be last_timestamp - epsilon
+        time_filter_arg = call_args_3[0]
+        filters = ast.literal_eval(time_filter_arg)
+        assert filters["start_time"] == subtract_epsilon_from_timestamp(last_timestamp)
 
     def test_fetch_audit_logs_with_remaining_logs_mechanism(self, mocker):
         """
@@ -246,11 +239,8 @@ class TestGetAuditLogs:
         limit = 8
         per_page = 5
 
-        # Mock constants
         mocker.patch("MondayEventCollector.MAX_AUDIT_LOGS_PER_PAGE", per_page)
         mocker.patch("MondayEventCollector.MAX_AUDIT_LOGS_PER_FETCH", limit)
-
-        # Arrange
         mock_params = {
             "audit_logs_url": "https://test.monday.com",
             "audit_token": "test_token",
@@ -322,7 +312,6 @@ class TestGetAuditLogs:
         mock_response_page1_1.json.return_value = {"data": page_1_1_logs, "page": 1, "per_page": per_page, "next_page": None}
 
         # Configure mock to return different responses for each call
-        # Mock BaseClient._http_request instead of requests.get since we now use AuditLogsClient
         mock_requests_get = mocker.patch("MondayEventCollector.BaseClient._http_request", side_effect=[
             mock_response_page1.json(),
             mock_response_page2.json(),
@@ -421,12 +410,6 @@ class TestGetActivityLogs:
 
     Test class for activity logs functionality.
 
-    Key differences from audit logs:
-    - Uses GraphQL API (POST requests)
-    - Multi-board support with per-board last_run state
-    - Maximum limit is 10,000 (no excess logs mechanism)
-    - Send request with page+1 check for pagination (no next_page field)
-    - Activity logs have 'id' field (no hash needed)
     """
 
     def test_fetch_activity_logs_with_continuing_fetch_multi_board(self, mocker):
@@ -498,40 +481,16 @@ class TestGetActivityLogs:
         ]
 
         # Mock GraphQL responses for sequential API calls
-        # First fetch: Board 123 page 1 (8 logs)
-        mock_response_board123_page1 = MagicMock()
-        mock_response_board123_page1.status_code = 200
-        mock_response_board123_page1.json.return_value = {"data": {"boards": [{"activity_logs": board_123_page1_logs}]}}
+        # First fetch:
+        mock_response_board123_page1 = {"data": {"boards": [{"activity_logs": board_123_page1_logs}]}}
+        mock_response_board123_page2_check = {"data": {"boards": [{"activity_logs": board_123_page2_logs}]}}
+        mock_response_board456_page1 = {"data": {"boards": [{"activity_logs": board_456_page1_logs}]}}
+        mock_response_board456_page2_empty = {"data": {"boards": [{"activity_logs": []}]}}
 
-        # First fetch: Board 123 page 2 check (has logs - continuing fetch needed)
-        mock_response_board123_page2_check = MagicMock()
-        mock_response_board123_page2_check.status_code = 200
-        mock_response_board123_page2_check.json.return_value = {"data": {"boards": [{"activity_logs": board_123_page2_logs}]}}
-
-        # First fetch: Board 456 page 1 (5 logs)
-        mock_response_board456_page1 = MagicMock()
-        mock_response_board456_page1.status_code = 200
-        mock_response_board456_page1.json.return_value = {"data": {"boards": [{"activity_logs": board_456_page1_logs}]}}
-
-        # First fetch: Board 456 page 2 check (empty - complete)
-        mock_response_board456_page2_empty = MagicMock()
-        mock_response_board456_page2_empty.status_code = 200
-        mock_response_board456_page2_empty.json.return_value = {"data": {"boards": [{"activity_logs": []}]}}
-
-        # Second fetch: Board 123 page 2 (remaining 7 logs)
-        mock_response_board123_page2 = MagicMock()
-        mock_response_board123_page2.status_code = 200
-        mock_response_board123_page2.json.return_value = {"data": {"boards": [{"activity_logs": board_123_page2_logs}]}}
-
-        # Second fetch: Board 123 page 3 check (empty - complete)
-        mock_response_board123_page3_empty = MagicMock()
-        mock_response_board123_page3_empty.status_code = 200
-        mock_response_board123_page3_empty.json.return_value = {"data": {"boards": [{"activity_logs": []}]}}
-
-        # Second fetch: Board 456 page 1 (epsilon adjusted timestamp - no new logs, only duplicate logs)
-        mock_response_board456_page1_empty = MagicMock()
-        mock_response_board456_page1_empty.status_code = 200
-        mock_response_board456_page1_empty.json.return_value = {
+        # Second fetch:
+        mock_response_board123_page2 = {"data": {"boards": [{"activity_logs": board_123_page2_logs}]}}
+        mock_response_board123_page3_empty = {"data": {"boards": [{"activity_logs": []}]}}
+        mock_response_board456_page1_empty = {  # Second fetch: Board 456 page 1 (epsilon adjusted timestamp - no new logs, only duplicate logs)
             "data": {
                 "boards": [
                     {
@@ -543,15 +502,12 @@ class TestGetActivityLogs:
             }
         }
 
-        # Second fetch: Board 456 page 2 check (empty)
-        mock_response_board456_page2_empty_2 = MagicMock()
-        mock_response_board456_page2_empty_2.status_code = 200
-        mock_response_board456_page2_empty_2.json.return_value = {"data": {"boards": [{"activity_logs": []}]}}
+        mock_response_board456_page2_empty_2 = {"data": {"boards": [{"activity_logs": []}]}}
 
         # Configure mock to return different responses for each call
-        mock_requests_post = mocker.patch("MondayEventCollector.requests.post")
+        mock_http_request = mocker.patch("MondayEventCollector.BaseClient._http_request")
 
-        mock_requests_post.side_effect = [
+        mock_http_request.side_effect = [
             # First fetch_activity_logs call:
             mock_response_board123_page1,  # Board 123, page 1 (8 logs)
             mock_response_board123_page2_check,  # Board 123, page 2 check (has logs)
@@ -564,12 +520,9 @@ class TestGetActivityLogs:
             mock_response_board456_page2_empty_2,  # Board 456, page 2 check (empty)
         ]
 
-        mock_timestamp_to_datestring = mocker.patch("MondayEventCollector.timestamp_to_datestring")
-        mock_timestamp_to_datestring.return_value = "2024-06-03T15:00:00.000Z"
-
         mocker.patch("MondayEventCollector.add_fields_to_events")
         mocker.patch("MondayEventCollector.extract_activity_log_data", side_effect=lambda x: x)
-        mocker.patch("MondayEventCollector.convert_17_digit_unix_time_to_ISO8601", return_value="2024-06-03T14:25:47.000Z")
+        mocker.patch("MondayEventCollector.convert_timestamp", return_value="2024-06-03T14:25:47.000Z")
 
         initial_last_run = {}
         result_last_run_1, result_logs_1 = fetch_activity_logs(initial_last_run)
@@ -640,7 +593,7 @@ class TestGetActivityLogs:
         assert board_456_last_run_2["continuing_fetch_info"] is None
 
         # Validate total API calls made for first two fetches
-        assert mock_requests_post.call_count == 8
+        assert mock_http_request.call_count == 8
 
         # --- THIRD FETCH: New fetch with duplication handling ---
         # This tests the scenario where continuing_fetch_info is None and we start a new fetch range
@@ -670,36 +623,19 @@ class TestGetActivityLogs:
         ]
 
         # Mock responses for third fetch
-        # Board 123 page 1 (new logs with duplicates)
-        mock_response_board123_new_fetch = MagicMock()
-        mock_response_board123_new_fetch.status_code = 200
-        mock_response_board123_new_fetch.json.return_value = {"data": {"boards": [{"activity_logs": board_123_new_logs}]}}
-
-        # Board 123 page 2 check (empty - no more logs)
-        mock_response_board123_page2_empty_new = MagicMock()
-        mock_response_board123_page2_empty_new.status_code = 200
-        mock_response_board123_page2_empty_new.json.return_value = {"data": {"boards": [{"activity_logs": []}]}}
-
-        # Board 456 page 1 (new logs with duplicates)
-        mock_response_board456_new_fetch = MagicMock()
-        mock_response_board456_new_fetch.status_code = 200
-        mock_response_board456_new_fetch.json.return_value = {"data": {"boards": [{"activity_logs": board_456_new_logs}]}}
-
-        # Board 456 page 2 check (empty - no more logs)
-        mock_response_board456_page2_empty_new = MagicMock()
-        mock_response_board456_page2_empty_new.status_code = 200
-        mock_response_board456_page2_empty_new.json.return_value = {"data": {"boards": [{"activity_logs": []}]}}
+        mock_response_board123_new_fetch = {"data": {"boards": [{"activity_logs": board_123_new_logs}]}}
+        mock_response_board123_page2_empty_new = {"data": {"boards": [{"activity_logs": []}]}}
+        mock_response_board456_new_fetch = {"data": {"boards": [{"activity_logs": board_456_new_logs}]}}
+        mock_response_board456_page2_empty_new = {"data": {"boards": [{"activity_logs": []}]}}
 
         # Reset and configure mock for third fetch
-        mock_requests_post.reset_mock()
-        mock_requests_post.side_effect = [
+        mock_http_request.reset_mock()
+        mock_http_request.side_effect = [
             mock_response_board123_new_fetch,  # Board 123, page 1 (new logs)
             mock_response_board123_page2_empty_new,  # Board 123, page 2 check (empty)
             mock_response_board456_new_fetch,  # Board 456, page 1 (new logs)
             mock_response_board456_page2_empty_new,  # Board 456, page 2 check (empty)
         ]
-
-        # Act - Third call to fetch_activity_logs (new fetch with duplication handling)
         result_last_run_3, result_logs_3 = fetch_activity_logs(result_last_run_2)
 
         # Should return 6 logs total (4 from board 123-filtering out 2 duplicates + 2 from board 456-filtering out 1 duplicate)
@@ -724,12 +660,8 @@ class TestGetActivityLogs:
         assert board_456_last_run_3["continuing_fetch_info"] is None
 
         # Validate new timestamps are set correctly (newest log from each board)
-        assert (
-            board_123_last_run_3["last_timestamp"] == "2024-06-03T14:25:47.000Z"
-        )  # From convert_17_digit_unix_time_to_ISO8601 mock
-        assert (
-            board_456_last_run_3["last_timestamp"] == "2024-06-03T14:25:47.000Z"
-        )  # From convert_17_digit_unix_time_to_ISO8601 mock
+        assert board_123_last_run_3["last_timestamp"] == "2024-06-03T14:25:47.000Z"
+        assert board_456_last_run_3["last_timestamp"] == "2024-06-03T14:25:47.000Z"
 
         # Validate upper_bound_log_id is set to newest logs
         assert board_123_last_run_3["upper_bound_log_id"] == ["log21"]  # Newest log from board 123
@@ -740,4 +672,4 @@ class TestGetActivityLogs:
         assert board_456_last_run_3["lower_bound_log_id"] == board_456_last_run_3["upper_bound_log_id"]
 
         # Validate total API calls for third fetch
-        assert mock_requests_post.call_count == 4
+        assert mock_http_request.call_count == 4
