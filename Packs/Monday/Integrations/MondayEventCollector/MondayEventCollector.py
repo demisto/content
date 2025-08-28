@@ -152,6 +152,62 @@ class ActivityLogsClient(BaseClient):
             return True
 
 
+class AuditLogsClient(BaseClient):
+    """
+    Client for Monday.com Audit Logs API using API token authentication.
+    Extends BaseClient to support proxy configuration and proper HTTP request handling.
+    """
+
+    def __init__(self, audit_token: str, audit_logs_url: str, proxy: bool = False, verify: bool = True):
+        """
+        Initialize AuditLogsClient with API token and configuration.
+        
+        Args:
+            audit_token (str): Monday.com API token for audit logs
+            audit_logs_url (str): Base URL for Monday.com audit logs API
+            proxy (bool): Whether to use proxy for requests
+            verify (bool): Whether to verify SSL certificates
+        """
+        super().__init__(base_url=audit_logs_url, verify=verify, proxy=proxy)
+        self.audit_token = audit_token
+        self.audit_logs_url = audit_logs_url
+
+    def get_audit_logs_request(self, time_filter: str, page: int, per_page: int) -> dict:
+        """
+        Send GET request to fetch audit logs from Monday.com API.
+        
+        Args:
+            time_filter (str): JSON string with start_time and end_time filters
+            page (int): Page number for pagination
+            per_page (int): Number of logs per page
+            
+        Returns:
+            dict: Response from Monday.com API containing audit logs
+        """
+        headers = {
+            "Authorization": f"Bearer {self.audit_token}",
+            "Content-Type": "application/json"
+        }
+        
+        params = {
+            "filters": time_filter,
+            "page": page,
+            "per_page": per_page
+        }
+        
+        demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Requesting audit logs\nParams: {params}")
+        
+        response = self._http_request(
+            method="GET",
+            url_suffix="audit-api/get-logs",
+            headers=headers,
+            params=params,
+            resp_type="json"
+        )
+        
+        return response
+
+
 def generate_login_url() -> CommandResults:
     """
     Generate OAuth 2.0 authorization URL for Monday.com authentication to grant permissions to the Cortex XSOAR integration.
@@ -239,29 +295,30 @@ def test_connection() -> CommandResults:
         - At least one log type must be properly configured for the test to pass
     """
     params = demisto.params()
-    client_id = params.get("client_id", "")
-    secret = params.get("secret", "")
-    auth_code = params.get("auth_code", "")
-    audit_token = params.get("audit_token", "")
-    audit_logs_url = params.get("audit_logs_url", "")
+    activity_client = initiate_activity_client()
+    audit_client = initiate_audit_client()
 
     activity_logs_missing_params = ""
     audit_logs_missing_params = ""
+
     now_ms = int(time.time() * 1000)
+
     try:
         # Try to test connection in the Authorization Code flow mode for activity logs.
-        if client_id and secret:
+        if activity_client.client_id and activity_client.client_secret:
+
             integration_context = get_integration_context()
             access_token = integration_context.get("access_token", "")
-            if access_token or auth_code:
-                activity_logs_url = params.get("activity_logs_url", "https://api.monday.com")
+
+            if access_token or activity_client.auth_code:
+
                 board_ids = params.get("board_ids", "")
                 board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()] if board_ids else []
-
                 if board_ids_list:
+
                     # All parameters are provided for activity logs, test fetch single activity log.
                     get_activity_logs(
-                        last_run={}, now_ms=now_ms, limit=1, board_id=board_ids_list[0], activity_logs_url=activity_logs_url
+                        last_run={}, now_ms=now_ms, limit=1, board_id=board_ids_list[0], client=activity_client
                     )
                     return CommandResults(readable_output="✅ Test connection success for activity logs.")
                 else:
@@ -271,9 +328,11 @@ def test_connection() -> CommandResults:
         else:
             activity_logs_missing_params = "Client ID and Client secret"
 
-        if audit_token and audit_logs_url:
+        # Activity logs test failed, try audit logs.
+        if audit_client.audit_token and audit_client.audit_logs_url:
+
             # All parameters are provided for audit logs, test fetch single audit log.
-            get_audit_logs(last_run={}, now_ms=now_ms, limit=1, logs_per_page=1)
+            get_audit_logs(last_run={}, now_ms=now_ms, limit=1, logs_per_page=1, client=audit_client)
             return CommandResults(readable_output="✅ Test connection success for audit logs.")
         else:
             audit_logs_missing_params = "Audit API token and Audit Server URL"
@@ -290,7 +349,7 @@ def test_connection() -> CommandResults:
         raise DemistoException(f"Error testing connection: {str(e)}")
 
 
-def get_remaining_audit_logs(last_run: dict, logs_per_page: int) -> tuple[list, dict]:
+def get_remaining_audit_logs(last_run: dict, logs_per_page: int, client: AuditLogsClient) -> tuple[list, dict]:
     """
     Fetch remaining audit logs from Monday based on configuration.
     Called only if the user set the audit logs limit to be bigger than 1,000,
@@ -298,6 +357,8 @@ def get_remaining_audit_logs(last_run: dict, logs_per_page: int) -> tuple[list, 
 
     Args:
         last_run (dict): The last run of the fetch.
+        logs_per_page (int): Number of logs per page
+        client (AuditLogsClient): AuditLogsClient instance for making requests
 
     Returns:
         tuple[list, dict]: The remaining audit logs and the updated last run.
@@ -312,37 +373,12 @@ def get_remaining_audit_logs(last_run: dict, logs_per_page: int) -> tuple[list, 
     start_time = excess_logs_info.get("start_time")
     end_time = excess_logs_info.get("end_time")
 
-    demisto_params = demisto.params()
-    audit_logs_url = demisto_params.get("audit_logs_url", "")
-    audit_token = demisto_params.get("audit_token", "")
-
     time_filter = f'{{"start_time":"{start_time}","end_time":"{end_time}"}}'
 
-    params = {"filters": time_filter, "page": page, "per_page": logs_per_page}
-
-    headers = {"Authorization": f"Bearer {audit_token}", "Content-Type": "application/json"}
-
-    url = urljoin(audit_logs_url, "audit-api/get-logs")
-
-    demisto.debug(
-        f"{AUDIT_LOG_DEBUG_PREFIX}Requesting remaining audit logs from previous fetch.\n"
-        f"URL: {url}, Params: {params}, Offset: {offset}"
-    )
-
     try:
-        response = requests.get(url, headers=headers, params=params, verify=USE_SSL)
-
-        if response.status_code != 200:
-            demisto.debug(
-                f"{AUDIT_LOG_DEBUG_PREFIX}Failed to get remaining audit logs."
-                f"response status code: {response.status_code}\n{response.text}"
-            )
-            raise DemistoException(
-                f"Failed to get remaining audit logs. response status code: {response.status_code}\n{response.text}"
-            )
-
-        demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Response: {response.text}, Status code: {response.status_code}")
-        fetched_logs = response.json().get("data", [])
+        response = client.get_audit_logs_request(time_filter, page, logs_per_page)
+        
+        fetched_logs = response.get("data", [])
         fetched_logs = fetched_logs[offset:]
 
         # TODO: check this flow (In case logs remaining from the last page)
@@ -688,7 +724,7 @@ def subtract_epsilon_from_timestamp(timestamp_str, epsilon_ms=1):
         return timestamp_str
 
 
-def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int) -> tuple[list, dict]:
+def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int, client: AuditLogsClient) -> tuple[list, dict]:
     """
     Fetch audit logs from Monday based on configuration.
 
@@ -697,21 +733,13 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int) 
     Args:
         last_run: Previous fetch state containing last_timestamp and fetched_ids
         now_ms: Current time in milliseconds
+        limit: Maximum number of logs to fetch
+        logs_per_page: Number of logs per page
+        client: AuditLogsClient instance for making requests
 
     Returns:
         tuple: (logs, last_run) where last_run is the updated state and logs are the fetched logs.
     """
-
-    demisto_params = demisto.params()
-
-    audit_logs_url = demisto_params.get("audit_logs_url", "")
-    audit_token = demisto_params.get("audit_token", "")
-
-    if not audit_token or not audit_logs_url:
-        demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Audit API token or Audit Server URL parameters are missing.")
-        raise DemistoException(
-            "Please provide Audit API token and Audit Server URL in the integration parameters for fetch audit logs."
-        )
 
     remaining_logs = 0
     fetched_logs = []
@@ -748,8 +776,6 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int) 
         )
 
     time_filter = f'{{"start_time":"{start_time}","end_time":"{end_time}"}}'
-    headers = {"Authorization": f"Bearer {audit_token}", "Content-Type": "application/json"}
-    url = urljoin(audit_logs_url, "audit-api/get-logs")
 
     """
         The first condition that reached will exit the loop:
@@ -757,29 +783,19 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int) 
         2. next_page = None
     """
     while len(total_logs) < limit:
-        params = {"filters": time_filter, "page": page, "per_page": logs_per_page}
-
         remaining_logs = limit - len(total_logs)
 
         demisto.debug(
             f"{AUDIT_LOG_DEBUG_PREFIX}Starting to fetch new page of audit logs.\nRemaining logs to fetch: {remaining_logs}"
         )
-        demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Requesting audit logs\nURL: {url}, Params: {params}")
 
         try:
-            response = requests.get(url, headers=headers, params=params, verify=USE_SSL)
+            response = client.get_audit_logs_request(time_filter, page, logs_per_page)
         except Exception as e:
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Exception during get audit logs. Exception is {e!s}")
             raise DemistoException(f"Exception during get audit logs. Exception is {e!s}")
 
-        if response.status_code != 200:
-            demisto.debug(
-                f"{AUDIT_LOG_DEBUG_PREFIX}Failed to get audit logs. response status code: {response.status_code}\n{response.text}"
-            )
-            raise DemistoException(f"Failed to get audit logs. Status code: {response.status_code}\n{response.text}")
-
-        # Status code 200
-        fetched_logs = response.json().get("data", [])
+        fetched_logs = response.get("data", [])
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Successfully fetched {len(fetched_logs)} audit logs.")
 
         if page == 1:
@@ -800,7 +816,7 @@ def get_audit_logs(last_run: dict, now_ms: int, limit: int, logs_per_page: int) 
 
         # last page reached, next_page = None, meaning there are no more logs to fetch.
         # We can remove duplicate logs based on the lower bound logs set on the previous fetch.
-        if not response.json().get("next_page"):
+        if not response.get("next_page"):
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}page={page} is the last page.")
 
             lower_bound_log_id = last_run.get("lower_bound_log_id", [])
@@ -901,10 +917,17 @@ def fetch_audit_logs(last_run: dict) -> tuple[dict, list]:
 
     try:
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}last_run before fetching audit logs: {last_run}")
+        client = initiate_audit_client()
+
+        if not client.audit_token or not client.audit_logs_url:
+            demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Audit API token or Audit Server URL parameters are missing.")
+            raise DemistoException(
+                "Please provide Audit API token and Audit Server URL in the integration parameters for fetch audit logs."
+            )
 
         # Handle fetching remaining logs from previous fetch
         if last_run.get("excess_logs_info"):
-            excess_logs, last_run = get_remaining_audit_logs(last_run, logs_per_page)
+            excess_logs, last_run = get_remaining_audit_logs(last_run, logs_per_page, client)
             limit_before_fetch = limit
             audit_logs.extend(excess_logs)
             limit -= len(excess_logs)
@@ -914,7 +937,9 @@ def fetch_audit_logs(last_run: dict) -> tuple[dict, list]:
             )
             demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}last_run after fetching remaining audit logs: {last_run}")
 
-        fetched_logs, last_run = get_audit_logs(last_run=last_run, now_ms=now_ms, limit=limit, logs_per_page=logs_per_page)
+        fetched_logs, last_run = get_audit_logs(
+            last_run=last_run, now_ms=now_ms, limit=limit, logs_per_page=logs_per_page, client=client
+        )
         audit_logs.extend(fetched_logs)
 
     except Exception as e:
@@ -950,6 +975,51 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list: list[str]) ->
     return last_run
 
 
+def initiate_activity_client() -> ActivityLogsClient:
+    """
+    Initialize ActivityLogsClient for making requests.
+    
+    Returns:
+        ActivityLogsClient: ActivityLogsClient instance for making requests.
+    """
+    demisto_params = demisto.params()
+    client_id = demisto_params.get("client_id", "")
+    client_secret = demisto_params.get("secret", "")
+    auth_code = demisto_params.get("auth_code", "")
+    proxy = demisto_params.get("proxy", False)
+    verify = not demisto_params.get("insecure", False)
+    activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
+    
+    return ActivityLogsClient(
+        client_id=client_id,
+        client_secret=client_secret,
+        auth_code=auth_code,
+        activity_logs_url=activity_logs_url,
+        proxy=proxy,
+        verify=verify
+    )
+
+
+def initiate_audit_client() -> AuditLogsClient:
+    """
+    Create AuditLogsClient for making requests.
+
+    Returns:
+        AuditLogsClient: AuditLogsClient instance for making requests
+    """
+    params = demisto.params()
+    audit_token = params.get("audit_token", "")
+    audit_logs_url = params.get("audit_logs_url", "")
+    proxy = params.get("proxy", False)
+    verify = not params.get("insecure", False)
+ 
+    return AuditLogsClient(
+        audit_token=audit_token,
+        audit_logs_url=audit_logs_url,
+        proxy=proxy,
+        verify=verify
+    )
+
 def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     """
     Fetch activity logs from Monday.com API for multiple boards.
@@ -969,7 +1039,6 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     Returns:
         tuple[dict, list]: Updated last_run state and list of fetched activity logs from all boards
     """
-    now_ms = int(time.time() * 1000)
     demisto_params = demisto.params()
     
     board_ids = demisto_params.get("board_ids", "")
@@ -979,27 +1048,14 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()]
     
     last_run = initiate_activity_log_last_run(last_run, board_ids_list)
-    activity_logs: list = []
-    limit = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(demisto_params.get("max_activity_logs_per_fetch", 10000)))
-
-    # Create ActivityLogsClient for making requests
-    client_id = demisto_params.get("client_id", "")
-    client_secret = demisto_params.get("secret", "")
-    auth_code = demisto_params.get("auth_code", "")
-    proxy = demisto_params.get("proxy", False)
-    verify = not demisto_params.get("insecure", False)
-    activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
     
-    client = ActivityLogsClient(
-        client_id=client_id,
-        client_secret=client_secret,
-        auth_code=auth_code,
-        activity_logs_url=activity_logs_url,
-        proxy=proxy,
-        verify=verify
-    )
+    limit = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(demisto_params.get("max_activity_logs_per_fetch", 10000)))
+    now_ms = int(time.time() * 1000)
+    activity_logs: list = []
 
     try:
+        client = initiate_activity_client()
+
         for board_id in board_ids_list:
             current_board_last_run = last_run[board_id]
             demisto.debug(
