@@ -103,7 +103,7 @@ script:
   - name: monday-auth-test
     description: Run this command to test the connectivity to Monday.
     arguments: []
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   runonce: false
   script: '-'
