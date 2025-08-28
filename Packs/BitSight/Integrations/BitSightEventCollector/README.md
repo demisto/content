@@ -1,6 +1,6 @@
 Use this integration to fetch BitSight security findings as events in Cortex XSIAM. This is important for organizations that wish to integrate BitSight programmatically into their security operations.
 
-When configured as a fetching integration, it will continuously fetch new findings starting from 1 hour back. The manual `bitsight-get-events` command fetches findings from the last 1 day (24 hours).
+When configured as a fetching integration, it will continuously fetch new findings starting from 1 hour back. The manual `bitsight-get-events` command fetches findings from the last 2 days (48 hours).
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### bitsight-get-events
 
 ***
-Gets findings as events from BitSight Event Collector. The command fetches findings from the last 1 day (24 hours).
+Gets findings as events from BitSight Event Collector. The command fetches findings from the last 2 days (48 hours).
 
 #### Base Command
 

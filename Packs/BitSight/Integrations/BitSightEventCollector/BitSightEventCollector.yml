@@ -75,7 +75,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    description: Gets BitSight findings events from the last 1 day (24 hours).
+    description: Gets BitSight findings events from the last 2 days (48 hours).
     name: bitsight-get-events
   runonce: false
   script: "-"

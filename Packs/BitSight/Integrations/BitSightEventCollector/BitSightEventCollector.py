@@ -16,7 +16,7 @@ BITSIGHT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_MAX_FETCH = 1000
 # Lookback windows
 FETCH_EVENTS_LOOKBACK_HOURS = 1
-GET_EVENTS_LOOKBACK_DAYS = 1
+GET_EVENTS_LOOKBACK_DAYS = 2
 
 # Bitsight headers per existing integration
 CALLING_PLATFORM_VERSION = "XSIAM"
@@ -174,7 +174,7 @@ def fetch_events(
 def bitsight_get_events_command(client: Client, guid: str, limit: int, should_push: bool) -> CommandResults:
     """Command implementation for `bitsight-get-events`.
 
-    Executes a one-off retrieval of findings for the last 1 day (24 hours) and optionally
+    Executes a one-off retrieval of findings for the last 2 days (48 hours) and optionally
     pushes them to XSIAM when `should_push_events=true`.
 
     Args:
@@ -187,7 +187,7 @@ def bitsight_get_events_command(client: Client, guid: str, limit: int, should_pu
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
     last_run = demisto.getLastRun() or {}
-    # Hardcode a 1-day window for this command: [now-1day, now]
+    # Hardcode a 2-day window for this command: [now-2day, now]
     start_ts, end_ts = time_window(days=GET_EVENTS_LOOKBACK_DAYS)
 
     events, new_last_run = fetch_events(
