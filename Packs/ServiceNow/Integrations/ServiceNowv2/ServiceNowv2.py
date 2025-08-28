@@ -1965,7 +1965,7 @@ def get_entries_for_notes(notes: list[dict], params) -> list[dict]:
                     "Type": note.get("type", 1),
                     "Category": note.get("category"),
                     "Contents": f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
-                    f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
+                                f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                     "ContentsFormat": note.get("format"),
                     "Tags": tags,
                     "Note": True,
@@ -3343,7 +3343,8 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
-    is_custom_close : bool = ((parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta)) and close_custom_state
+    is_custom_close: bool = ((parsed_args.inc_status == IncidentStatus.DONE) or (
+            "state" in parsed_args.delta)) and close_custom_state
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
     parsed_args = pre_process_close_incident_args(parsed_args, closure_case, ticket_type, close_custom_state)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
