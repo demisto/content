@@ -64,16 +64,21 @@ class TestGetAuditLogs:
             "per_page": limit,
             "next_page": 2,  # More pages available
         }
-
-        mock_requests_get = mocker.patch("MondayEventCollector.requests.get", return_value=mock_response)
+        mocker.patch("MondayEventCollector.BaseClient._http_request", return_value=mock_response.json())
         mock_timestamp_to_datestring = mocker.patch("MondayEventCollector.timestamp_to_datestring")
         mock_timestamp_to_datestring.return_value = "2024-06-03T15:00:00.000Z"
 
+        # Create a mock AuditLogsClient
+        mock_client = mocker.MagicMock()
+        mock_client.get_audit_logs_request.return_value = mock_response.json()
+        
         # Initial state - first fetch
         initial_last_run = {}
         now_ms = int(time.time() * 1000)
 
-        result_logs, result_last_run = get_audit_logs(initial_last_run, now_ms, limit=limit, logs_per_page=limit)
+        result_logs, result_last_run = get_audit_logs(
+            initial_last_run, now_ms, limit=limit, logs_per_page=limit, client=mock_client
+        )
 
         assert len(result_logs) == limit
         assert result_last_run["last_timestamp"] == page1_logs[0]["timestamp"]
@@ -85,11 +90,11 @@ class TestGetAuditLogs:
         assert result_last_run["continuing_fetch_info"]["page"] == 2
 
         # Verify only 1 request was made (limit reached <= 1000)
-        assert mock_requests_get.call_count == 1
+        assert mock_client.get_audit_logs_request.call_count == 1
 
         # Verify request used per_page = limit (limit <= 1000)
-        call_params = mock_requests_get.call_args[1]["params"]
-        assert call_params["per_page"] == limit
+        call_args = mock_client.get_audit_logs_request.call_args[0]
+        assert call_args[2] == limit  # logs_per_page parameter
 
         # --- SECOND FETCH: Continuing fetch mechanism, page=2---
         # Mock page 2 logs (8 more logs with different timestamps)
@@ -114,15 +119,17 @@ class TestGetAuditLogs:
         }
 
         # Reset mock to return page 2 response
-        mock_requests_get.return_value = mock_response_page2
-        mock_requests_get.reset_mock()
+        mock_client.get_audit_logs_request.return_value = mock_response_page2.json()
+        mock_client.reset_mock()
 
         # Use the last_run received from the previous fetch
         previous_last_timestamp = result_last_run["last_timestamp"]
         previous_upper_bound_log_id = result_last_run["upper_bound_log_id"]
         continuing_last_run = result_last_run
 
-        result_logs_2, result_last_run_2 = get_audit_logs(continuing_last_run, now_ms, limit, limit)
+        result_logs_2, result_last_run_2 = get_audit_logs(
+            continuing_last_run, now_ms, limit, limit, client=mock_client
+        )
 
         assert len(result_logs_2) == limit
 
@@ -143,10 +150,10 @@ class TestGetAuditLogs:
         )  # on the last page, upper_bound_log_id set to lower_bound_log_id for the next fetch
 
         # Validate API call parameters
-        assert mock_requests_get.call_count == 1
-        call_params_2 = mock_requests_get.call_args[1]["params"]
-        assert call_params_2["page"] == 2  # Should use page from continuing_fetch_info
-        assert call_params_2["per_page"] == limit
+        assert mock_client.get_audit_logs_request.call_count == 1
+        call_args_2 = mock_client.get_audit_logs_request.call_args[0]
+        assert call_args_2[1] == 2  # page parameter - Should use page from continuing_fetch_info
+        assert call_args_2[2] == limit  # logs_per_page parameter
 
         # --- THIRD FETCH: New fetch with duplication handling ---
         # This tests the scenario where continuing_fetch_info is None and we start a new fetch range
@@ -177,13 +184,15 @@ class TestGetAuditLogs:
         }
 
         # Reset mock for third fetch
-        mock_requests_get.return_value = mock_response_page1_new_fetch
-        mock_requests_get.reset_mock()
+        mock_client.get_audit_logs_request.return_value = mock_response_page1_new_fetch.json()
+        mock_client.reset_mock()
 
         # Use the last_run received from the previous fetch
         new_fetch_last_run = result_last_run_2
 
-        result_logs_3, result_last_run_3 = get_audit_logs(new_fetch_last_run, now_ms, limit, limit)
+        result_logs_3, result_last_run_3 = get_audit_logs(
+            new_fetch_last_run, now_ms, limit, limit, client=mock_client
+        )
 
         # Validate duplication handling - should get 6 logs (filtering out 2 duplicates)
         expected_logs = limit - 2
@@ -205,13 +214,14 @@ class TestGetAuditLogs:
         assert result_last_run_3["continuing_fetch_info"] is None  # No more pages
 
         # Validate API call
-        assert mock_requests_get.call_count == 1
-        call_params_3 = mock_requests_get.call_args[1]["params"]
-        assert call_params_3["page"] == 1  # New fetch starts from page 1
-        assert call_params_3["per_page"] == limit
+        assert mock_client.get_audit_logs_request.call_count == 1
+        call_args_3 = mock_client.get_audit_logs_request.call_args[0]
+        assert call_args_3[1] == 1  # page parameter - New fetch starts from page 1
+        assert call_args_3[2] == limit  # logs_per_page parameter
 
         # Verify start_time filter includes epsilon adjustment
-        filters = ast.literal_eval(call_params_3["filters"])  # Parse the JSON string
+        time_filter_arg = call_args_3[0]  # time_filter is the first argument
+        filters = ast.literal_eval(time_filter_arg)  # Parse the JSON string
         assert filters["start_time"] == subtract_epsilon_from_timestamp(last_timestamp)  # Should be last_timestamp - epsilon
 
     def test_fetch_audit_logs_with_remaining_logs_mechanism(self, mocker):
@@ -312,17 +322,16 @@ class TestGetAuditLogs:
         mock_response_page1_1.json.return_value = {"data": page_1_1_logs, "page": 1, "per_page": per_page, "next_page": None}
 
         # Configure mock to return different responses for each call
-        mock_requests_get = mocker.patch("MondayEventCollector.requests.get")
-
-        mock_requests_get.side_effect = [
-            mock_response_page1,
-            mock_response_page2,
-            mock_response_page2,
-            mock_response_page3,
-            mock_response_page4,
-            mock_response_page4,
-            mock_response_page1_1,
-        ]
+        # Mock BaseClient._http_request instead of requests.get since we now use AuditLogsClient
+        mock_requests_get = mocker.patch("MondayEventCollector.BaseClient._http_request", side_effect=[
+            mock_response_page1.json(),
+            mock_response_page2.json(),
+            mock_response_page2.json(),
+            mock_response_page3.json(),
+            mock_response_page4.json(),
+            mock_response_page4.json(),
+            mock_response_page1_1.json(),
+        ])
 
         mock_timestamp_to_datestring = mocker.patch("MondayEventCollector.timestamp_to_datestring")
         mock_timestamp_to_datestring.return_value = "2024-06-03T15:00:00.000Z"

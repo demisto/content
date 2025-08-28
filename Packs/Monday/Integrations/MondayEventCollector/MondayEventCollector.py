@@ -29,10 +29,6 @@ MAX_ACTIVITY_LOGS_PER_PAGE = 10000
 MAX_AUDIT_LOGS_PER_FETCH = 5000
 MAX_ACTIVITY_LOGS_PER_FETCH = 10000
 
-PARAMS = demisto.params()
-PROXY = PARAMS.get("proxy", False)
-USE_SSL = not PARAMS.get("insecure", False)
-
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 day_ms = 24 * 60 * 60 * 1000
@@ -483,7 +479,7 @@ def process_activity_log_data(log: dict) -> dict:
         return {}
 
 
-def convert_17_digit_unix_time_to_ISO8601(ts, data_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"):
+def convert_timestamp(ts, data_format: str = "%Y-%m-%dT%H:%M:%S.%fZ"):
     """
     Convert Monday's 17-digit Unix timestamp to ISO8601 format.
 
@@ -649,7 +645,7 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, cl
             )
 
             newest_log_timestamp = fetched_logs[0].get("created_at")
-            newest_log_timestamp = convert_17_digit_unix_time_to_ISO8601(newest_log_timestamp)
+            newest_log_timestamp = convert_timestamp(newest_log_timestamp)
 
             demisto.debug(
                 f"{ACTIVITY_LOG_DEBUG_PREFIX}page=1, newest log timestamp: {newest_log_timestamp}, "
@@ -1099,7 +1095,7 @@ def add_fields_to_events(events: List[Dict], event_type: str):
             time_value = create_time.strftime(DATE_FORMAT) if create_time else None
         else:  # Activity Log
             create_time = event.get("created_at")
-            time_value = convert_17_digit_unix_time_to_ISO8601(create_time, DATE_FORMAT) if create_time else None
+            time_value = convert_timestamp(create_time, DATE_FORMAT) if create_time else None
 
         event["_time"] = time_value
         event["event_type"] = event_type
