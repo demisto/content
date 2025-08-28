@@ -4307,6 +4307,9 @@ def test_get_remote_detection_data_for_multiple_types__idp(mocker):
         "incident_type": "IDP detection",
         "status": "closed",
         "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+        "assigned_to_uid": "1",
+        "comments": [{"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"}],
+        "tags": ["tag"],
     }
 
 
@@ -4356,10 +4359,17 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     assert updated_object == {"incident_type": "detection", "status": "new", "severity": 90}
 
 
-def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
+@pytest.mark.parametrize(
+    "detection_type, incident_type, entity_modifications",
+    [
+        ("ngsiem", "ngsiem_detection", {}),
+        ("ofp", "OFP detection", {"type": "ofp", "product": "epp"}),
+    ],
+)
+def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
     """
     Given
-        - an endpoint ngsiem detection ID on the remote system
+        - an endpoint detection ID on the remote system
     When
         - running get_remote_data_command with changes to make on a detection
     Then
@@ -4368,16 +4378,19 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
     from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
 
     detection_entity = input_data.response_ngsiem_detection.copy()
+    detection_entity.update(entity_modifications)
+
     mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
     mocker.patch.object(demisto, "debug", return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+
+    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
         input_data.remote_ngsiem_detection_id
     )
 
     assert mirrored_data == detection_entity
-    assert detection_type == "ngsiem"
+    assert returned_detection_type == detection_type
     assert updated_object == {
-        "incident_type": "ngsiem_detection",
+        "incident_type": incident_type,
         "status": mirrored_data["status"],
         "severity": mirrored_data["severity"],
         "tactic": mirrored_data["tactic"],
@@ -4385,6 +4398,8 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
         "composite_id": mirrored_data["composite_id"],
         "display_name": mirrored_data["display_name"],
         "tags": mirrored_data["tags"],
+        "comments": mirrored_data["comments"],
+        "assigned_to_uid": mirrored_data["assigned_to_uid"],
     }
 
 

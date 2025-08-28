@@ -433,6 +433,7 @@ def send_new_email(
     """
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
+    context_html_body = append_email_signature(context_html_body)
 
     send_new_mail_request(
         incident_id,
@@ -1091,6 +1092,12 @@ def single_thread_reply(
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, context_html_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
+
+        # Get the custom email signature, if set, append signature to email body and context body
+        reply_html_body = append_email_signature(reply_html_body)
+        context_html_body = append_email_signature(context_html_body)
+
+        # Send the email reply
         result = validate_email_sent(
             incident_id,
             email_subject,
@@ -1454,6 +1461,10 @@ def multi_thread_reply(
             # Trim "Re:" and "RE:" from subject since the reply-mail command in both EWS and Gmail adds it again
             reply_subject = reply_subject.removeprefix("Re: ").removeprefix("RE: ")
 
+            # Get the custom email signature, if set, append signature to email body and context body
+            reply_html_body = append_email_signature(reply_html_body)
+            context_html_body = append_email_signature(context_html_body)
+
             # Send the email reply
             result = validate_email_sent(
                 incident_id,
@@ -1482,7 +1493,6 @@ def multi_thread_reply(
                 subject_with_id = reply_subject
 
             # Store message details in context entry
-            context_html_body = append_email_signature(context_html_body)
             create_thread_context(
                 reply_code,
                 final_email_cc,

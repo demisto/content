@@ -11,8 +11,8 @@ class TestFilterByAgentIp:
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.101", "ComputerName": "Agent2"},
+            {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.101", "ComputerName": "Agent2"},
         ]
 
         # Act
@@ -21,18 +21,18 @@ class TestFilterByAgentIp:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ExternalIP"] == "192.168.1.100"
+        assert result.outputs[0]["externalIp"] == "192.168.1.100"
         assert result.outputs_prefix == "SentinelOne.Agents"
-        assert result.outputs_key_field == "ID"
+        assert result.outputs_key_field == "id"
 
     def test_filter_by_agent_ip_multiple_matches_in_list(self):
         """Test filtering when multiple agents match the IP in a list"""
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.100", "ComputerName": "Agent2"},
-            {"ID": "3", "ExternalIP": "192.168.1.101", "ComputerName": "Agent3"},
+            {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.100", "ComputerName": "Agent2"},
+            {"id": "3", "externalIp": "192.168.1.101", "ComputerName": "Agent3"},
         ]
 
         # Act
@@ -41,15 +41,15 @@ class TestFilterByAgentIp:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 2
-        assert all(agent["ExternalIP"] == "192.168.1.100" for agent in result.outputs)
+        assert all(agent["externalIp"] == "192.168.1.100" for agent in result.outputs)
 
     def test_filter_by_agent_ip_no_match_in_list(self, mocker):
         """Test filtering when no agents match the IP in a list"""
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": "192.168.1.101", "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.102", "ComputerName": "Agent2"},
+            {"id": "1", "externalIp": "192.168.1.101", "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.102", "ComputerName": "Agent2"},
         ]
         mocker.patch.object(demisto, "debug")
 
@@ -65,7 +65,7 @@ class TestFilterByAgentIp:
         """Test filtering when entry_outputs is a single dict that matches"""
         # Arrange
         ip = "192.168.1.100"
-        entry_outputs = {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"}
+        entry_outputs = {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"}
 
         # Act
         result = filter_by_agent_ip(ip, entry_outputs)
@@ -73,13 +73,13 @@ class TestFilterByAgentIp:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ExternalIP"] == "192.168.1.100"
+        assert result.outputs[0]["externalIp"] == "192.168.1.100"
 
     def test_filter_by_agent_ip_single_dict_no_match(self, mocker):
         """Test filtering when entry_outputs is a single dict that doesn't match"""
         # Arrange
         ip = "192.168.1.100"
-        entry_outputs = {"ID": "1", "ExternalIP": "192.168.1.101", "ComputerName": "Agent1"}
+        entry_outputs = {"id": "1", "externalIp": "192.168.1.101", "ComputerName": "Agent1"}
         mocker.patch.object(demisto, "debug")
 
         # Act
@@ -90,12 +90,12 @@ class TestFilterByAgentIp:
         assert result.readable_output == "No agents found with IP 192.168.1.100"
 
     def test_filter_by_agent_ip_missing_external_ip(self, mocker):
-        """Test filtering when agent has no ExternalIP field"""
+        """Test filtering when agent has no externalIp field"""
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ComputerName": "Agent1"},  # Missing ExternalIP
-            {"ID": "2", "ExternalIP": "192.168.1.100", "ComputerName": "Agent2"},
+            {"id": "1", "ComputerName": "Agent1"},  # Missing externalIp
+            {"id": "2", "externalIp": "192.168.1.100", "ComputerName": "Agent2"},
         ]
         mocker.patch.object(demisto, "debug")
 
@@ -105,7 +105,7 @@ class TestFilterByAgentIp:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ID"] == "2"
+        assert result.outputs[0]["id"] == "2"
 
     def test_filter_by_agent_ip_empty_list(self, mocker):
         """Test filtering with empty entry_outputs list"""
@@ -122,12 +122,12 @@ class TestFilterByAgentIp:
         assert result.readable_output == "No agents found with IP 192.168.1.100"
 
     def test_filter_by_agent_ip_null_external_ip(self, mocker):
-        """Test filtering when agent has null ExternalIP"""
+        """Test filtering when agent has null externalIp"""
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": None, "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.100", "ComputerName": "Agent2"},
+            {"id": "1", "externalIp": None, "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.100", "ComputerName": "Agent2"},
         ]
         mocker.patch.object(demisto, "debug")
 
@@ -137,15 +137,15 @@ class TestFilterByAgentIp:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ID"] == "2"
+        assert result.outputs[0]["id"] == "2"
 
     def test_filter_by_agent_ip_string_conversion(self):
         """Test that IP comparison works with string conversion"""
         # Arrange
         ip = "100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": 100, "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.100", "ComputerName": "Agent2"},
+            {"id": "1", "externalIp": 100, "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.100", "ComputerName": "Agent2"},
         ]
 
         # Act
@@ -154,7 +154,7 @@ class TestFilterByAgentIp:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ID"] == "1"
+        assert result.outputs[0]["id"] == "1"
 
 
 class TestEdgeCases:
@@ -165,8 +165,8 @@ class TestEdgeCases:
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.100/24", "ComputerName": "Agent2"},  # Edge case
+            {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.100/24", "ComputerName": "Agent2"},  # Edge case
         ]
 
         # Act
@@ -175,14 +175,14 @@ class TestEdgeCases:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ID"] == "1"
+        assert result.outputs[0]["id"] == "1"
 
     def test_list_agents_large_response(self, mocker):
         """Test list_agents with large response (performance consideration)"""
         # Arrange
         args = {"agent_ip": "192.168.1.100"}
-        large_contents = [{"ID": str(i), "ExternalIP": "192.168.1.101", "ComputerName": f"Agent{i}"} for i in range(1000)]
-        large_contents.append({"ID": "1001", "ExternalIP": "192.168.1.100", "ComputerName": "TargetAgent"})
+        large_contents = [{"id": str(i), "externalIp": "192.168.1.101", "ComputerName": f"Agent{i}"} for i in range(1000)]
+        large_contents.append({"id": "1001", "externalIp": "192.168.1.100", "ComputerName": "TargetAgent"})
         mock_response = [{"Contents": large_contents, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -195,15 +195,15 @@ class TestEdgeCases:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ID"] == "1001"
+        assert result.outputs[0]["id"] == "1001"
 
     def test_filter_by_agent_ip_case_sensitivity(self):
         """Test that IP filtering is case sensitive (though IPs shouldn't have letters)"""
         # Arrange
         ip = "192.168.1.100"
         entry_outputs = [
-            {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"},
-            {"ID": "2", "ExternalIP": "192.168.1.100", "ComputerName": "Agent2"},
+            {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"},
+            {"id": "2", "externalIp": "192.168.1.100", "ComputerName": "Agent2"},
         ]
 
         # Act
@@ -220,7 +220,7 @@ class TestEdgeCases:
             "agent_ip": "192.168.1.100",
             "min_active_threats": 0,  # Falsy but valid
         }
-        mock_response = [{"Contents": [{"ID": "1", "ExternalIP": "192.168.1.100"}], "Type": "note"}]
+        mock_response = [{"Contents": [{"id": "1", "externalIp": "192.168.1.100"}], "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
         mocker.patch.object(demisto, "debug")
@@ -269,8 +269,8 @@ class TestListAgents:
         # Arrange
         args = {"agent_ip": "192.168.1.100"}
         mock_response = [
-            {"Contents": {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"}, "Type": "note"},
-            {"Contents": {"ID": "2", "ExternalIP": "192.168.1.101", "ComputerName": "Agent2"}, "Type": "note"},
+            {"Contents": {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"}, "Type": "note"},
+            {"Contents": {"id": "2", "externalIp": "192.168.1.101", "ComputerName": "Agent2"}, "Type": "note"},
         ]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -283,15 +283,15 @@ class TestListAgents:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ExternalIP"] == "192.168.1.100"
+        assert result.outputs[0]["externalIp"] == "192.168.1.100"
 
     def test_list_agents_with_ip_filter_no_match(self, mocker):
         """Test list_agents with agent_ip filter but no matching agents"""
         # Arrange
         args = {"agent_ip": "192.168.1.100"}
         mock_response = [
-            {"Contents": {"ID": "1", "ExternalIP": "192.168.1.101", "ComputerName": "Agent1"}, "Type": "note"},
-            {"Contents": {"ID": "2", "ExternalIP": "192.168.1.102", "ComputerName": "Agent2"}, "Type": "note"},
+            {"Contents": {"id": "1", "externalIp": "192.168.1.101", "ComputerName": "Agent1"}, "Type": "note"},
+            {"Contents": {"id": "2", "externalIp": "192.168.1.102", "ComputerName": "Agent2"}, "Type": "note"},
         ]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -316,7 +316,7 @@ class TestListAgents:
             "created_at": "2023-01-01",
             "limit": 50,
         }
-        expected_contents = [{"ID": "1", "ComputerName": "test-host"}]
+        expected_contents = [{"id": "1", "ComputerName": "test-host"}]
         mock_response = [{"Contents": expected_contents, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -361,7 +361,7 @@ class TestListAgents:
             "created_at": "2023-01-01",
             "limit": 50,
         }
-        mock_response = [{"Contents": [{"ID": "1", "ExternalIP": "192.168.1.100"}], "Type": "note"}]
+        mock_response = [{"Contents": [{"id": "1", "externalIp": "192.168.1.100"}], "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
         mocker.patch.object(demisto, "debug")
@@ -464,7 +464,7 @@ class TestListAgents:
         """Test list_agents with empty args dictionary"""
         # Arrange
         args = {}
-        expected_contents = [{"ID": "1", "ComputerName": "Agent1"}]
+        expected_contents = [{"id": "1", "ComputerName": "Agent1"}]
         mock_response = [{"Contents": expected_contents, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -489,7 +489,7 @@ class TestListAgents:
             "created_at": "2023-06-01",
             "limit": 25,
         }
-        expected_contents = [{"ID": "1", "ComputerName": "test-host"}]
+        expected_contents = [{"id": "1", "ComputerName": "test-host"}]
         mock_response = [{"Contents": expected_contents, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -526,7 +526,7 @@ class TestListAgents:
         """Test list_agents creates correct params string when IP is provided"""
         # Arrange
         args = {"agent_ip": "10.0.0.1", "hostname": "server"}
-        mock_response = [{"Contents": [{"ID": "1", "ExternalIP": "10.0.0.1"}], "Type": "note"}]
+        mock_response = [{"Contents": [{"id": "1", "externalIp": "10.0.0.1"}], "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
         mocker.patch.object(demisto, "debug")
@@ -554,7 +554,7 @@ class TestListAgents:
         """Test list_agents when Contents contains a single agent dict with IP filter"""
         # Arrange
         args = {"agent_ip": "192.168.1.100"}
-        mock_response = [{"Contents": {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"}, "Type": "note"}]
+        mock_response = [{"Contents": {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"}, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
         mocker.patch.object(demisto, "debug")
@@ -566,13 +566,13 @@ class TestListAgents:
         # Assert
         assert isinstance(result, CommandResults)
         assert len(result.outputs) == 1
-        assert result.outputs[0]["ExternalIP"] == "192.168.1.100"
+        assert result.outputs[0]["externalIp"] == "192.168.1.100"
 
     def test_list_agents_single_agent_in_contents_without_ip(self, mocker):
         """Test list_agents when Contents contains a single agent dict without IP filter"""
         # Arrange
         args = {"hostname": "Agent1"}
-        single_agent = {"ID": "1", "ExternalIP": "192.168.1.100", "ComputerName": "Agent1"}
+        single_agent = {"id": "1", "externalIp": "192.168.1.100", "ComputerName": "Agent1"}
         mock_response = [{"Contents": single_agent, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
@@ -598,7 +598,7 @@ class TestListAgents:
             "created_at": None,
             "limit": None,
         }
-        mock_response = [{"Contents": [{"ID": "1", "ExternalIP": "192.168.1.100"}], "Type": "note"}]
+        mock_response = [{"Contents": [{"id": "1", "externalIp": "192.168.1.100"}], "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
         mocker.patch.object(demisto, "debug")
@@ -628,7 +628,7 @@ class TestListAgents:
             "agent_ip": "192.168.1.100",
             "min_active_threats": 0,  # Falsy but valid
         }
-        mock_response = [{"Contents": [{"ID": "1", "ExternalIP": "192.168.1.100"}], "Type": "note"}]
+        mock_response = [{"Contents": [{"id": "1", "externalIp": "192.168.1.100"}], "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)
         mocker.patch.object(demisto, "debug")
@@ -653,7 +653,7 @@ class TestListAgents:
         """Test that list_agents always returns CommandResults when no exception occurs"""
         # Arrange
         args = {"hostname": "test"}
-        expected_contents = [{"ID": "1", "ComputerName": "test"}]
+        expected_contents = [{"id": "1", "ComputerName": "test"}]
         mock_response = [{"Contents": expected_contents, "Type": "note"}]
 
         mocker.patch.object(demisto, "executeCommand", return_value=mock_response)

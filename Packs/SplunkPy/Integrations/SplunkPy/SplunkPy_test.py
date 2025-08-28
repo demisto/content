@@ -227,6 +227,7 @@ SAMPLE_RESPONSE = [
         "tag::eventtype": "modaction_result",
         "timestamp": "none",
         "urgency": "informational",
+        "last_modified_timestamp": "1737547610.488234",
     },
 ]
 
@@ -2188,7 +2189,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Closed", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Closed",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.49",
+                },
             ],
             {
                 "close_incident": True,
@@ -2209,7 +2216,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "New", "event_id": "id", "rule_id": "id", "status_end": "false"},
+                {
+                    "status_label": "New",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "false",
+                    "last_modified_timestamp": "1737547610.50",
+                },
             ],
             {
                 "close_incident": True,
@@ -2222,7 +2235,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "false"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "false",
+                    "last_modified_timestamp": "1737547610.51",
+                },
             ],
             {
                 "close_incident": True,
@@ -2243,7 +2262,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "false"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "false",
+                    "last_modified_timestamp": "1737547610.52",
+                },
             ],
             {
                 "close_incident": True,
@@ -2256,7 +2281,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.53",
+                },
             ],
             {
                 "close_incident": True,
@@ -2277,7 +2308,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.54",
+                },
             ],
             {
                 "close_incident": True,
@@ -2291,7 +2328,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.55",
+                },
             ],
             {
                 "close_incident": True,
@@ -2419,6 +2462,7 @@ def test_get_modified_remote_data_command_add_comment(mocker):
         "status_end": "false",
         "comment": "new comment from splunk",
         "reviewer": "admin",
+        "last_modified_timestamp": "1737547610.56",
         "review_time": "1612881691.589575",
     }
     entry_tempale = {"EntryContext": {"mirrorRemoteId": test_id}, "Type": 1}
@@ -2454,7 +2498,11 @@ def test_get_modified_remote_data_command_add_comment(mocker):
 
 
 def test_get_modified_remote_data_command(mocker):
-    updated_incidet_review = {"rule_id": "id", "event_id": "id"}
+    updated_incidet_review = {
+        "rule_id": "id",
+        "event_id": "id",
+        "last_modified_timestamp": "1737547610.56",
+    }
     service = mocker.patch.object(client, "Service")
     func_call_kwargs = {
         "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
@@ -3946,6 +3994,7 @@ def test_get_modified_remote_data_command_with_user_mapping(mocker, should_map_u
     mocker.patch.object(splunk.UserMappingObject, "get_xsoar_user_by_splunk", return_value=mapped_user)
     mocker.patch("SplunkPy.results.JSONResultsReader", side_effect=lambda res: res)
     mocked_service = mocker.patch("SplunkPy.client.Service")
+    mocker.patch("SplunkPy.get_integration_context")
     mocked_service.jobs.oneshot = (
         lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if "`incident_review`" in query else [notable_without_owner]
     )
@@ -4283,3 +4332,67 @@ def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, ar
             params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
         )
     assert "The following Splunk indexes do not exist: invalid_index." in str(e.value)
+
+
+def test_get_modified_remote_data_skips_cached_events(mocker):
+    """
+    Given:
+        - An initial run of get_modified_remote_data_command processes an event.
+    When:
+        - get_modified_remote_data_command is called a second time, and the same event is mirrored again.
+    Then:
+        - Ensure the event from the second run is skipped because its key (event_id:timestamp) is already in the cache.
+    """
+    from SplunkPy import get_modified_remote_data_command
+
+    test_id = "event_123"
+    timestamp = "1737547610.49"
+    event_key = f"{test_id}:{timestamp}"
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": False,
+        "close_end_statuses": False,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(MagicMock(), False),
+        "comment_tag_from_splunk": "from_splunk",
+    }
+
+    # Mock Splunk API responses
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+        }
+    ]
+
+    # === First Run: Process and cache the event ===
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
+    mocker.patch("SplunkPy.get_integration_context", return_value={})
+    mocker.patch("SplunkPy.demisto.results")
+    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
+    set_context_mock = mocker.patch("SplunkPy.set_integration_context")
+    extensive_log_mock = mocker.patch("SplunkPy.extensive_log")
+
+    get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
+    results = demisto.results.call_args[0][0][0]["Contents"]
+
+    assert results["event_id"] == test_id
+
+    # Assert the event was cached
+    set_context_mock.assert_called_once()
+    cached_context = set_context_mock.call_args[0][0]
+    assert cached_context.get("processed_mirror_in_events_cache") == [event_key]
+
+    # === Second Run: Should skip the cached event ===
+    mocker.patch("SplunkPy.get_integration_context", return_value=cached_context)
+    set_context_mock.reset_mock()
+    demisto.results.reset_mock()
+    extensive_log_mock.reset_mock()
+
+    get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
+
+    # Assert no new events were processed
+    results = demisto.results.call_args[0][0]
+    assert len(results) == 0
+    assert extensive_log_mock.call_args_list[0].contains("mirror-in: no notables was changed since")
