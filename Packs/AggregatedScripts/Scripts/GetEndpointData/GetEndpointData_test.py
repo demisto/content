@@ -1356,13 +1356,8 @@ def test_get_extended_hostnames_set_typical():
         It returns a set of all hostnames from the Cortex XDR brand.
     """
     mapped_endpoints = {
-        Brands.CORTEX_XDR_IR.value: {
-            "1": {"Hostname": "host-xdr-1"},
-            "2": {"Hostname": "host-xdr-2"},
-        },
-        "OtherBrand": {
-            "x": {"Hostname": "should-not-appear"},
-        },
+        "1": {"Hostname": "host-xdr-1"},
+        "2": {"Hostname": "host-xdr-2"}
     }
     result = get_extended_hostnames_set(mapped_endpoints)
     assert result == {"host-xdr-1", "host-xdr-2"}
@@ -1378,20 +1373,3 @@ def test_get_extended_hostnames_set_empty():
         It returns an empty set.
     """
     assert get_extended_hostnames_set({}) == set()
-
-
-def test_get_extended_hostnames_set_irrelevant_brand():
-    """
-    Given:
-        A mapping with only irrelevant brands (not Cortex XDR/Core).
-    When:
-        get_extended_hostnames_set is called.
-    Then:
-        It returns an empty set.
-    """
-    mapped_endpoints = {
-        "OtherBrand": {
-            "x": {"Hostname": "should-not-appear"},
-        }
-    }
-    assert get_extended_hostnames_set(mapped_endpoints) == set()
