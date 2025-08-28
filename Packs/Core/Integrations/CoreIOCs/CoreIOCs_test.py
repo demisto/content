@@ -3,7 +3,7 @@ from CoreIOCs import *
 from freezegun import freeze_time
 
 Client.severity = "INFO"
-client = Client({"url": "https://example.com"})
+client = Client({"url": "https://example.com", "apikey": "apikey", "apikey_id": "apikey_id"})
 
 
 def d_sort(in_dict):
@@ -690,7 +690,7 @@ class TestCommands:
         mocker_reurn_results = mocker.patch("CoreIOCs.return_results")
         mocker_set_context = mocker.patch.object(demisto, "setIntegrationContext")
         set_sync_time("2021-11-25T00:00:00")
-        mocker_reurn_results.assert_called_once_with("set sync time to 2021-11-25T00:00:00 seccedded.")
+        mocker_reurn_results.assert_called_once_with("Successfully set sync time to 2021-11-25T00:00:00.")
         call_args = mocker_set_context.call_args[0][0]
         assert call_args["ts"] == 1637798400000
         assert call_args["time"] == "2021-11-25T00:00:00Z"
