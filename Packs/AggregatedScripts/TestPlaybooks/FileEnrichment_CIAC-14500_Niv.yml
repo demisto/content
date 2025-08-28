@@ -1,0 +1,691 @@
+id: 4e2904f4-d3ee-41e1-8f77-d747914a9bd2
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: FileEnrichment_CIAC-14500_Niv
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 09c9caf6-dfe1-401a-82c2-47bc7f531230
+    type: start
+    task:
+      id: 09c9caf6-dfe1-401a-82c2-47bc7f531230
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 55
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1825d805-8f32-4923-bbd0-2885b030b209
+    type: regular
+    task:
+      id: 1825d805-8f32-4923-bbd0-2885b030b209
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 22b2cd6f-49c6-4a6b-86c6-892da7f2fb75
+    type: regular
+    task:
+      id: 22b2cd6f-49c6-4a6b-86c6-892da7f2fb75
+      version: -1
+      name: Create Hash 256
+      description: |
+        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
+      scriptName: CreateHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      text:
+        simple: nivtest
+      type:
+        simple: sha256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fbb7758a-1369-47e8-b7a9-adc3a2c7acdb
+    type: regular
+    task:
+      id: fbb7758a-1369-47e8-b7a9-adc3a2c7acdb
+      version: -1
+      name: File Enrichment 1
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichmenttest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "12"
+      - "13"
+    scriptarguments:
+      file_hash:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 387c1238-cdd4-42f8-9930-a3607d35b5be
+    type: condition
+    task:
+      id: 387c1238-cdd4-42f8-9930-a3607d35b5be
+      version: -1
+      name: |
+        Verify Brand
+      description: Pretty-print the contents of the playbook context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2c3736a6-da3e-4d52-9239-0c4cbc0e5e94
+    type: regular
+    task:
+      id: 2c3736a6-da3e-4d52-9239-0c4cbc0e5e94
+      version: -1
+      name: Create SHA 1
+      description: |
+        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
+      scriptName: CreateHash
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      text:
+        simple: file-enrichment
+      type:
+        simple: sha1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 383f7c36-1f02-4dba-94c5-1e7bb790b877
+    type: regular
+    task:
+      id: 383f7c36-1f02-4dba-94c5-1e7bb790b877
+      version: -1
+      name: File Enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichmenttest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+      - "17"
+    scriptarguments:
+      brands:
+        simple: VirusTotal (API v3)
+      file_hash:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4dde6e10-0ab5-4485-adb3-bad352c9e304
+    type: regular
+    task:
+      id: 4dde6e10-0ab5-4485-adb3-bad352c9e304
+      version: -1
+      name: Add to Tim
+      description: Checks the file reputation of the specified hash.
+      script: VirusTotal (API v3)|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    scriptarguments:
+      file:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7228c44e-911f-4326-a67a-825ba5a74586
+    type: regular
+    task:
+      id: 7228c44e-911f-4326-a67a-825ba5a74586
+      version: -1
+      name: Add to Tim
+      description: Retrieve results for a file hash using WildFire.
+      script: WildFire-v2|||file
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      file:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b7ab8950-52ef-4a7d-852b-6106e0df884d
+    type: title
+    task:
+      id: b7ab8950-52ef-4a7d-852b-6106e0df884d
+      version: -1
+      name: External Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 83fc969c-0a3c-41d5-a4d1-1c0bd2231ec2
+    type: title
+    task:
+      id: 83fc969c-0a3c-41d5-a4d1-1c0bd2231ec2
+      version: -1
+      name: 'Internal Enrichment '
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5c02bafc-58e2-41e3-a83a-8bd797a1d21a
+    type: condition
+    task:
+      id: 5c02bafc-58e2-41e3-a83a-8bd797a1d21a
+      version: -1
+      name: Validate Indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: CreateHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 59b704af-60bc-4e49-8375-af4de5620fd7
+    type: condition
+    task:
+      id: 59b704af-60bc-4e49-8375-af4de5620fd7
+      version: -1
+      name: Validate Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6e4dcfc3-b74b-43fc-9e34-63969e7363dd
+    type: regular
+    task:
+      id: 6e4dcfc3-b74b-43fc-9e34-63969e7363dd
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: CreateHash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: c90adb0c-9a12-47f3-bc90-bf310359fbf8
+    type: condition
+    task:
+      id: c90adb0c-9a12-47f3-bc90-bf310359fbf8
+      version: -1
+      name: |
+        Verify Brand
+      description: Pretty-print the contents of the playbook context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 02d31602-ed8f-4291-b7d4-bb2a924bab6b
+    type: condition
+    task:
+      id: 02d31602-ed8f-4291-b7d4-bb2a924bab6b
+      version: -1
+      name: Validate Indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: CreateHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1acf9e1c-2234-4caf-8274-f52df13ec137
+    type: condition
+    task:
+      id: 1acf9e1c-2234-4caf-8274-f52df13ec137
+      version: -1
+      name: Validate Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 1e6eceaf-3b91-402e-88d1-d1cf0ad7050b
+    type: title
+    task:
+      id: 1e6eceaf-3b91-402e-88d1-d1cf0ad7050b
+      version: -1
+      name: Combine Internal and External
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1910,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
