@@ -2088,6 +2088,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
     except DemistoException as e:
         if start_at and "Error in API call [410]" in str(e):
             # Old endpoint was used but is already removed in this jira instance
+            demisto.debug(f"Got error when using old query issues endpoint. Error message: {str(e)}")
             raise DemistoException(
                 "The start_at argument is no longer supported in this Jira instance." "Please use next_page_token instead."
             )
