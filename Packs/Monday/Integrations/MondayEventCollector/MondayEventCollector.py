@@ -31,9 +31,7 @@ MAX_ACTIVITY_LOGS_PER_FETCH = 10000
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-day_ms = 24 * 60 * 60 * 1000
-START_FETCH_TIME = 900 * day_ms  # TODO: change it to one minute before margin (60 * 1000)-1
-# START_FETCH_TIME = 60 * 1000 - 1
+START_FETCH_TIME = (60 * 1000) - 1 # TODO: change it to one minute before margin (60 * 1000)-1
 
 # Debug prefixes - used for logger messages
 AUDIT_LOG_DEBUG_PREFIX = "Audit Logs- MondayEventCollector Debug Message:\n"
