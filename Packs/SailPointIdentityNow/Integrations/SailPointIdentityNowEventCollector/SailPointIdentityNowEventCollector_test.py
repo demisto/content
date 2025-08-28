@@ -64,6 +64,7 @@ def test_fetch_events__end_to_end_with_affective_dedup(mocker):
     mocker.patch.object(demisto, "debug")
     client = mocker.patch("SailPointIdentityNowEventCollector.Client")
     last_run = {"prev_id": "0", "prev_date": "2022-01-01T00:00:00"}
+    look_back = 0
     max_events_per_fetch = 5
 
     mocker.patch.object(
@@ -76,7 +77,7 @@ def test_fetch_events__end_to_end_with_affective_dedup(mocker):
         ],
     )
 
-    next_run, events = fetch_events(client, max_events_per_fetch, last_run)
+    next_run, events = fetch_events(client, max_events_per_fetch, look_back, last_run)
 
     assert next_run == {"prev_date": "2022-01-01T00:04:00", "last_fetched_ids": ["4"]}
     assert len(events) == 4
@@ -96,10 +97,11 @@ def test_fetch_events__no_events(mocker):
     mock_debug = mocker.patch.object(demisto, "debug")
     client = mocker.patch("SailPointIdentityNowEventCollector.Client")
     last_run = {"prev_date": "2022-01-01T00:00:00", "last_fetched_ids": ["0"]}
+    look_back = 0
     max_events_per_fetch = 5
 
     mocker.patch.object(client, "search_events", return_value=[])
-    next_run, _ = fetch_events(client, max_events_per_fetch, last_run)
+    next_run, _ = fetch_events(client, max_events_per_fetch, look_back, last_run)
 
     assert next_run == last_run
     assert mock_debug.call_args_list[3][0][0] == "No events fetched. Exiting the loop."
@@ -119,13 +121,14 @@ def test_fetch_events__all_events_are_dedup(mocker):
     mock_debug = mocker.patch.object(demisto, "debug")
     client = mocker.patch("SailPointIdentityNowEventCollector.Client")
     last_run = {"prev_date": "2022-01-01T00:00:00", "last_fetched_ids": [0]}
+    look_back = 0
     max_events_per_fetch = 5
     mocker.patch("SailPointIdentityNowEventCollector.dedup_events", return_value=[])
 
     mocker.patch.object(
         client, "search_events", return_value=[{"id": str(i), "created": f"2022-01-01T00:0{i}:00"} for i in range(1, 4)]
     )
-    next_run, _ = fetch_events(client, max_events_per_fetch, last_run)
+    next_run, _ = fetch_events(client, max_events_per_fetch, look_back, last_run)
     assert next_run == last_run
     assert "Successfully fetched 3 events in this cycle." in mock_debug.call_args_list[2][0][0]
     assert "Done fetching. Sum of all events: 0, the next run is" in mock_debug.call_args_list[3][0][0]
