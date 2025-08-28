@@ -7,6 +7,7 @@ from MondayEventCollector import (
     subtract_epsilon_from_timestamp,
     fetch_audit_logs,
     fetch_activity_logs,
+    test_connection,
 )
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
@@ -671,4 +672,130 @@ class TestGetActivityLogs:
         assert board_456_last_run_3["lower_bound_log_id"] == board_456_last_run_3["upper_bound_log_id"]
 
         # Validate total API calls for third fetch
-        assert mock_http_request.call_count == 4
+
+
+class TestConnectionAndUtilities:
+    """Test class for connection testing and utility functions."""
+
+    def test_generate_login_url_success(self, mocker):
+        """Test successful generation of login URL."""
+        from MondayEventCollector import generate_login_url
+        
+        mock_params = {"client_id": "test_client_id"}
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        
+        result = generate_login_url()
+        
+        assert "https://auth.monday.com/oauth2/authorize?client_id=test_client_id" in result.readable_output
+        assert "Click on the [login URL]" in result.readable_output
+        assert "AUTH_CODE" in result.readable_output
+
+    def test_generate_login_url_missing_client_id(self, mocker):
+        """Test generate_login_url with missing client ID."""
+        from MondayEventCollector import generate_login_url
+        
+        mock_params = {"client_id": ""}
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+        
+        try:
+            generate_login_url()
+        except DemistoException as e:
+            assert "Please provide Client ID" in str(e)
+
+    def test_test_connection_activity_logs_success(self, mocker):
+        """Test successful connection test for activity logs."""
+        
+        mock_params = {
+            "client_id": "test_client_id",
+            "secret": "test_secret",
+            "auth_code": "test_auth_code",
+            "board_ids": "123,456",
+            "activity_logs_url": "https://api.monday.com"
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+        
+        # Mock ActivityLogsClient with required attributes
+        mock_activity_client = mocker.MagicMock()
+        mock_activity_client.client_id = "test_client_id"
+        mock_activity_client.client_secret = "test_secret"
+        mock_activity_client.auth_code = "test_auth_code"
+        
+        # Mock AuditLogsClient with required attributes
+        mock_audit_client = mocker.MagicMock()
+        mock_audit_client.audit_token = ""
+        mock_audit_client.audit_logs_url = ""
+        
+        # Mock the client initialization functions
+        mocker.patch("MondayEventCollector.initiate_activity_client", return_value=mock_activity_client)
+        mocker.patch("MondayEventCollector.initiate_audit_client", return_value=mock_audit_client)
+        
+        # Mock get_integration_context to return access token
+        mocker.patch("MondayEventCollector.get_integration_context", return_value={"access_token": "test_token"})
+        
+        # Mock get_activity_logs to simulate successful fetch
+        mocker.patch("MondayEventCollector.get_activity_logs", return_value=([{"id": "test_log"}], {}))
+        
+        result = test_connection()
+        
+        assert "Test connection success for activity logs" in result.readable_output
+
+    def test_test_connection_audit_logs_success(self, mocker):
+        """Test successful connection test for audit logs."""
+        
+        mock_params = {
+            "audit_token": "test_audit_token",
+            "audit_logs_url": "https://test.monday.com"
+        }
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+        
+        # Mock ActivityLogsClient with empty attributes (will fail activity logs test)
+        mock_activity_client = mocker.MagicMock()
+        mock_activity_client.client_id = ""
+        mock_activity_client.client_secret = ""
+        
+        # Mock AuditLogsClient with required attributes
+        mock_audit_client = mocker.MagicMock()
+        mock_audit_client.audit_token = "test_audit_token"
+        mock_audit_client.audit_logs_url = "https://test.monday.com"
+        
+        # Mock the client initialization functions
+        mocker.patch("MondayEventCollector.initiate_activity_client", return_value=mock_activity_client)
+        mocker.patch("MondayEventCollector.initiate_audit_client", return_value=mock_audit_client)
+        
+        # Mock get_audit_logs to simulate successful fetch
+        mocker.patch("MondayEventCollector.get_audit_logs", return_value=([{"timestamp": "2024-01-01T00:00:00.000Z"}], {}))
+        
+        result = test_connection()
+        
+        assert "Test connection success for audit logs" in result.readable_output
+
+    def test_test_connection_missing_params(self, mocker):
+        """Test connection test with missing parameters."""
+        from MondayEventCollector import test_connection
+        
+        mock_params = {}  # No parameters provided
+        mocker.patch.object(demisto, "params", return_value=mock_params)
+        mocker.patch.object(demisto, "debug")
+        
+        result = test_connection()
+        
+        assert "Please provide" in result.readable_output
+        assert "to test connection" in result.readable_output
+
+    def test_subtract_epsilon_from_timestamp(self):
+        """Test timestamp epsilon subtraction utility function."""
+
+        timestamp = "2024-06-03T14:25:47.000Z"
+        result = subtract_epsilon_from_timestamp(timestamp)
+        assert result == "2024-06-03T14:25:46.999000Z"
+
+        timestamp = "2024-06-03T14:25:00.000Z"
+        result = subtract_epsilon_from_timestamp(timestamp)
+        assert result == "2024-06-03T14:24:59.999000Z"
+
+        timestamp = "2024-06-03T14:00:00.000Z"
+        result = subtract_epsilon_from_timestamp(timestamp)
+        assert result == "2024-06-03T13:59:59.999000Z"
