@@ -104,8 +104,10 @@ def parse_filter_field(filter_string: str | None):
     for filter in list_filters:
         match_filter = regex.match(filter)
         if match_filter is None:
-            demisto.debug(f"could not parse filter: {filter}")
-            continue
+            raise ValueError(
+                f"Could not parse field: {filter}. Please make sure you provided "
+                "like so: name=<name>,values=<values>;name=<name>,values=<value1>,<value2>..."
+            )
         demisto.debug(
             f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
             f' if larger than {MAX_FILTER_VALUES},'

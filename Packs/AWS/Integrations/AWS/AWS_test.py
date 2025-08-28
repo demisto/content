@@ -2172,29 +2172,25 @@ def test_parse_filter_field_with_invalid_format():
     """
     Given: A filter string that doesn't match the expected regex pattern.
     When: parse_filter_field function processes the malformed input.
-    Then: It should skip the invalid filter and return an empty list.
+    Then: Raise an ValueError.
     """
     from AWS import parse_filter_field
 
-    result = parse_filter_field("invalid-filter-format")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_filter_field("invalid-filter-format")
 
 
 def test_parse_filter_field_with_mixed_valid_invalid_filters():
     """
     Given: Multiple filter strings where some are valid and some are invalid.
     When: parse_filter_field function processes the mixed input.
-    Then: It should return only the valid filters and skip invalid ones.
+    Then: Raise an ValueError.
     """
     from AWS import parse_filter_field
 
     filter_string = "name=valid-filter,values=test;invalid-format;name=another-valid,values=value1,value2"
-    result = parse_filter_field(filter_string)
-    assert len(result) == 2
-    assert result[0]["Name"] == "valid-filter"
-    assert result[0]["Values"] == ["test"]
-    assert result[1]["Name"] == "another-valid"
-    assert result[1]["Values"] == ["value1", "value2"]
+    with pytest.raises(ValueError):
+        parse_filter_field(filter_string)
 
 
 def test_parse_filter_field_with_spaces_in_values():
@@ -2215,24 +2211,24 @@ def test_parse_filter_field_with_missing_values():
     """
     Given: A filter string with name but missing values part.
     When: parse_filter_field function processes the incomplete input.
-    Then: It should skip the invalid filter and return an empty list.
+    Then: Raises ValueError.
     """
     from AWS import parse_filter_field
 
-    result = parse_filter_field("name=instance-state-name")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_filter_field("name=instance-state-name")
 
 
 def test_parse_filter_field_with_missing_name():
     """
     Given: A filter string with values but missing name part.
     When: parse_filter_field function processes the incomplete input.
-    Then: It should skip the invalid filter and return an empty list.
+    Then: Raises ValueError.
     """
     from AWS import parse_filter_field
 
-    result = parse_filter_field("values=running,stopped")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_filter_field("values=running,stopped")
 
 
 def test_parse_filter_field_with_colon_in_value():
