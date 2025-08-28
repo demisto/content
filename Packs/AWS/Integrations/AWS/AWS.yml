@@ -1970,7 +1970,7 @@ script:
       description: Comma-separated list of security group names. group_names is only supported for EC2-Classic and default VPC.
       isArray: true
     - name: filters
-      description: One or more custom filters to apply separated by ';' (e.g., name=<name>,values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request.
+      description: "One or more custom filters to apply, separated by ';' (for example, name=<name>;values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
       isArray: true
     - name: limit
       defaultValue: "50"

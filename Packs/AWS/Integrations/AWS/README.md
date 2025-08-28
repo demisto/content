@@ -768,7 +768,7 @@ Describes the specified security groups or all of your security groups. Returns 
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | group_ids | Comma-separated list of security group IDs (e.g., sg-12345678,sg-87654321). | Optional |
 | group_names | Comma-separated list of security group names. group_names is only supported for EC2-Classic and default VPC. | Optional |
-| filters | One or more custom filters to apply separated by ';' (e.g., name=&lt;name&gt;,values=&lt;values&gt;).You can specify up to 50 filters and up to 200 values per filter in a single request. | Optional |
+| filters | One or more custom filters to apply, separated by ';' (for example, name=&lt;name&gt;;values=&lt;values&gt;).You can specify up to 50 filters and up to 200 values per filter in a single request. | Optional |
 | limit | The maximum number of records to return. Valid range is 5-1000. Default is 50. | Optional |
 | next_token | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. | Optional |
 

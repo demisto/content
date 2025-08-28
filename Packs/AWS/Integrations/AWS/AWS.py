@@ -115,6 +115,7 @@ def parse_filter_field(filter_string: str | None):
 
     return filters
 
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
