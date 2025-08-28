@@ -5868,7 +5868,15 @@
             "playbookID": "QuarantineFile-Test",
             "timeout": 300,
             "fromversion": "6.10.0"
-        }
+        },
+        {
+            "playbookID": "BlockExternalIP - Test",
+            "integrations": ["F5Silverline", "Cisco ASA", "Panorama"],
+            "instance_names": [
+                "panorama_instance_security_team"
+            ],
+            "timeout": 600
+        },
     ],
     "skipped_tests": {
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
