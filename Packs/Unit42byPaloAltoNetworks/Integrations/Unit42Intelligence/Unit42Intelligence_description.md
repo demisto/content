@@ -12,18 +12,11 @@ This integration requires a Unit 42 Intelligence API key. Contact your Palo Alto
 - **API Key**: Your Unit 42 Intelligence API authentication key
 - **Source Reliability**: Configure the reliability level for threat intelligence data (default: A - Completely reliable)
 - **Create Relationships**: Enable automatic creation of relationships between indicators and threat objects
+- **Create Indicators from Relationships**: Enable automatic creation of indicators from relationships
 
 ### Supported Indicators
 
-- IP addresses (IPv4)
+- IP addresses (IPv4, IPv6)
 - Domains
 - URLs
 - File hashes (SHA256)
-
-### Features
-
-- Real-time indicator enrichment
-- Threat object associations (malware families, threat actors, campaigns)
-- Verdict classification (malicious, suspicious, benign, unknown)
-- Relationship mapping between indicators and threats
-- Comprehensive metadata including first/last seen dates and source information

@@ -1,180 +1,316 @@
-# Unit 42 Intelligence
+Enrich indicators with Unit 42 threat intelligence data including verdicts, tags, and relationships.
+This integration was integrated and tested with version xx of Unit 42 Intelligence.
 
-## Overview
+## Configure Unit 42 Intelligence in Cortex
 
-The Unit 42 Intelligence integration provides threat intelligence enrichment capabilities for indicators using Palo Alto Networks Unit 42 threat intelligence data. This integration replaces the deprecated AutoFocus V2 integration and provides enhanced threat intelligence capabilities.
-
-## Features
-
-- **Indicator Enrichment**: Enrich IP addresses, domains, URLs, and file hashes with threat intelligence data
-- **Threat Object Associations**: Get associated threat actors, malware families, campaigns, and attack patterns
-- **Verdict Information**: Receive malicious, suspicious, benign, or unknown verdicts for indicators
-- **Relationship Creation**: Automatically create relationships between indicators and threat objects
-- **Comprehensive Metadata**: Access first seen, last seen, and source information
-
-## Configuration
-
-To configure the Unit 42 Intelligence integration:
-
-1. **Server URL**: The base URL for the Unit 42 Intelligence API
-2. **API Key**: Your Unit 42 Intelligence API key for authentication
-3. **Source Reliability**: Set the reliability level for the intelligence source (default: A - Completely reliable)
-4. **Create Relationships**: Enable/disable automatic relationship creation between indicators and threat objects (default: enabled)
-5. **Trust any certificate**: Option to ignore SSL certificate verification (not recommended for production)
-6. **Use system proxy settings**: Use system proxy configuration if needed
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The base URL for the Unit 42 Intelligence API | True |
+| Password | API key for authentication with Unit 42 Intelligence service | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Create relationships | Create relationships between indicators and threat objects | False |
+| Create indicators from relationships | Whether to create indicators from relationships, When selected, the relationships will be created as indicators | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
 
+***
 Enrich an IP address with Unit 42 threat intelligence.
 
-**Arguments:**
+#### Base Command
 
-- `ip` (required): The IP address to enrich
+`ip`
 
-**Example:**
+#### Input
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address to enrich. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IP.Address | String | The IP address. |
+| IP.Malicious.Vendor | String | The vendor reporting the IP as malicious. |
+| IP.Malicious.Description | String | Description of the malicious IP. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Unit42.IP.Address | String | The IP address. |
+| Unit42.IP.Verdict | String | The verdict for the IP. |
+| Unit42.IP.VerdictCategory | String | The verdict category. |
+| Unit42.IP.FirstSeen | Date | First seen date. |
+| Unit42.IP.LastSeen | Date | Last seen date. |
+| Unit42.IP.SeenBy | String | Sources that have seen this IP. |
+| Unit42.IP.Tags | String | Associated threat tags. |
+
+#### Command example
+
+```!ip ip="8.8.8.8"```
+
+#### Context Example
+
+```json
+{
+    "Unit42.IP": {
+        "Counts": [
+            {
+                "count_type": "wf_sample",
+                "count_values": {
+                    "benign": 246022,
+                    "grayware": 214,
+                    "malware": 3176800
+                }
+            }
+        ],
+        "EnrichedThreatObjectAssociation": null,
+        "FirstSeen": "",
+        "LastSeen": "",
+        "SeenBy": [
+            "wf_sample"
+        ],
+        "Type": "ip",
+        "Value": "8.8.8.8",
+        "Verdict": "malicious",
+        "VerdictCategory": null
+    }
+}
 ```
-!ip ip="192.168.1.1"
-```
+
+#### Human Readable Output
+
+>### Unit 42 Intelligence results for IP: 8.8.8.8
+>
+>|Value|Verdict|Verdict Category|Seen By|First Seen|Last Seen|
+>|---|---|---|---|---|---|
+>| 8.8.8.8 | malicious |  | wf_sample |  |  |
 
 ### domain
 
+***
 Enrich a domain with Unit 42 threat intelligence.
 
-**Arguments:**
+#### Base Command
 
-- `domain` (required): The domain to enrich
+`domain`
 
-**Example:**
+#### Input
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to enrich. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The domain name. |
+| Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. |
+| Domain.Malicious.Description | String | Description of the malicious domain. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Unit42.Domain.Name | String | The domain name. |
+| Unit42.Domain.Verdict | String | The verdict for the domain. |
+| Unit42.Domain.VerdictCategory | String | The verdict category. |
+| Unit42.Domain.FirstSeen | Date | First seen date. |
+| Unit42.Domain.LastSeen | Date | Last seen date. |
+| Unit42.Domain.SeenBy | String | Sources that have seen this domain. |
+| Unit42.Domain.Tags | String | Associated threat tags. |
+
+#### Command example
+
+```!domain domain="example.com"```
+
+#### Context Example
+
+```json
+{
+    "Unit42.Domain":{
+        "Counts": null,
+        "EnrichedThreatObjectAssociation": null,
+        "FirstSeen": "",
+        "LastSeen": "",
+        "SeenBy": null,
+        "Type": "domain",
+        "Value": "example.com",
+        "Verdict": "benign",
+        "VerdictCategory": [
+            "allowlist_dict_dga"
+        ]
+    }
+}
 ```
-!domain domain="malicious.example.com"
-```
+
+#### Human Readable Output
+
+>### Unit 42 Intelligence results for Domain: example.com
+>
+>|Value|Verdict|Verdict Category|Seen By|First Seen|Last Seen|
+>|---|---|---|---|---|---|
+>| example.com | benign | allowlist_dict_dga | wf_sample |  |  |
 
 ### url
 
+***
 Enrich a URL with Unit 42 threat intelligence.
 
-**Arguments:**
+#### Base Command
 
-- `url` (required): The URL to enrich
+`url`
 
-**Example:**
+#### Input
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | URL to enrich. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| URL.Data | String | The URL. |
+| URL.Malicious.Vendor | String | The vendor reporting the URL as malicious. |
+| URL.Malicious.Description | String | Description of the malicious URL. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Unit42.URL.Data | String | The URL. |
+| Unit42.URL.Verdict | String | The verdict for the URL. |
+| Unit42.URL.VerdictCategory | String | The verdict category. |
+| Unit42.URL.FirstSeen | Date | First seen date. |
+| Unit42.URL.LastSeen | Date | Last seen date. |
+| Unit42.URL.SeenBy | String | Sources that have seen this URL. |
+| Unit42.URL.Tags | String | Associated threat tags. |
+
+#### Command example
+
+```!url url="https://en.wikipedia.org/wiki/URL"```
+
+#### Context Example
+
+```json
+{
+    "Unit42.URL": {
+        "Counts": [
+            {
+                "count_type": "wf_sample",
+                "count_values": {
+                    "benign": 97,
+                    "grayware": 0,
+                    "malware": 0
+                }
+            }
+        ],
+        "EnrichedThreatObjectAssociation": null,
+        "FirstSeen": "",
+        "LastSeen": "",
+        "SeenBy": [
+            "wf_sample"
+        ],
+        "Type": "url",
+        "Value": "https://en.wikipedia.org/wiki/URL",
+        "Verdict": "unknown",
+        "VerdictCategory": null
+    }
+}
 ```
-!url url="http://malicious.example.com/path"
-```
+
+#### Human Readable Output
+
+>### Unit 42 Intelligence results for URL: https://en.wikipedia.org/wiki/URL
+>
+>|Value|Verdict|Verdict Category|Seen By|First Seen|Last Seen|
+>|---|---|---|---|---|---|
+>| https://en.wikipedia.org/wiki/URL | unknown |  | wf_sample |  |  |
 
 ### file
 
+***
 Enrich a file hash with Unit 42 threat intelligence.
 
-**Arguments:**
+#### Base Command
 
-- `file` (required): The file hash to enrich (supports MD5, SHA1, SHA256)
+`file`
 
-**Example:**
+#### Input
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | File hash to enrich (MD5, SHA1, or SHA256). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.Vendor | String | The vendor reporting the file as malicious. |
+| File.Malicious.Description | String | Description of the malicious file. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Unit42.File.Hash | String | The file hash. |
+| Unit42.File.Verdict | String | The verdict for the file. |
+| Unit42.File.VerdictCategory | String | The verdict category. |
+| Unit42.File.FirstSeen | Date | First seen date. |
+| Unit42.File.LastSeen | Date | Last seen date. |
+| Unit42.File.SeenBy | String | Sources that have seen this file. |
+| Unit42.File.Tags | String | Associated threat tags. |
+
+#### Command example
+
+```!file file="123456abcdef"```
+
+#### Context Example
+
+```json
+{
+    "Unit42.File": {
+        "Counts": [
+            {
+                "count_type": "wf_sample",
+                "count_values": {
+                    "benign": 0,
+                    "grayware": 0,
+                    "malware": 3
+                }
+            }
+        ],
+        "EnrichedThreatObjectAssociation": null,
+        "FirstSeen": "",
+        "LastSeen": "",
+        "SeenBy": [
+            "wf_sample"
+        ],
+        "Type": "filehash_sha256",
+        "Value": "123456abcdef",
+        "Verdict": "malicious",
+        "VerdictCategory": null
+    }
+}
 ```
-!file file="a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
-```
 
-## Context Outputs
+#### Human Readable Output
 
-### IP Context
-
-- `IP.Address`: The IP address
-- `IP.Malicious.Vendor`: The vendor reporting the IP as malicious
-- `IP.Malicious.Description`: Description of the malicious IP
-- `Unit42.IP.Address`: The IP address
-- `Unit42.IP.Verdict`: The verdict for the IP (malicious, suspicious, benign, unknown)
-- `Unit42.IP.VerdictCategory`: The verdict category
-- `Unit42.IP.FirstSeen`: First seen date
-- `Unit42.IP.LastSeen`: Last seen date
-- `Unit42.IP.SeenBy`: Sources that have seen this IP
-- `Unit42.IP.Tags`: Associated threat tags
-
-### Domain Context
-
-- `Domain.Name`: The domain name
-- `Domain.Malicious.Vendor`: The vendor reporting the domain as malicious
-- `Domain.Malicious.Description`: Description of the malicious domain
-- `Unit42.Domain.Name`: The domain name
-- `Unit42.Domain.Verdict`: The verdict for the domain
-- `Unit42.Domain.VerdictCategory`: The verdict category
-- `Unit42.Domain.FirstSeen`: First seen date
-- `Unit42.Domain.LastSeen`: Last seen date
-- `Unit42.Domain.SeenBy`: Sources that have seen this domain
-- `Unit42.Domain.Tags`: Associated threat tags
-
-### URL Context
-
-- `URL.Data`: The URL
-- `URL.Malicious.Vendor`: The vendor reporting the URL as malicious
-- `URL.Malicious.Description`: Description of the malicious URL
-- `Unit42.URL.Data`: The URL
-- `Unit42.URL.Verdict`: The verdict for the URL
-- `Unit42.URL.VerdictCategory`: The verdict category
-- `Unit42.URL.FirstSeen`: First seen date
-- `Unit42.URL.LastSeen`: Last seen date
-- `Unit42.URL.SeenBy`: Sources that have seen this URL
-- `Unit42.URL.Tags`: Associated threat tags
-
-### File Context
-
-- `File.MD5`: The MD5 hash of the file
-- `File.SHA1`: The SHA1 hash of the file
-- `File.SHA256`: The SHA256 hash of the file
-- `File.Malicious.Vendor`: The vendor reporting the file as malicious
-- `File.Malicious.Description`: Description of the malicious file
-- `Unit42.File.Hash`: The file hash
-- `Unit42.File.Verdict`: The verdict for the file
-- `Unit42.File.VerdictCategory`: The verdict category
-- `Unit42.File.FirstSeen`: First seen date
-- `Unit42.File.LastSeen`: Last seen date
-- `Unit42.File.SeenBy`: Sources that have seen this file
-- `Unit42.File.Tags`: Associated threat tags
-
-### DBotScore Context
-
-All commands provide standard DBotScore context:
-
-- `DBotScore.Indicator`: The indicator that was tested
-- `DBotScore.Type`: The indicator type
-- `DBotScore.Vendor`: The vendor used to calculate the score
-- `DBotScore.Score`: The actual score (0=Unknown, 1=Good, 2=Suspicious, 3=Bad)
-- `DBotScore.Reliability`: Reliability of the source providing the intelligence data
-
-## Migration from AutoFocus V2
-
-This integration serves as a replacement for the deprecated AutoFocus V2 integration. Key differences include:
-
-1. **Enhanced API**: Uses the new Unit 42 Intelligence API for improved performance and data quality
-2. **Simplified Configuration**: Streamlined setup process with fewer configuration options
-3. **Better Relationships**: Improved relationship creation between indicators and threat objects
-4. **Updated Threat Objects**: Access to current Unit 42 threat intelligence tags and battlecards
-
-### Command Mapping
-
-- AutoFocus V2 `!ip` → Unit 42 Intelligence `!ip`
-- AutoFocus V2 `!domain` → Unit 42 Intelligence `!domain`
-- AutoFocus V2 `!url` → Unit 42 Intelligence `!url`
-- AutoFocus V2 `!file` → Unit 42 Intelligence `!file`
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Authentication Errors**: Verify your API key is correct and has proper permissions
-2. **Network Connectivity**: Ensure the XSOAR server can reach the Unit 42 Intelligence API endpoints
-3. **Rate Limiting**: The API may have rate limits; consider implementing delays between requests if needed
-
-### Support
-
-For technical support, please contact Palo Alto Networks support or refer to the Cortex XSOAR documentation.
-
-## Version History
-
-- **1.0.0**: Initial release of Unit 42 Intelligence integration
+>### Unit 42 Intelligence results for File: 123456abcdef
+>
+>|Value|Verdict|Verdict Category|Seen By|First Seen|Last Seen|
+>|---|---|---|---|---|---|
+>| 123456abcdef | malicious |  | wf_sample |  |  |
