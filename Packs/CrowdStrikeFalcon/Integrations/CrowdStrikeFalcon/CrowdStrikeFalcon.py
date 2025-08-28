@@ -3057,7 +3057,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
 
     detections_offset: int = current_fetch_info_detections.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
-        last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=0, date_format=DETECTION_DATE_FORMAT
+        last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
     fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
     incident_type = "detection"
