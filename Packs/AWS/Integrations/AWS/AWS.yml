@@ -1750,6 +1750,96 @@ script:
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
 
+  - name: aws-cloudtrail-trails-describe
+    arguments:
+    - description: A comma-separated list of trail names, trail ARNs, or both, of the trails to describe. If an empty list is specified, information for the trail in the current region is returned.
+      name: trail_names
+    - auto: PREDEFINED
+      description: Specifies whether to include shadow trails in the response. A shadow trail is the replication in a region of a trail that was created in a different region. The default is true.
+      name: include_shadow_trails
+      predefined:
+      - 'true'
+      - 'false'
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.CloudTrail.Trails.Name
+      description: Name of the trail set by calling CreateTrail.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.S3BucketName
+      description: Name of the Amazon S3 bucket into which CloudTrail delivers your trail files.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
+      description: Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
+      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
+      description: Set to True to include AWS API calls from AWS global services such as IAM. Otherwise, False.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
+      description: Specifies whether the trail belongs only to one region or exists in all regions.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.HomeRegion
+      description: The region in which the trail was created.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.TrailARN
+      description: Specifies the ARN of the trail.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.LogFileValidationEnabled
+      description: Specifies whether log file validation is enabled.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
+      description: Specifies an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
+      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      type: string
+    - contextPath: AWS.CloudTrail.KmsKeyId
+      description: Specifies the KMS key ID that encrypts the logs delivered by CloudTrail.
+      type: string
+    - contextPath: AWS.CloudTrail.HasCustomEventSelectors
+      description: Specifies if the trail has custom event selectors.
+      type: boolean
   isfetch: false
   runonce: false
   script: '-'
