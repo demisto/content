@@ -31,7 +31,7 @@ MAX_ACTIVITY_LOGS_PER_FETCH = 10000
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-START_FETCH_TIME = (60 * 1000) - 1 # TODO: change it to one minute before margin (60 * 1000)-1
+START_FETCH_TIME = (60 * 1000) - 1
 
 # Debug prefixes - used for logger messages
 AUDIT_LOG_DEBUG_PREFIX = "Audit Logs- MondayEventCollector Debug Message:\n"
@@ -350,7 +350,6 @@ def get_remaining_audit_logs(last_run: dict, logs_per_page: int, client: AuditLo
         fetched_logs = response.get("data", [])
         fetched_logs = fetched_logs[offset:]
 
-        # TODO: check this flow (In case logs remaining from the last page)
         # remove duplicate logs based on the lower bound logs set on the previous fetch.
         if not last_run.get("continuing_fetch_info"):
             fetched_logs = remove_duplicate_logs(
