@@ -2068,7 +2068,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
         )
 
     except PyMISPError as e:
-        raise DemistoException(f"Unable to convert data to JSON: {e}")
+        raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
 
 
 def main():
