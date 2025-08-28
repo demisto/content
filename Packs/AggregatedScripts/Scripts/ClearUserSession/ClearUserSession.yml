@@ -31,7 +31,7 @@ outputs:
 - contextPath: SessionClearResults.Result
   description: The status of the session clearance process. Possible values are "Success" or "Failed".
   type: string
-- contextPath: SessionClearResults.Source
+- contextPath: SessionClearResults.Brand
   description: The vendor or system source from which the session clearance result was obtained.
   type: list
 script: '-'
@@ -41,4 +41,4 @@ subtype: python3
 dockerimage: demisto/python3:3.12.11.4417419
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- ClearUserSession - Test
