@@ -96,7 +96,7 @@ def test_fetch_events__no_events(mocker):
     """
     mock_debug = mocker.patch.object(demisto, "debug")
     client = mocker.patch("SailPointIdentityNowEventCollector.Client")
-    last_run = {"prev_date": "2022-01-01T00:00:00", "last_fetched_ids": ["0"]}
+    last_run = {"prev_date": "2022-01-01T00:00:00Z", "last_fetched_ids": ["0"]}
     look_back = 0
     max_events_per_fetch = 5
 
@@ -104,7 +104,7 @@ def test_fetch_events__no_events(mocker):
     next_run, _ = fetch_events(client, max_events_per_fetch, look_back, last_run)
 
     assert next_run == last_run
-    assert mock_debug.call_args_list[3][0][0] == "No events fetched. Exiting the loop."
+    assert mock_debug.call_args_list[4][0][0] == "No events fetched. Exiting the loop."
 
 
 def test_fetch_events__all_events_are_dedup(mocker):
@@ -120,7 +120,7 @@ def test_fetch_events__all_events_are_dedup(mocker):
     """
     mock_debug = mocker.patch.object(demisto, "debug")
     client = mocker.patch("SailPointIdentityNowEventCollector.Client")
-    last_run = {"prev_date": "2022-01-01T00:00:00", "last_fetched_ids": [0]}
+    last_run = {"prev_date": "2022-01-01T00:00:00Z", "last_fetched_ids": [0]}
     look_back = 0
     max_events_per_fetch = 5
     mocker.patch("SailPointIdentityNowEventCollector.dedup_events", return_value=[])
@@ -130,8 +130,8 @@ def test_fetch_events__all_events_are_dedup(mocker):
     )
     next_run, _ = fetch_events(client, max_events_per_fetch, look_back, last_run)
     assert next_run == last_run
-    assert "Successfully fetched 3 events in this cycle." in mock_debug.call_args_list[2][0][0]
-    assert "Done fetching. Sum of all events: 0, the next run is" in mock_debug.call_args_list[3][0][0]
+    assert "Successfully fetched 3 events in this cycle." in mock_debug.call_args_list[3][0][0]
+    assert "Done fetching. Sum of all events: 0, the next run is" in mock_debug.call_args_list[4][0][0]
 
 
 def test_add_time_and_status_to_events(mocker):
