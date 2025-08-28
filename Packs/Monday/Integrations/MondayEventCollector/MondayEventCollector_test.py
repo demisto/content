@@ -615,7 +615,7 @@ class TestGetActivityLogs:
         # New logs for third fetch - Board 456
         board_456_new_logs = [
             # New logs with different timestamps (should be included)
-            {"id": "log25", "event": "create_group", "created_at": "17545145405000000", "data": "{}"},  # Newer timestamp
+            {"id": "log25", "event": "create_group", "created_at": "17545145404156780", "data": "{}"},  # Newer timestamp
             # Log with same timestamp as last_timestamp but different ID (should be included)
             {"id": "log26", "event": "update_column", "created_at": "17545145400000000", "data": "{}"},  # Same timestamp as log16
             # This would be duplicate from previous fetch (should be filtered out)
