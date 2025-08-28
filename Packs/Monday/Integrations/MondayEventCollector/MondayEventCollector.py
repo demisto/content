@@ -50,11 +50,12 @@ class ActivityLogsClient(BaseClient):
     Extends BaseClient to support proxy configuration and proper HTTP request handling.
     """
 
-    def __init__(self, client_id: str, client_secret: str, auth_code: str, activity_logs_url: str,
-                 proxy: bool = False, verify: bool = True):
+    def __init__(
+        self, client_id: str, client_secret: str, auth_code: str, activity_logs_url: str, proxy: bool = False, verify: bool = True
+    ):
         """
         Initialize ActivityLogsClient with OAuth 2.0 credentials and configuration.
-        
+
         Args:
             client_id (str): Monday.com OAuth 2.0 client ID
             client_secret (str): Monday.com OAuth 2.0 client secret
@@ -73,7 +74,7 @@ class ActivityLogsClient(BaseClient):
     def get_access_token_request(self) -> str:
         """
         Exchange authorization code for access token using Monday.com OAuth 2.0 flow.
-        
+
         Returns:
             str: Access token for Monday.com API authentication
         """
@@ -81,43 +82,34 @@ class ActivityLogsClient(BaseClient):
             "client_id": self.client_id,
             "client_secret": self.client_secret,
             "code": self.auth_code,
-            "redirect_uri": REDIRECT_URI
+            "redirect_uri": REDIRECT_URI,
         }
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        
-        response = self._http_request(
-            method="POST",
-            full_url=AUTH_URL,
-            headers=headers,
-            data=payload,
-            resp_type="json"
-        )
-        
+
+        response = self._http_request(method="POST", full_url=AUTH_URL, headers=headers, data=payload, resp_type="json")
+
         access_token = response.get("access_token")
         if not access_token:
             demisto.debug(f"{DEBUG_PREFIX}Response missing access_token")
             raise DemistoException("Response missing access_token")
-            
+
         return access_token
 
     def get_activity_logs_request(self, query: str, access_token: str) -> dict:
         """
         Send GraphQL request to fetch activity logs from Monday.com API.
-        
+
         Args:
             query (str): GraphQL query string
             access_token (str): OAuth 2.0 access token
-            
+
         Returns:
             dict: Response from Monday.com API containing activity logs
         """
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Requesting activity logs\nQuery: {query}")
-        
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json"
-        }
-        
+
+        headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
+
         response = self._http_request(
             method="POST",
             url_suffix="v2",
@@ -125,17 +117,17 @@ class ActivityLogsClient(BaseClient):
             json_data={"query": query},
             resp_type="json",
         )
-        
+
         return response
 
     def check_empty_page(self, query: str, access_token: str) -> bool:
         """
         Check if a GraphQL query returns an empty page of results.
-        
+
         Args:
             query (str): GraphQL query string
             access_token (str): OAuth 2.0 access token
-            
+
         Returns:
             bool: True if the page is empty, False otherwise
         """
@@ -157,7 +149,7 @@ class AuditLogsClient(BaseClient):
     def __init__(self, audit_token: str, audit_logs_url: str, proxy: bool = False, verify: bool = True):
         """
         Initialize AuditLogsClient with API token and configuration.
-        
+
         Args:
             audit_token (str): Monday.com API token for audit logs
             audit_logs_url (str): Base URL for Monday.com audit logs API
@@ -171,36 +163,25 @@ class AuditLogsClient(BaseClient):
     def get_audit_logs_request(self, time_filter: str, page: int, per_page: int) -> dict:
         """
         Send GET request to fetch audit logs from Monday.com API.
-        
+
         Args:
             time_filter (str): JSON string with start_time and end_time filters
             page (int): Page number for pagination
             per_page (int): Number of logs per page
-            
+
         Returns:
             dict: Response from Monday.com API containing audit logs
         """
-        headers = {
-            "Authorization": f"Bearer {self.audit_token}",
-            "Content-Type": "application/json"
-        }
-        
-        params = {
-            "filters": time_filter,
-            "page": page,
-            "per_page": per_page
-        }
-        
+        headers = {"Authorization": f"Bearer {self.audit_token}", "Content-Type": "application/json"}
+
+        params = {"filters": time_filter, "page": page, "per_page": per_page}
+
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Requesting audit logs\nParams: {params}")
-        
+
         response = self._http_request(
-            method="GET",
-            url_suffix="audit-api/get-logs",
-            headers=headers,
-            params=params,
-            resp_type="json"
+            method="GET", url_suffix="audit-api/get-logs", headers=headers, params=params, resp_type="json"
         )
-        
+
         return response
 
 
@@ -302,20 +283,15 @@ def test_connection() -> CommandResults:
     try:
         # Try to test connection in the Authorization Code flow mode for activity logs.
         if activity_client.client_id and activity_client.client_secret:
-
             integration_context = get_integration_context()
             access_token = integration_context.get("access_token", "")
 
             if access_token or activity_client.auth_code:
-
                 board_ids = params.get("board_ids", "")
                 board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()] if board_ids else []
                 if board_ids_list:
-
                     # All parameters are provided for activity logs, test fetch single activity log.
-                    get_activity_logs(
-                        last_run={}, now_ms=now_ms, limit=1, board_id=board_ids_list[0], client=activity_client
-                    )
+                    get_activity_logs(last_run={}, now_ms=now_ms, limit=1, board_id=board_ids_list[0], client=activity_client)
                     return CommandResults(readable_output="✅ Test connection success for activity logs.")
                 else:
                     activity_logs_missing_params = "Board IDs"
@@ -326,7 +302,6 @@ def test_connection() -> CommandResults:
 
         # Activity logs test failed, try audit logs.
         if audit_client.audit_token and audit_client.audit_logs_url:
-
             # All parameters are provided for audit logs, test fetch single audit log.
             get_audit_logs(last_run={}, now_ms=now_ms, limit=1, logs_per_page=1, client=audit_client)
             return CommandResults(readable_output="✅ Test connection success for audit logs.")
@@ -373,7 +348,7 @@ def get_remaining_audit_logs(last_run: dict, logs_per_page: int, client: AuditLo
 
     try:
         response = client.get_audit_logs_request(time_filter, page, logs_per_page)
-        
+
         fetched_logs = response.get("data", [])
         fetched_logs = fetched_logs[offset:]
 
@@ -974,7 +949,7 @@ def initiate_activity_log_last_run(last_run: dict, board_ids_list: list[str]) ->
 def initiate_activity_client() -> ActivityLogsClient:
     """
     Initialize ActivityLogsClient for making requests.
-    
+
     Returns:
         ActivityLogsClient: ActivityLogsClient instance for making requests.
     """
@@ -985,14 +960,14 @@ def initiate_activity_client() -> ActivityLogsClient:
     proxy = demisto_params.get("proxy", False)
     verify = not demisto_params.get("insecure", False)
     activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
-    
+
     return ActivityLogsClient(
         client_id=client_id,
         client_secret=client_secret,
         auth_code=auth_code,
         activity_logs_url=activity_logs_url,
         proxy=proxy,
-        verify=verify
+        verify=verify,
     )
 
 
@@ -1008,13 +983,9 @@ def initiate_audit_client() -> AuditLogsClient:
     audit_logs_url = params.get("audit_logs_url", "")
     proxy = params.get("proxy", False)
     verify = not params.get("insecure", False)
- 
-    return AuditLogsClient(
-        audit_token=audit_token,
-        audit_logs_url=audit_logs_url,
-        proxy=proxy,
-        verify=verify
-    )
+
+    return AuditLogsClient(audit_token=audit_token, audit_logs_url=audit_logs_url, proxy=proxy, verify=verify)
+
 
 def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     """
@@ -1036,15 +1007,15 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
         tuple[dict, list]: Updated last_run state and list of fetched activity logs from all boards
     """
     demisto_params = demisto.params()
-    
+
     board_ids = demisto_params.get("board_ids", "")
     if not board_ids:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ID is missing.")
         raise DemistoException("Please provide board ID in the integration parameters before starting to fetch activity logs.")
     board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()]
-    
+
     last_run = initiate_activity_log_last_run(last_run, board_ids_list)
-    
+
     limit = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(demisto_params.get("max_activity_logs_per_fetch", 10000)))
     now_ms = int(time.time() * 1000)
     activity_logs: list = []
