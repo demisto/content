@@ -134,6 +134,66 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def parse_filter_field(filter_string: str | None):
+    """
+    Parses a list representation of name and values with the form of 'name=<name>,values=<values>.
+    You can specify up to 50 filters and up to 200 values per filter in a single request.
+    Filter strings can be up to 255 characters in length.
+    Args:
+        filter_list: The name and values list
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_FILTERS:
+        list_filters = list_filters[0:50]
+        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    regex = re.compile(
+        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for filter in list_filters:
+        match_filter = regex.match(filter)
+        if match_filter is None:
+            demisto.debug(f"could not parse filter: {filter}")
+            continue
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
+
+    return filters
+
+
+def parse_tag_field(tags_string: str | None):
+    """
+    Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
+    You can specify up to 50 tags per resource.
+    Args:
+        tags_string: The name and value list
+    Returns:
+        A list of dicts with the form {"key": <key>, "value": <value>}
+    """
+    tags = []
+    list_tags = argToList(tags_string, separator=";")
+    if len(list_tags) > MAX_TAGS:
+        list_tags = list_tags[0:50]
+        demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
+    # According to the AWS Tag restrictions docs.
+    regex = re.compile(r"^key=([a-zA-Z0-9\s+\-=._:/@]{1,128}),value=(.{0,256})$", flags=re.UNICODE)
+    for tag in list_tags:
+        match_tag = regex.match(tag)
+        if match_tag is None:
+            demisto.debug(f"could not parse tag: {tag}")
+            continue
+        tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
+
+    return tags
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -1064,7 +1124,7 @@ class EC2:
             kwargs.update(pagination_kwargs)
 
         try:
-            # print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
+            print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
             remove_nulls_from_dictionary(kwargs)
             response = client.describe_instances(**kwargs)
             if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
@@ -1789,17 +1849,6 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:UpdateAccountPasswordPolicy",
     "iam:GetAccountAuthorizationDetails",
 ]
-
-
-def print_debug_logs(client: BotoClient, message: str):
-    """
-    Print debug logs with service prefix and command context.
-    Args:
-        client (BotoClient): The AWS client object
-        message (str): The debug message to log
-    """
-    service_name = client.meta.service_model.service_name
-    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
 
 def test_module(params):
