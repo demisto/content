@@ -5902,7 +5902,7 @@
                 "panorama_instance_security_team"
             ],
             "timeout": 600
-        },
+        }
     ],
     "skipped_tests": {
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
