@@ -1355,10 +1355,7 @@ def test_get_extended_hostnames_set_typical():
     Then:
         It returns a set of all hostnames from the Cortex XDR brand.
     """
-    mapped_endpoints = {
-        "1": {"Hostname": "host-xdr-1"},
-        "2": {"Hostname": "host-xdr-2"}
-    }
+    mapped_endpoints = {"1": {"Hostname": "host-xdr-1"}, "2": {"Hostname": "host-xdr-2"}}
     result = get_extended_hostnames_set(mapped_endpoints)
     assert result == {"host-xdr-1", "host-xdr-2"}
 
