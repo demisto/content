@@ -1795,7 +1795,7 @@ script:
       required: false
       isArray: true
     - name: filters
-      description: "One or more custom filters to apply separated by ';' (e.g., name=<name>,values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
+      description: "One or more custom filters to apply, separated by ';' (for example, name=<name>;values=<values>).You can specify up to 50 filters and up to 200 values per filter in a single request."
       required: false
       isArray: true
     - name: next_token
@@ -2183,7 +2183,7 @@ script:
       description: "The launch template version number, $Latest, or $Default."
       required: false
     - name: tags
-      description: "One or more tags to apply to a resource when the resource is being created. separated by ';' (e.g., key=<name>,value=<value>)."
+      description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
       required: false
     - name: host_id
       description: "The dedicated Host ID."
