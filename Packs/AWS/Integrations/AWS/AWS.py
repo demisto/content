@@ -89,7 +89,6 @@ def parse_filter_field(filter_string: str | None):
     Filter strings can be up to 255 characters in length.
     Args:
         filter_list: The name and values list
-
     Returns:
         A list of dicts with the form {"Name": <key>, "Values": [<value>]}
     """
@@ -115,7 +114,6 @@ def parse_filter_field(filter_string: str | None):
         filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
 
     return filters
-
 
 class AWSErrorHandler:
     """
@@ -1614,6 +1612,17 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:UpdateAccountPasswordPolicy",
     "iam:GetAccountAuthorizationDetails",
 ]
+
+
+def print_debug_logs(client: BotoClient, message: str):
+    """
+    Print debug logs with service prefix and command context.
+    Args:
+        client (BotoClient): The AWS client object
+        message (str): The debug message to log
+    """
+    service_name = client.meta.service_model.service_name
+    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
 
 def test_module(params):
