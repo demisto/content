@@ -19,15 +19,28 @@ filter
     xdm.source.user.username = json_extract_scalar(created_by, "$.login"),
     xdm.event.id = event_id,
     xdm.event.type = event_type,
+    xdm.event.original_event_type = event_type,
     xdm.source.ipv4 = ip_address;
 
 filter
     event_type in ("ADMIN_LOGIN","FAILED_LOGIN","LOGIN")
 | alter
+    xdm.event.id = event_id,
+    xdm.event.original_event_type = event_type,
+    xdm.event.type = "authentication",
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    xdm.event.outcome = if(event_type in ("ADMIN_LOGIN", "LOGIN"), XDM_CONST.OUTCOME_SUCCESS, event_type ~= "FAILED_LOGIN", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.outcome_reason = if(event_type ~= "FAILED_LOGIN", "failed_login", null),
     xdm.source.user.identifier = json_extract_scalar(source, "$.id"),
     xdm.source.user.first_name = arrayindex(split(json_extract_scalar(source, "$.name")), 0),
     xdm.source.user.last_name = arrayindex(split(json_extract_scalar(source, "$.name")), 1),
     xdm.source.user.username = json_extract_scalar(source, "$.login"),
-    xdm.event.id = event_id,
-    xdm.event.type = event_type,
-    xdm.source.ipv4 = ip_address;
+    xdm.source.user.upn = if(json_extract_scalar(source, "$.login") contains "@", json_extract_scalar(source, "$.login"), null),
+    xdm.source.ipv4 = if(ip_address ~= "(?:\d{1,3}\.){3}\d{1,3}", ip_address, null),
+    xdm.source.ipv6 = if(ip_address ~= "(?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}", ip_address, null),
+    xdm.source.port = to_integer(0),
+    xdm.target.ipv4 = "",
+    xdm.target.port = to_integer(0),
+    xdm.network.ip_protocol = XDM_CONST.IP_PROTOCOL_TCP,
+    xdm.auth.service = "SP";
