@@ -1967,6 +1967,7 @@ script:
       required: true
 
   - name: aws-ec2-create-snapshot
+    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2015,8 +2016,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
-    execution: true
     outputs:
     - contextPath: AWS.EC2.Snapshots.DataEncryptionKeyId
       description: The data encryption key identifier for the snapshot.
@@ -2068,6 +2067,7 @@ script:
       type: string
 
   - name: aws-ec2-modify-snapshot-permission
+    description: Adds or removes permission settings for the specified snapshot.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2129,9 +2129,9 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    description: Adds or removes permission settings for the specified snapshot.
 
   - name: aws-ecs-update-cluster-settings
+    description: Updates the containerInsights setting of an ECS cluster.
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -2184,7 +2184,6 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    description: Updates the containerInsights setting of an ECS cluster.
   isfetch: false
   runonce: false
   script: '-'
