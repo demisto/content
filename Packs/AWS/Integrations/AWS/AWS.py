@@ -70,11 +70,6 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
         "Monitoring": instance.get("Monitoring", {}).get("State"),
         "AvailabilityZone": instance.get("Placement", {}).get("AvailabilityZone"),
     }
-    if "Tags" in instance:
-        for tag in instance["Tags"]:
-            instance_data.update({tag["Key"]: tag["Value"]})
-    if "KeyName" in instance:
-        instance_data.update({"KeyName": instance["KeyName"]})
     instance_data = remove_empty_elements(instance_data)
     return instance_data
 
