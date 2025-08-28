@@ -1,5 +1,5 @@
 id: 4e2904f4-d3ee-41e1-8f77-d747914a9bd2
-version: 9
+version: 11
 vcShouldKeepItemLegacyProdMachine: false
 name: FileEnrichment_CIAC-14500_Niv
 starttaskid: "0"
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 55
+          "y": 50
         }
       }
     note: false
@@ -63,7 +63,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 380
+          "y": 370
         }
       }
     note: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 550
+          "y": 540
         }
       }
     note: false
@@ -113,12 +113,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: fbb7758a-1369-47e8-b7a9-adc3a2c7acdb
+    taskid: ed9aafcc-a986-4bd1-aafc-ab40992419d9
     type: regular
     task:
-      id: fbb7758a-1369-47e8-b7a9-adc3a2c7acdb
+      id: ed9aafcc-a986-4bd1-aafc-ab40992419d9
       version: -1
-      name: File Enrichment 1
+      name: 'File Enrichment '
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
@@ -140,7 +140,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 890
+          "y": 880
         }
       }
     note: false
@@ -183,42 +183,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 2c3736a6-da3e-4d52-9239-0c4cbc0e5e94
-    type: regular
-    task:
-      id: 2c3736a6-da3e-4d52-9239-0c4cbc0e5e94
-      version: -1
-      name: Create SHA 1
-      description: |
-        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
-      scriptName: CreateHash
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      text:
-        simple: file-enrichment
-      type:
-        simple: sha1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 50
+          "y": 1050
         }
       }
     note: false
@@ -230,16 +195,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 383f7c36-1f02-4dba-94c5-1e7bb790b877
+    taskid: b1f41a6a-9544-4ca0-b432-0c26d5abec97
     type: regular
     task:
-      id: 383f7c36-1f02-4dba-94c5-1e7bb790b877
+      id: b1f41a6a-9544-4ca0-b432-0c26d5abec97
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -259,39 +224,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 4dde6e10-0ab5-4485-adb3-bad352c9e304
-    type: regular
-    task:
-      id: 4dde6e10-0ab5-4485-adb3-bad352c9e304
-      version: -1
-      name: Add to Tim
-      description: Checks the file reputation of the specified hash.
-      script: VirusTotal (API v3)|||file
-      type: regular
-      iscommand: true
-      brand: VirusTotal (API v3)
-    scriptarguments:
-      file:
-        simple: ${CreateHash}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 50
+          "y": 1550
         }
       }
     note: false
@@ -303,10 +236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 7228c44e-911f-4326-a67a-825ba5a74586
+    taskid: 56248bc3-cc72-40de-87e5-f979181a99e4
     type: regular
     task:
-      id: 7228c44e-911f-4326-a67a-825ba5a74586
+      id: 56248bc3-cc72-40de-87e5-f979181a99e4
       version: -1
       name: Add to Tim
       description: Retrieve results for a file hash using WildFire.
@@ -326,7 +259,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 710
         }
       }
     note: false
@@ -356,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1230
+          "y": 1220
         }
       }
     note: false
@@ -386,7 +319,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 220
+          "y": 210
         }
       }
     note: false
@@ -428,7 +361,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1060
+          "y": 1050
         }
       }
     note: false
@@ -469,7 +402,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1060
+          "y": 1050
         }
       }
     note: false
@@ -511,7 +444,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1390
+          "y": 1380
         }
       }
     note: false
@@ -553,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1740
+          "x": 50,
+          "y": 1720
         }
       }
     note: false
@@ -595,8 +528,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1740
+          "x": 480,
+          "y": 1720
         }
       }
     note: false
@@ -637,7 +570,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1740
+          "y": 1720
         }
       }
     note: false
@@ -658,13 +591,248 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1900
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 19323b05-9ae1-4256-8715-cfdb0d6a732a
+    type: regular
+    task:
+      id: 19323b05-9ae1-4256-8715-cfdb0d6a732a
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 638fe72e-52d6-4c2d-a527-503a10e56e66
+    type: regular
+    task:
+      id: 638fe72e-52d6-4c2d-a527-503a10e56e66
+      version: -1
+      name: Create Hash MD5
+      description: |
+        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
+      scriptName: CreateHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      text:
+        simple: nivtest
+      type:
+        simple: md5
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e2a3c8ab-7d49-4212-83f6-f52f9c1f0315
+    type: regular
+    task:
+      id: e2a3c8ab-7d49-4212-83f6-f52f9c1f0315
+      version: -1
+      name: Add to Tim
+      description: Checks the file reputation of the specified hash.
+      script: VirusTotal (API v3)|||file
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      file:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: d5285e39-c41f-489f-ad41-5eb1b87ecf79
+    type: regular
+    task:
+      id: d5285e39-c41f-489f-ad41-5eb1b87ecf79
+      version: -1
+      name: File Enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichmenttest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      brands:
+        simple: VirusTotal (API v3),WildFire-v2
+      file_hash:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 19beb617-9df0-4309-99e4-960a25cb0714
+    type: condition
+    task:
+      id: 19beb617-9df0-4309-99e4-960a25cb0714
+      version: -1
+      name: Verify
+      description: Prints text to war room (Markdown supported)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    scriptarguments:
+      value:
+        simple: ${FileEnrichment}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: FileEnrichment
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: hasLength
+          left:
+            value:
+              simple: DBotScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 9044ea73-9e81-4539-9aa0-51c44856e25f
+    type: title
+    task:
+      id: 9044ea73-9e81-4539-9aa0-51c44856e25f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2900
         }
       }
     note: false
@@ -679,8 +847,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1910,
-        "width": 1670,
+        "height": 2910,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
