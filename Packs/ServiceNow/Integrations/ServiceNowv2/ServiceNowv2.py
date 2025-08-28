@@ -3276,7 +3276,7 @@ def pre_process_close_incident_args(
 
 
 def update_incident_closure_fields(
-    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, close_custom_state: Optional[str]
+    parsed_args: UpdateRemoteSystemArgs, fields: dict, ticket_type: str, is_custom_close: bool
 ) -> dict:
     """
     Handle closing fields of an incident.
@@ -3288,12 +3288,12 @@ def update_incident_closure_fields(
         parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
         fields (dict): The fields to update.
         ticket_type (str): The type of the ticket.
-        close_custom_state (Optional[str]): The custom state to use if given.
+        is_custom_close (Optional[str]):  Whether the incident is closed by a custom state.
 
     Returns:
         dict: The fields to update, excluding "closed_at" and "resolved_at".
     """
-    if parsed_args.delta.get("state") == "7 - Closed" and not close_custom_state:
+    if parsed_args.delta.get("state") == "7 - Closed" and not is_custom_close:
         fields["state"] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
 
     excluded_fields = {"closed_at", "resolved_at"}
@@ -3343,18 +3343,19 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
+    is_custom_close = ((parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta)) and close_custom_state
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
     parsed_args = pre_process_close_incident_args(parsed_args, closure_case, ticket_type, close_custom_state)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
     demisto.debug(f"all fields= {fields}")
     if closure_case:
-        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, close_custom_state)
+        fields = update_incident_closure_fields(parsed_args, fields, ticket_type, is_custom_close)
 
     demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
     result = client.update(ticket_type, ticket_id, fields)
 
     # Handle case of custom state doesn't exist, reverting to the original close state
-    if close_custom_state and demisto.get(result, "result.state") != close_custom_state:
+    if is_custom_close and demisto.get(result, "result.state") != close_custom_state:
         result = handle_missing_custom_state(client, fields, ticket_id, ticket_type)
 
     demisto.info(f"Ticket Update result {result}")
