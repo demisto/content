@@ -751,14 +751,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.9"
+version = "1.38.10"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 groups = ["dev"]
 files = [
-    {file = "demisto_sdk-1.38.9-py3-none-any.whl", hash = "sha256:a99a6706aabe3f8d6a6b948f5b853924ce3cb829833f9b2903d238eaeb6d17f1"},
-    {file = "demisto_sdk-1.38.9.tar.gz", hash = "sha256:67077c537b564337d7e396a0103017d82b9224a1c0d38fae7e39480caf596636"},
+    {file = "demisto_sdk-1.38.10-py3-none-any.whl", hash = "sha256:6e92ea45129bef3ef70334dd838ba5b3f338959ceff2be84019e33a137eb2020"},
+    {file = "demisto_sdk-1.38.10.tar.gz", hash = "sha256:da010a60f265ee7d709b74a266ebb918aac4b9cb43a29e7f2c73acd2a09523ac"},
 ]
 
 [package.dependencies]
@@ -819,7 +819,7 @@ slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
 tenacity = ">=8.4.1,<9.0.0"
 toml = ">=0.10.2,<0.11.0"
-typer = {version = ">=0.13.0,<0.14.0", extras = ["all"]}
+typer = {version = ">=0.16.0,<0.17.0", extras = ["all"]}
 typing-extensions = ">=4.1.1,<5.0.0"
 ujson = ">=5.1.0,<6.0.0"
 urllib3 = ">=1.26,<3"
@@ -4062,14 +4062,14 @@ reference = "pypi-public"
 
 [[package]]
 name = "typer"
-version = "0.13.1"
+version = "0.16.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = false
 python-versions = ">=3.7"
 groups = ["dev"]
 files = [
-    {file = "typer-0.13.1-py3-none-any.whl", hash = "sha256:5b59580fd925e89463a29d363e0a43245ec02765bde9fb77d39e5d0f29dd7157"},
-    {file = "typer-0.13.1.tar.gz", hash = "sha256:9d444cb96cc268ce6f8b94e13b4335084cef4c079998a9f4851a90229a3bd25c"},
+    {file = "typer-0.16.1-py3-none-any.whl", hash = "sha256:90ee01cb02d9b8395ae21ee3368421faf21fa138cb2a541ed369c08cec5237c9"},
+    {file = "typer-0.16.1.tar.gz", hash = "sha256:d358c65a464a7a90f338e3bb7ff0c74ac081449e53884b12ba658cbd72990614"},
 ]
 
 [package.dependencies]
@@ -4871,4 +4871,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10,<3.12"
-content-hash = "9e24f3f715294053eebe32f65e98896a774d843fd235b8736d2b477ebbf0bbbe"
+content-hash = "a1157f4db9203e3cfa8746dbec270867ae61fc3e366b0f8fab98db99a73006bb"
