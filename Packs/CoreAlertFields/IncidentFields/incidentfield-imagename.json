@@ -34,5 +34,6 @@
             "type": "shortText",
             "name": "Prisma Cloud Compute Image"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }
