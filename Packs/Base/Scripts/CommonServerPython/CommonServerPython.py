@@ -11519,7 +11519,14 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
     return CommandResults(readable_output=readable_output, indicator=indicator_)
 
 
-def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
+def get_fetch_run_time_range(
+    last_run,
+    first_fetch,
+    look_back=0,
+    timezone=0,
+    date_format='%Y-%m-%dT%H:%M:%S',
+    time_field_name='time',
+):
     """
     Calculates the time range for fetch depending the look_back argument and the previous fetch start time
     given from the last_run object.
@@ -11539,10 +11546,13 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :type date_format: ``str``
     :param date_format: The date format
 
+    :type time_field_name: ``str``
+    :param time_field_name: The name of the time field in the LastRun dictionary
+
     :return: The time range (start_time, end_time) of the creation date for the incidents to fetch in the current run.
     :rtype: ``Tuple``
     """
-    last_run_time = last_run and 'time' in last_run and last_run['time']
+    last_run_time = last_run and time_field_name in last_run and last_run[time_field_name]
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
