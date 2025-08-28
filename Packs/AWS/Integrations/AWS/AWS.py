@@ -66,7 +66,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         if not isinstance(next_token, str) or not next_token.strip():
             raise ValueError("next_token must be a non-empty string")
         kwargs["NextToken"] = next_token.strip()
-    kwargs.update({"MaxResults": limit})   
+    kwargs.update({"MaxResults": limit})
     return kwargs
 
 
