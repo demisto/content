@@ -45,6 +45,113 @@ ACTIVITY_LOG_DEBUG_PREFIX = "Activity Logs- MondayEventCollector Debug Message:\
 DEBUG_PREFIX = "MondayEventCollector Debug Message:\n"
 
 
+""" CLIENT CLASS """
+
+
+class ActivityLogsClient(BaseClient):
+    """
+    Client for Monday.com Activity Logs API using OAuth 2.0 authentication.
+    Extends BaseClient to support proxy configuration and proper HTTP request handling.
+    """
+
+    def __init__(self, client_id: str, client_secret: str, auth_code: str, activity_logs_url: str,
+                 proxy: bool = False, verify: bool = True):
+        """
+        Initialize ActivityLogsClient with OAuth 2.0 credentials and configuration.
+        
+        Args:
+            client_id (str): Monday.com OAuth 2.0 client ID
+            client_secret (str): Monday.com OAuth 2.0 client secret
+            auth_code (str): Authorization code from OAuth 2.0 flow
+            activity_logs_url (str): Base URL for Monday.com activity logs API
+            proxy (bool): Whether to use proxy for requests
+            verify (bool): Whether to verify SSL certificates
+        """
+        # Use the activity logs URL as base URL, we'll construct full URLs in methods
+        super().__init__(base_url=activity_logs_url, verify=verify, proxy=proxy)
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.auth_code = auth_code
+        self.activity_logs_url = activity_logs_url
+
+    def get_access_token_request(self) -> str:
+        """
+        Exchange authorization code for access token using Monday.com OAuth 2.0 flow.
+        
+        Returns:
+            str: Access token for Monday.com API authentication
+        """
+        payload = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "code": self.auth_code,
+            "redirect_uri": REDIRECT_URI
+        }
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        
+        response = self._http_request(
+            method="POST",
+            full_url=AUTH_URL,
+            headers=headers,
+            data=payload,
+            resp_type="json"
+        )
+        
+        access_token = response.get("access_token")
+        if not access_token:
+            demisto.debug(f"{DEBUG_PREFIX}Response missing access_token")
+            raise DemistoException("Response missing access_token")
+            
+        return access_token
+
+    def get_activity_logs_request(self, query: str, access_token: str) -> dict:
+        """
+        Send GraphQL request to fetch activity logs from Monday.com API.
+        
+        Args:
+            query (str): GraphQL query string
+            access_token (str): OAuth 2.0 access token
+            
+        Returns:
+            dict: Response from Monday.com API containing activity logs
+        """
+        demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Requesting activity logs\nQuery: {query}")
+        
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = self._http_request(
+            method="POST",
+            url_suffix="v2",
+            headers=headers,
+            json_data={"query": query},
+            resp_type="json",
+        )
+        
+        return response
+
+    def check_empty_page(self, query: str, access_token: str) -> bool:
+        """
+        Check if a GraphQL query returns an empty page of results.
+        
+        Args:
+            query (str): GraphQL query string
+            access_token (str): OAuth 2.0 access token
+            
+        Returns:
+            bool: True if the page is empty, False otherwise
+        """
+        try:
+            response = self.get_activity_logs_request(query, access_token)
+            logs = response["data"]["boards"][0].get("activity_logs", [])
+            return not logs
+        except Exception as e:
+            demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Error checking empty page: {str(e)}")
+            return True
+
+
 def generate_login_url() -> CommandResults:
     """
     Generate OAuth 2.0 authorization URL for Monday.com authentication to grant permissions to the Cortex XSOAR integration.
@@ -69,13 +176,16 @@ def generate_login_url() -> CommandResults:
     return CommandResults(readable_output=result_msg)
 
 
-def get_access_token() -> str:
+def get_access_token(client: ActivityLogsClient) -> str:
     """
     Exchange authorization code for access token from Monday.com OAuth 2.0 flow.
 
     This function first checks if an access token already exists in the integration context.
     If not found, it exchanges the authorization code for an access token using Monday.com's
     OAuth 2.0 token endpoint.
+
+    Args:
+        client (ActivityLogsClient, optional): ActivityLogsClient instance for making requests
 
     Returns:
         str: Access token for Monday.com API authentication
@@ -99,27 +209,8 @@ def get_access_token() -> str:
             f"{DEBUG_PREFIX}. get_access_token function: Client ID, Client secret or Authorization code is missing."
         )
 
-    payload = {"client_id": client_id, "client_secret": secret, "code": auth_code, "redirect_uri": REDIRECT_URI}
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
     try:
-        # NOTE: if I am using requests.lib i need to handle the code success and exception, add error handling
-        # response = http_request("POST", AUTH_URL, headers=headers, data=payload)
-        response = requests.post(url=AUTH_URL, headers=headers, data=payload, verify=USE_SSL)
-
-        if response.status_code != 200:
-            demisto.debug(
-                f"{DEBUG_PREFIX}Failed to get access token. response status code: {response.status_code}\n{response.text}"
-            )
-            raise DemistoException(
-                f"{DEBUG_PREFIX}Failed to get access token. response status code: {response.status_code}\n{response.text}"
-            )
-
-        access_token = response.json().get("access_token")
-
-        if not access_token:
-            demisto.debug(f"{DEBUG_PREFIX}Response missing access_token")
-            raise DemistoException("Response missing access_token")
+        access_token = client.get_access_token_request()
 
         integration_context.update({"access_token": access_token})
         set_integration_context(integration_context)
@@ -417,7 +508,7 @@ def remove_duplicate_logs(logs: list, ids_to_remove: list, is_id_field_exists: b
     return filtered_logs
 
 
-def is_activity_log_last_page(query: str, page: int, url: str, headers: dict) -> bool:
+def is_activity_log_last_page(query: str, page: int, client: ActivityLogsClient, access_token: str) -> bool:
     """
     Check if the current page is the last page for activity logs pagination.
 
@@ -428,56 +519,27 @@ def is_activity_log_last_page(query: str, page: int, url: str, headers: dict) ->
     Args:
         query (str): GraphQL query string for fetching activity logs
         page (int): Current page number being processed
-        url (str): Monday API endpoint URL
-        headers (dict): HTTP headers including authorization token
+        client (ActivityLogsClient): Client instance for making requests
+        access_token (str): OAuth 2.0 access token
 
     Returns:
         bool: True if current page is the last page (next page is empty), False otherwise
     """
     next_page = page + 1
-    # Replace current page number with next page number in query
-    next_query = query.replace(f"page: {page}", f"page: {next_page}")
-    return is_empty_page(next_query, url, headers)
+    next_page_query = query.replace(f"page: {page}", f"page: {next_page}")
+    return client.check_empty_page(next_page_query, access_token)
 
 
-def is_empty_page(query: str, url: str, headers: dict) -> bool:
-    """
-    Check if the page is empty based on the response.
-    Args:
-        query: Query to fetch logs.
-        url: URL to fetch logs from.
-        headers: Headers to fetch logs with.
-    Returns:
-        bool: True if the page is empty, False otherwise.
-    """
-
-    try:
-        response = requests.post(url, headers=headers, json={"query": query}, verify=USE_SSL)
-
-        if response.status_code != 200:
-            demisto.debug(
-                f"{ACTIVITY_LOG_DEBUG_PREFIX}Failed to check if page is empty.\n"
-                f"response status code: {response.status_code}\n{response.text}"
-            )
-            raise DemistoException(
-                f"Failed to check if page is empty.\n" f"response status code: {response.status_code}\n{response.text}"
-            )
-
-        logs = response.json()["data"]["boards"][0].get("activity_logs", [])
-        return not logs
-
-    except Exception as e:
-        demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Exception during check if page is empty. Exception is {e!s}")
-        raise DemistoException(f"Exception during check if page is empty. Exception is {e!s}")
-
-
-def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, activity_logs_url: str) -> tuple[list, dict]:
+def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, client: ActivityLogsClient) -> tuple[list, dict]:
     """
     Fetch activity logs from Monday based on configuration.
 
     Args:
         last_run: Previous fetch state containing last_timestamp and fetched_ids
         now_ms: Current time in milliseconds
+        limit: Maximum number of logs to fetch per board
+        board_id: Monday.com board ID to fetch logs from
+        client: ActivityLogsClient instance for making requests
 
     Returns:
         tuple: (logs, last_run) where logs are the fetched logs and last_run is the updated state.
@@ -514,9 +576,7 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
             f"from: {start_time} to {end_time}\nPage: {page}"
         )
 
-    access_token = get_access_token()
-    headers = {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
-    url = urljoin(activity_logs_url, "v2")
+    access_token = get_access_token(client)
     query = f"""
     query {{
         boards (ids: [{board_id}]) {{
@@ -535,23 +595,14 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
     }}
     """
 
-    demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Requesting activity logs\nURL: {url}\nQuery: {query}")
-
     try:
-        response = requests.post(url, headers=headers, json={"query": query}, verify=USE_SSL)
+        response = client.get_activity_logs_request(query, access_token)
     except Exception as e:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Exception during get activity logs. Exception is {e!s}")
         raise DemistoException(f"Exception during get activity logs. Exception is {e!s}")
 
-    if response.status_code != 200:
-        demisto.debug(
-            f"{ACTIVITY_LOG_DEBUG_PREFIX}Failed to get activity logs.ֿֿ\n"
-            f"response status code: {response.status_code}\n{response.text}"
-        )
-        raise DemistoException(f"Failed to get activity logs. Status code: {response.status_code}\n{response.text}")
-
-    # Status code 200
-    board_logs = response.json()["data"]["boards"][0].get("activity_logs", [])
+    # Extract board logs from response
+    board_logs = response.get("data", {}).get("boards", [{}])[0].get("activity_logs", [])
     fetched_logs = extract_activity_log_data(board_logs)
     demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}Successfully fetched {len(fetched_logs)} activity logs from board: {board_id}")
 
@@ -573,7 +624,7 @@ def get_activity_logs(last_run: dict, now_ms: int, limit: int, board_id: str, ac
             demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page=1, no logs available for this time range.")
             return [], last_run
     # last page reached when the response contains no activity logs.
-    if is_activity_log_last_page(query, page, url, headers):
+    if is_activity_log_last_page(query, page, client, access_token):
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}page={page} is the last page.")
 
         lower_bound_log_id = last_run.get("lower_bound_log_id", [])
@@ -920,19 +971,33 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     """
     now_ms = int(time.time() * 1000)
     demisto_params = demisto.params()
-    activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
+    
     board_ids = demisto_params.get("board_ids", "")
-
     if not board_ids:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ID is missing.")
         raise DemistoException("Please provide board ID in the integration parameters before starting to fetch activity logs.")
-
     board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()]
+    
     last_run = initiate_activity_log_last_run(last_run, board_ids_list)
-
-    now_ms = int(time.time() * 1000)
     activity_logs: list = []
     limit = min(MAX_ACTIVITY_LOGS_PER_FETCH, int(demisto_params.get("max_activity_logs_per_fetch", 10000)))
+
+    # Create ActivityLogsClient for making requests
+    client_id = demisto_params.get("client_id", "")
+    client_secret = demisto_params.get("secret", "")
+    auth_code = demisto_params.get("auth_code", "")
+    proxy = demisto_params.get("proxy", False)
+    verify = not demisto_params.get("insecure", False)
+    activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
+    
+    client = ActivityLogsClient(
+        client_id=client_id,
+        client_secret=client_secret,
+        auth_code=auth_code,
+        activity_logs_url=activity_logs_url,
+        proxy=proxy,
+        verify=verify
+    )
 
     try:
         for board_id in board_ids_list:
@@ -947,7 +1012,7 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
                 now_ms=now_ms,
                 limit=limit,
                 board_id=board_id,
-                activity_logs_url=activity_logs_url,
+                client=client,
             )
             last_run[board_id] = updated_last_run
             activity_logs.extend(fetched_logs)
@@ -1032,10 +1097,7 @@ def main() -> None:  # pragma: no cover
     main function, parses params and runs command functions
     """
 
-    params = demisto.params()
     command = demisto.command()
-    proxy = bool(params.get("proxy", False))  # TODO: check about how to using it.
-
     demisto.debug(f"{DEBUG_PREFIX}Command being called is {command}")
     try:
         if command == "test-module":
