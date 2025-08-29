@@ -2,10 +2,22 @@ Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local fo
 
 ## Configure AnythingLLM in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| AnythingLLM URL (e.g., http://&lt;url to AnythingLLM&gt;:3001) | True |
-| AnythingLLM API Key | True |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AnythingLLM URL (e.g., http://&lt;url to local AnythingLLM&gt;:3001) or https://&lt;Anything LLM cloud url&gt; |  | True |
+| AnythingLLM API Key |  | True |
+| Cloudflare Access Client Id |  | False |
+| Cloudflare Access Client Secret |  | False |
+| AIRS API URL | Leave blank if AIRS is not being used | False |
+| AIRS API Key | Leave blank if AIRS is not being used | False |
+| Sync Scan LLM Prompts with AIRS |  | False |
+| Sync Scan LLM Response with AIRS |  | False |
+| AIRS Profile Name for Scan Requests | The profile must be created in the AIRS console | False |
+| AIRS Application Name for Scan Requests |  | False |
+| AIR User for Scan Requests |  | False |
+| Anything LLM Model in use for Scan Requests |  | False |
+
 
 ## Commands
 
@@ -454,6 +466,33 @@ Delete a thread in a workspace
 | --- | --- | --- |
 | workspace | Name of the workspace. | Optional |
 | thread | Name of the thread. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+### anyllm-scan-request
+
+***
+Perform an AI security scan of a request with AIRS
+
+#### Base Command
+
+`anyllm-scan-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_name | AIRS profile name to use in scanning. | Required | 
+| app_name | AIRS application name - metadata. | Optional | 
+| app_user | AIRS application user name - metadata. | Optional | 
+| ai_model | LLM model in use - metadata. | Optional | 
+| user_ip | User IP - metadata. | Optional | 
+| prompt | LLM prompt to scan. | Optional | 
+| response | LLM response to scan. | Optional | 
+| code_prompt | LLM prompt with code to scan. | Optional | 
+| code_response | LLM response with code to scan. | Optional | 
+| context | LLM context for grounding. | Optional | 
 
 #### Context Output
 
