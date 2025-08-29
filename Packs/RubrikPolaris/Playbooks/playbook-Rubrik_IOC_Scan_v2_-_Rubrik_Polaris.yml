@@ -1,0 +1,1459 @@
+id: Rubrik IOC Scan v2 - Rubrik Polaris
+version: -1
+name: Rubrik IOC Scan v2 - Rubrik Polaris
+description: This playbook starts an advance IOC Scan with the provided IOC values and shows the results upon completion.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ab0aab4-be38-4ec4-862a-f58563e6dfda
+    type: start
+    task:
+      id: 2ab0aab4-be38-4ec4-862a-f58563e6dfda
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5e853d2c-0afe-43e8-859e-cd24464a5bb3
+    type: regular
+    task:
+      id: 5e853d2c-0afe-43e8-859e-cd24464a5bb3
+      version: -1
+      name: Start Advance IOC scan
+      description: Start a new advance threat hunt.
+      script: '|||rubrik-advance-ioc-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      advance_ioc:
+        complex:
+          root: Advance IOC
+          transformers:
+          - operator: Stringify
+      end_date:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "7"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.end_date
+                iscontext: true
+      max_file_size:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "8"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.max_file_size
+                iscontext: true
+      max_matches_per_snapshot:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "5"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.max_matches_per_snapshot
+                iscontext: true
+      max_snapshots_per_object:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "4"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.max_snapshots_per_object
+                iscontext: true
+      min_file_size:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "9"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.min_file_size
+                iscontext: true
+      object_id:
+        complex:
+          root: Object IDs.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.object_ids
+                iscontext: true
+      paths_to_exclude:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "11"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.paths_to_exclude
+                iscontext: true
+      paths_to_exempt:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "12"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.paths_to_exempt
+                iscontext: true
+      paths_to_include:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "10"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.paths_to_include
+                iscontext: true
+      scan_name:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.scan_name
+                iscontext: true
+      start_date:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "6"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.start_date
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ea93a751-c0a1-4140-82e6-7d6f7d9f72e7
+    type: title
+    task:
+      id: ea93a751-c0a1-4140-82e6-7d6f7d9f72e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c5f6228c-7b41-4a61-89bf-c4d31be2b27e
+    type: regular
+    task:
+      id: c5f6228c-7b41-4a61-89bf-c4d31be2b27e
+      version: -1
+      name: Prepare IOC Path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IOC Path
+      value:
+        complex:
+          root: inputs.ioc_path
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Scan Inputs.Answers.0
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME": ['
+              suffix:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '[]'
+              toReplace:
+                value:
+                  simple: '[""]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 81f954ec-77fe-45e9-8f6f-a75c5edb31e7
+    type: regular
+    task:
+      id: 81f954ec-77fe-45e9-8f6f-a75c5edb31e7
+      version: -1
+      name: Prepare IOC Hash
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IOC Hash
+      value:
+        complex:
+          root: inputs.ioc_hash
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Scan Inputs.Answers.2
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"INDICATOR_OF_COMPROMISE_TYPE_HASH": ['
+              suffix:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '[]'
+              toReplace:
+                value:
+                  simple: '[""]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bfe56131-508e-4193-8b04-0a4637211a9a
+    type: regular
+    task:
+      id: bfe56131-508e-4193-8b04-0a4637211a9a
+      version: -1
+      name: Prepare advance IOC
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Advance IOC
+      value:
+        complex:
+          root: IOC Path
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ', '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${IOC Hash}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ', '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${IOC Yara Rule}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{'
+              suffix:
+                value:
+                  simple: '}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ed13d0ff-0291-438b-8db5-fc8945b4100c
+    type: regular
+    task:
+      id: ed13d0ff-0291-438b-8db5-fc8945b4100c
+      version: -1
+      name: Get scan results
+      description: Retrieve details of the Turbo and Advance Threat Hunt.
+      script: '|||rubrik-ioc-scan-results-v2'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hunt_id:
+        complex:
+          root: RubrikPolaris.AdvanceIOCScan
+          accessor: huntId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d5b113d1-c502-4d68-803f-6cc42660130c
+    type: title
+    task:
+      id: d5b113d1-c502-4d68-803f-6cc42660130c
+      version: -1
+      name: Prepare advance IOC value
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: e747f757-1bbe-47fd-85bd-3b53510fe296
+    type: regular
+    task:
+      id: e747f757-1bbe-47fd-85bd-3b53510fe296
+      version: -1
+      name: Prepare IOC Yara Rule
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IOC Yara Rule
+      value:
+        complex:
+          root: inputs.ioc_yara_rule
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Scan Inputs.Answers.1
+                iscontext: true
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE": ['
+              suffix:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '[]'
+              toReplace:
+                value:
+                  simple: '[""]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 0fb49ff8-eb4c-4f86-8584-45e131ad594f
+    type: title
+    task:
+      id: 0fb49ff8-eb4c-4f86-8584-45e131ad594f
+      version: -1
+      name: Start IOC scan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e50ea7b2-fafe-40e7-8c4c-8472eb2e16e0
+    type: condition
+    task:
+      id: e50ea7b2-fafe-40e7-8c4c-8472eb2e16e0
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 9398f89d-712a-48fd-8ae8-4f21c5b139dc
+    type: condition
+    task:
+      id: 9398f89d-712a-48fd-8ae8-4f21c5b139dc
+      version: -1
+      name: Is IOC values are provided?
+      description: Checks whether IOC values are provided or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ioc_path
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ioc_hash
+                      iscontext: true
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.ioc_yara_rule
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 18531fbd-d955-4bd6-871b-d668a40fd241
+    type: collection
+    task:
+      id: 18531fbd-d955-4bd6-871b-d668a40fd241
+      version: -1
+      name: Provide IOC values and details to start Advance IOC scan
+      description: Provide IOC values and details to start Advance IOC scan.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide IOC File Paths.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 'Enter comma-separated values. Note: Provide the values in proper JSON format. Do not provide quoted values.'
+        tooltip: 'Provide IOC File Paths in proper JSON format (Example: C:\\Users\\Malware_Executible.ps1). Note: Get the file paths by executing the "rubrik-threat-monitoring-matched-file-get" command.'
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Provide IOC Yara Rules.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 'Enter comma-separated values. Note: Provide the values in proper JSON format. Do not provide quoted values.'
+        tooltip: Provide IOC Yara Rules in proper JSON format.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Provide IOC Hash values.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 'Enter comma-separated values. Note: Do not provide quoted values.'
+        tooltip: Get the Md5, SHA1 or SHA256 by executing the "rubrik-threat-monitoring-matched-file-get" command.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Provide the name of scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Name of the new advanced threat hunt scan.
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Provide maximum value for snapshot to scan per object.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If a snapshot value is not provided, all snapshots of all objects will be scanned.
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Provide maximum value for IOC matches allowed per snapshot.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'If not provided, all the IOC allowed to match per snapshot. '
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: Provide start time for snapshot to scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: date
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: Provide end time for snapshot to scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: date
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          simple: Provide maximum file size that will be included in the scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Maximum size of the file in bytes that will be included in the scan.
+        readonly: false
+      - id: "9"
+        label: ""
+        labelarg:
+          simple: Provide minimum file size that will be included in the scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Minimum size of the file in bytes that will be included in the scan.
+        readonly: false
+      - id: "10"
+        label: ""
+        labelarg:
+          simple: Provide paths to include in the scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Enter comma-separated values. Do not provide quoted values.
+        tooltip: 'Paths to include in the scan. Format accepted: path_to_include_1, path_to_include_2.'
+        readonly: false
+      - id: "11"
+        label: ""
+        labelarg:
+          simple: Provide paths to exclude from the scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Enter comma-separated values. Do not provide quoted values.
+        tooltip: 'Paths to exclude from the scan. Format accepted: path_to_exclude_1, path_to_exclude_2.'
+        readonly: false
+      - id: "12"
+        label: ""
+        labelarg:
+          simple: Provide paths to exempt from exclusion.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Enter comma-separated values. Do not provide quoted values.
+        tooltip: 'Paths to exempt from exclusion. Format accepted: path_to_exempt_1, path_to_exempt_2.'
+        readonly: false
+      title: Scan Inputs
+      description: Provide IOC values and details to start Advance IOC scan.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 280974b4-0d7a-4a0a-8643-34aefbb76f95
+    type: condition
+    task:
+      id: 280974b4-0d7a-4a0a-8643-34aefbb76f95
+      version: -1
+      name: Is IOC values are provided?
+      description: Checks whether IOC values are provided or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Scan Inputs.Answers
+                accessor: "0"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Scan Inputs.Answers.1
+                      iscontext: true
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: Scan Inputs.Answers.2
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 6e801aaa-7c9f-47fa-8a31-e1456b71394e
+    type: condition
+    task:
+      id: 6e801aaa-7c9f-47fa-8a31-e1456b71394e
+      version: -1
+      name: Is object ID provided?
+      description: Checks whether object ID is present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.object_ids
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 782d80c6-8488-4bc0-806f-d88e0292da47
+    type: collection
+    task:
+      id: 782d80c6-8488-4bc0-806f-d88e0292da47
+      version: -1
+      name: Provide object IDs
+      description: Provide Object ID of the system on which to perform the scan. Supports comma separated values.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide object IDs.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Enter comma-separated values.
+        tooltip: Get the list of object IDs by executing the "rubrik-polaris-objects-list" command.
+        readonly: false
+      title: Object IDs
+      description: The Object ID of the system on which to perform the scan. Supports comma separated values.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 4fb1bb2f-1529-45d6-8b25-4956b52cb951
+    type: regular
+    task:
+      id: 4fb1bb2f-1529-45d6-8b25-4956b52cb951
+      version: -1
+      name: Print exit message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      value:
+        simple: IOC values are not provided.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 9e9c7621-f616-4fa8-8ac1-5e7604bebc71
+    type: regular
+    task:
+      id: 9e9c7621-f616-4fa8-8ac1-5e7604bebc71
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      key:
+        simple: Object IDs,Scan Inputs,RubrikPolaris.AdvanceIOCScan,RubrikPolaris.IOCScan,Advance IOC,IOC Hash,IOC Path,IOC Yara Rule
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 80a39393-37a6-4f08-8a79-22b4ed0aeaef
+    type: playbook
+    task:
+      id: 80a39393-37a6-4f08-8a79-22b4ed0aeaef
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: RubrikPolaris.AdvanceIOCScan
+          accessor: huntId
+      Interval:
+        complex:
+          root: inputs.polling_interval
+      PollingCommandArgName:
+        simple: hunt_id
+      PollingCommandName:
+        simple: rubrik-ioc-scan-results-v2
+      Timeout:
+        complex:
+          root: inputs.polling_timeout
+      dt:
+        simple: RubrikPolaris.IOCScan(val.status !== 'SUCCEEDED' && val.status !== 'CANCELED' && val.status !== 'FAILED' && val.status !== 'ABORTED').hunt_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "45_3_#default#": 0.18,
+      "45_52_yes": 0.53,
+      "46_30_yes": 0.48,
+      "46_47_#default#": 0.7,
+      "48_30_yes": 0.32,
+      "48_51_#default#": 0.17,
+      "49_46_yes": 0.49,
+      "49_50_#default#": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2565,
+        "width": 1220,
+        "x": 370,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: object_ids
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjectid
+  required: true
+  description: |-
+    The Object ID of the system on which to perform the scan. Supports comma separated values.
+
+    Note: Users can get the list of object IDs by executing the "rubrik-polaris-objects-list" command.
+  playbookInputQuery:
+- key: start_date
+  value:
+    simple: 7 days
+  required: false
+  description: |-
+    Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.
+
+    Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+  playbookInputQuery:
+- key: end_date
+  value:
+    simple: now
+  required: false
+  description: |-
+    Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.
+
+    Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+  playbookInputQuery:
+- key: ioc_path
+  value: {}
+  required: false
+  description: "Path of IOC to scan. Supports comma separated multiple values. \n\nNote: Do not provide quoted values. Provide the values in proper JSON format (Example: C:\\\\Users\\\\Malware_Executible.ps1)."
+  playbookInputQuery:
+- key: ioc_hash
+  value: {}
+  required: false
+  description: "Hash of IOC to scan. Supports comma separated multiple values. \n\nNote: Do not provide quoted values."
+  playbookInputQuery:
+- key: ioc_yara_rule
+  value: {}
+  required: false
+  description: "Yara Rule(s) for IOC scan. \n\nNote: Do not provide quoted values. Provide the values in proper JSON format."
+  playbookInputQuery:
+- key: polling_interval
+  value:
+    simple: "5"
+  required: false
+  description: Frequency that the IOC scan command will run (minutes).
+  playbookInputQuery:
+- key: polling_timeout
+  value:
+    simple: "720"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+  playbookInputQuery:
+- key: paths_to_include
+  value: {}
+  required: false
+  description: |-
+    Paths to include in the scan. Supports comma separated values.
+
+    Note: Do not provide quoted values.
+
+    Format accepted: path_to_include_1, path_to_include_2.
+  playbookInputQuery:
+- key: paths_to_exclude
+  value: {}
+  required: false
+  description: |-
+    Paths to exclude from the scan. Supports comma separated values.
+
+    Note: Do not provide quoted values.
+
+    Format accepted: path_to_exclude_1, path_to_exclude_2.
+  playbookInputQuery:
+- key: paths_to_exempt
+  value: {}
+  required: false
+  description: |-
+    Paths to exempt from exclusion. Supports comma separated values.
+
+    Note: Do not provide quoted values.
+
+    Format accepted: path_to_exempt_1, path_to_exempt_2.
+  playbookInputQuery:
+- key: scan_name
+  value:
+    simple: PAXSOAR-1.6.0
+  required: false
+  description: Name of the new advanced threat hunt scan.
+  playbookInputQuery:
+- key: max_file_size
+  value:
+    simple: "5000000"
+  required: false
+  description: Maximum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes.
+  playbookInputQuery:
+- key: min_file_size
+  value:
+    simple: "1"
+  required: false
+  description: Minimum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes.
+  playbookInputQuery:
+- key: max_matches_per_snapshot
+  value: {}
+  required: false
+  description: Maximum number of IOC matches allowed per snapshot.
+  playbookInputQuery:
+- key: max_snapshots_per_object
+  value: {}
+  required: false
+  description: Maximum number of snapshots to scan per object.
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.IOCScan
+  description: The results of the IOC scan.
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
