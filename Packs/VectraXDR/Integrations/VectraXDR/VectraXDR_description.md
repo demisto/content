@@ -15,7 +15,7 @@ The integration only supports one type of ingestion:
 To fetch Vectra XDR Entity follow the next steps:
 
 1. Select Fetches incidents.
-2. Under Classifier, select "N/A". 
+2. Under Classifier, select "N/A".
 3. Under Incident type, select "Vectra XDR Entity".
 4. Under Mapper (incoming), select "Vectra XDR - Incoming Mapper" for default mapping.
 5. Enter connection parameters. (Server URL, Client ID & Client Secret Key)
@@ -25,11 +25,12 @@ To fetch Vectra XDR Entity follow the next steps:
     1. Incoming - Mirrors changes from the Vectra XDR Entity into the Cortex XSOAR incident.
     2. Outgoing - Mirrors changes from the Cortex XSOAR incident to the Vectra XDR Entity.
     3. Incoming And Outgoing - Mirrors changes both Incoming and Outgoing directions on incidents.
-9. Enter the relevant tag name for mirror notes.
+9. Uncheck the "Reopen closed incidents via mirroring" option if you want to prevent reopening and refetching closed incidents via mirroring on modification of an entity.
+10. Enter the relevant tag name for mirror notes.
 **Note:** This value is mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles notes when you tag them in the War Room. This is required for mirroring notes from Cortex XSOAR to Vectra XDR.
-10. Provide appropriate values for filtering Entities, such as Entity Type, Prioritization, and Tags. Additionally, specify filters for detections, including Detection Name, Detection Category, and Detection Type.
+11. Provide appropriate values for filtering Entities, such as Entity Type, Prioritization, and Tags. Additionally, specify filters for detections, including Detection Name, Detection Category, and Detection Type.
 **Note:** Filters for Entities and Detections are combined using 'OR' logic, while filters
-11. Adjust the Urgency Score to categorize Entity severity in Cortex XSOAR. There are three fields for this mapping:
+12. Adjust the Urgency Score to categorize Entity severity in Cortex XSOAR. There are three fields for this mapping:
     1. Input a value for 'Low' severity. Scores up to this limit are labelled as Low.
     2. The next value is for 'Medium' severity. Scores up to this limit are labelled as Medium.
     3. The third value is for 'High' severity. Scores up to this limit are labelled as High. Any score above this is marked as 'Critical' severity.
@@ -51,5 +52,7 @@ To fetch Vectra XDR Entity follow the next steps:
   - mirror_direction: This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
   - mirror_tags: This field determines what would be the tag needed to mirror the XSOAR entry out to Vectra XDR. It is a required field for XSOAR to enable mirroring support.
   - mirror_instance: This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
+- If "Reopen closed Incidents while Mirroring" checkbox is selected and the incoming mirroring is enabled then closed XSOAR incidents will automatically reopen if the associated entity is modified after closure.
+- If "Reopen closed Incidents while Mirroring" checkbox is not selected and the outgoing mirroring is enabled then closed XSOAR incidents will automatically re-fetch and create new incidents in XSOAR if the associated entity is modified after closure.
 
 For more information about this integration, visit [Vectra's knwoledge base](https://support.vectra.ai/s/article/KB-VS-1692).
