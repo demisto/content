@@ -804,9 +804,9 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
     entries = []
     if close_incident:
         for incident in modified_incidents:
-            if incident.get("status") == "Resolved":
+            if incident.get("status") in ("Resolved", "Redirected"):
                 demisto.debug(
-                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is resolved in Microsoft, "
+                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is {incident.get('status').lower()} in Microsoft, "
                     f"adding close entry to XSOAR."
                 )
                 entry = {
