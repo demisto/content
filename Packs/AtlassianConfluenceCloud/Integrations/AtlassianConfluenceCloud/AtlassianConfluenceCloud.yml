@@ -2046,6 +2046,67 @@ script:
       required: true
     description: Retrieves a Content Item by Content ID.
     name: confluence-cloud-content-get   
+    outputs:
+      - contextPath: ConfluenceCloud.Content.id
+        description: The ID of the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content.type
+        description: The type of the content (e.g., page, blogpost).
+        type: String
+      - contextPath: ConfluenceCloud.Content.ari
+        description: The Atlassian Resource Identifier (ARI) for the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content.base64EncodedAri
+        description: The Base64 encoded ARI of the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content.status
+        description: The status of the content (e.g., current, archived, draft).
+        type: String
+      - contextPath: ConfluenceCloud.Content.title
+        description: The title of the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content.body
+        description: The body of the content.
+        type: Unknown
+      - contextPath: ConfluenceCloud.Content.body.storage.value
+        description: The raw storage-format value of the content body (may contain HTML/XML).
+        type: String
+      - contextPath: ConfluenceCloud.Content.body.storage.representation
+        description: The representation format of the body (e.g., storage, view).
+        type: String
+      - contextPath: ConfluenceCloud.Content.body.storage.embeddedContent
+        description: A list of embedded content objects in the body.
+        type: Unknown
+      - contextPath: ConfluenceCloud.Content.body.storage._expandable.content
+        description: Link to the content resource for the body.
+        type: String
+      - contextPath: ConfluenceCloud.Content.extensions.position
+        description: Position of the content in the page tree or ordering.
+        type: Number
+      - contextPath: ConfluenceCloud.Content._links.editui
+        description: Link to edit the content in UI.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.webui
+        description: Web UI link to the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.edituiv2
+        description: Link to edit the content in the new UI.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.context
+        description: Context path of the Confluence instance.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.self
+        description: REST API self link for the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.tinyui
+        description: Tiny link to the content.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.collection
+        description: Link to the collection of content resources.
+        type: String
+      - contextPath: ConfluenceCloud.Content._links.base
+        description: Base URL of the Confluence site.
+        type: String
   dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   isfetchevents:xsoar: false

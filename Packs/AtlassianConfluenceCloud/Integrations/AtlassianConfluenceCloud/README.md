@@ -4396,7 +4396,7 @@ Retrieves a page with all it's content from the Atlassian Confluence Cloud insta
 
 #### Command Example
 
-```!confluence-cloud-get-events limit=1```
+```!confluence-cloud-content-get content_id="12345"```
 
 #### Context Example
 

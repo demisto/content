@@ -67,6 +67,7 @@ MESSAGES = {
     "INVALID_SPACE_NAME_LENGTH": "Space name cannot be longer than 200 characters.",
     "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters only.",
     "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space.",
+    "MISSING_CONTENT_ID": "Argument 'content_id' is required for this command.",
 }
 OUTPUT_PREFIX = {
     "GROUP": "ConfluenceCloud.Group",
@@ -1381,6 +1382,8 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
     """
 
     content_id = args.get("content_id")
+    if not content_id:
+        raise ValueError(MESSAGES["MISSING_CONTENT_ID"])
     params = {"expand": "body.storage"}
     request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
     try:

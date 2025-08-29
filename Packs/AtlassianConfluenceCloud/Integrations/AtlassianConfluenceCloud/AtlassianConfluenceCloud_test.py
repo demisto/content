@@ -1142,3 +1142,31 @@ def test_confluence_cloud_content_get_command_when_resource_not_found(mocker: Mo
     response = confluence_cloud_content_get_command(mock_client, args)
 
     assert response.outputs == {"Error": error_message}
+
+
+def test_confluence_cloud_content_get_command_when_valid_response_is_returned(requests_mock):
+    """
+    To test confluence_cloud_content_get command when valid response return.
+    Given:
+        - command arguments for get content command
+    When:
+        - Calling `confluence-cloud-content-get` command
+    Then:
+        - Returns the response data
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_content_get_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
+    requests_mock.get("https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage", json=expected_response)
+    expected_context_output = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
+
+    with open(os.path.join("test_data", "content_get/content_get_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"content_id": "2097159"}
+
+    response = confluence_cloud_content_get_command(client, args)
+    assert response.outputs_prefix == "ConfluenceCloud.Content"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context_output
+    assert response.readable_output == expected_readable_output
