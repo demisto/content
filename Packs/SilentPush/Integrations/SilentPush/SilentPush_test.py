@@ -6,7 +6,9 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+import uuid
 import json
+from requests import Response
 import pytest
 from SilentPush import (
     Client,
@@ -31,8 +33,14 @@ from SilentPush import (
     forward_padns_lookup_command,
     search_domains_command,
     density_lookup_command,
+    add_feed_command,
+    add_indicators_command,
+    add_indicators_tags_command,
+    get_data_exports_command,
+    run_threat_check_command,
+    add_feed_tags_command,
 )
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 
 
 def util_load_json(path):
@@ -1348,3 +1356,243 @@ def test_density_lookup_command_api_error(mock_client):
     # Call the function and expect DemistoException
     with pytest.raises(DemistoException, match="API Error: Invalid query"):
         density_lookup_command(mock_client, args)
+
+
+def test_add_feed_command_success(mock_client):
+    # Generate a unique name to avoid duplicates
+    unique_name = f"TestFeed_{uuid.uuid4().hex[:6]}"
+
+    # Mock arguments passed to the command
+    args = {"name": unique_name, "type": "domain", "tags": "Test,Demo"}
+
+    # Simulated API response
+    mock_response = {
+        "name": unique_name,
+        "type": "domain",
+        "vendor": "SilentPush",
+        "feed_description": "Test feed for unit testing",
+        "category": "default",
+        "tags": "Test,Demo",
+    }
+
+    # Patch the client's method to return the mocked response
+    mock_client.add_feed.return_value = mock_response
+
+    # Call your command
+    result = add_feed_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddFeed"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == unique_name
+    assert result.outputs["vendor"] == "SilentPush"
+    assert "SilentPush Add Feed" in result.readable_output
+
+
+def test_add_feed_command_missing_required_fields(mock_client):
+    # Case 1: Missing both 'name' and 'type'
+    args = {}
+    with pytest.raises(ValueError, match="Name is required"):
+        add_feed_command(mock_client, args)
+
+    # Case 2: Missing 'type'
+    args = {"name": "TestOnlyName"}
+    with pytest.raises(ValueError, match="Type is required"):
+        add_feed_command(mock_client, args)
+
+    # Case 3: Missing 'name'
+    args = {"type": "domain"}
+    with pytest.raises(ValueError, match="Name is required"):
+        add_feed_command(mock_client, args)
+
+
+def test_add_indicators_command_success(mock_client):
+    # Generate unique UUID for test feed
+    test_uuid = str(uuid.uuid4())
+
+    # Mock arguments
+    args = {"feed_uuid": test_uuid, "indicators": ["example.com", "malicious.net"]}
+
+    # Mock response returned by the API client
+    mock_response = {"feed_uuid": test_uuid, "added": 2, "indicators": ["example.com", "malicious.net"]}
+
+    mock_client.add_indicators.return_value = mock_response
+
+    # Execute command
+    result = add_indicators_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddIndicators"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs["feed_uuid"] == test_uuid
+    assert result.outputs["added"] == 2
+    assert "SilentPush Add Indicators" in result.readable_output
+
+
+def test_add_indicators_command_missing_fields(mock_client):
+    # Case 1: Both 'feed_uuid' and 'indicators' missing
+    args = {}
+    with pytest.raises(ValueError, match="Feed UUID is required"):
+        add_indicators_command(mock_client, args)
+
+    # Case 2: 'feed_uuid' present but 'indicators' missing
+    args = {"feed_uuid": "1234-5678"}
+    with pytest.raises(ValueError, match="Indicators is required"):
+        add_indicators_command(mock_client, args)
+
+    # Case 3: 'indicators' present but 'feed_uuid' missing
+    args = {"indicators": ["example.com"]}
+    with pytest.raises(ValueError, match="Feed UUID is required"):
+        add_indicators_command(mock_client, args)
+
+
+def test_add_indicators_tags_command_success(mock_client):
+    test_uuid = str(uuid.uuid4())
+    test_indicator = "example.com"
+    test_tags = ["test", "phishing"]
+
+    args = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags": test_tags}
+
+    mock_response = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags_added": test_tags}
+
+    mock_client.add_indicators_tags.return_value = mock_response
+
+    result = add_indicators_tags_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddIndicatorTags"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs["feed_uuid"] == test_uuid
+    assert result.outputs["indicator_name"] == test_indicator
+    assert result.outputs["tags_added"] == test_tags
+    assert "SilentPush Add Indicator Tags" in result.readable_output
+
+
+def test_add_indicators_tags_command_missing_tags(mock_client):
+    args = {"feed_uuid": "1234-5678", "indicator_name": "example.com"}
+
+    with pytest.raises(ValueError, match="The 'tags' argument is required and cannot be empty."):
+        add_indicators_tags_command(mock_client, args)
+
+
+def test_run_threat_check_command_success(mock_client):
+    args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user", "query": "test_query"}
+
+    mock_response = {
+        "type": "domain",
+        "data": ["example.com"],
+        "user_identifier": "test_user",
+        "query": "test_query",
+        "result": "benign",
+    }
+
+    mock_client.run_threat_check.return_value = mock_response
+
+    result = run_threat_check_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.RunThreatCheck"
+    assert result.outputs_key_field == "query"
+    assert result.outputs["query"] == "test_query"
+    assert result.outputs["result"] == "benign"
+    assert "SilentPush Threat Check" in result.readable_output
+
+
+def test_run_threat_check_command_missing_data(mock_client):
+    args = {"type": "domain", "user_identifier": "test_user", "query": "test_query"}
+
+    with pytest.raises(ValueError, match="Data is required"):
+        run_threat_check_command(mock_client, args)
+
+
+def test_run_threat_check_command_missing_user_identifier(mock_client):
+    args = {"type": "domain", "data": ["example.com"], "query": "test_query"}
+
+    with pytest.raises(ValueError, match="User identifier is required"):
+        run_threat_check_command(mock_client, args)
+
+
+def test_run_threat_check_command_missing_query(mock_client):
+    args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user"}
+
+    with pytest.raises(ValueError, match="Query is required"):
+        run_threat_check_command(mock_client, args)
+
+
+def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
+    response = Response()
+    response.status_code = status_code
+    response._content = content
+    response.headers = headers or {
+        "Content-Disposition": 'attachment; filename="export.csv"',
+        "Content-Type": "application/octet-stream",
+    }
+    return response
+
+
+def test_get_data_exports_command_success(mock_client):
+    feed_url = "https://api.silentpush.com/feeds/export.csv"
+    args = {"feed_url": feed_url}
+    content = b"test,data\n1,2"
+
+    # Mock the response from the client (returns a real Response object)
+    mock_response = mock_file_response(content)
+    mock_client.get_data_exports.return_value = mock_response
+
+    # Run the actual command function
+    result = get_data_exports_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, dict)
+    assert result["File"] == "export.csv"
+    assert result["Type"] == EntryType.FILE
+
+
+def test_add_feed_tags_command_success(mocker):
+    # Mock args
+    args = {"feed_uuid": "abc123", "tags": "malware"}
+
+    # Mocked result returned by client.add_feed_tags
+    mock_response = {"created_or_updated": [{"uuid": "8eb9c1b8-edbb-4081-9978-590f5c5a0319", "tag": "phishing"}]}
+
+    # Mock the Client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.add_feed_tags.return_value = mock_response
+
+    # Run the command
+    result = add_feed_tags_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddFeedTags"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+    assert "SilentPush Add Feed Tags" in result.readable_output
+
+
+def test_get_data_exports_command_missing_feed_url(mock_client):
+    args = {}
+
+    with pytest.raises(ValueError, match="Feed URL is required"):
+        get_data_exports_command(mock_client, args)
+
+
+def test_add_feed_tags_command_missing_feed_uuid(mocker):
+    # Missing 'feed_uuid'
+    args = {"tags": "malware"}
+    mock_client = mocker.Mock(spec=Client)
+
+    with pytest.raises(ValueError, match="Feed UUID is required"):
+        add_feed_tags_command(mock_client, args)
+
+
+def test_add_feed_tags_command_missing_tags(mocker):
+    # Missing 'tags'
+    args = {"feed_uuid": "abc123"}
+    mock_client = mocker.Mock(spec=Client)
+
+    with pytest.raises(ValueError, match="Tags name is required"):
+        add_feed_tags_command(mock_client, args)
