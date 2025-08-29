@@ -1,0 +1,117 @@
+id: criminalip_run_micro_asm
+version: -1
+fromversion: 6.0.0
+name: criminalip_run_micro_asm
+description: |-
+  For a single domain, this playbook performs a 'criminal-ip-domain-full-scan' and once the scan is complete, it executes 'criminal-ip-micro-asm'.
+  You can find the 'micro-asm' results in the context.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4239260e-705a-4374-85b6-b1d2c6e1d06b
+    type: start
+    task:
+      id: 4239260e-705a-4374-85b6-b1d2c6e1d06b
+      version: -1
+      name: Start
+      description: Initializes the playbook and validates prerequisites.
+      iscommand: false
+    nexttasks:
+      '#none#': ["1"]
+  "1":
+    id: "1"
+    taskid: 90b6d334-3476-45fc-ad74-05989a36887e
+    type: regular
+    task:
+      id: 90b6d334-3476-45fc-ad74-05989a36887e
+      version: -1
+      name: criminal-ip-domain-full-scan
+      description: Runs a full domain scan in Criminal IP.
+      script: CriminalIP|||criminal-ip-domain-full-scan
+      iscommand: true
+    nexttasks:
+      '#none#': ["2"]
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+  "2":
+    id: "2"
+    taskid: 03eab539-0b2c-4fb4-b48b-436f34c4e816
+    type: playbook
+    task:
+      id: 03eab539-0b2c-4fb4-b48b-436f34c4e816
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      description: Poll until scan finishes.
+      iscommand: false
+    nexttasks:
+      '#none#': ["3"]
+    scriptarguments:
+      Ids:
+        complex:
+          root: CriminalIP.Full_Scan.data
+          accessor: scan_id
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: criminal-ip-domain-full-scan-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: CriminalIP.Full_Scan_Status(val.data.scan_percentage < 100).data
+    separatecontext: true
+  "3":
+    id: "3"
+    taskid: a65124e3-8e74-49b0-b116-575412936205
+    type: regular
+    task:
+      id: a65124e3-8e74-49b0-b116-575412936205
+      version: -1
+      name: criminal-ip-micro-asm
+      description: Runs Micro ASM using the scan_id and domain.
+      script: CriminalIP|||criminal-ip-micro-asm
+      iscommand: true
+    nexttasks:
+      '#none#': ["4"]
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      scan_id:
+        complex:
+          root: CriminalIP.Full_Scan.data
+          accessor: scan_id
+          transformers:
+          - operator: LastArrayElement
+  "4":
+    id: "4"
+    taskid: d5fec2b5-08d9-42c4-8e30-66b5ce0afcd0
+    type: title
+    task:
+      id: d5fec2b5-08d9-42c4-8e30-66b5ce0afcd0
+      version: -1
+      name: Done
+      description: Playbook completed successfully.
+      iscommand: false
+inputs:
+- key: Domain
+  value: {}
+  required: true
+  description: A single domain for performing 'micro-asm'.
+outputs:
+- contextPath: CriminalIP.Micro_ASM.result
+  description: Micro ASM analysis results
+  type: String
+- contextPath: CriminalIP.Micro_ASM.domain
+  description: Domain analyzed
+  type: String
+- contextPath: CriminalIP.Micro_ASM.scan_id
+  description: Scan ID used for Micro ASM
+  type: String
+tests:
+- CriminalIP_TestPlaybook

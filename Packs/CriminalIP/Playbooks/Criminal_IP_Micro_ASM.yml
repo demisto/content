@@ -1,0 +1,134 @@
+id: criminalip_micro_asm
+version: -1
+fromversion: 6.0.0
+name: criminalip_micro_asm
+description: |-
+  This playbook takes domains as a List argument and executes the sub-playbook 'Criminal IP Run Micro ASM' for each domain in the List, then delivers the 'micro-asm' results to the user via email.
+  The user must set up the relevant arguments for the send-mail command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7cfa5294-9d33-4492-838e-f2beb157e7b7
+    type: start
+    task:
+      id: 7cfa5294-9d33-4492-838e-f2beb157e7b7
+      version: -1
+      name: Start
+      description: Initializes the playbook.
+      iscommand: false
+    nexttasks:
+      '#none#': ["1"]
+  "1":
+    id: "1"
+    taskid: cf115d01-8a9a-4d9e-9050-42bee52bc6c4
+    type: regular
+    task:
+      id: cf115d01-8a9a-4d9e-9050-42bee52bc6c4
+      version: -1
+      name: Set
+      description: Sets Domains context key.
+      scriptName: Set
+      iscommand: false
+    nexttasks:
+      '#none#': ["2"]
+    scriptarguments:
+      key:
+        simple: Domains
+      value:
+        simple: ${inputs.Domains}
+  "2":
+    id: "2"
+    taskid: b5125def-262e-4bca-b0eb-0ed9cda4aeea
+    type: playbook
+    task:
+      id: b5125def-262e-4bca-b0eb-0ed9cda4aeea
+      version: -1
+      name: Criminal IP Run Micro ASM
+      description: Executes the 'Criminal IP Run Micro ASM' playbook for each domain.
+      playbookName: Criminal IP Run Micro ASM
+      iscommand: false
+    nexttasks:
+      '#none#': ["3"]
+    scriptarguments:
+      Domain:
+        simple: ${Domains}
+    loop:
+      iscommand: false
+      forEach: true
+      wait: 60
+      max: 100
+  "3":
+    id: "3"
+    taskid: 7425fc60-ea8c-45e8-a418-447b12d27c20
+    type: condition
+    task:
+      id: 7425fc60-ea8c-45e8-a418-447b12d27c20
+      version: -1
+      name: Mail Body Check
+      description: Checks if Micro ASM result exists.
+      iscommand: false
+    nexttasks:
+      '#default#': ["4"]
+      "yes": ["5"]
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${CriminalIP.Micro_ASM.result}
+            iscontext: true
+  "4":
+    id: "4"
+    taskid: a5e5aa38-ca32-4dd9-b794-98b95a144643
+    type: regular
+    task:
+      id: a5e5aa38-ca32-4dd9-b794-98b95a144643
+      version: -1
+      name: send-mail
+      description: Sends results via email.
+      script: mail-sender|||send-mail
+      iscommand: true
+    nexttasks:
+      '#none#': ["5"]
+    scriptarguments:
+      body:
+        simple: ${CriminalIP.Micro_ASM.result}
+      subject:
+        simple: Criminal IP Micro ASM Report
+      to:
+        simple: you@example.com
+  "5":
+    id: "5"
+    taskid: f097c788-3844-4384-8ec9-cd5ac7a1fce5
+    type: title
+    task:
+      id: f097c788-3844-4384-8ec9-cd5ac7a1fce5
+      version: -1
+      name: Done
+      description: Playbook completed successfully.
+      iscommand: false
+inputs:
+- key: Domains
+  value: {}
+  required: true
+  description: |-
+    A list of domains that require Micro ASM analysis.
+    ex)
+    [
+      "www.example.com",
+      "www.criminalip.io"
+    ]
+outputs:
+- contextPath: CriminalIP.Micro_ASM.result
+  description: Micro ASM analysis results
+  type: String
+- contextPath: CriminalIP.Micro_ASM.domain
+  description: Domain analyzed
+  type: String
+- contextPath: CriminalIP.Micro_ASM.scan_id
+  description: Scan ID used for analysis
+  type: String
+tests:
+- CriminalIP_TestPlaybook
