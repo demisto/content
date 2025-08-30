@@ -31,7 +31,7 @@ MAX_ACTIVITY_LOGS_PER_FETCH = 10000
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-START_FETCH_TIME = (60 * 1000)
+START_FETCH_TIME = 60 * 1000
 
 # Debug prefixes - used for logger messages
 AUDIT_LOG_DEBUG_PREFIX = "Audit Logs- MondayEventCollector Debug Message:\n"
@@ -274,7 +274,7 @@ def test_connection() -> CommandResults:
     audit_client = initiate_audit_client()
 
     now_ms = int(time.time() * 1000)
-    
+
     activity_logs_success = False
 
     try:
