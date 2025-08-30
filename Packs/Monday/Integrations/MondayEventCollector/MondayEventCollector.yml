@@ -19,12 +19,12 @@ configuration:
   required: false
 - display: Client secret
   name: secret
-  type: 9
+  type: 4
   section: Connect
   required: false
 - display: Authorization code
   name: auth_code
-  type: 9
+  type: 4
   section: Connect
   required: false
   additionalinfo: "The code received from the redirect URL after running monday-generate-login-url command. (needed for Activity Logs only)"
@@ -54,7 +54,7 @@ configuration:
   section: Connect
 - display: Audit API token
   name: audit_token
-  type: 9
+  type: 4
   section: Connect
   required: false
   additionalinfo: "In the Admin section of your account, click into the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button."
@@ -77,7 +77,6 @@ configuration:
   name: selected_event_types
   type: 16
   section: Collect
-  advanced: true
   required: true
   options:
   - Audit Logs

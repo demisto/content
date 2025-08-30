@@ -31,7 +31,7 @@ MAX_ACTIVITY_LOGS_PER_FETCH = 10000
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-START_FETCH_TIME = (60 * 1000) - 1
+START_FETCH_TIME = (60 * 1000)
 
 # Debug prefixes - used for logger messages
 AUDIT_LOG_DEBUG_PREFIX = "Audit Logs- MondayEventCollector Debug Message:\n"
@@ -273,45 +273,43 @@ def test_connection() -> CommandResults:
     activity_client = initiate_activity_client()
     audit_client = initiate_audit_client()
 
-    activity_logs_missing_params = ""
-    audit_logs_missing_params = ""
-
     now_ms = int(time.time() * 1000)
+    
+    activity_logs_success = False
 
     try:
-        # Try to test connection in the Authorization Code flow mode for activity logs.
-        if activity_client.client_id and activity_client.client_secret:
-            integration_context = get_integration_context()
-            access_token = integration_context.get("access_token", "")
+        # Try to test connection for activity logs using OAuth 2.0 flow.
+        integration_context = get_integration_context()
+        access_token = integration_context.get("access_token", "")
 
-            if access_token or activity_client.auth_code:
-                board_ids = params.get("board_ids", "")
-                board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()] if board_ids else []
-                if board_ids_list:
-                    # All parameters are provided for activity logs, test fetch single activity log.
-                    get_activity_logs(last_run={}, now_ms=now_ms, limit=1, board_id=board_ids_list[0], client=activity_client)
-                    return CommandResults(readable_output="✅ Test connection success for activity logs.")
-                else:
-                    activity_logs_missing_params = "Board IDs"
+        if access_token or (activity_client.auth_code and activity_client.client_id and activity_client.client_secret):
+            board_ids = params.get("board_ids", "")
+            board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()] if board_ids else []
+            if board_ids_list:
+                # All parameters are provided for activity logs, test fetch single activity log.
+                get_activity_logs(last_run={}, now_ms=now_ms, limit=1, board_id=board_ids_list[0], client=activity_client)
+                result = "✅ Test connection success for activity logs.\n"
+                activity_logs_success = True
             else:
-                activity_logs_missing_params = "Authorization code"
+                result = "❌ Test connection failed for activity logs.\n"
+                result += "Please provide Board IDs to test connection for activity logs.\n"
         else:
-            activity_logs_missing_params = "Client ID and Client secret"
+            result = "❌ Test connection failed for activity logs.\n"
+            result += "Please provide Client ID, Client secret and Authorization code with "
+            result += "monday-generate-login-url command before testing connection for activity logs.\n"
 
         # Activity logs test failed, try audit logs.
         if audit_client.audit_token and audit_client.audit_logs_url:
             # All parameters are provided for audit logs, test fetch single audit log.
             get_audit_logs(last_run={}, now_ms=now_ms, limit=1, logs_per_page=1, client=audit_client)
-            return CommandResults(readable_output="✅ Test connection success for audit logs.")
+            if activity_logs_success:
+                return CommandResults(readable_output="✅ Test connection success for both activity logs and audit logs.")
+            result += "✅ Test connection success for audit logs."
         else:
-            audit_logs_missing_params = "Audit API token and Audit Server URL"
+            result += "❌ Test connection failed for audit logs.\n"
+            result += "Please provide Audit API token and Audit Server URL to test connection for audit logs.\n"
 
-        return CommandResults(
-            readable_output=(
-                f"Please provide {activity_logs_missing_params} to test connection for activity logs "
-                f"or {audit_logs_missing_params} to test connection for audit logs."
-            )
-        )
+        return CommandResults(readable_output=result)
 
     except Exception as e:
         demisto.debug(f"{DEBUG_PREFIX}Error testing connection: {str(e)}")
