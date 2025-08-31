@@ -123,9 +123,8 @@ if (
     if (tasks == undefined){
         return{
             Type: entryTypes.note,
-            HumanReadable: `Workplan for incident ${inc_id} has no tasks.`,
-            ReadableContentsFormat: formats.markdown,
-            Contents: {}
+            ReadableContentsFormat: formats.text,
+            Contents: `Workplan for incident ${inc_id} has no tasks.`,
         };
     }
 
@@ -173,10 +172,9 @@ if (
 
 
 if (tasks == undefined){
-	return{
-		Type: entryTypes.note,
-		HumanReadable: `Workplan for incident ${inc_id} has no tasks.`,
-		ReadableContentsFormat: formats.markdown,
-		Contents: {}
-	};
+    return{
+        Type: entryTypes.note,
+        ReadableContentsFormat: formats.text,
+        Contents: `Workplan for incident ${inc_id} has no tasks.`,
+    };
 }
