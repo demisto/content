@@ -88,7 +88,7 @@ function getSearchEvents(userSessionId) {
     var context = events;
     entry.HumanReadable = tableToMarkdown(title, events);
     entry.EntryContext = {};
-    entry.EntryContext['ArcSightLogger.Events(val.rowId === obj.rowId)'] = context;
+    entry.EntryContext[`ArcSightLogger.Events(val.${args.key} === obj.${args.key})`] = context;
     return entry;
 }
 
