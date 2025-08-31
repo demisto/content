@@ -942,7 +942,7 @@ def remove_trailing_bracket_and_redundant_characters_from_part(part: str, inside
 
     elif part.endswith(("'", '"')) and inside_brackets:
         # This Fixes the edge case of catching a redundant single or double quote in a part when extracting from a list.
-        part = part[:-1]  # We remove the last char which is a quote.
+        part = part[:-1]  # We remove the last char, which is a quote.
         inside_brackets -= 1
 
     return part, inside_brackets

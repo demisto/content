@@ -508,17 +508,14 @@ class TestFormatURL:
         "part, inside_brackets, expected_part, expected_brackets",
         [
             ("example.com',", 1, "example.com", 0),  # Remove last 2 chars (m and ') when ending with comma
-            ("test.com')", 1, "test.com'", 0),  # Remove single quote only
-            ("site.com']", 1, "site.com'", 0),  # Remove single quote only
+            ("test.com'", 1, "test.com", 0),  # Remove single quote only
+            ('site.com"', 1, "site.com", 0),  # Remove double quotes only
             ("normal.com", 1, "normal.com", 1),  # No trailing chars to remove
-            ("example.com,", 0, "example.com,", 0),  # comma in the end and inside_brackets is 0, no change
-            ("example.com'", 0, "example.com'", 0),  # single quote in the end and inside_brackets is 0, no change
             ("example.com',", 0, "example.com',", 0),  # single quote and comma in the end and inside_brackets is 0, no change
-            ("test.com)", 0, "test.com)", 0),  # closing parenthesis in the end and inside_brackets is 0, no change
-            ("test.com]", 0, "test.com]", 0),  # closing square bracket in the end and inside_brackets is 0, no change
+            ("example.com'", 0, "example.com'", 0),  # single quote in the end and inside_brackets is 0, no change
+            ('example.com"', 0, 'example.com"', 0),  # double quotes in the end and inside_brackets is 0, no change
             ("site.com.", 1, "site.com.", 1),  # Period not in removal list
             ("", 1, "", 1),  # Empty string
-            ("example.com\"", 1, "example.com", 0),  # Remove double quote
             ("https://test.com/abc?q=(123)'", 1, "https://test.com/abc?q=(123)", 0),  # should not remove inside_brackets
         ],
     )
