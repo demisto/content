@@ -702,3 +702,38 @@ Adds or removes permission settings for the specified snapshot. Note: snapshots 
 #### Context Output
 
 There is no context output for this command.
+
+### aws-cloudtrail-trails-describe
+
+***
+
+#### Base Command
+
+`aws-cloudtrail-trails-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| trail_names | A comma-separated list of trail names, trail ARNs, or both, of the trails to describe. If an empty list is specified, information for the trail in the current region is returned. | Optional |
+| include_shadow_trails | Specifies whether to include shadow trails in the response. A shadow trail is the replication in a region of a trail that was created in a different region. The default is true. Possible values are: true, false. Default is true. | Optional |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.CloudTrail.Trails.Name | string | Name of the trail set by calling CreateTrail. |
+| AWS.CloudTrail.Trails.S3BucketName | string | Name of the Amazon S3 bucket into which CloudTrail delivers your trail files. |
+| AWS.CloudTrail.Trails.S3KeyPrefix | string | Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery. |
+| AWS.CloudTrail.Trails.SnsTopicARN | string | Specifies the ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered. |
+| AWS.CloudTrail.Trails.IncludeGlobalServiceEvents | boolean | Set to True to include AWS API calls from AWS global services such as IAM. Otherwise, False. |
+| AWS.CloudTrail.Trails.IsMultiRegionTrail | boolean | Specifies whether the trail belongs only to one region or exists in all regions. |
+| AWS.CloudTrail.Trails.HomeRegion | string | The region in which the trail was created. |
+| AWS.CloudTrail.Trails.TrailARN | string | Specifies the ARN of the trail. |
+| AWS.CloudTrail.Trails.LogFileValidationEnabled | boolean | Specifies whether log file validation is enabled. |
+| AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn | string | Specifies an Amazon Resource Name \(ARN\), a unique identifier that represents the log group to which CloudTrail logs will be delivered. |
+| AWS.CloudTrail.Trails.CloudWatchLogsRoleArn | string | Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group. |
+| AWS.CloudTrail.KmsKeyId | string | Specifies the KMS key ID that encrypts the logs delivered by CloudTrail. |
+| AWS.CloudTrail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |

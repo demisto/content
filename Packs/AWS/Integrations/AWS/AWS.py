@@ -1293,14 +1293,38 @@ class CloudTrail:
             CommandResults: Detailed information about CloudTrail trails
         """
         trail_names = argToList(args.get("trail_names", []))
-        include_shadow_trails = arg_to_bool_or_none(args.get("include_shadow_trails", False))
+        include_shadow_trails = arg_to_bool_or_none(args.get("include_shadow_trails", True))
         kwargs = {"trailNameList": trail_names, "includeShadowTrails": include_shadow_trails}
         remove_nulls_from_dictionary(kwargs)
-
-        return CommandResults(
-            outputs_prefix="AWS.CloudTrail.Trails",
-            outputs_key_field="TrailARN",
-        )
+        try:
+            response = client.describe_trails(**kwargs)
+            trail_data = response.get("trailList", [])
+            headers = [
+                "Name",
+                "S3BucketName",
+                "IncludeGlobalServiceEvents",
+                "IsMultiRegionTrail",
+                "TrailARN",
+                "LogFileValidationEnabled",
+                "HomeRegion",
+            ]
+            readable_output = tableToMarkdown(
+                name="Trail List",
+                t=trail_data,
+                removeNull=True,
+                headers=headers,
+                headerTransform=pascalToSpace,
+            )
+            return CommandResults(
+                outputs_prefix="AWS.CloudTrail.Trails",
+                outputs_key_field="TrailARN",
+                raw_response=response,
+                outputs=response,
+                readable_output=readable_output,
+            )
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        return CommandResults("Failed to describe trails")
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
@@ -1367,6 +1391,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "cloudtrail:DescribeTrails",
 ]
 
 

@@ -1760,6 +1760,7 @@ script:
       predefined:
       - 'true'
       - 'false'
+      defaultValue: 'true'
     - name: account_id
       description: The AWS account ID.
       required: true
