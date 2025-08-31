@@ -1937,6 +1937,7 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
     for attempt in range(attempts):
         demisto.debug(f"Attempt {attempt}/{attempts} to get response for whois '{domain}' from '{target_server}'...")
         response = whois_request_get_response(request_domain, target_server)
+        demisto.debug(f"This is the raw response from Whois: {response.encode('utf-8')}")
         response_size = len(response.encode("utf-8"))
         demisto.debug(f"Response of attempt {attempt}/{attempts} to get whois {domain=} from {target_server=}, {response_size=}")
 
