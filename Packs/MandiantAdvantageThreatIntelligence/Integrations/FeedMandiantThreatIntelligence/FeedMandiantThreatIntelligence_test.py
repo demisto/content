@@ -383,7 +383,7 @@ def test_get_categories(sources, expected_categories):
             {"type": "Domain", "attributed_associations": [{"type": "malware", "name": "TrickBot"}]},
             [
                 EntityRelationship(
-                    name="indicates",
+                    name="indicator-of",
                     reverse_name="indicated-by",
                     entity_a="evil.com",
                     entity_a_type="Domain",
@@ -398,7 +398,7 @@ def test_get_categories(sources, expected_categories):
             {"type": "URL", "campaigns": [{"title": "Phishing Campaign X", "name": "campaign-x"}]},
             [
                 EntityRelationship(
-                    name="indicates",
+                    name="indicator-of",
                     reverse_name="indicated-by",
                     entity_a="phishing.site",
                     entity_a_type="URL",
