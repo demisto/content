@@ -27,11 +27,11 @@ configuration:
   type: 9
   section: Connect
   required: false
-  additionalinfo: "The code received from the redirect URL after running monday-generate-login-url command. (needed for Activity Logs only)"
+  additionalinfo: "The code received from the redirect URL after running the monday-generate-login-url command (needed for Activity Logs only)."
 - display: Board IDs
   name: board_ids
   required: false
-  additionalinfo: "Comma separated list of board IDs. (needed for Activity Logs only)"
+  additionalinfo: "Comma-separated list of board IDs (needed for Activity Logs only)."
   type: 0
   section: Connect
 - display: 'Events Fetch Interval'
@@ -57,7 +57,7 @@ configuration:
   type: 9
   section: Connect
   required: false
-  additionalinfo: "In the Admin section of your account, click into the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button."
+  additionalinfo: "In the Admin section of your account, click the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button."
 - display: Maximum number of Audit Logs per fetch
   defaultvalue: 5000
   section: Collect

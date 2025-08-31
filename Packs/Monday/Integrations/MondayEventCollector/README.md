@@ -8,7 +8,7 @@ To use this integration, the following permissions are required on the Monday.co
 
 ### Activity log
 
-can be accessed using the OAuth [method](https://developer.monday.com/apps/docs/choosing-auth#method-2-using-oauth-to-issue-access-tokens).
+Can be accessed using the OAuth [method](https://developer.monday.com/apps/docs/choosing-auth#method-2-using-oauth-to-issue-access-tokens).
 
 Create your Monday app [guidelines](https://developer.monday.com/apps/docs/create-an-app#creating-an-app-in-the-developer-center) and make sure the needed permissions are granted for the app registration:
 Required scope - boards:read
@@ -18,18 +18,18 @@ Enter your Client ID and Client Secret in the instance parameter fields.
 
 Run the ***!monday-generate-login-url*** command - command in the War Room and follow the instructions:
 
-Click on the login URL to sign in and grant Cortex XSOAR the permissions.You will be automatically redirected to a link with the following structure:
+To sign in, click the login URL and grant Cortex XSIAM permissions. You will be automatically redirected to a link with the following structure:
 REDIRECT_URI?code=AUTH_CODE&region=REGION&scope=boards%3Aread&state=
 
 Copy the AUTH_CODE (without the code= prefix) and paste it in your instance configuration under the Authorization code parameter.
 
 Save the instance.
-Run the !monday-auth-test command. A 'Success' message should be printed to the War Room.
+In the Playground, run the ***!monday-auth-test*** command. A 'Success' message is generated.
 
 ### Audit log
 
 Generating the API token
-To generate the audit log API token, access the admin section of your account, click into the "Security" section and then the "Audit" tab. From there, select on the "Monitor by API" button and copy it.
+To generate the audit log API token, access the admin section of your account, click the "Security" section, and then the "Audit" tab. From there, select the "Monitor by API" button and copy it.
 
 Audit log is an advanced security feature and available on the Enterprise plan and can only be accessed by the account admin. [docs](https://support.monday.com/hc/en-us/articles/4406042650002-Audit-Log-API)
 
@@ -45,7 +45,7 @@ Audit log is an advanced security feature and available on the Enterprise plan a
 | Events Fetch Interval |  | False |
 | Maximum number of Activity Logs per board per fetch |  | False |
 | Audit Server URL |  | False |
-| Audit API token | In the Admin section of your account, click into the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button. | False |
+| Audit API token | In the Admin section of your account, click the 'Security' section and then the 'Audit' tab. Select the 'Monitor by API' button. | False |
 | Maximum number of Audit Logs per fetch |  | False |
 | Fetch events |  | False |
 | Event types |  | True |
@@ -82,7 +82,7 @@ There is no context output for this command.
 
 >### Authorization instructions
 >
->1. Click on the login URL to sign in and grant Cortex XSOAR the permissions.
+>1. To sign in, click the login URL and grant Cortex XSIAM permissions.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&region=REGION&scope=boards%3Aread&state=```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix) and paste it in your instance configuration under the **Authorization code** parameter.
