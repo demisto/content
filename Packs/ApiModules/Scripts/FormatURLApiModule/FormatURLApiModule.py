@@ -428,7 +428,9 @@ class URLCheck:
             index, char = self.check_valid_character(index)
             fragment += char
 
-        fragment, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(fragment, self.inside_brackets)
+        fragment, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(
+            fragment, self.inside_brackets
+        )
 
         self.url.fragment = fragment
         self.output += fragment
