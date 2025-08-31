@@ -2078,7 +2078,7 @@ def sql_db_tde_set_command(client: AzureClient, params: dict[str, Any], args: Di
         params (dict): Configuration parameters.
         args (dict): Command arguments including server name, database name, and TDE state.
 
-    Returns:§
+    Returns:
         CommandResults: A message indicating successful TDE state update.
     """
     server_name = args.get("server_name", "")
