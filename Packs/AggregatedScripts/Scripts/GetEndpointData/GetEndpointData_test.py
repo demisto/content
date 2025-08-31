@@ -1247,10 +1247,10 @@ def test_update_endpoint_in_mapping_updates_risk_level():
     Then:
         The risk level in the mapping should be updated to the higher level.
     """
-    ir_mapping = {"1": {"Hostname": "host1", "RiskLevel": "Low", "Message": COMMAND_SUCCESS_MSG}}
-    endpoints = [{"Hostname": "host1", "RiskLevel": "High", "Message": COMMAND_SUCCESS_MSG}]
+    ir_mapping = {"1": {"Hostname": "host1", "RiskLevel": "LOW", "Message": COMMAND_SUCCESS_MSG}}
+    endpoints = [{"Hostname": "host1", "RiskLevel": "HIGH", "Message": COMMAND_SUCCESS_MSG}]
     update_endpoint_in_mapping(endpoints, ir_mapping)
-    assert ir_mapping["1"]["RiskLevel"] == "High"
+    assert ir_mapping["1"]["RiskLevel"] == "HIGH"
 
 
 def test_update_endpoint_in_mapping_adds_risk_level_if_missing():
@@ -1278,7 +1278,7 @@ def test_update_endpoint_in_mapping_updates_additional_fields():
         The additional fields should be merged into the mapping.
     """
     ir_mapping = {"1": {"Hostname": "host1", "Message": COMMAND_SUCCESS_MSG}}
-    endpoints = [{"Hostname": "host1", "Message": COMMAND_SUCCESS_MSG, "additional_fields": {"os": "Linux"}}]
+    endpoints = [{"Hostname": "host1", "Message": COMMAND_SUCCESS_MSG, "RiskLevel": "LOW", "additional_fields": {"os": "Linux"}}]
     update_endpoint_in_mapping(endpoints, ir_mapping)
     assert ir_mapping["1"]["os"] == "Linux"
 
