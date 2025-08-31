@@ -3,9 +3,9 @@
     "description": "Enrichment for devices and users in your environment.",
     "support": "xsoar",
     "currentVersion": "1.2.7",
-    "author": "Axonius",
-    "url": "https://docs.axonius.com",
-    "email": "support@test.com",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
     "created": "2020-07-30T18:52:36Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
