@@ -1747,14 +1747,14 @@ script:
       - contextPath: Azure.NSGSecurityGroup.id
         description: The security group's ID.
         type: String
-      - contextPath: Azure.NSGSecurityGroup.etag
-        description: The security group's ETag.
-        type: String
       - contextPath: Azure.NSGSecurityGroup.type
         description: The security group's type.
         type: String
       - contextPath: Azure.NSGSecurityGroup.location
         description: The security group's location.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.etag
+        description: The security group's ETag.
         type: String
       - contextPath: Azure.NSGSecurityGroup.tags
         description: The security group's tags.
@@ -1776,6 +1776,9 @@ script:
         type: String
       - contextPath: Azure.NSGRule.id
         description: The rule's ID.
+        type: String
+      - contextPath: Azure.NSGRule.location
+        description: The rule's location.
         type: String
       - contextPath: Azure.NSGRule.etag
         description: The rule's ETag.
