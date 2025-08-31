@@ -16,16 +16,28 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
         "Score": "Score",
         "Brand": "Brand",
     }
-
     url_indicator = Indicator(
         type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping=indicator_mapping
     )
+    
+    wildfire_command = [Command(
+            name="wildfire-get-verdict",
+            args={"url": url_list},
+            command_type=CommandType.INTERNAL,
+            brand="WildFire-v2",
+            context_output_mapping={
+                "WildFire.Verdicts(val.url && val.url == obj.url)": "WildFire.Verdicts(val.url && val.url == obj.url)[]"
+            },
+        )]
+    
+    create_new_indicator_commands = [Command(name="createNewIndicator", args={"value": url}, command_type=CommandType.INTERNAL) for url in url_list]
+    enrich_indicator_commands = [Command(name="enrichIndicators", args={"indicatorsValues": url, "indicatorType": "URL"}, command_type=CommandType.EXTERNAL) for url in url_list]
+    
+    commands = [
+        create_new_indicator_commands,
+        wildfire_command + enrich_indicator_commands
+    ]
 
-    commands: list[Command] = [Command(name="createNewIndicator", args={"value": url}, command_type=CommandType.INTERNAL) for url in url_list]
-    commands.extend([
-        Command(name="enrichIndicators", args={"indicatorsValues": url, "indicatorType": "URL"}, command_type=CommandType.INTERNAL)
-        for url in url_list
-    ])
     url_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands,
         verbose=verbose,
