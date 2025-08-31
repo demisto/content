@@ -337,9 +337,7 @@ class TestBitSightEventCollector:
         Then: Should calculate start date 2 days back from current time
         """
         # Mock API response
-        mocker.patch.object(
-            mock_client, "get_company_findings", return_value={"results": sample_findings}
-        )
+        mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
 
         with freeze_time("2024-01-15 12:00:00"):
             events, new_last_run = fetch_events(

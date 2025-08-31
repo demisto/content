@@ -191,9 +191,7 @@ def bitsight_get_events_command(client: Client, guid: str, limit: int, should_pu
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
     # Use empty last_run for one-off command - don't persist state
-    events, _ = fetch_events(
-        client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
-    )
+    events, _ = fetch_events(client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS)
 
     title = "Bitsight Findings Events (pushed)" if should_push else "Bitsight Findings Events"
     if should_push:
@@ -232,7 +230,6 @@ def test_module(client: Client, guid: str | None) -> str:
 
 
 """ HELPER FUNCTIONS """
-
 
 
 def resolve_guid(client: Client, guid_from_args: str | None, guid_from_params: str | None) -> str:
@@ -282,9 +279,7 @@ def main():
             max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
             guid = resolve_guid(client, None, params.get("guid"))
             last_run = demisto.getLastRun() or {}
-            events, new_last_run = fetch_events(
-                client, guid=guid, max_fetch=max_fetch, last_run=last_run
-            )
+            events, new_last_run = fetch_events(client, guid=guid, max_fetch=max_fetch, last_run=last_run)
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
             demisto.debug(f"Fetched and pushed {len(events)} events")
