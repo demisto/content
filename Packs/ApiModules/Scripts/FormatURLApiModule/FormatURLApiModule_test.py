@@ -201,6 +201,7 @@ FORMAT_PATH = [
     ('https://test.com/Test\\"', "https://test.com/Test"),  # disable-secrets-detection
     ("https://www.test.com/a\\", "https://www.test.com/a"),  # disable-secrets-detection
     ("https://aaa.aaa/test", "https://aaa.aaa/test"),  # disable-secrets-detection
+    ("https://abc.ly/test',", "https://abc.ly/test"),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
@@ -220,6 +221,10 @@ FORMAT_QUERY = [
         "https://test.dev?email=some@email.addres",  # disable-secrets-detection
         "https://test.dev?email=some@email.addres",
     ),  # disable-secrets-detection
+    (
+        "https://abc.ly/test?a=b',",
+        "https://abc.ly/test?a=b",
+    ),  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [
@@ -233,6 +238,10 @@ FORMAT_FRAGMENT = [
     (
         "https://test.dev#fragment",  # disable-secrets-detection
         "https://test.dev#fragment",
+    ),  # disable-secrets-detection
+    (
+        "https://abc.ly/test#a',",
+        "https://abc.ly/test#a",
     ),  # disable-secrets-detection
 ]
 
