@@ -1754,7 +1754,7 @@ def test_ec2_stop_instances_command_multiple_instances(mocker):
         ],
     }
 
-    args = {"instance_ids": ["InstanceID", "InstanceID"]}
+    args = {"instance_ids": ["InstanceID", "InstanceID"], "hibernate": "false", "force": "false"}
 
     result = EC2.stop_instances_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1782,7 +1782,7 @@ def test_ec2_stop_instances_command_with_force_flag(mocker):
         ],
     }
 
-    args = {"instance_ids": ["InstanceID"], "force": "true"}
+    args = {"instance_ids": ["InstanceID"], "hibernate": "false", "force": "true"}
 
     result = EC2.stop_instances_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1809,7 +1809,7 @@ def test_ec2_stop_instances_command_with_hibernate_flag(mocker):
         ],
     }
 
-    args = {"instance_ids": ["InstanceID"], "hibernate": "true"}
+    args = {"instance_ids": ["InstanceID"], "hibernate": "true", "force": "false"}
 
     result = EC2.stop_instances_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -1989,7 +1989,7 @@ def test_ec2_stop_instances_command_with_spaces_in_ids(mocker):
         ],
     }
 
-    args = {"instance_ids": "InstanceID, InstanceID"}
+    args = {"instance_ids": "InstanceID, InstanceID", "hibernate": "false", "force": "false"}
 
     result = EC2.stop_instances_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -2394,24 +2394,24 @@ def test_parse_tag_field_with_invalid_format():
     """
     Given: A tag string with invalid format (missing value part).
     When: parse_tag_field processes the malformed input.
-    Then: It should skip the invalid tag and return an empty list.
+    Then: It should raise an error.
     """
     from AWS import parse_tag_field
 
-    result = parse_tag_field("key=Key1")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_tag_field("key=Key1")
 
 
 def test_parse_tag_field_with_mixed_valid_and_invalid_tags():
     """
     Given: A tag string with both valid and invalid formatted tags.
     When: parse_tag_field processes the mixed input.
-    Then: It should return only the valid tags and skip invalid ones.
+    Then: It should raise an error.
     """
     from AWS import parse_tag_field
 
-    result = parse_tag_field("key=Key1,value=Value1;invalid-tag;key=Key2,value=Value2")
-    assert result == [{"Key": "Key1", "Value": "Value1"}, {"Key": "Key2", "Value": "Value2"}]
+    with pytest.raises(ValueError):
+        parse_tag_field("key=Key1,value=Value1;invalid-tag;key=Key2,value=Value2")
 
 
 def test_parse_tag_field_with_empty_value(mocker):
@@ -2481,26 +2481,26 @@ def test_parse_tag_field_with_key_exceeding_maximum_length():
     """
     Given: A tag string with key exceeding maximum allowed length (129 characters).
     When: parse_tag_field processes the input with oversized key.
-    Then: It should skip the invalid tag and return an empty list.
+    Then: It should raise an error.
     """
     from AWS import parse_tag_field
 
     oversized_key = "a" * 129
-    result = parse_tag_field(f"key={oversized_key},value=test")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_tag_field(f"key={oversized_key},value=test")
 
 
 def test_parse_tag_field_with_value_exceeding_maximum_length():
     """
     Given: A tag string with value exceeding maximum allowed length (257 characters).
     When: parse_tag_field processes the input with oversized value.
-    Then: It should skip the invalid tag and return an empty list.
+    Then: It should raise an error.
     """
     from AWS import parse_tag_field
 
     oversized_value = "a" * 257
-    result = parse_tag_field(f"key=TestKey,value={oversized_value}")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_tag_field(f"key=TestKey,value={oversized_value}")
 
 
 def test_parse_tag_field_with_exactly_fifty_tags(mocker):
@@ -2545,12 +2545,12 @@ def test_parse_tag_field_with_missing_comma_separator():
     """
     Given: A tag string missing comma separator between key and value.
     When: parse_tag_field processes the input without proper separator.
-    Then: It should skip the invalid tag and return an empty list.
+    Then: It should raise an error.
     """
     from AWS import parse_tag_field
 
-    result = parse_tag_field("key=Key1 value=Value1")
-    assert result == []
+    with pytest.raises(ValueError):
+        parse_tag_field("key=Key1 value=Value1")
 
 
 def test_parse_tag_field_with_extra_whitespace():
@@ -2585,10 +2585,8 @@ def test_parse_tag_field_debug_logging_for_invalid_tag(mocker):
     """
     from AWS import parse_tag_field
 
-    mock_debug = mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "debug")
 
     invalid_tag = "invalid-format"
-    result = parse_tag_field(invalid_tag)
-
-    assert result == []
-    mock_debug.assert_called_with(f"could not parse tag: {invalid_tag}")
+    with pytest.raises(ValueError):
+        parse_tag_field(invalid_tag)

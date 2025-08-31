@@ -77,10 +77,13 @@ def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
 def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     """
     Build pagination parameters for AWS API calls with proper validation and limits.
+
     Args:
         args (Dict[str, Any]): Command arguments containing pagination parameters
+
     Returns:
         Dict[str, Any]: Validated pagination parameters for AWS API
+
     Raises:
         ValueError: If limit exceeds maximum allowed value or is invalid
     """
@@ -113,10 +116,6 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         if not isinstance(next_token, str) or not next_token.strip():
             raise ValueError("next_token must be a non-empty string")
         kwargs["NextToken"] = next_token.strip()
-        if limit_arg is not None:
-            kwargs["MaxResults"] = limit
-        return kwargs
-
     kwargs.update({"MaxResults": limit})
     return kwargs
 
@@ -151,8 +150,10 @@ def parse_filter_field(filter_string: str | None):
     for filter in list_filters:
         match_filter = regex.match(filter)
         if match_filter is None:
-            demisto.debug(f"could not parse filter: {filter}")
-            continue
+            raise ValueError(
+                f"Could not parse field: {filter}. Please make sure you provided "
+                "like so: name=<name>,values=<values>;name=<name>,values=<value1>,<value2>..."
+            )
         demisto.debug(
             f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
             f' if larger than {MAX_FILTER_VALUES},'
@@ -182,8 +183,9 @@ def parse_tag_field(tags_string: str | None):
     for tag in list_tags:
         match_tag = regex.match(tag)
         if match_tag is None:
-            demisto.debug(f"could not parse tag: {tag}")
-            continue
+            raise ValueError(
+                f"Could not parse field: {tag}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
+            )
         tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
 
     return tags
@@ -1293,6 +1295,92 @@ class EC2:
         return CommandResults(readable_output="Failed to launch instances")
 
     @staticmethod
+    def _manage_instances_command(
+        client: BotoClient, args: Dict[str, Any], action: str, additional_params: Optional[Dict[str, str]] = None
+    ) -> CommandResults:
+        """
+        General function to manage EC2 instances (start, stop, terminate).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+            action (str): The action to perform ('start', 'stop', 'terminate')
+            additional_params (Optional[Dict[str, str]]): Additional parameter names to extract from args
+
+        Returns:
+            CommandResults: Results of the operation with instance management information
+
+        Raises:
+            DemistoException: If instance_ids parameter is missing or invalid action provided
+        """
+        # Validate action
+        valid_actions = {"start", "stop", "terminate"}
+        if action not in valid_actions:
+            raise DemistoException(f"Invalid action '{action}'. Must be one of: {valid_actions}")
+
+        # Validate and extract instance IDs
+        instance_ids = argToList(args.get("instance_ids", []))
+        if not instance_ids:
+            raise DemistoException("instance_ids parameter is required")
+
+        # Build base parameters
+        base_params = {"InstanceIds": instance_ids}
+
+        # Add action-specific parameters
+        if additional_params:
+            for param_name, arg_key in additional_params.items():
+                if arg_key in args:
+                    base_params[param_name] = argToBoolean(args.get(arg_key, False))
+
+        remove_empty_elements(base_params)
+
+        # Define action configuration
+        action_config = {
+            "start": {
+                "method_name": "start_instances",
+                "response_key": "StartingInstances",
+                "success_message": "started",
+                "failure_message": "Failed to start instances",
+            },
+            "stop": {
+                "method_name": "stop_instances",
+                "response_key": "StoppingInstances",
+                "success_message": "stopped",
+                "failure_message": "Failed to stop instances",
+            },
+            "terminate": {
+                "method_name": "terminate_instances",
+                "response_key": "TerminatingInstances",
+                "success_message": "terminated",
+                "failure_message": "Failed to terminate instances",
+            },
+        }
+
+        config = action_config[action]
+
+        try:
+            print_debug_logs(client, f"{action.title()}ing instances: {instance_ids}")
+
+            # Get the appropriate client method dynamically
+            client_method = getattr(client, config["method_name"])
+            response = client_method(**base_params)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                readable_output = (
+                    f"The instances have been {config['success_message']} successfully."
+                    if response.get(config["response_key"])
+                    else f"No instances were {config['success_message']}."
+                )
+                return CommandResults(readable_output=readable_output, raw_response=response)
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+
+        return CommandResults(readable_output=config["failure_message"])
+
+    @staticmethod
     def stop_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Stops one or more Amazon EC2 instances.
@@ -1302,38 +1390,10 @@ class EC2:
             args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
 
         Returns:
-            CommandResults: Results of the operation with instance termination information
+            CommandResults: Results of the operation with instance stop information
         """
-        instance_ids = argToList(args.get("instance_ids", []))
-
-        if not instance_ids:
-            raise DemistoException("instance_ids parameter is required")
-
-        # Prepare termination parameters
-        terminate_params = {
-            "InstanceIds": instance_ids,
-            "Force": argToBoolean(args.get("force", False)),
-            "Hibernate": argToBoolean(args.get("hibernate", False)),
-        }
-
-        try:
-            print_debug_logs(client, f"Stooping instances: {instance_ids}")
-            response = client.stop_instances(**terminate_params)
-
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
-                readable_output = (
-                    "The instances have been stopped successfully."
-                    if response.get("StoppingInstances")
-                    else "No instances were stopped."
-                )
-                return CommandResults(readable_output=readable_output, raw_response=response)
-            else:
-                AWSErrorHandler.handle_response_error(response)
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="Failed to stop instances")
+        additional_params = {"Force": "force", "Hibernate": "hibernate"}
+        return EC2._manage_instances_command(client, args, "stop", additional_params)
 
     @staticmethod
     def terminate_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1347,35 +1407,7 @@ class EC2:
         Returns:
             CommandResults: Results of the operation with instance termination information
         """
-
-        instance_ids = argToList(args.get("instance_ids", []))
-
-        if not instance_ids:
-            raise DemistoException("instance_ids parameter is required")
-
-        # Prepare termination parameters
-        terminate_params = {
-            "InstanceIds": instance_ids,
-        }
-
-        try:
-            print_debug_logs(client, f"Terminating instances: {instance_ids}")
-            response = client.terminate_instances(**terminate_params)
-
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
-                readable_output = (
-                    "The instances have been terminated successfully"
-                    if response.get("TerminatingInstances")
-                    else "No instances were terminated."
-                )
-                return CommandResults(readable_output=readable_output, raw_response=response)
-            else:
-                AWSErrorHandler.handle_response_error(response)
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="Failed to terminate instances")
+        return EC2._manage_instances_command(client, args, "terminate")
 
     @staticmethod
     def start_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1389,25 +1421,7 @@ class EC2:
         Returns:
             CommandResults: Results of the operation with instance start information
         """
-
-        instance_ids = argToList(args.get("instance_ids", []))
-
-        try:
-            response = client.start_instances(InstanceIds=instance_ids)
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
-                readable_output = (
-                    "The instances have been started successfully"
-                    if response.get("StartingInstances")
-                    else "No instances were started."
-                )
-                return CommandResults(readable_output=readable_output, raw_response=response)
-            else:
-                AWSErrorHandler.handle_response_error(response)
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="")
+        return EC2._manage_instances_command(client, args, "start")
 
 
 class EKS:
