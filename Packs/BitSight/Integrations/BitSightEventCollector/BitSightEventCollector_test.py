@@ -1,14 +1,11 @@
 import pytest
-from datetime import datetime
 from freezegun import freeze_time
-import demistomock as demisto
 from CommonServerPython import DemistoException, CommandResults
 
 from BitSightEventCollector import (
     Client,
     to_bitsight_date,
     findings_to_events,
-    time_window,
     resolve_guid,
     fetch_events,
     bitsight_get_events_command,
@@ -102,9 +99,9 @@ class TestBitSightEventCollector:
         events = findings_to_events(sample_findings)
 
         assert len(events) == 4
-        assert events[0]["_time"] == "2024-01-15T00:00:00Z"
-        assert events[1]["_time"] == "2024-01-14T00:00:00Z"
-        assert events[2]["_time"] == "2024-01-13T00:00:00Z"
+        assert events[0]["_time"] == "2024-01-15T00:00:00"
+        assert events[1]["_time"] == "2024-01-14T00:00:00"
+        assert events[2]["_time"] == "2024-01-13T00:00:00"
 
         # Verify original fields are preserved
         assert events[0]["id"] == "finding-1"
@@ -136,58 +133,11 @@ class TestBitSightEventCollector:
         events = findings_to_events(findings)
 
         assert len(events) == 1
-        assert events[0]["_time"] == "2024-01-10T00:00:00Z"
+        assert events[0]["_time"] == "2024-01-10T00:00:00"
         assert events[0]["id"] == "finding-camel"
         assert events[0]["severity"] == 7.5
 
-    def test_time_window_with_hours(self):
-        """
-        Given: A request for time window using hours
-
-        When: Calling time_window with hours parameter
-
-        Then: Should return proper start and end timestamps
-        """
-        with freeze_time("2024-01-15 12:00:00"):
-            start_ts, end_ts = time_window(hours=24)
-
-            # Should be 24 hours ago and now
-            expected_start = datetime(2024, 1, 14, 12, 0, 0).timestamp()
-            expected_end = datetime(2024, 1, 15, 12, 0, 0).timestamp()
-
-            assert start_ts == int(expected_start)
-            assert end_ts == int(expected_end)
-
-    def test_time_window_with_days(self):
-        """
-        Given: A request for time window using days
-
-        When: Calling time_window with days parameter
-
-        Then: Should return proper start and end timestamps
-        """
-        with freeze_time("2024-01-15 12:00:00"):
-            start_ts, end_ts = time_window(days=1)
-
-            expected_start = datetime(2024, 1, 14, 12, 0, 0).timestamp()
-            expected_end = datetime(2024, 1, 15, 12, 0, 0).timestamp()
-
-            assert start_ts == int(expected_start)
-            assert end_ts == int(expected_end)
-
-    def test_time_window_invalid_params(self):
-        """
-        Given: Invalid parameters to time_window
-
-        When: Calling with both hours and days or neither
-
-        Then: Should raise ValueError
-        """
-        with pytest.raises(ValueError):
-            time_window(hours=1, days=1)  # Both provided
-
-        with pytest.raises(ValueError):
-            time_window()  # Neither provided
+    # time_window function tests removed as the function was deleted
 
     def test_resolve_guid_from_args(self, mock_client):
         """
@@ -253,31 +203,30 @@ class TestBitSightEventCollector:
 
     def test_fetch_events_basic(self, mock_client, sample_findings, mocker):
         """
-        Given: A client and time window for fetching events
+        Given: A client for fetching events
 
-        When: Calling fetch_events
+        When: Calling fetch_events with no lookback_days (uses current date)
 
-        Then: Should return events and update last_run state
+        Then: Should return events and update last_run state with offset
         """
         # Mock API response
         mocker.patch.object(
             mock_client, "get_company_findings", return_value={"results": sample_findings, "links": {"next": None}}
         )
 
-        events, new_last_run = fetch_events(
-            client=mock_client,
-            guid="test-guid",
-            max_fetch=100,
-            last_run={},
-            start_time=1705280000,  # 2024-01-15 00:00:00
-            end_time=1705366400,  # 2024-01-16 00:00:00
-        )
+        with freeze_time("2024-01-15 12:00:00"):
+            events, new_last_run = fetch_events(
+                client=mock_client,
+                guid="test-guid",
+                max_fetch=100,
+                last_run={},
+            )
 
         assert len(events) == 4
-        assert events[0]["_time"] == "2024-01-15T00:00:00Z"
-        # Since count (4) < max_fetch (100) and no next link, window moves to end_time
-        assert new_last_run["window_start"] == 1705366400  # Moved to end_time
-        assert new_last_run["offset"] == 0  # Reset offset
+        assert events[0]["_time"] == "2024-01-15T00:00:00"
+        # Should have fixed first_fetch date and updated offset
+        assert "first_fetch" in new_last_run
+        assert new_last_run["offset"] == 4  # Number of events fetched
 
     def test_fetch_events_with_pagination(self, mock_client, sample_findings, mocker):
         """
@@ -285,42 +234,42 @@ class TestBitSightEventCollector:
 
         When: Calling fetch_events with last_run offset
 
-        Then: Should continue from previous offset and update state
+        Then: Should continue from previous offset and increment offset.
         """
         # Mock API response
         mocker.patch.object(
             mock_client,
             "get_company_findings",
             return_value={
-                "results": sample_findings[:2],  # Only 2 results
+                "results": sample_findings[:2],  # 2 results
                 "links": {"next": "next_page_url"},
             },
         )
 
-        last_run = {"window_start": 1705280000, "offset": 10}
+        last_run = {"first_fetch": "2024-01-15", "offset": 10}
 
-        events, new_last_run = fetch_events(
-            client=mock_client,
-            guid="test-guid",
-            max_fetch=100,
-            last_run=last_run,
-            start_time=1705280000,
-            end_time=1705366400,
-        )
+        with freeze_time("2024-01-16 12:00:00"):
+            events, new_last_run = fetch_events(
+                client=mock_client,
+                guid="test-guid",
+                max_fetch=100,
+                last_run=last_run,
+            )
 
         assert len(events) == 2
-        assert new_last_run["offset"] == 12  # 10 + 2
+        assert new_last_run["offset"] == 12  # 10 + 2 (simple increment)
+        assert new_last_run["first_fetch"] == "2024-01-15"  # Keep same date
         mock_client.get_company_findings.assert_called_once_with(
             "test-guid", first_seen_gte="2024-01-15", last_seen_lte="2024-01-16", limit=100, offset=10
         )
 
-    def test_fetch_events_window_exhausted(self, mock_client, mocker):
+    def test_fetch_events_no_results(self, mock_client, mocker):
         """
-        Given: API returns no more results for current window
+        Given: API returns no results
 
         When: Calling fetch_events
 
-        Then: Should reset window to end_time and reset offset
+        Then: Should return empty events but maintain offset state
         """
         # Mock API response
         mocker.patch.object(
@@ -332,14 +281,15 @@ class TestBitSightEventCollector:
             },
         )
 
-        events, new_last_run = fetch_events(
-            client=mock_client,
-            guid="test-guid",
-            max_fetch=100,
-            last_run={"window_start": 1705280000, "offset": 50},
-            start_time=1705280000,
-            end_time=1705366400,
-        )
+        last_run = {"first_fetch": "2024-01-15", "offset": 50}
+
+        with freeze_time("2024-01-16 12:00:00"):
+            events, new_last_run = fetch_events(
+                client=mock_client,
+                guid="test-guid",
+                max_fetch=100,
+                last_run=last_run,
+            )
 
         # Verify it called the API with correct offset
         mock_client.get_company_findings.assert_called_once_with(
@@ -347,15 +297,15 @@ class TestBitSightEventCollector:
         )
 
         assert len(events) == 0
-        assert new_last_run["window_start"] == 1705366400  # Moved to end_time
-        assert new_last_run["offset"] == 0  # Reset offset
+        assert new_last_run["first_fetch"] == "2024-01-15"  # Keep same date
+        assert new_last_run["offset"] == 50  # Keep same offset since no new events
 
     def test_fetch_events_max_fetch_limit(self, mock_client, sample_findings, mocker):
         """
-        Given: API returns more results than max_fetch limit
+        Given: API returns results respecting max_fetch limit
         When: Calling fetch_events with low max_fetch
 
-        Then: Should limit results to max_fetch and update offset correctly
+        Then: Should return limited results and update offset correctly
         """
         # Mock API response with only the limited findings (simulating API respecting limit)
         mocker.patch.object(
@@ -367,17 +317,46 @@ class TestBitSightEventCollector:
             },
         )
 
-        events, new_last_run = fetch_events(
-            client=mock_client,
-            guid="test-guid",
-            max_fetch=2,  # Limit to 2 events
-            last_run={},
-            start_time=1705280000,
-            end_time=1705366400,
-        )
+        with freeze_time("2024-01-15 12:00:00"):
+            events, new_last_run = fetch_events(
+                client=mock_client,
+                guid="test-guid",
+                max_fetch=2,  # Limit to 2 events
+                last_run={},
+            )
 
         assert len(events) == 2  # Should be limited to max_fetch
         assert new_last_run["offset"] == 2  # Should track processed count
+
+    def test_fetch_events_with_lookback_days(self, mock_client, sample_findings, mocker):
+        """
+        Given: A client with lookback_days parameter
+
+        When: Calling fetch_events with lookback_days=2
+
+        Then: Should calculate start date 2 days back from current time
+        """
+        # Mock API response
+        mocker.patch.object(
+            mock_client, "get_company_findings", return_value={"results": sample_findings}
+        )
+
+        with freeze_time("2024-01-15 12:00:00"):
+            events, new_last_run = fetch_events(
+                client=mock_client,
+                guid="test-guid",
+                max_fetch=100,
+                last_run={},
+                lookback_days=2,
+            )
+
+        assert len(events) == 4
+        # Should use 2024-01-13 as start date (2 days before 2024-01-15)
+        mock_client.get_company_findings.assert_called_once_with(
+            "test-guid", first_seen_gte="2024-01-13", last_seen_lte="2024-01-15", limit=100, offset=0
+        )
+        assert new_last_run["first_fetch"] == "2024-01-13"
+        assert new_last_run["offset"] == 4
 
     def test_bitsight_get_events_command_no_push(self, mock_client, sample_findings, mocker):
         """
@@ -387,8 +366,7 @@ class TestBitSightEventCollector:
 
         Then: Should return events in table format without pushing to XSIAM
         """
-        # Mock demisto functions
-        mocker.patch.object(demisto, "getLastRun", return_value={})
+        # Mock API response
         mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
 
         result = bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=False)
@@ -405,11 +383,8 @@ class TestBitSightEventCollector:
 
         Then: Should push events to XSIAM but NOT update last_run
         """
-        # Mock demisto functions
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        # Mock functions
         mock_send_events = mocker.patch("BitSightEventCollector.send_events_to_xsiam")
-
         mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
 
         result = bitsight_get_events_command(client=mock_client, guid="test-guid", limit=100, should_push=True)
@@ -417,7 +392,6 @@ class TestBitSightEventCollector:
         assert isinstance(result, CommandResults)
         assert "pushed" in result.readable_output
         mock_send_events.assert_called_once()
-        mock_set_last_run.assert_not_called()
 
     def test_test_module_success(self, mock_client, mocker):
         """

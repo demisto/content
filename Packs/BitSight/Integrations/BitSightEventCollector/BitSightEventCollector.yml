@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- defaultvalue: 1
+- defaultvalue: 5
   display: Events Fetch Interval
   name: eventFetchInterval
   required: false

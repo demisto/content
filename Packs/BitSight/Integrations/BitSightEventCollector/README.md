@@ -1,6 +1,6 @@
 Use this integration to fetch BitSight security findings as events in Cortex XSIAM. This is important for organizations that wish to integrate BitSight programmatically into their security operations.
 
-When configured as a fetching integration, it will continuously fetch new findings starting from 1 hour back. The manual `bitsight-get-events` command fetches findings from the last 2 days (48 hours).
+When configured as a fetching integration, it will continuously fetch new findings starting from the current day. The manual `bitsight-get-events` command fetches findings from the last 2 days (48 hours).
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -14,7 +14,7 @@ This is the default integration for this content pack when configured by the Dat
 | Trust any certificate (not secure) |  | False | - |
 | Use system proxy settings |  | False | - |
 | Max events per fetch | Maximum number of findings to fetch at a time. | False | 1000 |
-| Events Fetch Interval | Interval between fetch operations. | False | 1 |
+| Events Fetch Interval | Interval between fetch operations. | False | 5 |
 
 ## Commands
 

@@ -14,8 +14,6 @@ PRODUCT = "Bitsight"
 
 BITSIGHT_DATE_FORMAT = "%Y-%m-%d"
 DEFAULT_MAX_FETCH = 1000
-# Lookback windows
-FETCH_EVENTS_LOOKBACK_HOURS = 1
 GET_EVENTS_LOOKBACK_DAYS = 2
 
 # Bitsight headers per existing integration
@@ -102,7 +100,7 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
             # Bitsight returns YYYY-MM-DD for first_seen
             try:
                 dt = datetime.strptime(first_seen, BITSIGHT_DATE_FORMAT)
-                event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+                event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%S")
             except Exception as e:
                 demisto.debug(f"Failed to parse first_seen date '{first_seen}' for finding {f.get('id', 'unknown')}: {e}")
                 event["_time"] = first_seen
@@ -120,31 +118,41 @@ def fetch_events(
     guid: str,
     max_fetch: int,
     last_run: dict[str, Any],
-    start_time: int,
-    end_time: int,
+    lookback_days: int | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Fetch Bitsight findings as events using offset pagination within a time window.
+    """Fetch Bitsight findings as events using offset pagination from a fixed starting date.
 
-    This function pages through Bitsight findings for the specified company and time range,
-    converts the results to events, and returns both the events and an updated `last_run`
-    object to persist collection state (offset/window).
+    This function pages through Bitsight findings for the specified company starting from
+    a fixed date (first_fetch) and uses offset pagination to avoid duplicates.
+    Since the API only supports date-level precision, we start from current date for scheduled
+    fetches or use lookback_days for command calls.
 
     Args:
         client (Client): Initialized API client.
         guid (str): Company GUID to collect findings for.
         max_fetch (int): Maximum number of findings to request for this page.
-        last_run (dict[str, Any]): State from the previous run (expects keys `window_start`, `offset`).
-        start_time (int): Window start in UNIX epoch seconds.
-        end_time (int): Window end in UNIX epoch seconds.
+        last_run (dict[str, Any]): State from the previous run (expects keys `first_fetch`, `offset`).
+        lookback_days (int | None): Days to look back for initial fetch. If None, uses current date.
 
     Returns:
         tuple[list[dict[str, Any]], dict[str, Any]]: The list of events and the updated `last_run` state.
     """
-    window_start = last_run.get("window_start", start_time)
-    offset = last_run.get("offset", 0)
+    if "offset" in last_run:
+        offset = last_run["offset"]
+        first_fetch_date = last_run["first_fetch"]
+    else:
+        # Initial fetch - start from current date or lookback
+        offset = 0
+        current_time = datetime.now()
+        if lookback_days:
+            lookback_time = current_time - timedelta(days=lookback_days)
+            first_fetch_date = to_bitsight_date(int(lookback_time.timestamp()))
+        else:
+            first_fetch_date = to_bitsight_date(int(current_time.timestamp()))
 
-    first_seen_gte = to_bitsight_date(window_start)
-    last_seen_lte = to_bitsight_date(end_time)
+    # Always use same starting date, current date as end
+    first_seen_gte = first_fetch_date
+    last_seen_lte = to_bitsight_date(int(datetime.now().timestamp()))
 
     res = client.get_company_findings(
         guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=max_fetch, offset=offset
@@ -154,19 +162,15 @@ def fetch_events(
 
     events = findings_to_events(findings)
 
-    # Update last_run
+    # Update last_run with incremented offset (matches Performance Management pattern)
+    # Note: Although the API returns pagination links (next/previous) in rare cases of very large amounts of data,
+    # we ignore them since our offset-based approach will automatically fetch remaining data in subsequent calls
+    # See: https://help.bitsighttech.com/hc/en-us/articles/360050111794-Pagination
     new_offset = offset + count
     new_last_run: dict[str, Any] = {
-        "window_start": window_start,
+        "first_fetch": first_fetch_date,
         "offset": new_offset,
     }
-
-    # If fewer than requested returned, we likely exhausted window; move window to end_time and reset offset for next run
-    if count == 0 or (count < max_fetch and not res.get("links", {}).get("next")):
-        new_last_run = {
-            "window_start": end_time,
-            "offset": 0,
-        }
 
     return events, new_last_run
 
@@ -186,12 +190,9 @@ def bitsight_get_events_command(client: Client, guid: str, limit: int, should_pu
     Returns:
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
-    last_run = demisto.getLastRun() or {}
-    # Hardcode a 2-day window for this command: [now-2day, now]
-    start_ts, end_ts = time_window(days=GET_EVENTS_LOOKBACK_DAYS)
-
-    events, new_last_run = fetch_events(
-        client, guid=guid, max_fetch=int(limit), last_run=last_run, start_time=start_ts, end_time=end_ts
+    # Use empty last_run for one-off command - don't persist state
+    events, _ = fetch_events(
+        client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
     )
 
     title = "Bitsight Findings Events (pushed)" if should_push else "Bitsight Findings Events"
@@ -217,8 +218,12 @@ def test_module(client: Client, guid: str | None) -> str:
     try:
         client.get_companies_guid()
         if guid:
-            start, end = time_window(days=1)
-            client.get_company_findings(guid, to_bitsight_date(start), to_bitsight_date(end), limit=1, offset=0)
+            # Use a simple 1-day lookback for testing connectivity
+            current_time = datetime.now()
+            lookback_time = current_time - timedelta(days=1)
+            start_date = to_bitsight_date(int(lookback_time.timestamp()))
+            end_date = to_bitsight_date(int(current_time.timestamp()))
+            client.get_company_findings(guid, start_date, end_date, limit=1, offset=0)
     except DemistoException as e:
         if "Forbidden" in str(e) or "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key is correctly set"
@@ -228,20 +233,6 @@ def test_module(client: Client, guid: str | None) -> str:
 
 """ HELPER FUNCTIONS """
 
-
-def time_window(*, hours: int | None = None, days: int | None = None) -> tuple[int, int]:
-    """Return a [start_ts, end_ts] window ending at now using hours or days back.
-
-    Exactly one of `hours` or `days` should be provided.
-    """
-    now_dt = datetime.now()
-    if hours is not None and days is None:
-        start_dt = now_dt - timedelta(hours=hours)
-    elif days is not None and hours is None:
-        start_dt = now_dt - timedelta(days=days)
-    else:
-        raise ValueError("Provide exactly one of 'hours' or 'days'.")
-    return int(start_dt.timestamp()), int(now_dt.timestamp())
 
 
 def resolve_guid(client: Client, guid_from_args: str | None, guid_from_params: str | None) -> str:
@@ -291,10 +282,8 @@ def main():
             max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
             guid = resolve_guid(client, None, params.get("guid"))
             last_run = demisto.getLastRun() or {}
-            # Hardcode a 1-hour window for scheduled fetch: [now-1hour, now]
-            start_ts, end_ts = time_window(hours=FETCH_EVENTS_LOOKBACK_HOURS)
             events, new_last_run = fetch_events(
-                client, guid=guid, max_fetch=max_fetch, last_run=last_run, start_time=start_ts, end_time=end_ts
+                client, guid=guid, max_fetch=max_fetch, last_run=last_run
             )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
