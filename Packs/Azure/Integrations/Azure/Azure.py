@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
+DEFAULT_LIMIT = "50"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 API_VERSION = "2022-09-01"
 NEW_API_VERSION_PARAMS = {"api-version": "2024-05-01"}
@@ -1286,13 +1287,20 @@ class AzureClient:
 
 def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
     """
-    reformat data by extract nested dict {'key1': 'value1', 'key2': {'key3': 'value3'},
-    the changes is on the sent data.
+    Reformat data by extract nested dict.
+    Example:
+        Before: data = {'key1': 'value1', 'key2': {'key3': 'value3', 'key4': 'value4'}}
+        Calling:
+             - extract_inner_dict(data, inner_dict_key='key2', fields=['key3'])
+                After: data = {'key1': 'value1', 'key2': {'key3': 'value3', 'key4': 'value4'}, 'key3': 'value3'}
+             - extract_inner_dict(data, inner_dict_key='key2')
+                After: data = {'key1': 'value1', 'key2': {'key3': 'value3', 'key4': 'value4'}, 'key3': 'value3', 'key4': 'value4'}
+    the changes are made in the data argument.
 
     Args:
         data (Dict): nested dict
         inner_dict_key (str): the key to extract by
-        fields (List, optional): specific fields from the inner dict to extract. Defaults to [].
+        fields (List, optional): specific fields from the inner dict to extract. Defaults to None.
     """
     inner_dict = data.get(inner_dict_key, {})
     for key in inner_dict:
@@ -1302,8 +1310,9 @@ def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> No
 
 def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = "") -> None:
     """
-    reformat data: from {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']},
-    the changes is on the sent data.
+    Reformat data by extracting to list.
+    Example: {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']},
+    the changes are made in the data argument.
 
     Args:
         data (Dict): dict with list of dict that contains the same 'property_name' field
@@ -1318,12 +1327,12 @@ def extract_list(data: Dict, list_key: str, property_name: str, field_name: str 
 
 def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []) -> None:
     """
-    reformat the sent data using extract_inner_dict and extract_list
+    Reformat the data argument using extract_inner_dict and extract_list
 
     Args:
         data (Dict): data to reformat
-        dict_to_extract (List, optional): keys of inner dict to extract to outter dict. Defaults to [].
-        list_to_extract (List, optional): keys of inner list to extract to outter dict. Defaults to [].
+        dict_to_extract (List, optional): keys of inner dict to extract to outer dict. Defaults to [].
+        list_to_extract (List, optional): keys of inner list to extract to outer dict. Defaults to [].
     """
     for data_to_extract in dict_to_extract:
         extract_inner_dict(data, *data_to_extract)
@@ -1334,7 +1343,7 @@ def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List 
 
 def format_rule(rule_json: dict | list, security_rule_name: str):
     """
-    format the rule and create the commandResult object with it
+    Format the rule and create the commandResult object with it
     Args:
         rule_json: the json returned from the http_request
         security_rule_name: the name of the rule
@@ -1342,7 +1351,7 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
     Returns:
         CommandResults for the rule
     """
-    # We want to flatten the rules `properties` key as this is the more important key and we'd like
+    # We want to flatten the rules `properties` key as this is the more important key, and we'd like
     # to be able to display it nicely
     if isinstance(rule_json, dict):
         rule_json.update(rule_json.pop("properties", {}))
@@ -1352,7 +1361,12 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
 
     hr = tableToMarkdown(f"Rules {security_rule_name}", rule_json, removeNull=True)
 
-    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
+    return CommandResults(
+        outputs_prefix="Azure.NSGRule",
+        outputs_key_field="id",
+        outputs=rule_json,
+        readable_output=hr
+    )
 
 
 """ COMMAND FUNCTIONS """
@@ -2181,20 +2195,31 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
 
 
 def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    This command will create a rule in a security group.
+    Args:
+        client: The AzureClient
+        params: configuration parameters
+        args: args dictionary.
+    Returns:
+        CommandResults: The rule that was created.
+    """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     security_group_name = args.get("security_group_name", "")
     security_rule_name = args.get("security_rule_name", "")
-    action = args.get("action", "Allow")  # required, names as "access" in the API
-    direction = args.get("direction", "")  # required
-    priority = args.get("priority", "4096")  # required
-    protocol = args.get("protocol", "Any")  # required
+    direction = args.get("direction", "")  # required in API
+    action = args.get("action", "Allow")  # required in API, named as "access" in the API
+    priority = args.get("priority", "4096")  # required in API
+    protocol = args.get("protocol", "Any")  # required in API
     source = args.get("source", "Any")
     source_ports = args.get("source_ports", "*")
     destination = args.get("destination", "Any")
     destination_ports = args.get("destination_ports", "*")
-
     description = args.get("description", "")
+
+    if not security_rule_name or not security_group_name:
+        return_error("Please provide security_group_name and security_rule_name")
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
@@ -2248,11 +2273,17 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
         client: The AzureClient
         params: configuration parameters
         args: args dictionary.
+    Returns:
+        Message that the rule was deleted.
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     security_group_name = args.get("security_group_name", "")
     security_rule_name = args.get("security_rule_name", "")
+
+    if not security_rule_name or not security_group_name:
+        return_error("Please provide security_group_name and security_rule_name")
+
     rule_deleted = client.delete_rule(
         security_group_name=security_group_name,
         security_rule_name=security_rule_name,
@@ -2269,8 +2300,8 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     elif rule_deleted.status_code == 200:
         message = (
             f"Rule {security_rule_name} with resource_group_name "
-            f"{resource_group_name} and subscription id {subscription_id}"
-            f" was successfully deleted."
+            f"{resource_group_name} and subscription id {subscription_id} "
+            f"was successfully deleted."
         )
     elif rule_deleted.status_code == 202:
         message = (
@@ -2320,7 +2351,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     filter_by_tag = azure_tag_formatter(args.get("tag")) if args.get("tag") else ""
-    limit = args.get("limit", "50")
+    limit = args.get("limit", DEFAULT_LIMIT)
 
     response = client.list_resource_groups_request(subscription_id=subscription_id, filter_by_tag=filter_by_tag, limit=limit)
     data_from_response = response.get("value", [])
@@ -2328,7 +2359,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
     readable_output = tableToMarkdown(
         name="Resource Groups List",
         t=data_from_response,
-        headers=["name", "location", "tags", "properties.provisioningState"],
+        headers=["name", "location", "tags", "provisioningState"],
         removeNull=True,
         headerTransform=string_to_table_header,
     )
@@ -2343,7 +2374,14 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
 
 def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
-    List all network interfaces in a resource group.
+    List all network interfaces in a resource group. Extract those fields to main dict:
+                properties.ipConfigurations.name as ipConfigurationName,
+                properties.ipConfigurations.id as ipConfigurationID,
+                properties.ipConfigurations.properties as ipConfigurationsProperties,
+                properties.ipConfigurations.properties.privateIPAddress as ipConfigurationPrivateIPAddress,
+                properties.ipConfigurations.properties.publicIPAddress as ipConfigurationPublicIPAddress,
+                properties.ipConfiguration.properties.publicIPAddress.id as ipConfigurationPublicIPAddressName,
+                properties.dnsSettings.dnsServers as dnsServers
     Args:
         client (AzureNSGClient): AzureNSG client.
         args (Dict[str, Any]): command arguments.
@@ -2355,7 +2393,7 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
     all_results = argToBoolean(args.get("all_results", "false"))
-    limit = arg_to_number(args.get("limit", "50"))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     response = client.list_networks_interfaces_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
     data_from_response = response.get("value", [])
@@ -2412,14 +2450,23 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
 
 
 def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """
+    List all network interfaces in a resource group. Extract those fields to main dict:
+
+    Args:
+        client (AzureNSGClient): AzureNSG client.
+        args (Dict[str, Any]): command arguments.
+        params (Dict[str, Any]): configuration parameters.
+    Returns:
+        Command results with raw response, outputs and readable outputs.
+    """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 
     all_results = argToBoolean(args.get("all_results", "false"))
-    limit = arg_to_number(args.get("limit", "50"))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     response = client.list_public_ip_addresses_request(subscription_id=subscription_id, resource_group_name=resource_group_name)
-    demisto.debug(f"Response from API {response}")
     data_from_response = response.get("value", [])
     if not all_results:
         data_from_response = data_from_response[:limit]
