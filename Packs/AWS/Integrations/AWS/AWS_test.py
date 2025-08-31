@@ -748,6 +748,125 @@ def test_ec2_revoke_security_group_egress_command_with_ip_permissions(mocker):
     assert "Egress rule revoked successfully" in result.readable_output
 
 
+def test_ec2_create_snapshot_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot creation arguments.
+    When: create_snapshot_command is called successfully.
+    Then: It should return CommandResults with snapshot data and proper outputs.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "Description": "Test snapshot",
+        "Encrypted": False,
+        "Progress": "100%",
+        "SnapshotId": "snap-1234567890abcdef0",
+        "State": "completed",
+        "VolumeId": "vol-1234567890abcdef0",
+        "VolumeSize": 8,
+        "StartTime": datetime(2023, 10, 15, 14, 30, 45),
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Tags": [{"Key": "Environment", "Value": "test"}],
+    }
+    mock_client.create_snapshot.return_value = mock_response
+
+    args = {
+        "volume_id": "vol-1234567890abcdef0",
+        "description": "Test snapshot",
+        "region": "us-east-1",
+        "tags": "key=Environment,value=test",
+    }
+
+    result = EC2.create_snapshot_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EC2.Snapshots"
+    assert "snap-1234567890abcdef0" in str(result.outputs)
+    assert "AWS EC2 Snapshots" in result.readable_output
+    mock_client.create_snapshot.assert_called_once()
+
+
+def test_ec2_create_snapshot_command_failure(mocker):
+    """
+    Given: A mocked boto3 EC2 client that raises an exception during snapshot creation.
+    When: create_snapshot_command is called and encounters an error.
+    Then: It should raise the appropriate exception from the boto3 client.
+    """
+    from AWS import EC2
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {"Error": {"Code": "InvalidVolume.NotFound", "Message": "The volume vol-1234567890abcdef0 does not exist."}}
+    mock_client.create_snapshot.side_effect = ClientError(error_response, "CreateSnapshot")
+
+    args = {"volume_id": "vol-1234567890abcdef0", "description": "Test snapshot", "region": "us-east-1"}
+
+    with pytest.raises(ClientError):
+        EC2.create_snapshot_command(mock_client, args)
+
+
+def test_ec2_modify_snapshot_permission_command_success(mocker):
+    """
+    Given: A mocked boto3 EC2 client and valid snapshot permission arguments with user_ids.
+    When: modify_snapshot_permission_command is called successfully.
+    Then: It should return CommandResults with success message about permission update.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+    mock_client.modify_snapshot_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": 200}}
+
+    args = {
+        "snapshot_id": "snap-1234567890abcdef0",
+        "operation_type": "add",
+        "user_ids": "123456789012, 987654321098",
+        "dry_run": False,
+    }
+
+    result = EC2.modify_snapshot_permission_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "permissions was successfully updated" in result.readable_output
+    mock_client.modify_snapshot_attribute.assert_called_once_with(
+        Attribute="createVolumePermission",
+        SnapshotId="snap-1234567890abcdef0",
+        OperationType="add",
+        DryRun=False,
+        UserIds=["123456789012", "987654321098"],
+    )
+
+
+def test_ec2_modify_snapshot_permission_command_failure_both_params(mocker):
+    """
+    Given: Arguments containing both group_names and user_ids parameters.
+    When: modify_snapshot_permission_command is called with invalid parameter combination.
+    Then: It should raise DemistoException asking to provide either group_names or user_ids.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {"snapshot_id": "snap-1234567890abcdef0", "operation_type": "add", "group_names": "all", "user_ids": "123456789012"}
+
+    with pytest.raises(DemistoException, match='Please provide either "group_names" or "user_ids"'):
+        EC2.modify_snapshot_permission_command(mock_client, args)
+
+
+def test_ec2_modify_snapshot_permission_command_failure_no_params(mocker):
+    """
+    Given: Arguments containing neither group_names nor user_ids parameters.
+    When: modify_snapshot_permission_command is called without required parameters.
+    Then: It should raise DemistoException asking to provide either group_names or user_ids.
+    """
+    from AWS import EC2
+
+    mock_client = mocker.Mock()
+
+    args = {"snapshot_id": "snap-1234567890abcdef0", "operation_type": "add"}
+
+    with pytest.raises(DemistoException, match='Please provide either "group_names" or "user_ids"'):
+        EC2.modify_snapshot_permission_command(mock_client, args)
+
+
 def test_eks_update_cluster_config_command_success(mocker):
     """
     Given: A mocked boto3 EKS client and valid cluster configuration arguments.
@@ -789,6 +908,119 @@ def test_eks_update_cluster_config_command_no_changes_needed(mocker):
     result = EKS.update_cluster_config_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "No changes needed" in result.readable_output
+
+
+def test_eks_describe_cluster_command_success(mocker):
+    """
+    Given: A mocked boto3 EKS client and valid cluster name argument.
+    When: describe_cluster_command is called successfully.
+    Then: It should return CommandResults with cluster data and proper outputs.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "cluster": {
+            "name": "test-cluster",
+            "id": "cluster-12345",
+            "status": "ACTIVE",
+            "arn": "arn:aws:eks:us-east-1:123456789012:cluster/test-cluster",
+            "createdAt": datetime(2023, 10, 15, 14, 30, 45),
+            "version": "1.27",
+            "connectorConfig": {"activationExpiry": datetime(2024, 10, 15, 14, 30, 45)},
+        }
+    }
+    mock_client.describe_cluster.return_value = mock_response
+
+    args = {"cluster_name": "test-cluster"}
+
+    result = EKS.describe_cluster_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EKS.DescribeCluster"
+    assert result.outputs_key_field == "name"
+    assert "test-cluster" in str(result.outputs)
+    assert "Describe Cluster Information" in result.readable_output
+    mock_client.describe_cluster.assert_called_once_with(name="test-cluster")
+
+
+def test_eks_describe_cluster_command_failure(mocker):
+    """
+    Given: A mocked boto3 EKS client that raises an exception for non-existent cluster.
+    When: describe_cluster_command is called with invalid cluster name.
+    Then: It should raise the appropriate exception from the boto3 client.
+    """
+    from AWS import EKS
+    from botocore.exceptions import ClientError
+
+    mock_client = mocker.Mock()
+    error_response = {
+        "Error": {"Code": "ResourceNotFoundException", "Message": "No cluster found for name: non-existent-cluster."}
+    }
+    mock_client.describe_cluster.side_effect = ClientError(error_response, "DescribeCluster")
+
+    args = {"cluster_name": "non-existent-cluster"}
+
+    with pytest.raises(ClientError):
+        EKS.describe_cluster_command(mock_client, args)
+
+
+def test_eks_associate_access_policy_command_success(mocker):
+    """
+    Given: A mocked boto3 EKS client and valid access policy association arguments.
+    When: associate_access_policy_command is called successfully.
+    Then: It should return CommandResults with policy association data and proper outputs.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "clusterName": "test-cluster",
+        "principalArn": "arn:aws:iam::123456789012:user/test-user",
+        "associatedAccessPolicy": {
+            "policyArn": "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy",
+            "associatedAt": datetime(2023, 10, 15, 14, 30, 45),
+            "modifiedAt": datetime(2023, 10, 15, 14, 30, 45),
+        },
+    }
+    mock_client.associate_access_policy.return_value = mock_response
+
+    args = {
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:user/test-user",
+        "policy_arn": "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy",
+        "type": "cluster",
+        "namespaces": "",
+    }
+
+    result = EKS.associate_access_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.EKS.AssociatedAccessPolicy"
+    assert result.outputs_key_field == "clusterName"
+    assert "test-cluster" in str(result.outputs)
+    assert "The access policy was associated to the access entry successfully" in result.readable_output
+    mock_client.associate_access_policy.assert_called_once()
+
+
+def test_eks_associate_access_policy_command_failure_namespace_validation(mocker):
+    """
+    Given: Arguments with type set to 'namespace' but no namespaces provided.
+    When: associate_access_policy_command is called with invalid parameter combination.
+    Then: It should raise Exception asking for namespace when type is namespace.
+    """
+    from AWS import EKS
+
+    mock_client = mocker.Mock()
+
+    args = {
+        "cluster_name": "test-cluster",
+        "principal_arn": "arn:aws:iam::123456789012:user/test-user",
+        "policy_arn": "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy",
+        "type": "namespace",
+        "namespaces": "",
+    }
+
+    with pytest.raises(Exception, match="When the type_arg='namespace', you must enter a namespace"):
+        EKS.associate_access_policy_command(mock_client, args)
 
 
 def test_rds_modify_db_cluster_command_success(mocker):
@@ -1022,6 +1254,57 @@ def test_cloudtrail_update_trail_command_exception(mocker):
 
     with pytest.raises(DemistoException, match="Error updating CloudTrail"):
         CloudTrail.update_trail_command(mock_client, args)
+
+
+def test_ecs_update_cluster_settings_command_success(mocker):
+    """
+    Given: A mocked boto3 ECS client and valid cluster settings update arguments.
+    When: update_cluster_settings_command is called successfully.
+    Then: It should return CommandResults with cluster data and proper outputs.
+    """
+    from AWS import ECS
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "cluster": {
+            "clusterArn": "arn:aws:ecs:us-east-1:123456789012:cluster/test-cluster",
+            "clusterName": "test-cluster",
+            "status": "ACTIVE",
+            "settings": [{"name": "containerInsights", "value": "enabled"}],
+        },
+    }
+    mock_client.update_cluster_settings.return_value = mock_response
+
+    args = {"cluster_name": "test-cluster", "value": "enabled"}
+
+    result = ECS.update_cluster_settings_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.ECS.Cluster"
+    assert result.outputs_key_field == "clusterArn"
+    assert "test-cluster" in str(result.outputs)
+    assert "Successfully updated ECS cluster" in result.readable_output
+    mock_client.update_cluster_settings.assert_called_once_with(
+        cluster="test-cluster", settings=[{"name": "containerInsights", "value": "enabled"}]
+    )
+
+
+def test_ecs_update_cluster_settings_command_failure(mocker):
+    """
+    Given: A mocked boto3 ECS client returning non-OK HTTP status code.
+    When: update_cluster_settings_command is called with failed response.
+    Then: It should raise DemistoException with error message about failed update.
+    """
+    from AWS import ECS
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_client.update_cluster_settings.return_value = mock_response
+
+    args = {"cluster_name": "test-cluster", "value": "enabled"}
+
+    with pytest.raises(DemistoException, match="Failed to update ECS cluster"):
+        ECS.update_cluster_settings_command(mock_client, args)
 
 
 def test_register_proxydome_header(mocker):
