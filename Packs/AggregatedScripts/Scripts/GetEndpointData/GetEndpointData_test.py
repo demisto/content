@@ -1238,6 +1238,67 @@ def test_add_endpoint_to_mapping_skips_unsuccessful():
     assert mapping == {}
 
 
+def test_update_endpoint_in_mapping_updates_risk_level():
+    """
+    Given:
+        An ir_mapping with an endpoint having a lower risk level and an incoming endpoint with a higher risk level and a success message.
+    When:
+        update_endpoint_in_mapping is called with the incoming endpoint and the mapping.
+    Then:
+        The risk level in the mapping should be updated to the higher level.
+    """
+    ir_mapping = {"1": {"Hostname": "host1", "RiskLevel": "Low", "Message": COMMAND_SUCCESS_MSG}}
+    endpoints = [{"Hostname": "host1", "RiskLevel": "High", "Message": COMMAND_SUCCESS_MSG}]
+    update_endpoint_in_mapping(endpoints, ir_mapping)
+    assert ir_mapping["1"]["RiskLevel"] == "High"
+
+
+def test_update_endpoint_in_mapping_adds_risk_level_if_missing():
+    """
+    Given:
+        An ir_mapping with an endpoint missing a risk level and an incoming endpoint with a risk level and a success message.
+    When:
+        update_endpoint_in_mapping is called.
+    Then:
+        The risk level should be added to the mapping.
+    """
+    ir_mapping = {"1": {"Hostname": "host1", "Message": COMMAND_SUCCESS_MSG}}
+    endpoints = [{"Hostname": "host1", "RiskLevel": "Medium", "Message": COMMAND_SUCCESS_MSG}]
+    update_endpoint_in_mapping(endpoints, ir_mapping)
+    assert ir_mapping["1"]["RiskLevel"] == "Medium"
+
+
+def test_update_endpoint_in_mapping_updates_additional_fields():
+    """
+    Given:
+        An ir_mapping with an endpoint and an incoming endpoint with additional_fields and a success message.
+    When:
+        update_endpoint_in_mapping is called.
+    Then:
+        The additional fields should be merged into the mapping.
+    """
+    ir_mapping = {"1": {"Hostname": "host1", "Message": COMMAND_SUCCESS_MSG}}
+    endpoints = [{"Hostname": "host1", "Message": COMMAND_SUCCESS_MSG, "additional_fields": {"os": "Linux"}}]
+    update_endpoint_in_mapping(endpoints, ir_mapping)
+    assert ir_mapping["1"]["os"] == "Linux"
+
+
+def test_update_endpoint_in_mapping_skips_unsuccessful():
+    """
+    Given:
+        An endpoint with a failure message.
+    When:
+        update_endpoint_in_mapping is called with this endpoint.
+    Then:
+        The ir_mapping should remain unchanged.
+    """
+    ir_mapping = {"1": {"Hostname": "host1", "RiskLevel": "Low", "Message": COMMAND_SUCCESS_MSG}}
+    endpoints = [{"Hostname": "host1", "RiskLevel": "High", "Message": "Some error"}]
+    update_endpoint_in_mapping(endpoints, ir_mapping)
+    # Should not update the mapping
+    assert ir_mapping["1"]["RiskLevel"] == "Low"
+
+
 def test_get_generic_command_returns_correct_command():
     """
     Given:
