@@ -31,6 +31,7 @@ INDICATOR_TYPE_MAPPING = {
     "exploit": FeedIndicatorType.CVE,
     "malware_family": ThreatIntel.ObjectsNames.MALWARE,
     "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
+    "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "malicious_behavior": "",  # Todo add the correct type
@@ -170,55 +171,63 @@ def create_relationships(
     return relationships
 
 
-def create_indicators_from_relationships(relationship: dict[str, Any]):
+def create_indicators_from_relationships(
+    relationships: list[dict[str, Any]], reliability: str = "A - Completely reliable"
+) -> list:
     """
     Create indicators from relationship
 
     Args:
-        relationship: Relationship as dictionary
+        relationships: Relationship as a list of dictionaries
+        reliability: Source reliability
 
     Returns:
-        Indicator object based on the relationship type
+        List of indicators based on the relationship type
     """
-    indicator_name = relationship["name"]
-    indicator_type = relationship["threat_object_class"]
-    verdict = relationship.get("verdict", "unknown")
+    indicators: list = []
 
-    if not any([indicator_name, indicator_type]):
-        demisto.debug(f"Skipping create_indicators_from_relationships for {indicator_name=}, {indicator_type=}, {verdict=}")
-        return
+    for relationship in relationships:
+        indicator_name = relationship["name"]
+        indicator_type = relationship["threat_object_class"]
+        verdict = relationship.get("verdict", "unknown")
 
-    dbot_score = create_dbot_score(
-        indicator=indicator_name,
-        indicator_type=indicator_type,
-        verdict=verdict,
-    )
-    # Retrieve the indicator type from the mapping dictionary based on the relationship type
-    indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, "Indicator")
-    # Create indicator based on type
-    indicator: Common.IP | Common.Domain | Common.URL | Common.File | Common.CustomIndicator | None = None
-    if indicator_type == "IP":
-        indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
-    elif indicator_type == "Domain":
-        indicator = Common.Domain(domain=indicator_name, dbot_score=dbot_score)
-    elif indicator_type == "URL":
-        indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
-    elif indicator_type == "File":
-        indicator = Common.File(sha256=indicator_name, dbot_score=dbot_score)
-    else:
-        # Create custom indicator for unknown types
-        indicator = Common.CustomIndicator(
-            indicator_type=indicator_type,
-            value=indicator_name,
-            dbot_score=dbot_score,
-            data={"value": indicator_name},
-            context_prefix=indicator_type.capitalize(),
+        if not any([indicator_name, indicator_type]):
+            demisto.debug(f"Skipping create_indicators_from_relationships for {indicator_name=}, {indicator_type=}, {verdict=}")
+            continue
+
+        # Retrieve the indicator type from the mapping dictionary based on the indicator type
+        indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, "Indicator")
+
+        dbot_score = create_dbot_score(
+            indicator=indicator_name,
+            indicator_type=indicator_type if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
+            verdict=verdict,
+            reliability=reliability,
         )
 
-    command_results = CommandResults(
-        indicator=indicator,
-    )
-    return_results(command_results)
+        # Create indicator based on type
+        indicator: Common.IP | Common.Domain | Common.URL | Common.File | Common.CustomIndicator | None = None
+        if indicator_type == "IP":
+            indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
+        elif indicator_type == "Domain":
+            indicator = Common.Domain(domain=indicator_name, dbot_score=dbot_score)
+        elif indicator_type == "URL":
+            indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
+        elif indicator_type == "File":
+            indicator = Common.File(sha256=indicator_name, dbot_score=dbot_score)
+        else:
+            # Create custom indicator for unknown types
+            indicator = Common.CustomIndicator(
+                indicator_type=indicator_type,
+                value=indicator_name,
+                dbot_score=dbot_score,
+                data={"value": indicator_name},
+                context_prefix=indicator_type.capitalize(),
+            )
+
+        indicators.append(indicator)
+
+    return indicators
 
 
 def extract_response_data(response: dict[str, Any]) -> dict[str, Any]:
@@ -300,7 +309,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"])
+        create_indicators_from_relationships(response_data["relationships"], client.reliability)
 
     # Create context data
     context_data = create_context_data(response_data)
@@ -339,7 +348,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
     create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("domain", domain)
-    
+
     if response.status_code == 404:
         return CommandResults(readable_output="Indicator not found")
 
@@ -358,7 +367,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"])
+        demisto.createIndicators(create_indicators_from_relationships(response_data["relationships"], client.reliability))
 
     # Create context data
     context_data = create_context_data(response_data)
@@ -414,7 +423,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"])
+        create_indicators_from_relationships(response_data["relationships"], client.reliability)
 
     # Create context data
     context_data = create_context_data(response_data)
@@ -453,7 +462,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     create_indicators_from_relationships_flag = argToBoolean(args.get("create_indicators_from_relationships", False))
 
     response = client.lookup_indicator("filehash_sha256", file_hash)
-    
+
     if response.status_code == 404:
         return CommandResults(readable_output="Indicator not found")
 
@@ -477,7 +486,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"])
+        create_indicators_from_relationships(response_data["relationships"], client.reliability)
 
     # Create context data
     context_data = create_context_data(response_data)
