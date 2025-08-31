@@ -27,7 +27,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: This script disables users for multiple services. 
+comment: This script disables users for multiple services.
 commonfields:
   id: disable-user
   version: -1
@@ -66,7 +66,7 @@ subtype: python3
 dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- DisableUser - Test
 marketplaces:
 - xsoar
 - marketplacev2
