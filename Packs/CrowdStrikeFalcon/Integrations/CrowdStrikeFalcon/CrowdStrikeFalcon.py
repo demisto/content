@@ -7543,6 +7543,7 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     update_status = args.get("update_status", "")
     assign_to_name = args.get("assign_to_name", "")
     assign_to_uuid = args.get("assign_to_uuid", "")
+    assign_to_user_id = args.get("assign_to_user_id", "")
 
     # This argument is sent to the API in the form of a string, having the values 'true' or 'false'
     unassign = args.get("unassign", "")
@@ -7560,6 +7561,7 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
         update_status=update_status,
         assign_to_name=assign_to_name,
         assign_to_uuid=assign_to_uuid,
+        assign_to_user_id=assign_to_user_id,
         unassign=unassign,
         append_comment=append_comment,
         add_tag=add_tag,
