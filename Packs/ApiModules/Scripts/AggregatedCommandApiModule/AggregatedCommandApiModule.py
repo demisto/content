@@ -150,12 +150,12 @@ class Command:
             final_args["using-brand"] = ",".join(brands_to_run)
         return {self.name: final_args}
 
-    def execute(self) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    def execute(self) -> list[dict[str, Any]]:
         """Executes the command and returns the results."""
         demisto.debug(f"[Command.execute] Executing command {self.name} with args: {self.args}")
-        results, errors = execute_command(self.name, self.args)
+        results = execute_command(self.name, self.args)
         demisto.debug(f"[Command.execute] Command {self.name} execution completed with {len(results)} results")
-        return results, errors
+        return results
 
 
 class ReputationCommand(Command):
@@ -469,7 +469,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         additional_fields: bool = False,
         verbose: bool = False,
         commands: list[Command] = [],
-        validate_input_function: Callable[[dict[str, Any]], None] = lambda args: None,
+        validate_input_function: Callable[[dict[str, Any]], None] = validate_input_using_extract_indicator,
     ):
         """
         Initializes the reputation aggregated command.
@@ -515,6 +515,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         Main execution loop for the reputation aggregation.
         """
+        # 1. Step 1: Validate Input
+        
         demisto.debug("Starting aggregated command main loop.")
         context_builder = ContextBuilder(self.indicator, self.final_context_path)
 
@@ -528,12 +530,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
         else:
             demisto.debug("No commands to execute.")
             batch_results = []
-
+        demisto.debug(f"Batch results: {json.dumps(batch_results, indent=4)}")
         # 2. Process batch results
-        demisto.debug("Step 2: Processing batch results.")
-        commands_context, reputation_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(
-            batch_results, commands_to_execute
-        )
+        # demisto.debug("Step 2: Processing batch results.")
+        # commands_context, reputation_context, batch_dbot, verbose_outputs, batch_entries = self.process_batch_results(
+        #     batch_results, commands_to_execute
+        # )
         context_builder.add_reputation_context(reputation_context, batch_dbot, priority=2)
         context_builder.add_other_commands_results(commands_context)
 
@@ -1012,11 +1014,15 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 "None of the commands correspond to an enabled integration instance. "
                 "Please ensure relevant brands are enabled."
             )
+    
+    
+        
 
 
 """HELPER FUNCTIONS"""
 
 
+        
 def merge_nested_dicts_in_place(dict1: dict, dict2: dict) -> None:
     """
     Recursively merges dict2 into dict1. If a key exists in both and the
