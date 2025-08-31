@@ -10,8 +10,6 @@ from typing import Any
 
 # --- Constants ---
 GLOBAL_ADMIN_ROLE_ID = "62e90394-69f5-4237-9190-012177145e10"  # Azure Global Administrator role ID
-DEFAULT_NAMED_LOCATION_NAME = "Cortex Blocked IPs"
-DEFAULT_POLICY_NAME = "Cortex - Block Malicious IPs"
 
 # --- Helper Functions ---
 
@@ -275,9 +273,9 @@ def main():
     """
     try:
         args = demisto.args()
-        ip = args.get("ip")
-        named_location_name = args.get("named_location_name", DEFAULT_NAMED_LOCATION_NAME)
-        policy_name = args.get("policy_name", DEFAULT_POLICY_NAME)
+        ip = args["ip"]
+        named_location_name = args["named_location_name"]
+        policy_name = args["policy_name"]
         result_message = block_external_ip_with_ca_policy_main_logic(ip, named_location_name, policy_name)
         return_results(
             CommandResults(

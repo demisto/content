@@ -279,7 +279,7 @@ def main():
     All exceptions are caught and reported via `return_error`.
     """
     try:
-        ip = demisto.args().get("ip")
+        ip = demisto.args()["ip"]
         # Added a check to ensure the input IP is IPv4 before proceeding
         try:
             if ipaddress.ip_address(ip).version != 4:
@@ -300,7 +300,7 @@ def main():
         update_blocked_ip_zone(zone_id, zone_gateways, ip)
 
     except Exception as e:
-        return_error(f"Error blocking IP in Okta zone: {str(e)}", e)
+        return_error(f"Error blocking IP in Okta zone: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
