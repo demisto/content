@@ -1,6 +1,6 @@
 # Monday Event Collector
 
-Monday.com is a work operating system that powers teams to run projects and workflows with confidence. Use this pack to fetch Activity and Audit logs from Monday.com for threat detection and compliance monitoring in Cortex XSIAM.
+Monday.com is a work operating system that powers teams to run projects and workflows with confidence. Use this pack to fetch activity and audit logs from Monday.com for threat detection and compliance monitoring in Cortex XSIAM.
 
 ## What does this pack do?
 
