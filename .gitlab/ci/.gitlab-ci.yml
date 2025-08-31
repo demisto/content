@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: "filter-license"
+  CURRENT_BRANCH_NAME: "filter-license" 
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
