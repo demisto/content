@@ -1072,6 +1072,7 @@ Get a specific rule.
 | Azure.NSGRule.id | String | The rule's ID. |
 | Azure.NSGRule.etag | String | The rule's ETag. |
 | Azure.NSGRule.type | String | The rule's type. |
+| Azure.NSGRule.location | String | The rule's location. |
 | Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
 | Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", "\*". |
 | Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. |

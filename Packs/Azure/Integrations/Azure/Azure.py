@@ -1361,12 +1361,7 @@ def format_rule(rule_json: dict | list, security_rule_name: str):
 
     hr = tableToMarkdown(f"Rules {security_rule_name}", rule_json, removeNull=True)
 
-    return CommandResults(
-        outputs_prefix="Azure.NSGRule",
-        outputs_key_field="id",
-        outputs=rule_json,
-        readable_output=hr
-    )
+    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule_json, readable_output=hr)
 
 
 """ COMMAND FUNCTIONS """
