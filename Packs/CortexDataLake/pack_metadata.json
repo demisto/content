@@ -10,7 +10,9 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [
         "SLS",
