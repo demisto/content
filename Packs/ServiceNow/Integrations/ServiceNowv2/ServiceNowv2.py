@@ -3218,9 +3218,8 @@ def pre_process_parsed_args(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemote
     return parsed_args
 
 
-def modify_closure_delta(
+def add_default_closure_fields_to_delta(
     delta: dict,
-    state: str,
     close_code: str = "Resolved by caller",
     close_notes: str = "This is the resolution note required by ServiceNow to move the incident to the Resolved state.",
 ):
@@ -3238,36 +3237,38 @@ def modify_closure_delta(
     Returns:
         The modified delta dictionary.
     """
-    delta.setdefault("state", state)
     delta.setdefault("close_code", close_code)
     delta.setdefault("close_notes", close_notes)
     return delta
 
 
-def pre_process_close_incident_args(
+def set_state_according_to_closure_case_and_ticket_type(
     parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
 ) -> UpdateRemoteSystemArgs:
     """
-    Pre-process the parsed arguments to close an incident.
+       Pre-process the parsed arguments to close an incident.
 
-    Args:
-        parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
-        closure_case (str): The case to close the incident. Can be "closed" or "resolved".
-        ticket_type (str): The type of the ticket.
-        close_custom_state (str): The custom state to use if given.
+       Args:
+           parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
+           closure_case (str): The case to close the incident. Can be "closed" or "resolved".
+           ticket_type (str): The type of the ticket.
+           close_custom_state (str): The custom state to use if given.
 
-    Returns:
-        UpdateRemoteSystemArgs: The pre-processed parsed arguments.
-    """
-    if (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta):
-        demisto.debug("Closing incident by closure case")
-        if (closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}) or parsed_args.delta.get("state") == "3":
+       Returns:
+           UpdateRemoteSystemArgs: The pre-processed parsed arguments.
+       """
+    if parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug("Modifying incident status by closure case")
+        if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
+            demisto.debug("Setting state to 3 for sc_task, sc_req_item, SIR_INCIDENT and closing case.")
             parsed_args.delta["state"] = "3"
         # These ticket types are closed by changing their state.
-        if (closure_case == "closed" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "7":
-            parsed_args.delta = modify_closure_delta(parsed_args.delta, "7")
-        elif (closure_case == "resolved" and ticket_type == INCIDENT) or parsed_args.delta.get("state") == "6":
-            parsed_args.delta = modify_closure_delta(parsed_args.delta, "6")
+        if closure_case == "closed" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 7 for incident and closing case closed.")
+            parsed_args.delta["state"] = "7"  # Closing incident ticket.
+        elif closure_case == "resolved" and ticket_type == INCIDENT:
+            demisto.debug("Setting state to 6 for incident and closing case resolved.")
+            parsed_args.delta["state"] = "6"  # resolving incident ticket.
         if close_custom_state:  # Closing by custom state
             demisto.debug(f"Closing by custom state = {close_custom_state}")
             parsed_args.delta["state"] = close_custom_state
@@ -3323,6 +3324,25 @@ def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ti
     return result
 
 
+def set_default_fields(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemoteSystemArgs:
+    """
+    Set default closure fields of an incident if missing.
+
+    If the incident state is 7 (closed) or 6 (resolved), add default values for the close_code and close_notes fields
+    if they are missing in the delta dictionary.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments, containing the delta and other information.
+
+    Returns:
+        UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
+    """
+    if parsed_args.delta.get("state") in {"7", "6"}:
+        demisto.debug("State is 7 or 6 - Setting default closure fields if missing")
+        parsed_args.delta = add_default_closure_fields_to_delta(parsed_args.delta)
+    return parsed_args
+
+
 def update_remote_system_on_incident_change(
     client: Client,
     parsed_args: UpdateRemoteSystemArgs,
@@ -3342,16 +3362,14 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
-    is_custom_close: bool | str | None = (
-        (parsed_args.inc_status == IncidentStatus.DONE) or ("state" in parsed_args.delta)
-    ) and close_custom_state
+    is_custom_close: bool | str | None = (parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
-    parsed_args = pre_process_close_incident_args(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
+    parsed_args = set_default_fields(parsed_args)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
     demisto.debug(f"all fields= {fields}")
     if closure_case:
         fields = update_incident_closure_fields(parsed_args, fields, ticket_type, is_custom_close)
-
     demisto.debug(f"Sending update request to server {ticket_type}, {ticket_id}, {fields}")
     result = client.update(ticket_type, ticket_id, fields)
 
