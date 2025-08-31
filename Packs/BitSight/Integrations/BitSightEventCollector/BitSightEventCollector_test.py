@@ -96,9 +96,10 @@ class TestBitSightEventCollector:
 
         Then: Should set _time field from first_seen and preserve all original fields
         """
-        events = findings_to_events(sample_findings)
+        events, missing_date_findings = findings_to_events(sample_findings)
 
         assert len(events) == 4
+        assert len(missing_date_findings) == 0
         assert events[0]["_time"] == "2024-01-15T00:00:00"
         assert events[1]["_time"] == "2024-01-14T00:00:00"
         assert events[2]["_time"] == "2024-01-13T00:00:00"
@@ -114,12 +115,18 @@ class TestBitSightEventCollector:
 
         When: Converting to XSIAM events
 
-        Then: Should raise ValueError
+        Then: Should keep events without dates and track missing date count
         """
         findings = [{"id": "no-date", "severity": 5.0}]
 
-        with pytest.raises(ValueError, match="No first_seen date found for finding no-date"):
-            findings_to_events(findings)
+        events, missing_date_findings = findings_to_events(findings)
+
+        assert len(events) == 1
+        assert len(missing_date_findings) == 1
+        assert missing_date_findings[0] == "no-date"
+        assert events[0]["id"] == "no-date"
+        assert events[0]["severity"] == 5.0
+        assert "_time" not in events[0]  # No _time field added when no date available
 
     def test_findings_to_events_with_firstSeen_field(self):
         """
@@ -130,12 +137,14 @@ class TestBitSightEventCollector:
         Then: Should set _time field from firstSeen and preserve all fields
         """
         findings = [{"id": "finding-camel", "firstSeen": "2024-01-10", "risk_category": "Test", "severity": 7.5}]
-        events = findings_to_events(findings)
+        events, missing_date_findings = findings_to_events(findings)
 
         assert len(events) == 1
+        assert len(missing_date_findings) == 0
         assert events[0]["_time"] == "2024-01-10T00:00:00"
         assert events[0]["id"] == "finding-camel"
         assert events[0]["severity"] == 7.5
+        assert events[0]["risk_category"] == "Test"
 
     # time_window function tests removed as the function was deleted
 
@@ -215,7 +224,7 @@ class TestBitSightEventCollector:
         )
 
         with freeze_time("2024-01-15 12:00:00"):
-            events, new_last_run = fetch_events(
+            events, new_last_run, missing_date_findings = fetch_events(
                 client=mock_client,
                 guid="test-guid",
                 max_fetch=100,
@@ -249,7 +258,7 @@ class TestBitSightEventCollector:
         last_run = {"first_fetch": "2024-01-15", "offset": 10}
 
         with freeze_time("2024-01-16 12:00:00"):
-            events, new_last_run = fetch_events(
+            events, new_last_run, missing_date_findings = fetch_events(
                 client=mock_client,
                 guid="test-guid",
                 max_fetch=100,
@@ -284,7 +293,7 @@ class TestBitSightEventCollector:
         last_run = {"first_fetch": "2024-01-15", "offset": 50}
 
         with freeze_time("2024-01-16 12:00:00"):
-            events, new_last_run = fetch_events(
+            events, new_last_run, missing_date_findings = fetch_events(
                 client=mock_client,
                 guid="test-guid",
                 max_fetch=100,
@@ -318,7 +327,7 @@ class TestBitSightEventCollector:
         )
 
         with freeze_time("2024-01-15 12:00:00"):
-            events, new_last_run = fetch_events(
+            events, new_last_run, missing_date_findings = fetch_events(
                 client=mock_client,
                 guid="test-guid",
                 max_fetch=2,  # Limit to 2 events
@@ -340,7 +349,7 @@ class TestBitSightEventCollector:
         mocker.patch.object(mock_client, "get_company_findings", return_value={"results": sample_findings})
 
         with freeze_time("2024-01-15 12:00:00"):
-            events, new_last_run = fetch_events(
+            events, new_last_run, missing_date_findings = fetch_events(
                 client=mock_client,
                 guid="test-guid",
                 max_fetch=100,

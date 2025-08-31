@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -73,25 +73,27 @@ def to_bitsight_date(ts: int) -> str:
     Returns:
         str: Date string formatted as YYYY-MM-DD (UTC).
     """
-    return datetime.utcfromtimestamp(ts).strftime(BITSIGHT_DATE_FORMAT)
+    return datetime.fromtimestamp(ts, tz=UTC).strftime(BITSIGHT_DATE_FORMAT)
 
 
-def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def findings_to_events(findings: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[str]]:
     """Transform Bitsight findings into XSIAM event objects.
 
     - Preserves original finding fields.
     - Sets the XSIAM `_time` field using the finding's `first_seen` (YYYY-MM-DD) when available.
+    - Collects findings without dates for later error handling.
 
     Args:
         findings (list[dict[str, Any]]): A list of Bitsight findings as returned from the API.
 
     Returns:
-        list[dict[str, Any]]: A list of event dictionaries suitable for pushing to XSIAM.
-
-    Raises:
-        ValueError: If a finding is missing both first_seen and firstSeen fields.
+        tuple[list[dict[str, Any]], list[str]]: A tuple containing:
+            - A list of event dictionaries suitable for pushing to XSIAM
+            - A list of finding IDs that lack date fields (for error handling after offset update)
     """
     events: list[dict[str, Any]] = []
+    missing_date_findings: list[str] = []
+
     for f in findings:
         event = dict(f)
         # Set XSIAM time field to first_seen
@@ -105,12 +107,13 @@ def findings_to_events(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 demisto.debug(f"Failed to parse first_seen date '{first_seen}' for finding {f.get('id', 'unknown')}: {e}")
                 event["_time"] = first_seen
         else:
+            # Track findings missing dates for later error handling
             finding_id = f.get("id", "unknown")
-            raise ValueError(
-                f"No first_seen date found for finding {finding_id}. " "All findings must have a first_seen or firstSeen field."
-            )
+            missing_date_findings.append(finding_id)
+
         events.append(event)
-    return events
+
+    return events, missing_date_findings
 
 
 def fetch_events(
@@ -119,7 +122,7 @@ def fetch_events(
     max_fetch: int,
     last_run: dict[str, Any],
     lookback_days: int | None = None,
-) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], dict[str, Any], list[str]]:
     """Fetch Bitsight findings as events using offset pagination from a fixed starting date.
 
     This function pages through Bitsight findings for the specified company starting from
@@ -135,7 +138,10 @@ def fetch_events(
         lookback_days (int | None): Days to look back for initial fetch. If None, uses current date.
 
     Returns:
-        tuple[list[dict[str, Any]], dict[str, Any]]: The list of events and the updated `last_run` state.
+        tuple[list[dict[str, Any]], dict[str, Any], list[str]]: A tuple containing:
+            - list of events
+            - updated last_run dictionary with incremented offset
+            - list of finding IDs that lack date fields (for error handling by caller)
     """
     if "offset" in last_run:
         offset = last_run["offset"]
@@ -158,21 +164,20 @@ def fetch_events(
         guid, first_seen_gte=first_seen_gte, last_seen_lte=last_seen_lte, limit=max_fetch, offset=offset
     )
     findings = res.get("results", [])
-    count = len(findings)
 
-    events = findings_to_events(findings)
+    events, missing_date_findings = findings_to_events(findings)
 
     # Update last_run with incremented offset (matches Performance Management pattern)
     # Note: Although the API returns pagination links (next/previous) in rare cases of very large amounts of data,
     # we ignore them since our offset-based approach will automatically fetch remaining data in subsequent calls
     # See: https://help.bitsighttech.com/hc/en-us/articles/360050111794-Pagination
-    new_offset = offset + count
+    new_offset = offset + len(events)
     new_last_run: dict[str, Any] = {
         "first_fetch": first_fetch_date,
         "offset": new_offset,
     }
 
-    return events, new_last_run
+    return events, new_last_run, missing_date_findings
 
 
 def bitsight_get_events_command(client: Client, guid: str, limit: int, should_push: bool) -> CommandResults:
@@ -190,12 +195,15 @@ def bitsight_get_events_command(client: Client, guid: str, limit: int, should_pu
     Returns:
         CommandResults: CommandResults object with table output (when not pushing) or a summary message.
     """
-    # Use empty last_run for one-off command - don't persist state
-    events, _ = fetch_events(client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS)
+    events, _, missing_date_findings = fetch_events(
+        client, guid=guid, max_fetch=int(limit), last_run={}, lookback_days=GET_EVENTS_LOOKBACK_DAYS
+    )
 
     title = "Bitsight Findings Events (pushed)" if should_push else "Bitsight Findings Events"
     if should_push:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        if missing_date_findings:
+            raise ValueError(f"No first_seen date found for findings: {', '.join(missing_date_findings)}")
     return CommandResults(readable_output=tableToMarkdown(title, events, removeNull=True))
 
 
@@ -216,9 +224,9 @@ def test_module(client: Client, guid: str | None) -> str:
     try:
         client.get_companies_guid()
         if guid:
-            # Use a simple 1-day lookback for testing connectivity
+            # Use a simple 2-day lookback for testing connectivity
             current_time = datetime.now()
-            lookback_time = current_time - timedelta(days=1)
+            lookback_time = current_time - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)
             start_date = to_bitsight_date(int(lookback_time.timestamp()))
             end_date = to_bitsight_date(int(current_time.timestamp()))
             client.get_company_findings(guid, start_date, end_date, limit=1, offset=0)
@@ -248,17 +256,26 @@ def resolve_guid(client: Client, guid_from_args: str | None, guid_from_params: s
 
 
 def main():
+    # Extract command and parameters
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
 
+    # Extract configuration variables
     base_url = params.get("base_url") or "https://api.bitsighttech.com"
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     api_key = params.get("apikey", {}).get("password") or ""
 
+    # Extract command-specific variables
+    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    should_push = argToBoolean(args.get("should_push_events", "false")) if args.get("should_push_events") else False
+    limit = arg_to_number(args.get("limit")) or 5
+    last_run = demisto.getLastRun() or {}
+
     demisto.debug(f"Command being called is {command}")
 
+    # Create API client
     client = Client(
         base_url=base_url,
         verify=verify_certificate,
@@ -271,24 +288,23 @@ def main():
         },
     )
 
+    guid = resolve_guid(client, args.get("guid"), params.get("guid"))
+
     try:
         if command == "test-module":
             return_results(test_module(client, params.get("guid")))
 
         elif command == "fetch-events":
-            max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-            guid = resolve_guid(client, None, params.get("guid"))
-            last_run = demisto.getLastRun() or {}
-            events, new_last_run = fetch_events(client, guid=guid, max_fetch=max_fetch, last_run=last_run)
-            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            events, new_last_run, missing_date_findings = fetch_events(client, guid=guid, max_fetch=max_fetch, last_run=last_run)
             demisto.setLastRun(new_last_run)
+
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"Fetched and pushed {len(events)} events")
+            if missing_date_findings:
+                raise ValueError(f"No first_seen date found for findings: {', '.join(missing_date_findings)}")
             return
 
         elif command == "bitsight-get-events":
-            should_push = argToBoolean(args.get("should_push_events", "false"))
-            limit = arg_to_number(args.get("limit")) or 5
-            guid = resolve_guid(client, args.get("guid"), params.get("guid"))
             return_results(bitsight_get_events_command(client, guid, limit, should_push))
 
         else:
