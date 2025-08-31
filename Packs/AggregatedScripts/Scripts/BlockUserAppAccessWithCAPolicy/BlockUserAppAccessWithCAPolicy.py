@@ -22,8 +22,6 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
     res = demisto.executeCommand(command, args)
     if not res:
         raise DemistoException(f"{error_message_prefix}: Empty response for {command}.")
-    if not isinstance(res, list) or not res:  # res is now guaranteed not None, check if it's an empty list or not a list
-        raise DemistoException(f"{error_message_prefix}: Invalid command result structure (not a list) for {command}.")
     if res[0] is None:  # Check if the first element of the list is explicitly None
         raise DemistoException(f"{error_message_prefix}: Empty first element in command result for {command}.")
 
