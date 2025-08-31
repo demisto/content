@@ -1,0 +1,1 @@
+This script is particularly useful in incident enrichment and investigation workflows where raw evidence from security products may be inconsistent, duplicated, or contain redundant fields. It ensures downstream playbooks receive clean, structured, and deduplicated data for reporting, correlation, or automated response actions.'

@@ -1,0 +1,31 @@
+args:
+- description: Evidence section from MicrosoftATP.Alert
+  name: value
+  required: true
+comment: "Maps MicrosoftATP.Alert evidence objects into a normalized structure.\n Handles multiple entity types (User, Url, Process) and extracts key fields:\n user, host, file, process, URL, IP, hashes, registry, timestamps, etc."
+commonfields:
+  id: MappedDefenderEvidenceFields
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.12.11.4508456
+enabled: true
+engineinfo: {}
+name: MappedDefenderEvidenceFields
+outputs:
+- contextPath: 'DefenderEvidence '
+  description: Normalized evidence objects.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- atp
+- abrar
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

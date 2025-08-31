@@ -1,0 +1,21 @@
+{
+    "name": "MappedDefenderEvidenceFields",
+    "description": "This automation script is designed to normalize and standardize evidence data from Microsoft Defender for use in XSOAR playbooks.\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Abrar Hussain",
+    "url": "",
+    "email": "",
+    "created": "2025-08-31T07:27:43Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "System-CTL"
+    ]
+}
