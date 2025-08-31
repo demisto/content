@@ -355,13 +355,14 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
-    endpoint_mapping = {}
+    endpoint_mapping = {"id2": {"ID": "id2", "Hostname": "host2", "Message": "Command successful", "Brand": Brands.CORTEX_CORE_IR}}
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1"), ("id2", "192.168.1.2", "host2")]
     single_args_commands = [
-        Command(brand="TestBrand1", name="test-command-1", output_keys=[], args_mapping={"id": "endpoint_id"}, output_mapping={}),
+        Command(brand=Brands.ACTIVE_DIRECTORY_QUERY_V2, name="test-command-1", output_keys=[], args_mapping={"id": "endpoint_id"},
+                output_mapping={}),
         Command(
-            brand="TestBrand2",
+            brand=Brands.CORTEX_CORE_IR,
             name="test-command-2",
             output_keys=[],
             args_mapping={"hostname": "endpoint_hostname"},
@@ -378,11 +379,12 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
         (["Readable output 2"], []),  # Second command, first endpoint (no results)
         (
             ["Readable output 3"],
-            [{"ID": "id2", "Hostname": "host2", "Message": "Command successful", "Brand": Brands.CORTEX_CORE_IR}],
+            [{"ID": "id2", "Status": "Active", "Message": "Command successful", "Brand": Brands.FIREEYE_HX_V2}],
         ),  # First command, second endpoint
         (
             ["Readable output 4"],
-            [{"ID": "id2", "Status": "Active", "Message": "Command successful", "Brand": Brands.FIREEYE_HX_V2}],
+            [{"ID": "id2", "Status": "Active", "Hostname": "host2", "Message": "Command successful",
+              "Brand": Brands.CORTEX_CORE_IR, "RiskLevel": "Medium"}],
         ),  # Second command, second endpoint
     ]
 
@@ -395,7 +397,7 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
         single_args_commands=single_args_commands,
         command_runner=mock_command_runner,
         verbose=True,
-        endpoint_mapping=endpoint_mapping,
+        ir_mapping=endpoint_mapping,
     )
 
     # Assertions
@@ -408,12 +410,6 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
         },
         {
             "ID": "id2",
-            "Hostname": "host2",
-            "Message": "Command successful",
-            "Brand": Brands.CORTEX_CORE_IR,
-        },
-        {
-            "ID": "id2",
             "Status": "Active",
             "Message": "Command successful",
             "Brand": Brands.FIREEYE_HX_V2,
@@ -422,37 +418,20 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     expected_command_results = ["Readable output 1", "Readable output 2", "Readable output 3", "Readable output 4"]
 
     expected_endpoint_mapping = {
-        "Active Directory Query v2": {
-            "id1": {
-                "ID": "id1",
-                "Hostname": "host1",
-                "Message": "Command successful",
-                "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2,
-            }
-        },
-        "Cortex Core - IR": {
             "id2": {
                 "ID": "id2",
                 "Hostname": "host2",
                 "Message": "Command successful",
                 "Brand": Brands.CORTEX_CORE_IR,
+                "RiskLevel": "Medium"
             }
-        },
-        "FireEyeHX v2": {
-            "id2": {
-                "ID": "id2",
-                "Status": "Active",
-                "Message": "Command successful",
-                "Brand": Brands.FIREEYE_HX_V2,
-            }
-        },
     }
 
     assert endpoint_mapping == expected_endpoint_mapping
     assert endpoint_outputs == expected_endpoint_outputs
     assert command_results == expected_command_results
     assert mock_command_runner.run_command.call_count == 4
-    mock_debug.assert_called_with("ending single arg loop with 3 endpoints")
+    mock_debug.assert_called_with("ending single arg loop with 2 new endpoints")
 
 
 def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_command_runner):
@@ -486,14 +465,14 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
         single_args_commands=single_args_commands,
         command_runner=mock_command_runner,
         verbose=False,
-        endpoint_mapping=endpoint_mapping,
+        ir_mapping=endpoint_mapping,
     )
 
     # Assertions
     assert endpoint_outputs == [{"ID": "id1"}]
     assert command_results == []  # Should be empty when verbose=False
     assert mock_command_runner.run_command.call_count == 1
-    mock_debug.assert_called_with("ending single arg loop with 1 endpoints")
+    mock_debug.assert_called_with("ending single arg loop with 1 new endpoints")
 
 
 def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setup_command_runner):
@@ -527,14 +506,14 @@ def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setu
         single_args_commands=single_args_commands,
         command_runner=mock_command_runner,
         verbose=True,
-        endpoint_mapping=endpoint_mapping,
+        ir_mapping=endpoint_mapping,
     )
 
     # Assertions
     assert endpoint_outputs == []
     assert command_results == ["No results found"]
     assert mock_command_runner.run_command.call_count == 1
-    mock_debug.assert_called_once_with("ending single arg loop with 0 endpoints")
+    mock_debug.assert_called_once_with("ending single arg loop with 0 new endpoints")
 
 
 def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_command_runner):
@@ -561,13 +540,13 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
         ],
         command_runner=mock_command_runner,
         verbose=True,
-        endpoint_mapping=endpoint_mapping,
+        ir_mapping=endpoint_mapping,
     )
 
     assert endpoint_outputs == []
     assert command_results == []
     assert mock_command_runner.run_command.call_count == 0
-    mock_debug.assert_called_once_with("ending single arg loop with 0 endpoints")
+    mock_debug.assert_called_once_with("ending single arg loop with 0 new endpoints")
 
     # Reset mock
     mock_command_runner.reset_mock()
@@ -579,13 +558,13 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
         single_args_commands=[],
         command_runner=mock_command_runner,
         verbose=True,
-        endpoint_mapping=endpoint_mapping,
+        ir_mapping=endpoint_mapping,
     )
 
     assert endpoint_outputs == []
     assert command_results == []
     assert mock_command_runner.run_command.call_count == 0
-    mock_debug.assert_called_once_with("ending single arg loop with 0 endpoints")
+    mock_debug.assert_called_once_with("ending single arg loop with 0 new endpoints")
 
 
 def test_create_endpoint_with_endpoint_output():
@@ -1220,54 +1199,11 @@ def test_add_endpoint_to_mapping_new_brand():
         It should add the new endpoint to the mapping with the new brand and ID.
     """
     endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "id": 1},
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "ID": 1},
     ]
     mapping = {}
-    add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert mapping == {Brands.CORTEX_XDR_IR.value: {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "id": 1}}}
-
-
-def test_add_endpoint_to_mapping_existing_brand():
-    """
-    Given:
-        A list of endpoints with an existing brand and ID.
-    When:
-        The add_endpoint_to_mapping function is called with the endpoints.
-    Then:
-        It should add the new endpoint to the existing brand and ID.
-    """
-    endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 2},
-    ]
-    mapping = {
-        Brands.ACTIVE_DIRECTORY_QUERY_V2.value: {
-            1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1}
-        }
-    }
-    add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert 2 in mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value]
-    assert 1 in mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value]
-
-
-def test_add_endpoint_to_mapping_update_existing():
-    """
-    Given:
-        A list of endpoints with an existing brand and ID.
-    When:
-        The add_endpoint_to_mapping function is called with the endpoints.
-    Then:
-        It should update the existing endpoint with the new hostname.
-    """
-    endpoints = [
-        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1, "hostname": "host1"},
-    ]
-    mapping = {
-        Brands.ACTIVE_DIRECTORY_QUERY_V2.value: {
-            1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1}
-        }
-    }
-    add_endpoint_to_mapping(endpoints, mapping, "id")
-    assert mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value][1]["hostname"] == "host1"
+    add_endpoint_to_mapping(endpoints, mapping)
+    assert mapping == {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "ID": 1}}
 
 
 def test_add_endpoint_to_mapping_skips_unsuccessful():
@@ -1280,10 +1216,10 @@ def test_add_endpoint_to_mapping_skips_unsuccessful():
         It should skip the endpoint with the failed command message and return an empty mapping.
     """
     endpoints = [
-        {"Message": "Some error", "Brand": "BrandA", "id": 3},
+        {"Message": "Some error", "Brand": "BrandA", "ID": 3},
     ]
     mapping = {}
-    add_endpoint_to_mapping(endpoints, mapping, "id")
+    add_endpoint_to_mapping(endpoints, mapping)
     assert mapping == {}
 
 

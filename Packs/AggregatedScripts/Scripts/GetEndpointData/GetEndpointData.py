@@ -607,12 +607,12 @@ def run_single_args_commands(
                     update_endpoint_in_mapping(endpoint_output, ir_mapping)
                 else:
                     endpoint_outputs_list.extend(endpoint_output)
-                single_endpoint_readable_outputs.extend(readable_outputs)
+            single_endpoint_readable_outputs.extend(readable_outputs)
 
         if verbose:
             command_results_list.extend(single_endpoint_readable_outputs)
 
-    demisto.debug(f"ending single arg loop with {len(endpoint_outputs_list)} endpoints")
+    demisto.debug(f"ending single arg loop with {len(endpoint_outputs_list)} new endpoints")
     return endpoint_outputs_list, command_results_list
 
 
@@ -1104,12 +1104,14 @@ def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict
             continue
         for ir_endpoint in ir_mapping.values():
             if ir_endpoint["Hostname"] == endpoint["Hostname"]:
-                if "RiskLevel" in endpoint:
-                    endpoint["RiskLevel"] = IRRISKLEVEL[
+                if "RiskLevel" in ir_endpoint:
+                    ir_endpoint["RiskLevel"] = IRRISKLEVEL[
                         max(IRRISKLEVEL[endpoint["RiskLevel"]], IRRISKLEVEL[ir_endpoint["RiskLevel"]])
                     ]
                 else:
-                    endpoint["RiskLevel"] = ir_endpoint["RiskLevel"]
+                    ir_endpoint["RiskLevel"] = endpoint["RiskLevel"]
+                if "additional_fields" in endpoint:
+                    ir_endpoint.update(endpoint["additional_fields"])
 
 
 """ MAIN FUNCTION """
@@ -1159,8 +1161,7 @@ def main():  # pragma: no cover
         )
 
         demisto.debug("preparing to convert endpoint mapping to list.")
-        command_results_single_commands.extend(list(ir_mapping.values()))
-        demisto.debug(f"endpoint mapping to list prepared, got {len(endpoint_outputs_list)} endpoints.")
+        endpoint_outputs_single_commands.extend(list(ir_mapping.values()))
 
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
