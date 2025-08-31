@@ -111,7 +111,7 @@ script:
     - name: fields
       description: comma separated list of fields in the order to show. If not specified, all fields will be used.
     - name: key
-      description: Unique key for context ID.
+      description: Unique key for context ID. must provided when query using chart.
     description: Start a new search, wait until the search status is complete and then return the events. This command combine 3 commands - as-search, as-status, as-events.
   - name: as-status
     arguments:
