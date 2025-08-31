@@ -1851,7 +1851,7 @@ def calculate_domain_dbot_score(
 
                 secure_rank = (risk_score - 50) * -2
 
-            if secure_rank < MALICIOUS_THRESHOLD:
+            if secure_rank <= MALICIOUS_THRESHOLD:
                 return Common.DBotScore.BAD
 
             if secure_rank < SUSPICIOUS_THRESHOLD:

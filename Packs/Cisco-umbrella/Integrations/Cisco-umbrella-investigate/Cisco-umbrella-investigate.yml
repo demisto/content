@@ -51,7 +51,7 @@ configuration:
     type: 0
     additionalinfo: Make sure the suspicious threshold is greater than the malicious threshold.
     section: Collect
-  - defaultvalue: "-100"
+  - defaultvalue: "-90"
     display: Score Malicious Threshold (-100 to 100)
     name: dboscore_threshold
     additionalinfo: Make sure the malicious threshold is less than the suspicious threshold.
