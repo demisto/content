@@ -17,7 +17,6 @@ import re
 import string
 import sys
 from datetime import datetime, timedelta
-from distutils.util import strtobool
 from email.header import Header
 from email.mime.application import MIMEApplication
 from email.mime.audio import MIMEAudio
@@ -951,7 +950,7 @@ def list_users_command() -> CommandResults:
     query = args.get("query")
     sort_order = args.get("sort-order")
     max_results = args.get("max-results", 100)
-    show_deleted = bool(strtobool(args.get("show-deleted", "false")))
+    show_deleted = argToBoolean(args.get("show-deleted", "false"))
     projection = args.get("projection", "basic")
     custom_field_mask = args.get("custom_field_mask") if projection == "custom" else None
     page_token = args.get("page-token")
@@ -1449,7 +1448,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
     page_token = args.get("page-token")
     include_spam_trash = args.get("include-spam-trash", False)
     has_attachments = args.get("has-attachments")
-    has_attachments = None if has_attachments is None else bool(strtobool(has_attachments))
+    has_attachments = None if has_attachments is None else argToBoolean(has_attachments)
 
     if max_results > 500:
         raise ValueError(f"maxResults must be lower than 500, got {max_results}")
@@ -1672,7 +1671,7 @@ def delete_mail_command():
     args = demisto.args()
     user_id = args["user-id"]
     _id = args["message-id"]
-    permanent = bool(strtobool(args.get("permanent", "false")))
+    permanent = argToBoolean(args.get("permanent", "false"))
 
     return delete_mail(user_id, _id, permanent)
 

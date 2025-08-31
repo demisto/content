@@ -9,3 +9,9 @@ This content pack provides the Cyberwatch integration in order to fetch data reg
 - Get a list of Security Issues from the Cyberwatch Security Issues Encyclopedia.
 - Fetch details on one Security Issue from the Cyberwatch Security Issues Encyclopedia.
 - Fetch incidents from Cyberwatch.
+- Get a list of Sysadmin assets (/assets/servers).
+- Fetch details on one Sysadmin asset.
+- Get a list of Compliance assets (/compliance/assets).
+- Fetch details on one Compliance asset.
+- Upload Declarative Data for an asset.
+- Retrieve Declarative Data for an asset.
