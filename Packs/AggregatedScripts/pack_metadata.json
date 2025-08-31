@@ -2,7 +2,7 @@
     "name": "Aggregated Scripts",
     "description": "A pack containing all aggregated scripts.",
     "support": "xsoar",
-    "currentVersion": "1.0.22",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -23,14 +23,6 @@
         "Core": {
             "mandatory": false,
             "display_name": "Core - Investigation and Response"
-        },
-        "MicrosoftGraphIdentityandAccess": {
-            "mandatory": false,
-            "display_name": "Azure Active Directory Identity And Access"
-        },
-        "MicrosoftGraphApplications": {
-            "mandatory": false,
-            "display_name": "Azure Active Directory Applications"
         }
     },
     "marketplaces": [
