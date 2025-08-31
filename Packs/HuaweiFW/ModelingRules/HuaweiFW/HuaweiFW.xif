@@ -1,0 +1,198 @@
+
+[RULE:header_fields]
+alter
+    log_level = parsed_fields_headers -> severity_log_level,
+    pri_number = to_integer(parsed_fields_headers -> pri)
+| alter 
+    facility_number = floor(divide(pri_number, 8))
+| alter 
+    severity_number = to_string(subtract(pri_number, multiply(facility_number, 8)))
+| alter
+    xdm.alert.severity = if(severity_number = "0", "Emergency", severity_number = "1", "Alert" , severity_number = "2", "Critical", severity_number = "3", "Error", severity_number = "4", "Warning", severity_number = "5", "Notice", severity_number = "6", "Informational", severity_number = "7", "Debug", severity_number),
+    xdm.event.log_level = if(log_level = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , log_level = "1", XDM_CONST.LOG_LEVEL_ALERT , log_level = "2", XDM_CONST.LOG_LEVEL_CRITICAL, log_level = "3", XDM_CONST.LOG_LEVEL_ERROR, log_level = "4", XDM_CONST.LOG_LEVEL_WARNING, log_level = "5", XDM_CONST.LOG_LEVEL_NOTICE, log_level = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level = "7", XDM_CONST.LOG_LEVEL_DEBUG, log_level),
+    xdm.event.original_event_type = parsed_fields_headers -> module_name,
+    xdm.event.type = parsed_fields_headers -> log_brief,
+    xdm.observer.name = parsed_fields_headers -> hostname,
+    xdm.session_context_id = parsed_fields_headers -> log_serial_number;
+
+
+
+[MODEL:dataset="huawei_fw_raw"]
+// Traffic Managment
+call header_fields
+|filter _raw_log ~= "BWM\/4"
+| alter 
+extract_policy= arrayindex(regextract(parsed_fields_description ,"policy=([a-zA-Z0-9\[\]\-\_ ]+),"),0),
+extract_ip_v4= arrayindex(regextract(parsed_fields_description ,"IP\saddress=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+extract_ip_v6= arrayindex(regextract(parsed_fields_description ,"IP\saddress=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"),0),
+extract_username = arrayindex(regextract(parsed_fields_description ,"user=(\S+),"),0)
+|alter 
+    xdm.event.description = parsed_fields_description,
+    xdm.network.rule = extract_policy,
+    xdm.target.ipv4 = extract_ip_v4 ,
+    xdm.target.ipv6 = extract_ip_v6,
+    xdm.target.user.username = extract_username ;
+
+
+
+// System Managment
+call header_fields
+|filter _raw_log ~= "%%\d{1,2}UPDATE\/"
+| alter check_outcome_by_brief = parsed_fields_headers ->log_brief,
+        get_description = arrayindex(split(parsed_fields_description,"."),0)
+|alter 
+    extract_syslog_id = arrayindex(regextract(parsed_fields_description ,"SyslogId=(\S+),"),0),
+    extract_user = arrayindex(regextract(parsed_fields_description ,"User=(\S+),"),0),
+    extract_ip = arrayindex(regextract(parsed_fields_description ,"IP=(\S+),"),0),
+    extract_module = arrayindex(regextract(parsed_fields_description ,"Module=(\S+),"),0),
+    extract_slot = arrayindex(regextract(parsed_fields_description ,"Slot=(\S+),"),0),
+    extract_cpu = arrayindex(regextract(parsed_fields_description ,"CPU=(\S+),"),0),
+    extract_status = arrayindex(regextract(parsed_fields_description ,"Status=(\S+),"),0),
+    extract_duration = to_integer(arrayindex(regextract(parsed_fields_description ,"Duration\(s\)=(\d+)"),0)),
+    extract_reason = replace(arrayindex(regextract(parsed_fields_description ,"Reason=\"([^\"]+)\""),0),"\"",""),
+    extract_suggestion = replace(arrayindex(regextract(parsed_fields_description ,"Suggestion=(\S+)\)"),0),"\"",""),
+    extract_pre_update_version = arrayindex(regextract(parsed_fields_description ,"Pre-UpdateVersion=(\S+),"),0),
+    extract_update_version = arrayindex(regextract(parsed_fields_description ,"UpdateVersion=(\S+),"),0)
+
+| alter create_description = to_string(concat(get_description ,". ",
+if(len(extract_slot) != 0, concat("Slot ID: ",extract_slot,", "), ""),
+if(len(extract_cpu ) != 0, concat("CPU ID: ",extract_cpu,", "), ""),
+if(len(extract_status) != 0, concat("Status: ",extract_status,", "), ""),
+if(len(extract_pre_update_version) != 0, concat("Pre-Updated Version: ",extract_pre_update_version,", "), ""),
+if(len(extract_update_version ) != 0, concat("Updated Version: ",extract_update_version,", "), ""),
+if(len(extract_module) != 0, concat("Module: ",extract_module,", "), "") ,
+if(len(extract_suggestion) != 0, concat("Suggestion: ",extract_suggestion,"."),"")))
+
+|alter 
+    xdm.event.id = extract_syslog_id,
+    xdm.event.duration = to_integer(multiply(extract_duration , 1000)),
+    xdm.event.description = replex(create_description,"\,\s?$","."),
+    xdm.event.outcome = if(check_outcome_by_brief ~= "(FAIL|FAILURE)", XDM_CONST.OUTCOME_FAILED, check_outcome_by_brief ~= "(OK|SUCCESS)", XDM_CONST.OUTCOME_SUCCESS, check_outcome_by_brief ~= "RETRY", XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = extract_reason,
+    xdm.source.user.username = extract_user,
+    xdm.source.user.user_type = if(extract_user = "SystemTimer", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
+    xdm.source.ipv4 = arrayindex(regextract(extract_ip, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),
+    xdm.source.ipv6 = arrayindex(regextract(extract_ip ,"((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"),0);
+
+
+
+call header_fields
+|filter _raw_log ~= "%%\d{1,2}SSH\/[4|5]\/" and xdm.event.type not in("CMD_USERCHOICE", "CONTINUE_KEYEXCHANGE", "OVERWRITE_FILE", "RENAME_FILE", "SAVE_PUBLICKEY", "SAVEAS_PUBLICKEY", "STELNET_SERVER", "UPDATE_PUBLICKEY")
+| alter check_outcome_by_brief = parsed_fields_headers ->log_brief,
+        create_description = arrayindex(split(parsed_fields_description,"."),0)
+
+|alter 
+    extract_user_name = replace(arrayindex(regextract(parsed_fields_description ,"(?:User|UserName)=(\S+)"),0),",",""),
+    extract_ip_address_v4 = arrayindex(regextract(parsed_fields_description ,"(?:IP|IpAddress)=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}),"),0),
+    extract_ip_address_v6 = arrayindex(regextract(parsed_fields_description ,"(?:IP|IpAddress)=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4}),"),0),
+    extract_vpn = rtrim(replace(arrayindex(regextract(parsed_fields_description ,"(?:VPN|VpnInstanceName)=(\S+)"),0),",",""),"\)"),
+    extract_request = arrayindex(regextract(parsed_fields_description ,"Request=(.*),"),0),
+    extract_result = arrayindex(regextract(parsed_fields_description ,"Result=(\S+)\)"),0),
+    extract_task = arrayindex(regextract(parsed_fields_description ,"Task=(\S+),"),0),
+    extract_command = arrayindex(regextract(parsed_fields_description ,"Command=\"(.*)\""),0),
+    extract_failed_Reason = arrayindex(regextract(parsed_fields_description ,"FailedReason=([^,)]+)"),0),
+    extract_file_name = arrayindex(regextract(parsed_fields_description ,"FileName=(\S+),"),0),
+    extract_transfer_length = to_integer(arrayindex(regextract(parsed_fields_description ,"(?:Transferlength|Transfer length)=(\S+)[,\)]"),0)),
+    extract_action_type = arrayindex(regextract(parsed_fields_description ,"ActionType=(\S+)\)"),0)
+
+|alter 
+    add_description_by_event = if(check_outcome_by_brief = "CMDRECORD", concat(" Command run on the SFTP: ", extract_command, ", Name of the task: ", extract_task) , check_outcome_by_brief = "SFTP_REQ_RECORD", concat(" The request sent by the SFTP client: ",extract_request), "")
+
+|alter 
+    xdm.source.user.username = extract_user_name,
+    xdm.source.ipv4 = extract_ip_address_v4,
+    xdm.source.ipv6 = extract_ip_address_v6,
+    xdm.intermediate.host.hostname = extract_vpn,
+    xdm.event.outcome_reason = extract_failed_Reason,
+    xdm.event.outcome = if(check_outcome_by_brief ~= "FAIL" or (check_outcome_by_brief = "SFTP_REQ_RECORD" and extract_result ~="Failure") , XDM_CONST.OUTCOME_FAILED,check_outcome_by_brief = "CMDRECORD", XDM_CONST.OUTCOME_UNKNOWN,XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.description = concat(create_description, ".",add_description_by_event ),
+    xdm.source.sent_bytes = if(extract_action_type ~= "[D|d]ownload", extract_transfer_length, 0),
+    xdm.target.sent_bytes = if(extract_action_type ~= "[U|u]pload", extract_transfer_length, 0),
+    xdm.target.file.filename = extract_file_name,
+    xdm.event.operation_sub_type = extract_action_type;
+
+
+
+call header_fields
+|filter _raw_log ~= "PAF/4/READLCSFAIL" or _raw_log ~= "PAF/4/READPAFFAIL"
+|alter 
+    check_outcome_by_brief = parsed_fields_headers ->log_brief,
+    extract_error_code = arrayindex(regextract(parsed_fields_description ,"ErrorCode=\s?(\d+)"),0)
+
+|alter 
+    xdm.event.description = arrayindex(split(parsed_fields_description,"."),0),
+    xdm.event.outcome_reason = if(extract_error_code ~= "2","Handle is invalid", extract_error_code ~= "3","Pointer is invalid", extract_error_code ~= "4","Incorrect opening type", extract_error_code ~= "5","Incorrect parameter", extract_error_code),
+    xdm.event.outcome = if(check_outcome_by_brief ~= "FAIL", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN);
+
+
+
+call header_fields
+|filter _raw_log ~= "PAF/5/WRITE_LCS_FAIL" or _raw_log ~= "PAF/5/WRITE_PAF_FAIL" or _raw_log ~=  "PAF/6/LCS_NOT_SAME" or _raw_log ~=  "PAF/6/PAF_NOT_SAME"
+| alter 
+    xdm.event.description = parsed_fields_description,
+    xdm.event.outcome = if(_raw_log ~= "FAIL", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.event.outcome_reason = parsed_fields_description;
+
+
+
+// SYSTEM
+call header_fields
+|filter _raw_log ~= "SYSTEM\/"
+| alter check_brief = parsed_fields_headers ->log_brief
+|alter 
+    extract_id = arrayindex(regextract(parsed_fields_description ,"id=(\S+)"),0),
+    extract_fw = arrayindex(regextract(parsed_fields_description ,"fw=(\S+)"),0),
+    extract_vsys = arrayindex(regextract(parsed_fields_description ,"vsys=(\S+)"),0),
+    extract_user = arrayindex(regextract(parsed_fields_description ,"user=\"(\S+)\""),0),
+    extract_src_ipv4 = arrayindex(regextract(parsed_fields_description ,"src=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    extract_src_ipv6 = arrayindex(regextract(parsed_fields_description ,"src=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"),0),
+    extract_service = arrayindex(regextract(parsed_fields_description ,"service=(.*)\smsg="),0),
+    extract_msg = arrayindex(regextract(parsed_fields_description ,"msg=\"(.*)\""),0)
+
+|alter 
+    extract_global_ipv4 = arrayindex(regextract(extract_msg , "as (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    extract_global_ipv6 = arrayindex(regextract(extract_msg , "as ((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+    extract_virtual_gw_ipv4 = arrayindex(regextract(extract_msg , "IP address (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
+    extract_virtual_gw_ipv6 = arrayindex(regextract(extract_msg , "IP address ((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+    convert_service_type = if(extract_service = "1", "network extension service log",extract_service = "2", "file sharing service log",extract_service = "3", "port forwarding service log",extract_service = "4", "Web proxy service log",extract_service = "5", "user session log of this time",extract_service = "6", "virtual gateway management log",extract_service = "7", "system management log",extract_service = "11", "host ID log", extract_service )
+
+|alter 
+    xdm.event.description = if(check_brief ~= "VGADDGLOBALIP",concat(extract_msg, " Service Type: ", convert_service_type), parsed_fields_description ),
+    xdm.source.host.hostname = extract_fw,
+    xdm.intermediate.host.device_id = extract_id,
+    xdm.intermediate.host.hostname = extract_vsys,
+    xdm.source.user.username = extract_user,
+    xdm.source.ipv4 = extract_src_ipv4,
+    xdm.source.ipv6 = extract_src_ipv6,
+    xdm.intermediate.host.ipv4_addresses = arraycreate(extract_virtual_gw_ipv4),
+    xdm.intermediate.host.ipv6_addresses = arraycreate(extract_virtual_gw_ipv6),
+    xdm.intermediate.host.ipv4_public_addresses = arraycreate(extract_global_ipv4),
+    xdm.intermediate.host.ipv6_public_addresses = arraycreate(extract_global_ipv6),
+    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
+
+
+
+call header_fields
+|filter _raw_log ~= "FWLCNS/\d/ACTIVATION"
+|alter 
+    extract_access_type = rtrim(arrayindex(regextract(parsed_fields_description ,"AccessType=(\S+)"),0),"\,"),
+    extract_ipv4 = arrayindex(regextract(parsed_fields_description ,"Ip=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    extract_ipv6 = arrayindex(regextract(parsed_fields_description ,"Ip=((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"),0),
+    extract_username = rtrim(arrayindex(regextract(parsed_fields_description ,"UserName=(\S+)"),0),"\)")
+
+|alter 
+    xdm.source.ipv4 = extract_ipv4,
+    xdm.source.ipv6 = extract_ipv6,
+    xdm.source.user.username = extract_username,
+    xdm.event.outcome = if(parsed_fields_headers ->log_brief = "ACTIVATION", XDM_CONST.OUTCOME_SUCCESS, parsed_fields_headers ->log_brief = "ACTIVATIONFAIL", XDM_CONST.OUTCOME_FAILED),
+    xdm.event.description = concat(parsed_fields_description , ", Type of logins: ", extract_access_type );
+
+
+// informational logs
+/*
+PAF/5/WRITE_LCS_FAIL, PAF/5/WRITE_PAF_FAIL, PAF/6/LCS_NOT_SAME, PAF/6/PAF_NOT_SAME, SSH/4/CMD_USERCHOICE, SSH/4/CONTINUE_KEYEXCHANGE, SSH/4/OVERWRITE_FILE, SSH/4/RENAME_FILE, SSH/4/SAVE_PUBLICKEY, SSH/4/SAVEAS_PUBLICKEY, SSH/4/STELNET_SERVER, SSH/4/UPDATE_PUBLICKEY, SYSTEM/4/ECCLMCALARM, TFTP/4/OVERWRITE, VOSCPU/4/CPU_USAGE_RESUME, VOSMEM/4/MEM_IO_USAGE_RESUME, VOSMEM/4/MEM_MAIN_USAGE_RESUME, FWLCNS/1/EXPIRED, FWLCNS/1/TRIAL, FWLCNS/1/TRIALFINISH, FWLCNS/1/TRIALWILLFINISH, FWLCNS/1/WILLEXPIRE, FWLCNS/4/EMERGNO, FWLCNS/4/EMERGOVER, FWLCNS/4/EMERGSTART, FWLCNS/4/EMERGYES, FWLCNS/4/LCSEMERG, SNMPMAC/4/LOG,SNMPMAC/4/SNMP_LOG_ARPSYNC_FULL
+*/
+call header_fields
+|filter _raw_log not contains "=" and _raw_log not in ("*PAF/5/WRITE_LCS_FAIL*", "*PAF/5/WRITE_PAF_FAIL*", "*PAF/6/LCS_NOT_SAME*","*PAF/6/PAF_NOT_SAME*") or _raw_log ~= "VOSMEM/4/MEM" or _raw_log ~= "VOSCPU/4/CPU_USAGE_HIGH"
+| alter 
+    xdm.event.description = parsed_fields_description;

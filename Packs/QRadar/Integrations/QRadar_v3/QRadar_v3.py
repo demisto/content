@@ -1422,6 +1422,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     """
     Receives list of outputs, and performs API call to QRadar service to retrieve the domain names
     matching the domain IDs of the outputs.
+    Includes retry logic and enhanced logging for better reliability.
     Args:
         client (Client): Client to perform the API request to QRadar.
         outputs (List[Dict]): List of all of the offenses.
@@ -1429,15 +1430,56 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     Returns:
         (Dict): Dictionary of {domain_id: domain_name}
     """
-    try:
-        domain_ids = {offense.get("domain_id") for offense in outputs if offense.get("domain_id") is not None}
-        if not domain_ids:
-            return {}
-        domains_info = client.domains_list(filter_=f"""id in ({','.join(map(str, domain_ids))})""", fields="id,name")
-        return {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
-    except Exception as e:
-        demisto.error(f"Encountered an issue while getting offense domain names: {e}")
+    domain_ids = {offense.get("domain_id") for offense in outputs if offense.get("domain_id") is not None}
+    if not domain_ids:
+        demisto.debug("No domain IDs found in outputs for domain name enrichment")
         return {}
+
+    domain_ids_str = ",".join(map(str, domain_ids))
+    demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
+
+    # Retry logic with exponential backoff
+    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
+    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
+
+    last_exception = None
+    # NOTE: Retry logic is essential here to prevent silent failures in domain name resolution.
+    # Without retries, API call failures result in empty dict return, causing domain IDs (e.g., "6")
+    # to be displayed instead of domain names (e.g., "ABC") in the "Domain - Offense" field.
+    for attempt in range(max_retries):
+        try:
+            demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
+            domains_info = client.domains_list(filter_=f"""id in ({domain_ids_str})""", fields="id,name")
+
+            if domains_info:
+                domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
+                demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
+                return domain_mapping
+            else:
+                demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
+                return {}
+
+        except Exception as e:
+            last_exception = e
+            attempt_msg = f"Domain name resolution attempt {attempt + 1}/{max_retries} failed"
+
+            if attempt < max_retries - 1:
+                # Calculate delay with exponential backoff
+                delay = base_delay * (2**attempt)
+                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
+
+    # If we reach here, all retries failed
+    error_msg = f"Failed to resolve domain names after {max_retries} attempts for domain IDs: {domain_ids_str}"
+    if last_exception:
+        error_msg += f". Last error: {str(last_exception)}"
+
+    demisto.error(error_msg)
+    demisto.info("Falling back to using domain IDs instead of domain names for affected offenses")
+
+    return {}
 
 
 def get_rules_names(client: Client, offenses: List[dict]) -> dict:

@@ -1,10 +1,12 @@
 from collections.abc import Callable
+from itertools import zip_longest
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from requests import Response
+from urllib.parse import urlparse, urlunparse
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -53,6 +55,8 @@ SUBMISSION_PARAMETERS = (
     "environment_variable",
 )
 
+IN_PROGRESS_STATES = ["IN_PROGRESS", "RUNNING"]
+
 
 class Client(BaseClient):
     def get_environments(self) -> List[dict]:
@@ -65,9 +69,8 @@ class Client(BaseClient):
         self._headers["Content-Type"] = "application/x-www-form-urlencoded"
         return self._http_request(method="POST", url_suffix="/search/terms", data=query_args)
 
-    def scan(self, files: List[str]) -> List[dict[str, Any]]:
-        self._headers["Content-Type"] = "application/x-www-form-urlencoded"
-        return self._http_request(method="POST", url_suffix="/search/hashes", data={"hashes[]": files})
+    def scan(self, file: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=f"/report/{file}/summary")
 
     def analysis_overview(self, sha256hash: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/overview/{sha256hash}")
@@ -158,6 +161,31 @@ def get_api_id(args: dict[str, Any]) -> str:
         return args["JobID"]
     else:
         raise ValueError("Must supply JobID or environmentID and file")
+
+
+def get_scan_keys(args: dict[str, Any]) -> List[str]:
+    """
+    Extracts scan keys from the provided arguments.
+
+    Args:
+        args (dict[str, Any]): Dictionary containing scan parameters
+            - file: Comma-separated list of file hashes
+            - environmentId/environmentID: Comma-separated list of environment IDs
+            - JobID: Comma-separated list of job IDs
+
+    Returns:
+        List[str]: List of API IDs constructed from the parameters
+    """
+    files = argToList(args.get("file", []))
+    env_ids = argToList(args.get("environmentId", []) or args.get("environmentID", []))
+    job_ids = argToList(args.get("JobID", []))
+
+    if (files and env_ids) and (len(files) != len(env_ids)):
+        raise ValueError("When using files and environment IDs, they must be of the same length.")
+    keys = []
+    for f, e, j in zip_longest(files, env_ids, job_ids):
+        keys.append(get_api_id({"file": f, "environmentId": e, "JobID": j}))
+    return keys
 
 
 def test_module(client: Client, _) -> str:
@@ -280,7 +308,7 @@ def submission_response(client, response, polling) -> List[CommandResults]:
         return [submission_res]
     else:
         return_results(submission_res)  # return early
-    return crowdstrike_scan_command({"file": response.get("sha256"), "JobID": response.get("job_id"), "polling": True}, client)
+    return crowdstrike_scan_command({"JobID": response.get("job_id"), "polling": True}, client)
 
 
 def crowdstrike_submit_url_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
@@ -397,8 +425,10 @@ def crowdstrike_search_command(client: Client, args: dict[str, Any]) -> List[Com
 
 @polling_function("cs-falcon-sandbox-scan")
 def crowdstrike_scan_command(args: dict[str, Any], client: Client):
-    hashes = args["file"].split(",")
-    scan_response = client.scan(hashes)
+    scan_response = []
+    scan_keys = get_scan_keys(args)
+    for key in scan_keys:
+        scan_response.append(client.scan(key))
 
     def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(
@@ -432,6 +462,8 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
             ),
         )
 
+    continue_to_poll = any(res["state"] in IN_PROGRESS_STATES for res in scan_response)
+
     command_result = [
         CommandResults(
             outputs_prefix="CrowdStrike.Report",
@@ -439,18 +471,10 @@ def crowdstrike_scan_command(args: dict[str, Any], client: Client):
             outputs=scan_response,
             readable_output=f"Scan returned {len(scan_response)} results",
         ),
-        *[file_with_bwc_fields(res) for res in scan_response],
+        *[file_with_bwc_fields(res) for res in scan_response if not continue_to_poll],
     ]
-    if len(scan_response) != 0:
-        return PollResult(command_result)
-    try:
-        if len(hashes) == 1:
-            key = get_api_id(args)
-            demisto.debug(f"key found for poll state: {key}")
-            return PollResult(continue_to_poll=lambda: not has_error_state(client, key), response=command_result)
-    except ValueError:
-        demisto.debug(f"Cannot get a key to check state for {hashes}")
-    return PollResult(continue_to_poll=True, response=command_result)
+
+    return PollResult(continue_to_poll=continue_to_poll, response=command_result)
 
 
 def crowdstrike_analysis_overview_summary_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -590,9 +614,13 @@ def main() -> None:
 
     verify_certificate = not params.get("insecure", False)
     server_url = params.get("serverUrl", "") + "/api/v2"
-
     proxy = params.get("proxy", False)
 
+    parsed_url = urlparse(server_url)
+    if parsed_url.hostname == "www.hybrid-analysis.com":
+        # Replace hostname and reconstruct the URL
+        parsed_url = parsed_url._replace(netloc="hybrid-analysis.com")
+        server_url = urlunparse(parsed_url)
     demisto_command = demisto.command()
     demisto.debug(f"Command being called is {demisto_command}")
     try:
