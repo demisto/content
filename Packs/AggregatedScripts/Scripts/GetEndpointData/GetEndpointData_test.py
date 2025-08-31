@@ -355,12 +355,19 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
-    endpoint_mapping = {"id2": {"ID": "id2", "Hostname": "host2", "Message": "Command successful", "Brand": Brands.CORTEX_CORE_IR}}
+    endpoint_mapping = {
+        "id2": {"ID": "id2", "Hostname": "host2", "Message": "Command successful", "Brand": Brands.CORTEX_CORE_IR}
+    }
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1"), ("id2", "192.168.1.2", "host2")]
     single_args_commands = [
-        Command(brand=Brands.ACTIVE_DIRECTORY_QUERY_V2, name="test-command-1", output_keys=[], args_mapping={"id": "endpoint_id"},
-                output_mapping={}),
+        Command(
+            brand=Brands.ACTIVE_DIRECTORY_QUERY_V2,
+            name="test-command-1",
+            output_keys=[],
+            args_mapping={"id": "endpoint_id"},
+            output_mapping={},
+        ),
         Command(
             brand=Brands.CORTEX_CORE_IR,
             name="test-command-2",
@@ -383,8 +390,16 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
         ),  # First command, second endpoint
         (
             ["Readable output 4"],
-            [{"ID": "id2", "Status": "Active", "Hostname": "host2", "Message": "Command successful",
-              "Brand": Brands.CORTEX_CORE_IR, "RiskLevel": "Medium"}],
+            [
+                {
+                    "ID": "id2",
+                    "Status": "Active",
+                    "Hostname": "host2",
+                    "Message": "Command successful",
+                    "Brand": Brands.CORTEX_CORE_IR,
+                    "RiskLevel": "Medium",
+                }
+            ],
         ),  # Second command, second endpoint
     ]
 
@@ -418,13 +433,13 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     expected_command_results = ["Readable output 1", "Readable output 2", "Readable output 3", "Readable output 4"]
 
     expected_endpoint_mapping = {
-            "id2": {
-                "ID": "id2",
-                "Hostname": "host2",
-                "Message": "Command successful",
-                "Brand": Brands.CORTEX_CORE_IR,
-                "RiskLevel": "Medium"
-            }
+        "id2": {
+            "ID": "id2",
+            "Hostname": "host2",
+            "Message": "Command successful",
+            "Brand": Brands.CORTEX_CORE_IR,
+            "RiskLevel": "Medium",
+        }
     }
 
     assert endpoint_mapping == expected_endpoint_mapping

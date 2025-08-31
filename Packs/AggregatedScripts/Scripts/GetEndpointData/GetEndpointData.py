@@ -955,6 +955,20 @@ def entry_context_to_endpoints(command: Command, entry_context: list, add_additi
     return endpoints
 
 
+def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
+    """
+    Adds endpoints to the endpoint mapping.
+    Args:
+        endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
+        ir_mapping (dict[str, Any]): A dictionary mapping endpoints for core/xdr IR.
+    """
+    for endpoint in endpoints:
+        if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
+            demisto.debug(f"skipping endpoint due to failure: {endpoint}")
+            continue
+        ir_mapping[endpoint["ID"]] = endpoint
+
+
 def get_extended_hostnames_set(Ir_endpoints: dict[str, Any]) -> set[str]:
     """
     Retrieves a set of extended hostnames from the endpoint mappings.
@@ -1075,28 +1089,12 @@ def create_using_brand_argument_to_generic_command(brands_to_run: list, generic_
     generic_command.create_additional_args({"using-brand": joined_brands})
 
 
-def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
-    """
-    Adds endpoints to the endpoint mapping.
-    Args:
-        endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
-        endpoint_mapping (dict[str, Any]): A dictionary of endpoint mappings.
-        main_key (str): The main key to use for the endpoint mapping.
-    """
-    for endpoint in endpoints:
-        if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
-            demisto.debug(f"skipping endpoint due to failure: {endpoint}")
-            continue
-        ir_mapping[endpoint["ID"]] = endpoint
-
-
 def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[str, Any]):
     """
     Adds endpoints to the endpoint mapping.
     Args:
         endpoints (list[dict[str, Any]]): A list of endpoint dictionaries.
-        endpoint_mapping (dict[str, Any]): A dictionary of endpoint mappings.
-        main_key (str): The main key to use for the endpoint mapping.
+        ir_mapping (dict[str, Any]): A dictionary mapping endpoints for core/xdr IR.
     """
     for endpoint in endpoints:
         if COMMAND_SUCCESS_MSG not in endpoint.get("Message", ""):
