@@ -2,6 +2,10 @@
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
 const PLAYBOOK_METADATA = 'playbook_metadata';
 const INTEGRATION_NAME = 'CoreRESTAPI';
+const xsoar_hosted = ['xsoar', 'xsoar_hosted']
+const platform_hosted = ['x2', 'unified_platform']
+// Default timeout for HTTP requests (3 minutes in milliseconds)
+const default_timeout = 3 * 60 * 1000;
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -12,7 +16,7 @@ if (serverURL.slice(-1) === '/') {
 isHosted = function () {
     res = getDemistoVersion();
     platform = res.platform;
-    if  (((platform === "xsoar" || platform === "xsoar_hosted") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
+    if  ((xsoar_hosted.includes(platform) && isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION)) || platform_hosted.includes(platform)) {
         return true
     }
     return false
@@ -176,7 +180,7 @@ var addPlaybookMetadataToRequest = function(body, command) {
 };
 
 
-var sendRequest = function(method, uri, body, raw) {
+var sendRequest = function(method, uri, body, raw, timeout = default_timeout) {
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
@@ -199,7 +203,6 @@ var sendRequest = function(method, uri, body, raw) {
         body = addPlaybookMetadataToRequest(body, command);
     }
 
-    timeout = 3 * 60 * 1000; // timeout in milliseconds
     logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
         requestUrl,
@@ -594,9 +597,21 @@ switch (command) {
         if(args.body)
             var body = JSON.parse(args.body);
         else
-            logDebug('The body is empty.')
+            logDebug('The body is empty.');
+        var timeout; // Declare timeout.
+        if (args.timeout) {
+            var parsedTimeout = parseInt(args.timeout);
+            if (!isNaN(parsedTimeout) && parsedTimeout >= 0) {
+                timeout = parsedTimeout * 60 * 1000; // timeout in milliseconds
+                logDebug('Timeout was set to ' + timeout + ' milliseconds.');
+            }
+        }
+        if (!timeout) {
+            timeout = default_timeout; // Default 3 minutes timeout
+            logDebug('Timeout was not provided or it is invalid. Will use the default 3 minutes timeout.');
+        }
 
-        return sendRequest('POST',args.uri, args.body);
+        return sendRequest('POST', args.uri, args.body, false, timeout);
     case 'demisto-api-get':
     case 'core-api-get':
         return sendRequest('GET',args.uri);

@@ -121,7 +121,7 @@ script:
       name: next_page_id
     - description: The DNS view in which the records are located. For example 'External'. By default, the 'default' DNS view is searched.
       name: view
-    description: Lists all response policy rules that belong to the.g.,ven response policy zone.
+    description: Lists all response policy rules that belong to the given response policy zone.
     name: infoblox-list-response-policy-zone-rules
     outputs:
     - contextPath: Infoblox.ResponsePolicyZoneRulesList.Name

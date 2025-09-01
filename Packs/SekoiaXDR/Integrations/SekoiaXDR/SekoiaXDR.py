@@ -242,9 +242,13 @@ class Client(BaseClient):
     def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
 
-    def http_request(self, method: str, url_suffix: str, params: dict) -> dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict, data: dict) -> dict[str, Any]:
         if not params:
             params = {}
+
+        if data and method in ["POST", "PUT", "PATCH"]:
+            # If data is provided, we use json_data to send it as JSON
+            return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=data)
 
         return self._http_request(method=method, url_suffix=url_suffix, params=params)
 
@@ -525,7 +529,8 @@ def handle_alert_events_query(
         # If it's finished, get the events
         # This case is rare but can happen if the fetch is too fast
         events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-        alert["events"] = events
+        undoted_events = undot(json_data=events)
+        alert["events"] = undoted_events
 
     return alert
 
@@ -615,7 +620,8 @@ def fetch_incidents(
                         continue
 
                     events = client.retrieve_events(event_search_job_uuid=incident_job_uuid)
-                    incident["rawJSON"]["events"] = events
+                    undoted_events = undot(json_data=events)
+                    incident["rawJSON"]["events"] = undoted_events
                     # Serialize the rawJSON to a string
                     incident["rawJSON"] = json.dumps(incident["rawJSON"])
                     incidents.append(incident)
@@ -905,7 +911,8 @@ def get_remote_data_command(
 
             # If the alert is finished, we will get the events
             events = client.retrieve_events(event_search_job_uuid=alert_job_uuid)
-            alert_object["alert"]["events"] = events
+            undoted_events = undot(json_data=events)
+            alert_object["alert"]["events"] = undoted_events
 
             # Delete the object from the context
             del context_cache["mirroring_cache"][index]
@@ -1410,13 +1417,14 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
-    method, url_sufix, params = (
+    method, url_suffix, params, data = (
         args["method"],
         args["url_sufix"],
         args.get("parameters", {}),
+        args.get("data", {}),
     )
 
-    request = client.http_request(method=method, params=params, url_suffix=url_sufix)
+    request = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
     readable_output = tableToMarkdown(
         f"The HTTP {method} request with params {params} returned the following information:",
         request["items"] if request["items"] else request,

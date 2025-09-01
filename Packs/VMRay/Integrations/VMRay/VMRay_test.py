@@ -128,7 +128,7 @@ def test_dbot_score_by_hash():
             "Reliability": "C - Fairly reliable",
             "Score": None,
             "Type": "hash",
-            "Vendor": "VMRay",
+            "Vendor": "vmray",
         }
     ]
 
@@ -289,3 +289,47 @@ def test_http_request_rate_limit_exceeded(mocker, mock_http_request):
 
     # Assert expected behavior in the error message
     assert "Rate limit exceeded" in error_mock.call_args[0][0]
+
+
+def test_get_pdf_report_command(requests_mock, mocker):
+    """Test get-pdf-report command"""
+    from VMRay import main
+
+    raw_pdf_report = (
+        b"%PDF-1.0"
+        b"1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj"
+        b"2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj"
+        b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]>>endobj"
+        b"xref"
+        b"0 4"
+        b"0000000000 65535 f "
+        b"0000000009 00000 n "
+        b"0000000052 00000 n "
+        b"0000000103 00000 n "
+        b"trailer"
+        b"<</Size 4/Root 1 0 R>>"
+        b"startxref"
+        b"170"
+        b"%%EOF"
+    )
+    file_result_return_value = {
+        "Contents": b"",
+        "File": "123_report.pdf",
+        "FileID": "00000000-0000-0000-0000-000000000000",
+        "Type": EntryType.ENTRY_INFO_FILE,
+    }
+
+    mocker.patch.object(demisto, "args", return_value={"sample_id": "123"})
+    mocker.patch.object(demisto, "command", return_value="vmray-get-pdf-report")
+    mocker.patch("VMRay.get_pdf_report", return_value=raw_pdf_report)
+    return_results_mock = mocker.patch("VMRay.return_results")
+    file_result_mock = mocker.patch("VMRay.fileResult", return_value=file_result_return_value)
+
+    main()
+
+    file_result_mock.assert_called_once_with(
+        filename="123_report.pdf",
+        data=raw_pdf_report,
+        file_type=EntryType.ENTRY_INFO_FILE,
+    )
+    return_results_mock.assert_called_once_with(file_result_return_value)

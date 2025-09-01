@@ -6,6 +6,7 @@ from json import JSONDecodeError
 from typing import Any
 
 import urllib3
+import jwt
 from CommonServerPython import *
 from dateutil.parser import parse
 from MicrosoftApiModule import *  # noqa: E402
@@ -2310,6 +2311,16 @@ class MsClient:
             params["$filter"] = filter_req
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
+    def get_decoded_token(self) -> dict:
+        """Retrieves the decoded JWT that contains auth information (including permissions).
+
+        Returns:
+            dict: Decoded JWT information.
+        """
+        access_token = self.ms_client.get_access_token()
+        # Verifying signature is not needed here since there is no integration logic that depends on the access permissions
+        return jwt.decode(access_token, options={"verify_signature": False})
+
 
 """ Commands """
 
@@ -3360,6 +3371,27 @@ def request_download_investigation_package_command(client: MsClient, args: dict)
 
 def generate_login_url_command(client: MsClient):
     return generate_login_url(client.ms_client, MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS[client.endpoint_type])
+
+
+def list_auth_permissions_command(client: MsClient) -> CommandResults:
+    """Lists the auth permissions using the decoded JWT.
+
+    Args:
+        client (MsClient): Client to access Microsoft Defender Advanced Threat Protection (ATP) API.
+
+    Raises:
+        TypeError: If the decoded JWT is not a dictionary.
+
+    Returns:
+        CommandResults: Command results containing human-readable output.
+    """
+    decoded_token = client.get_decoded_token()
+    if not isinstance(decoded_token, dict):
+        raise TypeError(f"Expected decoded token dict. Got type: {type(decoded_token).__name__}.")
+
+    permissions = "\n".join(sorted(decoded_token.get("roles", [])))
+    human_readable = f"### Permissions\n{permissions}"
+    return CommandResults(readable_output=human_readable)
 
 
 def download_file_after_successful_status(client, res):
@@ -6383,6 +6415,8 @@ def main():  # pragma: no cover
             return_results(generate_login_url_command(client))
         elif command == "microsoft-atp-auth-reset":
             return_results(reset_auth())
+        elif command == "microsoft-atp-list-auth-permissions":
+            return_results(list_auth_permissions_command(client))
 
     except Exception as err:
         # TODO Following the CIAC-12304 ticket, many commands, including fetch incidents, are deprecated.

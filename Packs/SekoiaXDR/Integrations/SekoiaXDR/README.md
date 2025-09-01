@@ -811,6 +811,7 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 | method | Method to use with the http request (GET,POST,etc). Default is GET. | Required |
 | url_sufix | The URL suffix after <https://api.sekoia.io>, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/. | Required |
 | parameters | Query parameters, i.e. limit -&gt; 10 , match['status_name'] -&gt; Ongoing. | Optional |
+| data | Body of the request | Optional |
 
 #### Context Output
 
