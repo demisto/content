@@ -1997,7 +1997,7 @@ script:
       type: string
     - contextPath: AWS.EC2.SecurityGroups.IpPermissionsEgress
       description: The outbound rules associated with the security group.
-      type: string
+      type: array
     - contextPath: AWS.EC2.SecurityGroups.VpcId
       description: The ID of the VPC for the security group.
       type: string

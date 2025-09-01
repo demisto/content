@@ -782,7 +782,7 @@ Describes the specified security groups or all of your security groups. Returns 
 | AWS.EC2.SecurityGroups.IpPermissions | unknown | The inbound rules associated with the security group. |
 | AWS.EC2.SecurityGroups.OwnerId | string | The AWS account ID of the owner of the security group. |
 | AWS.EC2.SecurityGroups.GroupId | string | The ID of the security group. |
-| AWS.EC2.SecurityGroups.IpPermissionsEgress | string | The outbound rules associated with the security group. |
+| AWS.EC2.SecurityGroups.IpPermissionsEgress | array | The outbound rules associated with the security group. |
 | AWS.EC2.SecurityGroups.VpcId | string | The ID of the VPC for the security group. |
 | AWS.EC2.SecurityGroups.Tags.Key | string | The key of the tag. |
 | AWS.EC2.SecurityGroups.Tags.Value | string | The value of the tag. |
