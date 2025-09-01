@@ -1,0 +1,54 @@
+{
+    "data": [
+        {
+            "action": "modify",
+            "application": "app",
+            "category": "security_events",
+            "description": "Security Events: resolved",
+            "id": 1,
+            "rbac_id": "dummy_rbac_id",
+            "timestamp": "2025-08-14T06:23:47.723135",
+            "type": "user",
+            "user_info": "dummy_user_info",
+            "username": "dummy_username@dummy_org.com"
+        },
+        {
+            "action": "modify",
+            "application": "app",
+            "category": "users_events",
+            "description": "Users Events: resolved",
+            "id": 2,
+            "rbac_id": "dummy_rbac_id",
+            "timestamp": "2025-08-14T06:24:47.723135",
+            "type": "user",
+            "user_info": "dummy_user_info",
+            "username": "dummy_username@dummy_org.com"
+        },
+        {
+            "action": "modify",
+            "application": "app",
+            "category": "users_events",
+            "description": "Users Events: Resolved",
+            "id": 3,
+            "rbac_id": "dummy_rbac_id",
+            "timestamp": "2025-08-14T06:25:47.723135",
+            "type": "user",
+            "user_info": "dummy_user_info",
+            "username": "dummy_username@dummy_org.com"
+        },
+        {
+            "action": "create",
+            "application": "app",
+            "category": "admin_events",
+            "description": "Admin Events: Resolved",
+            "id": 4,
+            "rbac_id": "dummy_rbac_id",
+            "timestamp": "2025-08-14T06:26:47.723135",
+            "type": "user",
+            "user_info": "dummy_user_info",
+            "username": "dummy_username@dummy_org.com"
+        }
+    ],
+    "pagination": 1,
+    "total": 4
+}
