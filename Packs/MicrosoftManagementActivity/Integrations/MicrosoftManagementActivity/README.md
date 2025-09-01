@@ -49,6 +49,11 @@ There are two application authentication methods available:
 | Workloads to fetch | A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched. | False |
 | Operations to fetch | A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched. | False |
 
+## Fetch Alerts
+
+The **operations to fetch** parameter is case-sensitive. For example, `DlpRuleMatch` and `DLPRuleMatch` are treated as distinct operations that retrieve information from different workloads.
+For more information, see [Microsoft's technical blog](https://techcommunity.microsoft.com/blog/microsoftsentinelblog/ingest-office-365-dlp-events-into-azure-sentinel/1031820) and [Splunk portal article](https://splunk.my.site.com/customer/s/article/Email-data-model-was-not-populated-with-the-management-activity-logs-of-splunk-addon-for-o365).
+
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
