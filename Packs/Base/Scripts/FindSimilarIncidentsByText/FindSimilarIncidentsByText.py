@@ -6,7 +6,6 @@ from CommonServerPython import *
 
 INCIDENT_TEXT_FIELD = 'incident_text_for_tfidf'
 
-#comment
 def parse_datetime(datetime_str):
     return dateutil.parser.parse(datetime_str)
 

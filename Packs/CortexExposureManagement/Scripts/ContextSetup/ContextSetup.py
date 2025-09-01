@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# comment
 def context_setup(keys: list[str], vals: dict) -> list[dict[str, str]]:
     """Prepares key/value mapping to prepare input into XSOAR context
     :type keys: list[str]

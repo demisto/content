@@ -6,7 +6,6 @@ from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-#comment
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
