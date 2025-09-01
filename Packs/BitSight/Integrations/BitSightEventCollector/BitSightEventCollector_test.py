@@ -176,7 +176,7 @@ class TestBitSightEventCollector:
 
         When: Resolving company GUID
 
-        Then: Should call API and return myCompany.guid
+        Then: Should call API and return my_company.guid
         """
         mocker.patch.object(mock_client, "get_companies_guid", return_value=sample_companies_response)
 
@@ -192,7 +192,7 @@ class TestBitSightEventCollector:
 
         Then: Should raise ValueError
         """
-        mocker.patch.object(mock_client, "get_companies_guid", return_value={"myCompany": None})
+        mocker.patch.object(mock_client, "get_companies_guid", return_value={"my_company": None})
 
         with pytest.raises(ValueError, match="Company GUID is required"):
             resolve_guid(mock_client, None, None)
@@ -408,7 +408,7 @@ class TestBitSightEventCollector:
 
         Then: Should return "ok" after successful API calls
         """
-        mocker.patch.object(mock_client, "get_companies_guid", return_value={"myCompany": {"guid": "test"}})
+        mocker.patch.object(mock_client, "get_companies_guid", return_value={"my_company": {"guid": "test"}})
         mocker.patch.object(mock_client, "get_company_findings", return_value={"results": []})
 
         from BitSightEventCollector import test_module
