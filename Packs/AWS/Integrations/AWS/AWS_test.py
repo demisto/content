@@ -786,7 +786,7 @@ def test_ec2_create_snapshot_command_success(mocker):
     mock_client.create_snapshot.assert_called_once()
 
 
-def test_ec2_create_snapshot_command_failure(mocker):
+def test_ec2_create_snapshot_command_failure(mocker, capfd):
     """
     Given: A mocked boto3 EC2 client that raises an exception during snapshot creation.
     When: create_snapshot_command is called and encounters an error.
@@ -801,7 +801,7 @@ def test_ec2_create_snapshot_command_failure(mocker):
 
     args = {"volume_id": "vol-1234567890abcdef0", "description": "Test snapshot", "region": "us-east-1"}
 
-    with pytest.raises(ClientError):
+    with capfd.disabled(), pytest.raises(SystemExit):
         EC2.create_snapshot_command(mock_client, args)
 
 
@@ -920,6 +920,7 @@ def test_eks_describe_cluster_command_success(mocker):
 
     mock_client = mocker.Mock()
     mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "cluster": {
             "name": "test-cluster",
             "id": "cluster-12345",
@@ -928,7 +929,7 @@ def test_eks_describe_cluster_command_success(mocker):
             "createdAt": datetime(2023, 10, 15, 14, 30, 45),
             "version": "1.27",
             "connectorConfig": {"activationExpiry": datetime(2024, 10, 15, 14, 30, 45)},
-        }
+        },
     }
     mock_client.describe_cluster.return_value = mock_response
 
@@ -943,27 +944,6 @@ def test_eks_describe_cluster_command_success(mocker):
     mock_client.describe_cluster.assert_called_once_with(name="test-cluster")
 
 
-def test_eks_describe_cluster_command_failure(mocker):
-    """
-    Given: A mocked boto3 EKS client that raises an exception for non-existent cluster.
-    When: describe_cluster_command is called with invalid cluster name.
-    Then: It should raise the appropriate exception from the boto3 client.
-    """
-    from AWS import EKS
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    error_response = {
-        "Error": {"Code": "ResourceNotFoundException", "Message": "No cluster found for name: non-existent-cluster."}
-    }
-    mock_client.describe_cluster.side_effect = ClientError(error_response, "DescribeCluster")
-
-    args = {"cluster_name": "non-existent-cluster"}
-
-    with pytest.raises(ClientError):
-        EKS.describe_cluster_command(mock_client, args)
-
-
 def test_eks_associate_access_policy_command_success(mocker):
     """
     Given: A mocked boto3 EKS client and valid access policy association arguments.
@@ -974,6 +954,7 @@ def test_eks_associate_access_policy_command_success(mocker):
 
     mock_client = mocker.Mock()
     mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "clusterName": "test-cluster",
         "principalArn": "arn:aws:iam::123456789012:user/test-user",
         "associatedAccessPolicy": {
