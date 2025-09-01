@@ -11,6 +11,7 @@ configuration:
   type: 0
   required: true
   defaultvalue: https://api.silentpush.com
+  section: Connect
 - display: API Key
   hiddenusername: true
   displaypassword: API Key
@@ -22,10 +23,12 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   commands:
   - deprecated: false
@@ -69,22 +72,22 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.AddFeed.name
+    - contextPath: SilentPush.Feed.name
       description: The name of the feed.
       type: String
-    - contextPath: SilentPush.AddFeed.type
+    - contextPath: SilentPush.Feed.type
       description: The type of the feed.
       type: String
-    - contextPath: SilentPush.AddFeed.vendor
+    - contextPath: SilentPush.Feed.vendor
       description: The vendor of the feed.
       type: String
-    - contextPath: SilentPush.AddFeed.feed_description
+    - contextPath: SilentPush.Feed.feed_description
       description: A description of the feed.
       type: String
-    - contextPath: SilentPush.AddFeed.category
+    - contextPath: SilentPush.Feed.category
       description: The category of the feed.
       type: String
-    - contextPath: SilentPush.AddFeed.tags
+    - contextPath: SilentPush.Feed.tags
       description: Tags associated with the feed.
       type: Unknown
   - deprecated: false
@@ -94,13 +97,13 @@ script:
     - name: feed_uuid
       isArray: false
       description: Never return query metadata, even if original request did include metadata.
-      required: false
+      required: true
       secret: false
       default: false
     - name: tags
       isArray: false
       description: Comma separated tags to be updated to the feed.
-      required: false
+      required: true
       secret: false
       default: false
     outputs:
@@ -2741,7 +2744,7 @@ script:
   runonce: false
   longRunning: false
   longRunningPort: false
-fromversion: 6.1.0
+fromversion: 6.10.0
 sectionorder:
   - Connect
   - Collect

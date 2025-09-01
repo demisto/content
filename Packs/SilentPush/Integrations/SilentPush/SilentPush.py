@@ -4139,7 +4139,7 @@ def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResul
 @metadata_collector.command(
     command_name="silentpush-add-feed",
     inputs_list=ADD_FEED_INPUTS,
-    outputs_prefix="SilentPush.AddFeed",
+    outputs_prefix="SilentPush.Feed",
     outputs_list=ADD_FEED_OUTPUTS,
     description="This command add the new feed",
 )
@@ -4154,19 +4154,10 @@ def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | d
     Returns:
         CommandResults: JSON response of added feed.
     """
-
-    name = args.get("name")
-    if not name:
-        raise ValueError("Name is required")
-
-    feed_type = args.get("type")
-    if not feed_type:
-        raise ValueError("Type is required")
-
     result = client.add_feed(args)
 
     return CommandResults(
-        outputs_prefix="SilentPush.AddFeed",
+        outputs_prefix="SilentPush.Feed",
         outputs_key_field="name",
         outputs=result,
         readable_output=tableToMarkdown("SilentPush Add Feed", result),
@@ -4208,13 +4199,6 @@ def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResult
     Returns:
         CommandResults: JSON response of added tags.
     """
-    feed_uuid = args.get("feed_uuid")
-    if not feed_uuid:
-        raise ValueError("Feed UUID is required")
-
-    if not args.get("tags"):
-        raise ValueError("Tags name is required")
-
     result = client.add_feed_tags(args)
 
     return CommandResults(
@@ -4244,14 +4228,6 @@ def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: JSON response of added indicators.
     """
-    feed_uuid = args.get("feed_uuid")
-    if not feed_uuid:
-        raise ValueError("Feed UUID is required")
-
-    indicators = args.get("indicators")
-    if not indicators:
-        raise ValueError("Indicators is required")
-
     result = client.add_indicators(args)
 
     return CommandResults(
@@ -4281,17 +4257,6 @@ def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> Command
     Returns:
         CommandResults: JSON response of added indicator tags.
     """
-    feed_uuid = args.get("feed_uuid")
-    if not feed_uuid:
-        raise ValueError("Feed UUID is required")
-
-    indicator_name = args.get("indicator_name")
-    if not indicator_name:
-        raise ValueError("Indicator name is required")
-
-    if not args.get("tags"):
-        raise ValueError("The 'tags' argument is required and cannot be empty.")
-
     result = client.add_indicators_tags(args)
 
     return CommandResults(
@@ -4321,22 +4286,6 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
     Returns:
         CommandResults: JSON response of threat check.
     """
-    threat_type = args.get("type")
-    if not threat_type:
-        raise ValueError("Threat type is required")
-
-    data = args.get("data")
-    if not data:
-        raise ValueError("Data is required")
-
-    user_identifier = args.get("user_identifier")
-    if not user_identifier:
-        raise ValueError("User identifier is required")
-
-    query = args.get("query")
-    if not query:
-        raise ValueError("Query is required")
-
     result = client.run_threat_check(args)
 
     return CommandResults(
@@ -4369,10 +4318,6 @@ def get_data_exports_command(client: Client, args: dict[str, Any]) -> dict[str, 
     """
 
     feed_url = args.get("feed_url")
-
-    if not feed_url:
-        raise ValueError("Feed URL is required")
-
     response = client.get_data_exports(feed_url)
 
     # Check for errors
@@ -4383,7 +4328,9 @@ def get_data_exports_command(client: Client, args: dict[str, Any]) -> dict[str, 
     filename = feed_url.split("/")[-1] or "exported_data"
 
     # Return fileResult
-    return fileResult(filename, response.content)
+    file_entry = fileResult(filename, response.content, file_type=EntryType.ENTRY_INFO_FILE)
+    return file_entry
+    
 
 
 """ MAIN FUNCTION """
