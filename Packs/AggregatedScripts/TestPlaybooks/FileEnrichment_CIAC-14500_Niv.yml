@@ -1,5 +1,5 @@
 id: 4e2904f4-d3ee-41e1-8f77-d747914a9bd2
-version: 11
+version: 19
 vcShouldKeepItemLegacyProdMachine: false
 name: FileEnrichment_CIAC-14500_Niv
 starttaskid: "0"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 50
         }
       }
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 370
         }
       }
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 22b2cd6f-49c6-4a6b-86c6-892da7f2fb75
+    taskid: 1c35cf84-1f6e-42e7-a929-f9cf69f94a14
     type: regular
     task:
-      id: 22b2cd6f-49c6-4a6b-86c6-892da7f2fb75
+      id: 1c35cf84-1f6e-42e7-a929-f9cf69f94a14
       version: -1
       name: Create Hash 256
       description: |
@@ -92,7 +92,7 @@ tasks:
       - "9"
     scriptarguments:
       text:
-        simple: nivtest
+        simple: FileEnrichmentTest
       type:
         simple: sha256
     separatecontext: false
@@ -100,7 +100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 540
         }
       }
@@ -113,16 +113,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ed9aafcc-a986-4bd1-aafc-ab40992419d9
+    taskid: 02002637-60c8-4af2-9e53-cf879e5b571c
     type: regular
     task:
-      id: ed9aafcc-a986-4bd1-aafc-ab40992419d9
+      id: 02002637-60c8-4af2-9e53-cf879e5b571c
       version: -1
       name: 'File Enrichment '
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -131,6 +131,7 @@ tasks:
       - "4"
       - "12"
       - "13"
+      - "25"
     scriptarguments:
       file_hash:
         simple: ${CreateHash}
@@ -139,7 +140,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 880
         }
       }
@@ -152,10 +153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 387c1238-cdd4-42f8-9930-a3607d35b5be
+    taskid: b4165155-f0fd-4e63-9dd2-bd78cb680cb6
     type: condition
     task:
-      id: 387c1238-cdd4-42f8-9930-a3607d35b5be
+      id: b4165155-f0fd-4e63-9dd2-bd78cb680cb6
       version: -1
       name: |
         Verify Brand
@@ -170,7 +171,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: FileEnrichment.Brand
@@ -178,6 +179,14 @@ tasks:
           right:
             value:
               simple: WildFire-v2
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
     continueonerrortype: ""
     view: |-
       {
@@ -195,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b1f41a6a-9544-4ca0-b432-0c26d5abec97
+    taskid: 835e6d6e-2d43-4324-af2f-872202e00924
     type: regular
     task:
-      id: b1f41a6a-9544-4ca0-b432-0c26d5abec97
+      id: 835e6d6e-2d43-4324-af2f-872202e00924
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
@@ -213,6 +222,7 @@ tasks:
       - "15"
       - "16"
       - "17"
+      - "26"
     scriptarguments:
       brands:
         simple: VirusTotal (API v3)
@@ -223,7 +233,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 1550
         }
       }
@@ -236,29 +246,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 56248bc3-cc72-40de-87e5-f979181a99e4
+    taskid: c085acc4-455c-4513-bc36-07af15e9acad
     type: regular
     task:
-      id: 56248bc3-cc72-40de-87e5-f979181a99e4
+      id: c085acc4-455c-4513-bc36-07af15e9acad
       version: -1
-      name: Add to Tim
-      description: Retrieve results for a file hash using WildFire.
-      script: WildFire-v2|||file
+      name: Create Indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
-      brand: WildFire-v2
+      brand: Builtin
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      file:
+      type:
+        simple: File
+      value:
         simple: ${CreateHash}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 710
         }
       }
@@ -288,7 +300,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 1220
         }
       }
@@ -318,7 +330,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 210
         }
       }
@@ -331,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5c02bafc-58e2-41e3-a83a-8bd797a1d21a
+    taskid: df9a77f1-e3d5-4934-8896-a8ad8f89e79e
     type: condition
     task:
-      id: 5c02bafc-58e2-41e3-a83a-8bd797a1d21a
+      id: df9a77f1-e3d5-4934-8896-a8ad8f89e79e
       version: -1
       name: Validate Indicator
       type: condition
@@ -350,7 +362,43 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FileEnrichment.SHA256
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: SHA256
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CreateHash
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: SHA256
             iscontext: true
           right:
             value:
@@ -373,10 +421,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 59b704af-60bc-4e49-8375-af4de5620fd7
+    taskid: 130caf7a-3dc8-4307-a7fa-bb18dfabb331
     type: condition
     task:
-      id: 59b704af-60bc-4e49-8375-af4de5620fd7
+      id: 130caf7a-3dc8-4307-a7fa-bb18dfabb331
       version: -1
       name: Validate Score
       type: condition
@@ -392,7 +440,37 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: FileEnrichment.Score
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TIM
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileEnrichment
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: FileEnrichment.Brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                accessor: Score
             iscontext: true
           right:
             value:
@@ -414,10 +492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 6e4dcfc3-b74b-43fc-9e34-63969e7363dd
+    taskid: d60eab20-c34a-4c37-a7d5-e47fea3500eb
     type: regular
     task:
-      id: 6e4dcfc3-b74b-43fc-9e34-63969e7363dd
+      id: d60eab20-c34a-4c37-a7d5-e47fea3500eb
       version: -1
       name: DeleteContext
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -443,7 +521,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 1380
         }
       }
@@ -456,10 +534,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c90adb0c-9a12-47f3-bc90-bf310359fbf8
+    taskid: 9f256a2e-6d82-415c-a93f-9c7d5c3f0b0e
     type: condition
     task:
-      id: c90adb0c-9a12-47f3-bc90-bf310359fbf8
+      id: 9f256a2e-6d82-415c-a93f-9c7d5c3f0b0e
       version: -1
       name: |
         Verify Brand
@@ -474,7 +552,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: FileEnrichment.Brand
@@ -482,6 +560,14 @@ tasks:
           right:
             value:
               simple: VirusTotal (API v3)
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
     continueonerrortype: ""
     view: |-
       {
@@ -499,10 +585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 02d31602-ed8f-4291-b7d4-bb2a924bab6b
+    taskid: 8b59fca0-fe6b-4a01-8773-18700b485fee
     type: condition
     task:
-      id: 02d31602-ed8f-4291-b7d4-bb2a924bab6b
+      id: 8b59fca0-fe6b-4a01-8773-18700b485fee
       version: -1
       name: Validate Indicator
       type: condition
@@ -599,7 +685,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 1890
         }
       }
@@ -639,7 +725,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2050
         }
       }
@@ -652,10 +738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 638fe72e-52d6-4c2d-a527-503a10e56e66
+    taskid: 66c841e2-5fc8-400d-8529-3dc2441e28e5
     type: regular
     task:
-      id: 638fe72e-52d6-4c2d-a527-503a10e56e66
+      id: 66c841e2-5fc8-400d-8529-3dc2441e28e5
       version: -1
       name: Create Hash MD5
       description: |
@@ -669,7 +755,7 @@ tasks:
       - "21"
     scriptarguments:
       text:
-        simple: nivtest
+        simple: FileEnrichmentTest
       type:
         simple: md5
     separatecontext: false
@@ -677,7 +763,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2220
         }
       }
@@ -690,29 +776,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: e2a3c8ab-7d49-4212-83f6-f52f9c1f0315
+    taskid: fd6273a2-d74b-49ee-8ba3-119c5381f2f1
     type: regular
     task:
-      id: e2a3c8ab-7d49-4212-83f6-f52f9c1f0315
+      id: fd6273a2-d74b-49ee-8ba3-119c5381f2f1
       version: -1
-      name: Add to Tim
-      description: Checks the file reputation of the specified hash.
-      script: VirusTotal (API v3)|||file
+      name: Create Indicator MD5
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
-      brand: VirusTotal (API v3)
+      brand: Builtin
     nexttasks:
       '#none#':
       - "22"
     scriptarguments:
-      file:
+      type:
+        simple: File
+      value:
         simple: ${CreateHash}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2390
         }
       }
@@ -725,16 +813,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d5285e39-c41f-489f-ad41-5eb1b87ecf79
+    taskid: 6f6e62f5-90fa-42fa-99d9-631ca434133f
     type: regular
     task:
-      id: d5285e39-c41f-489f-ad41-5eb1b87ecf79
+      id: 6f6e62f5-90fa-42fa-99d9-631ca434133f
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -751,7 +839,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2560
         }
       }
@@ -804,7 +892,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2730
         }
       }
@@ -831,8 +919,97 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 170bbfc3-0314-4f8c-9962-76ae82a0cf3b
+    type: condition
+    task:
+      id: 170bbfc3-0314-4f8c-9962-76ae82a0cf3b
+      version: -1
+      name: DBotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: DBotScore
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: dbd3438d-b689-4c05-9024-72f1455ea967
+    type: condition
+    task:
+      id: dbd3438d-b689-4c05-9024-72f1455ea967
+      version: -1
+      name: DBotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: CreateHash
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1720
         }
       }
     note: false
@@ -848,7 +1025,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2910,
-        "width": 1240,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
