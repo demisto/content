@@ -300,7 +300,7 @@ def main():
         update_blocked_ip_zone(zone_id, zone_gateways, ip)
 
     except Exception as e:
-        return_error(f"Error blocking IP in Okta zone: {str(e)}")
+        return_error(f"Error blocking IP in Okta zone: {str(e)}", e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
