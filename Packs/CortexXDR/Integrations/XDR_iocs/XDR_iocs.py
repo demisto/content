@@ -211,21 +211,21 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
     search_after_array = None
     try:
         filter_fields = (
-            "value"
+            "value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields"
             if is_xsiam_or_xsoar_saas()
             else None
         )
+        demisto.debug(f"[IOC_FETCH] Filter fields: {filter_fields}")
         search_after = get_integration_context().get("search_after", None)
         for batch in IndicatorsSearcher(
             size=size,
             query=full_query,
             search_after=search_after,
             sort=[{"field": "modified", "asc": True}, {"field": "id", "asc": True}],
-            filter_fields=filter_fields,
+            filter_fields=None,
         ):
             search_after_array = batch.get("searchAfter", [])
             iocs = batch.get("iocs", [])
-            demisto.debug(f"IOC {json.dumps(iocs, indent=2)}")
             last_fetched = iocs[-1]
             ioc_count += len(iocs)
             yield from iocs
@@ -240,15 +240,25 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
     except Exception as e:
         raise e
 
-
 def demisto_expiration_to_xdr(expiration) -> int:
+    # --- DEBUG MESSAGE ADDED ---
+    demisto.debug(f"[EXPIRATION_CHECK] Received raw expiration value: '{expiration}' (type: {type(expiration)})")
+
     if expiration and not expiration.startswith("0001"):
         try:
             expiration_date = parse(expiration)
             assert expiration_date is not None, f"could not parse {expiration}"
-            return int(expiration_date.astimezone(UTC).timestamp() * 1000)
-        except (ValueError, AssertionError):
-            pass
+            converted_timestamp = int(expiration_date.astimezone(UTC).timestamp() * 1000)
+            
+            # --- DEBUG MESSAGE ADDED ---
+            demisto.debug(f"[EXPIRATION_CHECK] Parsed successfully. Returning timestamp: {converted_timestamp}")
+            return converted_timestamp
+        except (ValueError, AssertionError) as e:
+            # --- DEBUG MESSAGE ADDED ---
+            demisto.debug(f"[EXPIRATION_CHECK] Failed to parse expiration '{expiration}'. Error: {e}. Returning -1.")
+            
+    # --- DEBUG MESSAGE ADDED ---
+    demisto.debug("[EXPIRATION_CHECK] Condition not met or value is null/zero. Returning -1 (Never).")
     return -1
 
 
@@ -365,6 +375,10 @@ def parse_demisto_single_comment(ioc: dict, comment_field_name: str, comments_as
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
         extensive_log(f"Raw outgoing IOC: {ioc=}")
+        demisto.debug("---------------------")
+        demisto.debug(f"expiration: {ioc.get('expiration')}")
+        demisto.debug(f"expiration_date: {demisto_expiration_to_xdr(ioc.get('expiration'))}")
+        demisto.debug("---------------------")
         xdr_ioc: dict = {
             "indicator": ioc["value"],
             "severity": Client.severity,  # default, may be overwritten, see below

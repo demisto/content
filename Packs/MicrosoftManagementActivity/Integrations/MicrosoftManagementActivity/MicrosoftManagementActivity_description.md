@@ -54,5 +54,4 @@ For more information, see [Managed identities for Azure resources](https://learn
 ### Fetch Alerts
 
 The **operations to fetch** parameter is case-sensitive. For example, `DlpRuleMatch` and `DLPRuleMatch` are treated as distinct operations that retrieve information from different workloads.
-To ensure you target the correct operation, copy the exact operation name from the official documentation.
-For example, see [Microsoft's technical blog](https://techcommunity.microsoft.com/blog/microsoftsentinelblog/ingest-office-365-dlp-events-into-azure-sentinel/1031820) and [Splunk portal article](https://splunk.my.site.com/customer/s/article/Email-data-model-was-not-populated-with-the-management-activity-logs-of-splunk-addon-for-o365).
+For more information, see [Microsoft's technical blog](https://techcommunity.microsoft.com/blog/microsoftsentinelblog/ingest-office-365-dlp-events-into-azure-sentinel/1031820) and [Splunk portal article](https://splunk.my.site.com/customer/s/article/Email-data-model-was-not-populated-with-the-management-activity-logs-of-splunk-addon-for-o365).
