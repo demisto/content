@@ -211,7 +211,7 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
     search_after_array = None
     try:
         filter_fields = (
-            "value,indicator_type,score,expiration,modified,aggregatedReliability,moduleToFeedMap,comments,id,CustomFields"
+            "value"
             if is_xsiam_or_xsoar_saas()
             else None
         )
@@ -225,6 +225,7 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
         ):
             search_after_array = batch.get("searchAfter", [])
             iocs = batch.get("iocs", [])
+            demisto.debug(f"IOC {json.dumps(iocs, indent=2)}")
             last_fetched = iocs[-1]
             ioc_count += len(iocs)
             yield from iocs
