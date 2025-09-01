@@ -9,19 +9,24 @@ Additionally, if a Full scan is conducted, an overview report of notable finding
 For this purpose, the user needs to fill in the arguments for the #43 send-mail command.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
+
 * Criminal IP
 * mail-sender
 
 ### Scripts
+
 * print
 
 ### Commands
+
 * domain-full-scan
 * domain-full-scan-make-email-body
 * domain-full-scan-result
@@ -35,6 +40,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -43,5 +49,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 
 ## Playbook Image
+
 ---
 ![Criminal_IP_Check_Malicious_Domain](../doc_files/Criminal_IP_Check_Malicious_Domain.png)

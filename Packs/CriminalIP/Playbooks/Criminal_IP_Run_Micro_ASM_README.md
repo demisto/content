@@ -7,23 +7,29 @@ This playbook is intended to be used as a sub-playbook within the "Criminal IP M
 For additional information, please refer to the documentation of the "Criminal IP Micro ASM" playbook.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
+
 * Criminal IP
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * domain-full-scan
 * domain-full-scan-status
 * micro-asm
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -32,5 +38,6 @@ This playbook does not use any scripts.
 
 
 ## Playbook Image
+
 ---
 ![Criminal_IP_Micro_ASM](../doc_files/Criminal_IP_Run_Micro_ASM.png)

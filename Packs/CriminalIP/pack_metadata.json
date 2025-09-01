@@ -6,7 +6,7 @@
     "author": "AI SPERA",
     "url": "https://www.criminalip.io/",
     "email": "support@aispera.com",
-    "created" : "2025-04-28T10:00:00Z",
+    "created": "2025-04-28T10:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-	 "certification": "certified"
+    "certification": "certified"
 }

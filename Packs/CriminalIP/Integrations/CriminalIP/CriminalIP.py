@@ -13,8 +13,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, headers: dict[str, str], timeout: float | None = None):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
-        self.base_url = (base_url or "").rstrip("/")
+        super().__init__(base_url=base_url.rstrip("/") if base_url else "", verify=verify, proxy=proxy, headers=headers)
         self.timeout: float | None = float(timeout) if timeout is not None else None
 
     def ip_lookup(self, ip: str) -> dict:
@@ -122,11 +121,17 @@ def check_malicious_ip(client: Client, args: dict[str, Any]) -> CommandResults:
     if any((data.get("issues") or {}).values()):
         malicious = True
 
+    outputs = {
+        "ip": ip,
+        "malicious": malicious,
+        "real_ip_list": real_ip_list,
+    }
+
     return CommandResults(
         readable_output=f"Malicious: {malicious}, Protected IPs: {real_ip_list}",
         outputs_prefix="CriminalIP.Mal_IP",
-        outputs_key_field="mal_ip",
-        outputs={"ip": ip, "malicious": malicious, "real_ip_list": real_ip_list},
+        outputs_key_field="ip",
+        outputs=outputs,
         raw_response=data,
     )
 
@@ -149,24 +154,28 @@ def check_last_scan_date(client: Client, args: dict[str, Any]) -> CommandResults
     reports = (raw.get("data") or {}).get("reports", [])
 
     if not reports:
+        outputs = {"scaned": False, "scanned": False, "scan_id": ""}
         return CommandResults(
             readable_output="No scan result",
             outputs_prefix="CriminalIP.Scan_Date",
-            outputs_key_field="scan_date",
-            outputs={"scanned": False, "scan_id": ""},
+            outputs_key_field="scan_id",
+            outputs=outputs,
             raw_response=raw,
         )
 
     report = reports[0]
     reg_dt = _to_aware_utc(dateparser.parse(report.get("reg_dtime", "")))
     now = datetime.now(timezone.utc)
-    scanned = bool(reg_dt and (now - reg_dt).days <= 7)
+    scanned_bool = bool(reg_dt and (now - reg_dt).days <= 7)
+
+    # 호환성: scaned(레거시) + scanned(정식) 둘 다 제공
+    outputs = {"scaned": scanned_bool, "scanned": scanned_bool, "scan_id": report.get("scan_id", "")}
 
     return CommandResults(
-        readable_output=f"Scanned in 7 days: {scanned}",
+        readable_output=f"Scanned in 7 days: {scanned_bool}",
         outputs_prefix="CriminalIP.Scan_Date",
-        outputs_key_field="scan_date",
-        outputs={"scanned": scanned, "scan_id": report.get("scan_id", "")},
+        outputs_key_field="scan_id",
+        outputs=outputs,
         raw_response=raw,
     )
 
@@ -192,20 +201,22 @@ def make_email_body(client: Client, args: dict[str, Any]) -> CommandResults:
             body.append(f"Newborn: {summary['newborn_domain']}")
 
     if not body:
+        outputs = {"domain": domain, "scan_id": scan_id, "body": ""}
         return CommandResults(
             readable_output="No suspicious element",
             outputs_prefix="CriminalIP.Email_Body",
-            outputs_key_field="email_body",
-            outputs={"domain": domain, "scan_id": scan_id, "body": ""},
+            outputs_key_field="scan_id",
+            outputs=outputs,
             raw_response=raw,
         )
 
     body_text = f"Domain {domain} scan summary:\n- " + "\n- ".join(body)
+    outputs = {"domain": domain, "scan_id": scan_id, "body": body_text}
     return CommandResults(
         readable_output=body_text,
         outputs_prefix="CriminalIP.Email_Body",
-        outputs_key_field="email_body",
-        outputs={"domain": domain, "scan_id": scan_id, "body": body_text},
+        outputs_key_field="scan_id",
+        outputs=outputs,
         raw_response=raw,
     )
 
@@ -236,20 +247,35 @@ def micro_asm(client: Client, args: dict[str, Any]) -> CommandResults:
         results.append("Found .exe URL in logs")
 
     if not results:
+        outputs = {"domain": domain, "scan_id": scan_id, "result": ""}
         return CommandResults(
             readable_output="No suspicious element",
             outputs_prefix="CriminalIP.Micro_ASM",
-            outputs_key_field="micro_asm",
-            outputs={"domain": domain, "scan_id": scan_id, "result": ""},
+            outputs_key_field="scan_id",
+            outputs=outputs,
             raw_response=raw,
         )
 
     text = f"===== {domain} =====\n" + "\n".join(results)
+    outputs = {"domain": domain, "scan_id": scan_id, "result": text}
     return CommandResults(
         readable_output=text,
         outputs_prefix="CriminalIP.Micro_ASM",
-        outputs_key_field="micro_asm",
-        outputs={"domain": domain, "scan_id": scan_id, "result": text},
+        outputs_key_field="scan_id",
+        outputs=outputs,
+        raw_response=raw,
+    )
+
+
+def _wrap_simple_output(prefix: str, raw: dict, key_field: str = "") -> CommandResults:
+    """
+    Helper to return CommandResults with a consistent outputs_prefix so README/YML/validator가 좋아함.
+    """
+    return CommandResults(
+        readable_output=tableToMarkdown(prefix, [raw]),
+        outputs_prefix=prefix,
+        outputs_key_field=key_field or "",
+        outputs=raw,
         raw_response=raw,
     )
 
@@ -258,7 +284,7 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
 
-    base_url = params.get("url", "https://api.criminalip.io/")
+    base_url = params.get("url")
 
     client = Client(
         base_url=base_url,
@@ -290,28 +316,54 @@ def main() -> None:
         args = demisto.args()
         if command == "criminal-ip-ip-report":
             return_results(get_ip_report(client, args))
+
         elif command == "criminal-ip-check-malicious-ip":
             return_results(check_malicious_ip(client, args))
+
         elif command == "criminal-ip-check-last-scan-date":
             return_results(check_last_scan_date(client, args))
+
         elif command == "criminal-ip-domain-quick-scan":
-            return_results(CommandResults(raw_response=client.domain_quick_scan(args.get("domain") or "")))
+            domain = args.get("domain") or ""
+            raw = client.domain_quick_scan(domain)
+            return_results(_wrap_simple_output("CriminalIP.Domain_Quick", raw))
+
         elif command == "criminal-ip-domain-lite-scan":
-            return_results(CommandResults(raw_response=client.domain_lite_scan(args.get("domain") or "")))
+            domain = args.get("domain") or ""
+            raw = client.domain_lite_scan(domain)
+            return_results(_wrap_simple_output("CriminalIP.Domain_Lite", raw))
+
         elif command == "criminal-ip-domain-lite-scan-status":
-            return_results(CommandResults(raw_response=client.domain_lite_scan_status(args.get("scan_id") or "")))
+            sid = args.get("scan_id") or ""
+            raw = client.domain_lite_scan_status(sid)
+            return_results(_wrap_simple_output("CriminalIP.Domain_Lite_Status", raw))
+
         elif command == "criminal-ip-domain-lite-scan-result":
-            return_results(CommandResults(raw_response=client.domain_lite_scan_result(args.get("scan_id") or "")))
+            sid = args.get("scan_id") or ""
+            raw = client.domain_lite_scan_result(sid)
+            return_results(_wrap_simple_output("CriminalIP.Domain_Lite_Result", raw))
+
         elif command == "criminal-ip-domain-full-scan":
-            return_results(CommandResults(raw_response=client.domain_full_scan(args.get("domain") or "")))
+            domain = args.get("domain") or ""
+            raw = client.domain_full_scan(domain)
+            return_results(_wrap_simple_output("CriminalIP.Full_Scan", raw))
+
         elif command == "criminal-ip-domain-full-scan-status":
-            return_results(CommandResults(raw_response=client.domain_full_scan_status(args.get("scan_id") or "")))
+            sid = args.get("scan_id") or ""
+            raw = client.domain_full_scan_status(sid)
+            return_results(_wrap_simple_output("CriminalIP.Full_Scan_Status", raw))
+
         elif command == "criminal-ip-domain-full-scan-result":
-            return_results(CommandResults(raw_response=client.domain_full_scan_result(args.get("scan_id") or "")))
+            sid = args.get("scan_id") or ""
+            raw = client.domain_full_scan_result(sid)
+            return_results(_wrap_simple_output("CriminalIP.Full_Scan_Result", raw))
+
         elif command == "criminal-ip-domain-full-scan-make-email-body":
             return_results(make_email_body(client, args))
+
         elif command == "criminal-ip-micro-asm":
             return_results(micro_asm(client, args))
+
         else:
             raise NotImplementedError(f"Command {command} not implemented")
     except Exception as e:

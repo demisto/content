@@ -1,6 +1,6 @@
 id: Test-CriminalIP
 version: -1
-fromversion: 6.0.0
+fromversion: 6.10.0
 name: Test-CriminalIP
 description: >
   Test playbook for the CriminalIP integration.
@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -62,13 +63,13 @@ tasks:
       iscommand: false
       brand: ""
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: CriminalIP.IP.ip
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CriminalIP.IP.ip
+            iscontext: true
     nexttasks:
       "yes": ["3"]
     view: |
@@ -156,6 +157,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     view: |
       {
         "position": {"x": 250, "y": 950}
