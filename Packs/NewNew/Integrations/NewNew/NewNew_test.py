@@ -54,7 +54,7 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 
 import json
 from CommonServerPython import DemistoException
-from HelloWorld import (
+from NewNew import (
     Client,
     ip_reputation_command,
     alert_list_command,
