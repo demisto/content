@@ -89,7 +89,11 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
         DemistoException: If the command execution fails, returns an empty/invalid response structure,
                           or indicates an error via `is_error(res)`.
     """
+    demisto.debug(f"MSGraphIdentityBlockExternalIP: About to execute command '{command}' with args: {args}")
     res = demisto.executeCommand(command, args)
+    demisto.debug(
+        f"MSGraphIdentityBlockExternalIP: Command '{command}' execution completed. Result type: {type(res)}, Result: {res}"
+    )
     if not res or not isinstance(res, list) or not res[0]:
         raise DemistoException(f"{error_message_prefix}: Empty or invalid command result for {command}.")
     if is_error(res):

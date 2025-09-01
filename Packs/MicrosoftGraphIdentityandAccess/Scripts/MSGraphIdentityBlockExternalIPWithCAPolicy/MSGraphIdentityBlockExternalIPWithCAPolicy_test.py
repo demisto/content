@@ -109,6 +109,7 @@ def test_execute_command_success(mocker):
     When: Calling _execute_command_and_handle_error.
     Then: Should return the 'Contents' of the result.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.executeCommand", return_value=[{"Contents": {"id": "123"}}])
     result = _execute_command_and_handle_error("cmd", {}, "Fail")
     assert result == {"id": "123"}
@@ -120,6 +121,7 @@ def test_execute_command_empty(mocker):
     When: Calling _execute_command_and_handle_error.
     Then: Should raise an exception about empty command result.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.executeCommand", return_value=[])
     with pytest.raises(Exception, match="Empty or invalid command result"):
         _execute_command_and_handle_error("cmd", {}, "Fail")
@@ -131,6 +133,7 @@ def test_execute_command_error(mocker):
     When: Calling _execute_command_and_handle_error.
     Then: Should raise an exception with parsed error details.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.is_error", return_value=True)
     mocker.patch(
         "MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.executeCommand",
@@ -146,6 +149,7 @@ def test_get_named_ip_location_found(mocker):
     When: Calling get_named_ip_location.
     Then: Should return the found named IP location.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch(
         "MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error", return_value={"value": [{"id": "x"}]}
     )
@@ -159,6 +163,7 @@ def test_get_named_ip_location_not_found(mocker):
     When: Calling get_named_ip_location.
     Then: Should return None.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error", return_value={"value": []})
     assert get_named_ip_location("test") is None
 
@@ -169,6 +174,7 @@ def test_update_named_location_adds_ip(mocker):
     When: Calling update_existing_named_location.
     Then: Should execute update command with the new IP added to the list.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     execute = mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error")
     update_existing_named_location("123", "test", ["1.1.1.1/32"], "2.2.2.2/32")
     execute.assert_called_once()
@@ -192,6 +198,7 @@ def test_create_named_ip_location_success(mocker):
     When: Calling create_new_named_ip_location.
     Then: Should return the ID of the newly created location.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error", return_value={"id": "loc-id"})
     result = create_new_named_ip_location("name", "1.2.3.4")
     assert result == "loc-id"
@@ -203,6 +210,7 @@ def test_create_named_ip_location_fail(mocker):
     When: Calling create_new_named_ip_location.
     Then: Should raise an exception about invalid ID.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error", return_value={})
     with pytest.raises(Exception, match="Named location creation did not return a valid ID."):
         create_new_named_ip_location("name", "1.2.3.4")
@@ -214,6 +222,7 @@ def test_create_ca_policy(mocker):
     When: Calling create_conditional_access_policy.
     Then: Should execute the CA policy creation command.
     """
+    mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy.demisto.debug")
     execute = mocker.patch("MSGraphIdentityBlockExternalIPWithCAPolicy._execute_command_and_handle_error")
     create_conditional_access_policy("p", "loc")
     assert execute.call_args[0][0] == "msgraph-identity-ca-policy-create"
