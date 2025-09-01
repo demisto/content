@@ -965,7 +965,7 @@ class EC2:
             ip_perms = [
                 {"IpProtocol": proto, "FromPort": from_port, "ToPort": to_port, "IpRanges": [{"CidrIp": cidr}] if cidr else None}
             ]
-            remove_nulls_from_dictionary(ip_perms[0])
+            ip_perms = [remove_empty_elements(ip_perms[0])]
         kwargs = {"GroupId": group_id, "IpPermissions": ip_perms}
 
         try:
