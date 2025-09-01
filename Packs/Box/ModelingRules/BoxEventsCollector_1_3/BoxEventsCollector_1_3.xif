@@ -31,7 +31,7 @@ filter
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION),
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
     xdm.event.outcome = if(event_type in ("ADMIN_LOGIN", "LOGIN"), XDM_CONST.OUTCOME_SUCCESS, event_type ~= "FAILED_LOGIN", XDM_CONST.OUTCOME_FAILED),
-    xdm.event.outcome_reason = if(event_type ~= "FAILED_LOGIN", "failed_login", null),
+    xdm.event.outcome_reason = if(event_type ~= "FAILED_LOGIN", "failed_login", event_type in ("ADMIN_LOGIN", "LOGIN"), "Successful login", null),
     xdm.source.user.identifier = json_extract_scalar(source, "$.id"),
     xdm.source.user.first_name = arrayindex(split(json_extract_scalar(source, "$.name")), 0),
     xdm.source.user.last_name = arrayindex(split(json_extract_scalar(source, "$.name")), 1),
