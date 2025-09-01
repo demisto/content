@@ -3582,7 +3582,7 @@ def update_remote_system_command(client: VectraClient, args: dict, params: dict)
     xsoar_incident_id = parsed_args.data.get("id", "")
     demisto.debug(f"XSOAR Incident ID: {xsoar_incident_id}")
     new_entries = parsed_args.entries
-    xsoar_tags: List = parsed_args.delta.get("tags", []) or []
+    xsoar_tags: List = parsed_args.delta.get("tags") or []
     remote_entity_type = parsed_args.data.get("vectraxdrentitytype", "").lower()
 
     # For notes
