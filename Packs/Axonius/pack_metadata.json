@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "formula"
+    ],
     "githubUser": [
         "bryce-ax",
         "nate-axonius",
