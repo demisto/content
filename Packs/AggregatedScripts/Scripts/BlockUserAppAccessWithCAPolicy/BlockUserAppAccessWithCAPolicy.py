@@ -19,7 +19,9 @@ def _execute_command_and_handle_error(command: str, args: dict[str, Any], error_
     Returns:
         dict[str, Any]: Parsed contents of the command result.
     """
+    demisto.debug(f"Executing command: {command} with args: {args}")
     res = demisto.executeCommand(command, args)
+    demisto.debug(f"Command {command} execution completed. Result type: {type(res)}")
     if not res:
         raise DemistoException(f"{error_message_prefix}: Empty response for {command}.")
     if res[0] is None:  # Check if the first element of the list is explicitly None

@@ -56,6 +56,7 @@ def test_resolve_user_object_id_when_upn(mocker):
     Then:
         - Should resolve to the user's object ID via command execution
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error",
         return_value={"id": "user-object-id-1234"},
@@ -176,7 +177,7 @@ def test__parse_error_message_unexpected_exception(mocker):
         - Should return a generic error extraction message
     """
     # Mock demisto.debug to prevent actual logging during test
-    mocker.patch.object(BlockUserAppAccessWithCAPolicy.demisto, "debug")
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
 
     # Simulate an unexpected exception *within* the parsing logic itself.
     # For example, if raw_contents is an object that raises an error when converted to string or loaded as JSON.
@@ -199,6 +200,7 @@ def test__execute_command_and_handle_error_success(mocker):
     Then:
         - Should return the 'Contents' of the result
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.demisto.executeCommand",
         return_value=[{"Contents": {"key": "value"}}],
@@ -218,6 +220,7 @@ def test__execute_command_and_handle_error_failure(mocker):
     Then:
         - Should raise DemistoException with the appropriate message
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[{"Contents": "Error"}])
     mocker.patch("BlockUserAppAccessWithCAPolicy.is_error", return_value=True)
     mocker.patch("BlockUserAppAccessWithCAPolicy._parse_error_message", return_value="bad error")
@@ -235,6 +238,7 @@ def test__execute_command_and_handle_error_empty_res(mocker):
     Then:
         - Should raise DemistoException with 'Empty response'
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[])
 
     with pytest.raises(DemistoException, match="Error Prefix: Empty response for command."):
@@ -254,6 +258,7 @@ def test__execute_command_and_handle_error_invalid_res_structure(mocker):
     Then:
         - Should raise DemistoException or return empty dict if not error.
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     # Case 1: First element is not a dict
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=["not a dict"])
     with pytest.raises(
@@ -285,6 +290,7 @@ def test_resolve_app_object_id_valid_response_dict(mocker):
     Then:
         - Should return the appId of the matching app
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error",
         return_value={"MSGraphApplication": [{"displayName": "MyApp", "appId": "app-id-123"}]},
@@ -304,6 +310,7 @@ def test_resolve_app_object_id_app_not_found(mocker):
     Then:
         - Should raise DemistoException with list of available apps
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error",
         return_value={"MSGraphApplication": [{"displayName": "OtherApp"}]},
@@ -323,6 +330,7 @@ def test_resolve_app_object_id_res_is_list(mocker):
     Then:
         - Should return the appId
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error",
         return_value=[{"displayName": "AnotherApp", "appId": "list-app-id-456"}],
@@ -341,6 +349,7 @@ def test_resolve_app_object_id_unexpected_res_type(mocker):
     Then:
         - Should raise DemistoException for unexpected format
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     # This case will be caught by _execute_command_and_handle_error first,
     # as its return value is then processed by resolve_app_object_id.
     # So, we expect the exception from _execute_command_and_handle_error.
@@ -366,6 +375,7 @@ def test_resolve_app_object_id_missing_app_id(mocker):
     Then:
         - Should raise DemistoException
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error",
         return_value={"MSGraphApplication": [{"displayName": "AppWithoutID", "appId": None}]},
@@ -386,6 +396,7 @@ def test_fetch_policy_by_name_found(mocker):
     Then:
         - Should return the policy dict
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.demisto.executeCommand",
         return_value=[{"Contents": {"value": [{"displayName": "My Policy"}]}}],
@@ -405,6 +416,7 @@ def test_fetch_policy_by_name_not_found(mocker):
     Then:
         - Should return None
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.demisto.executeCommand",
         return_value=[{"Contents": {"value": [{"displayName": "Other Policy"}]}}],
@@ -423,6 +435,7 @@ def test_fetch_policy_by_name_empty_or_invalid_response(mocker):
     Then:
         - Should raise DemistoException
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.executeCommand", return_value=[])
     with pytest.raises(DemistoException, match="Failed to retrieve Conditional Access policies: Empty or invalid response."):
         BlockUserAppAccessWithCAPolicy.fetch_policy_by_name("Any Policy")
@@ -447,6 +460,7 @@ def test_fetch_policy_by_name_contents_is_list(mocker):
     Then:
         - Should return the matching policy
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.demisto.executeCommand",
         return_value=[{"Contents": [{"displayName": "Direct List Policy"}]}],
@@ -466,6 +480,7 @@ def test_fetch_policy_by_name_unexpected_contents_structure(mocker):
     Then:
         - Should raise DemistoException
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.demisto.executeCommand",
         return_value=[{"Contents": "unexpected_string"}],
@@ -487,6 +502,7 @@ def test_create_policy_success(mocker):
         - Should return a success message
         - _execute_command_and_handle_error should be called with correct arguments
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mock_execute = mocker.patch("BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error", return_value={})
 
     app_id = "app-123"
@@ -511,6 +527,7 @@ def test_update_policy_success(mocker):
     Then:
         - Should add the user to the policy and return a success message
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mock_execute = mocker.patch("BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error", return_value={})
     policy = {
         "id": "policy-id-123",
@@ -539,6 +556,7 @@ def test_update_policy_user_already_blocked(mocker):
         - Should return a message indicating no action was taken
         - No update command should be executed
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mock_execute = mocker.patch("BlockUserAppAccessWithCAPolicy._execute_command_and_handle_error", return_value={})
     policy = {
         "id": "policy-id-123",
@@ -564,6 +582,7 @@ def test_main_existing_policy_updates(mocker):
         - update_policy should be called
         - return_results should be called with success message
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-123")
     # E501 fix: Breaking the dictionary across multiple lines
@@ -595,6 +614,7 @@ def test_main_new_policy_created(mocker):
         - create_policy should be called
         - return_results should be called with success message
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "NewApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-abc")
     mocker.patch("BlockUserAppAccessWithCAPolicy.fetch_policy_by_name", return_value=None)
@@ -619,6 +639,7 @@ def test_main_user_id_resolution_failure(mocker):
         - DemistoException should be raised and caught
         - return_error should be called
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "nonexistent_user", "app_name": "TestApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value=None)
     mock_return_error = mocker.patch("BlockUserAppAccessWithCAPolicy.return_error")
@@ -639,6 +660,7 @@ def test_main_general_exception_handling(mocker):
         - The exception should be caught
         - return_error should be called with the exception message
     """
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.debug")
     mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-123")
     mocker.patch(
