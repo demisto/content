@@ -176,8 +176,7 @@ def _execute_command(command: str, args: dict[str, Any], error_message_prefix: s
     """
     demisto.debug(f"OktaAddIPToBlockedIpZone: About to execute command '{command}' with args: {args}")
     res = demisto.executeCommand(command, args)
-    demisto.debug(
-        f"OktaAddIPToBlockedIpZone: Command '{command}' execution completed. Result type: {type(res)}, Result: {res}")
+    demisto.debug(f"OktaAddIPToBlockedIpZone: Command '{command}' execution completed. Result type: {type(res)}, Result: {res}")
     if not res or not isinstance(res, list) or not res[0]:
         raise DemistoException(f"{error_message_prefix}: Empty or invalid command result for {command}.")
 
