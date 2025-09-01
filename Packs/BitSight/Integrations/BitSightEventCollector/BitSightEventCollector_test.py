@@ -68,7 +68,7 @@ def sample_findings():
 @pytest.fixture
 def sample_companies_response():
     """Sample companies API response."""
-    return {"myCompany": {"guid": "auto-detected-guid", "name": "Test Company", "customId": "test-123"}}
+    return {"my_company": {"guid": "auto-detected-guid", "name": "Test Company", "customId": "test-123"}}
 
 
 class TestBitSightEventCollector:
@@ -418,18 +418,22 @@ class TestBitSightEventCollector:
 
     def test_test_module_auth_error(self, mock_client, mocker):
         """
-        Given: Invalid API credentials
+        Given: Client with authentication error
 
-        When: Running test-module
+        When: Running test_module
 
-        Then: Should return authorization error message
+        Then: Should raise DemistoException (handled by main function)
         """
+        # Mock get_companies_guid to raise DemistoException
         mocker.patch.object(mock_client, "get_companies_guid", side_effect=DemistoException("Unauthorized"))
 
         from BitSightEventCollector import test_module
 
-        result = test_module(mock_client, None)
-        assert "Authorization Error" in result
+        # After centralized error handling, DemistoException bubbles up to main()
+        with pytest.raises(DemistoException) as exc_info:
+            test_module(mock_client, None)
+
+        assert "Unauthorized" in str(exc_info.value)
 
     def test_test_module_other_error(self, mock_client, mocker):
         """
