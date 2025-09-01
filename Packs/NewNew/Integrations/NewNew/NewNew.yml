@@ -1,10 +1,10 @@
 commonfields:
-  id: NewPack
+  id: New New
   version: -1
-name: NewPack
-display: NewPack
+name: New New
+display: New New
 category: Data Enrichment & Threat Intelligence
-description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated tool
+description: New pack for testing
 configuration:
 - display: API Key
   name: apiKey
