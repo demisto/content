@@ -27,7 +27,7 @@ def get_case_extra_data(args):
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     case_extra_data = execute_command("core-get-case-extra-data", args)
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
-    case = case_extra_data.get("case", {}).get("data")
+    case = case_extra_data.get("case", {})
     issues = case_extra_data.get("issues", {}).get("data")
     issue_ids = extract_ids(issues, "issue_id")
     network_artifacts = case_extra_data.get("network_artifacts")
@@ -38,7 +38,7 @@ def get_case_extra_data(args):
 
 def main():
     args = demisto.args()
-    case_ids = argToList(args.get("case_id_list", ""))
+    case_ids = argToList(args.get("case_id", ""))
     issues_limit = str(min(int(args.get("issues_limit", 1000)), 1000))
     try:
         final_results = []

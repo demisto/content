@@ -9,7 +9,7 @@ enabled: true
 args:
 - description: An array or CSV string of case IDs.
   isArray: true
-  name: case_id_list
+  name: case_id
   required: true
 - defaultValue: '1000'
   description: Maximum number of issues to return per case. The default and maximum is 1000.
