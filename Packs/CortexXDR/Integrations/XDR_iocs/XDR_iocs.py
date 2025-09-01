@@ -215,14 +215,13 @@ def get_iocs_generator(size=200, query=f"expirationStatus:active AND ({Client.qu
             if is_xsiam_or_xsoar_saas()
             else None
         )
-        demisto.debug(f"[IOC_FETCH] Filter fields: {filter_fields}")
         search_after = get_integration_context().get("search_after", None)
         for batch in IndicatorsSearcher(
             size=size,
             query=full_query,
             search_after=search_after,
             sort=[{"field": "modified", "asc": True}, {"field": "id", "asc": True}],
-            filter_fields=None,
+            filter_fields=filter_fields,
         ):
             search_after_array = batch.get("searchAfter", [])
             iocs = batch.get("iocs", [])
