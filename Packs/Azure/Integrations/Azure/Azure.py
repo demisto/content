@@ -1949,7 +1949,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
     max_results = int(args.get("max_results", 50))
     next_page_token = args.get("next_page_token")
 
-    scope = f"/subscriptions/{subscription_id}"
+    scope = f"/{subscription_id}"
     url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
     api_version = "2021-10-01"
     params_ = {"api-version": api_version, "$top": max_results}
@@ -1999,9 +1999,9 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     filter_ = args.get("filter")
-    scope = f"/subscriptions/{subscription_id}"
+    scope = f"/{subscription_id}"
     url = f"{scope}/providers/Microsoft.Consumption/forecasts"
-    api_version = "2021-10-01"
+    api_version = "2025-04-01"
     params_ = {"api-version": api_version}
     if filter_:
         params_["$filter"] = filter_
@@ -2030,7 +2030,8 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     budget_name = args.get("budget_name")
-    scope = f"/subscriptions/{subscription_id}"
+    scope = f"/{subscription_id}"
+    demisto.debug(f"{scope=}")
     api_version = "2021-10-01"
     if budget_name:
         url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"

@@ -1797,6 +1797,15 @@ script:
       description: Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]
       isArray: true
       required: false
+      auto: PREDEFINED
+      predefined:
+      - AmortizedCost
+      - BlendedCost
+      - NetAmortizedCost
+      - NetUnblendedCost
+      - NormalizedUsageAmount
+      - UnblendedCost
+      - UsageQuantity
     - name: start_date
       description: Start date for the report (YYYY-MM-DD). Default - 7 days ago
       required: false
@@ -1885,6 +1894,13 @@ script:
       description: Metrics to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST]
       isArray: true
       required: true
+      auto: PREDEFINED
+      predefined:
+      - AMORTIZED_COST
+      - BLENDED_COST
+      - NET_AMORTIZED_COST
+      - NET_UNBLENDED_COST
+      - UNBLENDED_COST
     - name: start_date
       description: Start date for the forecast (YYYY-MM-DD). Default - 7 days ago
       required: false
