@@ -1,5 +1,5 @@
 id: 4e2904f4-d3ee-41e1-8f77-d747914a9bd2
-version: 20
+version: 24
 vcShouldKeepItemLegacyProdMachine: false
 name: FileEnrichment_CIAC-14500_Niv
 starttaskid: "0"
@@ -855,15 +855,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9044ea73-9e81-4539-9aa0-51c44856e25f
+    taskid: 558f8090-77a2-4acb-a956-0cce5ddc3321
     type: title
     task:
-      id: 9044ea73-9e81-4539-9aa0-51c44856e25f
+      id: 558f8090-77a2-4acb-a956-0cce5ddc3321
       version: -1
-      name: Done
+      name: Sad Flows
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1017,7 +1020,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 50,
           "y": 2730
         }
       }
@@ -1059,7 +1062,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 2730
         }
       }
@@ -1100,7 +1103,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2730
         }
       }
@@ -1158,8 +1161,287 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1340,
           "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: b0d731f6-5994-425c-8490-ee12e11fd431
+    type: regular
+    task:
+      id: b0d731f6-5994-425c-8490-ee12e11fd431
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: CreateHash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2ccf5397-8281-401b-bae0-636284c5d47a
+    type: regular
+    task:
+      id: 2ccf5397-8281-401b-bae0-636284c5d47a
+      version: -1
+      name: File Enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichmenttest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+      brands:
+        simple: dummy
+      file_hash:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c8b2d2e9-3a5a-40ce-9480-9a9561466fb6
+    type: regular
+    task:
+      id: c8b2d2e9-3a5a-40ce-9480-9a9561466fb6
+      version: -1
+      name: Verify
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 2e185042-b789-4471-a155-fbc9299250c6
+    type: title
+    task:
+      id: 2e185042-b789-4471-a155-fbc9299250c6
+      version: -1
+      name: Brands Does Not Exist
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 8db0667d-c285-4192-8e73-d0c70e1ec4b0
+    type: title
+    task:
+      id: 8db0667d-c285-4192-8e73-d0c70e1ec4b0
+      version: -1
+      name: No Arguments
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 3deae0c8-dce5-4bce-897a-3dffe94d4210
+    type: regular
+    task:
+      id: 3deae0c8-dce5-4bce-897a-3dffe94d4210
+      version: -1
+      name: DeleteContext
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: CreateHash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2e5ddf4e-30fe-478f-8b21-f7b1832978e4
+    type: regular
+    task:
+      id: 2e5ddf4e-30fe-478f-8b21-f7b1832978e4
+      version: -1
+      name: File Enrichment
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichmenttest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      additional_fields:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 9b820a74-3e2c-4fa5-8240-7a536a206b0b
+    type: regular
+    task:
+      id: 9b820a74-3e2c-4fa5-8240-7a536a206b0b
+      version: -1
+      name: Verify
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4140
         }
       }
     note: false
@@ -1174,7 +1456,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2910,
+        "height": 4160,
         "width": 1670,
         "x": 50,
         "y": 50
