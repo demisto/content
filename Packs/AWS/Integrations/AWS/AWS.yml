@@ -849,8 +849,9 @@ script:
       required: true
       isArray: false
     - name: region
-      description: 'The AWS Region. If not specified, the configured region will be used.'
+      description: 'The AWS Region.'
       auto: PREDEFINED
+      required: true
       predefined:
       - us-east-1
       - us-east-2

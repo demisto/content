@@ -1025,7 +1025,7 @@ class EC2:
             )
             if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            return CommandResults(readable_output=f"Snapshot {args.get('snapshotId')} permissions was successfully updated.")
+            return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions was successfully updated.")
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
@@ -1609,6 +1609,9 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifyInstanceAttribute",
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
+    "ec2:CreateSnapshot",
+    "eks:DescribeCluster",
+    "eks:AssociateAccessPolicy",
     "eks:UpdateClusterConfig",
     "iam:DeleteLoginProfile",
     "iam:PutUserPolicy",
@@ -1619,6 +1622,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "ecs:UpdateClusterSettings",
 ]
 
 
