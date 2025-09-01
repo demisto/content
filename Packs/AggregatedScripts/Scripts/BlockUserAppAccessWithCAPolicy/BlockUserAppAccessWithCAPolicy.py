@@ -230,10 +230,10 @@ def update_policy(policy: dict[str, Any], user_id: str) -> str:
     if user_id in existing_users:
         return f"User is already blocked in policy '{policy.get('displayName')}'. No action taken."
 
-    updated_users = existing_users.append(user_id)
+    existing_users.append(user_id)
     policy_id = policy.get("id")
 
-    patch_payload = {"conditions": {"users": {"includeUsers": updated_users}}}
+    patch_payload = {"conditions": {"users": {"includeUsers": existing_users}}}
 
     _execute_command_and_handle_error(
         "msgraph-identity-ca-policy-update",

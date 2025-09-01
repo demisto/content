@@ -564,7 +564,7 @@ def test_main_existing_policy_updates(mocker):
         - update_policy should be called
         - return_results should be called with success message
     """
-    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp"})
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-123")
     # E501 fix: Breaking the dictionary across multiple lines
     mocker.patch(
@@ -595,7 +595,7 @@ def test_main_new_policy_created(mocker):
         - create_policy should be called
         - return_results should be called with success message
     """
-    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "NewApp"})
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "NewApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-abc")
     mocker.patch("BlockUserAppAccessWithCAPolicy.fetch_policy_by_name", return_value=None)
     mock_resolve_app_id = mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_app_object_id", return_value="app-id-xyz")
@@ -619,7 +619,7 @@ def test_main_user_id_resolution_failure(mocker):
         - DemistoException should be raised and caught
         - return_error should be called
     """
-    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "nonexistent_user"})
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "nonexistent_user", "app_name": "TestApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value=None)
     mock_return_error = mocker.patch("BlockUserAppAccessWithCAPolicy.return_error")
 
@@ -639,7 +639,7 @@ def test_main_general_exception_handling(mocker):
         - The exception should be caught
         - return_error should be called with the exception message
     """
-    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp"})
+    mocker.patch("BlockUserAppAccessWithCAPolicy.demisto.args", return_value={"username": "testuser", "app_name": "TestApp", "policy_name": None})
     mocker.patch("BlockUserAppAccessWithCAPolicy.resolve_user_object_id", return_value="user-id-123")
     mocker.patch(
         "BlockUserAppAccessWithCAPolicy.fetch_policy_by_name", side_effect=ValueError("Simulated error")
