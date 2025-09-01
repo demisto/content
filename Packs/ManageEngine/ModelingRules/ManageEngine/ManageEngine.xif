@@ -1,0 +1,20 @@
+[MODEL: dataset=manage_engine_raw]
+alter
+    userip_v4 = if(userIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",userIP ,null),
+    userip_v6 = if(userIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",userIP ,null),
+    viewerip_v4 = if(viewerIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",viewerIP ,null),
+    viewerip_v6 = if(viewerIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",viewerIP ,null)
+| alter
+    xdm.source.host.hostname = hostName,
+    xdm.event.id = eventId,
+    xdm.observer.type = module,
+    xdm.source.user.username = userName,
+    xdm.alert.severity = priority,
+    xdm.source.application.name = application,
+    xdm.target.host.hostname = computerName,
+    xdm.target.domain = domainName,
+    xdm.intermediate.ipv4 = viewerip_v4,
+    xdm.intermediate.ipv6 = viewerip_v6,
+    xdm.source.ipv4 = userip_v4,
+    xdm.source.ipv6 = userip_v6,
+    xdm.event.outcome = remarks;
