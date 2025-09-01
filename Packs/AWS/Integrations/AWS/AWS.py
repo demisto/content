@@ -45,8 +45,6 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     try:
         if limit_arg is not None:
             limit = arg_to_number(limit_arg) or DEFAULT_LIMIT_VALUE
-            if limit is None:
-                raise ValueError(f"Invalid limit value: {limit_arg}")
         else:
             limit = DEFAULT_LIMIT_VALUE  # Default limit
     except (ValueError, TypeError) as e:
