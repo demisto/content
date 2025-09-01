@@ -1386,14 +1386,11 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
         raise ValueError(MESSAGES["MISSING_CONTENT_ID"])
     params = {"expand": "body.storage"}
     request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
-    try:
-        response = client.http_request(method="GET", url_suffix=request_url, params=params)
-        response_json = response.json()
-        context = remove_empty_elements(response_json)
-        readable_hr = prepare_hr_for_content_create(response_json, "Content")
-    except Exception as e:
-        context = response_json = {"Error": str(e)}
-        readable_hr = f"**Error**: {str(e)}"
+    response = client.http_request(method="GET", url_suffix=request_url, params=params)
+    response_json = response.json()
+    context = remove_empty_elements(response_json)
+    readable_hr = prepare_hr_for_content_create(response_json, "Content")
+    
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX.get("CONTENT"),

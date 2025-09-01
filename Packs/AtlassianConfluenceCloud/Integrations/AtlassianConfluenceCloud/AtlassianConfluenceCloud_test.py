@@ -1140,7 +1140,6 @@ def test_confluence_cloud_content_get_command_when_resource_not_found(mocker: Mo
 
     args = {"content_id": "65639"}
     response = confluence_cloud_content_get_command(mock_client, args)
-
     assert response.outputs == {"Error": error_message}
 
 
