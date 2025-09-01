@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, UTC
 from typing import Any
+import traceback
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -221,23 +222,47 @@ def test_module(client: Client, guid: str | None) -> str:
         str: "ok" when validation succeeds; otherwise raises an error.
     """
     # Validate credentials and, if guid provided, that findings endpoint is reachable
-    try:
-        client.get_companies_guid()
-        if guid:
-            # Use a simple 2-day lookback for testing connectivity
-            current_time = datetime.now()
-            lookback_time = current_time - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)
-            start_date = to_bitsight_date(int(lookback_time.timestamp()))
-            end_date = to_bitsight_date(int(current_time.timestamp()))
-            client.get_company_findings(guid, start_date, end_date, limit=1, offset=0)
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Unauthorized" in str(e):
-            return "Authorization Error: make sure API Key is correctly set"
-        raise
+    client.get_companies_guid()
+    if guid:
+        # Use a simple 2-day lookback for testing connectivity
+        current_time = datetime.now()
+        lookback_time = current_time - timedelta(days=GET_EVENTS_LOOKBACK_DAYS)
+        start_date = to_bitsight_date(int(lookback_time.timestamp()))
+        end_date = to_bitsight_date(int(current_time.timestamp()))
+        client.get_company_findings(guid, start_date, end_date, limit=1, offset=0)
     return "ok"
 
 
 """ HELPER FUNCTIONS """
+
+
+def handle_api_error(e: DemistoException, context: str = "API operation") -> str:
+    """Centralized error handling for DemistoException with user-friendly messages.
+
+    Args:
+        e: The DemistoException to handle
+        context: Context description for the error message
+
+    Returns:
+        User-friendly error message string
+    """
+    error_str = str(e)
+    message = None
+
+    if "401" in error_str or "Unauthorized" in error_str:
+        message = "Authentication failed. Please verify your API key is correct and has proper permissions."
+
+    elif "403" in error_str or "Forbidden" in error_str:
+        message = "Access denied. Your API key does not have sufficient permissions to access BitSight data."
+
+    elif "404" in error_str or "Not Found" in error_str:
+        message = "Resource not found. Please verify the Company GUID is correct."
+
+    # Return formatted error message
+    if message:
+        return f"{context} failed: {message} Original error: {error_str}"
+    else:
+        return f"{context} failed: {error_str}"
 
 
 def resolve_guid(client: Client, guid_from_args: str | None, guid_from_params: str | None) -> str:
@@ -248,8 +273,10 @@ def resolve_guid(client: Client, guid_from_args: str | None, guid_from_params: s
     guid = guid_from_args or guid_from_params
     if guid:
         return guid
+
     companies = client.get_companies_guid()
-    guid = (companies.get("myCompany") or {}).get("guid")
+
+    guid = (companies.get("my_company") or {}).get("guid")
     if not guid:
         raise ValueError("Company GUID is required. Provide it as an argument or in the integration parameters.")
     return guid
@@ -265,7 +292,7 @@ def main():
     base_url = params.get("base_url") or "https://api.bitsighttech.com"
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    api_key = params.get("apikey", {}).get("password") or ""
+    api_key = params.get("credentials", {}).get("identifier", "")
 
     # Extract command-specific variables
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
@@ -288,9 +315,9 @@ def main():
         },
     )
 
-    guid = resolve_guid(client, args.get("guid"), params.get("guid"))
-
     try:
+        guid = resolve_guid(client, args.get("guid"), params.get("guid"))
+
         if command == "test-module":
             return_results(test_module(client, params.get("guid")))
 
@@ -310,7 +337,11 @@ def main():
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
+    except DemistoException as e:
+        demisto.error(traceback.format_exc())
+        return_error(handle_api_error(e, f"{command} command"))
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command. Error: {e}")
 
 

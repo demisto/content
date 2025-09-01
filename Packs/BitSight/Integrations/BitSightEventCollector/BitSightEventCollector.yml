@@ -14,7 +14,7 @@ configuration:
   additionalinfo: REST API Endpoint of BitSight server.
   section: Connect
 - display: API Key
-  name: apikey
+  name: credentials
   required: true
   type: 9
   hiddenpassword: true

@@ -41,3 +41,7 @@ Gets findings as events from BitSight Event Collector. The command fetches findi
 #### Context Output
 
 There is no context output for this command.
+
+## Notes
+
+**API Date Format Limitation:** The BitSight API returns `first_seen` timestamps in date-only format (YYYY-MM-DD) without hours or minutes. The integration converts these to full timestamps in the `_time` field for XSIAM compatibility. This means all events will show timestamps like `2025-08-30T00:00:00` (midnight UTC) regardless of when during that day the finding was actually discovered.
