@@ -99,7 +99,7 @@ Get JVM status of a node in cluster
 
 #### Command Example
 
-```!graylog-cluster-node-jvm nodeId=95ba5102-13c9-4520-ac75-c8736f206953 ```
+```!graylog-cluster-node-jvm nodeId=95ba5102-13c9-4520-ac75-c8736f206953```
 
 #### Context Example
 

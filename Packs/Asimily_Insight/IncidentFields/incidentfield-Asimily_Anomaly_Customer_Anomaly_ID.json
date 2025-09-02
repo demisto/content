@@ -1,0 +1,31 @@
+{
+    "id": "incident_asimilyanomalycustomeranomalyid",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "name": "Asimily Anomaly Customer Anomaly ID",
+    "ownerOnly": false,
+    "cliName": "asimilyanomalycustomeranomalyid",
+    "description": "Unique anomaly type identifier assigned by Asimily for a specific customer. This ID can be used in future operations such as invoking anomaly fix actions.",
+    "type": "number",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Asimily Anomaly"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

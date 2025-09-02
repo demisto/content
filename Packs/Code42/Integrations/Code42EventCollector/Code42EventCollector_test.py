@@ -615,3 +615,32 @@ def test_get_events_command(mocker):
     assert command_result.outputs[0]["eventType"] == Code42EventCollector.EventType.FILE
     assert command_result.outputs
     assert command_result.readable_output
+
+
+def test_next_trigger():
+    """
+    Given:
+     - Fetching alerts.
+
+    When:
+     - The API returns the maximum amount of alerts.
+
+    Then:
+     - Make sure the LastRun has the "nextTrigger" set to 0.
+    """
+    from Code42EventCollector import fetch_file_events, fetch_audit_logs
+
+    LIMIT = 100
+
+    class MockClient:
+        def get_file_events(*_, **__):
+            return [{"_time": datetime(2000, 1, 1, tzinfo=timezone.utc)}] * LIMIT
+
+        def get_audit_logs(*_, **__):
+            return [{"_time": datetime(2000, 1, 1, tzinfo=timezone.utc)}] * LIMIT
+
+    _, file_event_last_run = fetch_file_events(MockClient, {}, LIMIT)  # type: ignore
+    _, audit_logs_last_run = fetch_audit_logs(MockClient, {}, LIMIT)  # type: ignore
+
+    assert file_event_last_run["nextTrigger"] == "0"
+    assert audit_logs_last_run["nextTrigger"] == "0"

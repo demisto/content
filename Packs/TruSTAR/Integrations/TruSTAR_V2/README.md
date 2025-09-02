@@ -1,7 +1,7 @@
 TruSTAR is an Intelligence Management Platform that helps you operationalize data across tools and teams, helping you prioritize investigations and accelerate incident response.
 This integration was integrated and tested with version 0.3.31 of TruSTAR v2
-## Configure TruSTAR v2 in Cortex
 
+## Configure TruSTAR v2 in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,56 +13,59 @@ This integration was integrated and tested with version 0.3.31 of TruSTAR v2
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### trustar-search-indicators
+
 ***
 Searches for all indicators that contain the given search term.
-
 
 #### Base Command
 
 `trustar-search-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_term | The term to search for (e.g. covid-19) | Optional | 
-| enclave_ids | Comma-separated list of enclave ids; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| indicator_types | comma-separated indicator types to filter by. e.g. "URL, IP" | Optional | 
-| tags | Name (or list of names) of tag(s) to filter indicators by. (i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). Only indicators containing ALL of these tags will be returned. | Optional | 
-| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| search_term | The term to search for (e.g. covid-19) | Optional |
+| enclave_ids | Comma-separated list of enclave ids; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| indicator_types | comma-separated indicator types to filter by. e.g. "URL, IP" | Optional |
+| tags | Name (or list of names) of tag(s) to filter indicators by. (i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). Only indicators containing ALL of these tags will be returned. | Optional |
+| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Indicators.indicatorType | string | Indicator type | 
-| TruSTAR.Indicators.value | string | Indicator value | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
+| TruSTAR.Indicators.indicatorType | string | Indicator type |
+| TruSTAR.Indicators.value | string | Indicator value |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-search-indicators```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -397,6 +400,7 @@ Searches for all indicators that contain the given search term.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| MD5 | 7aef3cfa5a71fb2010d8b7ffca95ccf0 |
@@ -425,39 +429,37 @@ Searches for all indicators that contain the given search term.
 >| MD5 | 4f4af35ed47d965bcd1012f2da2d75cd |
 >| SHA1 | da3111fb65f02659d52900412c8968a342fd19ae |
 
-
-
-
 ### trustar-get-enclaves
+
 ***
 Returns the list of all enclaves that the user has access to, as well as whether they can read, create, and update reports in that enclave.
-
 
 #### Base Command
 
 `trustar-get-enclaves`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Enclaves.id | string | Enclave type | 
-| TruSTAR.Enclaves.name | string | Enclave name | 
-| TruSTAR.Enclaves.type | string | Enclave type | 
-| TruSTAR.Enclaves.create | Bool | True if I have create permissions on enclave | 
-| TruSTAR.Enclaves.update | Bool | True if I have update permissions on enclave | 
-| TruSTAR.Enclaves.read | Bool | True if I have read permissions on enclave | 
-
+| TruSTAR.Enclaves.id | string | Enclave type |
+| TruSTAR.Enclaves.name | string | Enclave name |
+| TruSTAR.Enclaves.type | string | Enclave type |
+| TruSTAR.Enclaves.create | Bool | True if I have create permissions on enclave |
+| TruSTAR.Enclaves.update | Bool | True if I have update permissions on enclave |
+| TruSTAR.Enclaves.read | Bool | True if I have read permissions on enclave |
 
 #### Command Example
+
 ```!trustar-get-enclaves```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -942,6 +944,7 @@ Returns the list of all enclaves that the user has access to, as well as whether
 #### Human Readable Output
 
 >### TruSTAR Enclaves
+>
 >|create|id|name|read|type|update|
 >|---|---|---|---|---|---|
 >| false | ed35f85a-d6bf-4e74-a0f8-61651abf705e | IBM X-Force | true | CLOSED | false |
@@ -1004,52 +1007,50 @@ Returns the list of all enclaves that the user has access to, as well as whether
 >| false | 0e450b84-d96f-41de-be51-495af574c1a5 | CrowdStrike Falcon Reports | true | CLOSED | false |
 >| false | 379be0e7-86df-4403-900e-d5e59b9022ae | Intel 471 Adversary List  | true | CLOSED | false |
 
-
-
 ### trustar-related-indicators
+
 ***
 Finds all reports that contain any of the given indicators and returns correlated indicators from those reports.
-
 
 #### Base Command
 
 `trustar-related-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave_ids | Comma-separated list of enclave IDs; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required |
+| enclave_ids | Comma-separated list of enclave IDs; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Indicators.indicatorType | string | Indicator type | 
-| TruSTAR.Indicators.value | string | Indicator value | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
-
+| TruSTAR.Indicators.indicatorType | string | Indicator type |
+| TruSTAR.Indicators.value | string | Indicator value |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-related-indicators indicators=WANNACRY```
 
 #### Context Example
+
 ```
 {
     "CVE": {
@@ -1395,6 +1396,7 @@ Finds all reports that contain any of the given indicators and returns correlate
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| SHA256 | ed01ebfbc9eb5bbea545af4d01bf5f1071661840480439c6e5babe8e080e41aa |
@@ -1424,49 +1426,49 @@ Finds all reports that contain any of the given indicators and returns correlate
 >| CVE | CVE-2017-0147 |
 
 ### trustar-trending-indicators
+
 ***
 Find indicators that are trending in the community.
-
 
 #### Base Command
 
 `trustar-trending-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The types of indicators to be returned. If other, then all indicator types except for CVE and MALWARE will be returned. | Optional | 
-| days_back | The number of days back to count correlations for. | Optional | 
-
+| indicator_type | The types of indicators to be returned. If other, then all indicator types except for CVE and MALWARE will be returned. | Optional |
+| days_back | The number of days back to count correlations for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Indicators.correlationCount | Number | Indicator correlation count | 
-| TruSTAR.Indicators.indicatorType | string | Indicator type | 
-| TruSTAR.Indicators.value | string | Indicator value | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
-
+| TruSTAR.Indicators.correlationCount | Number | Indicator correlation count |
+| TruSTAR.Indicators.indicatorType | string | Indicator type |
+| TruSTAR.Indicators.value | string | Indicator value |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-trending-indicators days_back=1 indicator_type=MALWARE```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -1529,6 +1531,7 @@ Find indicators that are trending in the community.
 #### Human Readable Output
 
 >### Results
+>
 >|correlationCount|indicatorType|value|
 >|---|---|---|
 >| 85 | MALWARE | TRICKBOT |
@@ -1542,55 +1545,55 @@ Find indicators that are trending in the community.
 >| 4 | MALWARE | KRYPTIK |
 >| 4 | MALWARE | ANDROMEDA |
 
-
 ### trustar-indicators-metadata
+
 ***
 Provide metadata associated with a list of indicators, including value, indicatorType, noteCount, sightings, lastSeen, enclaveIds, and tags. The metadata is determined based on the enclaves the user making the request has READ access to.
-
 
 #### Base Command
 
 `trustar-indicators-metadata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave_ids | CSV of enclave IDs to restrict to. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-
+| indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required |
+| enclave_ids | CSV of enclave IDs to restrict to. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). By default, uses all of the user’s enclaves. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.IndicatorsMetadata.notes | string | Indicator notes | 
-| TruSTAR.IndicatorsMetadata.indicatorType | string | Indicator type | 
-| TruSTAR.IndicatorsMetadata.firstSeen | Date | Indicator first seen value | 
-| TruSTAR.IndicatorsMetadata.correlationCount | Number | Indicator correlation count | 
-| TruSTAR.IndicatorsMetadata.value | string | Indicator value | 
-| TruSTAR.IndicatorsMetadata.lastSeen | Date | Indicator last seen value | 
-| TruSTAR.IndicatorsMetadata.tags | string | Indicator tags | 
-| TruSTAR.IndicatorsMetadata.enclaveIds | string | Enclave IDs where indicator is present | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
+| TruSTAR.IndicatorsMetadata.notes | string | Indicator notes |
+| TruSTAR.IndicatorsMetadata.indicatorType | string | Indicator type |
+| TruSTAR.IndicatorsMetadata.firstSeen | Date | Indicator first seen value |
+| TruSTAR.IndicatorsMetadata.correlationCount | Number | Indicator correlation count |
+| TruSTAR.IndicatorsMetadata.value | string | Indicator value |
+| TruSTAR.IndicatorsMetadata.lastSeen | Date | Indicator last seen value |
+| TruSTAR.IndicatorsMetadata.tags | string | Indicator tags |
+| TruSTAR.IndicatorsMetadata.enclaveIds | string | Enclave IDs where indicator is present |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-indicators-metadata indicators=37.26.41.210```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1624,108 +1627,106 @@ Provide metadata associated with a list of indicators, including value, indicato
 #### Human Readable Output
 
 >### Results
+>
 >|correlationCount|enclaveIds|firstSeen|indicatorType|lastSeen|notes|tags|value|
 >|---|---|---|---|---|---|---|---|
 >| 0 | 2eeccced-c740-4ad9-aa5c-82744cd1f6aa | 2020-07-02 04:59:03 | IP | 2020-07-02 04:59:03 |  |  | 37.26.41.210 |
 
-
 ### trustar-indicator-summaries
+
 ***
 Provides structured summaries about indicators, which are derived from intelligence sources on the TruSTAR Marketplace.
-
 
 #### Base Command
 
 `trustar-indicator-summaries`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| values | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave_ids | CSV of enclaves to search for indicator summaries in. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). These should be enclaves containing data from sources on the TruSTAR Marketplace. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| values | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required |
+| enclave_ids | CSV of enclaves to search for indicator summaries in. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). These should be enclaves containing data from sources on the TruSTAR Marketplace. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.IndicatorSummaries.severityLevel | string | Indicator severity level | 
-| TruSTAR.IndicatorSummaries.reportId | string | Indicator report ID | 
-| TruSTAR.IndicatorSummaries.value | string | Indicator value | 
-| TruSTAR.IndicatorSummaries.score.name | string | Indicator score name | 
-| TruSTAR.IndicatorSummaries.score.value | string | Indicator score value | 
-| TruSTAR.IndicatorSummaries.attributes | String | Indicator attributes | 
-| TruSTAR.IndicatorSummaries.enclaveId | string | Indicator enclave ID | 
-| TruSTAR.IndicatorSummaries.type | string | Indicator type | 
-| TruSTAR.IndicatorSummaries.source.key | string | Indicator source key | 
-| TruSTAR.IndicatorSummaries.source.name | string | Indicator source name | 
-| TruSTAR.IndicatorSummaries.updated | string | Indicator last update value | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
-
+| TruSTAR.IndicatorSummaries.severityLevel | string | Indicator severity level |
+| TruSTAR.IndicatorSummaries.reportId | string | Indicator report ID |
+| TruSTAR.IndicatorSummaries.value | string | Indicator value |
+| TruSTAR.IndicatorSummaries.score.name | string | Indicator score name |
+| TruSTAR.IndicatorSummaries.score.value | string | Indicator score value |
+| TruSTAR.IndicatorSummaries.attributes | String | Indicator attributes |
+| TruSTAR.IndicatorSummaries.enclaveId | string | Indicator enclave ID |
+| TruSTAR.IndicatorSummaries.type | string | Indicator type |
+| TruSTAR.IndicatorSummaries.source.key | string | Indicator source key |
+| TruSTAR.IndicatorSummaries.source.name | string | Indicator source name |
+| TruSTAR.IndicatorSummaries.updated | string | Indicator last update value |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-indicator-summaries values=LOCKY,23.121.54.102```
 
 #### Human Readable Output
 
-
 ### trustar-get-whitelisted-indicators
+
 ***
 Gets a list of indicators that the user’s company has added to allow list.
-
 
 #### Base Command
 
 `trustar-get-whitelisted-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.WhitelistedIndicators.indicatorType | string | File MD5 | 
-| TruSTAR.WhitelistedIndicators.value | string | File SHA1 | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
-
+| TruSTAR.WhitelistedIndicators.indicatorType | string | File MD5 |
+| TruSTAR.WhitelistedIndicators.value | string | File SHA1 |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-get-whitelisted-indicators```
 
 #### Context Example
+
 ```
 {
     "Account": {
@@ -1978,6 +1979,7 @@ Gets a list of indicators that the user’s company has added to allow list.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| EMAIL_ADDRESS | htain@trustar.co |
@@ -1999,42 +2001,40 @@ Gets a list of indicators that the user’s company has added to allow list.
 >| SOFTWARE | \windows\system32\cmd.exe |
 >| IP | 109.120.214.195 |
 
-
-
 ### trustar-get-reports
+
 ***
 Returns incident reports matching the specified filters. All parameters are optional: if nothing is specified, the latest 25 reports accessible by the user will be returned (matching the view the user would have by logging into Station).
-
 
 #### Base Command
 
 `trustar-get-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| distribution_type | Whether to search for reports in the community, or only in enclaves | Optional | 
-| enclave_ids | Comma separated list of enclave ids to search for reports in. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| tags | a list of names of tags to filter by; only reports containing ALL of these tags will be returned. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
-| excluded_tags | reports containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
-
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| distribution_type | Whether to search for reports in the community, or only in enclaves | Optional |
+| enclave_ids | Comma separated list of enclave ids to search for reports in. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Even if distributionType is COMMUNITY, these enclaves will still be searched as well. Default is All enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| tags | a list of names of tags to filter by; only reports containing ALL of these tags will be returned. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional |
+| excluded_tags | reports containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Report.title | string | Title of the report | 
-| TruSTAR.Report.reportBody | string | Body of the report | 
-| TruSTAR.Report.id | string | ID of the report | 
-
-
+| TruSTAR.Report.title | string | Title of the report |
+| TruSTAR.Report.reportBody | string | Body of the report |
+| TruSTAR.Report.id | string | ID of the report |
 
 #### Command Example
+
 ```!trustar-get-reports enclave_ids=6ef1078c-a74a-4b42-9344-56c6adea0bda from_time="1 day ago"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2043,50 +2043,49 @@ Returns incident reports matching the specified filters. All parameters are opti
 
 >No reports were found.
 
-
 ### trustar-get-indicators-for-report
+
 ***
 Return a list of indicators extracted from a report.
-
 
 #### Base Command
 
 `trustar-get-indicators-for-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | the ID of the report to get the indicators from | Required | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| report_id | the ID of the report to get the indicators from | Required |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Indicators.type | string | Indicator type | 
-| TruSTAR.Indicators.value | string | Indicator value | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
-
+| TruSTAR.Indicators.type | string | Indicator type |
+| TruSTAR.Indicators.value | string | Indicator value |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-get-indicators-for-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -2168,6 +2167,7 @@ Return a list of indicators extracted from a report.
 #### Human Readable Output
 
 >### Results
+>
 >|indicatorType|value|
 >|---|---|
 >| SHA1 | c5737f53ea049a88162297604b41c791dd8583b3 |
@@ -2176,31 +2176,32 @@ Return a list of indicators extracted from a report.
 >| URL | https://zenshin-talent.us4.list-manage.com/profile?u=bf272ebe406152763de31f5a2&id=d178821f2b&e=0cbc95e07c |
 >| URL | https://zenshin-talent.us4.list-manage.com/unsubscribe?u=bf272ebe406152763de31f5a2&id=d178821f2b&e=0cbc95e07c&c=d1fe02d910 |
 
-
 ### trustar-move-report
+
 ***
 Move a report from one enclave to another.
-
 
 #### Base Command
 
 `trustar-move-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | the ID of the report you want to move | Required | 
-| dest-enclave-id | the ID of the destination enclave | Required | 
-
+| report_id | the ID of the report you want to move | Required |
+| dest-enclave-id | the ID of the destination enclave | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-move-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db dest-enclave-id=71001c42-2d05-4491-bf35-ee7c678b92da```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2209,31 +2210,32 @@ There is no context output for this command.
 
 >20ce2d7f-4a25-4bed-a74e-ec99bf0b46db has been moved to enclave id: 71001c42-2d05-4491-bf35-ee7c678b92da
 
-
 ### trustar-copy-report
+
 ***
 Copies a report from one enclave to another.
-
 
 #### Base Command
 
 `trustar-copy-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | the ID of the report you want to move | Required | 
-| dest_enclave_id | the ID of the destination enclave | Required | 
-
+| report_id | the ID of the report you want to move | Required |
+| dest_enclave_id | the ID of the destination enclave | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-copy-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 dest_enclave_id=c879f089-ffbd-4a2f-8144-d3e8bdbd6981```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2242,42 +2244,41 @@ There is no context output for this command.
 
 >6e00a714-379a-4db8-ac0c-812a629c8288 has been copied to enclave id: c879f089-ffbd-4a2f-8144-d3e8bdbd6981 with id: 9cc749a5-21b2-418d-8fa7-5e28fcf671ba
 
-
-
 ### trustar-submit-report
+
 ***
 Submit a new incident report, and receive the ID it has been assigned in TruSTAR’s system.
-
 
 #### Base Command
 
 `trustar-submit-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | Title of the report | Required | 
-| report_body | Text content of report | Required | 
-| enclave_ids | CSV of TruSTAR-generated enclave ids. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| distribution_type | Distribution type of the report | Optional | 
-| external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional | 
-| time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional | 
-| redact | YES OR NO. If redact is YES, all terms from user's company redaction library in TruSTAR will be applied before submitting. If NO, submits the report with body and title as written by the user. | Optional | 
-
+| title | Title of the report | Required |
+| report_body | Text content of report | Required |
+| enclave_ids | CSV of TruSTAR-generated enclave ids. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| distribution_type | Distribution type of the report | Optional |
+| external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional |
+| time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional |
+| redact | YES OR NO. If redact is YES, all terms from user's company redaction library in TruSTAR will be applied before submitting. If NO, submits the report with body and title as written by the user. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Report.title | string | Title of the report | 
-| TruSTAR.Report.reportBody | string | Body of the report | 
-| TruSTAR.Report.id | string | ID of the report | 
-
+| TruSTAR.Report.title | string | Title of the report |
+| TruSTAR.Report.reportBody | string | Body of the report |
+| TruSTAR.Report.id | string | ID of the report |
 
 #### Command Example
+
 ```!trustar-submit-report title="foo title" report_body="the report body" enclave_ids=080234eb-d818-4507-a676-dae5c5927d94```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2293,36 +2294,37 @@ Submit a new incident report, and receive the ID it has been assigned in TruSTAR
 #### Human Readable Output
 
 >### TruSTAR report was successfully created
+>
 >|distributionType|enclaveIds|id|reportBody|reportDeepLink|timeBegan|title|
 >|---|---|---|---|---|---|---|
 >| ENCLAVE | 080234eb-d818-4507-a676-dae5c5927d94 | 5cf979cb-aae6-4270-8295-52a2ed2b36a1 | the report body | https://station.trustar.co/constellation/reports/5cf979cb-aae6-4270-8295-52a2ed2b36a1 | 2020-07-02T20:51:05.817066+00:00 | foo title |
 
-
 ### trustar-delete-report
+
 ***
 Deletes a report as specified by given id (id can be TruSTAR report id or external id).
-
 
 #### Base Command
 
 `trustar-delete-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | Finds a report by its internal or external id. | Required | 
-| id_type | Type of report ID | Optional | 
-
+| report_id | Finds a report by its internal or external id. | Required |
+| id_type | Type of report ID | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
-
 #### Command Example
+
 ```!trustar-delete-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2331,33 +2333,34 @@ There is no context output for this command.
 
 >Report 20ce2d7f-4a25-4bed-a74e-ec99bf0b46db was successfully deleted
 
-
 ### trustar-correlated-reports
+
 ***
 Returns a list of all reports that contain any of the provided indicator values.
-
 
 #### Base Command
 
 `trustar-correlated-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required | 
-| enclave-ids | Comma-separated list of enclave ids; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-| distribution_type | Distribution type of the report | Optional | 
-
+| indicators | Comma separated indicator values. Values can be any of the following types; i.e. an IP address, email address, URL, MD5, SHA1, SHA256, Registry Key, Malware name, etc. | Required |
+| enclave-ids | Comma-separated list of enclave ids; (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). Defaults is all enclaves the user has READ access to. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
+| distribution_type | Distribution type of the report | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-correlated-reports indicators=WANNACRY```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2366,38 +2369,36 @@ There is no context output for this command.
 
 >No reports were found.
 
-
-
 ### trustar-report-details
+
 ***
 Finds a report by its ID and returns the report details.
-
 
 #### Base Command
 
 `trustar-report-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | Finds a report by its internal or external id. | Required | 
-| id_type | Type of report ID | Optional | 
-
+| report_id | Finds a report by its internal or external id. | Required |
+| id_type | Type of report ID | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Report.title | string | Title of the report | 
-| TruSTAR.Report.reportBody | string | Body of the report | 
-| TruSTAR.Report.id | string | ID of the report | 
-
-
+| TruSTAR.Report.title | string | Title of the report |
+| TruSTAR.Report.reportBody | string | Body of the report |
+| TruSTAR.Report.id | string | ID of the report |
 
 #### Command Example
+
 ```!trustar-report-details report_id=6e00a714-379a-4db8-ac0c-812a629c8288```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2413,46 +2414,46 @@ Finds a report by its ID and returns the report details.
 #### Human Readable Output
 
 >### TruSTAR report ID 6e00a714-379a-4db8-ac0c-812a629c8288 details
+>
 >|created|distributionType|enclaveIds|externalTrackingId|id|reportBody|reportDeepLink|timeBegan|title|updated|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288 | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
 
-
 ### trustar-update-report
+
 ***
 Update the report with the specified ID. Either the internal TruSTAR report ID or an external tracking ID can be used. Only the fields passed will be updated. All others will be left unchanged.
-
 
 #### Base Command
 
 `trustar-update-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | TruSTAR report id or external tracking id. | Required | 
-| title | Title of the report | Optional | 
-| report-body | Text content of report | Optional | 
-| enclave_ids | CSV of TruSTAR-generated enclave ids. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional | 
-| distribution_type | Distribution type of the report | Optional | 
-| time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional | 
-
+| report_id | TruSTAR report id or external tracking id. | Required |
+| title | Title of the report | Optional |
+| report-body | Text content of report | Optional |
+| enclave_ids | CSV of TruSTAR-generated enclave ids. (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Use the enclave ID, NOT the enclave name. Mandatory if the distribution type is ENCLAVE. You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| external_url | URL for the external report that this originated from, if one exists. Limit 500 alphanumeric characters. Must be unique across all reports for a given company. | Optional |
+| distribution_type | Distribution type of the report | Optional |
+| time_began | ISO-8601 formatted incident time with timezone, e.g. 2016-09-22T11:38:35+00:00. Default is current time. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Report.title | string | Title of the report | 
-| TruSTAR.Report.reportBody | string | Body of the report | 
-| TruSTAR.Report.id | string | ID of the report | 
-
-
+| TruSTAR.Report.title | string | Title of the report |
+| TruSTAR.Report.reportBody | string | Body of the report |
+| TruSTAR.Report.id | string | ID of the report |
 
 #### Command Example
+
 ```!trustar-update-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 title="The new title"```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2468,44 +2469,45 @@ Update the report with the specified ID. Either the internal TruSTAR report ID o
 #### Human Readable Output
 
 >### TruSTAR report was successfully updated
+>
 >|created|distributionType|enclaveIds|externalTrackingId|externalUrl|id|reportBody|reportDeepLink|timeBegan|title|updated|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-06-22 15:25:04 | ENCLAVE | d915e45a-d0c8-4a75-987a-775649020c96 | PGJmMjcyZWJlNDA2MTUyNzYzZGUzMWY1YTIuMGNiYzk1ZTA3Yy4yMDIwMDYxNzEzMTQyNS5kMWZlMDJkOTEwLmNmYjY5Mjg1QG1haWwyMjYuc2VhODEubWNzdi5uZXQ+ |  | 6e00a714-379a-4db8-ac0c-812a629c8288 | <br/>==================================================<br/> EMAIL THREAD DATE: 2020-06-22 11:22:59<br/>==================================================<br/>Fwd: Looking to hire? | https://station.trustar.co/constellation/reports/6e00a714-379a-4db8-ac0c-812a629c8288 | 2020-06-22 15:25:04 | The new title | 2020-06-22 15:25:04 |
 
-
 ### trustar-search-reports
+
 ***
 Searches for all reports that contain the given search term.
-
 
 #### Base Command
 
 `trustar-search-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_term | The term to search for (e.g. covid-19) If empty, no search term will be applied. Otherwise, must be at least 3 characters. | Optional | 
-| enclave_ids | Comma-separated list of enclave ids (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional | 
-| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| tags | Name (or list of names) of tag(s) to filter indicators by. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). Only indicators containing ALL of these tags will be returned. | Optional | 
-| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| search_term | The term to search for (e.g. covid-19) If empty, no search term will be applied. Otherwise, must be at least 3 characters. | Optional |
+| enclave_ids | Comma-separated list of enclave ids (i.e. &lt;enclave1&gt;,&lt;enclave2&gt;,&lt;enclave3&gt;). Only indicators found in reports from these enclaves will be returned (defaults to all of user’s enclaves). You can get a list of your enclave IDs executing the command '!trustar-get-enclaves' | Optional |
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| tags | Name (or list of names) of tag(s) to filter indicators by. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). Only indicators containing ALL of these tags will be returned. | Optional |
+| excluded_tags | Indicators containing ANY of these tags will be excluded from the results. Can be a single tag or a list of tags. i.e. &lt;tag1&gt;,&lt;tag2&gt;,&lt;tag3&gt;). | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.Report.id | string | ID of the report | 
-| TruSTAR.Report.title | string | Report Title | 
-
+| TruSTAR.Report.id | string | ID of the report |
+| TruSTAR.Report.title | string | Report Title |
 
 #### Command Example
+
 ```!trustar-search-reports search_term=WANNACRY```
 
 #### Context Example
+
 ```
 {
     "TruSTAR": {
@@ -2618,6 +2620,7 @@ Searches for all reports that contain the given search term.
 #### Human Readable Output
 
 >### TruSTAR reports that contain the term WANNACRY
+>
 >|created|distributionType|enclaveIds|id|title|updated|
 >|---|---|---|---|---|---|
 >| 2020-07-02 19:14:00 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | 319b7fa5-0be0-4ff0-aac8-f4455f7a99ce | URLhaus - http://demo.singhealth.xyz/files/WannaCry/GeneralElectionCandidates.pdf.exe | 2020-07-02 19:14:00 |
@@ -2646,30 +2649,31 @@ Searches for all reports that contain the given search term.
 >| 2020-06-10 20:37:01 | ENCLAVE | d039cebb-fb2a-411f-bbc8-7e6a80af105f | e36505b3-de31-48f9-a39b-9dba57051fe2 | URLhaus - https://github.com/71e6fd52/wannacry/raw/master/wannacry.exe | 2020-06-10 20:37:01 |
 >| 2020-03-25 17:41:22 | ENCLAVE | 82c899e4-1031-4e5a-bb0b-c91a4e95150c | e218d224-c92f-4004-8614-580d8a02440b | Hungary Global Spotlight (Analyst Knowledge Page) | 2020-06-09 20:48:08 |
 
-
 ### trustar-add-to-whitelist
+
 ***
 Add to allow list a list of indicator values for the user’s company.
-
 
 #### Base Command
 
 `trustar-add-to-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicators | CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224 | Required | 
-
+| indicators | CSV of indicators to add to allow list, i.e. evil.com,101.43.52.224 | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-add-to-whitelist indicators=8.8.8.8```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2679,30 +2683,31 @@ There is no context output for this command.
 >['8.8.8.8'] added to the allow list successfully
 
 ### trustar-remove-from-whitelist
+
 ***
 Delete an indicator from the user’s company allow list.
-
 
 #### Base Command
 
 `trustar-remove-from-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The value of the indicator to delete. | Required | 
-| indicator_type | The type of the indicator to delete. | Required | 
-
+| indicator | The value of the indicator to delete. | Required |
+| indicator_type | The type of the indicator to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
-
 #### Command Example
+
 ```!trustar-remove-from-whitelist indicator=8.8.8.8 indicator_type=IP```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2711,44 +2716,44 @@ There is no context output for this command.
 
 >8.8.8.8 removed from the allow list successfully
 
-
 ### trustar-get-phishing-submissions
+
 ***
 Fetches all phishing submissions that fit the given criteria
-
 
 #### Base Command
 
 `trustar-get-phishing-submissions`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. -1,0,2) | Optional | 
-| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| status | A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. -1,0,2) | Optional |
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| status | A list of triage statuses for submissions (UNRESOLVED,CONFIRMED,IGNORED); only email submissions marked with at least one of these statuses will be returned | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.PhishingSubmission.submissionId | string | The submission ID | 
-| TruSTAR.PhishingSubmission.title | string | Submission title | 
-| TruSTAR.PhishingSubmission.normalizedTriageScore | number | Submission triage score | 
-| TruSTAR.PhishingSubmission.context.indicatorType | string | Indicator type | 
-| TruSTAR.PhishingSubmission.context.sourceKey | string | Indicator source | 
-| TruSTAR.PhishingSubmission.context.normalizedSourceScore | number | Indicator score | 
-| TruSTAR.PhishingSubmission.context.originalIndicatorScore.name | string | Original Indicator score name | 
-| TruSTAR.PhishingSubmission.context.originalIndicatorScore.value | string | Original Indicator score value | 
-
+| TruSTAR.PhishingSubmission.submissionId | string | The submission ID |
+| TruSTAR.PhishingSubmission.title | string | Submission title |
+| TruSTAR.PhishingSubmission.normalizedTriageScore | number | Submission triage score |
+| TruSTAR.PhishingSubmission.context.indicatorType | string | Indicator type |
+| TruSTAR.PhishingSubmission.context.sourceKey | string | Indicator source |
+| TruSTAR.PhishingSubmission.context.normalizedSourceScore | number | Indicator score |
+| TruSTAR.PhishingSubmission.context.originalIndicatorScore.name | string | Original Indicator score name |
+| TruSTAR.PhishingSubmission.context.originalIndicatorScore.value | string | Original Indicator score value |
 
 #### Command Example
+
 ```!trustar-get-phishing-submissions from_time="7 days ago"```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2757,32 +2762,32 @@ Fetches all phishing submissions that fit the given criteria
 
 >No phishing submissions were found.
 
-
-
 ### trustar-set-triage-status
+
 ***
 Marks a phishing email submission with one of the phishing namespace tags
-
 
 #### Base Command
 
 `trustar-set-triage-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submission_id | ID of the email submission | Required | 
-| status | Submission status | Required | 
-
+| submission_id | ID of the email submission | Required |
+| status | Submission status | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!trustar-set-triage-status submission_id=6e00a714-379a-4db8-ac0c-812a629c8288 status=CONFIRMED```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -2791,57 +2796,57 @@ There is no context output for this command.
 
 >Submission ID 6e00a714-379a-4db8-ac0c-812a629c8288 is ['CONFIRMED']
 
-
 ### trustar-get-phishing-indicators
+
 ***
 Get phishing indicators that match the given criteria.
-
 
 #### Base Command
 
 `trustar-get-phishing-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| normalized_indicator_score | List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3), | Optional | 
-| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3), | Optional | 
-| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional | 
-| status | A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED' | Optional | 
-| limit | Limit of results to return. Max value possible is 1000. | Optional | 
-
+| normalized_indicator_score | List of Intel scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3), | Optional |
+| priority_event_score | List of email submissions scores to restrict the query. Possible values are -1, 0, 1, 2, 3. (i.e. 0,2,3), | Optional |
+| from_time | Start of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| to_time | End of time window (format can be absolute like YYYY-MM-DD HH:MM:SS, i.e. 2018-01-01 10:30:00; OR relative, i.e. '10 minutes ago', '5 days ago', etc). Based on updated time, and not created time. Default is 1 day ago. | Optional |
+| status | A list of triage statuses for submissions; only email submissions marked with at least one of these statuses will be returned. Options are 'UNRESOLVED', 'CONFIRMED', 'IGNORED' | Optional |
+| limit | Limit of results to return. Max value possible is 1000. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TruSTAR.PhishingIndicator.indicatorType | string | Indicator Type | 
-| TruSTAR.PhishingIndicator.normalizedIndicatorScore | number | Indicator normalized score | 
-| TruSTAR.PhishingIndicator.originalIndicatorScore.name | string | Indicator original score name | 
-| TruSTAR.PhishingIndicator.originalIndicatorScore.value | string | Indicator original score value | 
-| TruSTAR.PhishingIndicator.sourceKey | string | Indicator source key | 
-| TruSTAR.PhishingIndicator.value | string | Indicator value | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 | 
-| Account.Email.Address | String | The email address of the account. | 
-| RegistryKey.Path | String | The path to the registry key | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of the indicator | 
-| DBotScore.Vendor | string | Vendor used to calculate the score | 
-| DBotScore.Score | number | The actual score | 
-
+| TruSTAR.PhishingIndicator.indicatorType | string | Indicator Type |
+| TruSTAR.PhishingIndicator.normalizedIndicatorScore | number | Indicator normalized score |
+| TruSTAR.PhishingIndicator.originalIndicatorScore.name | string | Indicator original score name |
+| TruSTAR.PhishingIndicator.originalIndicatorScore.value | string | Indicator original score value |
+| TruSTAR.PhishingIndicator.sourceKey | string | Indicator source key |
+| TruSTAR.PhishingIndicator.value | string | Indicator value |
+| File.Name | String | The full file name \(including file extension\). |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA1 hash of the file. |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| CVE.ID | String | The ID of the CVE, for example: CVE\-2015\-1653 |
+| Account.Email.Address | String | The email address of the account. |
+| RegistryKey.Path | String | The path to the registry key |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | string | The indicator we tested |
+| DBotScore.Type | string | The type of the indicator |
+| DBotScore.Vendor | string | Vendor used to calculate the score |
+| DBotScore.Score | number | The actual score |
 
 #### Command Example
+
 ```!trustar-get-phishing-indicators from_time="7 days ago"```
 
 #### Context Example
+
 ```
 {}
 ```

@@ -31,6 +31,7 @@ PACKS_DIR_NAME = "Packs"
 CONTENT_REPO_URL = "https://github.com/demisto/content.git"
 CACHED_MODULES_DIR = "/tmp/cached_modules"
 PRE_COMMIT_TEMPLATE_PATH = os.path.join(CONTENT_DIR_PATH, ".pre-commit-config_template.yaml")
+PRE_COMMIT_MODE = "validate_content"
 BRANCH_MASTER = "master"
 DEFAULT_ERROR_PATTERN = {
     "regex": re.compile(r"(\/[\w\/\.-]+):(\d+):(\d+): .* : (.*)"),
@@ -504,6 +505,7 @@ def run_pre_commit(output_path: Path) -> int:
         run_docker_hooks=False,
         pre_commit_template_path=Path(PRE_COMMIT_TEMPLATE_PATH),
         json_output_path=output_path,
+        mode=PRE_COMMIT_MODE,
     )
     demisto.debug(f"run_pre_commit {exit_code=}")
     return exit_code

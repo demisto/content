@@ -1,6 +1,7 @@
 Aggregate entries from ServiceNow CMDB into AttributionCI
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Aggregate entries from ServiceNow CMDB into AttributionCI
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Expanse Attribution Subplaybook
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +27,7 @@ This script is used in the following playbooks and scripts.
 | current | Current aggregation state. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -22,7 +22,7 @@ See the documentation below for the configuration required for each event type t
 
 Sign in to your AWS account and create a dedicated Amazon S3 bucket, which collects the generic logs that you want to capture.
 
-See this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
+See this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
 
 **On Radware Cloud Services**
 
@@ -44,7 +44,7 @@ For additional information, refer to the official Radware [documentation](https:
 2. Click **Amazon S3**.
 3. Click **Connect** or **Connect Another Instance**.
 4. Set the following values:
-   - SQS URL - Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+   - SQS URL - Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
    - Name as `Radware Access Log`
    - AWS Client ID
    - AWS Client Secret
@@ -54,7 +54,7 @@ For additional information, refer to the official Radware [documentation](https:
    - Product as `access_logs`
    - Compression as `gzip`
 
-For additional information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+For additional information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
 
 ## Collect Radware AppWall Cloud WAF Security Events
 
@@ -112,7 +112,7 @@ You need to update this file to include a syslog *output* plugin that would forw
 
 ### Configure Cortex XSIAM Broker VM Syslog Server  
 
-You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
+You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Set-up-and-configure-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
 

@@ -782,6 +782,9 @@ script:
     - name: timeout
       description: The timeout for the polling in seconds.
       defaultValue: "1200"
+    - name: interval_in_seconds
+      description: The timeout for the interval in seconds.
+      defaultValue: "45"
     - name: hide_polling_output
       description: Hide polling output.
       deprecated: true

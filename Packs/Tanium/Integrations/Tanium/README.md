@@ -96,12 +96,12 @@
 </pre>
 <h5>Context Example</h5>
 <pre>{
-	Tanium: {
-   		QuestionResults:[{
-      		Computer Name: Demisto-Computer,
-      		Count:1
-   		}]
-	}
+ Tanium: {
+     QuestionResults:[{
+        Computer Name: Demisto-Computer,
+        Count:1
+     }]
+ }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -166,12 +166,12 @@
 <pre>!tn-ask-system hostname="Demisto-Computer"</pre>
 <h5>Context Example</h5>
 <pre>{
-	Tanium: {
-   		QuestionResults:[{
-      		Computer Name: Demisto-Computer,
-      		Count:1
-   		}]
-	}
+ Tanium: {
+     QuestionResults:[{
+        Computer Name: Demisto-Computer,
+        Count:1
+     }]
+ }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -283,12 +283,12 @@
 <pre>!tn-ask-manual-question sensors="Computer Name, opt:max_data_age:60" question_filters="Index Query File Exists{fileMagicNumber=10}, that contains:No;Computer Name, that contains:WIN"</pre>
 <h5>Context Example</h5>
 <pre>{
-	Tanium: {
-   		QuestionResults:[{
-      		Computer Name: Demisto-Computer,
-      		Count:1
-   		}]
-	}
+ Tanium: {
+     QuestionResults:[{
+        Computer Name: Demisto-Computer,
+        Count:1
+     }]
+ }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -388,10 +388,10 @@
 <pre>!tn-deploy-package package="Comply - Remove Selected Hashes - Unix" package_args=hash1</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	SavedActions:[{
-		Id:1050
-		Name:API Deploy Comply - Remove Selected Hashes - Unix
-	}]
+ SavedActions:[{
+  Id:1050
+  Name:API Deploy Comply - Remove Selected Hashes - Unix
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -452,11 +452,11 @@
 <pre>!tn-approve-pending-action id=1050</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	ActionApproval:[{
-		ApprovedFlag:1
-		Id:1050
-		Name:API Deploy Comply - Remove Selected Hashes - Unix
-	}]
+ ActionApproval:[{
+  ApprovedFlag:1
+  Id:1050
+  Name:API Deploy Comply - Remove Selected Hashes - Unix
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -598,29 +598,29 @@
 <pre>!tn-create-package command="cmd /c echo $1" name=ExamplePackage display_name="Example Package"</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	Packages:[{
-		skip_lock_flag:0
-		hidden_flag:0
-		verify_group_id:0
-		available_time:2001-01-01T00:00:00
-		last_modified_by:Shani
-		verify_expire_seconds:3600
-		display_name:Echo
-		name:EchoPackage
-		command:cmd /c echo $1
-		creation_time:2018-08-23T15:22:54
-		command_timeout:600
-		modification_time:2018-08-23T15:22:54
-		last_update:2018-08-23T15:22:54
-		deleted_flag:0
-		_type:package_spec
-		verify_group:{}
-		_type:group
-		id:0
-		id:771
-		expire_seconds:600
-		source_id:0
-	}]
+ Packages:[{
+  skip_lock_flag:0
+  hidden_flag:0
+  verify_group_id:0
+  available_time:2001-01-01T00:00:00
+  last_modified_by:Shani
+  verify_expire_seconds:3600
+  display_name:Echo
+  name:EchoPackage
+  command:cmd /c echo $1
+  creation_time:2018-08-23T15:22:54
+  command_timeout:600
+  modification_time:2018-08-23T15:22:54
+  last_update:2018-08-23T15:22:54
+  deleted_flag:0
+  _type:package_spec
+  verify_group:{}
+  _type:group
+  id:0
+  id:771
+  expire_seconds:600
+  source_id:0
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -705,29 +705,29 @@
 <pre>!tn-get-sensor name="Index Query File Exists"</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	Sensors:[{
-		hidden_flag:0
-		string_count:6
-		max_age_seconds:86400
-		queries:{
-			_type:queries
-			query:[{
-				_type:query
-				platform:Windows
-				script:select CSName from win32_operatingsystem
-				script_type:WMIQuery
-			}]
-		}
-		exclude_from_parse_flag:0
-		value_type:String
-		name:Computer Name
-		ignore_case_flag:1
-		_type:sensor
-		id:3
-		description:The assigned name of the client machine. Example: workstation-1.company.com
-		category:Reserved
-		source_id:0
-	}]
+ Sensors:[{
+  hidden_flag:0
+  string_count:6
+  max_age_seconds:86400
+  queries:{
+   _type:queries
+   query:[{
+    _type:query
+    platform:Windows
+    script:select CSName from win32_operatingsystem
+    script_type:WMIQuery
+   }]
+  }
+  exclude_from_parse_flag:0
+  value_type:String
+  name:Computer Name
+  ignore_case_flag:1
+  _type:sensor
+  id:3
+  description:The assigned name of the client machine. Example: workstation-1.company.com
+  category:Reserved
+  source_id:0
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -893,31 +893,31 @@
 <pre>!tn-get-package name="Set Mac Tanium Client Logging Level"</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	Packages:[{
-		skip_lock_flag:0
-		hidden_flag:0
-		verify_group_id:0
-		available_time:2016-04-06T13:03:12
-		last_modified_by:Administrator
-		verify_expire_seconds:600
-		display_name:Set Mac Tanium Client Logging Level
-		parameter_definition:{"parameters":[{"maximum":99,"key":"$1","stepSize":1,"label":"Log Level (0-99)","helpString":"Enter a logging level, 0=no logging, 99=verbose logging","snapInterval":1,"defaultValue":"1","minimum":0,"value":"1","parameterType":"com.tanium.components.parameters::NumericParameter","model":"com.tanium.components.parameters::NumericParameter"}],"parameterType":"com.tanium.components.parameters::ParametersArray","model":"com.tanium.components.parameters::ParametersArray"}
-		name:Set Mac Tanium Client Logging Level
-		command:/bin/sh set-log-level-parameterized.sh $1
-		creation_time:2018-01-10T18:37:56
-		command_timeout:900
-		modification_time:2018-01-10T18:37:56
-		last_update:2018-01-10T18:37:56
-		deleted_flag:0
-		files:{}
-		_type:package_spec
-		verify_group:{}
-		_type:group
-		id:0
-		id:50
-		expire_seconds:1500
-		source_id:0
-	}]
+ Packages:[{
+  skip_lock_flag:0
+  hidden_flag:0
+  verify_group_id:0
+  available_time:2016-04-06T13:03:12
+  last_modified_by:Administrator
+  verify_expire_seconds:600
+  display_name:Set Mac Tanium Client Logging Level
+  parameter_definition:{"parameters":[{"maximum":99,"key":"$1","stepSize":1,"label":"Log Level (0-99)","helpString":"Enter a logging level, 0=no logging, 99=verbose logging","snapInterval":1,"defaultValue":"1","minimum":0,"value":"1","parameterType":"com.tanium.components.parameters::NumericParameter","model":"com.tanium.components.parameters::NumericParameter"}],"parameterType":"com.tanium.components.parameters::ParametersArray","model":"com.tanium.components.parameters::ParametersArray"}
+  name:Set Mac Tanium Client Logging Level
+  command:/bin/sh set-log-level-parameterized.sh $1
+  creation_time:2018-01-10T18:37:56
+  command_timeout:900
+  modification_time:2018-01-10T18:37:56
+  last_update:2018-01-10T18:37:56
+  deleted_flag:0
+  files:{}
+  _type:package_spec
+  verify_group:{}
+  _type:group
+  id:0
+  id:50
+  expire_seconds:1500
+  source_id:0
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1050,30 +1050,30 @@
 <pre>!tn-get-saved-question id=132</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	SavedQuestions:[{
-		row_count_flag:0
-		hidden_flag:0
-		public_flag:1
-		query_text:Get Is Virtual and Chassis Type from all machines
-		issue_seconds_never_flag:0
-		keep_seconds:0
-		question:{}
-		archive_enabled_flag:0
-		mod_user:{}
-		mod_time:2018-01-10T18:38:00
-		action_tracking_flag:0
-		name:Virtualized / Physical Chassis
-		user: {}
-		most_recent_question_id:519303
-		packages:{}
-		archive_owner:{}
-		sort_column:0
-		_type:saved_question
-		issue_seconds:120
-		id:182
-		cache_row_id:68
-		expire_seconds:600
-	}]
+ SavedQuestions:[{
+  row_count_flag:0
+  hidden_flag:0
+  public_flag:1
+  query_text:Get Is Virtual and Chassis Type from all machines
+  issue_seconds_never_flag:0
+  keep_seconds:0
+  question:{}
+  archive_enabled_flag:0
+  mod_user:{}
+  mod_time:2018-01-10T18:38:00
+  action_tracking_flag:0
+  name:Virtualized / Physical Chassis
+  user: {}
+  most_recent_question_id:519303
+  packages:{}
+  archive_owner:{}
+  sort_column:0
+  _type:saved_question
+  issue_seconds:120
+  id:182
+  cache_row_id:68
+  expire_seconds:600
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1244,31 +1244,31 @@
 <pre>!tn-get-all-packages</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	Packages:[{
-		skip_lock_flag:0
-		hidden_flag:0
-		verify_group_id:0
-		available_time:2016-04-06T13:03:12
-		last_modified_by:Administrator
-		verify_expire_seconds:600
-		display_name:Set Mac Tanium Client Logging Level
-		parameter_definition:{"parameters":[{"maximum":99,"key":"$1","stepSize":1,"label":"Log Level (0-99)","helpString":"Enter a logging level, 0=no logging, 99=verbose logging","snapInterval":1,"defaultValue":"1","minimum":0,"value":"1","parameterType":"com.tanium.components.parameters::NumericParameter","model":"com.tanium.components.parameters::NumericParameter"}],"parameterType":"com.tanium.components.parameters::ParametersArray","model":"com.tanium.components.parameters::ParametersArray"}
-		name:Set Mac Tanium Client Logging Level
-		command:/bin/sh set-log-level-parameterized.sh $1
-		creation_time:2018-01-10T18:37:56
-		command_timeout:900
-		modification_time:2018-01-10T18:37:56
-		last_update:2018-01-10T18:37:56
-		deleted_flag:0
-		files:{}
-		_type:package_spec
-		verify_group:{}
-		_type:group
-		id:0
-		id:50
-		expire_seconds:1500
-		source_id:0
-	}]
+ Packages:[{
+  skip_lock_flag:0
+  hidden_flag:0
+  verify_group_id:0
+  available_time:2016-04-06T13:03:12
+  last_modified_by:Administrator
+  verify_expire_seconds:600
+  display_name:Set Mac Tanium Client Logging Level
+  parameter_definition:{"parameters":[{"maximum":99,"key":"$1","stepSize":1,"label":"Log Level (0-99)","helpString":"Enter a logging level, 0=no logging, 99=verbose logging","snapInterval":1,"defaultValue":"1","minimum":0,"value":"1","parameterType":"com.tanium.components.parameters::NumericParameter","model":"com.tanium.components.parameters::NumericParameter"}],"parameterType":"com.tanium.components.parameters::ParametersArray","model":"com.tanium.components.parameters::ParametersArray"}
+  name:Set Mac Tanium Client Logging Level
+  command:/bin/sh set-log-level-parameterized.sh $1
+  creation_time:2018-01-10T18:37:56
+  command_timeout:900
+  modification_time:2018-01-10T18:37:56
+  last_update:2018-01-10T18:37:56
+  deleted_flag:0
+  files:{}
+  _type:package_spec
+  verify_group:{}
+  _type:group
+  id:0
+  id:50
+  expire_seconds:1500
+  source_id:0
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1365,30 +1365,30 @@
 <pre>!tn-get-all-saved-questions</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	SavedQuestions:[{
-		row_count_flag:0
-		hidden_flag:0
-		public_flag:1
-		query_text:Get Is Virtual and Chassis Type from all machines
-		issue_seconds_never_flag:0
-		keep_seconds:0
-		question:{}
-		archive_enabled_flag:0
-		mod_user:{}
-		mod_time:2018-01-10T18:38:00
-		action_tracking_flag:0
-		name:Virtualized / Physical Chassis
-		user: {}
-		most_recent_question_id:519303
-		packages:{}
-		archive_owner:{}
-		sort_column:0
-		_type:saved_question
-		issue_seconds:120
-		id:182
-		cache_row_id:68
-		expire_seconds:600
-	}]
+ SavedQuestions:[{
+  row_count_flag:0
+  hidden_flag:0
+  public_flag:1
+  query_text:Get Is Virtual and Chassis Type from all machines
+  issue_seconds_never_flag:0
+  keep_seconds:0
+  question:{}
+  archive_enabled_flag:0
+  mod_user:{}
+  mod_time:2018-01-10T18:38:00
+  action_tracking_flag:0
+  name:Virtualized / Physical Chassis
+  user: {}
+  most_recent_question_id:519303
+  packages:{}
+  archive_owner:{}
+  sort_column:0
+  _type:saved_question
+  issue_seconds:120
+  id:182
+  cache_row_id:68
+  expire_seconds:600
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1509,33 +1509,33 @@
 <pre>!tn-get-all-saved-actions</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	SavedActions:[{
-		distribute_seconds:0
-		public_flag:0
-		action_group_id:0
-		approver:{}
-		issue_count:0
-		start_time:2001-01-01T00:00:00
-		name:Unscheduled - Clean Stale Tanium Client Data
-		user:{}
-		creation_time:2016-08-10T07:12:58
-		metadata:{}
-		target_group:{}
-		end_time:Never
-		status:1
-		last_start_time:Never
-		package_spec:{}
-		approved_flag:1
-		next_start_time:Never
-		_type:saved_action
-		issue_seconds:0
-		policy_flag:0
-		id:94
-		cache_row_id:1
-		user_start_time:2016-08-10T07:13:00
-		expire_seconds:1800
-		last_action:{} 
-	}]
+ SavedActions:[{
+  distribute_seconds:0
+  public_flag:0
+  action_group_id:0
+  approver:{}
+  issue_count:0
+  start_time:2001-01-01T00:00:00
+  name:Unscheduled - Clean Stale Tanium Client Data
+  user:{}
+  creation_time:2016-08-10T07:12:58
+  metadata:{}
+  target_group:{}
+  end_time:Never
+  status:1
+  last_start_time:Never
+  package_spec:{}
+  approved_flag:1
+  next_start_time:Never
+  _type:saved_action
+  issue_seconds:0
+  policy_flag:0
+  id:94
+  cache_row_id:1
+  user_start_time:2016-08-10T07:13:00
+  expire_seconds:1800
+  last_action:{}
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1664,33 +1664,33 @@
 <pre>!tn-get-all-pending-actions</pre>
 <h5>Context Example</h5>
 <pre>Tanium:{
-	PendingActions:[{
-		distribute_seconds:0
-		public_flag:0
-		action_group_id:0
-		approver:{}
-		issue_count:0
-		start_time:2001-01-01T00:00:00
-		name:Unscheduled - Clean Stale Tanium Client Data
-		user:{}
-		creation_time:2016-08-10T07:12:58
-		metadata:{}
-		target_group:{}
-		end_time:Never
-		status:1
-		last_start_time:Never
-		package_spec:{}
-		approved_flag:1
-		next_start_time:Never
-		_type:saved_action
-		issue_seconds:0
-		policy_flag:0
-		id:94
-		cache_row_id:1
-		user_start_time:2016-08-10T07:13:00
-		expire_seconds:1800
-		last_action:{} 
-	}]
+ PendingActions:[{
+  distribute_seconds:0
+  public_flag:0
+  action_group_id:0
+  approver:{}
+  issue_count:0
+  start_time:2001-01-01T00:00:00
+  name:Unscheduled - Clean Stale Tanium Client Data
+  user:{}
+  creation_time:2016-08-10T07:12:58
+  metadata:{}
+  target_group:{}
+  end_time:Never
+  status:1
+  last_start_time:Never
+  package_spec:{}
+  approved_flag:1
+  next_start_time:Never
+  _type:saved_action
+  issue_seconds:0
+  policy_flag:0
+  id:94
+  cache_row_id:1
+  user_start_time:2016-08-10T07:13:00
+  expire_seconds:1800
+  last_action:{}
+ }]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1774,15 +1774,15 @@
 }</pre>
 <p> </p>
 
-
 ### tn-get-all-sensors
+
 ***
 Gets all sensors
-
 
 #### Base Command
 
 `tn-get-all-sensors`
+
 #### Input
 
 There are no input arguments for this command.
@@ -1790,33 +1790,34 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### tn-get-action
+
 ***
 Get detailed information about a given action.
-
 
 #### Base Command
 
 `tn-get-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of action of retrieve. | Optional | 
-
+| id | ID of action of retrieve. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tanium.Actions.name | string | Name of the actions | 
-| Tanium.Actions.id | number | ID of the action | 
-| Tanium.Actions.status | string | Status of the action - Closed, Pending, etc. | 
-| Tanium.Actions.start_time | date | Time when the action started running | 
-| Tanium.Actions.approver.name | string | Name of Tanium user who approved the action | 
-| Tanium.Actions.creation_time | date | Time when the action was created | 
-| Tanium.Actions.package_spec.command | string | The command that is issued by the action | 
-| Tanium.Actions.package_spec.name | string | Name of the package that was deployed | 
+| Tanium.Actions.name | string | Name of the actions |
+| Tanium.Actions.id | number | ID of the action |
+| Tanium.Actions.status | string | Status of the action - Closed, Pending, etc. |
+| Tanium.Actions.start_time | date | Time when the action started running |
+| Tanium.Actions.approver.name | string | Name of Tanium user who approved the action |
+| Tanium.Actions.creation_time | date | Time when the action was created |
+| Tanium.Actions.package_spec.command | string | The command that is issued by the action |
+| Tanium.Actions.package_spec.name | string | Name of the package that was deployed |
 
 <h2>Debug Commands</h2>
 <h3 id="h_95205013124651536234522127">1. Request the server to parse question text</h3>

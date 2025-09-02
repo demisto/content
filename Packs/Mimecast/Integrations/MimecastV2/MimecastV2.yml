@@ -600,6 +600,8 @@ script:
     - contextPath: Mimecast.Managed.ID
       description: The Mimecast secure ID of the managed sender object.
       type: string
+    compliantpolicies:
+    - Domain Blockage
   - arguments:
     - description: Filter results by specific URL.
       name: url
@@ -3412,7 +3414,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - Mimecast test
 - Mimecast Test api 2.0

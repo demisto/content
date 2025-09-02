@@ -499,9 +499,31 @@ def test_fetch_incidents_when_valid_response_is_returned(mocker_http_request, mo
 
     params = {"max_fetch": "2", "first_fetch": "1 year", "mirror_direction": "Incoming"}
 
-    _, incidents = fetch_incidents(client, {}, params)
+    next_run, incidents = fetch_incidents(client, {}, params)
 
     assert incidents == context_output["incidents"]
+    assert next_run == {"ids": ["4", "6"], "updated_at": "2021-05-02T08:38:57.241Z"}
+
+
+@patch("demistomock.integrationInstance", create=True)
+@patch(MOCKER_HTTP_METHOD)
+def test_fetch_incidents_with_last_run_when_valid_response_is_returned(mocker_http_request, mocker_integration_instance, client):
+    """Test case scenario for successful execution of fetch_incident."""
+    from CofenseTriagev3 import fetch_incidents
+
+    response = util_load_json(os.path.join("test_data", "fetch_incidents/fetch_incidents_response.json"))
+
+    mocker_http_request.return_value = response
+    mocker_integration_instance.return_value = "Cofense Triage v3_instance_1"
+
+    context_output = util_load_json(os.path.join("test_data", "fetch_incidents/fetch_incidents.json"))
+
+    params = {"max_fetch": "2", "first_fetch": "1 year", "mirror_direction": "Incoming"}
+
+    next_run, incidents = fetch_incidents(client, {"ids": ["1"], "page_number": 1}, params)
+
+    assert incidents == context_output["incidents"]
+    assert next_run == {"ids": ["1", "4", "6"], "updated_at": "2021-05-02T08:38:57.241Z"}
 
 
 def test_cofense_url_list_command_when_valid_response_is_returned(mocked_client):

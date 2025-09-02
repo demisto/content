@@ -3,7 +3,6 @@ This integration was integrated and tested with version v2 of LookoutMobileEndpo
 
 ## Configure Lookout Mobile Endpoint Security Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | False |
@@ -12,7 +11,6 @@ This integration was integrated and tested with version v2 of LookoutMobileEndpo
 | Use system proxy settings | False |
 | Fetch interval in seconds | True |
 | Event types to fetch | True |
-
 
 ## Commands
 

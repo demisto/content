@@ -65,6 +65,7 @@ Leave the *Client ID*, *Client Secret* and *Personal Access Token* fields empty 
 
 Ensure that you possess the necessary permissions by navigating to **Project Settings** > **Permissions** in the project.
 Locate permissions for the tasks listed below:
+
 - Browse projects
 - Create issues
 - Edit issues
@@ -472,6 +473,7 @@ Scope: `read:jira-work`
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Jira.Query.nextPageToken | String | A token for fetching the next page of the query if such exists. |
 | Ticket.Id | String | The ticket ID. |
 | Ticket.Key | String | The ticket key. |
 | Ticket.Assignee | String | The user assigned to the ticket. |

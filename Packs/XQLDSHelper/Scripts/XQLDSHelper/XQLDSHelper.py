@@ -37,6 +37,13 @@ def to_float(val: Any) -> float | int:
         return 0
 
 
+def get_target_type():
+    if is_xsiam() or is_platform():
+        return "alerts"
+    else:
+        return "incidents"
+
+
 def to_str(val: Any) -> str:
     """Ensure the value is of type string.
 
@@ -451,7 +458,7 @@ class Cache:
             cache_node: self.__compress(json.dumps(data)),
         }
         if incident_id := demisto.incident().get("id"):
-            target = "alerts" if is_xsiam() else "incidents"
+            target = get_target_type()
             demisto.executeCommand(
                 "executeCommandAt",
                 {
@@ -1867,8 +1874,8 @@ class Main:
 
         entries = {
             "context": base_context,
-            "alert": fields if is_xsiam() else None,
-            "incident": None if is_xsiam() else fields,
+            "alert": fields if (is_xsiam() or is_platform()) else None,
+            "incident": None if (is_xsiam() or is_platform()) else fields,
         }
         for name, context in dict(entries).items():
             filters = demisto.get(template, f"config.{name}.filters")

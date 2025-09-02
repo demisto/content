@@ -50,7 +50,7 @@ In order to create an instance of the integration, you need to download a user A
     * **Incident type**
     * **Trust any certificate (unsecure)**
     * **Use system proxy**
-    * __First fetch since__
+    * **First fetch since**
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data

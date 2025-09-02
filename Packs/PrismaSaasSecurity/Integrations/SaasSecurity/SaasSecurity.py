@@ -106,14 +106,25 @@ class Client(BaseClient):
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }
-        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+        try:
+            return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+        except Exception as e:
+            if "401" in str(e) and "Unauthorized" in str(e):
+                demisto.debug(f"requesting a new token since {str(e)}")
+                token = self.get_access_token(True)
+                headers["Authorization"] = f"Bearer {token}"
+                return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
+            else:
+                raise e
 
-    def get_access_token(self):
+    def get_access_token(self, force_generate: bool = False):
         """
         Obtains access and refresh token from server.
         Access token is used and stored in the integration context until expiration time.
         After expiration, new refresh token and access token are obtained and stored in the
         integration context.
+
+        :param force_generate: Whether to generate a new token anyway, regardless of the TOKEN_LIFE_TIME.
 
         :return: Access token that will be added to authorization header.
         :rtype: str
@@ -123,10 +134,12 @@ class Client(BaseClient):
         access_token = integration_context.get("access_token")
         time_issued = integration_context.get("time_issued")
 
-        if access_token and get_passed_mins(now, time_issued) < TOKEN_LIFE_TIME:
+        if access_token and get_passed_mins(now, time_issued) < TOKEN_LIFE_TIME and not force_generate:
+            demisto.debug("retrieving the token from the context.")
             return access_token
 
         # there's no token or it is expired
+        demisto.debug(f"There's no token or it is expired, or {force_generate=}")
         access_token = self.get_token_request()
         integration_context = {"access_token": access_token, "time_issued": date_to_timestamp(now) / 1000}
         set_integration_context(integration_context)
@@ -159,7 +172,7 @@ class Client(BaseClient):
         to_time: str = None,
         app_ids: str = None,
         state: str = None,
-        severity: str = None,
+        severity: list = None,
         status: str = None,
         next_page: str = None,
     ):
@@ -176,6 +189,11 @@ class Client(BaseClient):
         url_suffix = next_page or "/incident/api/incidents/delta"
         state = state if state != "All" else None
 
+        severity_str = ""
+        if severity:  # validate that the severities are of type double
+            severity_arr_double = [f"{sev}.0" if ".0" not in sev else sev for sev in severity]
+            severity_str = ",".join(severity_arr_double)
+
         params = (
             {
                 "limit": limit,
@@ -183,13 +201,14 @@ class Client(BaseClient):
                 "to": to_time,
                 "app_ids": app_ids,
                 "state": state,
-                "severity": severity,
+                "severities": severity_str,
                 "status": status,
             }
             if not next_page
             else {}
         )
         remove_nulls_from_dictionary(params)
+        demisto.debug(f"Calling {url_suffix=} with {params=}")
 
         return self.http_request("GET", url_suffix=url_suffix, params=params)
 
@@ -303,7 +322,7 @@ def test_module(
     is_fetch: bool = False,
     first_fetch_time: str = None,
     state: str = None,
-    severity: str = None,
+    severity: list = None,
     status: str = None,
     app_ids: str = None,
 ) -> str:
@@ -336,15 +355,15 @@ def get_incidents_command(client: Client, args: dict) -> CommandResults:
     to_time = args.get("to")
     app_ids = ",".join(argToList(args.get("app_ids", [])))
     state = args.get("state", "open")
-    severity = ",".join(argToList(args.get("severity", [])))
+    severity_arr = argToList(args.get("severity", []))
     status = ",".join(STATUS_MAP.get(x) for x in argToList(args.get("status", [])))  # type: ignore[misc]
     next_page = args.get("next_page")
 
-    raw_res = client.get_incidents(limit, from_time, to_time, app_ids, state, severity, status, next_page)
+    raw_res = client.get_incidents(limit, from_time, to_time, app_ids, state, severity_arr, status, next_page)
     incidents = raw_res.get("resources", [])
 
     # The API always returns the nextPage field with value in it even if there are no more incidents to retrieve.
-    next_page = raw_res.get("nextPath") if len(incidents) == limit else None
+    next_page = raw_res.get("nextPath", "").replace("severity", "severities") if len(incidents) == limit else None
     metadata = (
         "Run the following command to retrieve the next batch of incidents:\n"
         f"!saas-security-incidents-get next_page={next_page}"
@@ -506,16 +525,22 @@ def fetch_incidents(
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_run_time")
 
+    fetch_severity_arr = fetch_severity if isinstance(fetch_severity, list) else argToList(fetch_severity)
+    demisto.debug(f"{fetch_severity_arr=}")
+
     if last_fetch is None:
         last_fetch = dateparser.parse(first_fetch_time, settings={"TIMEZONE": "UTC"})
         last_fetch = last_fetch.strftime(SAAS_SECURITY_DATE_FORMAT)[:-4] + "Z"  # format ex: 2021-08-23T09:26:25.872Z
 
+    demisto.debug(
+        f"Calling get_incidents with {fetch_limit=}, {last_fetch=}, {fetch_state=}, {fetch_severity_arr=}, {fetch_status=}"
+    )
     current_fetch = last_fetch
     results = client.get_incidents(
         limit=fetch_limit,
         from_time=last_fetch,
         state=fetch_state,
-        severity=fetch_severity,
+        severity=fetch_severity_arr,
         status=fetch_status,
         app_ids=fetch_app_ids,
     ).get("resources", [])

@@ -1,0 +1,23 @@
+{
+    "raw_response": [
+        {
+            "groupId": 12345,
+            "groupName": "Test Group",
+            "contractIds": [
+                "ctr_1-23456"
+            ]
+        }
+    ],
+    "human_readable": "### Akamai WAF - list datastream groups command\n|contractIds|groupId|groupName|\n|---|---|---|\n| ctr_1-23456 | 12345 | Test Group |\n",
+    "context_entry": {
+        "Akamai.DataStreamGroups": [
+            {
+                "groupId": 12345,
+                "groupName": "Test Group",
+                "contractIds": [
+                    "ctr_1-23456"
+                ]
+            }
+        ]
+    }
+}

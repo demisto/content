@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Infoblox
   version: -1
@@ -8,19 +11,23 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: User Name
   name: credentials
   type: 9
   required: false
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.
 display: Infoblox
 name: Infoblox
@@ -114,7 +121,7 @@ script:
       name: next_page_id
     - description: The DNS view in which the records are located. For example 'External'. By default, the 'default' DNS view is searched.
       name: view
-    description: Lists all response policy rules that belong to the.g.,ven response policy zone.
+    description: Lists all response policy rules that belong to the given response policy zone.
     name: infoblox-list-response-policy-zone-rules
     outputs:
     - contextPath: Infoblox.ResponsePolicyZoneRulesList.Name
@@ -784,7 +791,7 @@ script:
     - contextPath: Infoblox.NetworkInfo.AdditionalFields
       description: The additional fields for network.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.11.3982393
   runonce: false
   script: ''
   subtype: python3

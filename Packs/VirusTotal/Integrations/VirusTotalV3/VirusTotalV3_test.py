@@ -333,6 +333,7 @@ def test_ip_command(mocker, requests_mock):
     mocker.patch.object(demisto, "args", return_value={"ip": "192.168.0.1", "extended_data": "false"})
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -379,6 +380,7 @@ def test_ip_command_private_ip_lookup(mocker):
     mocker.patch.object(demisto, "args", return_value={"ip": "192.168.0.1", "extended_data": "false"})
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -422,6 +424,7 @@ def test_ip_command_override_private_lookup(mocker, requests_mock):
     )
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -468,6 +471,7 @@ def test_not_found_ip_command(mocker, requests_mock):
     mocker.patch.object(demisto, "args", return_value={"ip": "192.168.0.1", "extended_data": "false"})
     mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+    mocker.patch("VirusTotalV3.is_ip_address_internal", return_value=False)
 
     # Assign arguments
     params = demisto.params()
@@ -646,6 +650,78 @@ def test_not_found_private_file_command(mocker, requests_mock):
 
     assert results[0].execution_metrics is None
     assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal.'
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing file
+
+    When:
+    - Running the !file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from VirusTotalV3 import Client, file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    client = Client(params=params)
+
+    results = file_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=None,
+    )
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_private_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing private file
+
+    When:
+    - Running the !vt-privatescanning-file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from VirusTotalV3 import Client, private_file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    results = private_file_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
     assert results[0].indicator.dbot_score.score == 0
 
 

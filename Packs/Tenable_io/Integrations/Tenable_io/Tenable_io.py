@@ -1942,7 +1942,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             if isinstance(results, CommandResults) and results.raw_response:  # pylint: disable=E1101
                 vulnerabilities = results.raw_response  # type: ignore    # pylint: disable=E1101
             return_results(results)
-            if argToBoolean(args.get("should_push_events", "false")) and is_xsiam():
+            if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
                 send_data_to_xsiam(vulnerabilities, product=f"{PRODUCT}_vulnerabilities", vendor=VENDOR)
 
         elif command == "tenable-io-list-scan-filters":
@@ -1962,7 +1962,7 @@ def main():  # pragma: no cover   # pylint: disable=W9018
             )
             return_results(results)
 
-            if argToBoolean(args.get("should_push_events", "false")) and is_xsiam():
+            if argToBoolean(args.get("should_push_events", "false")) and (is_xsiam() or is_platform()):
                 send_data_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
         # Fetch Commands
         elif command == "fetch-events":

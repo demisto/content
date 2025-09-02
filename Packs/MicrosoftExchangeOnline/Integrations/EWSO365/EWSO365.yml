@@ -106,6 +106,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When 'Mark fetched emails as read' is enabled and emails are fetched by modification time, emails will be re-fetched in the next cycle after being marked as read (due to metadata changes). This is expected behavior.
 - display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
   type: 0
@@ -339,6 +340,8 @@ script:
     - contextPath: EWS.Items.action
       description: The action taken. The value will be "moved".
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The item IDs to delete.
       name: item-ids
@@ -361,6 +364,8 @@ script:
     - contextPath: EWS.Items.action
       description: The deletion action. Can be 'trash-deleted', 'soft-deleted', or 'hard-deleted'.
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: 'The search query string. For more information about the query syntax, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/ee693615.aspx'
       name: query
@@ -777,6 +782,8 @@ script:
     - contextPath: EWS.Items.action
       description: The action taken on the item. The value will be "moved".
       type: string
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: The mailbox on which to run the search.
       name: target-mailbox

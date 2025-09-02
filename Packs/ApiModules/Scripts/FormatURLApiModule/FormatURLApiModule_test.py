@@ -201,6 +201,7 @@ FORMAT_PATH = [
     ('https://test.com/Test\\"', "https://test.com/Test"),  # disable-secrets-detection
     ("https://www.test.com/a\\", "https://www.test.com/a"),  # disable-secrets-detection
     ("https://aaa.aaa/test", "https://aaa.aaa/test"),  # disable-secrets-detection
+    ("https://abc.ly/test',", "https://abc.ly/test"),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
@@ -220,6 +221,10 @@ FORMAT_QUERY = [
         "https://test.dev?email=some@email.addres",  # disable-secrets-detection
         "https://test.dev?email=some@email.addres",
     ),  # disable-secrets-detection
+    (
+        "https://abc.ly/test?a=b',",
+        "https://abc.ly/test?a=b",
+    ),  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [
@@ -233,6 +238,10 @@ FORMAT_FRAGMENT = [
     (
         "https://test.dev#fragment",  # disable-secrets-detection
         "https://test.dev#fragment",
+    ),  # disable-secrets-detection
+    (
+        "https://abc.ly/test#a',",
+        "https://abc.ly/test#a",
     ),  # disable-secrets-detection
 ]
 
@@ -265,6 +274,9 @@ FORMAT_HEX = [
     ("foo.bar/baz%26bar", "foo.bar/baz&bar"),  # disable-secrets-detection
     ("https://foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
     ("https%3A//foo.com/?key=foo%26bar", "https://foo.com/?key=foo&bar"),  # disable-secrets-detection
+    ("https://foo.com/?key=foo%26bar%2F%2Fwww.foo.com", "https://foo.com/?key=foo&bar//www.foo.com"),  # disable-secrets-detection
+    ("http://foo.r.us.me/L0/http:%2F%2Fwww.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
+    ("http:%2F%2ffoo.r.us.me/L0/http:www.foo.com", "http://foo.r.us.me/L0/http://www.foo.com"),  # disable-secrets-detection
 ]
 
 FAILS = [
@@ -344,6 +356,10 @@ FAILS = [
         "test.test/test",  # disable-secrets-detection
         pytest.raises(URLError),
     ),  # invalid tld
+    (
+        "test:",  # disable-secrets-detection
+        pytest.raises(URLError),
+    ),  # invalid input
 ]
 
 REDIRECT_TEST_DATA = ATP_REDIRECTS + PROOF_POINT_REDIRECTS + FIREEYE_REDIRECT + TRENDMICRO_REDIRECT

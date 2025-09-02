@@ -1,0 +1,17 @@
+{
+    "raw_response": [
+        {
+            "edgeHostnameId": 12345,
+            "domainPrefix": "test.edgekey.net"
+        }
+    ],
+    "human_readable": "### Akamai WAF - List Edgehostname command\n|domainPrefix|edgeHostnameId|\n|---|---|\n| test.edgekey.net | 12345 |\n",
+    "context_entry": {
+        "Akamai.Edgehostname": [
+            {
+                "edgeHostnameId": 12345,
+                "domainPrefix": "test.edgekey.net"
+            }
+        ]
+    }
+}

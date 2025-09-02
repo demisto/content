@@ -1,6 +1,7 @@
 Connects to a Checkpoint firewall appliance using SSH and trigger a task to create a configuration backup of the device. The user account that accesses the device must be setup to use the SSH shell and not the built in Checkpoint CLI. Consult the Checkpoint documentation for instructions on how to do this.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,13 +9,15 @@ Connects to a Checkpoint firewall appliance using SSH and trigger a task to crea
 | Script Type | python |
 | Tags | checkpoint |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * ssh
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +25,7 @@ This script uses the following commands and scripts.
 | devices | The list of `RemoteAccess` instances of the checkpoint firewall appliances to back up. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

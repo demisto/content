@@ -2089,3 +2089,4 @@ fromversion: 5.0.0
 supportedModules:
 - X3
 - X5
+- agentix

@@ -1,9 +1,10 @@
 Gets the requested sensors from all of the machines where the index query file details match the given filter.
-For example, `!TaniumFilterQuestionByIndexQueryFileDetails sensors="Computer Name" filter_type=contains filter_value=Demisto limit=5` 
+For example, `!TaniumFilterQuestionByIndexQueryFileDetails sensors="Computer Name" filter_type=contains filter_value=Demisto limit=5`
 will be translated to the following plain text Tanium question:
-"Get Computer Name from all machines with any Index Query File Details[*, *, *, *, *, *, *, 5] containing "Demisto"".
+"Get Computer Name from all machines with any Index Query File Details[*,*, *,*, *,*, *, 5] containing "Demisto"".
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,13 +12,15 @@ will be translated to the following plain text Tanium question:
 | Script Type | python |
 | Tags | tanium |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * tn-ask-manual-question
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -35,6 +38,7 @@ This script uses the following commands and scripts.
 | sensors | The semicolon separated list of columns to return. For example, "Computer Name;IP Address". |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -171,6 +171,7 @@ configuration:
   defaultvalue: None
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Resolve findings of closed incidents from XSOAR in AWS Security Hub
   additionalinfo: 'After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved'
@@ -180,6 +181,7 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Finding Type
   name: finding_type

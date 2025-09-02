@@ -1,4 +1,5 @@
 Perplexity AI is a web search engine that uses a large language model to process queries and synthesize responses based on web search results.  With a conversational approach, Perplexity AI allows users to ask follow-up questions and receive answers with citations to its sources from the internet.
+
 ## Configure Perplexity AI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -33,14 +34,14 @@ Send a chat message. You may need to increase the command timeout in "advanced s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| systemmessage | The system message to influence how the user message is handled - used in the "system" role. Default is Be precise and concise. | Optional | 
-| usermessage | The user's question - used in the "users" role. | Required | 
-| recentfilter | Limit search to recent hour, day, week, month. Possible values are: hour, day, week, month. | Optional | 
-| domainfilter | Limit search to these domains. CSV list of domains of up to 3 domains. A '-' in front of the domain excludes it. | Optional | 
-| jsonout | Include JSON output in context if yes, with markdown in war room. Possible values are: yes, no. Default is no. | Optional | 
-| citations | Include research citations in the output. Possible values are: yes, no. Default is no. | Optional | 
-| thinking | Include thinking in the output. Possible values are: yes, no. Default is no. | Optional | 
-| contextsize | How much context is returned as results. Possible values are: low, medium, high. Default is medium. | Optional | 
+| systemmessage | The system message to influence how the user message is handled - used in the "system" role. Default is Be precise and concise. | Optional |
+| usermessage | The user's question - used in the "users" role. | Required |
+| recentfilter | Limit search to recent hour, day, week, month. Possible values are: hour, day, week, month. | Optional |
+| domainfilter | Limit search to these domains. CSV list of domains of up to 3 domains. A '-' in front of the domain excludes it. | Optional |
+| jsonout | Include JSON output in context if yes, with markdown in war room. Possible values are: yes, no. Default is no. | Optional |
+| citations | Include research citations in the output. Possible values are: yes, no. Default is no. | Optional |
+| thinking | Include thinking in the output. Possible values are: yes, no. Default is no. | Optional |
+| contextsize | How much context is returned as results. Possible values are: low, medium, high. Default is medium. | Optional |
 
 #### Context Output
 

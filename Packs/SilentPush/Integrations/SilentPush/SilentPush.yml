@@ -1355,22 +1355,22 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.SubnetReputation.nameserver
+    - contextPath: SilentPush.NameserverReputation.nameserver
       description: The nameserver associated with the reputation history entry.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.reputation_data.date
+    - contextPath: SilentPush.NameserverReputation.reputation_data.date
       description: Date of the reputation history entry (in YYYYMMDD format).
       type: Number
-    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server
+    - contextPath: SilentPush.NameserverReputation.reputation_data.ns_server
       description: Name of the nameserver associated with the reputation history entry.
       type: String
-    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server_reputation
+    - contextPath: SilentPush.NameserverReputation.reputation_data.ns_server_reputation
       description: Reputation score of the nameserver on the specified date.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density
+    - contextPath: SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density
       description: Number of domains associated with the nameserver.
       type: Number
-    - contextPath: SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed
+    - contextPath: SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed
       description: Number of domains listed in reputation databases.
       type: Number
   - deprecated: false

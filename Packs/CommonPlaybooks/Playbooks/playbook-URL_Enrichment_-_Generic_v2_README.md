@@ -6,6 +6,10 @@ URL enrichment includes:
 * Providing of URL screenshots.
 * URL Reputation using !url.
 
+## Limitation
+
+The "Get URL screenshot" task has a timeout of 10 minutes when using the Rasterize integration. This allows processing a large number of URLs. If the task still fails due to timeout because the Rasterize command is processing too many URLs, the timeout value of the task needs to be increased.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.

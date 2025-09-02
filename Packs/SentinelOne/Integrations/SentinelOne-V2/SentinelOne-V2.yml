@@ -119,6 +119,7 @@ configuration:
 - display: API Token (Deprecated)
   name: token
   type: 4
+  hidden: true
   section: Connect
   required: false
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
@@ -1043,6 +1044,8 @@ script:
     - contextPath: SentinelOne.Agent.ID
       description: Input agents' IDs.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: The message to broadcast to agents.
       name: message
@@ -1685,7 +1688,7 @@ script:
       description: Name of the blocklist scope.
       type: String
   - arguments:
-    - description: SHA1 hash to add to the global blocklist.
+    - description: SHA1 hash to add to the blocklist.
       name: sha1
     - defaultValue: XSOAR
       description: String describing the source of the block.
@@ -1701,8 +1704,14 @@ script:
     - defaultValue: Blocked from XSOAR
       description: Note stored in SentinelOne about the block.
       name: description
-    description: Add a hash to the global blocklist in SentinelOne.
+    - description: Comma-separated string of site IDs to scope the blocklist.
+      name: site_ids
+    - description: Comma-separated string of group IDs to scope the blocklist.
+      name: group_ids
+    - description: Comma-separated string of account IDs to scope the blocklist.
+      name: account_ids
     name: sentinelone-add-hash-to-blocklist
+    description: Add a hash to the blocklist in SentinelOne. Supports scoping by site, group, or account. If Scope not provided, the block will be global.
     outputs:
     - contextPath: SentinelOne.AddHashToBlocklist.hash
       description: Hash of the file.
@@ -1718,6 +1727,12 @@ script:
       - windows
       - macos
       - linux
+    - description: Comma-separated string of site IDs to scope the blocklist.
+      name: site_ids
+    - description: Comma-separated string of group IDs to scope the blocklist.
+      name: group_ids
+    - description: Comma-separated string of account IDs to scope the blocklist.
+      name: account_ids
     description: Remove a hash from the global blocklist in SentinelOne.
     name: sentinelone-remove-hash-from-blocklist
     outputs:
@@ -1845,6 +1860,9 @@ script:
     - contextPath: SentinelOne.IOC.ExternalId
       description: The unique identifier of the indicator as provided by the Threat Intelligence source.
       type: String
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - name: account_ids
       required: true
@@ -2309,7 +2327,7 @@ script:
     name: sentinelone-run-remote-script
   - arguments:
     - name: account_ids
-      isArray: true 
+      isArray: true
       description: "A comma-separated list of account IDs. Example: '225494730938493804,225494730938493915'."
     - name: computer_name_contains
       description: Free-text filter by agent computer name (supports multiple values).
@@ -2332,16 +2350,16 @@ script:
     - name: description_contains
       description: Only include tasks with specific description.
     - name: detailed_status_contains
-      isArray: true 
+      isArray: true
       description: Only include tasks with specific detailed status.
     - name: group_ids
-      isArray: true 
+      isArray: true
       description: "Comma-separated list of Group IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: ids
-      isArray: true 
+      isArray: true
       description: "Comma-separated list of IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: initiated_by_contains
-      isArray: true 
+      isArray: true
       description: Only include tasks from specific initiating user.
     - name: limit
       description: "Limit number of returned items (1-1000). Example: '10'."
@@ -2349,12 +2367,12 @@ script:
       required: true
       description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
     - name: parent_task_id_in
-      isArray: true 
+      isArray: true
       description: List of IDs to filter by.
     - name: query
       description: Query.
     - name: site_ids
-      isArray: true 
+      isArray: true
       description: "List of site IDs to filter by. Example: '225494730938493804,225494730938493915'."
     - name: status
       description: "Status of the script task. Example: 'created'."
@@ -2512,10 +2530,10 @@ script:
       - "false"
       - "true"
     - defaultValue: '60'
-      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. 
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
     - defaultValue: '600'
-      description: Indicates the time in seconds until the polling sequence timeouts. 
+      description: Indicates the time in seconds until the polling sequence timeouts.
       name: timeout
     - description: "Parent task ID to fetch the status by. Example: '225494730938493804'."
       name: parent_task_id
@@ -2659,7 +2677,7 @@ script:
       description: A comma-separated list of account IDs.
       isArray: true
     - name: application_catalog_id
-      description: Filter results by application catalog id. 
+      description: Filter results by application catalog id.
     - name: creator_contains
       description: Free-text filter by application creator.
     - name: ids
@@ -2825,7 +2843,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   ismappable: true
   isremotesyncin: true

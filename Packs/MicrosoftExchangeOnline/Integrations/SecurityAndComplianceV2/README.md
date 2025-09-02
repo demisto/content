@@ -1229,6 +1229,7 @@ Gets compliance search action from the Security & Compliance Center.
 >| Preview | 11/29/2020 7:24:05 AM | 11/29/2020 7:23:50 AM | example\_Preview | XSOAR-user | example | Completed
 
 ## Tips for finding messages to remove
+
 - Keyword Query Language (KQL)
   - If you know the exact text or phrase used in the subject line of the message, use the Subject property in the search query, e.g., `(subject:give me all ur money)`.
   - If you know that exact date (or date range) of the message, include the Received property in the search query, e.g., `(received:6/13/2021..6/16/2021)`.
@@ -1494,3 +1495,29 @@ Update inputs for case hold policies.
 #### Context Output
 
 There is no context output for this command.
+
+### o365-sc-email-security-search-and-delete-email-office-365-quick-action
+
+***
+Deletes an email for all recipients.
+On first run, creates and starts a search (if it already exists – returns its status).
+Then runs polling until the deletion is complete.
+The force parameter allows creating a new search even if one already exists (default: false).
+
+#### Base Command
+
+`o365-sc-email-security-search-and-delete-email-office-365-quick-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| internet_message_id | The unique identifier of the email message, e.g., &lt;abc123@mail.example.com&gt;. | Required |
+| exchange_location | Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow). Default is All. | Optional |
+| force | If true, creates a new search even if one already exists. Possible values are: false, true. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. |

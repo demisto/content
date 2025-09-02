@@ -899,6 +899,8 @@ script:
       required: true
     description: Enable users to set the account's credentials to use for the next Central Policy Manager (CPM) change.
     name: cyberark-pas-credentials-change-set-new-password
+    compliantpolicies:
+    - User Soft Remediation
   - arguments:
     - description: |-
         The starting date to get the security events from. Must be in the following timestamp format:
@@ -932,7 +934,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

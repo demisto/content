@@ -3,7 +3,6 @@ This integration was integrated and tested with version vSeries-100 of Cisco-WSA
 
 ## Configure CiscoWSA in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | BASE_URL | True |
@@ -13,33 +12,36 @@ This integration was integrated and tested with version vSeries-100 of Cisco-WSA
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### wsa-get-access-policies
+
 ***
 Retrieving all access policies
-
 
 #### Base Command
 
 `wsa-get-access-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| wsa.AccessPolicies | string | Retrieving all access policies | 
-
+| wsa.AccessPolicies | string | Retrieving all access policies |
 
 #### Command Example
+
 ```!wsa-get-access-policies```
 
 #### Context Example
+
 ```json
 {
     "access_policies": [
@@ -491,6 +493,7 @@ Retrieving all access policies
 #### Human Readable Output
 
 >### Results
+>
 >|access_policies|
 >|---|
 >|  |
@@ -499,32 +502,32 @@ Retrieving all access policies
 >|  |
 >|  |
 
-
 ### wsa-get-domain-map
+
 ***
 Retrieving the Domain Map Details
-
 
 #### Base Command
 
 `wsa-get-domain-map`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| wsa.DomainMaps | string | Retrieving the Domain Map Details | 
-
+| wsa.DomainMaps | string | Retrieving the Domain Map Details |
 
 #### Command Example
+
 ```!wsa-get-domain-map```
 
 #### Context Example
+
 ```json
 {
     "res_code": 400,
@@ -535,36 +538,37 @@ Retrieving the Domain Map Details
 #### Human Readable Output
 
 >### Results
+>
 >|res_code|res_message|
 >|---|---|
 >| 400 | The feature key for https proxy has expired or is unavailable. |
 
-
 ### wsa-get-url-categories
+
 ***
 Retrieving URL Categories
-
 
 #### Base Command
 
 `wsa-get-url-categories`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| wsa.UrlCategories | string | Retrieving URL Categories | 
-
+| wsa.UrlCategories | string | Retrieving URL Categories |
 
 #### Command Example
+
 ```!wsa-get-url-categories```
 
 #### Context Example
+
 ```json
 {
     "custom": [
@@ -577,36 +581,37 @@ Retrieving URL Categories
 #### Human Readable Output
 
 >### Results
+>
 >|custom|predefined|
 >|---|---|
 >| SocialURLCategorynader1 |  |
 
-
 ### wsa-get-identification-profiles
+
 ***
 Modifying identification profiles
-
 
 #### Base Command
 
 `wsa-get-identification-profiles`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| wsa.Profiles | string | Retrieving Identification Profiles | 
-
+| wsa.Profiles | string | Retrieving Identification Profiles |
 
 #### Command Example
+
 ```!wsa-get-identification-profiles```
 
 #### Context Example
+
 ```json
 {
     "identification_profiles": [
@@ -651,43 +656,44 @@ Modifying identification profiles
 #### Human Readable Output
 
 >### Results
+>
 >|identification_profiles|
 >|---|
 >|  |
 >|  |
 >|  |
 
-
 ### wsa-modify-access-policies
+
 ***
 Modifying an Access Policy
-
 
 #### Base Command
 
 `wsa-modify-access-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policyname | Name of the policy. Unique identifier of the policy. | Required | 
-| profile_name | (profile_name, auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated. | Required | 
-| auth | (profile_name,auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated. | Required | 
-| policy_order | Index of this specific profile in the collection. Its starts from 1. Order of policy in collection of policies. Not applicable for global_policy. | Required | 
-| policy_status | Whether profile is enabled or disabled. Possible values: enable, disable. | Required | 
-
+| policyname | Name of the policy. Unique identifier of the policy. | Required |
+| profile_name | (profile_name, auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated. | Required |
+| auth | (profile_name,auth). Use "No Authentication" in case of no authentication required for the specific profile. Empty strings represents "global identification profile". _all_ represents "All identification profiles".  Please  all inputs comma separated. | Required |
+| policy_order | Index of this specific profile in the collection. Its starts from 1. Order of policy in collection of policies. Not applicable for global_policy. | Required |
+| policy_status | Whether profile is enabled or disabled. Possible values: enable, disable. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| wsa.response | string | whether the result indicates if request is success or failure | 
-
+| wsa.response | string | whether the result indicates if request is success or failure |
 
 #### Command Example
+
 ```!wsa-modify-access-policies policyname=policy1 profile_name=profile1 policy_order=2 policy_status=disable auth="No Authentication"```
 
 #### Context Example
+
 ```json
 {
     "wsa": {
@@ -699,37 +705,38 @@ Modifying an Access Policy
 #### Human Readable Output
 
 >### Results
+>
 >|wsa|
 >|---|
 >|  |
 
-
 ### wsa-delete-access-policies
+
 ***
 Deleting an Access Policy
-
 
 #### Base Command
 
 `wsa-delete-access-policies`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Name of the policy. Unique identifier of the policy. | Required | 
-
+| policy_name | Name of the policy. Unique identifier of the policy. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| wsa.response | unknown | whether the result indicates if request is success or failure | 
-
+| wsa.response | unknown | whether the result indicates if request is success or failure |
 
 #### Command Example
+
 ```!wsa-delete-access-policies policy_name=policy2```
 
 #### Context Example
+
 ```json
 {
     "wsa": {
@@ -741,6 +748,7 @@ Deleting an Access Policy
 #### Human Readable Output
 
 >### Results
+>
 >|wsa|
 >|---|
 >|  |

@@ -19,39 +19,39 @@ def set_logging(caplog):
 
 
 @pytest.mark.parametrize("file", ["test1"])
-def test_convert_to_pdf(mocker,file):
+def test_convert_to_pdf(mocker, file):
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test"})
     ext = os.path.splitext(file)[1]
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + file, "name": "test" + ext})
     mocker.patch.object(demisto, "results")
-    mocker.patch("ConvertFile.make_sha", return_value='mocked_sha')
-    mocker.patch.object(subprocess, "check_output", return_value=b'mocked_output')
-    mocker.patch.object(glob, "glob", return_value=['file1'])
-    mocker.patch('ConvertFile.shutil.copy')
-    mocker.patch('ConvertFile.os.path.basename', return_value='test1_name')
+    mocker.patch("ConvertFile.make_sha", return_value="mocked_sha")
+    mocker.patch.object(subprocess, "check_output", return_value=b"mocked_output")
+    mocker.patch.object(glob, "glob", return_value=["file1"])
+    mocker.patch("ConvertFile.shutil.copy")
+    mocker.patch("ConvertFile.os.path.basename", return_value="test1_name")
     main()
     results1 = demisto.results.call_args_list[0][0]
     results2 = demisto.results.call_args_list[1][0]
     assert demisto.results.call_count == 2
     assert results1[0]["Type"] == entryTypes["file"]
     assert results1[0]["File"] == "test"
-    assert 'ERROR' not in str(results1)
+    assert "ERROR" not in str(results1)
     assert results2[0]["Type"] == entryTypes["note"]
-    assert results2[0]["EntryContext"]['ConvertedFile']['FileSHA256'] == 'mocked_sha'
-    assert results2[0]["EntryContext"]['ConvertedFile']['Convertable'] == 'yes'
+    assert results2[0]["EntryContext"]["ConvertedFile"]["FileSHA256"] == "mocked_sha"
+    assert results2[0]["EntryContext"]["ConvertedFile"]["Convertable"] == "yes"
 
 
 def test_convert_file_returns_no_files(mocker):
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test"})
-    ext = os.path.splitext('test1')[1]
-    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + 'test1', "name": "test" + ext})
+    ext = os.path.splitext("test1")[1]
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + "test1", "name": "test" + ext})
     mocker.patch.object(demisto, "results")
     mocker.patch("ConvertFile.convert_file", return_value=[])
     main()
     results = demisto.results.call_args_list[0][0]
-    assert 'No file result returned for convert format:' in str(results)
-    
-    
+    assert "No file result returned for convert format:" in str(results)
+
+
 def test_bad_entry_id(mocker):
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test"})
     mocker.patch.object(demisto, "getFilePath", return_value=None)
@@ -59,8 +59,8 @@ def test_bad_entry_id(mocker):
     main()
     results = demisto.results.call_args_list[0][0]
     assert "Couldn't find entry id:" in str(results)
-    
-    
+
+
 def test_convert_failure(mocker):
     # test with BAD format to see that we do not fail and that outputs contain the ERROR field
     file = "MS-DOCX-190319.docx"  # disable-secrets-detection
@@ -72,7 +72,7 @@ def test_convert_failure(mocker):
     assert demisto.args()["entry_id"] == "test"
     main()
     result = [x[0] for x in demisto.results.call_args_list][0]
-    assert 'ERROR' in str(result)
+    assert "ERROR" in str(result)
 
 
 def test_zombie_prcesses(mocker):
@@ -93,18 +93,18 @@ def test_zombie_prcesses(mocker):
     zombies, output = find_zombie_processes()
     assert len(zombies) == 9
     assert output == ps_output
-    
+
 
 def test_make_sha_with_mocked_file_data(mocker):
     # Mocking the file reading process
-    file_data = b'Test file content'
-    mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data=file_data))
-    
+    file_data = b"Test file content"
+    mock_open = mocker.patch("builtins.open", mocker.mock_open(read_data=file_data))
+
     mock_sha256 = mocker.MagicMock()
-    mock_sha256.hexdigest.return_value = 'mocked_sha256_hash'
-    
-    with patch('hashlib.sha256', return_value=mock_sha256):
-        sha256_hash = make_sha('test_file.txt')
-        
-        mock_open.assert_called_once_with('test_file.txt', 'rb')
-        assert sha256_hash == 'mocked_sha256_hash'
+    mock_sha256.hexdigest.return_value = "mocked_sha256_hash"
+
+    with patch("hashlib.sha256", return_value=mock_sha256):
+        sha256_hash = make_sha("test_file.txt")
+
+        mock_open.assert_called_once_with("test_file.txt", "rb")
+        assert sha256_hash == "mocked_sha256_hash"

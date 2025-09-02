@@ -225,12 +225,12 @@ class Client(BaseClient):
     ):
         url_suffix = "/PasswordVault/api/Users"
 
-        body = {
+        params = {
             "filter": filter,
             "search": search,
         }
 
-        return self._http_request("GET", url_suffix, json_data=body)
+        return self._http_request("GET", url_suffix, params=params)
 
     def activate_user(self, user_id: str):
         """
@@ -1250,7 +1250,7 @@ def get_security_events_command(client: Client, start_time: str, limit: str = "5
         return CommandResults(outputs="No events were found")
 
     if limit:
-        events_data = events_data[0: int(limit)]
+        events_data = events_data[0 : int(limit)]
 
     results = CommandResults(
         outputs=events_data,

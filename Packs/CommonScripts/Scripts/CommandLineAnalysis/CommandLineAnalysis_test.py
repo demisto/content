@@ -1,25 +1,25 @@
 import pytest
 from CommandLineAnalysis import (
-    analyze_command_line,
-    check_amsi,
+    is_base64,
+    identify_and_decode_base64,
+    reverse_command,
     check_malicious_commands,
+    check_reconnaissance_temp,
+    check_windows_temp_paths,
+    check_suspicious_content,
+    check_amsi,
     check_mixed_case_powershell,
     check_powershell_suspicious_patterns,
-    check_reconnaissance_temp,
-    check_suspicious_content,
-    check_suspicious_macos_applescript_commands,
-    check_windows_temp_paths,
-    decode_base64,
-    identify_and_decode_base64,
-    is_base64,
-    remove_null_bytes,
-    reverse_command,
+    check_macOS_suspicious_commands,
+    analyze_command_line,
 )
 
 # Test data
 DOUBLE_ENCODED_STRING = "cmVjdXJzaXZlIGRlY29kZSBaR1ZqYjJSbElGWkhhSEJqZVVKd1kzbENhRWxJVW14ak0xRm5Zek5TZVdGWE5XND0="
 MALICIOUS_COMMAND_LINE = "wevtutil cl Security RG91YmxlIGVuY29kaW5nIFZHaHBjeUJwY3lCaElHeHBjM1JsYm1WeUtERXhMakV3TVM0eE1qUXVNaklw"
-MACOS_COMMAND_LINE = "tell window 1 of application to set visible to false"
+MACOS_COMMAND_LINE = (
+    'osascript -e \'tell application Finder to duplicate POSIX file "/tmp/secret.txt" to POSIX file "/tmp/secret_copy.txt"\''
+)
 
 
 @pytest.fixture
@@ -41,29 +41,14 @@ def test_is_base64():
     assert is_base64(invalid_base64) is False
 
 
-# Test remove_null_bytes
-def test_remove_null_bytes():
-    string_with_nulls = "test\x00string\x00"
-    assert remove_null_bytes(string_with_nulls) == "teststring"
-
-
-# Test decode_base64
-def test_decode_base64(sample_encoded_command):
-    decoded_str, double_encoded = decode_base64(sample_encoded_command)
-    assert "recursive decode" in decoded_str  # Check successful decoding
-    assert double_encoded is True  # Verify double encoding is detected
-
-
 # Test identify_and_decode_base64
 def test_identify_and_decode_base64(sample_malicious_command):
-    decoded_command, is_double_encoded = identify_and_decode_base64(sample_malicious_command)
+    decoded_command, is_double_encoded, _ = identify_and_decode_base64(sample_malicious_command)
     assert "11.101.124.22" in decoded_command
     assert is_double_encoded is True
 
 
 # Test reverse_command
-
-
 def test_reverse_command():
     reversed_string = "llehSrewoP"
     result, was_reversed = reverse_command(reversed_string)
@@ -83,7 +68,7 @@ def test_check_reconnaissance_temp():
     command = "ipconfig /all netstat -ano"
     matches = check_reconnaissance_temp(command)
     assert "ipconfig" in matches
-    assert "netstat -ano" in matches
+    assert "netstat" in matches
 
 
 # Test check_windows_temp_paths
@@ -125,16 +110,35 @@ def test_check_powershell_suspicious_patterns():
 
 # Test check_reconnaissance_temp
 def test_check_suspicious_macos_applescript_commands():
-    matches = check_suspicious_macos_applescript_commands(MACOS_COMMAND_LINE)
-    assert ["to set visible", "false"] in matches["infostealer_characteristics"]
+    matches = check_macOS_suspicious_commands(MACOS_COMMAND_LINE)
+    assert "tell application finder" in matches["infostealer_characteristics"][0]
+
+
+def test_custom_patterns_score():
+    """Test that custom patterns are properly scored in command line analysis."""
+
+    command = 'cmd "test"'
+    result = analyze_command_line(command, custom_patterns=["test"])
+    assert result["score"] == 21
+    assert result["analysis"]["original"]["custom_patterns"] == ["test"]
+
+
+def test_custom_high_risk_combo():
+    """Test that custom patterns combined with suspicious indicators produce high risk scores."""
+
+    command = 'PoWeRsHeLl.exe -w h -nop "test"'
+    result = analyze_command_line(command, custom_patterns=["test"])
+    assert result["score"] == 71
+    assert result["risk"] == "High Risk"
 
 
 # Test analyze_command_line
-
-
 def test_analyze_command_line():
     result = analyze_command_line(MALICIOUS_COMMAND_LINE)
-    assert result["risk"] == "Medium Risk"
-    assert "11.101.124.22" in result["analysis"]["original"]["base64_encoding"]
-    assert "11.101.124.22" in result["decoded_command"]
-    assert "wevtutil cl Security" in result["original_command"]
+    assert result["risk"] == "High Risk"
+    assert result["parsed_command"] == 'wevtutil cl Security "Double encoding "This is a listener(11.101.124.22)""'
+    assert "base64 encoding detected" in result["findings"]["original"]
+
+    result = analyze_command_line(MACOS_COMMAND_LINE, custom_patterns=["secret_copy"])
+    assert result["risk"] == "High Risk"
+    assert "custom patterns detected (1 instances)" in result["findings"]["original"]

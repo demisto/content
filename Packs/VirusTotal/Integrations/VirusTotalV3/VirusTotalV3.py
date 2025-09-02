@@ -1261,7 +1261,8 @@ def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) 
     )
     options: dict[str, Common.DBotScore | str] = {"dbot_score": dbot}
     if dbot_type == "FILE":
-        options[get_hash_type(ioc_id)] = ioc_id
+        if (hash_type := get_hash_type(ioc_id)) != "Unknown":
+            options[hash_type] = ioc_id
     else:
         options[dbot_type.lower()] = ioc_id
     return CommandResults(indicator=getattr(Common, common_type)(**options), readable_output=desc)
@@ -1275,8 +1276,11 @@ def build_quota_exceeded_output(client: Client, ioc_id: str, ioc_type: str) -> C
     return _get_error_result(client, ioc_id, ioc_type, "was not enriched. Quota was exceeded.")
 
 
-def build_error_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
-    return _get_error_result(client, ioc_id, ioc_type, "could not be processed")
+def build_error_output(client: Client, ioc_id: str, ioc_type: str, error_msg: str = None) -> CommandResults:
+    msg = "could not be processed."
+    if error_msg:
+        msg += f" Error: {error_msg}"
+    return _get_error_result(client, ioc_id, ioc_type, msg)
 
 
 def build_unknown_file_output(client: Client, file: str) -> CommandResults:
@@ -1287,8 +1291,8 @@ def build_quota_exceeded_file_output(client: Client, file: str) -> CommandResult
     return build_quota_exceeded_output(client, file, "file")
 
 
-def build_error_file_output(client: Client, file: str) -> CommandResults:
-    return build_error_output(client, file, "file")
+def build_error_file_output(client: Client, file: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, file, "file", error_msg)
 
 
 def build_unknown_domain_output(client: Client, domain: str) -> CommandResults:
@@ -1299,8 +1303,8 @@ def build_quota_exceeded_domain_output(client: Client, domain: str) -> CommandRe
     return build_quota_exceeded_output(client, domain, "domain")
 
 
-def build_error_domain_output(client: Client, domain: str) -> CommandResults:
-    return build_error_output(client, domain, "domain")
+def build_error_domain_output(client: Client, domain: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, domain, "domain", error_msg)
 
 
 def build_unknown_url_output(client: Client, url: str) -> CommandResults:
@@ -1311,8 +1315,8 @@ def build_quota_exceeded_url_output(client: Client, url: str) -> CommandResults:
     return build_quota_exceeded_output(client, url, "url")
 
 
-def build_error_url_output(client: Client, url: str) -> CommandResults:
-    return build_error_output(client, url, "url")
+def build_error_url_output(client: Client, url: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, url, "url", error_msg)
 
 
 def build_unknown_ip_output(client: Client, ip: str) -> CommandResults:
@@ -1323,8 +1327,8 @@ def build_quota_exceeded_ip_output(client: Client, ip: str) -> CommandResults:
     return build_quota_exceeded_output(client, ip, "ip")
 
 
-def build_error_ip_output(client: Client, ip: str) -> CommandResults:
-    return build_error_output(client, ip, "ip")
+def build_error_ip_output(client: Client, ip: str, error_msg: str = None) -> CommandResults:
+    return build_error_output(client, ip, "ip", error_msg)
 
 
 def build_skipped_enrichment_ip_output(client: Client, ip: str) -> CommandResults:
@@ -1949,6 +1953,11 @@ def ip_command(
 
     for ip in ips:
         raise_if_ip_not_valid(ip)
+
+        if is_ip_address_internal(ip):
+            demisto.info(f"Skipping internal IP: {ip}")
+            continue
+
         if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
             results.append(build_skipped_enrichment_ip_output(client, ip))
             execution_metrics.success += 1
@@ -1966,7 +1975,7 @@ def ip_command(
             # If anything happens, just keep going
             demisto.debug(f'Could not process IP: "{ip}"\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_ip_output(client, ip))
+            results.append(build_error_ip_output(client, ip, str(exc)))
             continue
         execution_metrics.success += 1
         results.append(
@@ -1989,8 +1998,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     execution_metrics = ExecutionMetrics()
 
     for file in files:
-        raise_if_hash_not_valid(file)
         try:
+            raise_if_hash_not_valid(file)
             raw_response = client.file(file, relationships)
             if raw_response.get("error", {}).get("code") == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -2005,7 +2014,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             # If anything happens, just keep going
             demisto.debug(f'Could not process file: "{file}"\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_file_output(client, file))
+            results.append(build_error_file_output(client, file, str(exc)))
             continue
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
@@ -2023,8 +2032,8 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
     execution_metrics = ExecutionMetrics()
 
     for file in files:
-        raise_if_hash_not_valid(file)
         try:
+            raise_if_hash_not_valid(file)
             raw_response = client.private_file(file)
             if raw_response.get("error", {}).get("code") == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -2039,7 +2048,7 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
             # If anything happens, just keep going
             demisto.debug(f'Could not process private file: "{file}"\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_file_output(client, file))
+            results.append(build_error_file_output(client, file, str(exc)))
             continue
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
@@ -2072,7 +2081,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             # If anything happens, just keep going
             demisto.debug(f'Could not process URL: "{url}".\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_url_output(client, url))
+            results.append(build_error_url_output(client, url, str(exc)))
             continue
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
@@ -2105,7 +2114,7 @@ def private_url_command(client: Client, args: dict) -> List[CommandResults]:
             # If anything happens, just keep going
             demisto.debug(f'Could not process private URL: "{url}".\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_url_output(client, url))
+            results.append(build_error_url_output(client, url, str(exc)))
             continue
         execution_metrics.success += 1
         results.append(build_private_url_output(url, raw_response))
@@ -2138,7 +2147,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             # If anything happens, just keep going
             demisto.debug(f'Could not process domain: "{domain}"\n {exc!s}')
             execution_metrics.general_error += 1
-            results.append(build_error_domain_output(client, domain))
+            results.append(build_error_domain_output(client, domain, str(exc)))
             continue
         execution_metrics.success += 1
         result = build_domain_output(

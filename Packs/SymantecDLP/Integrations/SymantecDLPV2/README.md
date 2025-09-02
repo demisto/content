@@ -1421,6 +1421,7 @@ Returns the message body from the Enforce console by incident ID. Requires SDLP 
 #### The following arguments were removed in this version
 
 In the ***symantec-dlp-update-incident*** command:
+
 - *incident_id* - this argument was replaced by *incident_ids*.
 - *note_time*
 - *status*

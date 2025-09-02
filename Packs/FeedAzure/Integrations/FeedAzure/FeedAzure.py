@@ -76,26 +76,32 @@ class Client(BaseClient):
         Returns:
             str. The download link.
         """
-        azure_url_response = self._http_request(
-            method="GET",
-            full_url=self._base_url,
-            url_suffix="",
-            headers={"User-Agent": "PANW-XSOAR"},
-            stream=False,
-            timeout=self._polling_timeout,
-            resp_type="text",
-            retries=4,
-            status_list_to_retry=[403, 404],
-        )
+        try:
+            azure_url_response = self._http_request(
+                method="GET",
+                full_url=self._base_url,
+                url_suffix="",
+                headers={"User-Agent": "PANW-XSOAR"},
+                stream=False,
+                timeout=self._polling_timeout,
+                resp_type="text",
+                retries=4,
+                status_list_to_retry=[403, 404],
+            )
+            download_link_search_regex = re.search(r"(https://download\.microsoft\.com/download/.+?\.json)", azure_url_response)
+            download_link = download_link_search_regex.group(1) if download_link_search_regex else None
+            if download_link is None:
+                demisto.debug(f"azure response is: {azure_url_response}")
+                raise RuntimeError(f"{INTEGRATION_NAME} - Download link not found")
+            demisto.debug(f"download link: {download_link}")
+            save_azure_download_link(download_link)
 
-        download_link_search_regex = re.search(r"(https://download\.microsoft\.com/download/.+?\.json)", azure_url_response)
-        download_link = download_link_search_regex.group(1) if download_link_search_regex else None
-
-        if download_link is None:
-            demisto.debug(f"azure response is: {azure_url_response}")
-            raise RuntimeError(f"{INTEGRATION_NAME} - Download link not found")
-
-        demisto.debug(f"download link: {download_link}")
+        except Exception as e:
+            demisto.info(f"Error while fetching download link: {e}")
+            download_link = load_azure_download_link()
+            demisto.debug(f"Loaded cached download link: {download_link}")
+            if not download_link:
+                raise DemistoException("Unable to get download link.")
 
         return download_link
 
@@ -216,9 +222,7 @@ class Client(BaseClient):
         try:
             download_link = self.get_azure_download_link()
             values_from_file = self.get_download_file_content_values(download_link)
-            results = self.extract_indicators_from_values_dict(values_from_file)
-
-            return results
+            return self.extract_indicators_from_values_dict(values_from_file)
 
         except (requests.exceptions.SSLError, requests.ConnectionError, requests.exceptions.HTTPError) as err:
             demisto.debug(str(err))
@@ -230,7 +234,21 @@ class Client(BaseClient):
 
         except ValueError as err:
             demisto.debug(str(err))
-            raise ValueError(f"Could not parse returned data to Json. \n\nError massage: {err}")
+            raise ValueError(f"Could not parse returned data to Json. \n\nError message: {err}")
+
+
+def load_azure_download_link() -> Optional[str]:
+    """Loads the download link for the file from the server.
+
+    Returns:
+        str. The download link.
+    """
+    return demisto.getIntegrationContext().get("azure_download_link")
+
+
+def save_azure_download_link(link: str):
+    """Saves the download link for the file to the server."""
+    demisto.setIntegrationContext(demisto.getIntegrationContext() | {"azure_download_link": link})
 
 
 def test_module(client: Client) -> tuple[str, dict, dict]:
@@ -351,7 +369,7 @@ def main():
 
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
-    command = demisto.command()
+
     try:
         client = Client(regions_list, services_list, polling_timeout, insecure, proxy)
         if command == "test-module":

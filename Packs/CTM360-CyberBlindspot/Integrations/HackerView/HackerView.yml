@@ -15,6 +15,7 @@ configuration:
   type: 15
   hidden:
   - marketplacev2
+  - platform
   required: false
 - defaultvalue: 7 days
   display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)

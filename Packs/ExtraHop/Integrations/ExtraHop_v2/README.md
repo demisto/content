@@ -1,7 +1,7 @@
 ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution that provides complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
 
 ## Configure ExtraHop Reveal(x) in Cortex
-    
+
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ExtraHop Reveal(x).
 3. Click **Add instance** to create and configure a new integration instance.
@@ -25,7 +25,7 @@ ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution
 | Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. | False |
 | Log Level | Specifies the level of logging to enable for this instance of the integration. | False |
 | Run on | Specifies whether to run the instance of the integration on a single engine. | False |
-    
+
 4. Click **Test** to validate the URL, credentials, and connection.
 
 ## Commands

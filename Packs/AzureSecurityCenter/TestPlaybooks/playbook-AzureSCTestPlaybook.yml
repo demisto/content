@@ -118,7 +118,9 @@ tasks:
       - "11"
     scriptarguments:
       asc_location:
-        simple: centralus
+        simple: westeurope
+      resource_group_name:
+        simple: Sample-RG
     separatecontext: false
     view: |-
       {
@@ -324,7 +326,7 @@ tasks:
           transformers:
           - operator: FirstArrayElement
       asc_location:
-        simple: centralus
+        simple: westeurope
     separatecontext: false
     view: |-
       {

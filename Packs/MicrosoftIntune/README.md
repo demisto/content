@@ -24,4 +24,4 @@ To collect logs from Microsoft Intune, use the information described [here](http
 
 ### Azure Event Hub Integration
 
-To create or configure the Azure Event Hub collector (to collect the logs you sent to Azure Event Hub), use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub).
+To create or configure the Azure Event Hub collector (to collect the logs you sent to Azure Event Hub), use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub).

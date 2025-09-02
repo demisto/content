@@ -19,6 +19,7 @@ It can be set by following these steps:
 
 ---
 This script uses the following commands and scripts.
+
 - pt-get-components
 
 ## Inputs

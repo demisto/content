@@ -72,6 +72,8 @@ script:
     - contextPath: PrismaAccess.LogoutUser
       description: LogoutUser command results.
     description: Force logout a specific user from Prisma Access.
+    compliantpolicies:
+    - User Soft Remediation
   - name: prisma-access-query
     arguments:
     - name: query
@@ -99,7 +101,7 @@ script:
       description: Active Users on Prisma Access.
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.117495
+  dockerimage: demisto/netmiko:1.0.0.3557241
   subtype: python3
 fromversion: 5.0.0
 tests:

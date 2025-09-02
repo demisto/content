@@ -92,16 +92,16 @@ class Client(BaseClient):
             print_debug_msg(str(e))
             raise
 
-    def _handle_403_errors(self, res):
+    def _handle_4xx_errors(self, res):
         """
-        Handles 403 exception on get-dlp-report and tries to refresh token
+        Handles 4xx exception on get-dlp-report and tries to refresh token
         Args:
             res: Response of DLP API call
         """
-        if res.status_code != 403:
+        if res.status_code < 400 or res.status_code >= 500:
             return
         try:
-            print_debug_msg("Got 403, attempting to refresh access token")
+            print_debug_msg(f"Got {res.status_code}, attempting to refresh access token")
             if self.credentials[CREDENTIAL]:
                 print_debug_msg("Requesting access token with client id/client secret")
                 self._refresh_token_with_client_credentials()
@@ -125,11 +125,11 @@ class Client(BaseClient):
                 headers={"Authorization": "Bearer " + self.access_token},
                 url_suffix=url_suffix,
                 ok_codes=[200, 201, 204],
-                error_handler=self._handle_403_errors,
+                error_handler=self._handle_4xx_errors,
                 resp_type="",
                 return_empty_response=True,
             )
-            if res.status_code != 403:
+            if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
 
@@ -159,11 +159,11 @@ class Client(BaseClient):
                 url_suffix=url_suffix,
                 json_data=payload,
                 ok_codes=[200, 201, 204],
-                error_handler=self._handle_403_errors,
+                error_handler=self._handle_4xx_errors,
                 resp_type="response",
                 return_empty_response=True,
             )
-            if res.status_code != 403:
+            if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
 

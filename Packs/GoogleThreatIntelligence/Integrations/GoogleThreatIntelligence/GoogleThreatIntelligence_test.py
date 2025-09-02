@@ -687,7 +687,7 @@ def test_private_file_command(mocker, requests_mock):
     - A valid Testing private file
 
     When:
-    - Running the !vt-privatescanning-file command
+    - Running the !gti-privatescanning-file command
 
     Then:
     - Validate the command results are valid and contains metric data
@@ -724,7 +724,7 @@ def test_not_found_private_file_command(mocker, requests_mock):
     - A valid Testing private file
 
     When:
-    - Running the !vt-privatescanning-file command
+    - Running the !gti-privatescanning-file command
 
     Then:
     - Display "Not found" message to user
@@ -749,6 +749,78 @@ def test_not_found_private_file_command(mocker, requests_mock):
 
     assert results[0].execution_metrics is None
     assert results[0].readable_output == f'File "{sha256}" was not found in GoogleThreatIntelligence.'
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing file
+
+    When:
+    - Running the !file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from GoogleThreatIntelligence import Client, file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    client = Client(params=params)
+
+    results = file_command(
+        client=client,
+        score_calculator=mocked_score_calculator,
+        args=demisto.args(),
+        relationships=None,
+    )
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_invalid_private_file_command(mocker):
+    """
+    Given:
+    - A invalid Testing private file
+
+    When:
+    - Running the !gti-privatescanning-file command
+
+    Then:
+    - Display "Invalid hash" message to user
+    """
+    import CommonServerPython
+    from GoogleThreatIntelligence import Client, private_file_command
+
+    # Setup Mocks
+    sha256 = "Invalid random hash"
+    mocker.patch.object(demisto, "args", return_value={"file": sha256})
+    mocker.patch.object(demisto, "params", return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    results = private_file_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == (
+        f'File "{sha256}" could not be processed. Error: Hash "{sha256}" is not of type SHA-256, SHA-1 or MD5'
+    )
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -829,7 +901,7 @@ def test_not_found_file_sandbox_report_command(mocker, requests_mock):
     - A valid Testing hash
 
     When:
-    - Running the !vt-file-sandbox-report command
+    - Running the !gti-file-sandbox-report command
 
     Then:
     - Display "Not found" message to user
@@ -1465,8 +1537,14 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 1",
                     "description": "Description 1",
                     "last_modification_date": 1718719985,
-                    "targeted_regions": ["UK", "FR"],
-                    "targeted_industries": ["Industry 1", "Industry 2"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "UK"},
+                        {"country_iso2": "FR"},
+                    ],
+                    "targeted_industries_tree": [
+                        {"industry_group": "Industry 1"},
+                        {"industry_group": "Industry 2"},
+                    ],
                 },
             },
             {
@@ -1475,7 +1553,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                     "name": "Name 2",
                     "description": "Description 2",
                     "last_modification_date": 1718720000,
-                    "targeted_regions": ["FR"],
+                    "targeted_regions_hierarchy": [
+                        {"country_iso2": "FR"},
+                    ],
                     "targeted_industries": [],
                 },
             },
@@ -1508,8 +1588,9 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
                 filter_query += "%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29"
             else:
                 filter_query += f"collection_type%3A{collection_type}"
+            args = f"filter={filter_query}&exclude_attributes=aggregations"
             requests_mock.get(
-                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections?filter={filter_query}",
+                f"https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/associations?{args}",
                 json=data_json,
             )
 

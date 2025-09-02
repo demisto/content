@@ -186,7 +186,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    param_api_key = params.get("api_key") or (params.get("credentials") or {}).get("password")
+    param_api_key = (params.get("credentials") or {}).get("password") or params.get("api_key")
     if not param_api_key:
         raise Exception("API Key must be provided.")
     insecure = params.get("insecure", False)

@@ -26,9 +26,7 @@
     "selectValues": [
         "new",
         "under investigation",
-        "closed",
-        "action required",
-        "auto-resolved"
+        "closed"
     ],
     "unmapped": false,
     "unsearchable": true,

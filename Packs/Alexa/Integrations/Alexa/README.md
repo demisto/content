@@ -1,7 +1,7 @@
 Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
 This integration was integrated and tested with Amazon Web Information Services.
-## Configure Alexa Rank Indicator in Cortex
 
+## Configure Alexa Rank Indicator in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -12,42 +12,45 @@ This integration was integrated and tested with Amazon Web Information Services.
 | Trust any certificate (not secure) |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### domain
+
 ***
 Provides an Alexa ranking of the Domain in question.
-
 
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to search. | Required | 
-
+| domain | Domain to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | string | The Domain being checked | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Domain | string | Domain being reported | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| Alexa.Domain.Indicator | string | The Domain being checked | 
-| Alexa.Domain.Name | string | The Domain being checked | 
-| Alexa.Domain.Rank | string | Alexa rank as determined by Amazon | 
-
+| Domain.Name | string | The Domain being checked |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Domain | string | Domain being reported |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| Alexa.Domain.Indicator | string | The Domain being checked |
+| Alexa.Domain.Name | string | The Domain being checked |
+| Alexa.Domain.Rank | string | Alexa rank as determined by Amazon |
 
 #### Command Example
+
 ```!domain domain=demisto.com```
 
 #### Context Example
+
 ```json
 {
     "Alexa": {
@@ -74,4 +77,5 @@ Provides an Alexa ranking of the Domain in question.
 ```
 
 #### Human Readable Output
+
 ![image](../../doc_files/51466171-3b4ead80-1d72-11e9-9cff-14e997e9346a.png)

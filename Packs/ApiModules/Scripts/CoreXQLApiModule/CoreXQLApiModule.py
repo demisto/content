@@ -14,7 +14,9 @@ BUILD_VERSION = "1247804"
 # To use apiCall, the machine must have a version greater than 8.7.0-1247804,
 # and is_using_engine()=False.
 IS_CORE_AVAILABLE = (
-    is_xsiam() and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION) and not is_using_engine()
+    (is_xsiam() or is_platform())
+    and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION)
+    and not is_using_engine()
 )
 
 

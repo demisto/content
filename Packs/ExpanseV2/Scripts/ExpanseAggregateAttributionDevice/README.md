@@ -1,6 +1,7 @@
 Aggregate entries from multiple sources into AttributionDevice
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Aggregate entries from multiple sources into AttributionDevice
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Expanse Attribution Subplaybook
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -28,6 +32,7 @@ This script is used in the following playbooks and scripts.
 | internal_ip_networks | Comma separated list of IPv4 Networks to be considered internal \(default to RFC private networks\). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

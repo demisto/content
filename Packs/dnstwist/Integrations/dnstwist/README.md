@@ -151,7 +151,7 @@
 <h5>Command Example</h5>
 <p><code>!dnstwist-domain-variations domain=demisto.com</code></p>
 <h5>Context Example</h5>
-<pre>"dnstwist": 
+<pre>"dnstwist":
  {
   "Domain": {
     "Name": "demisto.com",
@@ -163,7 +163,7 @@
               },
        {
         "Name": "demistol.com",
-               "IP": ["85.13.155.169"]              
+               "IP": ["85.13.155.169"]
               }
      ]
    }

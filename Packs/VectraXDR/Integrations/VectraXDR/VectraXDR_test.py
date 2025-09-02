@@ -3214,11 +3214,12 @@ def test_get_modified_remote_command_successful_retrieval(client):
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
     # Mock dateparser, get_last_mirror_run, list_entities_request, and set_last_mirror_run
-    with (patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
-          patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
-          patch("VectraXDR.VectraClient.list_entities_request", return_value={"results": [], "next_url": None}),
-          patch("VectraXDR.set_last_mirror_run")
-          ):
+    with (
+        patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
+        patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
+        patch("VectraXDR.VectraClient.list_entities_request", return_value={"results": [], "next_url": None}),
+        patch("VectraXDR.set_last_mirror_run"),
+    ):
         args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
         get_modified_remote_data_command(client, args)
 
@@ -3244,15 +3245,19 @@ def test_get_modified_remote_command_max_mirroring_limit_reached(client):
     - Calling the 'get_modified_remote_data_command' function with the provided client and arguments.
     """
     # Mock dateparser, get_last_mirror_run, list_entities_request, and set_last_mirror_run
-    with (patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
-          patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
-          patch("VectraXDR.VectraClient.list_entities_request",
-                return_value={"results": [{"id": 1, "type": "account"}] * 10000,
-                              "next_url": "http://serverurl.com/api/v3.3/entities?page=2&page_size=500"
-                              "&last_modified_timestamp_gte=2023-09-20T10%3A00%3A00Z",
-                              }),
-          patch("VectraXDR.set_last_mirror_run")
-          ):
+    with (
+        patch("VectraXDR.dateparser.parse", return_value=datetime(2023, 9, 20, 10)),
+        patch("VectraXDR.get_last_mirror_run", return_value={"lastMirrorRun": "2023-09-20T10:00:00+00:00"}),
+        patch(
+            "VectraXDR.VectraClient.list_entities_request",
+            return_value={
+                "results": [{"id": 1, "type": "account"}] * 10000,
+                "next_url": "http://serverurl.com/api/v3.3/entities?page=2&page_size=500"
+                "&last_modified_timestamp_gte=2023-09-20T10%3A00%3A00Z",
+            },
+        ),
+        patch("VectraXDR.set_last_mirror_run"),
+    ):
         args = {"lastUpdate": "2023-09-20T10:00:00+00:00"}
         get_modified_remote_data_command(client, args)
 

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The get-user-data script's output prefix have changed from Account to UserData."
+}

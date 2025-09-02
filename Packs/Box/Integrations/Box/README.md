@@ -6,10 +6,10 @@ Deprecated. Use the Box v2 integration instead.
 | --- | --- | --- |
 | insecure | Trust any certificate \(not secure\) | False |
 
-
-## How to initialize the Box integration:
+## How to initialize the Box integration
 
   Note: The following steps should be done in less than 30 seconds due to Box security.
+
   1. Create a new Box instance. Do not click **Test**.
   2. In your browser, copy the following line containing the Cortex XSOAR application client id:
   https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu
@@ -23,33 +23,36 @@ Deprecated. Use the Box v2 integration instead.
   For additional information, watch https://www.youtube.com/watch?v=ha26tN8amI0
   Or read about the box oauth2 process at https://developer.box.com/guides/authentication/oauth2/
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### box_get_current_user
+
 ***
 Retrieves information about the user who is currently logged in i.e. the user for whom this auth token was generated
-
 
 #### Base Command
 
 `box_get_current_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| verbose | Print verbose data on each user | Optional | 
-
+| verbose | Print verbose data on each user | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_get_current_user```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -57,41 +60,42 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Box account current user
+>
 >|ID|Username|Name|Created at|Status|
 >|---|----|----|----|----|
 >|14226607780|exampleuser@paloaltonetworks.com|My Name|2020-09-25T15:23:39-07:00|active|
 
-
 ### box_get_users
+
 ***
 Returns a list of all users for the Enterprise along with their user_id, public_name, and login
-
 
 #### Base Command
 
 `box_get_users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter_term | A string used to filter the results to only users starting with the filter_term in either the name or the login | Optional | 
-| limit | The number of records to return. The default is 100 and the max is 1000 | Optional | 
-| offset | The record at which to start. The default is 0 | Optional | 
-| user_type | The type of user to search for. Valid values are all, external or managed. If nothing is provided, the default behavior will be managed only | Optional | 
-| verbose | Print verbose data on each user | Optional | 
-
+| filter_term | A string used to filter the results to only users starting with the filter_term in either the name or the login | Optional |
+| limit | The number of records to return. The default is 100 and the max is 1000 | Optional |
+| offset | The record at which to start. The default is 0 | Optional |
+| user_type | The type of user to search for. Valid values are all, external or managed. If nothing is provided, the default behavior will be managed only | Optional |
+| verbose | Print verbose data on each user | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Account | unknown | Account information of users returned by query, including ID, name and username | 
-
+| Account | unknown | Account information of users returned by query, including ID, name and username |
 
 #### Command Example
+
 ```!box_get_users```
 
 #### Context Example
+
 ```json
 {
     "Account": [
@@ -109,50 +113,53 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 #### Human Readable Output
 
 >### Box account users
+>
 >|ID|Username|Name|Created at|Status|
 >|---|---|---|---|---|
 >|14226607780|exampleuser@paloaltonetworks.com|My Name|2020-10-29T07:49:51-07:00|active|
 
 ### box_update_user
+
 ***
 Used to edit the settings and information about a user
-
 
 #### Base Command
 
 `box_update_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| notify | Whether the user should receive an email when they are rolled out of an enterprise | Optional | 
-| enterprise | Setting this to null will roll the user out of the enterprise and make them a free user. When passing a null value, do not pass this value as a string | Optional | 
-| name | The name of this user | Optional | 
-| role | string This user’s enterprise role | Optional | 
-| language | The language of this user | Optional | 
-| is_sync_enabled | Whether or not this user can use Box Sync | Optional | 
-| job_title | The user’s job title | Optional | 
-| phone | The user’s phone number | Optional | 
-| address | The user’s address | Optional | 
-| space_amount | The user’s total available space amount in byte. A value of -1 grants unlimited storage | Optional | 
-| tracking_codes | An array of key/value pairs set by the user’s admin | Optional | 
-| can_see_managed_users |  boolean Whether this user can see other enterprise users in its contact list | Optional | 
-| status | Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload | Optional | 
-| timezone | The timezone of this user | Optional | 
-| is_exempt_from_device_limits | Whether to exempt this user from Enterprise device limits | Optional | 
-| is_exempt_from_login_verification | Whether or not this user must use two-factor authentication | Optional | 
-| is_password_reset_required | Whether or not the user is required to reset password | Optional | 
-| user_id | The user id to update | Required | 
-
+| notify | Whether the user should receive an email when they are rolled out of an enterprise | Optional |
+| enterprise | Setting this to null will roll the user out of the enterprise and make them a free user. When passing a null value, do not pass this value as a string | Optional |
+| name | The name of this user | Optional |
+| role | string This user’s enterprise role | Optional |
+| language | The language of this user | Optional |
+| is_sync_enabled | Whether or not this user can use Box Sync | Optional |
+| job_title | The user’s job title | Optional |
+| phone | The user’s phone number | Optional |
+| address | The user’s address | Optional |
+| space_amount | The user’s total available space amount in byte. A value of -1 grants unlimited storage | Optional |
+| tracking_codes | An array of key/value pairs set by the user’s admin | Optional |
+| can_see_managed_users |  boolean Whether this user can see other enterprise users in its contact list | Optional |
+| status | Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload | Optional |
+| timezone | The timezone of this user | Optional |
+| is_exempt_from_device_limits | Whether to exempt this user from Enterprise device limits | Optional |
+| is_exempt_from_login_verification | Whether or not this user must use two-factor authentication | Optional |
+| is_password_reset_required | Whether or not the user is required to reset password | Optional |
+| user_id | The user id to update | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_update_user user_id=14226607780```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -160,47 +167,49 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### User updated
+>
 >|ID|Username|Name|Created at|Status|
 >|---|---|---|---|---|
 >|14226607780|eampleuser@paloaltonetworks.com|My Name |2020-09-25T16:02:17-07:00|active|
 
-
 ### box_add_user
+
 ***
 Used to provision a new user in an enterprise
-
 
 #### Base Command
 
 `box_add_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| login | The email address this user uses to login | Required | 
-| name | The name of this user | Required | 
-| role | This user’s enterprise role. Can be coadmin or user | Optional | 
-| language | The language of this user | Optional | 
-| is_sync_enabled | Whether or not this user can use Box Sync | Optional | 
-| job_title | The user’s job title | Optional | 
-| phone | The user’s phone number | Optional | 
-| address | The user’s address | Optional | 
-| space_amount | The user’s total available space amount in bytes | Optional | 
-| tracking_codes | An array of key/value pairs set by the user’s admin | Optional | 
-| can_see_managed_users | Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload | Optional | 
-| timezone | The timezone of this user | Optional | 
-| is_exempt_from_device_limits | Whether to exempt this user from Enterprise device limits | Optional | 
-| is_exempt_from_login_verification | Whether or not this user must use two-factor authentication | Optional | 
-
+| login | The email address this user uses to login | Required |
+| name | The name of this user | Required |
+| role | This user’s enterprise role. Can be coadmin or user | Optional |
+| language | The language of this user | Optional |
+| is_sync_enabled | Whether or not this user can use Box Sync | Optional |
+| job_title | The user’s job title | Optional |
+| phone | The user’s phone number | Optional |
+| address | The user’s address | Optional |
+| space_amount | The user’s total available space amount in bytes | Optional |
+| tracking_codes | An array of key/value pairs set by the user’s admin | Optional |
+| can_see_managed_users | Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload | Optional |
+| timezone | The timezone of this user | Optional |
+| is_exempt_from_device_limits | Whether to exempt this user from Enterprise device limits | Optional |
+| is_exempt_from_login_verification | Whether or not this user must use two-factor authentication | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_add_user login=exampleuser@paloaltonetworks.com name="My Name"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -208,36 +217,38 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### User created
+>
 >|ID|Username|Name|Created at|Status|
 >|---|---|---|---|---|
 >|14226607780|exampleuser@paloaltonetworks.com|My Name|2020-10-29T07:49:51-07:00|active|
 
-
 ### box_delete_user
+
 ***
 Deletes a user in an enterprise account
-
 
 #### Base Command
 
 `box_delete_user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| notify | Determines if the destination user should receive email notification of the transfer | Optional | 
-| force | Whether or not the user should be deleted even if this user still own files | Optional | 
-| user_id | The user id to update | Required | 
-
+| notify | Determines if the destination user should receive email notification of the transfer | Optional |
+| force | Whether or not the user should be deleted even if this user still own files | Optional |
+| user_id | The user id to update | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_delete_user user_id=14226607780```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -245,33 +256,35 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### User deleted
+>
 >success
 
-
 ### box_move_folder
+
 ***
 Moves all of the owned content from within one user’s folder into a new folder in another user’s account. You can move folders across users as long as the you have administrative permissions and the ‘source’ user owns the folders. To move everything from the root folder, use “0” which always represents the root folder of a Box account (Currently only moving of the root folder (0) is supported)
-
 
 #### Base Command
 
 `box_move_folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_user_id | The ID of the user who the folder will be transferred from | Required | 
-| to_user_id | The ID of the user who the folder will be transferred to | Required | 
-
+| from_user_id | The ID of the user who the folder will be transferred from | Required |
+| to_user_id | The ID of the user who the folder will be transferred to | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_move_folder from_user_id=13917563262 to_user_id=14226607780```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -279,40 +292,41 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Folder moved
+>
 >Content is now available in account **exampleuser@paloaltonetworks.com** under directory **exmple@paloaltonetworks.com - My Name's Files and Folders (2)**
 
-
 ### box_files_get
+
 ***
 getting a file from private Box storage
-
 
 #### Base Command
 
 `box_files_get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | File's id | Required | 
-
+| file_id | File's id | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | string | Filename | 
-| File.Type | string | File type | 
-| File.Size | number | File size | 
-| File.MD5 | string | MD5 hash of the file | 
-| File.SHA1 | string | SHA1 hash of the file | 
-| File.SHA256 | string | SHA256 hash of the file | 
-
+| File.Name | string | Filename |
+| File.Type | string | File type |
+| File.Size | number | File size |
+| File.MD5 | string | MD5 hash of the file |
+| File.SHA1 | string | SHA1 hash of the file |
+| File.SHA256 | string | SHA256 hash of the file |
 
 #### Command Example
+
 ```!box_files_get file_id=723447059947```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -336,28 +350,30 @@ getting a file from private Box storage
 >Untitled Note 2020-09-25 15.56.56.boxnote
 
 ### box_initiate
+
 ***
 Initialising of Box's integration
-
 
 #### Base Command
 
 `box_initiate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| access_code | Box's access code (see description) | Required | 
-
+| access_code | Box's access code (see description) | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box_initiate access_code=wOK4V7vzcljJNTFu2mSDyQq7phlFY5nx```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -367,67 +383,68 @@ There is no context output for this command.
 >Box initialized successfully
 
 ### box_files_get_info
+
 ***
 Getting file info of provided ID
-
 
 #### Base Command
 
 `box_files_get_info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | File's ID | Required | 
-
+| file_id | File's ID | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Size | number | Size of file \(in bits\) | 
-| Box.ContentModifiedAt | date | Time of content modification | 
-| Box.Sha1 | string | File's SHA1 | 
-| Box.ModifiedAt | date | Time of file info | 
-| Box.Parent.Etag | string | Parent's etag | 
-| Box.Parent.Id | string | Parent's ID | 
-| Box.Parent.Name | string | Parent's name | 
-| Box.SequenceId | string | Parent's sequence ID | 
-| Box.Parent.Type | string | Parent's type | 
-| Box.CreatedAt | date | Time of file's upload | 
-| Box.Name | string | File's name | 
-| Box.ModifiedBy.Id | string | ID's of last user modified | 
-| Box.ModifiedBy.Login | string | User's login email | 
-| Box.ModifiedBy.Name | string | User's name of last modified | 
-| Box.ModifiedBy.User | string | User's type | 
-| Box.ContentCreatedAt | date | File's time of creation | 
-| Box.OwnedBy.Id | string | File's owner ID | 
-| Box.OwnedBy.Login | string | File's owner email | 
-| Box.OwnedBy.Name | string | File's owner name | 
-| Box.OwnedBy.Type | string | File's owner type | 
-| Box.SharedLink | string | Shared link | 
-| Box.Etag | string | File's etag | 
-| Box.FileVersion.Id | string | File's version ID | 
-| Box.FileVersion.Sha1 | string | File's version SHA1 | 
-| Box.FileVersion.Type | string | File's version type | 
-| Box.PathCollection.Entries.Etag | string | Path's collection entries etag | 
-| Box.PathCollection.Entries.Id | string | Path's collection entries ID | 
-| Box.PathCollection.Entries.Sha1 | string | Path's collection entries SHA1 | 
-| Box.PathCollection.Entries.Name | string | Path's collection entries name | 
-| Box.PathCollection.Entries.SequenceId | string | Path's collection entries sequence_id | 
-| Box.PathCollection.Entries.Type | string | Path's collection entries type | 
-| Box.PathCollection.TotalCount | string | Size of path_collection object | 
-| Box.PurgedAt | string | purged at | 
-| Box.Type | string | File's type | 
-| Box.Id | string | File's ID | 
-| Box.Description | string | File's description | 
-| Box.ItemStatus | string | File's status | 
-
+| Box.Size | number | Size of file \(in bits\) |
+| Box.ContentModifiedAt | date | Time of content modification |
+| Box.Sha1 | string | File's SHA1 |
+| Box.ModifiedAt | date | Time of file info |
+| Box.Parent.Etag | string | Parent's etag |
+| Box.Parent.Id | string | Parent's ID |
+| Box.Parent.Name | string | Parent's name |
+| Box.SequenceId | string | Parent's sequence ID |
+| Box.Parent.Type | string | Parent's type |
+| Box.CreatedAt | date | Time of file's upload |
+| Box.Name | string | File's name |
+| Box.ModifiedBy.Id | string | ID's of last user modified |
+| Box.ModifiedBy.Login | string | User's login email |
+| Box.ModifiedBy.Name | string | User's name of last modified |
+| Box.ModifiedBy.User | string | User's type |
+| Box.ContentCreatedAt | date | File's time of creation |
+| Box.OwnedBy.Id | string | File's owner ID |
+| Box.OwnedBy.Login | string | File's owner email |
+| Box.OwnedBy.Name | string | File's owner name |
+| Box.OwnedBy.Type | string | File's owner type |
+| Box.SharedLink | string | Shared link |
+| Box.Etag | string | File's etag |
+| Box.FileVersion.Id | string | File's version ID |
+| Box.FileVersion.Sha1 | string | File's version SHA1 |
+| Box.FileVersion.Type | string | File's version type |
+| Box.PathCollection.Entries.Etag | string | Path's collection entries etag |
+| Box.PathCollection.Entries.Id | string | Path's collection entries ID |
+| Box.PathCollection.Entries.Sha1 | string | Path's collection entries SHA1 |
+| Box.PathCollection.Entries.Name | string | Path's collection entries name |
+| Box.PathCollection.Entries.SequenceId | string | Path's collection entries sequence_id |
+| Box.PathCollection.Entries.Type | string | Path's collection entries type |
+| Box.PathCollection.TotalCount | string | Size of path_collection object |
+| Box.PurgedAt | string | purged at |
+| Box.Type | string | File's type |
+| Box.Id | string | File's ID |
+| Box.Description | string | File's description |
+| Box.ItemStatus | string | File's status |
 
 #### Command Example
+
 ```!box_files_get_info file_id=723447059947```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -490,7 +507,7 @@ Getting file info of provided ID
 
 #### Human Readable Output
 
->### File info:
+>### File info
 >
 >| Key | Value |
 >|---|---|
@@ -513,7 +530,7 @@ Getting file info of provided ID
 >| ModifiedBy.Name | My Name |
 >| ModifiedBy.Type | user |
 >| Name | Untitled Note 2020-09-25 15.56.56.boxnote |
->| OwnedBy.Id | 14226607780 | 
+>| OwnedBy.Id | 14226607780 |
 >| OwnedBy.Login | exampleuser@paloaltonetworks.com |
 >| OwnedBy.Name | My Name |
 >| OwnedBy.Type | user |

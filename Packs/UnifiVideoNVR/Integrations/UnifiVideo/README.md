@@ -16,7 +16,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| UnifiVideo.Cameras | Unknown | The camera list. | 
+| UnifiVideo.Cameras | Unknown | The camera list. |
+
 ### unifivideo-get-snapshot
 
 ***
@@ -30,11 +31,12 @@ The name of the camera to take the snapshot from. If empty then all camera snaps
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| camera_name | The name of the camera. | Required | 
+| camera_name | The name of the camera. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### unifivideo-get-recording
 
 ***
@@ -48,13 +50,14 @@ Download a recording to file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| recording_id | The id of the recording. | Required | 
+| recording_id | The id of the recording. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| UnifiVideo.Recordings | Unknown | The recording list. | 
+| UnifiVideo.Recordings | Unknown | The recording list. |
+
 ### unifivideo-set-recording-settings
 
 ***
@@ -68,12 +71,13 @@ Set the recording settings.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| camera_name | The camera name. | Required | 
-| rec_set | Recording setting, motion,fulltime or disable. Possible values are: fulltime, motion, disable. Default is motion. | Required | 
+| camera_name | The camera name. | Required |
+| rec_set | Recording setting, motion,fulltime or disable. Possible values are: fulltime, motion, disable. Default is motion. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### unifivideo-ir-leds
 
 ***
@@ -87,12 +91,13 @@ Turn ON or OFF the camera Infra-Red LED.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| camera_name | The camera name. | Required | 
-| ir_leds | The Infra-Red LED mode. Possible values are: auto, on, off. Default is auto. | Required | 
+| camera_name | The camera name. | Required |
+| ir_leds | The Infra-Red LED mode. Possible values are: auto, on, off. Default is auto. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### unifivideo-get-recording-list
 
 ***
@@ -109,6 +114,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### unifivideo-get-snapshot-at-frame
 
 ***
@@ -122,12 +128,13 @@ Get a snapshot from video file based on the frame number.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryid | File entryID of the video file. | Required | 
-| frame | Frame to take from the video. | Required | 
+| entryid | File entryID of the video file. | Required |
+| frame | Frame to take from the video. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### unifivideo-get-recording-snapshot
 
 ***
@@ -141,12 +148,13 @@ Get the recording snapshot (at frame) based on the recording id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| frame | The frame to snapshot. Default is 150. | Required | 
-| recording_id | the ubnt_id of the recording. | Required | 
+| frame | The frame to snapshot. Default is 150. | Required |
+| recording_id | the ubnt_id of the recording. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### unifivideo-get-recording-motion-snapshot
 
 ***
@@ -160,7 +168,7 @@ Gets the frame snapshot that has triggered the motion event.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| recording_id | the ubnt_id of the recording. | Required | 
+| recording_id | the ubnt_id of the recording. | Required |
 
 #### Context Output
 

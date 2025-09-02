@@ -231,7 +231,7 @@ def test_module(client: Client):  # pragma: no cover
     return_results("ok")
 
 
-def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: str = "all") -> tuple | list:
+def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: list = []) -> tuple | list:
     """
     Fetch indicators from Xpanse API and create indicators in XSOAR.
 
@@ -245,14 +245,15 @@ def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: st
         List: raw response from API.
     """
     asset_list, asset_response = [], []
-    if asset_type == "all":
-        asset_list = ["CERTIFICATE", "DOMAIN", "UNASSOCIATED_RESPONSIVE_IP"]
-    if "domain" in asset_type:
-        asset_list.append("DOMAIN")
-    if "certificate" in asset_type:
-        asset_list.append("CERTIFICATE")
-    if "ipv4" in asset_type:
-        asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
+    if asset_type == []:
+        asset_list = ["DOMAIN", "CERTIFICATE", "UNASSOCIATED_RESPONSIVE_IP"]
+    else:
+        if "Domain" in asset_type:
+            asset_list.append("DOMAIN")
+        if "Certificate" in asset_type:
+            asset_list.append("CERTIFICATE")
+        if "IP" in asset_type:
+            asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
     if limit:
         # Had to add 1 to the limit to get the right return.
         asset_response = client.list_asset_internet_exposure_request(
@@ -285,13 +286,13 @@ def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     hr_list = []
 
-    asset_type = ""
+    asset_type = []
     if argToBoolean(args.get("ip", "yes")):
-        asset_type += "ipv4"
+        asset_type.append("IP")
     if argToBoolean(args.get("domain", "yes")):
-        asset_type += "domain"
+        asset_type.append("Domain")
     if argToBoolean(args.get("certificate", "yes")):
-        asset_type += "certificate"
+        asset_type.append("Certificate")
 
     limit = arg_to_number(args.get("limit", None))
 
@@ -299,7 +300,7 @@ def get_indicators(client: Client, args: dict[str, Any]) -> CommandResults:
         raise ValueError("Limit must be a positive number.")
     if limit and limit > DEFAULT_ASSET_SEARCH_LIMIT:
         raise ValueError("Limit must be less that the API limit of " + str(DEFAULT_ASSET_SEARCH_LIMIT) + ".")
-    if asset_type == "":
+    if asset_type == []:
         raise ValueError("need to specify at least one asset type")
 
     indicators, raw_res = fetch_indicators(client=client, limit=limit, asset_type=asset_type)
@@ -328,6 +329,7 @@ def main() -> None:  # pragma: no cover
     # Append default tags.
     feed_tags = list(set(argToList(params.get("feedTags", []))) | DEFAULT_FEED_TAGS)
     tlp_color = params.get("tlp_color", "")
+    indicator_types = params.get("indicatorTypes", [])
     creds = params.get("credentials", {})
     api = creds.get("password", "")
     add_sensitive_log_strs(api)
@@ -344,7 +346,7 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             test_module(client)
         elif command == "fetch-indicators":
-            indicators, _ = fetch_indicators(client)
+            indicators, _ = fetch_indicators(client, asset_type=indicator_types)
             for iter_ in batch(indicators, batch_size=2000):
                 try:
                     demisto.createIndicators(iter_)
