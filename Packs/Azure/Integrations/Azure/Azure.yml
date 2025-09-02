@@ -453,25 +453,25 @@ script:
   - description: Run this command to get the blob service properties of a specific account storage.
     name: azure-storage-blob-service-properties-get
     outputs:
-      - contextPath: AzureStorage.BlobServiceProperties.id
+      - contextPath: Azure.StorageBlobServiceProperties.id
         description: Fully qualified resource ID for the resource.
         type: String
-      - contextPath: AzureStorage.BlobServiceProperties.name
+      - contextPath: Azure.StorageBlobServiceProperties.name
         description: The name of the resource.
         type: String
-      - contextPath: AzureStorage.BlobServiceProperties.type
+      - contextPath: Azure.StorageBlobServiceProperties.type
         description: The type of the resource.
         type: String
-      - contextPath: AzureStorage.BlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
         description: When set to true last access time based tracking is enabled.
         type: Boolean
-      - contextPath: AzureStorage.BlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
         description: Name of the policy. The valid value is AccessTimeTracking.
         type: String
-      - contextPath: AzureStorage.BlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
         description: The field specifies blob object tracking granularity in days, typically how often the blob object should be tracked.
         type: Number
-      - contextPath: AzureStorage.BlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
         description: An array of predefined supported blob types. Only blockBlob is the supported value.
         type: String
     arguments:
@@ -487,25 +487,25 @@ script:
   - description: Run this command to update an specific blob container.
     name: azure-storage-blob-containers-update
     outputs:
-    - contextPath: AzureStorage.BlobContainer.id
+    - contextPath: Azure.StorageBlobContainer.id
       description: Fully qualified resource ID for the resource.
       type: String
-    - contextPath: AzureStorage.BlobContainer.name
+    - contextPath: Azure.StorageBlobContainer.name
       description: The name of the resource.
       type: String
-    - contextPath: AzureStorage.BlobContainer.type
+    - contextPath: Azure.StorageBlobContainer.type
       description: The type of the resource.
       type: String
-    - contextPath: AzureStorage.BlobContainer.properties.metadata.metadata
+    - contextPath: Azure.StorageBlobContainer.properties.metadata.metadata
       description: A name-value pair to associate with the container as metadata.
       type: String
-    - contextPath: AzureStorage.BlobContainer.properties.publicAccess
+    - contextPath: Azure.StorageBlobContainer.properties.publicAccess
       description: Specifies whether data in the container may be accessed publicly and the level of access.
       type: String
-    - contextPath: AzureStorage.BlobContainer.properties.hasImmutabilityPolicy
+    - contextPath: Azure.StorageBlobContainer.properties.hasImmutabilityPolicy
       description: The hasImmutabilityPolicy public property is set to true by SRP if ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy public property is set to false by SRP if ImmutabilityPolicy has not been created for this container.
       type: Boolean
-    - contextPath: AzureStorage.BlobContainer.properties.hasLegalHold
+    - contextPath: Azure.StorageBlobContainer.properties.hasLegalHold
       description: The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
     arguments:
