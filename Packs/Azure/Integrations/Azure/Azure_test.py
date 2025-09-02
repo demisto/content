@@ -2433,9 +2433,7 @@ def test_storage_blob_service_properties_get_command(mocker):
     result: CommandResults = storage_blob_service_properties_get_command(mock_client, params, args)
 
     mock_client.storage_blob_service_properties_get_request.assert_called_once_with(
-        account_name="teststorage",
-        resource_group_name="rg1",
-        subscription_id="subid"
+        account_name="teststorage", resource_group_name="rg1", subscription_id="subid"
     )
 
     assert isinstance(result, CommandResults)
@@ -2458,7 +2456,7 @@ def test_storage_blob_service_properties_get_command(mocker):
         "Resource Group",
         "Change Feed",
         "Delete Retention Policy",
-        "Versioning"
+        "Versioning",
     ]
     for header in expected_headers:
         assert header in result.readable_output
@@ -2486,10 +2484,7 @@ def test_storage_blob_containers_update_command(mocker):
     result: CommandResults = storage_blob_containers_update_command(mock_client, params, args)
 
     mock_client.storage_blob_containers_create_update_request.assert_called_once_with(
-        subscription_id="subid",
-        resource_group_name="rg1",
-        args=args,
-        method="PATCH"
+        subscription_id="subid", resource_group_name="rg1", args=args, method="PATCH"
     )
 
     assert isinstance(result, CommandResults)
@@ -2505,12 +2500,6 @@ def test_storage_blob_containers_update_command(mocker):
     assert "res3376" in result.readable_output
     assert "Container" in result.readable_output
 
-    expected_headers = [
-        "Name",
-        "Account Name",
-        "Subscription ID",
-        "Resource Group",
-        "Public Access"
-    ]
+    expected_headers = ["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"]
     for header in expected_headers:
         assert header in result.readable_output
