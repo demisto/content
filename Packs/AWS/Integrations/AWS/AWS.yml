@@ -1751,6 +1751,7 @@ script:
       required: true
 
   - name: aws-cloudtrail-trails-describe
+    description: Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
     arguments:
     - description: A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region.
       name: trail_names
