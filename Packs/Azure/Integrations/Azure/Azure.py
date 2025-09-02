@@ -79,6 +79,35 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
 }
 
+COMMANDS_TO_PERMISSIONS = {
+    "azure-acr-update": ['Microsoft.ContainerRegistry/registries/read', 'Microsoft.ContainerRegistry/registries/write'],
+    "azure-cosmos-db-update": ['Microsoft.DocumentDB/databaseAccounts/read', 'Microsoft.DocumentDB/databaseAccounts/write'],
+    "azure-disk-update": ['Microsoft.Compute/disks/read', 'Microsoft.Compute/disks/write'],
+    "azure-key-vault-update": ['Microsoft.KeyVault/vaults/read', 'Microsoft.KeyVault/vaults/write'],
+    "azure-monitor-log-profile-update": ['Microsoft.Insights/logprofiles/read', 'Microsoft.Insights/logprofiles/write'],
+    "azure-mysql-flexible-server-param-set": ['Microsoft.DBforMySQL/flexibleServers/configurations/read', 'Microsoft.DBforMySQL/flexibleServers/configurations/write'],
+    "azure-nsg-network-interfaces-list": "Microsoft.Network/networkInterfaces/read",
+    "azure-nsg-public-ip-addresses-list": "Microsoft.Network/publicIPAddresses/read",
+    "azure-nsg-resource-group-list": "Microsoft.Resources/subscriptions/resourceGroups/read",
+    "azure-nsg-security-groups-list": "Microsoft.Network/networkSecurityGroups/read",
+    "azure-nsg-security-rule-create": ['Microsoft.Network/networkSecurityGroups/securityRules/read', 'Microsoft.Network/networkSecurityGroups/securityRules/write'],
+    "azure-nsg-security-rule-delete": "Microsoft.Network/networkSecurityGroups/securityRules/delete",
+    "azure-nsg-security-rule-update": ['Microsoft.Network/networkSecurityGroups/securityRules/read', 'Microsoft.Network/networkSecurityGroups/securityRules/write'],
+    "azure-nsg-subscriptions-list": "Microsoft.Resources/subscriptions/read",
+    "azure-policy-assignment-create": ['Microsoft.Authorization/policyAssignments/read', 'Microsoft.Authorization/policyAssignments/write'],
+    "azure-postgres-config-set": ['Microsoft.DBforPostgreSQL/servers/configurations/read', 'Microsoft.DBforPostgreSQL/servers/configurations/write'],
+    "azure-postgres-server-update": ['Microsoft.DBforPostgreSQL/servers/read', 'Microsoft.DBforPostgreSQL/servers/write'],
+    "azure-sql-db-threat-policy-update": ['Microsoft.Sql/servers/databases/securityAlertPolicies/read', 'Microsoft.Sql/servers/databases/securityAlertPolicies/write'],
+    "azure-sql-db-transparent-data-encryption-set": ['Microsoft.Sql/servers/databases/transparentDataEncryption/read', 'Microsoft.Sql/servers/databases/transparentDataEncryption/write'],
+    "azure-storage-account-update": ['Microsoft.Storage/storageAccounts/read', 'Microsoft.Storage/storageAccounts/write'],
+    "azure-storage-blob-containers-update": "Microsoft.Storage/storageAccounts/blobServices/containers/write",
+    "azure-storage-blob-service-properties-get": "Microsoft.Storage/storageAccounts/blobServices/read",
+    "azure-storage-blob-service-properties-set": ['Microsoft.Storage/storageAccounts/blobServices/read', 'Microsoft.Storage/storageAccounts/blobServices/write'],
+    "azure-webapp-auth-update": ['Microsoft.Web/sites/config/read', 'Microsoft.Web/sites/config/write'],
+    "azure-webapp-config-set": ['Microsoft.Web/sites/config/read', 'Microsoft.Web/sites/config/write'],
+    "azure-webapp-update": ['Microsoft.Web/sites/read', 'Microsoft.Web/sites/write'],
+}
+
 REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/networkSecurityGroups/read",
     "Microsoft.Network/networkSecurityGroups/securityRules/read",
@@ -212,7 +241,8 @@ class AzureClient:
         )
 
     def handle_azure_error(
-        self, e: Exception, resource_name: str, resource_type: str, subscription_id: str = None, resource_group_name: str = None
+        self, e: Exception, resource_name: str, resource_type: str, subscription_id: str = None, resource_group_name: str = None,
+        command_name: str = None
     ) -> None:
         """
         Standardized error handling for Azure API calls
@@ -223,6 +253,7 @@ class AzureClient:
             resource_type: Type of the resource (e.g., 'Security Rule', 'Storage Account')
             subscription_id: Azure subscription ID (optional, for better error messages)
             resource_group_name: Resource group name (optional, for better error messages)
+            command_name: The command name, used when need to know the permissions.
 
         Raises:
             ValueError: For 404 (not found) errors
@@ -238,6 +269,12 @@ class AzureClient:
             elif subscription_id:
                 error_details += f' under subscription ID "{subscription_id}"'
             raise ValueError(f"{error_details} was not found. {str(e)}")
+
+        elif (("403" in error_msg or "forbidden" in error_msg) or
+              ("401" in error_msg or "unauthorized" in error_msg) and command_name):
+            # in case it's permissions error we want to handle it with the return_multiple_permissions_error function
+            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": COMMANDS_TO_PERMISSIONS[command_name]}]
+            return_multiple_permissions_error(error_entries)
 
         elif "403" in error_msg or "forbidden" in error_msg:
 
