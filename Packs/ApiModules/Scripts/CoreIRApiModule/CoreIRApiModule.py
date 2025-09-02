@@ -162,7 +162,7 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(
     version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
 )
 
-MAX_GET_INCIDENTS_LIMIT = 100
+MAX_GET_INCIDENTS_PAGE_SIZE = 100
 
 
 class CoreClient(BaseClient):
@@ -4372,18 +4372,18 @@ def get_cases_command(client, args):
         if isinstance(id_, int | float):
             case_id_list[index] = str(id_)
 
-    lte_modification_time = args.get("lte_modification_time")
-    gte_modification_time = args.get("gte_modification_time")
-    since_modification_time = args.get("since_modification_time")
+    lte_modification_time = args.get("modified_before_iso_8601_timestamp")
+    gte_modification_time = args.get("modified_after_iso_8601_timestamp")
+    since_modification_time = args.get("modified_within")
 
     if since_modification_time and gte_modification_time:
         raise ValueError("Can't set both since_modification_time and lte_modification_time")
     if since_modification_time:
         gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
 
-    lte_creation_time = args.get("lte_creation_time")
-    gte_creation_time = args.get("gte_creation_time")
-    since_creation_time = args.get("since_creation_time")
+    lte_creation_time = args.get("created_before_iso_8601_timestamp")
+    gte_creation_time = args.get("created_after_iso_8601_timestamp")
+    since_creation_time = args.get("created_within")
 
     if since_creation_time and gte_creation_time:
         raise ValueError("Can't set both since_creation_time and lte_creation_time")
@@ -4400,10 +4400,10 @@ def get_cases_command(client, args):
     sort_by_creation_time = args.get("sort_by_creation_time")
 
     page = int(args.get("page", 0))
-    limit = int(args.get("limit", MAX_GET_INCIDENTS_LIMIT))
-    if limit > MAX_GET_INCIDENTS_LIMIT:
-        hr += f"Limit is {limit} which is greater than {MAX_GET_INCIDENTS_LIMIT}. Setting limit to {MAX_GET_INCIDENTS_LIMIT}.\n"
-        limit = MAX_GET_INCIDENTS_LIMIT
+    page_size = int(args.get("page_size", MAX_GET_INCIDENTS_PAGE_SIZE))
+    if page_size > MAX_GET_INCIDENTS_PAGE_SIZE:
+        hr += f"page_size is {page_size} which is greater than {MAX_GET_INCIDENTS_PAGE_SIZE}. Setting page_size to {MAX_GET_INCIDENTS_PAGE_SIZE}.\n"
+        page_size = MAX_GET_INCIDENTS_PAGE_SIZE
 
     # If no filters were given, return a meaningful error message
     if not case_id_list and (
@@ -4434,14 +4434,14 @@ def get_cases_command(client, args):
                 sort_by_creation_time=sort_by_creation_time,
                 sort_by_modification_time=sort_by_modification_time,
                 page_number=page,
-                limit=limit,
+                limit=page_size,
                 status=status,
                 starred=starred,
                 starred_incidents_fetch_window=starred_incidents_fetch_window,
             )
 
-        if len(raw_cases) > limit:
-            raw_cases = raw_cases[:limit]
+        if len(raw_cases) > page_size:
+            raw_cases = raw_cases[:page_size]
 
     else:
         raw_cases = client.get_incidents(
@@ -4453,7 +4453,7 @@ def get_cases_command(client, args):
             sort_by_creation_time=sort_by_creation_time,
             sort_by_modification_time=sort_by_modification_time,
             page_number=page,
-            limit=limit,
+            limit=page_size,
             starred=starred,
             starred_incidents_fetch_window=starred_incidents_fetch_window,
         )
