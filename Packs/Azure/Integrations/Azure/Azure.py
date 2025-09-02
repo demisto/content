@@ -43,8 +43,12 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Network/publicIPAddresses/read": ["azure-nsg-public-ip-addresses-list"],
     "Microsoft.Storage/storageAccounts/read": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
-    "Microsoft.Storage/storageAccounts/blobServices/read": ["azure-storage-blob-service-properties-set"],
+    "Microsoft.Storage/storageAccounts/blobServices/read": [
+        "azure-storage-blob-service-properties-set",
+        "azure-storage-blob-service-properties-get"
+    ],
     "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
     "Microsoft.Authorization/policyAssignments/read": ["azure-policy-assignment-create"],
     "Microsoft.Authorization/policyAssignments/write": ["azure-policy-assignment-create"],
     "Microsoft.DBforPostgreSQL/servers/read": ["azure-postgres-server-update"],
@@ -86,6 +90,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
     "Microsoft.Storage/storageAccounts/blobServices/write",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write"
     "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
@@ -448,6 +453,21 @@ class AzureClient:
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
+
+    def storage_blob_service_properties_get_request(self, account_name: str, resource_group_name: str, subscription_id: str):
+        """
+            Send the get blob service properties request to the API.
+        Args:
+            account_name: The storage account name.
+            resource_group_name: The resource group name.
+            subscription_id: The subscription id.
+
+        Returns:
+            The json response from the API call.
+        """
+        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default")
+        return self.ms_client.http_request(method="GET", full_url=full_url)
 
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
@@ -1574,7 +1594,57 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
 
 
 def storage_blob_service_properties_get_command(client: AzureClient, params: dict, args: dict):
-    pass
+    """
+        Gets the blob service properties for the storage account.
+    Args:
+        client: The AzureClient client.
+        params: The configuration parameters.
+        args: The users arguments, (like account name).
+
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+    account_name = args.get("account_name", "")
+    response = client.storage_blob_service_properties_get_request(
+        account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id
+    )
+
+    if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
+        subscription_id = subscription_id.group(1)  # type: ignore
+
+    if resource_group := re.search("resourceGroups/(.+?)/providers", response.get("id", "")):
+        resource_group = resource_group.group(1)  # type: ignore
+
+    if account_name := re.search("storageAccounts/(.+?)/blobServices", response.get("id", "")):
+        account_name = account_name.group(1)  # type: ignore
+
+    readable_output = {
+        "Name": response.get("name"),
+        "Account Name": account_name,
+        "Subscription ID": subscription_id,
+        "Resource Group": resource_group,
+        "Change Feed": response.get("properties").get("changeFeed").get("enabled")
+        if response.get("properties").get("changeFeed")
+        else "",
+        "Delete Retention Policy": response.get("properties").get("deleteRetentionPolicy").get("enabled")
+        if response.get("properties").get("deleteRetentionPolicy")
+        else "",
+        "Versioning": response.get("properties").get("isVersioningEnabled"),
+    }
+
+    return CommandResults(
+        outputs_prefix="AzureStorage.BlobServiceProperties",
+        outputs_key_field="id",
+        outputs=response,
+        readable_output=tableToMarkdown(
+            "Azure Storage Blob Service Properties",
+            readable_output,
+            ["Name", "Account Name", "Subscription ID", "Resource Group", "Change Feed", "Delete Retention Policy", "Versioning"],
+        ),
+        raw_response=response,
+    )
 
 
 def storage_blob_containers_update_command(client: AzureClient, params: dict, args: dict):
