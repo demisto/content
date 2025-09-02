@@ -1496,38 +1496,34 @@ class ECS:
     @staticmethod
     def update_cluster_settings_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        Updates the settings of an ECS cluster.
+        Updates the containerInsights setting of an ECS cluster.
 
         Args:
             client (BotoClient): The boto3 client for ECS service
-            args (Dict[str, Any]): Command arguments including cluster name and settings options
+            args (Dict[str, Any]): Command arguments including cluster name and setting value
 
         Returns:
             CommandResults: Results of the operation with updated cluster settings
         """
         setting_value = args.get("value")
-
-        kwargs = {
-            "cluster": args.get("cluster_name"),
-            "settings": [
-                {
-                    "name": "containerInsights",
-                    "value": setting_value,
-                }
-            ],
-        }
-
-        remove_nulls_from_dictionary(kwargs)
         try:
-            print_debug_logs(client, f"Updating ECS cluster settings with parameters: {kwargs=}")  # noqa: E501
-            response = client.update_cluster_settings(**kwargs)
+            print_debug_logs(client, f"Updating ECS cluster settings with parameters: {setting_value=}")  # noqa: E501
+            response = client.update_cluster_settings(
+            cluster=args.get("cluster_name"),
+            settings=[
+                {
+                    'name': 'containerInsights',
+                    'value': setting_value
+                },
+            ]
+        )
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 cluster_data = response.get("cluster", {})
-                readable_output = f"Successfully updated ECS cluster: {args.get('cluster')}"
+                readable_output = f"Successfully updated ECS cluster: {args.get('cluster_name')}"
 
                 if cluster_data:
-                    readable_output += "\n\nUpdated Cluster Details:"
+                    readable_output += "\n\nUpdated Cluster Details:ֿֿֿֿֿ\n"
                     readable_output += tableToMarkdown("", cluster_data)
 
                 return CommandResults(
@@ -1546,7 +1542,7 @@ class ECS:
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
         except Exception as e:
-            raise DemistoException(f"Error updating ECS cluster {args.get('cluster')}: {str(e)}")
+            raise DemistoException(f"Error updating ECS cluster {args.get('cluster_name')}: {str(e)}")
 
         return CommandResults(readable_output="Failed to update ECS cluster")
 
