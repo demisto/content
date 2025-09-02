@@ -319,7 +319,7 @@ class Client:
 
         return self.ms_client.http_request(
             method="GET",
-            url_suffix=f"v1.0//security/threatIntelligence/hosts/{host_id}/reputation{odata_query}",
+            url_suffix=f"v1.0/security/threatIntelligence/hosts/{host_id}/reputation{odata_query}",
         )
 
 
