@@ -2364,3 +2364,48 @@ def test_nsg_security_groups_list_command(mocker):
     # The readable_output should contain the NSG names
     for group in result.outputs:
         assert group["name"] in result.readable_output
+
+
+def test_nsg_security_rule_delete_command(mocker):
+    """
+    Given: An Azure client mock and various scenarios.
+    When: nsg_security_rule_delete_command is called.
+    Then:
+        1. It should call client.delete_rule with correct arguments for valid inputs.
+        2. It should return appropriate messages based on status codes (202=success, 204=not found).
+        3. It should call return_error when required parameters are missing or empty.
+    """
+    from Azure import nsg_security_rule_delete_command
+
+    mock_client = mocker.Mock()
+    mock_return_error = mocker.patch("Azure.return_error")
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+
+    # Test successful deletion (status_code 202)
+    mock_response = mocker.Mock()
+    mock_response.status_code = 202
+    mock_client.delete_rule.return_value = mock_response
+
+    args = {"security_group_name": "testnsg", "security_rule_name": "testrule"}
+    result = nsg_security_rule_delete_command(mock_client, params, args)
+
+    mock_client.delete_rule.assert_called_with(
+        security_group_name="testnsg",
+        security_rule_name="testrule",
+        subscription_id="subid",
+        resource_group_name="rg1",
+    )
+    assert isinstance(result, CommandResults)
+    assert "was successfully deleted" in result.readable_output
+
+    # Test rule not found (status_code 204)
+    mock_response.status_code = 204
+    result = nsg_security_rule_delete_command(mock_client, params, args)
+    assert "was not found" in result.readable_output
+
+    # Test missing required parameters
+    nsg_security_rule_delete_command(mock_client, params, {"security_group_name": "testnsg"})
+    mock_return_error.assert_called_with("Please provide security_group_name and security_rule_name")
+
+    nsg_security_rule_delete_command(mock_client, params, {"security_rule_name": "testrule"})
+    mock_return_error.assert_called_with("Please provide security_group_name and security_rule_name")
