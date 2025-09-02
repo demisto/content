@@ -4350,7 +4350,7 @@ Display role names and role ids.
 >|id|name|
 >|---|---|
 >| 1 | rolename |
->
+
 ### misp-get-warninglists
 
 ***
@@ -4570,4 +4570,3 @@ Get a specific warninglist by its ID.
 >|ID|Value|Description|
 >|---|---|---|
 >|123| hostname.example.local | An example of a hostname |
->
