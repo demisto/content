@@ -47,7 +47,7 @@ def main():
             final_results.append(case_data)
         mapped_cases = replace_response_names(final_results)
         return_results( CommandResults(
-            readable_output=tableToMarkdown("Cases", mapped_cases, headerTransform=string_to_table_header),
+            readable_output=tableToMarkdown("Cases Extra Data", mapped_cases, headerTransform=string_to_table_header),
             outputs_prefix="Core.CaseExtraData",
             outputs_key_field="case_id",
             outputs=mapped_cases,
