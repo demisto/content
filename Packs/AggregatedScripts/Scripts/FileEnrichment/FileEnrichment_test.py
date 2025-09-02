@@ -226,42 +226,27 @@ def test_merge_context_outputs():
     assert merge_context_outputs(per_command_context, include_additional_fields=True) == expected_merged_context
 
 
-@pytest.mark.parametrize("dbot_scores, file_context, expected_result", [
-    # A standard case with a valid match.
-    (
-        [{'Indicator': MD5_HASH, 'Vendor': 'TestVendor'}],
-        {'MD5': MD5_HASH, 'SHA256': 'abc'},
-        {'Indicator': MD5_HASH, 'Vendor': 'TestVendor'}
-    ),
-    # No matching hash found.
-    (
-        [{'Indicator': 'no_match_here', 'Vendor': 'TestVendor'}],
-        {'MD5': MD5_HASH},
-        {}
-    ),
-    # The function should correctly find the SHA256 match and ignore the None MD5.
-    (
-        [{
-            'Indicator': SHA_256_HASH,
-            'Vendor': 'VirusTotal'
-        }],
-        {
-            'MD5': None,
-            'SHA256': SHA_256_HASH,
-            'Verdict': '-102'
-        },
-        {
-            'Indicator': SHA_256_HASH,
-            'Vendor': 'VirusTotal'
-        }
-    ),
-    # The indicator value in `dbot_scores` is None or an empty string.
-    (
-        [{'Indicator': None, 'Vendor': 'TestVendor'}],
-        {'MD5': MD5_HASH},
-        {}
-    ),
-])
+@pytest.mark.parametrize(
+    "dbot_scores, file_context, expected_result",
+    [
+        # A standard case with a valid match.
+        (
+            [{"Indicator": MD5_HASH, "Vendor": "TestVendor"}],
+            {"MD5": MD5_HASH, "SHA256": "abc"},
+            {"Indicator": MD5_HASH, "Vendor": "TestVendor"},
+        ),
+        # No matching hash found.
+        ([{"Indicator": "no_match_here", "Vendor": "TestVendor"}], {"MD5": MD5_HASH}, {}),
+        # The function should correctly find the SHA256 match and ignore the None MD5.
+        (
+            [{"Indicator": SHA_256_HASH, "Vendor": "VirusTotal"}],
+            {"MD5": None, "SHA256": SHA_256_HASH, "Verdict": "-102"},
+            {"Indicator": SHA_256_HASH, "Vendor": "VirusTotal"},
+        ),
+        # The indicator value in `dbot_scores` is None or an empty string.
+        ([{"Indicator": None, "Vendor": "TestVendor"}], {"MD5": MD5_HASH}, {}),
+    ],
+)
 def test_find_matching_dbot_score(dbot_scores: list[dict], file_context: dict[str, Any], expected_result: dict):
     """
     Given:
@@ -276,6 +261,7 @@ def test_find_matching_dbot_score(dbot_scores: list[dict], file_context: dict[st
     """
 
     from FileEnrichment import find_matching_dbot_score
+
     assert find_matching_dbot_score(dbot_scores, file_context) == expected_result
 
 
