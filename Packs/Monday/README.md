@@ -8,8 +8,6 @@ The Monday Event Collector integration provides comprehensive event collection c
 
 - **Activity Logs Collection**: Monitor user activities, board interactions, and workspace changes using OAuth 2.0 authentication
 - **Audit Logs Collection**: Track administrative actions, security events, and compliance-related activities using API token authentication
-- **Real-time Event Streaming**
-- **Flexible Configuration**
 
 ## Pack Contents
 
@@ -42,5 +40,5 @@ Audit logs provide detailed security and administrative event tracking:
 - [Monday.com API Documentation](https://developer.monday.com/api-reference/docs)
 - [OAuth 2.0 Authentication Guide](https://developer.monday.com/apps/docs/choosing-auth#method-2-using-oauth-to-issue-access-tokens)
 - [Audit Log API Documentation](https://support.monday.com/hc/en-us/articles/4406042650002-Audit-Log-API)
-- [Audit Log API Documentation](https://developer.monday.com/api-reference/reference/activity-logs)
+- [Activity Log API Documentation](https://developer.monday.com/api-reference/reference/activity-logs)
 - [Monday.com App Creation Guide](https://developer.monday.com/apps/docs/create-an-app#creating-an-app-in-the-developer-center)

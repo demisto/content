@@ -191,7 +191,7 @@ def generate_login_url() -> CommandResults:
         CommandResults: Command result containing the authorization URL and instructions
     """
     params = demisto.params()
-    client_id = params.get("client_id", "")
+    client_id = params.get("credentials", {}).get("identifier", "")
     if not client_id:
         demisto.debug(f"{AUDIT_LOG_DEBUG_PREFIX}Client ID parameter is missing.")
         raise DemistoException("Please provide Client ID in the integration parameters before running monday-generate-login-url.")
@@ -230,9 +230,9 @@ def get_access_token(client: ActivityLogsClient) -> str:
         return access_token
 
     params = demisto.params()
-    client_id = params.get("client_id", "")
-    secret = params.get("secret", "")
-    auth_code = params.get("auth_code", "")
+    client_id = params.get("credentials", {}).get("identifier", "")
+    secret = params.get("credentials", {}).get("password", "")
+    auth_code = params.get("auth_code", {}).get("password", "")
 
     if not client_id or not secret or not auth_code:
         demisto.debug(f"{DEBUG_PREFIX}. get_access_token function: Client ID, Client secret or Authorization code is missing.")
@@ -252,6 +252,29 @@ def get_access_token(client: ActivityLogsClient) -> str:
     except Exception as e:
         demisto.debug(f"{DEBUG_PREFIX}Error retrieving access token: {str(e)}")
         raise DemistoException(f"Error retrieving access token: {str(e)}")
+
+
+def test_module() -> str:
+    """
+    Test connectivity for audit logs endpoint only.
+    There is no way to test activity logs connectivity be test module button because it requires OAuth 2.0 flow.
+
+    Returns:
+        str: Success message if connection test passes or error message if connection test fails
+
+    """
+    audit_client = initiate_audit_client()
+    now_ms = int(time.time() * 1000)
+    try:
+        if audit_client.audit_token and audit_client.audit_logs_url:
+            get_audit_logs(last_run={}, now_ms=now_ms, limit=1, logs_per_page=1, client=audit_client)
+            return "ok"
+        else:
+            return "Please provide Audit API token and Audit Server URL to test connection for audit logs."
+
+    except Exception as e:
+        demisto.debug(f"{DEBUG_PREFIX}Error testing connection: {str(e)}")
+        return "Failed to test connection for audit logs."
 
 
 def test_connection() -> CommandResults:
@@ -291,12 +314,12 @@ def test_connection() -> CommandResults:
                 result = "✅ Test connection success for activity logs.\n"
                 activity_logs_success = True
             else:
-                result = "❌ Test connection failed for activity logs.\n"
-                result += "Please provide Board IDs to test connection for activity logs.\n"
+                result = ("❌ Test connection failed for activity logs.\n"
+                         "Please provide Board IDs to test connection for activity logs.\n")
         else:
-            result = "❌ Test connection failed for activity logs.\n"
-            result += "Please provide Client ID, Client secret and Authorization code with "
-            result += "monday-generate-login-url command before testing connection for activity logs.\n"
+            result = ("❌ Test connection failed for activity logs.\n"
+                     "Please provide Client ID, Client secret and Authorization code with "
+                     "monday-generate-login-url command before testing connection for activity logs.\n")
 
         # Activity logs test failed, try audit logs.
         if audit_client.audit_token and audit_client.audit_logs_url:
@@ -306,8 +329,8 @@ def test_connection() -> CommandResults:
                 return CommandResults(readable_output="✅ Test connection success for both activity logs and audit logs.")
             result += "✅ Test connection success for audit logs."
         else:
-            result += "❌ Test connection failed for audit logs.\n"
-            result += "Please provide Audit API token and Audit Server URL to test connection for audit logs.\n"
+            result += ("❌ Test connection failed for audit logs.\n"
+                      "Please provide Audit API token and Audit Server URL to test connection for audit logs.\n")
 
         return CommandResults(readable_output=result)
 
@@ -348,7 +371,8 @@ def get_remaining_audit_logs(last_run: dict, logs_per_page: int, client: AuditLo
         fetched_logs = response.get("data", [])
         fetched_logs = fetched_logs[offset:]
 
-        # remove duplicate logs based on the lower bound logs set on the previous fetch.
+        # All excess logs fetched from the last fetch time range, no longer logs fetched from the last fetch time range.
+        # Remove duplicate logs based on the lower bound logs set on the previous fetch.
         if not last_run.get("continuing_fetch_info"):
             fetched_logs = remove_duplicate_logs(
                 fetched_logs,
@@ -949,9 +973,9 @@ def initiate_activity_client() -> ActivityLogsClient:
         ActivityLogsClient: ActivityLogsClient instance for making requests.
     """
     demisto_params = demisto.params()
-    client_id = demisto_params.get("client_id", "")
-    client_secret = demisto_params.get("secret", "")
-    auth_code = demisto_params.get("auth_code", "")
+    client_id = demisto_params.get("credentials", {}).get("identifier", "")
+    client_secret = demisto_params.get("credentials", {}).get("password", "")
+    auth_code = demisto_params.get("auth_code", {}).get("password", "")
     proxy = demisto_params.get("proxy", False)
     verify = not demisto_params.get("insecure", False)
     activity_logs_url = demisto_params.get("activity_logs_url", "https://api.monday.com")
@@ -974,7 +998,7 @@ def initiate_audit_client() -> AuditLogsClient:
         AuditLogsClient: AuditLogsClient instance for making requests
     """
     params = demisto.params()
-    audit_token = params.get("audit_token", "")
+    audit_token = params.get("audit_token", {}).get("password")
     audit_logs_url = params.get("audit_logs_url", "")
     proxy = params.get("proxy", False)
     verify = not params.get("insecure", False)
@@ -1006,7 +1030,7 @@ def fetch_activity_logs(last_run: dict) -> tuple[dict, list]:
     board_ids = demisto_params.get("board_ids", "")
     if not board_ids:
         demisto.debug(f"{ACTIVITY_LOG_DEBUG_PREFIX}board ID is missing.")
-        raise DemistoException("Please provide board ID in the integration parameters before starting to fetch activity logs.")
+        raise DemistoException("Please provide board IDs in the integration parameters before starting to fetch activity logs.")
     board_ids_list = [board_id.strip() for board_id in board_ids.split(",") if board_id.strip()]
 
     last_run = initiate_activity_log_last_run(last_run, board_ids_list)
@@ -1080,7 +1104,7 @@ def fetch_events() -> tuple[dict, list]:
     last_run = demisto.getLastRun()
     if not last_run:
         last_run = {AUDIT_LOGS_TYPE: {}, ACTIVITY_LOGS_TYPE: {}}
-        demisto.debug("Empty last run object, initializing new last run object: {last_run}")
+        demisto.debug(f"Empty last run object, initializing new last run object: {last_run}")
 
     last_run_audit_logs = last_run.get(AUDIT_LOGS_TYPE, {})
     last_run_activity_logs = last_run.get(ACTIVITY_LOGS_TYPE, {})
@@ -1119,7 +1143,7 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"{DEBUG_PREFIX}Command being called is {command}")
     try:
         if command == "test-module":
-            return_results("The test module is not functional, run the monday-auth-test command instead.")
+            return_results(test_module())
         elif command == "monday-generate-login-url":
             return_results(generate_login_url())
         elif command == "monday-auth-test":
@@ -1134,7 +1158,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"{DEBUG_PREFIX}Updated last_run object after fetch: {last_run}")
 
     except Exception as e:
-        return_error(f"{AUDIT_LOG_DEBUG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"{DEBUG_PREFIX}Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
