@@ -92,16 +92,6 @@ configuration:
   required: false
   type: 8
   section: Connect
-- display: Activity Logs
-  name: activity_log
-  required: false
-  type: 8
-  section: Connect
-- display: Audit Logs
-  name: audit_log
-  required: false
-  type: 8
-  section: Connect
 description: Collects Monday.com audit logs and activity events for Cortex XSIAM using OAuth 2.0 authentication.
 display: MondayEventCollector
 name: MondayEventCollector
@@ -125,14 +115,3 @@ marketplaces:
 fromversion: 8.3.0
 tests:
 - No tests (auto formatted)
-triggers:
-  - conditions:
-      - name: activity_log
-        operator: exists
-    effects:
-      - name: audit_logs_url
-        action:
-          hidden: true
-      - name: audit_token
-        action:
-          hidden: true
