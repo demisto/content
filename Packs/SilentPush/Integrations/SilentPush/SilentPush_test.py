@@ -40,6 +40,12 @@ from SilentPush import (
     run_threat_check_command,
     add_feed_tags_command,
     parse_arguments,
+    format_domain_information,
+    format_certificate_info,
+    validate_ip,
+    extract_and_sort_asn_reputation,
+    generate_no_reputation_response,
+    prepare_asn_reputation_table
 )
 from CommonServerPython import DemistoException, EntryType
 
@@ -1531,3 +1537,117 @@ def test_parse_arguments_no_domains():
     args = {"fetch_risk_score": "true"}
     with pytest.raises(DemistoException, match="No domains provided"):
         parse_arguments(args)
+
+def test_format_domain_with_risk_and_whois():
+    """Test formatting with risk score and WHOIS info"""
+    response = {
+        "domains": [
+            {
+                "domain": "example.com",
+                "risk_score": 85,
+                "risk_score_explanation": "High reputation risk",
+                "whois_info": {
+                    "registrant": "John Doe",
+                    "country": "US"
+                },
+            }
+        ]
+    }
+
+    result = format_domain_information(response, fetch_risk_score=True, fetch_whois_info=True)
+
+    # Assertions: check that key info is present in the markdown output
+    assert "# Domain Information Results" in result
+    assert "## Domain: example.com" in result
+    assert "Risk Assessment" in result
+    assert "John Doe" in result
+    assert "High reputation risk" in result
+
+def test_format_certificate_info_success():
+    cert = {
+        "issuer": "Let's Encrypt",
+        "not_before": "2024-01-01",
+        "not_after": "2025-01-01",
+        "subject": str({"CN": "example.com"}),
+        "domains": ["example.com", "www.example.com"],
+        "serial_number": "1234567890",
+        "fingerprint_sha256": "abcdef1234567890"
+    }
+
+    result = format_certificate_info(cert)
+
+    assert result["Issuer"] == "Let's Encrypt"
+    assert result["Issued On"] == "2024-01-01"
+    assert result["Expires On"] == "2025-01-01"
+    assert result["Common Name"] == "example.com"
+    assert result["Subject Alternative Names"] == "example.com, www.example.com"
+    assert result["Serial Number"] == "1234567890"
+    assert result["Fingerprint SHA256"] == "abcdef1234567890"
+
+def test_validate_ip_invalid_ipv4(mock_client):
+    """Test validate_ip raises DemistoException for an invalid IPv4 address"""
+    resource = "ipv4"
+    value = "999.999.999.999"  # invalid IPv4
+    mock_client.validate_ip_address.return_value = False
+
+    with pytest.raises(DemistoException, match=f"Invalid {resource.upper()} address: {value}"):
+        validate_ip(mock_client, resource, value)
+
+def test_extract_and_sort_asn_reputation():
+    """Test ASN reputation extraction and sorting by date"""
+    raw_response = {
+        "response": {
+            "asn_reputation": [
+                {"asn": "12345", "date": "2023-01-01", "score": 50},
+                {"asn": "54321", "date": "2023-02-01", "score": 70},
+                {"asn": "67890", "date": "2022-12-15", "score": 40},
+            ]
+        }
+    }
+
+    result = extract_and_sort_asn_reputation(raw_response)
+
+    expected = [
+        {"asn": "54321", "date": "2023-02-01", "score": 70},  # newest first
+        {"asn": "12345", "date": "2023-01-01", "score": 50},
+        {"asn": "67890", "date": "2022-12-15", "score": 40},  # oldest last
+    ]
+
+    assert result == expected
+
+def test_generate_no_reputation_response():
+    asn = "AS12345"
+    raw_response = {"status": "success", "message": "No data available"}
+
+    result = generate_no_reputation_response(asn, raw_response)
+
+    # Validate type
+    assert isinstance(result, CommandResults)
+
+    # Validate readable_output
+    assert result.readable_output == f"No reputation data found for ASN {asn}."
+
+def test_prepare_asn_reputation_table_with_explain():
+    asn_reputation = [
+        {
+            "asn": "AS12345",
+            "asn_reputation": "Good",
+            "asname": "Test ASN",
+            "date": "2025-09-01",
+            "asn_reputation_explain": "This ASN has a good reputation.",
+        }
+    ]
+
+    result = prepare_asn_reputation_table(asn_reputation, explain=True)
+
+    expected = [
+        {
+            "ASN": "AS12345",
+            "Reputation": "Good",
+            "ASName": "Test ASN",
+            "Date": "2025-09-01",
+            "Explanation": "This ASN has a good reputation.",
+        }
+    ]
+
+    assert result == expected
