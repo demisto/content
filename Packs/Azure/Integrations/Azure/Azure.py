@@ -1659,7 +1659,6 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
     response = client.storage_blob_service_properties_get_request(
         account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id
     )
-    print(response)
     if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
         subscription_id = subscription_id.group(1)  # type: ignore
 
