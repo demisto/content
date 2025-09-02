@@ -16,7 +16,7 @@ This integration requires a Unit 42 Intelligence API key. Contact your Palo Alto
 
 ### Supported Indicators
 
-- IP addresses (IPv4, IPv6)
+- IP addresses
 - Domains
 - URLs
 - File hashes (SHA256)

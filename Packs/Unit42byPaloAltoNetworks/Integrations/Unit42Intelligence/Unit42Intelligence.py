@@ -198,34 +198,40 @@ def create_indicators_from_relationships(
         # Retrieve the indicator type from the mapping dictionary based on the indicator type
         indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, "Indicator")
 
-        dbot_score = create_dbot_score(
-            indicator=indicator_name,
-            indicator_type=indicator_type if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
-            verdict=verdict,
-            reliability=reliability,
-        )
+        # dbot_score = create_dbot_score(
+        #     indicator=indicator_name,
+        #     indicator_type=indicator_type if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
+        #     verdict=verdict,
+        #     reliability=reliability,
+        # )
 
-        # Create indicator based on type
-        indicator: Common.IP | Common.Domain | Common.URL | Common.File | Common.CustomIndicator | None = None
-        if indicator_type == "IP":
-            indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
-        elif indicator_type == "Domain":
-            indicator = Common.Domain(domain=indicator_name, dbot_score=dbot_score)
-        elif indicator_type == "URL":
-            indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
-        elif indicator_type == "File":
-            indicator = Common.File(sha256=indicator_name, dbot_score=dbot_score)
-        else:
-            # Create custom indicator for unknown types
-            indicator = Common.CustomIndicator(
-                indicator_type=indicator_type,
-                value=indicator_name,
-                dbot_score=dbot_score,
-                data={"value": indicator_name},
-                context_prefix=indicator_type.capitalize(),
-            )
+        # # Create indicator based on type
+        # indicator: Common.IP | Common.Domain | Common.URL | Common.File | Common.CustomIndicator | None = None
+        # if indicator_type == "IP":
+        #     indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
+        # elif indicator_type == "Domain":
+        #     indicator = Common.Domain(domain=indicator_name, dbot_score=dbot_score)
+        # elif indicator_type == "URL":
+        #     indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
+        # elif indicator_type == "File":
+        #     indicator = Common.File(sha256=indicator_name, dbot_score=dbot_score)
+        # else:
+        #     # Create custom indicator for unknown types
+        #     indicator = Common.CustomIndicator(
+        #         indicator_type=indicator_type,
+        #         value=indicator_name,
+        #         dbot_score=dbot_score,
+        #         data={"value": indicator_name},
+        #         context_prefix=indicator_type.capitalize(),
+        #     )
 
-        indicators.append(indicator)
+        indicator_data = {
+            "value": indicator_name.replace("Threat.U42.", ""),
+            "type": indicator_type,
+            "rawJSON": {},
+        }
+
+        indicators.append(indicator_data)
 
     return indicators
 
