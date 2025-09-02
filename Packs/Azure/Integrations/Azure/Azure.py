@@ -259,7 +259,7 @@ class AzureClient:
         self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str
     ):
         """
-        Create or updating a security rule in an Azure Network Security Group.
+        Create or update a security rule in an Azure Network Security Group.
         Args:
             security_group: Name of the network security group
             rule_name: Name of the security rule to retrieve
