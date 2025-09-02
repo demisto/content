@@ -1752,10 +1752,10 @@ script:
 
   - name: aws-cloudtrail-trails-describe
     arguments:
-    - description: A comma-separated list of trail names, trail ARNs, or both, of the trails to describe. If an empty list is specified, information for the trail in the current region is returned.
+    - description: A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region.
       name: trail_names
     - auto: PREDEFINED
-      description: Specifies whether to include shadow trails in the response. A shadow trail is the replication in a region of a trail that was created in a different region. The default is true.
+      description: Include shadow trails in the response. A shadow trail is a replication in a region of a trail created in another region.
       name: include_shadow_trails
       predefined:
       - 'true'
@@ -1806,37 +1806,37 @@ script:
       description: Name of the trail set by calling CreateTrail.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3BucketName
-      description: Name of the Amazon S3 bucket into which CloudTrail delivers your trail files.
+      description: The name of the Amazon S3 bucket where CloudTrail delivers trail files.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
-      description: Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery.
+      description: The Amazon S3 key prefix appended to the bucket name designated for log file delivery. 
       type: string
     - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
-      description: Specifies the ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      description: The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
-      description: Set to True to include AWS API calls from AWS global services such as IAM. Otherwise, False.
+      description: Whether to include AWS API calls from AWS global services such as IAM.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
       description: Specifies whether the trail belongs only to one region or exists in all regions.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.HomeRegion
-      description: The region in which the trail was created.
+      description: The region where the trail was created.
       type: string
     - contextPath: AWS.CloudTrail.Trails.TrailARN
-      description: Specifies the ARN of the trail.
+      description: The ARN of the trail.
       type: string
     - contextPath: AWS.CloudTrail.Trails.LogFileValidationEnabled
-      description: Specifies whether log file validation is enabled.
+      description: Whether log file validation is enabled.
       type: boolean
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
-      description: Specifies an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs will be delivered.
+      description: The ARN of the CloudWatch log group to which CloudTrail logs are delivered.
       type: string
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
-      description: Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group.
+      description: The role assumed by CloudTrail to write logs to the CloudWatch log group.
       type: string
     - contextPath: AWS.CloudTrail.KmsKeyId
-      description: Specifies the KMS key ID that encrypts the logs delivered by CloudTrail.
+      description: The KMS key ID that encrypts logs delivered by CloudTrail.
       type: string
     - contextPath: AWS.CloudTrail.HasCustomEventSelectors
       description: Specifies if the trail has custom event selectors.
