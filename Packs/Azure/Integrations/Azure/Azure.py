@@ -2292,7 +2292,7 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
             f"Rule {security_rule_name} with resource_group_name "
             f"{resource_group_name} and subscription id {subscription_id} was not found."
         )
-    elif rule_deleted.status_code == 202:  # in this API we get 202 when success.
+    elif rule_deleted.status_code in (202, 200):  # in this API we get 202 when success.
         message = (
             f"Rule {security_rule_name} with resource_group_name "
             f"{resource_group_name} and subscription id {subscription_id} "
