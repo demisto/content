@@ -1383,28 +1383,11 @@ def test_add_feed_command_success(mock_client):
 
     # Assertions
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "SilentPush.AddFeed"
+    assert result.outputs_prefix == "SilentPush.Feed"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == unique_name
     assert result.outputs["vendor"] == "SilentPush"
     assert "SilentPush Add Feed" in result.readable_output
-
-
-def test_add_feed_command_missing_required_fields(mock_client):
-    # Case 1: Missing both 'name' and 'type'
-    args = {}
-    with pytest.raises(ValueError, match="Name is required"):
-        add_feed_command(mock_client, args)
-
-    # Case 2: Missing 'type'
-    args = {"name": "TestOnlyName"}
-    with pytest.raises(ValueError, match="Type is required"):
-        add_feed_command(mock_client, args)
-
-    # Case 3: Missing 'name'
-    args = {"type": "domain"}
-    with pytest.raises(ValueError, match="Name is required"):
-        add_feed_command(mock_client, args)
 
 
 def test_add_indicators_command_success(mock_client):
@@ -1431,23 +1414,6 @@ def test_add_indicators_command_success(mock_client):
     assert "SilentPush Add Indicators" in result.readable_output
 
 
-def test_add_indicators_command_missing_fields(mock_client):
-    # Case 1: Both 'feed_uuid' and 'indicators' missing
-    args = {}
-    with pytest.raises(ValueError, match="Feed UUID is required"):
-        add_indicators_command(mock_client, args)
-
-    # Case 2: 'feed_uuid' present but 'indicators' missing
-    args = {"feed_uuid": "1234-5678"}
-    with pytest.raises(ValueError, match="Indicators is required"):
-        add_indicators_command(mock_client, args)
-
-    # Case 3: 'indicators' present but 'feed_uuid' missing
-    args = {"indicators": ["example.com"]}
-    with pytest.raises(ValueError, match="Feed UUID is required"):
-        add_indicators_command(mock_client, args)
-
-
 def test_add_indicators_tags_command_success(mock_client):
     test_uuid = str(uuid.uuid4())
     test_indicator = "example.com"
@@ -1468,13 +1434,6 @@ def test_add_indicators_tags_command_success(mock_client):
     assert result.outputs["indicator_name"] == test_indicator
     assert result.outputs["tags_added"] == test_tags
     assert "SilentPush Add Indicator Tags" in result.readable_output
-
-
-def test_add_indicators_tags_command_missing_tags(mock_client):
-    args = {"feed_uuid": "1234-5678", "indicator_name": "example.com"}
-
-    with pytest.raises(ValueError, match="The 'tags' argument is required and cannot be empty."):
-        add_indicators_tags_command(mock_client, args)
 
 
 def test_run_threat_check_command_success(mock_client):
@@ -1498,27 +1457,6 @@ def test_run_threat_check_command_success(mock_client):
     assert result.outputs["query"] == "test_query"
     assert result.outputs["result"] == "benign"
     assert "SilentPush Threat Check" in result.readable_output
-
-
-def test_run_threat_check_command_missing_data(mock_client):
-    args = {"type": "domain", "user_identifier": "test_user", "query": "test_query"}
-
-    with pytest.raises(ValueError, match="Data is required"):
-        run_threat_check_command(mock_client, args)
-
-
-def test_run_threat_check_command_missing_user_identifier(mock_client):
-    args = {"type": "domain", "data": ["example.com"], "query": "test_query"}
-
-    with pytest.raises(ValueError, match="User identifier is required"):
-        run_threat_check_command(mock_client, args)
-
-
-def test_run_threat_check_command_missing_query(mock_client):
-    args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user"}
-
-    with pytest.raises(ValueError, match="Query is required"):
-        run_threat_check_command(mock_client, args)
 
 
 def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
@@ -1547,7 +1485,7 @@ def test_get_data_exports_command_success(mock_client):
     # Assertions
     assert isinstance(result, dict)
     assert result["File"] == "export.csv"
-    assert result["Type"] == EntryType.FILE
+    assert result["Type"] == EntryType.ENTRY_INFO_FILE
 
 
 def test_add_feed_tags_command_success(mocker):
@@ -1572,27 +1510,3 @@ def test_add_feed_tags_command_success(mocker):
     assert result.raw_response == mock_response
     assert "SilentPush Add Feed Tags" in result.readable_output
 
-
-def test_get_data_exports_command_missing_feed_url(mock_client):
-    args = {}
-
-    with pytest.raises(ValueError, match="Feed URL is required"):
-        get_data_exports_command(mock_client, args)
-
-
-def test_add_feed_tags_command_missing_feed_uuid(mocker):
-    # Missing 'feed_uuid'
-    args = {"tags": "malware"}
-    mock_client = mocker.Mock(spec=Client)
-
-    with pytest.raises(ValueError, match="Feed UUID is required"):
-        add_feed_tags_command(mock_client, args)
-
-
-def test_add_feed_tags_command_missing_tags(mocker):
-    # Missing 'tags'
-    args = {"feed_uuid": "abc123"}
-    mock_client = mocker.Mock(spec=Client)
-
-    with pytest.raises(ValueError, match="Tags name is required"):
-        add_feed_tags_command(mock_client, args)

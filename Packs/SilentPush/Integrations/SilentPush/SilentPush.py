@@ -2668,7 +2668,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_data_exports(self, feed_url: dict) -> requests.Response:
+    def get_data_exports(self, feed_url: str) -> requests.Response:
         """
         Exports data on SilentPush.
 
@@ -4305,13 +4305,13 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
     file_output=True,
     description="This command runs the threat check on the specified ",
 )
-def get_data_exports_command(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, Any]:
     """
     Command handler to export data.
 
     Args:
         client (Client): SilentPush API client instance.
-        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' key.
+        args (Dict[str, str]): Command arguments, must include 'feed_uuid' key.
 
     Returns:
         CommandResults: JSON response of threat check.

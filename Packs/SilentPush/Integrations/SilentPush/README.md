@@ -1932,12 +1932,12 @@ This command add the new feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.AddFeed.name | String | The name of the feed. |
-| SilentPush.AddFeed.type | String | The type of the feed. |
-| SilentPush.AddFeed.vendor | String | The vendor of the feed. |
-| SilentPush.AddFeed.feed_description | String | A description of the feed. |
-| SilentPush.AddFeed.category | String | The category of the feed. |
-| SilentPush.AddFeed.tags | Unknown | Tags associated with the feed. |
+| SilentPush.Feed.name | String | The name of the feed. |
+| SilentPush.Feed.type | String | The type of the feed. |
+| SilentPush.Feed.vendor | String | The vendor of the feed. |
+| SilentPush.Feed.feed_description | String | A description of the feed. |
+| SilentPush.Feed.category | String | The category of the feed. |
+| SilentPush.Feed.tags | Unknown | Tags associated with the feed. |
 
 ### silentpush-add-feed-tags
 
