@@ -469,6 +469,50 @@ class AzureClient:
                     f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default")
         return self.ms_client.http_request(method="GET", full_url=full_url)
 
+    def storage_blob_containers_create_update_request(self, subscription_id: str, resource_group_name: str, args: Dict, method: str):
+        """
+        Create or update a blob container in an Azure Storage account.
+
+        This function constructs the request body from user-provided arguments
+        and sends an HTTP request to the Azure REST API to create or update
+        a blob container under the specified storage account.
+
+        Args:
+            subscription_id (str): The Azure subscription ID.
+            resource_group_name (str): The name of the resource group containing the storage account.
+            args (Dict): User-provided arguments, which can include:
+                - container_name (str): Name of the blob container.
+                - account_name (str): Name of the storage account.
+                - default_encryption_scope (str, optional): Default encryption scope for the container.
+                - deny_encryption_scope_override (bool, optional): Whether to deny overriding the encryption scope.
+                - public_access (str, optional): Public access level for the container (e.g., "None", "Blob", "Container").
+            method (str): HTTP method to use for the request (e.g., "PUT" or "PATCH").
+
+        Returns:
+            dict: The JSON response from the Azure API.
+        """
+        container_name = args.get("container_name", "")
+        account_name = args.get("account_name", "")
+        properties = {}
+
+        if "default_encryption_scope" in args:
+            properties["defaultEncryptionScope"] = args.get("default_encryption_scope")
+
+        if "deny_encryption_scope_override" in args:
+            properties["denyEncryptionScopeOverride"] = argToBoolean(args.get("deny_encryption_scope_override"))
+
+        if "public_access" in args:
+            properties["publicAccess"] = args.get("public_access")
+
+        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
+                    f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}")
+
+        return self.ms_client.http_request(
+            method=method,
+            full_url=full_url,
+            json_data={"properties": properties},
+        )
+
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
     ):
@@ -1621,34 +1665,75 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
         account_name = account_name.group(1)  # type: ignore
 
     readable_output = {
-        "Name": response.get("name"),
+        "Name": response.get("name", ""),
         "Account Name": account_name,
         "Subscription ID": subscription_id,
         "Resource Group": resource_group,
-        "Change Feed": response.get("properties").get("changeFeed").get("enabled")
-        if response.get("properties").get("changeFeed")
-        else "",
-        "Delete Retention Policy": response.get("properties").get("deleteRetentionPolicy").get("enabled")
-        if response.get("properties").get("deleteRetentionPolicy")
-        else "",
-        "Versioning": response.get("properties").get("isVersioningEnabled"),
+        "Change Feed": response.get("properties", {}).get("changeFeed", {}).get("enabled", ""),
+        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy", {}).get("enabled", "")
+        "Versioning": response.get("properties", {}).get("isVersioningEnabled"),
     }
 
     return CommandResults(
-        outputs_prefix="AzureStorage.BlobServiceProperties",
+        outputs_prefix="Azure.StorageBlobServiceProperties",
         outputs_key_field="id",
         outputs=response,
-        readable_output=tableToMarkdown(
-            "Azure Storage Blob Service Properties",
-            readable_output,
-            ["Name", "Account Name", "Subscription ID", "Resource Group", "Change Feed", "Delete Retention Policy", "Versioning"],
-        ),
         raw_response=response,
+        readable_output=tableToMarkdown(
+            name="Azure Storage Blob Service Properties",
+            t=readable_output,
+            headers=["Name", "Account Name", "Subscription ID", "Resource Group",
+                     "Change Feed", "Delete Retention Policy", "Versioning"],
+        ),
     )
 
 
 def storage_blob_containers_update_command(client: AzureClient, params: dict, args: dict):
-    pass
+    """
+         Updates a given blob container.
+     Args:
+         client: The microsoft client.
+         params: The configuration parameters.
+         args: The users arguments, (like account name, container name).
+
+     Returns:
+         CommandResults: The command results in MD table and context data.
+     """
+    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
+    resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
+
+    response = client.storage_blob_containers_create_update_request(
+        subscription_id=subscription_id, resource_group_name=resource_group_name, args=args, method="PATCH"
+    )
+
+    if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
+        subscription_id = subscription_id.group(1)  # type: ignore
+
+    if resource_group := re.search("resourceGroups/(.+?)/providers", response.get("id", "")):
+        resource_group = resource_group.group(1)  # type: ignore
+
+    if account_name := re.search("storageAccounts/(.+?)/blobServices", response.get("id", "")):
+        account_name = account_name.group(1)  # type: ignore
+
+    readable_output = {
+        "Name": response.get("name", ""),
+        "Account Name": account_name,
+        "Subscription ID": subscription_id,
+        "Resource Group": resource_group,
+        "Public Access": response.get("properties", {}).get("publicAccess"),
+    }
+
+    return CommandResults(
+        outputs_prefix="Azure.StorageBlobContainer",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown(
+            name="Azure Storage Blob Containers Properties",
+            t=readable_output,
+            headers=["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"],
+        ),
+    )
 
 
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
