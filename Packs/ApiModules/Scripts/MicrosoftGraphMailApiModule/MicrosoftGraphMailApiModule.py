@@ -751,9 +751,11 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size,
             )
-
+            demisto.debug(f"upload_attachment response: {response.text}")
             if response.status_code not in (201, 200):
-                raise Exception(f"{response.json()}")
+                demisto.debug(f"status code :{response.status_code}")
+                demisto.error(f"Failed to add attachment with upload session: {response.text}")
+                raise Exception(f"{response.text}")
 
     def send_mail_with_upload_session_flow(
         self, email: str, json_data: dict, attachments_more_than_3mb: list[dict], reply_message_id: str = None
@@ -2092,7 +2094,9 @@ def send_email_command(client: MsGraphMailBaseClient, args):
 
     2) if there aren't any attachments larger than 3MB, just send the email as usual.
     """
+    demisto.debug(f"send_email_command args: {args}")
     prepared_args = GraphMailUtils.prepare_args("send-mail", args)
+    demisto.debug(f"send_email_command prepared_args: {prepared_args}")
     render_body = prepared_args.pop("renderBody", False)
     message_content = GraphMailUtils.build_message(**prepared_args)
     email = args.get("from", client._mailbox_to_fetch)
