@@ -1573,6 +1573,14 @@ def storage_blob_service_properties_set_command(client: AzureClient, params: dic
     )
 
 
+def storage_blob_service_properties_get_command(client: AzureClient, params: dict, args: dict):
+    pass
+
+
+def storage_blob_containers_update_command(client: AzureClient, params: dict, args: dict):
+    pass
+
+
 def create_policy_assignment_command(client: AzureClient, params: dict, args: dict):
     """
         Creates a policy assignment.
@@ -2620,6 +2628,8 @@ def main():
             "azure-nsg-security-rule-update": update_security_rule_command,
             "azure-storage-account-update": storage_account_update_command,
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
+            "azure-storage-blob-service-properties-get": storage_blob_service_properties_get_command,
+            "azure-storage-blob-containers-update": storage_blob_containers_update_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-postgres-server-update": postgres_server_update_command,
