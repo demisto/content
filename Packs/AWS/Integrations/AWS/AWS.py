@@ -370,6 +370,98 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
 
+    @staticmethod
+    def download_file_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Download a file from an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - key (str): The key (path) of the file in the bucket
+        """
+        return CommandResults(readable_output="Failed to download file")
+
+    @staticmethod
+    def upload_file_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Upload a file to an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - key (str): The key (path) where the file will be stored in the bucket
+                - entry_id (str): The file to upload.
+
+        Returns:
+            CommandResults: Results of the upload operation with success/failure message
+        """
+        return CommandResults(readable_output="Failed to upload file")
+
+    @staticmethod
+    def delete_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Delete the bucket policy from an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+
+        Returns:
+            CommandResults: Results of the delete operation with success/failure message
+        """
+        return CommandResults(readable_output="Failed to delete")
+
+    @staticmethod
+    def get_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Get the Public Access Block configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the Public Access Block configuration
+        """
+        return CommandResults(readable_output="Failed to get public access block")
+
+    @staticmethod
+    def get_bucket_encryption_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Get the encryption configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+
+        Returns:
+            CommandResults: Results containing the bucket encryption configuration
+        """
+        return CommandResults(readable_output="Failed to get bucket encryption")
+
+    @staticmethod
+    def get_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Get the policy configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket policy configuration
+        """
+        return CommandResults(readable_output="Failed to get bucket policy")
+
 
 class IAM:
     service = AWSServices.IAM
@@ -1308,6 +1400,12 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-s3-file-download": S3.download_file_command,
+    "aws-s3-file-upload": S3.upload_file_command,
+    "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
+    "aws-s3-public-access-block-get": S3.get_public_access_block_command,
+    "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
+    "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -1344,6 +1442,12 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "s3:GetBucketPolicy",
+    "s3:GetObject",
+    "s3:PutObject",
+    "s3:GetBucketPublicAccessBlock",
+    "s3:GetEncryptionConfiguration",
+    "s3:DeleteBucketPolicy",
 ]
 
 
