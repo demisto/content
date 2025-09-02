@@ -45,7 +45,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Storage/storageAccounts/write": ["azure-storage-account-update"],
     "Microsoft.Storage/storageAccounts/blobServices/read": [
         "azure-storage-blob-service-properties-set",
-        "azure-storage-blob-service-properties-get"
+        "azure-storage-blob-service-properties-get",
     ],
     "Microsoft.Storage/storageAccounts/blobServices/write": ["azure-storage-blob-service-properties-set"],
     "Microsoft.Storage/storageAccounts/blobServices/containers/write": ["azure-storage-blob-containers-update"],
@@ -90,8 +90,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
     "Microsoft.Storage/storageAccounts/blobServices/write",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/write"
-    "Microsoft.Authorization/policyAssignments/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write" "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
     "Microsoft.DBforPostgreSQL/servers/write",
@@ -465,11 +464,15 @@ class AzureClient:
         Returns:
             The json response from the API call.
         """
-        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default")
-        return self.ms_client.http_request(method="GET", full_url=full_url)
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
+        )
+        return self.http_request(method="GET", full_url=full_url)
 
-    def storage_blob_containers_create_update_request(self, subscription_id: str, resource_group_name: str, args: Dict, method: str):
+    def storage_blob_containers_create_update_request(
+        self, subscription_id: str, resource_group_name: str, args: Dict, method: str
+    ):
         """
         Create or update a blob container in an Azure Storage account.
 
@@ -504,10 +507,12 @@ class AzureClient:
         if "public_access" in args:
             properties["publicAccess"] = args.get("public_access")
 
-        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-                    f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}")
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
+            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}"
+        )
 
-        return self.ms_client.http_request(
+        return self.http_request(
             method=method,
             full_url=full_url,
             json_data={"properties": properties},
@@ -1654,7 +1659,7 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
     response = client.storage_blob_service_properties_get_request(
         account_name=account_name, resource_group_name=resource_group_name, subscription_id=subscription_id
     )
-
+    print(response)
     if subscription_id := re.search("subscriptions/(.+?)/resourceGroups", response.get("id", "")):
         subscription_id = subscription_id.group(1)  # type: ignore
 
@@ -1670,7 +1675,7 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
         "Subscription ID": subscription_id,
         "Resource Group": resource_group,
         "Change Feed": response.get("properties", {}).get("changeFeed", {}).get("enabled", ""),
-        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy", {}).get("enabled", "")
+        "Delete Retention Policy": response.get("properties", {}).get("deleteRetentionPolicy", {}).get("enabled", ""),
         "Versioning": response.get("properties", {}).get("isVersioningEnabled"),
     }
 
@@ -1682,23 +1687,30 @@ def storage_blob_service_properties_get_command(client: AzureClient, params: dic
         readable_output=tableToMarkdown(
             name="Azure Storage Blob Service Properties",
             t=readable_output,
-            headers=["Name", "Account Name", "Subscription ID", "Resource Group",
-                     "Change Feed", "Delete Retention Policy", "Versioning"],
+            headers=[
+                "Name",
+                "Account Name",
+                "Subscription ID",
+                "Resource Group",
+                "Change Feed",
+                "Delete Retention Policy",
+                "Versioning",
+            ],
         ),
     )
 
 
 def storage_blob_containers_update_command(client: AzureClient, params: dict, args: dict):
     """
-         Updates a given blob container.
-     Args:
-         client: The microsoft client.
-         params: The configuration parameters.
-         args: The users arguments, (like account name, container name).
+        Updates a given blob container.
+    Args:
+        client: The microsoft client.
+        params: The configuration parameters.
+        args: The users arguments, (like account name, container name).
 
-     Returns:
-         CommandResults: The command results in MD table and context data.
-     """
+    Returns:
+        CommandResults: The command results in MD table and context data.
+    """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
 

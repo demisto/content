@@ -818,177 +818,6 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
 | Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
-### azure-nsg-security-rule-create
-
-***
-Create a security rule.
-
-#### Base Command
-
-`azure-nsg-security-rule-create`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required |
-| security_group_name | The name of the security group. | Required |
-| security_rule_name | The name of the rule to be created. | Required |
-| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Required |
-| action | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny. Default is Allow. | Optional |
-| protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
-| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". Default is Any. | Optional |
-| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". Default is 4096. | Optional |
-| source_ports | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". Default is *. | Optional |
-| destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
-| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
-| description | A description to add to the rule. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGRule.name | String | The rule's name. |
-| Azure.NSGRule.id | String | The rule's ID. |
-| Azure.NSGRule.etag | String | The rule's ETag. |
-| Azure.NSGRule.type | String | The rule's type. |
-| Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. |
-| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. |
-| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
-| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. |
-| Azure.NSGRule.sourceAddressPrefix | String | The source address. |
-| Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
-| Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
-| Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
-
-### azure-nsg-network-interfaces-list
-
-***
-Gets network interfaces in a resource group.
-
-#### Base Command
-
-`azure-nsg-network-interfaces-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Required |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGNetworkInterfaces.name | String | The network interface's name. |
-| Azure.NSGNetworkInterfaces.id | String | The network interface's ID. |
-| Azure.NSGNetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. |
-| Azure.NSGNetworkInterfaces.ipConfigurationName | List | The name of the resource that is unique within a resource group. |
-| Azure.NSGNetworkInterfaces.ipConfigurationID | List | The resource ID. |
-| Azure.NSGNetworkInterfaces.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. |
-| Azure.NSGNetworkInterfaces.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. |
-| Azure.NSGNetworkInterfaces.dnsServers | List | List of DNS servers IP addresses. |
-| Azure.NSGNetworkInterfaces.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. |
-| Azure.NSGNetworkInterfaces.internalDomainNameSuffix | String | The network interface's internal domain name suffix. |
-| Azure.NSGNetworkInterfaces.properties.macAddress | String | The network interface's MAC address. |
-| Azure.NSGNetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's ID. |
-| Azure.NSGNetworkInterfaces.location | String | The network interface's location. |
-| Azure.NSGNetworkInterfaces.kind | String | The network interface's kind. |
-
-### azure-nsg-security-rule-delete
-
-***
-Delete a security rule.
-
-#### Base Command
-
-`azure-nsg-security-rule-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required |
-| security_group_name | The name of the security group. | Required |
-| security_rule_name | The name of the rule to be deleted. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### azure-nsg-public-ip-addresses-list
-
-***
-Gets public IP addresses in a resource group.
-
-#### Base Command
-
-`azure-nsg-public-ip-addresses-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Required |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGPublicIPAddress.name | String | The public IP address's name. |
-| Azure.NSGPublicIPAddress.id | String | The public IP address's ID. |
-| Azure.NSGPublicIPAddress.etag | String | The public IP address's etag. |
-| Azure.NSGPublicIPAddress.provisioningState | String | The public IP address's provisioning state. |
-| Azure.NSGPublicIPAddress.publicIPAddressVersion | String | The public IP address's version. |
-| Azure.NSGPublicIPAddress.ipAddress | String | The public IP address's IP address. |
-| Azure.NSGPublicIPAddress.domainNameLabel | String | The public IP address's domain name label. |
-| Azure.NSGPublicIPAddress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). |
-
-### azure-nsg-resource-group-list
-
-***
-Gets all resource groups for a subscription.
-
-#### Base Command
-
-`azure-nsg-resource-group-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| limit | Limit on the number of resource groups to return. Default is 50. | Optional |
-| tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGResourceGroup.id | String | The unique identifier of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.name | String | The name of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.type | String | The type of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.location | String | The location of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.tags.Owner | String | The owner tag of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.tags | Unknown | The tags associated with the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.tags.Name | String | The name tag of the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.managedBy | String | The entity that manages the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. |
-| Azure.NSGResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. |
-
 ### azure-nsg-subscriptions-list
 
 ***
@@ -1006,18 +835,18 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.NSGSubscription.id | String | The unique identifier of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.authorizationSource | String | The source of authorization for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionId | String | The ID of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.tenantId | String | The ID of the tenant associated with the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.displayName | String | The display name of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.state | String | The current state of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.count.type | String | The type of the Azure Network Security Groups subscription count. |
-| Azure.NSGSubscription.count.value | Number | The value of the Azure Network Security Groups subscription count. |
+| Azure.NSGSubscription.id | String | The unique identifier of the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.authorizationSource | String | The source of authorization for the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.subscriptionId | String | The ID of the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.tenantId | String | The ID of the tenant associated with the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.displayName | String | The display name of the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.state | String | The current state of the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Network Security Groups subscription. | 
+| Azure.NSGSubscription.count.type | String | The type of the Azure Network Security Groups subscription count. | 
+| Azure.NSGSubscription.count.value | Number | The value of the Azure Network Security Groups subscription count. | 
 
 ### azure-nsg-security-groups-list
 
@@ -1032,19 +861,186 @@ List all network security groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.NSGSecurityGroup.name | String | The security group's name. |
-| Azure.NSGSecurityGroup.id | String | The security group's ID. |
-| Azure.NSGSecurityGroup.etag | String | The security group's ETag. |
-| Azure.NSGSecurityGroup.type | String | The security group's type. |
-| Azure.NSGSecurityGroup.location | String | The security group's location. |
-| Azure.NSGSecurityGroup.tags | String | The security group's tags. |
+| Azure.NSGSecurityGroup.name | String | The security group's name. | 
+| Azure.NSGSecurityGroup.id | String | The security group's ID. | 
+| Azure.NSGSecurityGroup.type | String | The security group's type. | 
+| Azure.NSGSecurityGroup.location | String | The security group's location. | 
+| Azure.NSGSecurityGroup.etag | String | The security group's ETag. | 
+| Azure.NSGSecurityGroup.tags | String | The security group's tags. | 
+
+### azure-nsg-security-rule-delete
+
+***
+Delete a security rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | The name of the rule to be deleted. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### azure-nsg-network-interfaces-list
+
+***
+Gets network interfaces in a resource group.
+
+#### Base Command
+
+`azure-nsg-network-interfaces-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Required | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGNetworkInterfaces.name | String | The network interface's name. | 
+| Azure.NSGNetworkInterfaces.id | String | The network interface's ID. | 
+| Azure.NSGNetworkInterfaces.properties.provisioningState | String | The network interface's provisioning state. | 
+| Azure.NSGNetworkInterfaces.ipConfigurationName | List | The name of the resource that is unique within a resource group. | 
+| Azure.NSGNetworkInterfaces.ipConfigurationID | List | The resource ID. | 
+| Azure.NSGNetworkInterfaces.ipConfigurationPrivateIPAddress | List | The private IP address of the IP configuration. | 
+| Azure.NSGNetworkInterfaces.ipConfigurationPublicIPAddressName | List | The ID of the public IP address of the IP configuration. | 
+| Azure.NSGNetworkInterfaces.dnsServers | List | List of DNS servers IP addresses. | 
+| Azure.NSGNetworkInterfaces.appliedDnsServers | List | List of all DNS servers from all NICs that are part of the Availability Set. | 
+| Azure.NSGNetworkInterfaces.internalDomainNameSuffix | String | The network interface's internal domain name suffix. | 
+| Azure.NSGNetworkInterfaces.properties.macAddress | String | The network interface's MAC address. | 
+| Azure.NSGNetworkInterfaces.properties.virtualMachine.id | String | The network interface's virtual machine's ID. | 
+| Azure.NSGNetworkInterfaces.location | String | The network interface's location. | 
+| Azure.NSGNetworkInterfaces.kind | String | The network interface's kind. | 
+
+### azure-storage-blob-containers-update
+
+***
+Run this command to update an specific blob container.
+
+#### Base Command
+
+`azure-storage-blob-containers-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required | 
+| account_name | The name of the storage account. | Required | 
+| container_name | The name of the container. | Required | 
+| default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
+| deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
+| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobContainer.id | String | Fully qualified resource ID for the resource. | 
+| Azure.StorageBlobContainer.name | String | The name of the resource. | 
+| Azure.StorageBlobContainer.type | String | The type of the resource. | 
+| Azure.StorageBlobContainer.properties.metadata.metadata | String | A name-value pair to associate with the container as metadata. | 
+| Azure.StorageBlobContainer.properties.publicAccess | String | Specifies whether data in the container may be accessed publicly and the level of access. | 
+| Azure.StorageBlobContainer.properties.hasImmutabilityPolicy | Boolean | The hasImmutabilityPolicy public property is set to true by SRP if ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy public property is set to false by SRP if ImmutabilityPolicy has not been created for this container. | 
+| Azure.StorageBlobContainer.properties.hasLegalHold | Boolean | The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out. | 
+
+### azure-nsg-security-rule-create
+
+***
+Create a security rule.
+
+#### Base Command
+
+`azure-nsg-security-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | The name of the rule to be created. | Required | 
+| direction | The direction of the rule. Possible values are: "Inbound" and "Outbound". Possible values are: Inbound, Outbound. | Required | 
+| action | Whether to allow the traffic. Possible values are: "Allow" and "Deny". Possible values are: Allow, Deny. Default is Allow. | Optional | 
+| protocol | The protocol on which to apply the rule. Possible values are: "Any", "TCP", "UDP" and "ICMP". Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional | 
+| source | The source IP address range from which incoming traffic will be allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is "Any". Default is Any. | Optional | 
+| priority | The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096". Default is 4096. | Optional | 
+| source_ports | The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*". Default is *. | Optional | 
+| destination | The specific destination IP address range for outgoing traffic that will be allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional | 
+| destination_ports | The destination ports for which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is *. | Optional | 
+| description | A description to add to the rule. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGRule.name | String | The rule's name. | 
+| Azure.NSGRule.id | String | The rule's ID. | 
+| Azure.NSGRule.etag | String | The rule's ETag. | 
+| Azure.NSGRule.type | String | The rule's type. | 
+| Azure.NSGRule.provisioningState | String | The rule's provisioning state. | 
+| Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", or "\*". | 
+| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. | 
+| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. | 
+| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
+| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. | 
+| Azure.NSGRule.sourceAddressPrefix | String | The source address. | 
+| Azure.NSGRule.destinationAddressPrefix | String | The destination address. | 
+| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". | 
+| Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. | 
+| Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". | 
+
+### azure-storage-blob-service-properties-get
+
+***
+Run this command to get the blob service properties of a specific account storage.
+
+#### Base Command
+
+`azure-storage-blob-service-properties-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required | 
+| account_name | The name of the storage account. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.StorageBlobServiceProperties.id | String | Fully qualified resource ID for the resource. | 
+| Azure.StorageBlobServiceProperties.name | String | The name of the resource. | 
+| Azure.StorageBlobServiceProperties.type | String | The type of the resource. | 
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable | Boolean | When set to true last access time based tracking is enabled. | 
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name | String | Name of the policy. The valid value is AccessTimeTracking. | 
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays | Number | The field specifies blob object tracking granularity in days, typically how often the blob object should be tracked. | 
+| Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType | String | An array of predefined supported blob types. Only blockBlob is the supported value. | 
 
 ### azure-nsg-security-rule-get
 
@@ -1059,28 +1055,94 @@ Get a specific rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required |
-| resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required |
-| security_group_name | The name of the security group. | Required |
-| security_rule_name | A comma-separated list of the names of the rules to get. | Required |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| resource_group_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Required | 
+| security_group_name | The name of the security group. | Required | 
+| security_rule_name | A comma-separated list of the names of the rules to get. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Azure.NSGRule.name | String | The rule's name. |
-| Azure.NSGRule.id | String | The rule's ID. |
-| Azure.NSGRule.location | String | The rule's location. |
-| Azure.NSGRule.etag | String | The rule's ETag. |
-| Azure.NSGRule.type | String | The rule's type. |
-| Azure.NSGRule.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", "\*". |
-| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. |
-| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. |
-| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. |
-| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. |
-| Azure.NSGRule.sourceAddressPrefix | String | The source address. |
-| Azure.NSGRule.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
-| Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
-| Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
+| Azure.NSGRule.name | String | The rule's name. | 
+| Azure.NSGRule.id | String | The rule's ID. | 
+| Azure.NSGRule.location | String | The rule's location. | 
+| Azure.NSGRule.etag | String | The rule's ETag. | 
+| Azure.NSGRule.type | String | The rule's type. | 
+| Azure.NSGRule.provisioningState | String | The rule's provisioning state. | 
+| Azure.NSGRule.protocol | String | The protocol. Can be "TCP", "UDP", "ICMP", "\*". | 
+| Azure.NSGRule.sourcePortRange | String | For a single port, the source port or a range of ports. Note that for multiple ports, \`sourcePortRanges\` will appear instead. | 
+| Azure.NSGRule.sourcePortRanges | String | For multiple ports, a list of these ports. Note that for single ports, \`sourcePortRange\` will appear instead. | 
+| Azure.NSGRule.destinationPortRange | String | For a single port, the destination port or range of ports. Note that for multiple ports, \`destinationPortRanges\` will appear instead. | 
+| Azure.NSGRule.destinationPortRanges | String | For multiple ports, a list of destination ports. Note that for single ports, \`destinationPortRange\` will appear instead. | 
+| Azure.NSGRule.sourceAddressPrefix | String | The source address. | 
+| Azure.NSGRule.destinationAddressPrefix | String | The destination address. | 
+| Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". | 
+| Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. | 
+| Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". | 
+
+### azure-nsg-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-nsg-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
+| tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGResourceGroup.id | String | The unique identifier of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.name | String | The name of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.type | String | The type of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.location | String | The location of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.properties.provisioningState | String | The provisioning state of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.tags.Owner | String | The owner tag of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.tags | Unknown | The tags associated with the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.tags.Name | String | The name tag of the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.managedBy | String | The entity that manages the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.tags.aNSG-managed-cluster-name | String | The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.tags.aNSG-managed-cluster-rg | String | The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group. | 
+| Azure.NSGResourceGroup.tags.type | String | The type tag associated with the Azure Network Security Groups resource group. | 
+
+### azure-nsg-public-ip-addresses-list
+
+***
+Gets public IP addresses in a resource group.
+
+#### Base Command
+
+`azure-nsg-public-ip-addresses-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group_name | The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’. | Required | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Required | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the results by overriding the default limit. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.NSGPublicIPAddress.name | String | The public IP address's name. | 
+| Azure.NSGPublicIPAddress.id | String | The public IP address's ID. | 
+| Azure.NSGPublicIPAddress.etag | String | The public IP address's etag. | 
+| Azure.NSGPublicIPAddress.provisioningState | String | The public IP address's provisioning state. | 
+| Azure.NSGPublicIPAddress.publicIPAddressVersion | String | The public IP address's version. | 
+| Azure.NSGPublicIPAddress.ipAddress | String | The public IP address's IP address. | 
+| Azure.NSGPublicIPAddress.domainNameLabel | String | The public IP address's domain name label. | 
+| Azure.NSGPublicIPAddress.fqdn | String | The public IP address's fully qualified domain name \(FQDN\). | 
+
