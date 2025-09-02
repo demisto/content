@@ -1319,7 +1319,7 @@ class CloudTrail:
                 outputs_prefix="AWS.CloudTrail.Trails",
                 outputs_key_field="TrailARN",
                 raw_response=response,
-                outputs=response,
+                outputs=trail_data,
                 readable_output=readable_output,
             )
         except ClientError as err:
