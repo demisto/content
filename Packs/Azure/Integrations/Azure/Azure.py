@@ -232,6 +232,8 @@ class AzureClient:
         error_msg = str(e).lower()
         demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
 
+        demisto.debug(f"Error message: {error_msg}, {e=}")
+
         if "404" in error_msg or "not found" in error_msg:
             error_details = f'{resource_type} "{resource_name}"'
             if subscription_id and resource_group_name:
@@ -244,19 +246,20 @@ class AzureClient:
             # in case it's permissions error we want to handle it with the return_multiple_permissions_error function
             name = ""
             for permission in REQUIRED_ROLE_PERMISSIONS:
-                if permission in error_msg:
+                if permission.lower() in error_msg.lower():
                     name = permission
+                    demisto.debug(f"Found missing permission: {permission}.")
             if not name:
-                # get the permission by regex
-                pass
-            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": name}]
-            return_multiple_permissions_error(error_entries)
+                demisto.debug(f"Didn't find the missing permission, raising a regular exception.")
+                # if didn't find permission, raise regular exception
+                if "403" in error_msg or "forbidden" in error_msg:
+                    raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
 
-        # elif "403" in error_msg or "forbidden" in error_msg:
-        #     raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
-        #
-        # elif "401" in error_msg or "unauthorized" in error_msg:
-        #     raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". {str(e)}')
+                if "401" in error_msg or "unauthorized" in error_msg:
+                    raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". {str(e)}')
+            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": name}]
+            demisto.debug(f"Calling return_multiple_permissions_error function with {error_entries=}")
+            return_multiple_permissions_error(error_entries)
 
         elif "400" in error_msg or "bad request" in error_msg:
             if "intercepted by proxydome" in error_msg:
@@ -477,12 +480,23 @@ class AzureClient:
 
         Returns:
             The json response from the API call.
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/storagerp/blob-services/get-service-properties?view=rest-storagerp-2024-01-01&utm_source=chatgpt.com&tabs=HTTP
         """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
-        return self.http_request(method="GET", full_url=full_url)
+        try:
+            return self.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/blobServices",
+                resource_type="Storage Blob Service",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def storage_blob_containers_create_update_request(
         self, subscription_id: str, resource_group_name: str, args: Dict, method: str
@@ -510,27 +524,36 @@ class AzureClient:
         """
         container_name = args.get("container_name", "")
         account_name = args.get("account_name", "")
-        properties = {}
+        try:
+            properties = {}
 
-        if "default_encryption_scope" in args:
-            properties["defaultEncryptionScope"] = args.get("default_encryption_scope")
+            if "default_encryption_scope" in args:
+                properties["defaultEncryptionScope"] = args.get("default_encryption_scope")
 
-        if "deny_encryption_scope_override" in args:
-            properties["denyEncryptionScopeOverride"] = argToBoolean(args.get("deny_encryption_scope_override"))
+            if "deny_encryption_scope_override" in args:
+                properties["denyEncryptionScopeOverride"] = argToBoolean(args.get("deny_encryption_scope_override"))
 
-        if "public_access" in args:
-            properties["publicAccess"] = args.get("public_access")
+            if "public_access" in args:
+                properties["publicAccess"] = args.get("public_access")
 
-        full_url = (
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
-            f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}"
-        )
+            full_url = (
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/providers/"
+                f"Microsoft.Storage/storageAccounts/{account_name}/blobServices/default/containers/{container_name}"
+            )
 
-        return self.http_request(
-            method=method,
-            full_url=full_url,
-            json_data={"properties": properties},
-        )
+            return self.http_request(
+                method=method,
+                full_url=full_url,
+                json_data={"properties": properties},
+            )
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{account_name}/{container_name}",
+                resource_type="Storage Blob Service",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def create_policy_assignment(
         self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str, scope: str
@@ -1266,7 +1289,16 @@ class AzureClient:
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Network/networkSecurityGroups"
         )
-        return self.http_request(method="GET", full_url=full_url)
+        try:
+            return self.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Security Group",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
         """
@@ -1289,7 +1321,16 @@ class AzureClient:
             f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
             f"/securityRules/{security_rule_name}"
         )
-        return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        try:
+            return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=f"{security_group_name}/{security_rule_name}",
+                resource_type="Security Group",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str):
         """
@@ -1307,7 +1348,16 @@ class AzureClient:
             https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2021-04-01
         """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
-        return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+        try:
+            return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=subscription_id,
+                resource_type="Resource Group",
+                subscription_id=subscription_id,
+                resource_group_name=None,
+            )
 
     def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
         """
@@ -1327,7 +1377,16 @@ class AzureClient:
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/networkInterfaces"
         )
-        return self.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
+        try:
+            return self.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Network Interface",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
         """
@@ -1347,7 +1406,16 @@ class AzureClient:
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/publicIPAddresses"
         )
-        return self.http_request(method="GET", full_url=full_url)
+        try:
+            return self.http_request(method="GET", full_url=full_url)
+        except Exception as e:
+            self.handle_azure_error(
+                e=e,
+                resource_name=resource_group_name,
+                resource_type="Public IP Addresses",
+                subscription_id=subscription_id,
+                resource_group_name=resource_group_name,
+            )
 
     def list_subscriptions_request(self):
         """
