@@ -1,7 +1,7 @@
 id: 4e2904f4-d3ee-41e1-8f77-d747914a9bd2
-version: 35
+version: 40
 vcShouldKeepItemLegacyProdMachine: false
-name: FileEnrichment_CIAC-14500_Niv
+name: FileEnrichment-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 66a8962b-9306-4612-980a-f0229d2b7f61
+    taskid: 7cd7fc8f-1871-4c5f-9e8a-9866a99eedf5
     type: regular
     task:
-      id: 66a8962b-9306-4612-980a-f0229d2b7f61
+      id: 7cd7fc8f-1871-4c5f-9e8a-9866a99eedf5
       version: -1
       name: Create SHA256
       description: |
@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6c82c003-1093-48cf-8c2c-4f7442431aec
+    taskid: d1d94c8b-783c-4030-ab6c-483f0058c940
     type: regular
     task:
-      id: 6c82c003-1093-48cf-8c2c-4f7442431aec
+      id: d1d94c8b-783c-4030-ab6c-483f0058c940
       version: -1
       name: File Enrichment Internal
       description: This script gathers file reputation data from multiple integrations
@@ -1320,10 +1320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: daf07aec-889a-4519-94ef-2f8bfee40b8d
+    taskid: bf457348-a69d-44b7-9bfa-5dfe12dadf6b
     type: condition
     task:
-      id: daf07aec-889a-4519-94ef-2f8bfee40b8d
+      id: bf457348-a69d-44b7-9bfa-5dfe12dadf6b
       version: -1
       name: Failure
       type: condition
@@ -1333,7 +1333,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isEqualNumber
           left:
             value:
               simple: "1"
