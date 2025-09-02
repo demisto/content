@@ -3,7 +3,7 @@ version: -1
 fromversion: 6.10.0
 name: criminalip_micro_asm
 description: |-
-  This playbook takes domains as a List argument and executes the sub-playbook 'Criminal IP Run Micro ASM' for each domain in the List, then delivers the 'micro-asm' results to the user via email.
+  This playbook takes domains as a List argument and executes the sub-playbook 'criminal_ip_run_micro_asm' for each domain in the List, then delivers the 'micro-asm' results to the user via email.
   The user must set up the relevant arguments for the send-mail command.
 starttaskid: "0"
 
@@ -66,9 +66,9 @@ tasks:
     task:
       id: b5125def-262e-4bca-b0eb-0ed9cda4aeea
       version: -1
-      name: Criminal IP Run Micro ASM
-      description: Executes the 'Criminal IP Run Micro ASM' playbook for each domain.
-      playbookName: Criminal IP Run Micro ASM
+      name: criminal_ip_run_micro_asm
+      description: Executes the 'criminal_ip_run_micro_asm' playbook for each domain.
+      playbookName: criminal_ip_run_micro_asm
       iscommand: false
       brand: ""
     nexttasks:
@@ -205,4 +205,4 @@ outputs:
   type: String
 
 tests:
-- CriminalIP_TestPlaybook
+- Test-CriminalIP

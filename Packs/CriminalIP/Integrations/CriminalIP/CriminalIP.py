@@ -1,8 +1,8 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa: F401
+from CommonServerPython import *  # noqa: F401  # pylint: disable=import-error
+from CommonServerUserPython import *  # noqa: F401  # pylint: disable=import-error
 
-from datetime import datetime, timezone
+from datetime import datetime
 import dateparser
 from typing import Any
 
@@ -12,9 +12,21 @@ class Client(BaseClient):
     Criminal IP API Client using XSOAR BaseClient.
     """
 
-    def __init__(self, base_url: str, verify: bool, proxy: bool, headers: dict[str, str], timeout: float | None = None):
-        super().__init__(base_url=base_url.rstrip("/") if base_url else "", verify=verify, proxy=proxy, headers=headers)
-        self.timeout: float | None = float(timeout) if timeout is not None else None
+    def __init__(
+        self,
+        base_url: str,
+        verify: bool,
+        proxy: bool,
+        headers: dict[str, str],
+        timeout: float | None = None,
+    ):
+        super().__init__(
+            base_url=base_url.rstrip("/") if base_url else "",
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+        )
+        self.timeout: float = float(timeout) if timeout is not None else 0.0
 
     def ip_lookup(self, ip: str) -> dict:
         return self._http_request(
@@ -137,7 +149,6 @@ def check_malicious_ip(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def _to_aware_utc(dt: datetime | None) -> datetime | None:
-    """Normalize datetime to timezone-aware UTC."""
     if not dt:
         return None
     if dt.tzinfo is None:
@@ -168,7 +179,6 @@ def check_last_scan_date(client: Client, args: dict[str, Any]) -> CommandResults
     now = datetime.now(timezone.utc)
     scanned_bool = bool(reg_dt and (now - reg_dt).days <= 7)
 
-    # 호환성: scaned(레거시) + scanned(정식) 둘 다 제공
     outputs = {"scaned": scanned_bool, "scanned": scanned_bool, "scan_id": report.get("scan_id", "")}
 
     return CommandResults(

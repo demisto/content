@@ -1,7 +1,7 @@
-id: criminalip_run_micro_asm
+id: criminal_ip_run_micro_asm
 version: -1
 fromversion: 6.10.0
-name: criminalip_run_micro_asm
+name: criminal_ip_run_micro_asm
 description: |-
   For a single domain, this playbook performs a 'criminal-ip-domain-full-scan' and once the scan is complete, it executes 'criminal-ip-micro-asm'.
   You can find the 'micro-asm' results in the context.
