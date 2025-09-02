@@ -90,7 +90,8 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Storage/storageAccounts/write",
     "Microsoft.Storage/storageAccounts/blobServices/read",
     "Microsoft.Storage/storageAccounts/blobServices/write",
-    "Microsoft.Storage/storageAccounts/blobServices/containers/write" "Microsoft.Authorization/policyAssignments/read",
+    "Microsoft.Storage/storageAccounts/blobServices/containers/write",
+    "Microsoft.Authorization/policyAssignments/read",
     "Microsoft.Authorization/policyAssignments/write",
     "Microsoft.DBforPostgreSQL/servers/read",
     "Microsoft.DBforPostgreSQL/servers/write",
@@ -2635,7 +2636,7 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
 
     for output in data_from_response:
         reformat_data(output, dict_to_extract=[("properties",), ("dnsSettings",)])
-        output["etag"] = output.get("etag", "")[3:-1]  # cleans up the tag, remove the "W/" prefix
+        output["etag"] = output.get("etag", "")[3:-1]  # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
 
     readable_output = tableToMarkdown(
         name="Public IP Addresses List",
