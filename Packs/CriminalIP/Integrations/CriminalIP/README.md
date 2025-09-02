@@ -5,7 +5,6 @@ This integration was integrated and tested with Criminal IP API version 1.0 of C
 
 ## Configure Criminal IP in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | The API Key to use for connection. | True |
@@ -32,18 +31,18 @@ Provides detailed information about IP addresses through Criminal IP's API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to search. | Required | 
+| ip | The IP address to search. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.IP.ip | String | Queried IP Address | 
-| CriminalIP.IP.score.inbound | String | Inbound Score | 
-| CriminalIP.IP.score.outbound | String | Outbound Score | 
-| CriminalIP.IP.issues | Unknown | Detected Issues \(VPN, Proxy, Tor, etc.\) | 
-| CriminalIP.IP.vulnerability | Unknown | Vulnerabilities detected on the IP | 
-| CriminalIP.IP.raw | Unknown | Full raw response from Criminal IP API | 
+| CriminalIP.IP.ip | String | Queried IP Address |
+| CriminalIP.IP.score.inbound | String | Inbound Score |
+| CriminalIP.IP.score.outbound | String | Outbound Score |
+| CriminalIP.IP.issues | Unknown | Detected Issues \(VPN, Proxy, Tor, etc.\) |
+| CriminalIP.IP.vulnerability | Unknown | Vulnerabilities detected on the IP |
+| CriminalIP.IP.raw | Unknown | Full raw response from Criminal IP API |
 
 ### criminal-ip-check-malicious-ip
 
@@ -58,15 +57,15 @@ Determines whether an IP is malicious or safe through Criminal IP Asset Search.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP Address to check. | Required | 
+| ip | IP Address to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Mal_IP.result | String | Malicious / Safe decision | 
-| CriminalIP.Mal_IP.real_ip | String | Real IP if detected | 
-| CriminalIP.Mal_IP.raw | Unknown | Full raw response | 
+| CriminalIP.Mal_IP.result | String | Malicious / Safe decision |
+| CriminalIP.Mal_IP.real_ip | String | Real IP if detected |
+| CriminalIP.Mal_IP.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-quick-scan
 
@@ -81,15 +80,15 @@ Performs a Domain Quick Scan using Criminal IP's API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to perform Quick Scan. | Required | 
+| domain | The domain to perform Quick Scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Domain_Quick.domain | String | Queried Domain | 
-| CriminalIP.Domain_Quick.risk_score | Number | Risk Score | 
-| CriminalIP.Domain_Quick.raw | Unknown | Full raw response | 
+| CriminalIP.Domain_Quick.domain | String | Queried Domain |
+| CriminalIP.Domain_Quick.risk_score | Number | Risk Score |
+| CriminalIP.Domain_Quick.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-lite-scan
 
@@ -104,14 +103,14 @@ Initiates a Domain Lite Scan and returns a scan_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to perform Lite Scan. | Required | 
+| domain | The domain to perform Lite Scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Domain_Lite.scan_id | String | Scan ID returned for Lite Scan | 
-| CriminalIP.Domain_Lite.raw | Unknown | Full raw response | 
+| CriminalIP.Domain_Lite.scan_id | String | Scan ID returned for Lite Scan |
+| CriminalIP.Domain_Lite.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-lite-scan-status
 
@@ -126,14 +125,14 @@ Checks the progress of the Lite Scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan_id whose Lite Scan progress to check. | Required | 
+| scan_id | The scan_id whose Lite Scan progress to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Domain_Lite_Status.status | String | Lite Scan status | 
-| CriminalIP.Domain_Lite_Status.raw | Unknown | Full raw response | 
+| CriminalIP.Domain_Lite_Status.status | String | Lite Scan status |
+| CriminalIP.Domain_Lite_Status.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-lite-scan-result
 
@@ -148,15 +147,15 @@ Returns the Lite Scan results for the given scan_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan_id whose Lite Scan result to fetch. | Required | 
+| scan_id | The scan_id whose Lite Scan result to fetch. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Domain_Lite_Result.domain | String | Queried Domain | 
-| CriminalIP.Domain_Lite_Result.vulns | Unknown | CVEs detected | 
-| CriminalIP.Domain_Lite_Result.raw | Unknown | Full raw response | 
+| CriminalIP.Domain_Lite_Result.domain | String | Queried Domain |
+| CriminalIP.Domain_Lite_Result.vulns | Unknown | CVEs detected |
+| CriminalIP.Domain_Lite_Result.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-full-scan
 
@@ -171,14 +170,14 @@ Initiates a Domain Full Scan and returns a scan_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to perform Full Scan. | Required | 
+| domain | The domain to perform Full Scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Full_Scan.scan_id | String | Scan ID returned for Full Scan | 
-| CriminalIP.Full_Scan.raw | Unknown | Full raw response | 
+| CriminalIP.Full_Scan.scan_id | String | Scan ID returned for Full Scan |
+| CriminalIP.Full_Scan.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-full-scan-status
 
@@ -193,14 +192,14 @@ Checks the progress of the Full Scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan_id whose Full Scan status to check. | Required | 
+| scan_id | The scan_id whose Full Scan status to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Full_Scan_Status.status | String | Full Scan status | 
-| CriminalIP.Full_Scan_Status.raw | Unknown | Full raw response | 
+| CriminalIP.Full_Scan_Status.status | String | Full Scan status |
+| CriminalIP.Full_Scan_Status.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-full-scan-result
 
@@ -215,16 +214,16 @@ Returns the Full Scan results for the given scan_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan_id whose Full Scan result to fetch. | Required | 
+| scan_id | The scan_id whose Full Scan result to fetch. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Full_Scan_Result.domain | String | Queried Domain | 
-| CriminalIP.Full_Scan_Result.certificates | Unknown | Certificate Information | 
-| CriminalIP.Full_Scan_Result.vulns | Unknown | CVEs detected in Full Scan | 
-| CriminalIP.Full_Scan_Result.raw | Unknown | Full raw response | 
+| CriminalIP.Full_Scan_Result.domain | String | Queried Domain |
+| CriminalIP.Full_Scan_Result.certificates | Unknown | Certificate Information |
+| CriminalIP.Full_Scan_Result.vulns | Unknown | CVEs detected in Full Scan |
+| CriminalIP.Full_Scan_Result.raw | Unknown | Full raw response |
 
 ### criminal-ip-domain-full-scan-make-email-body
 
@@ -239,14 +238,14 @@ Builds an email body summarizing notable findings from a completed Full Scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan_id of the completed Full Scan. | Required | 
-| domain | The domain of the completed Full Scan. | Required | 
+| scan_id | The scan_id of the completed Full Scan. | Required |
+| domain | The domain of the completed Full Scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Email_Body | String | Generated email body string | 
+| CriminalIP.Email_Body | String | Generated email body string |
 
 ### criminal-ip-micro-asm
 
@@ -261,12 +260,12 @@ Performs a micro ASM-style summary for a domain with a completed Full Scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_id | The scan_id of the completed Full Scan. | Required | 
-| domain | The domain of the completed Full Scan. | Required | 
+| scan_id | The scan_id of the completed Full Scan. | Required |
+| domain | The domain of the completed Full Scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.Micro_ASM.summary | String | Concise summary string of notable findings | 
-| CriminalIP.Micro_ASM.raw | Unknown | Full raw response | 
+| CriminalIP.Micro_ASM.summary | String | Concise summary string of notable findings |
+| CriminalIP.Micro_ASM.raw | Unknown | Full raw response |
