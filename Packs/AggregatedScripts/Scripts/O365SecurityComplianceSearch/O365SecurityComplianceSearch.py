@@ -4,7 +4,7 @@ from CommonServerPython import *
 SCRIPT_NAME = "o365-security-compliance-search"
 
 # required integrations
-SEC_COMP_MODULES = ["SecurityAndCompliance", "SecurityAndComplianceV2"]
+SEC_COMP_MODULES = ["SecurityAndComplianceV2"]
 
 # O365 commands
 CMD_GET_SEARCH = "o365-sc-get-search"
