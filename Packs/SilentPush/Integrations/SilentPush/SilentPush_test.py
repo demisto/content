@@ -39,6 +39,7 @@ from SilentPush import (
     get_data_exports_command,
     run_threat_check_command,
     add_feed_tags_command,
+    parse_arguments,
 )
 from CommonServerPython import DemistoException, EntryType
 
@@ -1510,3 +1511,23 @@ def test_add_feed_tags_command_success(mocker):
     assert result.raw_response == mock_response
     assert "SilentPush Add Feed Tags" in result.readable_output
 
+def test_parse_arguments_valid():
+    """Test parsing with all valid arguments"""
+    args = {
+        "domains": "example.com, test.com",
+        "fetch_risk_score": "true",
+        "fetch_whois_info": "false"
+    }
+
+    # Run the function
+    domains, fetch_risk_score, fetch_whois_info = parse_arguments(args)
+
+    assert domains == ["example.com", "test.com"]
+    assert fetch_risk_score is True
+    assert fetch_whois_info is False
+
+def test_parse_arguments_no_domains():
+    """Test when no domains are provided"""
+    args = {"fetch_risk_score": "true"}
+    with pytest.raises(DemistoException, match="No domains provided"):
+        parse_arguments(args)
