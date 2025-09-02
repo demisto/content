@@ -226,6 +226,43 @@ def test_list_exception_rule_command(requests_mock, mock_client: Client):
     assert result.outputs[0]["exception_rule_names"][0] == "test_exception"
 
 
+def test_get_rule_source_destination_command(requests_mock, mock_client: Client):
+    """
+    Scenario: List all exception rules associated with policies.
+    Given:
+     - A valid policy type.
+    When:
+     - The `forcepoint-dlp-list-exception-rule` command is executed.
+    Then:
+     - Ensure that the response is correctly parsed and outputs are generated.
+    """
+    from ForcepointDLP import get_rule_source_destination_command
+
+    json_response = load_mock_response("get_source_destination_rules.json")
+    requests_mock.get(
+        url=f"{mock_client._base_url}/policy/rules/source-destination",
+        json=json_response,
+        status_code=HTTPStatus.OK,
+    )
+
+    result = get_rule_source_destination_command(
+        mock_client,
+        {
+            "policy_type": "DLP",
+            "all_results": "false",
+            "limit": "50",
+        },
+    )
+    assert result.outputs_prefix == "ForcepointDlp.SourceDestinationRule"
+    assert result.outputs_key_field == "policy_name"
+    assert isinstance(result.outputs, dict)
+    assert len(result.outputs["Rule"]) == 2
+    assert 'DestinationChannel' in result.outputs["Rule"][0]
+    assert len(result.outputs["Rule"][0]['DestinationChannel']) == 1
+    assert 'SourceResource' in result.outputs["Rule"][0]
+    assert len(result.outputs["Rule"][0]['SourceResource']) == 0
+
+
 def test_get_exception_rule_command(requests_mock, mock_client: Client):
     """
     Scenario: List all exception rules associated with policies.

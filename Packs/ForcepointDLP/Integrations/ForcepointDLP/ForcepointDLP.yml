@@ -309,40 +309,40 @@ script:
         - contextPath: ForcepointDlp.SourceDestinationRule.Rule.rule_name
           description: The name of the policy rule.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_channel_machine_type
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.source_endpoint_channel_machine_type
           description: The source machine type.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_connection_type
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.source_endpoint_connection_type
           description: The network location of the endpoint machines to analyze.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.resource_name
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.SourceResource.resource_name
           description: The name of the resource.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.type
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.SourceResource.type
           description: The type of the resource (for example, computers).
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.include
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.SourceResource.include
           description: Indicates whether the resource is included or excluded.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.email_monitor_directions
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.destination_email_monitor_directions
           description: "Specifies the email traffic directions to monitor: inbound, outbound, internal, or all."
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.channel_type
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.channel_type
           description: The type of the channel.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.enabled
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.enabled
           description: Indicates whether the resource is enabled.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.user_operations
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.user_operations
           description: A user operation to monitor, such as file uploading, downloading, or external file-sharing.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.resource_name
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.Resource.resource_name
           description: The name of the resource.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.type
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.Resource.type
           description: The type of the resource (for example, computers).
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.include
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.Resource.include
           description: Indicates whether the resource is included or excluded.
           type: String
     - name: fp-dlp-rule-create

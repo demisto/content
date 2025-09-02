@@ -1728,7 +1728,23 @@ def get_rule_source_destination_command(client: Client, args: dict) -> CommandRe
     policy_name = args.get("policy_name")
     response = client.get_rule_source_destination(policy_name=policy_name)
 
-    outputs = transform_keys(
+    outputs = {
+        "policy_name": response.get("policy_name"),
+        "Rule": []
+    }
+
+    for rule in response.get("rules", []):
+        new_rule = {
+            "rule_name": rule.get("rule_name"),
+            "source_endpoint_channel_machine_type": dict_safe_get(rule, ["rule_source", "endpoint_channel_machine_type"]),
+            "source_endpoint_connection_type": dict_safe_get(rule, ["rule_source", "endpoint_connection_type"]),
+            "SourceResource": dict_safe_get(rule, ["rule_source", "resource"], []),
+            "destination_email_monitor_directions": dict_safe_get(rule, ["rule_destination", "email_monitor_directions"], []),
+            "DestinationChannel": dict_safe_get(rule, ["rule_destination", "channels"], [])
+        }
+        outputs["Rule"].append(new_rule)
+
+    hr_outputs = transform_keys(
         response,
         {
             "rules": "Rule",
@@ -1750,7 +1766,7 @@ def get_rule_source_destination_command(client: Client, args: dict) -> CommandRe
                 rule, ["Destination", "email_monitor_directions"]
             ),
         }
-        for rule in outputs.get("Rule", []) or []
+        for rule in hr_outputs.get("Rule", []) or []
     ]
 
     return CommandResults(

@@ -561,18 +561,18 @@ Retrieve the source and destination details of rules associated with a specified
 | --- | --- | --- |
 | ForcepointDlp.SourceDestinationRule.policy_name | Unknown | The name of the policy. |
 | ForcepointDlp.SourceDestinationRule.Rule.rule_name | String | The name of the policy rule. |
-| ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_channel_machine_type | String | The source machine type. |
-| ForcepointDlp.SourceDestinationRule.Rule.Source.endpoint_connection_type | String | The network location of the endpoint machines to analyze. |
-| ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.resource_name | String | The name of the resource. |
-| ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.type | String | The type of the resource \(for example, computers\). |
-| ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.include | String | Indicates whether the resource is included or excluded |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.email_monitor_directions | String | Specifies the email traffic directions to monitor: inbound, outbound, internal, or all. |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.channel_type | String | The type of the channel. |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.enabled | String | Indicates whether the resource is enabled. |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.user_operations | String | A user operation to monitor, such as file uploading, downloading, or external file-sharing. |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.resource_name | String | The name of the resource. |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.type | String | The type of the resource \(for example, computers\). |
-| ForcepointDlp.SourceDestinationRule.Rule.Destination.Channel.Resource.include | String | Indicates whether the resource is included or excluded. |
+| ForcepointDlp.SourceDestinationRule.Rule.source_endpoint_channel_machine_type | String | The source machine type. |
+| ForcepointDlp.SourceDestinationRule.Rule.source_endpoint_connection_type | String | The network location of the endpoint machines to analyze. |
+| ForcepointDlp.SourceDestinationRule.Rule.SourceResource.resource_name | String | The name of the resource. |
+| ForcepointDlp.SourceDestinationRule.Rule.SourceResource.type | String | The type of the resource \(for example, computers\). |
+| ForcepointDlp.SourceDestinationRule.Rule.SourceResource.include | String | Indicates whether the resource is included or excluded |
+| ForcepointDlp.SourceDestinationRule.Rule.destination_email_monitor_directions | String | Specifies the email traffic directions to monitor: inbound, outbound, internal, or all. |
+| ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.channel_type | String | The type of the channel. |
+| ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.enabled | String | Indicates whether the resource is enabled. |
+| ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.user_operations | String | A user operation to monitor, such as file uploading, downloading, or external file-sharing. |
+| ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.Resource.resource_name | String | The name of the resource. |
+| ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.Resource.type | String | The type of the resource \(for example, computers\). |
+| ForcepointDlp.SourceDestinationRule.Rule.DestinationChannel.Resource.include | String | Indicates whether the resource is included or excluded. |
 
 #### Command example
 ```!fp-dlp-rule-source-destination-get policy_name=new_policy_4```
