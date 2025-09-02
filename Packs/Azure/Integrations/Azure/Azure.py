@@ -240,6 +240,7 @@ class AzureClient:
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif "403" in error_msg or "forbidden" in error_msg:
+
             raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
 
         elif "401" in error_msg or "unauthorized" in error_msg:
@@ -2348,7 +2349,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     security_rule_name = args.get("security_rule_name", "")
 
     if not security_rule_name or not security_group_name:
-        return_error("Please provide security_group_name and security_rule_name")
+        return_error("Please provide security_group_name and security_rule_name.")
 
     security_rule_list = argToList(security_rule_name)
 
@@ -2388,8 +2389,8 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     destination_ports = args.get("destination_ports", "*")
     description = args.get("description", "")
 
-    if not security_rule_name or not security_group_name:
-        return_error("Please provide security_group_name and security_rule_name")
+    if not security_rule_name or not security_group_name or not direction:
+        return_error("Please provide security_group_name, security_rule_name and direction.")
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
@@ -2452,7 +2453,7 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     security_rule_name = args.get("security_rule_name", "")
 
     if not security_rule_name or not security_group_name:
-        return_error("Please provide security_group_name and security_rule_name")
+        return_error("Please provide security_group_name and security_rule_name.")
 
     rule_deleted = client.delete_rule(
         security_group_name=security_group_name,
@@ -2467,11 +2468,17 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
             f"Rule {security_rule_name} with resource_group_name "
             f"{resource_group_name} and subscription id {subscription_id} was not found."
         )
-    elif rule_deleted.status_code in (202, 200):  # in this API we get 202 when success.
+    elif rule_deleted.status_code == 200:
         message = (
             f"Rule {security_rule_name} with resource_group_name "
             f"{resource_group_name} and subscription id {subscription_id} "
             f"was successfully deleted."
+        )
+    elif rule_deleted.status_code == 202:
+        message = (
+            f"The delete request for rule {security_rule_name} with resource_group_name"
+            f"{resource_group_name} and subscription id {subscription_id} "
+            f"was accepted and the operation will complete asynchronously."
         )
     return CommandResults(readable_output=message)
 
