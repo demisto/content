@@ -1,5 +1,5 @@
 id: 4e2904f4-d3ee-41e1-8f77-d747914a9bd2
-version: 32
+version: 35
 vcShouldKeepItemLegacyProdMachine: false
 name: FileEnrichment_CIAC-14500_Niv
 starttaskid: "0"
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: cf5d8e1d-b372-478a-a54a-64d02b7765ec
+    taskid: 66a8962b-9306-4612-980a-f0229d2b7f61
     type: regular
     task:
-      id: cf5d8e1d-b372-478a-a54a-64d02b7765ec
+      id: 66a8962b-9306-4612-980a-f0229d2b7f61
       version: -1
       name: Create SHA256
       description: |
@@ -191,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 1050
         }
       }
@@ -246,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 6455ea0f-6d78-4d54-bae6-440092c951c0
+    taskid: d5b99091-5146-47d9-9e76-d74cdab47c37
     type: regular
     task:
-      id: 6455ea0f-6d78-4d54-bae6-440092c951c0
+      id: d5b99091-5146-47d9-9e76-d74cdab47c37
       version: -1
       name: Create File Indicator SHA256
       description: commands.local.cmd.new.indicator
@@ -408,7 +408,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 1050
         }
       }
@@ -479,7 +479,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 1050
         }
       }
@@ -572,7 +572,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 1720
         }
       }
@@ -614,7 +614,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 1720
         }
       }
@@ -655,7 +655,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 1720
         }
       }
@@ -668,12 +668,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 1e6eceaf-3b91-402e-88d1-d1cf0ad7050b
+    taskid: 9d5451d4-90b6-4dc6-b284-3693dc0e8c07
     type: title
     task:
-      id: 1e6eceaf-3b91-402e-88d1-d1cf0ad7050b
+      id: 9d5451d4-90b6-4dc6-b284-3693dc0e8c07
       version: -1
-      name: Combine Internal and External
+      name: Internal and External Enrichment
       type: title
       iscommand: false
       brand: ""
@@ -685,7 +685,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 1890
         }
       }
@@ -725,7 +725,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 2050
         }
       }
@@ -763,7 +763,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 2220
         }
       }
@@ -800,7 +800,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 2390
         }
       }
@@ -842,7 +842,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 2560
         }
       }
@@ -855,24 +855,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 558f8090-77a2-4acb-a956-0cce5ddc3321
+    taskid: bd1529c0-8309-4ea7-aa93-12e62a43cd07
     type: title
     task:
-      id: 558f8090-77a2-4acb-a956-0cce5ddc3321
+      id: bd1529c0-8309-4ea7-aa93-12e62a43cd07
       version: -1
-      name: Sad Flows
+      name: Case 4 - Some Hash Malformed
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "45"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 2900
         }
       }
@@ -913,7 +913,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1340,
           "y": 1050
         }
       }
@@ -963,7 +963,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1340,
           "y": 1720
         }
       }
@@ -1174,48 +1174,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 09520584-ec08-4c65-9237-0e42e5a9cfad
-    type: regular
-    task:
-      id: 09520584-ec08-4c65-9237-0e42e5a9cfad
-      version: -1
-      name: Delete Context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: CreateHash
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: d06ed782-a6a8-4191-93df-19f0f30607c5
@@ -1249,8 +1207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 4390
+          "x": 377.5,
+          "y": 4550
         }
       }
     note: false
@@ -1273,14 +1231,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "32"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 4060
+          "x": 377.5,
+          "y": 4390
         }
       }
     note: false
@@ -1303,56 +1261,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 3060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 3deae0c8-dce5-4bce-897a-3dffe94d4210
-    type: regular
-    task:
-      id: 3deae0c8-dce5-4bce-897a-3dffe94d4210
-      version: -1
-      name: DeleteContext
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
       - "37"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: CreateHash
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3220
+          "x": 695,
+          "y": 3730
         }
       }
     note: false
@@ -1391,8 +1307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 3390
+          "x": 695,
+          "y": 3890
         }
       }
     note: false
@@ -1429,8 +1345,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 4560
+          "x": 797.5,
+          "y": 4720
         }
       }
     note: false
@@ -1456,8 +1372,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 4565
+          "x": 367.5,
+          "y": 4725
         }
       }
     note: false
@@ -1480,56 +1396,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1022.5,
-          "y": 3560
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: 6f39ee79-8174-4e81-8f4a-b1a3417e2f30
-    type: regular
-    task:
-      id: 6f39ee79-8174-4e81-8f4a-b1a3417e2f30
-      version: -1
-      name: DeleteContext
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
       - "43"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: CreateHash
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 3720
+          "x": 582.5,
+          "y": 4060
         }
       }
     note: false
@@ -1570,8 +1444,322 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
-          "y": 3890
+          "x": 582.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7a5b490a-9c4a-44c4-9e2c-fe31925f4078
+    type: title
+    task:
+      id: 7a5b490a-9c4a-44c4-9e2c-fe31925f4078
+      version: -1
+      name: Sad Flows
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: fb3732da-7778-4263-85ba-e18d6ee2fb58
+    type: regular
+    task:
+      id: fb3732da-7778-4263-85ba-e18d6ee2fb58
+      version: -1
+      name: Delete Context
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: CreateHash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 719d077d-f797-46cc-9436-22798a787016
+    type: regular
+    task:
+      id: 719d077d-f797-46cc-9436-22798a787016
+      version: -1
+      name: File Enrichment Hash Malformed
+      description: This script gathers file reputation data from multiple integrations
+        and returns a "FileEnrichment" object with consolidated information to the
+        context output.
+      scriptName: file-enrichmenttest
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+      - "48"
+      - "49"
+      - "50"
+    scriptarguments:
+      brands:
+        simple: VirusTotal (API v3),WildFire-v2
+      file_hash:
+        simple: ${CreateHash}, 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: f368335c-3d40-48b2-8c74-b48615ff2c82
+    type: condition
+    task:
+      id: f368335c-3d40-48b2-8c74-b48615ff2c82
+      version: -1
+      name: |
+        Validate Brand
+      description: Pretty-print the contents of the playbook context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: TIM
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: FileEnrichment.Brand
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 25ac5264-d213-4c76-8e9d-7d8cf6f3d4a4
+    type: condition
+    task:
+      id: 25ac5264-d213-4c76-8e9d-7d8cf6f3d4a4
+      version: -1
+      name: Validate Indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.MD5
+            iscontext: true
+          right:
+            value:
+              simple: CreateHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 12bca415-b3e2-4ca6-8c50-93e0c3f7f533
+    type: condition
+    task:
+      id: 12bca415-b3e2-4ca6-8c50-93e0c3f7f533
+      version: -1
+      name: Validate Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 861be53c-51ac-47f2-888d-feb9fe8c0e1e
+    type: condition
+    task:
+      id: 861be53c-51ac-47f2-888d-feb9fe8c0e1e
+      version: -1
+      name: Validate DBotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: CreateHash
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: VirusTotal (API v3)
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: WildFire-v2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3400
         }
       }
     note: false
@@ -1588,8 +1776,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4580,
-        "width": 1885,
+        "height": 4740,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
