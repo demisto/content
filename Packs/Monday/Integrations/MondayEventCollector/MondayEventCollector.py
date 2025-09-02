@@ -314,12 +314,16 @@ def test_connection() -> CommandResults:
                 result = "✅ Test connection success for activity logs.\n"
                 activity_logs_success = True
             else:
-                result = ("❌ Test connection failed for activity logs.\n"
-                         "Please provide Board IDs to test connection for activity logs.\n")
+                result = (
+                    "❌ Test connection failed for activity logs.\n"
+                    "Please provide Board IDs to test connection for activity logs.\n"
+                )
         else:
-            result = ("❌ Test connection failed for activity logs.\n"
-                     "Please provide Client ID, Client secret and Authorization code with "
-                     "monday-generate-login-url command before testing connection for activity logs.\n")
+            result = (
+                "❌ Test connection failed for activity logs.\n"
+                "Please provide Client ID, Client secret and Authorization code with "
+                "monday-generate-login-url command before testing connection for activity logs.\n"
+            )
 
         # Activity logs test failed, try audit logs.
         if audit_client.audit_token and audit_client.audit_logs_url:
@@ -329,8 +333,10 @@ def test_connection() -> CommandResults:
                 return CommandResults(readable_output="✅ Test connection success for both activity logs and audit logs.")
             result += "✅ Test connection success for audit logs."
         else:
-            result += ("❌ Test connection failed for audit logs.\n"
-                      "Please provide Audit API token and Audit Server URL to test connection for audit logs.\n")
+            result += (
+                "❌ Test connection failed for audit logs.\n"
+                "Please provide Audit API token and Audit Server URL to test connection for audit logs.\n"
+            )
 
         return CommandResults(readable_output=result)
 

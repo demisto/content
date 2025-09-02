@@ -39,7 +39,7 @@ class TestGetAuditLogs:
         limit = 8
         mock_params = {
             "audit_logs_url": "https://test.monday.com",
-            "audit_token": "test_token",
+            "audit_token": {"password": "test_token"},
         }
         mocker.patch.object(demisto, "params", return_value=mock_params)
         mocker.patch.object(demisto, "debug")
@@ -240,7 +240,7 @@ class TestGetAuditLogs:
         mocker.patch("MondayEventCollector.MAX_AUDIT_LOGS_PER_FETCH", limit)
         mock_params = {
             "audit_logs_url": "https://test.monday.com",
-            "audit_token": "test_token",
+            "audit_token": {"password": "test_token"},
             "max_audit_logs_per_fetch": limit,
         }
         mocker.patch.object(demisto, "params", return_value=mock_params)
@@ -681,7 +681,7 @@ class TestConnectionAndUtilities:
         """Test successful generation of login URL."""
         from MondayEventCollector import generate_login_url
 
-        mock_params = {"client_id": "test_client_id"}
+        mock_params = {"credentials": {"identifier": "test_client_id"}}
         mocker.patch.object(demisto, "params", return_value=mock_params)
 
         result = generate_login_url()
@@ -732,7 +732,7 @@ class TestConnectionAndUtilities:
         mocker.patch("MondayEventCollector.initiate_audit_client", return_value=mock_audit_client)
 
         # Mock get_integration_context to return access token
-        mocker.patch("MondayEventCollector.get_integration_context", return_value={"access_token": "test_token"})
+        mocker.patch("MondayEventCollector.get_integration_context", return_value={"access_token": {"password": "test_token"}})
 
         # Mock get_activity_logs to simulate successful fetch
         mocker.patch("MondayEventCollector.get_activity_logs", return_value=([{"id": "test_log"}], {}))
