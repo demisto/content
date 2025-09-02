@@ -4317,7 +4317,7 @@ def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, 
         CommandResults: JSON response of threat check.
     """
 
-    feed_url = args.get("feed_url")
+    feed_url = args["feed_url"]
     response = client.get_data_exports(feed_url)
 
     # Check for errors
