@@ -1803,7 +1803,7 @@ script:
       - sa-east-1
     outputs:
     - contextPath: AWS.CloudTrail.Trails.Name
-      description: Name of the trail set by calling CreateTrail.
+      description: The name of the trail, as set in CreateTrail.
       type: string
     - contextPath: AWS.CloudTrail.Trails.S3BucketName
       description: The name of the Amazon S3 bucket where CloudTrail delivers trail files.

@@ -724,7 +724,7 @@ There is no context output for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.CloudTrail.Trails.Name | string | Name of the trail set by calling CreateTrail. | 
+| AWS.CloudTrail.Trails.Name | string | The name of the trail, as set in CreateTrail. | 
 | AWS.CloudTrail.Trails.S3BucketName | string | The name of the Amazon S3 bucket where CloudTrail delivers trail files. | 
 | AWS.CloudTrail.Trails.S3KeyPrefix | string | The Amazon S3 key prefix appended to the bucket name designated for log file delivery. | 
 | AWS.CloudTrail.Trails.SnsTopicARN | string | The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered. | 
