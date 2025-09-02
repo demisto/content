@@ -194,7 +194,7 @@ CREATE_ISSUE_QUERY_CASES = [
         "some_jql_string",
         None,
         None,
-        {"jql": "some_jql_string", "nextPageToken": "", "maxResults": 50},
+        {"jql": "some_jql_string", "maxResults": 50},
     ),
     (
         "some_jql_string",
