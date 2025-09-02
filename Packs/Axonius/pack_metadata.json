@@ -13,13 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "formula"
+        "Axonius"
     ],
-    "githubUser": [
-        "bryce-ax",
-        "nate-axonius",
-        "sahar-hagbi1"
-    ],
+    "githubUser": [],
     "certification": "certified",
     "marketplaces": [
         "xsoar",
