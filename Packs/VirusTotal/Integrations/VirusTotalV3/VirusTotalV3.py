@@ -1954,7 +1954,7 @@ def ip_command(
     for ip in ips:
         raise_if_ip_not_valid(ip)
 
-        if is_ip_internal(ip):
+        if is_ip_address_internal(ip):
             demisto.info(f"Skipping internal IP: {ip}")
             continue
 
