@@ -1,0 +1,1144 @@
+{
+	"cacheVersn": 0,
+	"definitionId": "",
+	"fromDate": "0001-01-01T00:00:00Z",
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"fromServerVersion": "",
+	"hidePivot": false,
+	"hideSearch": false,
+	"id": "Arcanna dashboard",
+	"isCommon": false,
+	"itemVersion": "",
+	"layout": [
+		{
+			"forceRange": false,
+			"h": 5,
+			"i": "43b9e350-f9d9-11ef-98fe-8370021daaf2",
+			"id": "43b9e350-f9d9-11ef-98fe-8370021daaf2",
+			"reflectDimensions": true,
+			"w": 12,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:48:19.637660776Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "6db8c22f-eeab-4b7e-8315-63a0a87c007e",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:48:19.638387422Z",
+				"name": "Incidents processed by Arcanna",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"showGraphValues": false,
+					"tableColumns": [
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "id",
+							"width": 110
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "name",
+							"width": 249
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "type",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "occurred",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna job ID",
+							"width": 145
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Event ID",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision",
+							"width": 143
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision confidence score",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna outlier flag",
+							"width": 155
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna bucket state",
+							"width": 157
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback User",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna error message",
+							"width": 200
+						}
+					]
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannaeventid:*",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"sort": [
+					{
+						"asc": false,
+						"field": "Arcanna outlier flag",
+						"fieldType": ""
+					}
+				],
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "table"
+			},
+			"x": 0,
+			"y": 4
+		},
+		{
+			"forceRange": false,
+			"h": 7,
+			"i": "f9838420-f9d9-11ef-98fe-8370021daaf2",
+			"id": "f9838420-f9d9-11ef-98fe-8370021daaf2",
+			"reflectDimensions": true,
+			"w": 6,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:53:24.459817874Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "days",
+						"field": "",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "628c750c-32c3-41de-8466-7f79e8aafce6",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:53:24.460372693Z",
+				"name": "Arcanna bucket state / rule name ",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"groupBy": [
+						"rulename",
+						"arcannabucketstate"
+					],
+					"keys": null,
+					"legend": [
+						{
+							"color": "#01A2EC",
+							"name": "port scanning"
+						},
+						{
+							"color": "#229D80",
+							"name": "proxy port activity to the internet"
+						},
+						{
+							"color": "#F50057",
+							"name": "linux system command execution"
+						},
+						{
+							"color": "#AA00FF",
+							"name": "ssh (secure shell) to the internet"
+						},
+						{
+							"color": "#FD5BDE",
+							"name": "multiple alerts involving a user"
+						},
+						{
+							"color": "#FF8411",
+							"name": "multiple alerts in different att\u0026ck tactics on a single host"
+						},
+						{
+							"color": "#FED22C",
+							"name": "potential persistence via login hook"
+						},
+						{
+							"color": "#229D80",
+							"name": "new"
+						},
+						{
+							"color": "#999999",
+							"name": "None"
+						},
+						{
+							"color": "#229D80",
+							"name": "[\"new\"]"
+						}
+					],
+					"showGraphValues": false,
+					"timeFrame": "days",
+					"valuesFormat": "abbreviated"
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannadecision:*",
+				"shouldCommit": false,
+				"size": 15,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "bar"
+			},
+			"x": 0,
+			"y": 21
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "21716b90-f9db-11ef-98fe-8370021daaf2",
+			"id": "21716b90-f9db-11ef-98fe-8370021daaf2",
+			"reflectDimensions": true,
+			"w": 4,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:53:24.459817874Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 30,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "628c750c-32c3-41de-8466-7f79e8aafce6",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:53:24.460372693Z",
+				"name": "Arcanna decision",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"groupBy": [
+						"arcannadecision"
+					],
+					"legend": [
+						{
+							"color": "#229D80",
+							"name": "drop"
+						},
+						{
+							"color": "#229D80",
+							"name": "[\"drop\"]"
+						},
+						{
+							"color": "#FF8411",
+							"name": "investigate"
+						},
+						{
+							"color": "#FF8411",
+							"name": "[\"investigate\"]"
+						}
+					],
+					"showGraphValues": true,
+					"valuesFormat": "abbreviated"
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannadecision:*",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "pie"
+			},
+			"x": 4,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "c8665b40-f9db-11ef-98fe-8370021daaf2",
+			"id": "c8665b40-f9db-11ef-98fe-8370021daaf2",
+			"reflectDimensions": true,
+			"w": 4,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:53:24.459817874Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 30,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "628c750c-32c3-41de-8466-7f79e8aafce6",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:53:24.460372693Z",
+				"name": "Arcanna bucket state",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"groupBy": [
+						"arcannabucketstate"
+					],
+					"showGraphValues": false,
+					"valuesFormat": "abbreviated"
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannadecision:*",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "pie"
+			},
+			"x": 8,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "4f444b30-fa78-11ef-b148-91357ed705ff",
+			"id": "4f444b30-fa78-11ef-b148-91357ed705ff",
+			"reflectDimensions": true,
+			"w": 2,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2024-09-13T10:38:45.418816719Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "5.0.0",
+				"id": "",
+				"isPredefined": false,
+				"itemVersion": "1.2.51",
+				"modified": "2024-09-13T10:38:51.640609662Z",
+				"name": "Number of Incidents",
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"packPropagationLabels": [
+					"all"
+				],
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {},
+						"type": "above"
+					}
+				},
+				"prevName": "Late Incidents",
+				"propagationLabels": [],
+				"query": "",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 0,
+				"widgetType": "number"
+			},
+			"x": 0,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "76d2f110-fa78-11ef-b148-91357ed705ff",
+			"id": "76d2f110-fa78-11ef-b148-91357ed705ff",
+			"reflectDimensions": true,
+			"w": 2,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2024-09-13T10:38:45.418816719Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "5.0.0",
+				"id": "",
+				"isPredefined": false,
+				"itemVersion": "1.2.51",
+				"modified": "2024-09-13T10:38:51.640609662Z",
+				"name": "Number of Incidents with Arcanna decision",
+				"packID": "CommonWidgets",
+				"packName": "Common Widgets",
+				"packPropagationLabels": [
+					"all"
+				],
+				"params": {
+					"colors": {
+						"isEnabled": false,
+						"items": {},
+						"type": "above"
+					}
+				},
+				"prevName": "Late Incidents",
+				"propagationLabels": [],
+				"query": "arcannadecision:*",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 0,
+				"widgetType": "number"
+			},
+			"x": 2,
+			"y": 0
+		},
+		{
+			"forceRange": false,
+			"h": 5,
+			"i": "50539b60-fe75-11ef-a33f-475826094044",
+			"id": "50539b60-fe75-11ef-a33f-475826094044",
+			"reflectDimensions": true,
+			"w": 12,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:53:24.459817874Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "days",
+						"field": "",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "628c750c-32c3-41de-8466-7f79e8aafce6",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:53:24.460372693Z",
+				"name": "Arcanna decision / rule name ",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"groupBy": [
+						"rulename",
+						"arcannadecision"
+					],
+					"keys": null,
+					"legend": [
+						{
+							"color": "#01A2EC",
+							"name": "port scanning"
+						},
+						{
+							"color": "#229D80",
+							"name": "proxy port activity to the internet"
+						},
+						{
+							"color": "#F50057",
+							"name": "linux system command execution"
+						},
+						{
+							"color": "#AA00FF",
+							"name": "ssh (secure shell) to the internet"
+						},
+						{
+							"color": "#FD5BDE",
+							"name": "multiple alerts involving a user"
+						},
+						{
+							"color": "#FF8411",
+							"name": "multiple alerts in different att\u0026ck tactics on a single host"
+						},
+						{
+							"color": "#FED22C",
+							"name": "potential persistence via login hook"
+						},
+						{
+							"color": "#229D80",
+							"name": "new"
+						},
+						{
+							"color": "#999999",
+							"name": "None"
+						},
+						{
+							"color": "#229D80",
+							"name": "[\"new\"]"
+						}
+					],
+					"showGraphValues": false,
+					"timeFrame": "days",
+					"valuesFormat": "abbreviated"
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannadecision:*",
+				"shouldCommit": false,
+				"size": 15,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "bar"
+			},
+			"x": 0,
+			"y": 28
+		},
+		{
+			"forceRange": false,
+			"h": 7,
+			"i": "a0ac5ee0-057c-11f0-9c2d-e5f2924789b2",
+			"id": "a0ac5ee0-057c-11f0-9c2d-e5f2924789b2",
+			"reflectDimensions": true,
+			"w": 6,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:53:24.459817874Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "days",
+						"field": "",
+						"fromValue": 6,
+						"toValue": 0
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "628c750c-32c3-41de-8466-7f79e8aafce6",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:53:24.460372693Z",
+				"name": "Arcanna feedback / rule name ",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"groupBy": [
+						"rulename",
+						"arcannafeedback"
+					],
+					"keys": null,
+					"legend": [
+						{
+							"color": "#01A2EC",
+							"name": "port scanning"
+						},
+						{
+							"color": "#229D80",
+							"name": "proxy port activity to the internet"
+						},
+						{
+							"color": "#F50057",
+							"name": "linux system command execution"
+						},
+						{
+							"color": "#AA00FF",
+							"name": "ssh (secure shell) to the internet"
+						},
+						{
+							"color": "#FD5BDE",
+							"name": "multiple alerts involving a user"
+						},
+						{
+							"color": "#FF8411",
+							"name": "multiple alerts in different att\u0026ck tactics on a single host"
+						},
+						{
+							"color": "#FED22C",
+							"name": "potential persistence via login hook"
+						},
+						{
+							"color": "#229D80",
+							"name": "new"
+						},
+						{
+							"color": "#999999",
+							"name": "None"
+						},
+						{
+							"color": "#229D80",
+							"name": "[\"new\"]"
+						}
+					],
+					"showGraphValues": false,
+					"timeFrame": "days",
+					"valuesFormat": "abbreviated"
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannadecision:*",
+				"shouldCommit": false,
+				"size": 15,
+				"sizeInBytes": 0,
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "bar"
+			},
+			"x": 6,
+			"y": 21
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "6f8c9cf0-0589-11f0-9c2d-e5f2924789b2",
+			"id": "6f8c9cf0-0589-11f0-9c2d-e5f2924789b2",
+			"reflectDimensions": true,
+			"w": 12,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:48:19.637660776Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "6db8c22f-eeab-4b7e-8315-63a0a87c007e",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:48:19.638387422Z",
+				"name": "Incidents with escalate decision and different feedback from analyst",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"showGraphValues": false,
+					"tableColumns": [
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "id",
+							"width": 110
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "name",
+							"width": 249
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "type",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "occurred",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna job ID",
+							"width": 145
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Event ID",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision",
+							"width": 143
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision confidence score",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna outlier flag",
+							"width": 155
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback User",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna bucket state",
+							"width": 157
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna error message",
+							"width": 200
+						}
+					]
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannafeedback:* and arcannadecision:escalate and -arcannafeedback:escalate",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"sort": [
+					{
+						"asc": false,
+						"field": "Arcanna outlier flag",
+						"fieldType": ""
+					}
+				],
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "table"
+			},
+			"x": 0,
+			"y": 9
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "2f0d5000-058b-11f0-9c2d-e5f2924789b2",
+			"id": "2f0d5000-058b-11f0-9c2d-e5f2924789b2",
+			"reflectDimensions": true,
+			"w": 12,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:48:19.637660776Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "6db8c22f-eeab-4b7e-8315-63a0a87c007e",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:48:19.638387422Z",
+				"name": "Incidents with investigate decision and different feedback from analyst",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"showGraphValues": false,
+					"tableColumns": [
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "id",
+							"width": 110
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "name",
+							"width": 249
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "type",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "occurred",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna job ID",
+							"width": 145
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Event ID",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision",
+							"width": 143
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision confidence score",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna outlier flag",
+							"width": 155
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback User",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna bucket state",
+							"width": 157
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna error message",
+							"width": 200
+						}
+					]
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannafeedback:* and arcannadecision:investigate and -arcannafeedback:investigate ",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"sort": [
+					{
+						"asc": false,
+						"field": "Arcanna outlier flag",
+						"fieldType": ""
+					}
+				],
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "table"
+			},
+			"x": 0,
+			"y": 13
+		},
+		{
+			"forceRange": false,
+			"h": 4,
+			"i": "6ba342e0-058b-11f0-9c2d-e5f2924789b2",
+			"id": "6ba342e0-058b-11f0-9c2d-e5f2924789b2",
+			"reflectDimensions": true,
+			"w": 12,
+			"widget": {
+				"Cache": null,
+				"cacheVersn": 0,
+				"category": "",
+				"commitMessage": "",
+				"created": "2025-03-05T15:48:19.637660776Z",
+				"dataType": "incidents",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"fromDateLicense": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byFrom": "days",
+						"byTo": "",
+						"field": "",
+						"fromValue": 7,
+						"toValue": null
+					},
+					"toDate": "0001-01-01T00:00:00Z"
+				},
+				"definitionId": "",
+				"fromServerVersion": "",
+				"id": "6db8c22f-eeab-4b7e-8315-63a0a87c007e",
+				"isPredefined": false,
+				"itemVersion": "",
+				"modified": "2025-03-05T15:48:19.638387422Z",
+				"name": "Incidents with drop decision and different feedback from analyst",
+				"packID": "",
+				"packName": "",
+				"params": {
+					"enablePagination": true,
+					"showGraphValues": false,
+					"tableColumns": [
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "id",
+							"width": 110
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "name",
+							"width": 249
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "type",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"isDefault": true,
+							"key": "occurred",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna job ID",
+							"width": 145
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Event ID",
+							"width": 126
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision",
+							"width": 143
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna decision confidence score",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna outlier flag",
+							"width": 155
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback User",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna Feedback",
+							"width": 200
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna bucket state",
+							"width": 157
+						},
+						{
+							"displayed": true,
+							"key": "Arcanna error message",
+							"width": 200
+						}
+					]
+				},
+				"prevName": "Arcanna feedback",
+				"propagationLabels": [
+					"all"
+				],
+				"query": "arcannafeedback:* and arcannadecision:drop and -arcannafeedback:drop ",
+				"shouldCommit": false,
+				"sizeInBytes": 0,
+				"sort": [
+					{
+						"asc": false,
+						"field": "Arcanna outlier flag",
+						"fieldType": ""
+					}
+				],
+				"toServerVersion": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"version": 1,
+				"widgetType": "table"
+			},
+			"x": 0,
+			"y": 17
+		}
+	],
+	"locked": false,
+	"modulePage": false,
+	"name": "Arcanna dashboard",
+	"owner": "admin",
+	"packID": "",
+	"packName": "",
+	"period": {
+		"by": "",
+		"byFrom": "days",
+		"byTo": "",
+		"field": "",
+		"fromValue": 0,
+		"toValue": null
+	},
+	"system": false,
+	"toDate": "0001-01-01T00:00:00Z",
+	"toServerVersion": "",
+	"version": -1
+}
