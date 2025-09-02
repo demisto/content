@@ -366,7 +366,7 @@ script:
       Cloud message ID.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
 tests:
 - No Test
 
