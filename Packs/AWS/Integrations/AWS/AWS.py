@@ -1509,14 +1509,11 @@ class ECS:
         try:
             print_debug_logs(client, f"Updating ECS cluster settings with parameters: {setting_value=}")  # noqa: E501
             response = client.update_cluster_settings(
-            cluster=args.get("cluster_name"),
-            settings=[
-                {
-                    'name': 'containerInsights',
-                    'value': setting_value
-                },
-            ]
-        )
+                cluster=args.get("cluster_name"),
+                settings=[
+                    {"name": "containerInsights", "value": setting_value},
+                ],
+            )
 
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 cluster_data = response.get("cluster", {})
