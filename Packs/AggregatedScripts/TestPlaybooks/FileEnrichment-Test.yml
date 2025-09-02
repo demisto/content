@@ -122,7 +122,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -213,7 +213,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -822,7 +822,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -1185,7 +1185,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -1289,7 +1289,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -1424,7 +1424,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
@@ -1538,7 +1538,7 @@ tasks:
       description: This script gathers file reputation data from multiple integrations
         and returns a "FileEnrichment" object with consolidated information to the
         context output.
-      scriptName: file-enrichmenttest
+      scriptName: file-enrichment
       type: regular
       iscommand: false
       brand: ""
