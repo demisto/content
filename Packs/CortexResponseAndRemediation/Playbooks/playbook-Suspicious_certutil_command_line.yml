@@ -1,0 +1,2266 @@
+id: Suspicious certutil command line
+version: -1
+name: Suspicious certutil command line
+description: |-
+  This playbook handles "Suspicious certutil command line" alerts.
+
+  Playbook Stages:
+
+  Analysis:
+
+  During the alert analysis, the playbook will perform the following actions:
+
+  - Extracts and enriches the URL from the command line.
+  - Checks if the URL reputation is suspicious.
+  - Checks if any process in the causality chain is unsigned.
+  - Checks if any process in the causality chain is non-prevalent.
+  - Searches for Cortex XDR agent alerts related to file drops using certutil.
+  - Checks for any suspicious parameters in the command line (if the command line risk score is medium or higher).
+
+  If the playbook detects any of these conditions, it will proceed to the early containment stage; otherwise, it will close the alert.
+
+  Early Containment:
+
+  - Identify if an agent prevention rule was triggered. If triggered in **block mode**, proceed with the URL reputation check; otherwise, terminate the causality process tree.
+
+  Verdict:
+
+  - Based on the URL's reputation, if found to be malicious, the playbook will perform remediation actions; otherwise, it will close the alert.
+
+  Remediation:
+
+  If the URL is found to have a malicious reputation, the playbook will perform the following actions:
+
+  - Block the malicious URL using PAN-OS (requires analyst approval).
+  - Isolate the endpoint (requires analyst approval).
+  - Execute an XQL query to check for file creation events by the certutil process, and if a file is found, quarantine it (requires analyst approval).
+  - Automatically close the alert.
+
+  Required Integrations:
+
+  For response actions, you need the following integrations:
+
+  - Palo Alto Networks PAN-OS
+  - XQL Query Engine.
+tags:
+- TA0005 - Defense Evasion
+- T1218 - System Binary Proxy Execution
+- TA0011 - Command and Control
+- T1105 - Ingress Tool Transfer
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73f05945-ea83-4505-8833-cba0c65b30c4
+    type: start
+    task:
+      id: 73f05945-ea83-4505-8833-cba0c65b30c4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6b287e61-9939-4790-8c8e-18755bf12ec8
+    type: regular
+    task:
+      id: 6b287e61-9939-4790-8c8e-18755bf12ec8
+      version: -1
+      name: Search for agent file drop alerts that blocked the process
+      description: This task searches for Cortex XSIAM agent alerts related to file drops using certutil.
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      query:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(name:"File Drop - 1815185192" or name:"File Drop - 4219385159" or name:"File Drop - 98943342") and caseid:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8fa2386e-0186-4377-860d-cfc35f5ddeed
+    type: condition
+    task:
+      id: 8fa2386e-0186-4377-860d-cfc35f5ddeed
+      version: -1
+      name: Was the causality blocked by another alert?
+      description: Checks the alert's alerts for an alert that blocked the causality using the agent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      Blocked:
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: Blocked
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                accessor: action
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0c3f09bd-ab2b-42d5-84f9-06399154c231
+    type: regular
+    task:
+      id: 0c3f09bd-ab2b-42d5-84f9-06399154c231
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available from Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b23acb51-0803-4d17-848b-959f2109f375
+    type: regular
+    task:
+      id: b23acb51-0803-4d17-848b-959f2109f375
+      version: -1
+      name: Url Enrichment
+      description: Gets a URL category from URL filtering.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: da84030a-4f57-4045-8d71-595cd4e82f95
+    type: regular
+    task:
+      id: da84030a-4f57-4045-8d71-595cd4e82f95
+      version: -1
+      name: Get Wildfire Verdict for URL
+      description: Returns a verdict for a hash.
+      script: '|||wildfire-get-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 87b36f66-b55b-4fac-8c75-d44ab9816417
+    type: condition
+    task:
+      id: 87b36f66-b55b-4fac-8c75-d44ab9816417
+      version: -1
+      name: Is the URL, process, or command suspicious?
+      description: |-
+        This task checks the following to determine if process termination is needed:
+        - If the URL reputation is suspicious.
+        - If any process in the causality chain is unsigned.
+        - If any process in the causality chain is non-prevalent.
+        - If Cortex XDR agent alerts related to file drops using certutil are found.
+        - If any suspicious parameters are found in the command line (if the command line risk score is medium or higher).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.AnalyticsPrevalence.Process.value
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+        - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: alert.cgosignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.cgosignature
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+        - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: alert.osparentsignature
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: alert.osparentsignature
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: SIGNATURE_SIGNED
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CommandLineAnalysis.score
+            iscontext: true
+          right:
+            value:
+              simple: "25"
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents.name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c4f026aa-b77e-4a51-8e9b-b8f01df16eee
+    type: title
+    task:
+      id: c4f026aa-b77e-4a51-8e9b-b8f01df16eee
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 994cd4ee-eed3-49a2-8632-ccfbe4846a4c
+    type: playbook
+    task:
+      id: 994cd4ee-eed3-49a2-8632-ccfbe4846a4c
+      version: -1
+      name: PAN-OS - Block URL - Custom URL Category
+      description: |-
+        This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
+        The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      AutoCommit:
+        simple: "Yes"
+      CustomURLCategory:
+        simple: XSIAM - Malicious URLs
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: isEqualNumber
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      pre-post:
+        simple: pre-rulebase
+      type:
+        simple: URL List
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fbb1b0fb-ab08-4c33-882d-9be592e4bcbc
+    type: collection
+    task:
+      id: fbb1b0fb-ab08-4c33-882d-9be592e4bcbc
+      version: -1
+      name: Approve XQL search & quarantine & Block URL & Isolation
+      description: |-
+        Analyst approval is required for the following actions:
+        - Blocking the malicious URL.
+        - Executing an XQL query to identify files downloaded via the malicious URL.
+        - Isolating the endpoint.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Should the XQL query be executed and the downloaded file quarantined if found?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This action will execute an XQL query to search for file creation events using certutil and quarantine the file.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: "Should Block the following malicious URL using PAN-OS? \n- ${URL.Data}   "
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This will block URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories. The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: "Should Isolate the endpoint? \n- ${alert.hostname}   "
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This action will isolate the endpoint and is recommended to prevent the attacker from executing lateral movement.
+        readonly: false
+      title: RemediationApproval
+      description: Blocking the URL, quarantining the downloaded file, and isolating the endpoint are recommended due to the URL's malicious reputation.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 55b21f0b-e203-43a0-89f3-5d722343fe9e
+    type: title
+    task:
+      id: 55b21f0b-e203-43a0-89f3-5d722343fe9e
+      version: -1
+      name: Search and quarantine file & Block URL
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+      - "18"
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4d8dfda3-60d6-421e-81c6-a63444e687b3
+    type: title
+    task:
+      id: 4d8dfda3-60d6-421e-81c6-a63444e687b3
+      version: -1
+      name: Search and quarantine file
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c987695c-86b1-4f23-844f-79c71bc0ed05
+    type: title
+    task:
+      id: c987695c-86b1-4f23-844f-79c71bc0ed05
+      version: -1
+      name: Block URL
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 30a5a879-98ae-46ec-80f8-25c7787ec3a6
+    type: condition
+    task:
+      id: 30a5a879-98ae-46ec-80f8-25c7787ec3a6
+      version: -1
+      name: Check analyst answers
+      description: Check the analyst's answers and execute the appropriate actions based on the responses.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      Block URL Only:
+      - "16"
+      Search File and Quarantine:
+      - "15"
+      Search File and quarantine & block url:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: Search File and quarantine & block url
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: Search File and Quarantine
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: Block URL Only
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 00247eff-9984-4d09-8bd5-e7a1fdce1cad
+    type: condition
+    task:
+      id: 00247eff-9984-4d09-8bd5-e7a1fdce1cad
+      version: -1
+      name: Is the integration of 'XQL Query Engine' available?
+      description: Returns 'yes' if integration brand 'XQL Query Engine' is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "41"
+    scriptarguments:
+      brandname:
+        simple: XQL Query Engine
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0aa0b526-468f-42de-84fa-29a2f5d54480
+    type: regular
+    task:
+      id: 0aa0b526-468f-42de-84fa-29a2f5d54480
+      version: -1
+      name: XQL Query - Search file creation event by certutil
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      query:
+        simple: dataset  = xdr_data | filter agent_hostname = "${alert.hostname}" and actor_process_instance_id ="${alert.actionprocessinstanceid.[0]}" and event_type = FILE and event_sub_type = FILE_WRITE | fields action_file_name, action_file_path , action_file_sha256
+      query_name:
+        simple: Search_Downloaded_files_by_certutil
+      time_frame:
+        simple: between ${QueryStartTime} and ${QueryEndTime}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c88e2910-55e1-4b10-8be6-f22abe3bc3dc
+    type: regular
+    task:
+      id: c88e2910-55e1-4b10-8be6-f22abe3bc3dc
+      version: -1
+      name: 'Manual – Search file using XQL query and quarantine the file '
+      description: |-
+        Dear Analyst,
+
+        Ensure that the 'XQL Query Engine' integration is active. If it's not enabled, activate the integration or manually run the following XQL query to determine if a file was successfully downloaded from a malicious URL using certutil.
+
+        Query:
+
+         dataset  = xdr_data | filter agent_hostname = "${alert.hostname}" and actor_process_instance_id ="${alert.actionprocessinstanceid}" and event_type = FILE and event_sub_type = FILE_WRITE | fields action_file_name, action_file_path , action_file_sha256
+
+        If the query output indicates a file created by a malicious certutil command line with a malicious URL, quarantine and remove the file immediately.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 51da6740-feb1-4cac-81de-1d9481397f0f
+    type: condition
+    task:
+      id: 51da6740-feb1-4cac-81de-1d9481397f0f
+      version: -1
+      name: Found file created by certutil?
+      description: Checks if the XQL query has returned 'File Creation' events by certutil.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.action_file_name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.action_file_path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXQL.GenericQuery.results.action_file_sha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3f1b5543-e742-4133-87c8-5a0d1eb0db76
+    type: title
+    task:
+      id: 3f1b5543-e742-4133-87c8-5a0d1eb0db76
+      version: -1
+      name: Quarantine File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c312d63a-b220-4889-8343-92f330492b9f
+    type: regular
+    task:
+      id: c312d63a-b220-4889-8343-92f330492b9f
+      version: -1
+      name: Get file quarantine status
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||core-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.action_file_sha256}
+      file_path:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.action_file_path}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: acf62e77-11e5-4949-8063-586e57a33171
+    type: condition
+    task:
+      id: acf62e77-11e5-4949-8063-586e57a33171
+      version: -1
+      name: Should quarantine file?
+      description: Determines whether to quarantine the files based on their quarantine status.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c0cdf2a4-84df-438b-8bee-9dc890500d75
+    type: regular
+    task:
+      id: c0cdf2a4-84df-438b-8bee-9dc890500d75
+      version: -1
+      name: File quarantine
+      description: 'Quarantines a file on selected endpoints.'
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "27"
+      '#none#':
+      - "29"
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.action_file_sha256}
+      file_path:
+        simple: ${PaloAltoNetworksXQL.GenericQuery.results.action_file_path}
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 66b2d9ee-311b-4bb3-86fe-929cadc13445
+    type: regular
+    task:
+      id: 66b2d9ee-311b-4bb3-86fe-929cadc13445
+      version: -1
+      name: Manual action needed –The file couldn't be quarantined
+      description: |-
+        The playbook was unable to quarantine the downloaded file due to the following possible reasons:
+
+        - The file does not exist or has been moved to another location on the host.
+        - The endpoint is currently disconnected.
+
+        Please take manual action to quarantine the downloaded file.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 1b8d7af5-3ecd-47d1-8045-8b73d535a9a9
+    type: regular
+    task:
+      id: 1b8d7af5-3ecd-47d1-8045-8b73d535a9a9
+      version: -1
+      name: Close Alert - True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious certutil command line detected with a malicious URL.
+      closeReason:
+        simple: True Positive - Resolved - Handled by the playbook "Suspicious certutil command line"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 6d6a776e-0551-429d-8feb-dea3d405ef0d
+    type: title
+    task:
+      id: 6d6a776e-0551-429d-8feb-dea3d405ef0d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: b8204b08-44a8-4820-8638-c5173fe4527c
+    type: regular
+    task:
+      id: b8204b08-44a8-4820-8638-c5173fe4527c
+      version: -1
+      name: Close Alert - True Positive
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      closeNotes:
+        simple: Suspicious certutil command line detected – the process has been terminated.
+      closeReason:
+        simple: True Positive - Resolved - Handled by the playbook "Suspicious certutil command line"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b164bebc-f532-4a72-8a64-598a6af3d307
+    type: title
+    task:
+      id: b164bebc-f532-4a72-8a64-598a6af3d307
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 14cad4bf-d67a-4da9-8a8d-f808da7c291c
+    type: condition
+    task:
+      id: 14cad4bf-d67a-4da9-8a8d-f808da7c291c
+      version: -1
+      name: Is the process has been terminate by the agent?
+      description: Checks the alert's alerts for an alert that blocked the causality using the agent.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Terminated:
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: Terminated
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: foundIncidents.CustomFields
+                accessor: action
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: BLOCKED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4616c7a0-eb85-4ed3-82ec-f4417441326a
+    type: collection
+    task:
+      id: 4616c7a0-eb85-4ed3-82ec-f4417441326a
+      version: -1
+      name: Approve the URL block using PAN-OS
+      description: Analyst approval is required to block the malicious URL.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Should Block the following malicious URL using PAN-OS? \n- ${URL.Data}   "
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This will block URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories. The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
+        readonly: false
+      title: UrlBlockApproval
+      description: Blocking the URL is recommended, as its reputation is malicious.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 280e1d4c-a22f-4e73-8c3e-c67e56c13f62
+    type: condition
+    task:
+      id: 280e1d4c-a22f-4e73-8c3e-c67e56c13f62
+      version: -1
+      name: Check analyst answers
+      description: Check the analyst's answers and execute the appropriate actions based on the responses.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      Block URL Only:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: Block URL Only
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UrlBlockApproval.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 717f0868-d441-40d1-846e-21cee80f3f31
+    type: title
+    task:
+      id: 717f0868-d441-40d1-846e-21cee80f3f31
+      version: -1
+      name: Close Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: bac2669e-6936-476c-8171-176df095d438
+    type: regular
+    task:
+      id: bac2669e-6936-476c-8171-176df095d438
+      version: -1
+      name: 'Retrieve the query''s timeframe: start time'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: QueryStartTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 5 min ago
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: fa3d50df-242b-4de5-8dcf-9b877439c9a3
+    type: regular
+    task:
+      id: fa3d50df-242b-4de5-8dcf-9b877439c9a3
+      version: -1
+      name: 'Retrieve the query''s timeframe: end time'
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: QueryEndTime
+      value:
+        complex:
+          root: alert
+          accessor: timestamp
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 15 min after
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 27452030-2116-4417-8cd8-a5fd4b716fe2
+    type: title
+    task:
+      id: 27452030-2116-4417-8cd8-a5fd4b716fe2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: cfd56532-54ee-48d3-8dcd-bef9b0ad1eac
+    type: regular
+    task:
+      id: cfd56532-54ee-48d3-8dcd-bef9b0ad1eac
+      version: -1
+      name: Close Alert - No indication of malicious activity was found
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      closeNotes:
+        simple: No indication of malicious activity was found
+      closeReason:
+        simple: Resolved - Handled by the playbook "Suspicious certutil command line"
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: adb0f9eb-8a9c-47b0-89ea-52b000b7da5c
+    type: title
+    task:
+      id: adb0f9eb-8a9c-47b0-89ea-52b000b7da5c
+      version: -1
+      name: No malicious activity was found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: cdab80be-bc03-417e-8d31-e9db2a80e52c
+    type: title
+    task:
+      id: cdab80be-bc03-417e-8d31-e9db2a80e52c
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+      - "51"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 0c93af04-432d-4de1-801c-703a45330dc7
+    type: regular
+    task:
+      id: 0c93af04-432d-4de1-801c-703a45330dc7
+      version: -1
+      name: Check the processes prevalence
+      description: Get the prevalence of a process, identified by process_name.
+      script: '|||core-get-process-analytics-prevalence'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      process_name:
+        complex:
+          root: alert
+          accessor: cgoname
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: alert.osparentname
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: e8663374-f814-4699-863c-ca31c8594c9b
+    type: title
+    task:
+      id: e8663374-f814-4699-863c-ca31c8594c9b
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 0c3bd267-8cc3-4946-82f2-636bcd174e35
+    type: regular
+    task:
+      id: 0c3bd267-8cc3-4946-82f2-636bcd174e35
+      version: -1
+      name: Command Line Analysis
+      description: |-
+        This script evaluates command-line threats by analyzing both original and decoded inputs. It assigns weighted scores to detected patterns, such as AMSI bypass or credential dumping, and applies risk combination bonuses for multiple detections. The total score is normalized to a 0-100 scale, with risk levels categorized as follows:
+
+        * 0-25: Low Risk
+        * 26-50: Medium Risk
+        * 51-90: High Risk
+        * 91-100: Critical Risk
+
+        The scoring mechanism provides a comprehensive risk assessment, considering both the severity and frequency of malicious behaviors.
+      scriptName: CommandLineAnalysis
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      command_line:
+        simple: ${alert.targetprocesscmd}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 04eb7a8f-2192-48c7-8aa3-10e2aef1894c
+    type: condition
+    task:
+      id: 04eb7a8f-2192-48c7-8aa3-10e2aef1894c
+      version: -1
+      name: Is the URL reputation malicious?
+      description: Checks if the URL reputation is malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: fb868f96-2f7d-43ab-86ee-b9723830ed39
+    type: regular
+    task:
+      id: fb868f96-2f7d-43ab-86ee-b9723830ed39
+      version: -1
+      name: 'Isolate Endpoint '
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 71609f38-f610-4866-80bb-37f4c8f0fc10
+    type: regular
+    task:
+      id: 71609f38-f610-4866-80bb-37f4c8f0fc10
+      version: -1
+      name: Get endpoint info by endpoint ID
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 71f66172-4ea1-4a71-8780-bd4076aad0c2
+    type: condition
+    task:
+      id: 71f66172-4ea1-4a71-8780-bd4076aad0c2
+      version: -1
+      name: Verify endpoint isn't isolated, disconnected, or a server
+      description: Determine whether to isolate the endpoint based on its status, isolation state, and OS type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      Already isolated:
+      - "61"
+      Isolate:
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: Isolate
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: CONNECTED
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+    - label: Already isolated
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 59b940e1-3fd4-4097-849e-d802fc89905a
+    type: regular
+    task:
+      id: 59b940e1-3fd4-4097-849e-d802fc89905a
+      version: -1
+      name: Manual remediation actions for a server or a disconnected endpoint
+      description: "Dear Analyst,\n\nPlease note that during the remediation process, the playbook didn't isolate the following host: ${alert.hostname} \n\nThis is due to one of the following reasons:\n- The device disconnected.\n- The device has been identified as a server.\n\nPlease take manual action to contain the attack and prevent the attacker from executing lateral movement before closing this alert."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1220,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 9489508e-a58b-4a84-818c-77a4568bac1e
+    type: condition
+    task:
+      id: 9489508e-a58b-4a84-818c-77a4568bac1e
+      version: -1
+      name: Check analyst answer -  Should isolate the endpoint?
+      description: Check the analyst's answers and execute the endpoint isolation actions accordingly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: RemediationApproval.Answers.2
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 5c4337e3-822f-42fa-829c-121aec493d72
+    type: title
+    task:
+      id: 5c4337e3-822f-42fa-829c-121aec493d72
+      version: -1
+      name: Isolate Endpoint
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: a5106cbd-6599-4e8e-86c0-fc3ee770aafa
+    type: title
+    task:
+      id: a5106cbd-6599-4e8e-86c0-fc3ee770aafa
+      version: -1
+      name: Close Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 2405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: d5a64697-1494-4756-8755-76eeacff3e11
+    type: title
+    task:
+      id: d5a64697-1494-4756-8755-76eeacff3e11
+      version: -1
+      name: Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_50_yes": 0.43,
+      "17_14_Search File and quarantine \u0026 block url": 0.4,
+      "17_15_Search File and Quarantine": 0.71,
+      "17_16_Block URL Only": 0.6,
+      "18_41_yes": 0.37,
+      "21_22_yes": 0.41,
+      "21_29_#default#": 0.14,
+      "25_29_#default#": 0.27,
+      "26_27_#error#": 0.46,
+      "36_13_#default#": 0.71,
+      "36_37_Terminated": 0.54,
+      "38_16_Block URL Only": 0.34,
+      "38_39_#default#": 0.39,
+      "3_62_Blocked": 0.41,
+      "52_11_yes": 0.58,
+      "57_54_Isolate": 0.55,
+      "57_58_#default#": 0.61,
+      "59_60_yes": 0.35,
+      "59_61_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4525,
+        "width": 3080,
+        "x": -1220,
+        "y": -1180
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0

@@ -1,0 +1,803 @@
+id: A Successful login from TOR
+version: -1
+name: A Successful login from TOR
+description: "This playbook is designed to handle the following alert:\n\n- A successful login from TOR\n\nThe playbook executes the following stages:\n\nTriage:\n\n- The playbook will fetch the user identity details.\n\nRemediation & Eradication:\n\n- The playbooks will suggest several actions for the analyst to take: disabling the user account using Active Directory or Azure Active Directory, expiring the user password using Active Directory, or blocking traffic from TOR exit nodes using PAN-OS and Palo Alto Networks' predefined EDL.\n\nThe analyst can select multiple actions, which will then be executed by the playbook based on the analyst's choices.\n\nRequirements: \nFor any response action, you will need one of the following integrations: Azure Active Directory Users / Active Directory Users."
+tags:
+- TA0001 - Initial Access
+- T1090 - Proxy
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 31ec7e08-1f47-4c7c-8152-2892e9e547a9
+    type: start
+    task:
+      id: 31ec7e08-1f47-4c7c-8152-2892e9e547a9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d792840b-3502-4cc8-87c4-2f02e5661e06
+    type: title
+    task:
+      id: d792840b-3502-4cc8-87c4-2f02e5661e06
+      version: -1
+      name: Containment & Eradication
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 331cade7-b3e9-4a82-8cf8-1ee613a71d7c
+    type: collection
+    task:
+      id: 331cade7-b3e9-4a82-8cf8-1ee613a71d7c
+      version: -1
+      name: Select containment & Eradication plans
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "19"
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select containment plan for the user ${alert.username.[0]}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: Disable the user account
+        - simple: Expire the user password (Active Directory Only)
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: "Would you like to block traffic from TOR exit nodes using PAN-OS and Palo Alto Networks predefined EDL. \nNOTICE: By selecting \"Yes, commit automatically\" you are allowing to automatically commit the rule to your firewalls."
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "No"
+        - simple: Yes, commit manually
+        - simple: Yes, commit automatically
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Select containment & Eradication plans
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9e1167c7-f6f3-4230-8db0-ef2f65c915b7
+    type: condition
+    task:
+      id: 9e1167c7-f6f3-4230-8db0-ef2f65c915b7
+      version: -1
+      name: Disable User Account?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Select containment & Eradication plans.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable the user account
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ActiveDirectory.Users.sAMAccountName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 08e40ba9-ff3b-4bdf-809c-914a919a54fa
+    type: condition
+    task:
+      id: 08e40ba9-ff3b-4bdf-809c-914a919a54fa
+      version: -1
+      name: Expire User Password?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Select containment & Eradication plans.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Expire the user password (Active Directory Only)
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ActiveDirectory.Users.sAMAccountName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b31d6055-ca01-444c-8587-c9b76b4fed78
+    type: condition
+    task:
+      id: b31d6055-ca01-444c-8587-c9b76b4fed78
+      version: -1
+      name: Block Traffic From TOR Exit Nodes?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Select containment & Eradication plans.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: Yes, commit automatically
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Select containment & Eradication plans.Answers.1
+            iscontext: true
+          right:
+            value:
+              simple: Yes, commit manually
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4e9d89fa-2d50-46c7-8e68-b33cda0f4dbe
+    type: playbook
+    task:
+      id: 4e9d89fa-2d50-46c7-8e68-b33cda0f4dbe
+      version: -1
+      name: PAN-OS - Block IPs From EDL - Custom Block Rule
+      description: This playbook blocks IP addresses from External Dynamic List using Custom Block Rules in Palo Alto Networks Panorama or Firewall. The playbook receives an EDL name as input, creates a custom "from" directional rule to block, and commits the configuration.
+      playbookId: PAN-OS - Block IPs From EDL - Custom Block Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: ${
+          accessor: '}'
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: "No"
+              equals: {}
+              lhs:
+                value:
+                  simple: Select containment & Eradication plans.Answers.1
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: Yes, commit automatically
+              rhsB: {}
+              then:
+                value:
+                  simple: "Yes"
+      EDLName:
+        simple: panw-torexit-ip-list
+      RuleName:
+        simple: TOR Exit nodes from predefined EDLs was Blocked by Cortex XSIAM
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 16e0ff95-8ea1-4a5c-84a5-45b385dd19ff
+    type: title
+    task:
+      id: 16e0ff95-8ea1-4a5c-84a5-45b385dd19ff
+      version: -1
+      name: Eradication
+      description: commands.local.cmd.close.inv
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b5b43e75-8fc6-4216-8302-8bfffe18b6b7
+    type: regular
+    task:
+      id: b5b43e75-8fc6-4216-8302-8bfffe18b6b7
+      version: -1
+      name: Active Directory - Search User
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      sAMAccountName:
+        simple: ${Core.OriginalAlert.event.login_data_dst_normalized_user.username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 660
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8729df19-7078-4516-826d-0566d3be66d8
+    type: regular
+    task:
+      id: 8729df19-7078-4516-826d-0566d3be66d8
+      version: -1
+      name: Active Directory - Disable User Account
+      description: Disables an Active Directory user account.
+      script: '|||ad-disable-account'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      username:
+        simple: ${ActiveDirectory.Users.sAMAccountName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a402f3c4-396d-4962-8210-267d645ad480
+    type: regular
+    task:
+      id: a402f3c4-396d-4962-8210-267d645ad480
+      version: -1
+      name: Close Alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        complex:
+          root: alert
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a5cfd092-601a-4ff2-8f25-7cabd460ec84
+    type: title
+    task:
+      id: a5cfd092-601a-4ff2-8f25-7cabd460ec84
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a6e46587-a13a-4ca9-8276-199a1743d113
+    type: regular
+    task:
+      id: a6e46587-a13a-4ca9-8276-199a1743d113
+      version: -1
+      name: Active Directory - Expire User Password
+      description: Expires the password of an Active Directory user.
+      script: '|||ad-expire-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      username:
+        simple: ${Core.OriginalAlert.event.login_data_dst_normalized_user.username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 82ced8bc-aea8-486b-8f86-374b6254bc37
+    type: regular
+    task:
+      id: 82ced8bc-aea8-486b-8f86-374b6254bc37
+      version: -1
+      name: Get User Identity Details
+      description: Returns information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f0c501d7-19d6-4ef6-8864-980df56d8132
+    type: regular
+    task:
+      id: f0c501d7-19d6-4ef6-8864-980df56d8132
+      version: -1
+      name: Azure AD - Search User
+      description: |-
+        Retrieves a list of user objects.
+        Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      filter:
+        simple: startswith(userPrincipalName,'${Core.OriginalAlert.event.login_data_dst_normalized_user.username}@')
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 660
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f5edf591-d22f-4306-8852-4f8d17ffee3f
+    type: condition
+    task:
+      id: f5edf591-d22f-4306-8852-4f8d17ffee3f
+      version: -1
+      name: Disable User Account?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Select containment & Eradication plans.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Disable the user account
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1adf22f2-87e0-415b-8aad-495172d41031
+    type: regular
+    task:
+      id: 1adf22f2-87e0-415b-8aad-495172d41031
+      version: -1
+      name: Azure AD - Disable User Account
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        but does not terminate an existing session. Supported only in a self-deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated).
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      user:
+        simple: ${MSGraphUser.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 964e5b3e-f677-43bd-87f8-84e400da8a36
+    type: title
+    task:
+      id: 964e5b3e-f677-43bd-87f8-84e400da8a36
+      version: -1
+      name: Triage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "20_8_#default#": 0.23,
+      "3_12_yes": 0.7,
+      "3_8_#default#": 0.43,
+      "4_8_#default#": 0.23,
+      "5_7_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1935,
+        "width": 1720,
+        "x": -460,
+        "y": -70
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
