@@ -51,3 +51,7 @@ Follow one of these steps for authentication based on Azure Managed Identities:
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
+### Fetch Alerts
+
+The **operations to fetch** parameter is case-sensitive. For example, `DlpRuleMatch` and `DLPRuleMatch` are treated as distinct operations that retrieve information from different workloads.
+For more information, see [Microsoft's technical blog](https://techcommunity.microsoft.com/blog/microsoftsentinelblog/ingest-office-365-dlp-events-into-azure-sentinel/1031820) and [Splunk portal article](https://splunk.my.site.com/customer/s/article/Email-data-model-was-not-populated-with-the-management-activity-logs-of-splunk-addon-for-o365).
