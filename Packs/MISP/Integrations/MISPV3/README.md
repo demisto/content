@@ -4369,15 +4369,15 @@ Gets all warninglists from MISP
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Warninglist.ID | number | The ID of the warninglist |
-| MISP.Warninglist.Name | string | The warninglist's name |
-| MISP.Warninglist.Type | string | MISP warninglist type |
-| MISP.Warninglist.Description | string | Description of the warninglist |
-| MISP.Warninglist.Version | number | The warninglist version number |
-| MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
-| MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
-| MISP.Warninglist.Entries | dict | The warninglist entries |
-| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist |
+| MISP.Warninglist.ID | number | The ID of the warninglist. |
+| MISP.Warninglist.Name | string | The warninglist's name. |
+| MISP.Warninglist.Type | string | MISP warninglist type. |
+| MISP.Warninglist.Description | string | Description of the warninglist. |
+| MISP.Warninglist.Version | number | The warninglist version number. |
+| MISP.Warninglist.Enabled | boolean | Whether the warninglist is enabled. |
+| MISP.Warninglist.Default | boolean | Whether the warninglist is set as default. |
+| MISP.Warninglist.Entries | dict | The warninglist entries. |
+| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist. |
 
 #### Command Example
 
@@ -4417,16 +4417,16 @@ This command only changes the values supplied through the parameters of this com
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Warninglist.ID | number | The ID of the warninglist |
-| MISP.Warninglist.Name | string | The warninglist's name |
-| MISP.Warninglist.Type | string | MISP warninglist type |
-| MISP.Warninglist.Description | string | Description of the warninglist |
-| MISP.Warninglist.Version | number | The warninglist version number |
-| MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
-| MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
-| MISP.Warninglist.Category | string | The category of the MISP warninglist |
-| MISP.Warninglist.Entries | dict | The warninglist entries |
-| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist |
+| MISP.Warninglist.ID | number | The ID of the warninglist. |
+| MISP.Warninglist.Name | string | The warninglist's name. |
+| MISP.Warninglist.Type | string | MISP warninglist type. |
+| MISP.Warninglist.Description | string | Description of the warninglist. |
+| MISP.Warninglist.Version | number | The warninglist version number. |
+| MISP.Warninglist.Enabled | boolean | Whether the warninglist is enabled. |
+| MISP.Warninglist.Default | boolean | Whether the warninglist is set as default. |
+| MISP.Warninglist.Category | string | The category of the MISP warninglist. |
+| MISP.Warninglist.Entries | dict | The warninglist entries. |
+| MISP.Warninglist.Attributes | dict | The valid attribute types for this warninglist. |
 
 #### Command Example
 
@@ -4503,16 +4503,16 @@ Get a specific warninglist by its ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MISP.Warninglist.ID | number | The ID of the warninglist |
-| MISP.Warninglist.Name | string | The warninglist's name |
-| MISP.Warninglist.Type | string | MISP warninglist type |
-| MISP.Warninglist.Description | string | Description of the warninglist |
-| MISP.Warninglist.Version | number | The warninglist version number |
-| MISP.Warninglist.Enabled | boolean | True if the warninglist is enabled, False otherwise. |
-| MISP.Warninglist.Default | boolean | True if the warninglist is set as default, False otherwise. |
-| MISP.Warninglist.Category | string | The category of the MISP warninglist |
-| MISP.Warninglist.Entries | unknown | The warninglist entries |
-| MISP.Warninglist.Attributes | unknown | The valid attribute types for this warninglist |
+| MISP.Warninglist.ID | number | The ID of the warninglist. |
+| MISP.Warninglist.Name | string | The warninglist's name. |
+| MISP.Warninglist.Type | string | MISP warninglist type. |
+| MISP.Warninglist.Description | string | Description of the warninglist. |
+| MISP.Warninglist.Version | number | The warninglist version number. |
+| MISP.Warninglist.Enabled | boolean | Whether the warninglist is enabled. |
+| MISP.Warninglist.Default | boolean | Whether the warninglist is set as default. |
+| MISP.Warninglist.Category | string | The category of the MISP warninglist. |
+| MISP.Warninglist.Entries | unknown | The warninglist entries. |
+| MISP.Warninglist.Attributes | unknown | The valid attribute types for this warninglist. |
 
 #### Command Example
 

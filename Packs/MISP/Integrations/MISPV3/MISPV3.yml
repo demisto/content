@@ -2760,10 +2760,10 @@ script:
       description: The warninglist version number.
       type: number
     - contextPath: MISP.Warninglist.Enabled
-      description: True if the warninglist is enabled, False otherwise.
+      description: Whether the warninglist is enabled.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: True if the warninglist is set as default, False otherwise.
+      description: Whether the warninglist is set as default.
       type: boolean
     - contextPath: MISP.Warninglist.Category
       description: The category of the MISP warninglist.
@@ -2794,10 +2794,10 @@ script:
       description: The warninglist version number.
       type: number
     - contextPath: MISP.Warninglist.Enabled
-      description: True if the warninglist is enabled, False otherwise.
+      description: Whether the warninglist is enabled.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: True if the warninglist is set as default, False otherwise.
+      description: Whether the warninglist is set as default.
       type: boolean
     - contextPath: MISP.Warninglist.Entries
       description: The warninglist entries.
@@ -2817,12 +2817,12 @@ script:
     - name: description
       description: Updated description of the warninglist.
     - name: enabled
-      description: True if the warninglist is enabled, False otherwise.
+      description: Whether the warninglist is enabled.
       type: boolean
     - name: version
       description: Updated version number of the warninglist.
     - name: default
-      description: True if the warninglist is set as default, False otherwise.
+      description: Whether the warninglist is set as default
       type: boolean
     - name: values
       description: Updated values of the warninglist.
@@ -2847,10 +2847,10 @@ script:
       description: The updated warninglist version number.
       type: number
     - contextPath: MISP.Warninglist.Enabled
-      description: True if the warninglist is enabled, False otherwise.
+      description: Whether the warninglist is enabled.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: True if the warninglist is set as default, False otherwise.
+      description: Whether the warninglist is set as default
       type: boolean
     - contextPath: MISP.Warninglist.Category
       description: The updated category of the warninglist.
