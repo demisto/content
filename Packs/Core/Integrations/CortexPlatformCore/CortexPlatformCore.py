@@ -43,9 +43,9 @@ def recursive_replace_response_names(obj, old_to_new=True):
         return obj.replace("case", "incident").replace("issue", "alert")
 
     elif isinstance(obj, list):
-        return [recursive_replace_response_names(item) for item in obj]
+        return [recursive_replace_response_names(item, old_to_new) for item in obj]
     elif isinstance(obj, dict):
-        return {recursive_replace_response_names(key): recursive_replace_response_names(value) for key, value in obj.items()}
+        return {recursive_replace_response_names(key, old_to_new): recursive_replace_response_names(value,old_to_new) for key, value in obj.items()}
     else:
         return obj
 
@@ -120,8 +120,10 @@ def get_cases_command(client, args):
     """
     Retrieve a list of Cases from XDR, filtered by some filters.
     """
+    demisto.debug(f"get_cases_command original args: {args}")
     args = recursive_replace_response_names(args, old_to_new=False)
-    _, _, raw_incidents = client.get_incidents_command(client, args)
+    demisto.debug(f"get_cases_command after recursive_replace_response_names args: {args}")
+    _, _, raw_incidents = get_incidents_command(client, args)
     mapped_raw_cases = recursive_replace_response_names(raw_incidents)
     return CommandResults(
         readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
@@ -215,3 +217,4 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
