@@ -1,7 +1,6 @@
 import json
 from datetime import datetime, date
 from http import HTTPStatus
-import demistomock as demisto
 import pytest
 
 from CommonServerPython import CommandResults, DemistoException
