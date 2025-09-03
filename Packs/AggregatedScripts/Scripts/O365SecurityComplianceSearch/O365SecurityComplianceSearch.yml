@@ -8,13 +8,13 @@ args:
   description: The name of the compliance search.
   required: true
 - name: force
-  description: Overwrite the existing search if true, or use the existing search without modifying any search parameters if false.
+  description: Overwrite the existing search if true. Otherwise, uses the existing search without modifying any search parameters.
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
 - name: preview
-  description: Preview results using the search action.
+  description: Preview results using the search action - returns additional content from the emails found in the search.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -50,10 +50,10 @@ args:
   description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
   isArray: true
 - name: polling_interval
-  description: Compliance search polling interval.
+  description: Compliance search polling interval in seconds. Default is 30.
   defaultValue: '30'
 - name: polling_timeout
-  description: Compliance search polling timeout.
+  description: Compliance search polling timeout in seconds. Default is 300.
   defaultValue: '300'
 outputs:
   - contextPath: O365SecurityAndComplianceSearch.Search.Name

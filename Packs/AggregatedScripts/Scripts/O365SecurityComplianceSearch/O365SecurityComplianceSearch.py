@@ -4,7 +4,7 @@ from CommonServerPython import *
 SCRIPT_NAME = "o365-security-compliance-search"
 
 # required integrations
-SEC_COMP_MODULES = ["SecurityAndComplianceV2"]
+SEC_COMP_MODULE = "SecurityAndComplianceV2"
 
 # O365 commands
 CMD_GET_SEARCH = "o365-sc-get-search"
@@ -186,12 +186,12 @@ def main():
         # check if relevant integrations are enabled
         module_enabled = False
         for module in modules:
-            if modules[module].get("brand") in SEC_COMP_MODULES:
+            if modules[module].get("brand") == SEC_COMP_MODULE:
                 module_enabled = True
                 break
 
         if not module_enabled:
-            raise DemistoException("Security and Compliance module is not enabled")
+            raise DemistoException("Security and Compliance V2 module is not enabled")
 
         # check if search exists
         search_cmd_results = demisto.executeCommand(CMD_GET_SEARCH, args)
@@ -261,8 +261,8 @@ def main():
             CommandResults(
                 outputs_prefix=CONTEXT_MAIN_KEY,
                 outputs=context,
-                readable_output=f"Search [{search_name}] returned with status [{search_status}]\n"
-                + f"Preview [{preview_name}] returned with status [{preview_status}]",
+                readable_output=f"Search [{search_name}] returned with status [{search_status}].\n"
+                + f"Preview [{preview_name}] returned with status [{preview_status}].",
             )
         )
 

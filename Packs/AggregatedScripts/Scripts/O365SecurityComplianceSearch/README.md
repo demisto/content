@@ -16,8 +16,8 @@ This script runs an O365 Security & Compliance Search using the specified parame
 | **Argument Name** | **Description** |
 | --- | --- |
 | search_name | The name of the compliance search |
-| force | Overwrite the existing search if true, or use the existing search without modifying any search parameters if false. |
-| preview | Preview results using the search action. |
+| force | Overwrite the existing search if true. Otherwise, uses the existing search without modifying any search parameters. |
+| preview | Preview results using the search action - returns additional content from the emails found in the search. |
 | case | The name of a Core eDiscovery case to associate with the new compliance search. |
 | kql_search | Text search string or a query that is formatted using the Keyword Query Language (KQL). |
 | include_mailboxes | Whether to include mailboxes other than regular user mailboxes in the compliance search. |
@@ -26,8 +26,8 @@ This script runs an O365 Security & Compliance Search using the specified parame
 | public_folder_location | Comma-separated list of public folders to include, or use the value "All" to include all. |
 | share_point_location | Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or use the value "All" to include all sites. |
 | share_point_location_exclusion | Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. |
-| polling_interval | Compliance search polling interval. |
-| polling_timeout | Compliance search polling timeout. |
+| polling_interval | Compliance search polling interval in seconds. Default is 30. |
+| polling_timeout | Compliance search polling timeout in seconds. Default is 300. |
 
 ## Outputs
 
