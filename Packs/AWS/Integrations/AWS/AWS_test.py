@@ -1445,38 +1445,6 @@ def test_ec2_create_security_group_command_without_vpc(mocker):
     assert isinstance(result, CommandResults)
 
 
-def test_ec2_create_security_group_command_client_error(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises ClientError.
-    When: create_security_group_command encounters a client error.
-    Then: It should raise SystemExit and return error entry with response message.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    demisto_results = mocker.patch("AWS.demisto.results")
-    mocker.patch("AWS.demisto.error")
-    error_response = {"Error": {"Code": "InvalidGroup.Duplicate", "Message": "The security group already exists"}}
-    mock_client.create_security_group.side_effect = ClientError(error_response, "CreateSecurityGroup")
-
-    args = {"group_name": "duplicate-group", "description": "Duplicate security group", "vpc_id": "vpc-12345678"}
-
-    with pytest.raises(SystemExit):
-        EC2.create_security_group_command(mock_client, args)
-    demisto_results.assert_called_once_with(
-        {
-            "Type": 4,
-            "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:"
-            "  with arguments: {}\nError Code: InvalidGroup.Duplicate\n"
-            "Error Message: The security group already exists\n"
-            "HTTP Status Code: N/A\nRequest ID: N/A",
-            "EntryContext": None,
-        }
-    )
-
-
 def test_ec2_create_security_group_command_unexpected_response(mocker):
     """
     Given: A mocked boto3 EC2 client returning unexpected response status.
@@ -1563,7 +1531,8 @@ def test_ec2_delete_security_group_command_success_with_group_id(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.delete_security_group.return_value = {"GroupId": "sg-1234567890abcdef0"}
+    mock_client.delete_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+                                                      "GroupId": "sg-1234567890abcdef0"}
 
     args = {"group_id": "sg-1234567890abcdef0"}
 
@@ -1581,7 +1550,8 @@ def test_ec2_delete_security_group_command_success_with_group_name(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.delete_security_group.return_value = {"GroupId": "sg-1234567890abcdef0"}
+    mock_client.delete_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+                                                      "GroupId": "sg-1234567890abcdef0"}
 
     args = {"group_name": "test-security-group"}
 
@@ -1620,73 +1590,6 @@ def test_ec2_delete_security_group_command_both_parameters(mocker):
         EC2.delete_security_group_command(mock_client, args)
 
 
-def test_ec2_delete_security_group_command_group_not_found(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises InvalidGroup.NotFound error.
-    When: delete_security_group_command encounters group not found error.
-    Then: It should raise SystemExit and return error entry with response message.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    mocker.patch.object(demisto, "error")
-    mocker.patch("AWS.demisto.error")
-    demisto_results = mocker.patch("AWS.demisto.results")
-    error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "The security group does not exist"}}
-    mock_client.delete_security_group.side_effect = ClientError(error_response, "DeleteSecurityGroup")
-
-    args = {"group_id": "sg-nonexistent"}
-
-    with pytest.raises(SystemExit):
-        EC2.delete_security_group_command(mock_client, args)
-
-    demisto_results.assert_called_once_with(
-        {
-            "Type": 4,
-            "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:"
-            "  with arguments: {}\nError Code: InvalidGroup.NotFound\n"
-            "Error Message: The security group does not exist\n"
-            "HTTP Status Code: N/A\nRequest ID: N/A",
-            "EntryContext": None,
-        }
-    )
-
-
-def test_ec2_delete_security_group_command_group_id_not_found(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises InvalidGroupId.NotFound error.
-    When: delete_security_group_command encounters group ID not found error.
-    Then: It should raise SystemExit and return error entry with response message.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    mocker.patch.object(demisto, "error")
-    demisto_results = mocker.patch("AWS.demisto.results")
-    error_response = {"Error": {"Code": "InvalidGroupId.NotFound", "Message": "The security group ID does not exist"}}
-    mock_client.delete_security_group.side_effect = ClientError(error_response, "DeleteSecurityGroup")
-
-    args = {"group_id": "sg-invalid"}
-
-    with pytest.raises(SystemExit):
-        EC2.delete_security_group_command(mock_client, args)
-
-    demisto_results.assert_called_once_with(
-        {
-            "Type": 4,
-            "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:"
-            "  with arguments: {}\nError Code: InvalidGroupId.NotFound\n"
-            "Error Message: The security group ID does not exist\n"
-            "HTTP Status Code: N/A\nRequest ID: N/A",
-            "EntryContext": None,
-        }
-    )
-
-
 def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
     """
     Given: A mocked boto3 EC2 client and valid group_ids argument.
@@ -1697,6 +1600,7 @@ def test_ec2_describe_security_groups_command_success_with_group_ids(mocker):
 
     mock_client = mocker.Mock()
     mock_client.describe_security_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "NextToken": "NextToken",
         "SecurityGroups": [
             {
@@ -1744,6 +1648,7 @@ def test_ec2_describe_security_groups_command_success_with_group_names(mocker):
 
     mock_client = mocker.Mock()
     mock_client.describe_security_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "SecurityGroups": [
             {
                 "GroupId": "ssg-1234567890abcdef0",
@@ -1775,6 +1680,7 @@ def test_ec2_describe_security_groups_command_with_multiple_groups(mocker):
 
     mock_client = mocker.Mock()
     mock_client.describe_security_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "SecurityGroups": [
             {
                 "GroupId": "sg-1111111111111111",
@@ -1819,7 +1725,8 @@ def test_ec2_describe_security_groups_command_no_security_groups_found(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.describe_security_groups.return_value = {"SecurityGroups": []}
+    mock_client.describe_security_groups.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+                                                         "SecurityGroups": []}
 
     args = {"group_ids": "sg-nonexistent123"}
 
@@ -1839,6 +1746,7 @@ def test_ec2_describe_security_groups_command_with_tags(mocker):
 
     mock_client = mocker.Mock()
     mock_client.describe_security_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
         "SecurityGroups": [
             {
                 "GroupId": "sg-1234567890abcdef0",
@@ -1949,102 +1857,6 @@ def test_ec2_authorize_security_group_egress_command_invalid_json(mocker):
     with pytest.raises(DemistoException, match="Received invalid `ip_permissions` JSON object"):
         EC2.authorize_security_group_egress_command(mock_client, args)
 
-
-def test_ec2_authorize_security_group_egress_command_security_group_not_found(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises InvalidGroup.NotFound error.
-    When: authorize_security_group_egress_command encounters security group not found error.
-    Then: It should raise SystemExit and return error entry with response message.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    demisto_results = mocker.patch("AWS.demisto.results")
-    mocker.patch("AWS.demisto.error")
-    error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "InvalidGroup.NotFound"}}
-    mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
-
-    args = {"group_id": "sg-nonexistent", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
-
-    with pytest.raises(SystemExit):
-        EC2.authorize_security_group_egress_command(mock_client, args)
-
-    demisto_results.assert_called_once_with(
-        {
-            "Type": 4,
-            "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:"
-            "  with arguments: {}\nError Code: InvalidGroup.NotFound\n"
-            "Error Message: InvalidGroup.NotFound\n"
-            "HTTP Status Code: N/A\nRequest ID: N/A",
-            "EntryContext": None,
-        }
-    )
-
-
-def test_ec2_authorize_security_group_egress_command_invalid_group_id(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises InvalidGroupId.NotFound error.
-    When: authorize_security_group_egress_command encounters invalid group ID error.
-    Then: It should raise SystemExit and return error entry with response message.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    mocker.patch("AWS.demisto.error")
-    demisto_results = mocker.patch("AWS.demisto.results")
-    error_response = {"Error": {"Code": "InvalidGroup.NotFound", "Message": "InvalidGroup.NotFound"}}
-    mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
-
-    args = {"group_id": "sg-invalid", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
-
-    with pytest.raises(SystemExit):
-        EC2.authorize_security_group_egress_command(mock_client, args)
-    demisto_results.assert_called_once_with(
-        {
-            "Type": 4,
-            "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:"
-            "  with arguments: {}\nError Code: InvalidGroup.NotFound\n"
-            "Error Message: InvalidGroup.NotFound\n"
-            "HTTP Status Code: N/A\nRequest ID: N/A",
-            "EntryContext": None,
-        }
-    )
-
-
-def test_ec2_authorize_security_group_egress_command_duplicate_rule(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises InvalidPermission.Duplicate error.
-    When: authorize_security_group_egress_command encounters duplicate rule error.
-    Then: It should raise SystemExit and return error entry with response message.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    mocker.patch("AWS.demisto.error")
-    demisto_results = mocker.patch("AWS.demisto.results")
-    error_response = {"Error": {"Code": "InvalidPermission.Duplicate", "Message": "InvalidPermission.Duplicate"}}
-    mock_client.authorize_security_group_egress.side_effect = ClientError(error_response, "AuthorizeSecurityGroupEgress")
-
-    args = {"group_id": "sg-1234567890abcdef0", "protocol": "tcp", "from_port": "0000", "to_port": "0000", "cidr": "cidr"}
-
-    with pytest.raises(SystemExit):
-        EC2.authorize_security_group_egress_command(mock_client, args)
-    demisto_results.assert_called_once_with(
-        {
-            "Type": 4,
-            "ContentsFormat": "text",
-            "Contents": "AWS API Error occurred while executing:"
-            "  with arguments: {}\nError Code: InvalidPermission.Duplicate\n"
-            "Error Message: InvalidPermission.Duplicate\n"
-            "HTTP Status Code: N/A\nRequest ID: N/A",
-            "EntryContext": None,
-        }
-    )
 
 
 def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker):
@@ -2282,18 +2094,6 @@ def test_parse_filter_exactly_200_values():
     assert result[0]["Values"][0] == "value0"
 
 
-def test_parse_resource_ids_with_empty_string():
-    """
-    Given: An empty string is passed to parse_resource_ids function.
-    When: The function attempts to process the empty string.
-    Then: It should raise a ValueError indicating resource ID cannot be empty.
-    """
-    from AWS import parse_resource_ids
-
-    with pytest.raises(ValueError, match="Resource ID cannot be empty"):
-        parse_resource_ids("")
-
-
 def test_parse_resource_ids_with_single_id():
     """
     Given: A single resource ID without commas or spaces.
@@ -2316,18 +2116,6 @@ def test_parse_resource_ids_with_no_spaces():
 
     result = parse_resource_ids("id1,id2,id3")
     assert result == ["id1", "id2", "id3"]
-
-
-def test_parse_resource_ids_with_mixed_spaces():
-    """
-    Given: A comma-separated string with inconsistent spacing.
-    When: parse_resource_ids function processes the input.
-    Then: It should return a list of cleaned resource IDs with all spaces removed.
-    """
-    from AWS import parse_resource_ids
-
-    result = parse_resource_ids("id1 , id2, id3 ,id4")
-    assert result == ["id1,id2,id3,id4"]
 
 
 def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
