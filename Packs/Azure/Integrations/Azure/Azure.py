@@ -250,7 +250,7 @@ class AzureClient:
                     name = permission
                     demisto.debug(f"Found missing permission: {permission}.")
             if not name:
-                demisto.debug(f"Didn't find the missing permission, raising a regular exception.")
+                demisto.debug("Didn't find the missing permission, raising a regular exception.")
                 # if didn't find permission, raise regular exception
                 if "403" in error_msg or "forbidden" in error_msg:
                     raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
