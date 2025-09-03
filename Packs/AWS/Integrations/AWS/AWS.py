@@ -158,15 +158,21 @@ class AWSErrorHandler:
             err (ClientError): The boto3 ClientError exception
             account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
         """
-        error_code = err.response.get("Error", {}).get("Code", "")
-        error_message = err.response.get("Error", {}).get("Message", "")
-        http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
-        # Check if this is a permission-related error
-        if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
-            cls._handle_permission_error(err, error_code, error_message, account_id)
-        else:
-            cls._handle_general_error(err, error_code, error_message)
+        try:
+            error_code = err.response.get("Error", {}).get("Code")
+            error_message = err.response.get("Error", {}).get("Message")
+            http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
+            if not error_code or not error_message or not http_status_code:
+                raise DemistoException(err)
+            # Check if this is a permission-related error
+            if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
+                cls._handle_permission_error(err, error_code, error_message, account_id)
+            else:
+                cls._handle_general_error(err, error_code, error_message)
+        except Exception as e:
+            demisto.debug(f"[AWSErrorHandler] Unhandled error: {str(e)}")
+            raise DemistoException(str(err))
 
     @classmethod
     def _handle_permission_error(
@@ -1007,23 +1013,17 @@ class EC2:
         description = args.get("description")
         vpc_id = args.get("vpc_id")
         kwargs = {"Description": description, "GroupName": group_name, "VpcId": vpc_id}
-        try:
-            remove_nulls_from_dictionary(kwargs)
-            response = client.create_security_group(**kwargs)
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (
-                group_id := response.get("GroupId")
-            ):
-                return CommandResults(
-                    readable_output=f'The security group "{group_id}" was created successfully.',
-                    raw_response=response,
-                )
-            else:
-                AWSErrorHandler.handle_response_error(response)
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="")
+        remove_nulls_from_dictionary(kwargs)
+        response = client.create_security_group(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and (group_id := response.get("GroupId")):
+            return CommandResults(
+                readable_output=f'The security group "{group_id}" was created successfully.',
+                raw_response=response,
+            )
+        else:
+            AWSErrorHandler.handle_response_error(response)
+        # Should Not Reach Here: handle_response_error should raise an error
+        return CommandResults(readable_output="Failed to Create Security Group")
 
     @staticmethod
     def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1055,21 +1055,18 @@ class EC2:
         else:
             kwargs["GroupName"] = group_name
 
-        try:
-            remove_nulls_from_dictionary(kwargs)
-            response = client.delete_security_group(**kwargs)
-            if response.get("GroupId"):
-                return CommandResults(
-                    readable_output=f"Successfully deleted security group: {response.get('GroupId')}",
-                    raw_response=response,
-                )
-            else:
-                # If group_id was not found or no GroupId in response, raise an exception
-                AWSErrorHandler.handle_response_error(response)
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="")
+        remove_nulls_from_dictionary(kwargs)
+        response = client.delete_security_group(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK and response.get("GroupId"):
+            return CommandResults(
+                readable_output=f"Successfully deleted security group: {response.get('GroupId')}",
+                raw_response=response,
+            )
+        else:
+            # If group_id was not found or no GroupId in response, raise an exception
+            AWSErrorHandler.handle_response_error(response)
+        # Should Not Reach Here: handle_response_error should raise an error
+        return CommandResults(readable_output="Failed to Delete Security Group.")
 
     @staticmethod
     def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1099,10 +1096,10 @@ class EC2:
         # Can't add limit when specify GroupIds or GroupNames
         if not args.get("group_ids") and not args.get("group_names"):
             kwargs.update(build_pagination_kwargs(args))
-        try:
-            remove_nulls_from_dictionary(kwargs)
-            response = client.describe_security_groups(**kwargs)
 
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_security_groups(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             if len(response["SecurityGroups"]) == 0:
                 return CommandResults(readable_output="No security groups were found.")
             for _, sg in enumerate(response["SecurityGroups"]):
@@ -1127,10 +1124,10 @@ class EC2:
                 readable_output=tableToMarkdown("AWS EC2 SecurityGroups", data, removeNull=True),
                 raw_response=response,
             )
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="")
+        else:
+            AWSErrorHandler.handle_response_error(response)
+        # Should Not Reach Here: handle_response_error should raise an error
+        return CommandResults(readable_output="Failed to Describe Security Groups.")
 
     @staticmethod
     def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1162,23 +1159,19 @@ class EC2:
             ]
 
         remove_nulls_from_dictionary(kwargs["IpPermissions"][0])
-        try:
-            response = client.authorize_security_group_egress(**kwargs)
+        response = client.authorize_security_group_egress(**kwargs)
 
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
-                readable_output = (
-                    "The Security Group egress rule was authorized"
-                    if response.get("SecurityGroupRules")
-                    else "No Security Group egress rule was authorized"
-                )
-                return CommandResults(readable_output=readable_output, raw_response=response)
-            else:
-                AWSErrorHandler.handle_response_error(response)
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
-
-        return CommandResults(readable_output="")
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK and response["Return"]:
+            readable_output = (
+                "The Security Group egress rule was authorized"
+                if response.get("SecurityGroupRules")
+                else "No Security Group egress rule was authorized"
+            )
+            return CommandResults(readable_output=readable_output, raw_response=response)
+        else:
+            AWSErrorHandler.handle_response_error(response)
+        # Should Not Reach Here: handle_response_error should raise an error
+        return CommandResults(readable_output="Failed to Authorize Security Groups.")
 
 
 class EKS:
@@ -1807,6 +1800,14 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
+    except ClientError as client_err:
+        # Catch ClientError at the main level and try to handle it
+        try:
+            account_id = args.get("account_id", "")
+            AWSErrorHandler.handle_client_error(client_err, account_id)
+        except DemistoException as handler_err:
+            # If we can't handle or parse the error, raise an exception
+            return_error(f"Failed to execute {command} command.\nError:\n{str(handler_err)}")
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
