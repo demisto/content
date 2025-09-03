@@ -5,6 +5,8 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
+NON_RISKY_USERS = {}
+
 class Command:
     def __init__(self, brand: str, name: str, args: dict) -> None:
         """
@@ -493,10 +495,13 @@ def gsuite_get_user(
     return readable_outputs_list, account_outputs
 
 
-def xdr_list_risky_users(
-    command: Command,
+def xdr_list_all_users(
+    first_commands: list[Command],
+    second_command: Command,
     outputs_key_field: str,
     additional_fields: bool,
+    list_non_risky_users: bool,
+    email_list: List[str],
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list = []
 
@@ -504,6 +509,16 @@ def xdr_list_risky_users(
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     account_outputs = []
+    if list_non_risky_users:
+        if not NON_RISKY_USERS:
+            list_non_risky_users_cmd =  Command(
+                brand=command.brand,
+                name=list_non_risky_users_cmd,
+                args={"using-brand": command.brand},
+            )
+            entry_context, _, readable_errors = run_execute_command(list_non_risky_users_cmd.name, list_non_risky_users_cmd.args)
+            if not readable_errors:
+                
     for output in entry_context:
         output_key = get_output_key(f"{outputs_key_field}.RiskyUser", output)
         outputs = get_outputs(output_key, output)
@@ -521,24 +536,6 @@ def xdr_list_risky_users(
         )
 
     return readable_outputs_list, account_outputs
-
-
-def xdr_get_risky_user(
-    command: Command,
-    additional_fields: bool,
-) -> tuple[list[CommandResults], list[dict[str, Any]]]:
-    return xdr_list_risky_users(
-        command,
-        outputs_key_field="PaloAltoNetworksXDR",
-        additional_fields=additional_fields,
-    )
-
-
-def core_get_risky_user(
-    command: Command,
-    additional_fields: bool,
-) -> tuple[list[CommandResults], list[dict[str, Any]]]:
-    return xdr_list_risky_users(command, outputs_key_field="Core", additional_fields=additional_fields)
 
 
 def azure_get_risky_user(
@@ -604,6 +601,49 @@ def get_data(
     return [], []
 
 
+def get_core_and_xdr_data(
+    modules: Modules,
+    brand_name: str,
+    first_command: str,
+    second_command: str,
+    first_arg_name: str,
+    first_arg_values: List[str],
+    additional_fields: bool,
+    list_non_risky_users: bool = False,
+    email_list: List[str] = [],
+) -> tuple[list[str], list[dict]]:
+    
+    # prepare both commands
+    first_commands = [Command(
+        brand=brand_name,
+        name=first_command,
+        args={first_arg_name: first_arg_value, "using-brand": brand_name},
+    ) for first_arg_value in first_arg_values]
+    second_command = Command(
+        brand=brand_name,
+        name=second_command,
+        args={"using-brand": brand_name},
+    )
+    
+    if first_commands and modules.is_brand_available(first_commands[0]) and is_valid_args(first_commands[0]):
+        demisto.debug(f"Starting execution flow for list-users for {brand_name}")
+        readable_outputs, outputs = xdr_list_all_users(
+        first_commands,
+        second_command,
+        outputs_key_field="PaloAltoNetworksXDR",
+        additional_fields=additional_fields,
+        list_non_risky_users=list_non_risky_users,
+        email_list=email_list,
+    )
+        for output in outputs:
+            if set(output) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
+                output["Status"] = f"User not found - userId: {arg_value}."
+            else:
+                output["Status"] = "found"
+        return readable_outputs, outputs
+    return [], []
+
+
 """ MAIN FUNCTION """
 
 
@@ -618,6 +658,7 @@ def main():
         brands_to_run = argToList(args.get("brands", []))
         additional_fields = argToBoolean(args.get("additional_fields") or False)
         modules = Modules(demisto.getModules(), brands_to_run)
+        list_non_risky_users = argToBoolean(args.get("list_non_risky_users") or False)
 
         if domain and not users_names:
             raise ValueError("When specifying the domain argument, the user_name argument must also be provided.")
@@ -775,38 +816,6 @@ def main():
                 if readable_output and outputs:
                     users_outputs.extend(outputs)
                     users_readables.extend(readable_output)
-
-            #################################
-            ### Running for Cortex XDR - IR (XDR) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex XDR - IR",
-                command_name="xdr-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_name,
-                cmd=xdr_get_risky_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.extend(outputs)
-                users_readables.extend(readable_output)
-
-            #################################
-            ### Running for Cortex XDR - IR (Core) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex Core - IR",
-                command_name="core-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_name,
-                cmd=core_get_risky_user,
-                additional_fields=additional_fields,
-            )
-            if readable_output and outputs:
-                users_outputs.extend(outputs)
-                users_readables.extend(readable_output)
 
         #################################
         ### Running for Users IDs ###
@@ -991,6 +1000,43 @@ def main():
 
         if verbose:
             command_results_list.extend(users_readables)
+            
+            
+            
+        #################################
+        ### Running for Core & XDR ###
+        #################################
+        readable_output, outputs = get_core_and_xdr_data(
+            modules=modules,
+            brand_name="Cortex XDR - IR",
+            first_command="xdr-list-risky-users",
+            second_command="xdr-list-users",
+            first_arg_name="user_id",
+            first_arg_values=users_names,
+            additional_fields=additional_fields,
+            list_non_risky_users=list_non_risky_users,
+            email_list=users_emails,
+            outputs_key_field="PaloAltoNetworksXDR",
+        )
+        if readable_output and outputs:
+            users_outputs.extend(outputs)
+            users_readables.extend(readable_output)
+
+        readable_output, outputs = get_core_and_xdr_data(
+            modules=modules,
+            brand_name="Cortex XDR - IR",
+            first_command="core-list-risky-users",
+            second_command="core-list-users",
+            first_arg_name="user_id",
+            first_arg_values=users_names,
+            additional_fields=additional_fields,
+            list_non_risky_users=list_non_risky_users,
+            email_list=users_emails,
+            outputs_key_field="Core",
+        )
+        if readable_output and outputs:
+            users_outputs.extend(outputs)
+            users_readables.extend(readable_output)
 
         demisto.debug(f"users list: {user_outputs_list}")
         command_results_list.append(
