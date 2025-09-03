@@ -2079,7 +2079,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> list[Co
     max_results = arg_to_number(args.get("max_results", DEFAULT_PAGE_SIZE)) or DEFAULT_PAGE_SIZE
     headers = args.get("headers", "")
     specific_fields = argToList(args.get("fields", ""))
-    
+
     if client.api_version == "2" and next_page_token:
         raise DemistoException("The next_page_token argument is not supported for Jira OnPrem instances.")
 
