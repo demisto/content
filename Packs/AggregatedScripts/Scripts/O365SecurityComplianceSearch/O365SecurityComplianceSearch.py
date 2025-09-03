@@ -39,14 +39,19 @@ def parse_args(args: dict) -> dict:
     Returns:
         dict: Parsed args
     """
-    
+
     expected_args = {
-        "bool":["force", "preview", "include_mailboxes"],
-        "list":["exchange_location", "exchange_location_exclusion",
-              "public_folder_location", "share_point_location", "share_point_location_exclusion"],
-        "num": ["polling_interval", "polling_timeout"]
-        }
-    
+        "bool": ["force", "preview", "include_mailboxes"],
+        "list": [
+            "exchange_location",
+            "exchange_location_exclusion",
+            "public_folder_location",
+            "share_point_location",
+            "share_point_location_exclusion",
+        ],
+        "num": ["polling_interval", "polling_timeout"],
+    }
+
     for arg_type in expected_args:
         for arg_name in expected_args[arg_type]:
             if arg_name in args:
@@ -61,25 +66,6 @@ def parse_args(args: dict) -> dict:
                     pass
 
     return args
-
-
-def get_result_value(cmd_results: CommandResults, key: str) -> str:
-    """
-    Get key value from command results
-
-    Args:
-        context (CommandResults): The commands results
-        key (str): The key to look for in the response "Contents"
-
-    Returns:
-        str: The value of the key
-    """
-    try:
-        context = cmd_results[0]  # type: ignore
-        return demisto.get(context, f"Contents.{key}")  # type: ignore
-
-    except (KeyError, IndexError):
-        return ""
 
 
 def add_to_context(context: dict, sub_key: str, new_key: str, new_value: str | list):
@@ -156,8 +142,8 @@ def wait_for_results(args: dict, cmd: str, result_key: str) -> CommandResults:
             raise DemistoException(f"Polling timed out after {int(passed_time)} seconds")
 
         # get search status and results
-        results = demisto.executeCommand(cmd, args)
-        search_status = get_result_value(results, "Status")  # type: ignore
+        results = execute_command(cmd, args)
+        search_status = results.get("Status")  # type: ignore
 
         # if status and results show command finished, return
         if search_status == "Completed":
@@ -176,7 +162,7 @@ def main():
         # check if relevant integrations are enabled
         module_enabled = False
         for module in modules:
-            if modules[module].get("brand") == SEC_COMP_MODULE:
+            if (modules[module].get("brand") == SEC_COMP_MODULE) and (modules[module].get("state") == "active"):
                 module_enabled = True
                 break
 
@@ -184,8 +170,8 @@ def main():
             raise DemistoException("Security and Compliance V2 module is not enabled")
 
         # check if search exists
-        search_cmd_results = demisto.executeCommand(CMD_GET_SEARCH, args)
-        search_name = get_result_value(search_cmd_results, "Name")  # type: ignore
+        search_cmd_results = execute_command(CMD_GET_SEARCH, args)
+        search_name = search_cmd_results.get("Name")  # type: ignore
 
         run_new_search = False
 
@@ -195,7 +181,7 @@ def main():
 
         # if search exists and force flag is used, remove search and make new one
         elif args.get("force", False):
-            demisto.executeCommand(CMD_DEL_SEARCH, args)
+            execute_command(CMD_DEL_SEARCH, args)
             run_new_search = True
 
         # create and start a new search
@@ -204,14 +190,14 @@ def main():
             if not args.get("kql_search", None):
                 raise DemistoException("Running a new search requires the argument 'kql_search'.")
 
-            demisto.executeCommand(CMD_NEW_SEARCH, args)
-            demisto.executeCommand(CMD_START_SEARCH, args)
+            execute_command(CMD_NEW_SEARCH, args)
+            execute_command(CMD_START_SEARCH, args)
             search_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH, result_key="SuccessResults")
 
         # get updated search values
-        search_name = get_result_value(search_cmd_results, "Name")  # type: ignore
-        search_status = get_result_value(search_cmd_results, "Status")  # type: ignore
-        search_results = parse_results(get_result_value(search_cmd_results, "SuccessResults"))  # type: ignore
+        search_name = search_cmd_results.get("Name")  # type: ignore
+        search_status = search_cmd_results.get("Status")  # type: ignore
+        search_results = parse_results(search_cmd_results.get("SuccessResults"))  # type: ignore
 
         # add search values to context
         add_to_context(context=context, sub_key=CONTEXT_SEARCH_KEY, new_key=CONTEXT_NAME_KEY, new_value=search_name)
@@ -230,16 +216,16 @@ def main():
             return
 
         # start search action
-        demisto.executeCommand(CMD_NEW_SEARCH_ACTION, args)
+        execute_command(CMD_NEW_SEARCH_ACTION, args)
 
         # add search_action_name and get preview
         args["search_action_name"] = args["search_name"] + SEARCH_ACTION_SUFFIX
         preview_cmd_results = wait_for_results(args=args, cmd=CMD_GET_SEARCH_ACTION, result_key="Results")
 
         # get preview result values
-        preview_name = get_result_value(preview_cmd_results, "Name")
-        preview_status = get_result_value(preview_cmd_results, "Status")
-        preview_results = parse_results(get_result_value(preview_cmd_results, "Results"))
+        preview_name = preview_cmd_results.get("Name")  # type: ignore
+        preview_status = preview_cmd_results.get("Status")  # type: ignore
+        preview_results = parse_results(preview_cmd_results.get("Results"))  # type: ignore
 
         # add preview values to context
         add_to_context(context=context, sub_key=CONTEXT_PREV_KEY, new_key=CONTEXT_NAME_KEY, new_value=preview_name)
