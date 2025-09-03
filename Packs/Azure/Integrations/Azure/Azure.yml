@@ -450,30 +450,6 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
-      name: resource_group_name
-      required: true
-    - description: The name of the storage account.
-      name: account_name
-      required: true
-    - description: The name of the container.
-      name: container_name
-      required: true
-    - description: Default the container to use specified encryption scope for all writes.
-      name: default_encryption_scope
-    - auto: PREDEFINED
-      description: Block override of encryption scope from the container default.
-      name: deny_encryption_scope_override
-      predefined:
-        - 'true'
-        - 'false'
-    - auto: PREDEFINED
-      description: Specifies the level of access.
-      name: public_access
-      predefined:
-        - Blob
-        - Container
-        - None
   - arguments:
     - name: name
       required: true
