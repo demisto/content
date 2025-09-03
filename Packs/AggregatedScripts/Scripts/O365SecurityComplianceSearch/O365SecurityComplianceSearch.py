@@ -39,36 +39,26 @@ def parse_args(args: dict) -> dict:
     Returns:
         dict: Parsed args
     """
-
-    if "force" in args:
-        args["force"] = argToBoolean(args["force"])
-
-    if "preview" in args:
-        args["preview"] = argToBoolean(args["preview"])
-
-    if "include_mailboxes" in args:
-        args["include_mailboxes"] = argToBoolean(args["include_mailboxes"])
-
-    if "exchange_location" in args:
-        args["exchange_location"] = argToList(args["exchange_location"])
-
-    if "exchange_location_exclusion" in args:
-        args["exchange_location_exclusion"] = argToList(args["exchange_location_exclusion"])
-
-    if "public_folder_location" in args:
-        args["public_folder_location"] = argToList(args["public_folder_location"])
-
-    if "share_point_location" in args:
-        args["share_point_location"] = argToList(args["share_point_location"])
-
-    if "share_point_location_exclusion" in args:
-        args["share_point_location_exclusion"] = argToList(args["share_point_location_exclusion"])
-
-    if "polling_interval" in args:
-        args["polling_interval"] = arg_to_number(args["polling_interval"])
-
-    if "polling_timeout" in args:
-        args["polling_timeout"] = arg_to_number(args["polling_timeout"])
+    
+    expected_args = {
+        "bool":["force", "preview", "include_mailboxes"],
+        "list":["exchange_location", "exchange_location_exclusion",
+              "public_folder_location", "share_point_location", "share_point_location_exclusion"],
+        "num": ["polling_interval", "polling_timeout"]
+        }
+    
+    for arg_type in expected_args:
+        for arg_name in expected_args[arg_type]:
+            if arg_name in args:
+                try:
+                    if arg_type == "bool":
+                        args[arg_name] = argToBoolean(args[arg_name])
+                    elif arg_type == "list":
+                        args[arg_name] = argToList(args[arg_name])
+                    elif arg_type == "num":
+                        args[arg_name] = arg_to_number(args[arg_name])
+                except (TypeError, ValueError):
+                    pass
 
     return args
 
