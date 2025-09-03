@@ -230,6 +230,7 @@ class AzureClient:
             DemistoException: For permission errors and other API errors
         """
         error_msg = str(e).lower()
+        print(f"{error_msg=}")
         demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
 
         demisto.debug(f"Error message: {error_msg}, {e=}")
@@ -1321,8 +1322,12 @@ class AzureClient:
             f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
             f"/securityRules/{security_rule_name}"
         )
-        try:
-            return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
+        if response in (200, 202, 204):
+            return response
+
+        try:  # in case we didn't get success we want to get the error message
+            return self.http_request(method="DELETE", full_url=full_url)
         except Exception as e:
             self.handle_azure_error(
                 e=e,
