@@ -5899,7 +5899,7 @@
             "playbookID": "BlockExternalIP - Test",
             "integrations": ["F5Silverline", "Cisco ASA", "Panorama"],
             "instance_names": [
-                "panorama_instance_security_team"
+                "palo_alto_panorama_11_fw_test"
             ],
             "timeout": 600
         }
