@@ -36,6 +36,20 @@ def alert_to_issue(outputs):
     return outputs
 
 
+def recursive_replace_response_names(obj, old_to_new=True):
+    if isinstance(obj, str):
+        if old_to_new:
+            return obj.replace("incident", "case").replace("alert", "issue")
+        return obj.replace("case", "incident").replace("issue", "alert")
+
+    elif isinstance(obj, list):
+        return [recursive_replace_response_names(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {recursive_replace_response_names(key): recursive_replace_response_names(value) for key, value in obj.items()}
+    else:
+        return obj
+
+
 def filter_context_fields(output_keys: list, context: list):
     """
     Filters only specific keys from the context dictionary based on provided output_keys.
@@ -102,6 +116,34 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         raw_response=reply,
     )
 
+def get_cases_command(client, args):
+    """
+    Retrieve a list of Cases from XDR, filtered by some filters.
+    """
+    args = recursive_replace_response_names(args, old_to_new=False)
+    _, _, raw_incidents = client.get_incidents_command(client, args)
+    mapped_raw_cases = recursive_replace_response_names(raw_incidents)
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
+        outputs_prefix="Core.Case",
+        outputs_key_field="case_id",
+        outputs=mapped_raw_cases,
+        raw_response=mapped_raw_cases,
+    )
+
+
+def get_extra_data_for_case_id_command(client, args, remove_nulls_from_alerts=True):
+    case_id = args.get("case_id")
+    issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
+    response = client.get_incident_extra_data(case_id, issues_limit)
+    mapped_response = recursive_replace_response_names(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseExtraData",
+        outputs=mapped_response,
+        raw_response=mapped_response,
+    )
+
 
 def main():  # pragma: no cover
     """
@@ -148,11 +190,13 @@ def main():  # pragma: no cover
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = [alert_to_issue(output) for output in
+                                                  issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
 
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = filter_context_fields(output_keys,
+                                                                       issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
 

@@ -410,17 +410,24 @@ class CoreClient(BaseClient):
 
         return incidents
 
-    def get_extra_data_for_case_id(
+    def get_incident_extra_data(
         self,
-        request_data: dict
-    ) -> dict:
+        incident_id: str,
+        alerts_limit: int,
+        full_alert_fields: bool = False,
+        remove_nulls_from_alerts: bool = True) -> dict:
         """
-        Returns case extra data by id
-
+        Returns incident extra data by id
         :param incident_id: The id of case
         :param alerts_limit: Maximum number issues to get
+        :param full_alert_fields: Whether to return full alert fields
         :return:
         """
+        request_data = {"incident_id": incident_id,
+                        "alerts_limit": alerts_limit,
+                        "full_alert_fields": full_alert_fields,
+                        "drop_nulls": remove_nulls_from_alerts}
+
         demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
         response = self._http_request(
             method="POST",
@@ -1446,7 +1453,6 @@ STATUS_PROGRESS = {"New": "STATUS_010_NEW", "In Progress": "STATUS_020_UNDER_INV
 STATUS_PROGRESS_REVERSE = {value: key for key, value in STATUS_PROGRESS.items()}
 SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
 SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
-
 
 ALERT_DOMAIN = {
     "Security": "DOMAIN_SECURITY",
@@ -4461,149 +4467,6 @@ def get_incidents_command(client, args):
         tableToMarkdown("Incidents", raw_incidents),
         {f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents},
         raw_incidents,
-    )
-
-
-def replace_response_names(obj):
-    if isinstance(obj, str):
-        return obj.replace("incident", "case").replace("alert", "issue")
-    elif isinstance(obj, list):
-        return [replace_response_names(item) for item in obj]
-    elif isinstance(obj, dict):
-        return {replace_response_names(key): replace_response_names(value) for key, value in obj.items()}
-    else:
-        return obj
-
-
-def get_cases_command(client, args):
-    """
-    Retrieve a list of Cases from XDR, filtered by some filters.
-    """
-
-    # sometimes case id can be passed as integer from the playbook
-    hr = ""
-    case_id_list = args.get("case_id_list")
-    if isinstance(case_id_list, int):
-        case_id_list = str(case_id_list)
-
-    case_id_list = argToList(case_id_list)
-    # make sure all the ids passed are strings and not integers
-    for index, id_ in enumerate(case_id_list):
-        if isinstance(id_, int | float):
-            case_id_list[index] = str(id_)
-
-    lte_modification_time = args.get("modified_before_iso_8601_timestamp")
-    gte_modification_time = args.get("modified_after_iso_8601_timestamp")
-    since_modification_time = args.get("modified_within")
-
-    if since_modification_time and gte_modification_time:
-        raise ValueError("Can't set both since_modification_time and lte_modification_time")
-    if since_modification_time:
-        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
-
-    lte_creation_time = args.get("created_before_iso_8601_timestamp")
-    gte_creation_time = args.get("created_after_iso_8601_timestamp")
-    since_creation_time = args.get("created_within")
-
-    if since_creation_time and gte_creation_time:
-        raise ValueError("Can't set both since_creation_time and lte_creation_time")
-    if since_creation_time:
-        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
-
-    statuses = argToList(args.get("status", ""))
-
-    starred = argToBoolean(args.get("starred")) if args.get("starred", None) not in ("", None) else None
-    starred_incidents_fetch_window = args.get("starred_incidents_fetch_window", "3 days")
-    starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
-
-    sort_by_modification_time = args.get("sort_by_modification_time")
-    sort_by_creation_time = args.get("sort_by_creation_time")
-
-    page = int(args.get("page", 0))
-    page_size = int(args.get("page_size", MAX_GET_INCIDENTS_PAGE_SIZE))
-    if page_size > MAX_GET_INCIDENTS_PAGE_SIZE:
-        hr += f"page_size is {page_size} which is greater than {MAX_GET_INCIDENTS_PAGE_SIZE}. Setting page_size to {MAX_GET_INCIDENTS_PAGE_SIZE}.\n"
-        page_size = MAX_GET_INCIDENTS_PAGE_SIZE
-
-    # If no filters were given, return a meaningful error message
-    if not case_id_list and (
-        not lte_modification_time
-        and not gte_modification_time
-        and not since_modification_time
-        and not lte_creation_time
-        and not gte_creation_time
-        and not since_creation_time
-        and not statuses
-        and not starred
-    ):
-        raise ValueError(
-            "Specify a query for the incidents.\nFor example:"
-            ' since_creation_time="1 year" sort_by_creation_time="desc" limit=10'
-        )
-
-    if statuses:
-        raw_cases = []
-
-        for status in statuses:
-            raw_cases += client.get_incidents(
-                incident_id_list=case_id_list,
-                lte_modification_time=lte_modification_time,
-                gte_modification_time=gte_modification_time,
-                lte_creation_time=lte_creation_time,
-                gte_creation_time=gte_creation_time,
-                sort_by_creation_time=sort_by_creation_time,
-                sort_by_modification_time=sort_by_modification_time,
-                page_number=page,
-                limit=page_size,
-                status=status,
-                starred=starred,
-                starred_incidents_fetch_window=starred_incidents_fetch_window,
-            )
-
-        if len(raw_cases) > page_size:
-            raw_cases = raw_cases[:page_size]
-
-    else:
-        raw_cases = client.get_incidents(
-            incident_id_list=case_id_list,
-            lte_modification_time=lte_modification_time,
-            gte_modification_time=gte_modification_time,
-            lte_creation_time=lte_creation_time,
-            gte_creation_time=gte_creation_time,
-            sort_by_creation_time=sort_by_creation_time,
-            sort_by_modification_time=sort_by_modification_time,
-            page_number=page,
-            limit=page_size,
-            starred=starred,
-            starred_incidents_fetch_window=starred_incidents_fetch_window,
-        )
-
-    mapped_raw_cases = replace_response_names(raw_cases)
-
-    hr += tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header)
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="Core.Case",
-        outputs_key_field="case_id",
-        outputs=mapped_raw_cases,
-        raw_response=mapped_raw_cases,
-    )
-
-
-def get_extra_data_for_case_id_command(client, args, remove_nulls_from_alerts=True):
-    case_id = args.get("case_id")
-    issues_limit = min(int(args.get("issues_limit", 1000)),1000)
-    request_data = {"incident_id": case_id, "alerts_limit": issues_limit, "full_alert_fields": True}
-    if remove_nulls_from_alerts:
-        request_data["drop_nulls"] = True
-    demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
-    response = client.get_extra_data_for_case_id(request_data)
-    mapped_response = replace_response_names(response)
-    return CommandResults(
-        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
-        outputs_prefix="Core.CaseExtraData",
-        outputs=mapped_response,
-        raw_response=mapped_response,
     )
 
 

@@ -374,47 +374,47 @@ script:
         - contextPath: Core.CoreAsset.all_sources
           description: A list of all sources providing information about the asset.
     - arguments:
-      - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved.
-        name: created_before_iso_8601_timestamp
-      - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved.
-        name: created_after_iso_8601_timestamp
-      - description: Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
-        name: modified_before_iso_8601_timestamp
-      - description: Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
-        name: modified_after_iso_8601_timestamp
-      - description: An array or CSV string of case IDs.
-        isArray: true
-        name: case_id_list
-      - description: Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
-        name: created_within
-      - description: Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
-        name: modified_within
-      - auto: PREDEFINED
-        description: Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending).
-        name: sort_by_modification_time
-        predefined:
-        - asc
-        - desc
-      - auto: PREDEFINED
-        description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
-        name: sort_by_creation_time
-        predefined:
-        - asc
-        - desc
-      - defaultValue: '0'
-        description: Page number (for pagination). The default is 0 (the first page).
-        name: page
-      - defaultValue: '100'
-        description: Maximum number of cases to return per page. The default and maximum is 100.
-        name: page_size
-      - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
-        name: status
-      - auto: PREDEFINED
-        description: 'Whether the case is starred (Boolean value: true or false).'
-        name: starred
-        predefined:
-        - 'true'
-        - 'false'
+        - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved.
+          name: lte_creation_time
+        - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved.
+          name: gte_creation_time
+        - description: Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
+          name: lte_modification_time
+        - description: Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
+          name: gte_modification_time
+        - description: An array or CSV string of case IDs.
+          isArray: true
+          name: case_id_list
+        - description: Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_creation_time
+        - description: Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+          name: since_modification_time
+        - auto: PREDEFINED
+          description: Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending).
+          name: sort_by_modification_time
+          predefined:
+            - asc
+            - desc
+        - auto: PREDEFINED
+          description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
+          name: sort_by_creation_time
+          predefined:
+            - asc
+            - desc
+        - defaultValue: '0'
+          description: Page number (for pagination). The default is 0 (the first page).
+          name: page
+        - defaultValue: '100'
+          description: Maximum number of cases to return per page. The default and maximum is 100.
+          name: limit
+        - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
+          name: status
+        - auto: PREDEFINED
+          description: 'Whether the case is starred (Boolean value: true or false).'
+          name: starred
+          predefined:
+            - 'true'
+            - 'false'
       name: core-get-cases
       description: Get cases information based on the specified filters.
       outputs:
