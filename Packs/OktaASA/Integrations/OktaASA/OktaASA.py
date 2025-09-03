@@ -139,11 +139,17 @@ class OktaASAClient(BaseClient):
             )
             if not events:
                 break
-            add_time_and_related_object_data_to_events(events, related_objects, add_time_mapping)
-            event_offset = events[0] if descending else events[len(events) - 1]
+            
+            # Process each event with its related objects
+            processed_events = []
+            for event in events:
+                processed_event = process_and_enrich_event(event, related_objects, add_time=add_time_mapping)
+                processed_events.append(processed_event)
+            
+            event_offset = processed_events[0] if descending else processed_events[len(processed_events) - 1]
             offset = event_offset.get("id")
             returned_timestamp = event_offset.get("timestamp")
-            results.extend(events)
+            results.extend(processed_events)
             count = min(limit - len(results), 1000)
         demisto.debug(f"{INTEGRATION_NAME}: will return {len(results)} events")
 
@@ -169,32 +175,74 @@ def is_token_expired(expires_date: str) -> bool:
     return current_utc_time > expires_datetime_date
 
 
-def add_time_and_related_object_data_to_events(events: List[Dict], related_objects: Dict, add_time_mapping: bool):
+def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool = True) -> dict:
     """
-    Adds the "_time" key to the event and enhances the "server", "project" keys values of an event.
-    Related object structure is "related_objects": {"id_of_keys_to_enhance": {"type": "some_type", "object": {}}}
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-        related_objects: Dict - A dict of events related_objects to add the related objects to.
-        add_time_mapping (bool): whether to add time mapping.
-    Returns:
-        list: The events with the _time key and related object information.
-    """
-    keys_to_enhance = ["project", "server"]
-    for event in events:
-        if add_time_mapping:
-            create_time = arg_to_datetime(arg=event.get("timestamp"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+    Transforms an individual event by adding a _time field and dynamically merging
+    all related objects, preserving the original link ID.
 
-        for key in keys_to_enhance:
-            event_details = event.get("details", {})
-            id_of_key_to_enhance = event_details.get(key)
-            if not event_details or not id_of_key_to_enhance:
+    Args:
+        event: Individual event object.
+        related_objects: Dict of related objects mapped by ID.
+        add_time: Whether to add the _time field from timestamp.
+
+    Returns:
+        A single dictionary representing the fully enriched event.
+    """
+    if not isinstance(event, dict):
+        demisto.debug(f"{INTEGRATION_NAME}: Invalid event type: {type(event)}. Full event: {event}")
+        return {}
+
+    if not isinstance(related_objects, dict):
+        demisto.debug(f"{INTEGRATION_NAME}: Invalid related_objects type: {type(related_objects)}. Full event: {event}")
+        return {}
+    
+    processed_event = event.copy()
+
+    # 1. Add the _time field if requested
+    if add_time and (timestamp := processed_event.get("timestamp")):
+        if create_time := arg_to_datetime(arg=timestamp):
+            processed_event["_time"] = create_time.strftime(DATE_FORMAT)
+        else:
+            demisto.debug(f"{INTEGRATION_NAME}: Failed to parse timestamp '{timestamp}'. Full event: {event}")
+
+    # 2. Dynamically merge only referenced related objects
+    event_details = processed_event.get("details", {})
+    if event_details and isinstance(related_objects, dict):
+        for _, referenced_id in event_details.items():
+            # Skip non-string values (like "type" field which is not an ID)
+            if not isinstance(referenced_id, str) or referenced_id not in related_objects:
                 continue
-            # structure is {"type": "some_type", "object": {}}
-            related_object_dict = related_objects.get(id_of_key_to_enhance,{})
-            if  key == related_object_dict.get("type") and (related_object_data:=related_object_dict.get("object")):
-                event_details[key] = related_object_data if related_object_data else id_of_key_to_enhance
+                
+            related_data = related_objects[referenced_id]
+            if not isinstance(related_data, dict):
+                demisto.debug(
+                    f"{INTEGRATION_NAME}: Skipping malformed related_data for ID '{referenced_id}': {related_data}. "
+                    f"Full event: {event}"
+                )
+                continue
+                
+            new_key_name = related_data.get("type")
+            object_data = related_data.get("object")
+
+            if not new_key_name:
+                demisto.debug(
+                    f"{INTEGRATION_NAME}: Missing 'type' field for related object ID '{referenced_id}': {related_data}. "
+                    f"Full event: {event}"
+                )
+                continue
+                
+            if not isinstance(object_data, dict):
+                demisto.debug(
+                    f"{INTEGRATION_NAME}: Invalid or missing 'object' data for ID '{referenced_id}' (type: {new_key_name}): "
+                    f"{object_data}. Full event: {event}"
+                )
+                continue
+
+            enriched_object = object_data.copy()
+            enriched_object['original_link_id'] = referenced_id
+            processed_event[new_key_name] = enriched_object
+
+    return processed_event
 
 """COMMAND FUNCTIONS"""
 
