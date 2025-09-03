@@ -1,6 +1,7 @@
 import json
 import demistomock as demisto
 
+MAX_GET_INCIDENTS_LIMIT = 100
 
 def load_test_data(json_path):
     with open(json_path) as f:
