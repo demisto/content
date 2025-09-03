@@ -1531,8 +1531,10 @@ def test_ec2_delete_security_group_command_success_with_group_id(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.delete_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-                                                      "GroupId": "sg-1234567890abcdef0"}
+    mock_client.delete_security_group.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "GroupId": "sg-1234567890abcdef0",
+    }
 
     args = {"group_id": "sg-1234567890abcdef0"}
 
@@ -1550,8 +1552,10 @@ def test_ec2_delete_security_group_command_success_with_group_name(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.delete_security_group.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-                                                      "GroupId": "sg-1234567890abcdef0"}
+    mock_client.delete_security_group.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "GroupId": "sg-1234567890abcdef0",
+    }
 
     args = {"group_name": "test-security-group"}
 
@@ -1659,7 +1663,7 @@ def test_ec2_describe_security_groups_command_success_with_group_names(mocker):
                 "IpPermissions": [],
                 "IpPermissionsEgress": [],
             }
-        ]
+        ],
     }
 
     args = {"group_names": "production-sg"}
@@ -1700,7 +1704,7 @@ def test_ec2_describe_security_groups_command_with_multiple_groups(mocker):
                 "IpPermissions": [],
                 "IpPermissionsEgress": [],
             },
-        ]
+        ],
     }
 
     args = {"group_ids": "sg-1111111111111111, sg-2222222222222222"}
@@ -1725,8 +1729,10 @@ def test_ec2_describe_security_groups_command_no_security_groups_found(mocker):
     from AWS import EC2
 
     mock_client = mocker.Mock()
-    mock_client.describe_security_groups.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
-                                                         "SecurityGroups": []}
+    mock_client.describe_security_groups.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "SecurityGroups": [],
+    }
 
     args = {"group_ids": "sg-nonexistent123"}
 
@@ -1762,7 +1768,7 @@ def test_ec2_describe_security_groups_command_with_tags(mocker):
                     {"Key": "Application", "Value": "WebApp"},
                 ],
             }
-        ]
+        ],
     }
 
     args = {"group_ids": "sg-1234567890abcdef0"}
@@ -1856,7 +1862,6 @@ def test_ec2_authorize_security_group_egress_command_invalid_json(mocker):
 
     with pytest.raises(DemistoException, match="Received invalid `ip_permissions` JSON object"):
         EC2.authorize_security_group_egress_command(mock_client, args)
-
 
 
 def test_ec2_authorize_security_group_egress_command_unexpected_response(mocker):
