@@ -139,7 +139,7 @@ script:
   subtype: python3
   isfetch: true
   dockerimage: demisto/python3:3.11.10.115186
-fromversion: 6.9.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
 defaultclassifier: SpyCloud - Classifier
