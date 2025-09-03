@@ -2074,7 +2074,10 @@ def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
     assert "Azure Billing Usage" in result.readable_output
     assert "Azure.Billing.Usage" in result.outputs
     assert "Azure.Billing.UsageNextToken" in result.outputs
-    assert result.outputs["Azure.Billing.UsageNextToken"] == "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+    assert (
+        result.outputs["Azure.Billing.UsageNextToken"]
+        == "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+    )
     assert len(result.outputs["Azure.Billing.Usage"]) == 1
     assert result.outputs["Azure.Billing.Usage"][0]["Product"] == "Virtual Machines"
     assert result.raw_response == mock_response
@@ -2105,10 +2108,10 @@ def test_azure_billing_forecast_list_command_success(mocker, client, mock_params
 
     assert isinstance(result, CommandResults)
     assert "Azure Billing Forecast" in result.readable_output
-    assert "Azure.BillingForecast" in result.outputs
-    assert len(result.outputs["Azure.BillingForecast"]) == 1
-    assert result.outputs["Azure.BillingForecast"][0]["Charge"] == 250.50
-    assert result.outputs["Azure.BillingForecast"][0]["Currency"] == "USD"
+    assert "Azure.Billing.Forecast" in result.outputs
+    assert len(result.outputs["Azure.Billing.Forecast"]) == 1
+    assert result.outputs["Azure.Billing.Forecast"][0]["Charge"] == 250.50
+    assert result.outputs["Azure.Billing.Forecast"][0]["Currency"] == "USD"
     assert result.raw_response == mock_response
 
 

@@ -1401,7 +1401,7 @@ def test_aws_error_handler_extract_action_from_message_empty_input():
     assert AWSErrorHandler._extract_action_from_message(None) == "unknown"
     assert AWSErrorHandler._extract_action_from_message("") == "unknown"
     assert AWSErrorHandler._extract_action_from_message(123) == "unknown"
-    
+
 
 def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
     """

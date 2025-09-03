@@ -1269,11 +1269,11 @@ class CostExplorer:
 
         response = client.get_cost_and_usage(**request)
 
-        results = response.get('ResultsByTime', [])
+        results = response.get("ResultsByTime", [])
         next_token = response.get("NextPageToken", "")
         demisto.debug(f"AWS get_cost_and_usage response - ResultsByTime count: {len(results)},\n NextToken: {next_token}")
 
-        results_by_metric = {metric: [] for metric in metrics}
+        results_by_metric: dict[str, list] = {metric: [] for metric in metrics}
         for result in results:
             total = result.get("Total")
             service = total.get("Keys", [None])[0] if total.get("Keys") else None
@@ -1418,6 +1418,7 @@ class CostExplorer:
 
 class Budgets:
     service = AWSServices.BUDGETS
+
     @staticmethod
     def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -1532,9 +1533,7 @@ class Budgets:
 
         notifications = response.get("Notifications", [])
         next_token = response.get("NextToken", "")
-        demisto.debug(
-            f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}"
-        )
+        demisto.debug(f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}")
         outputs = {"AWS.Billing.Notification": notifications}
         if next_token:
             outputs["AWS.Billing.Notification.NextToken"] = next_token

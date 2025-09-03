@@ -987,7 +987,7 @@ script:
     description: Retrieves actual cost and usage data for a given time range and optional service filter.
     arguments:
     - name: account_id
-      description: AWS account to run the command on
+      description: AWS account to run the command on.
       required: true
     - name: region
       description: The AWS region.
@@ -1021,91 +1021,91 @@ script:
       required: false
     outputs:
     - contextPath: AWS.Billing.Usage
-      description: Complete usage data from AWS Cost Explorer API
+      description: Complete usage data from AWS Cost Explorer API.
     - contextPath: AWS.Billing.Usage.TimePeriod
-      description: Time period for the usage data
+      description: Time period for the usage data.
     - contextPath: AWS.Billing.Usage.TimePeriod.Start
-      description: Start date of the time period
+      description: Start date of the time period.
       type: date
     - contextPath: AWS.Billing.Usage.TimePeriod.End
-      description: End date of the time period
+      description: End date of the time period.
       type: date
     - contextPath: AWS.Billing.Usage.Total
-      description: Total cost and usage metrics for the time period
+      description: Total cost and usage metrics for the time period.
     - contextPath: AWS.Billing.Usage.Total.AmortizedCost
-      description: Amortized cost information
+      description: Amortized cost information.
     - contextPath: AWS.Billing.Usage.Total.AmortizedCost.Amount
-      description: Amortized cost amount
+      description: Amortized cost amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.AmortizedCost.Unit
-      description: Amortized cost unit (e.g., USD)
+      description: Amortized cost unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Usage.Total.BlendedCost
-      description: Blended cost information
+      description: Blended cost information.
     - contextPath: AWS.Billing.Usage.Total.BlendedCost.Amount
-      description: Blended cost amount
+      description: Blended cost amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.BlendedCost.Unit
-      description: Blended cost unit (e.g., USD)
+      description: Blended cost unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Usage.Total.NetAmortizedCost
-      description: Net amortized cost information
+      description: Net amortized cost information.
     - contextPath: AWS.Billing.Usage.Total.NetAmortizedCost.Amount
-      description: Net amortized cost amount
+      description: Net amortized cost amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.NetAmortizedCost.Unit
-      description: Net amortized cost unit (e.g., USD)
+      description: Net amortized cost unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Usage.Total.NetUnblendedCost
-      description: Net unblended cost information
+      description: Net unblended cost information.
     - contextPath: AWS.Billing.Usage.Total.NetUnblendedCost.Amount
-      description: Net unblended cost amount
+      description: Net unblended cost amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.NetUnblendedCost.Unit
-      description: Net unblended cost unit (e.g., USD)
+      description: Net unblended cost unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Usage.Total.NormalizedUsageAmount
-      description: Normalized usage amount information
+      description: Normalized usage amount information.
     - contextPath: AWS.Billing.Usage.Total.NormalizedUsageAmount.Amount
-      description: Normalized usage amount
+      description: Normalized usage amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.NormalizedUsageAmount.Unit
-      description: Normalized usage amount unit
+      description: Normalized usage amount unit.
       type: string
     - contextPath: AWS.Billing.Usage.Total.UnblendedCost
-      description: Unblended cost information
+      description: Unblended cost information.
     - contextPath: AWS.Billing.Usage.Total.UnblendedCost.Amount
-      description: Unblended cost amount
+      description: Unblended cost amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.UnblendedCost.Unit
-      description: Unblended cost unit (e.g., USD)
+      description: Unblended cost unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Usage.Total.UsageQuantity
-      description: Usage quantity information
+      description: Usage quantity information.
     - contextPath: AWS.Billing.Usage.Total.UsageQuantity.Amount
-      description: Usage quantity amount
+      description: Usage quantity amount.
       type: string
     - contextPath: AWS.Billing.Usage.Total.UsageQuantity.Unit
-      description: Usage quantity unit (e.g., Hrs, GB)
+      description: Usage quantity unit (e.g., Hrs, GB).
       type: string
     - contextPath: AWS.Billing.Usage.Groups
-      description: Usage data grouped by dimensions (when grouping is applied)
+      description: Usage data grouped by dimensions (when grouping is applied).
     - contextPath: AWS.Billing.Usage.Groups.Keys
-      description: Group keys (dimension values)
+      description: Group keys (dimension values).
     - contextPath: AWS.Billing.Usage.Groups.Metrics
-      description: Metrics for the group
+      description: Metrics for the group.
     - contextPath: AWS.Billing.Usage.Estimated
-      description: Whether the data is estimated
+      description: Whether the data is estimated.
       type: boolean
     - contextPath: AWS.Billing.UsageNextToken
-      description: Next page token for pagination
+      description: Next page token for pagination.
       type: string
 
   - name: aws-billing-forecast-list
     description: Forecasts AWS spending over a given future time period using historical trends.
     arguments:
     - name: account_id
-      description: AWS account to run the command on
+      description: AWS account to run the command on.
       required: true
     - name: region
       description: The AWS region.
@@ -1139,58 +1139,58 @@ script:
       required: false
     outputs:
     - contextPath: AWS.Billing.Forecast
-      description: Complete forecast data from AWS Cost Explorer API
+      description: Complete forecast data from AWS Cost Explorer API.
     - contextPath: AWS.Billing.Forecast.Service
-      description: AWS Service (if exists)
+      description: AWS Service (if exists).
       type: string
     - contextPath: AWS.Billing.Forecast.StartDate
-      description: Start date of the forecast
+      description: Start date of the forecast.
       type: date
     - contextPath: AWS.Billing.Forecast.EndDate
-      description: End date of the forecast
+      description: End date of the forecast.
       type: date
     - contextPath: AWS.Billing.Forecast.TotalAmount
-      description: Total forecasted amount
+      description: Total forecasted amount.
       type: string
     - contextPath: AWS.Billing.Forecast.TotalUnit
-      description: Unit for the forecasted amount
+      description: Unit for the forecasted amount.
       type: string
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime
-      description: Forecast results grouped by time period
+      description: Forecast results grouped by time period.
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod
-      description: Time period for the forecast
+      description: Time period for the forecast.
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.Start
-      description: Start date of the forecast period
+      description: Start date of the forecast period.
       type: date
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.End
-      description: End date of the forecast period
+      description: End date of the forecast period.
       type: date
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.MeanValue
-      description: Mean forecasted value for the time period
+      description: Mean forecasted value for the time period.
       type: string
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalLowerBound
-      description: Lower bound of the prediction interval
+      description: Lower bound of the prediction interval.
       type: string
     - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalUpperBound
-      description: Upper bound of the prediction interval
+      description: Upper bound of the prediction interval.
       type: string
     - contextPath: AWS.Billing.Forecast.Total
-      description: Total forecast information
+      description: Total forecast information.
     - contextPath: AWS.Billing.Forecast.Total.Amount
-      description: Total forecasted amount
+      description: Total forecasted amount.
       type: string
     - contextPath: AWS.Billing.Forecast.Total.Unit
-      description: Unit for the total forecasted amount
+      description: Unit for the total forecasted amount.
       type: string
     - contextPath: AWS.Billing.ForecastNextToken
-      description: Next page token for pagination
+      description: Next page token for pagination.
       type: string
 
   - name: aws-billing-budgets-list
     description: Lists configured budgets for a given AWS account.
     arguments:
     - name: account_id
-      description: AWS account to run the command on
+      description: AWS account to run the command on.
       required: true
     - name: region
       description: The AWS region.
@@ -1208,74 +1208,74 @@ script:
       required: false
     outputs:
     - contextPath: AWS.Billing.Budget
-      description: Complete budget data from AWS Budgets API
+      description: Complete budget data from AWS Budgets API.
     - contextPath: AWS.Billing.Budget.BudgetName
-      description: Budget name
+      description: Budget name.
       type: string
     - contextPath: AWS.Billing.Budget.BudgetType
-      description: Budget type (COST, USAGE, RI_UTILIZATION, RI_COVERAGE, SAVINGS_PLANS_UTILIZATION, SAVINGS_PLANS_COVERAGE)
+      description: Budget type (COST, USAGE, RI_UTILIZATION, RI_COVERAGE, SAVINGS_PLANS_UTILIZATION, SAVINGS_PLANS_COVERAGE).
       type: string
     - contextPath: AWS.Billing.Budget.TimeUnit
-      description: Time unit for the budget (DAILY, MONTHLY, QUARTERLY, ANNUALLY)
+      description: Time unit for the budget (DAILY, MONTHLY, QUARTERLY, ANNUALLY).
       type: string
     - contextPath: AWS.Billing.Budget.TimePeriod
-      description: Time period for the budget
+      description: Time period for the budget.
     - contextPath: AWS.Billing.Budget.TimePeriod.Start
-      description: Start date of the budget time period
+      description: Start date of the budget time period.
       type: date
     - contextPath: AWS.Billing.Budget.TimePeriod.End
-      description: End date of the budget time period
+      description: End date of the budget time period.
       type: date
     - contextPath: AWS.Billing.Budget.BudgetLimit
-      description: Budget limit information
+      description: Budget limit configuration.
     - contextPath: AWS.Billing.Budget.BudgetLimit.Amount
-      description: Budget limit amount
+      description: Budget limit amount.
       type: string
     - contextPath: AWS.Billing.Budget.BudgetLimit.Unit
-      description: Budget limit unit (e.g., USD)
+      description: Budget limit unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Budget.CostFilters
-      description: Cost filters applied to the budget
+      description: Cost filters applied to the budget.
     - contextPath: AWS.Billing.Budget.TimeUnit
-      description: Time unit for the budget period
+      description: Time unit for the budget period.
       type: string
     - contextPath: AWS.Billing.Budget.CalculatedSpend
-      description: Calculated spend information
+      description: Calculated spend information.
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend
-      description: Actual spend information
+      description: Actual spend information.
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend.Amount
-      description: Actual spend amount
+      description: Actual spend amount.
       type: string
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend.Unit
       description: Actual spend unit (e.g., USD)
       type: string
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend
-      description: Forecasted spend information
+      description: Forecasted spend information.
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Amount
-      description: Forecasted spend amount
+      description: Forecasted spend amount.
       type: string
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Unit
-      description: Forecasted spend unit (e.g., USD)
+      description: Forecasted spend unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Budget.BudgetType
-      description: Type of budget (COST, USAGE, etc.)
+      description: Type of budget (COST, USAGE, etc.).
       type: string
     - contextPath: AWS.Billing.Budget.LastUpdatedTime
-      description: Last time the budget was updated
+      description: Last time the budget was updated.
       type: date
     - contextPath: AWS.Billing.Budget.AutoAdjustData
-      description: Auto-adjust data for the budget
+      description: Auto-adjust data for the budget.
     - contextPath: AWS.Billing.Budget.PlannedBudgetLimits
-      description: Planned budget limits for future periods
+      description: Planned budget limits for future periods.
     - contextPath: AWS.Billing.BudgetNextToken
-      description: Next page token for pagination
+      description: Next page token for pagination.
       type: string
 
   - name: aws-billing-budget-notification-list
     description: Lists the notifications that are associated with a budget.
     arguments:
     - name: account_id
-      description: AWS account to run the command on
+      description: AWS account to run the command on.
       required: true
     - name: region
       description: The AWS region.
@@ -1283,44 +1283,44 @@ script:
       auto: PREDEFINED
       predefined: *aws_regions
     - name: budget_name
-      description: Name of the budget
+      description: Name of the budget.
       required: true
     - name: max_result
-      description: Maximum results to return. Default - 50, Max - 100
+      description: Maximum results to return. Default - 50, Max - 100.
       required: false
     - name: next_page_token
       description: Next page token for pagination. Use value from AWS.Billing.NotificationNextToken.
       required: false
     outputs:
     - contextPath: AWS.Billing.Budget.Notification
-      description: Complete budget notification data from AWS Budgets API
+      description: Complete budget notification data from AWS Budgets API.
     - contextPath: AWS.Billing.Budget.Notification.Notification
-      description: Notification configuration
+      description: Notification configuration.
     - contextPath: AWS.Billing.Budget.Notification.Notification.NotificationType
-      description: Type of notification (ACTUAL or FORECASTED)
+      description: Type of notification (ACTUAL or FORECASTED).
       type: string
     - contextPath: AWS.Billing.Budget.Notification.Notification.ComparisonOperator
-      description: Comparison operator for the notification (GREATER_THAN, LESS_THAN, EQUAL_TO)
+      description: Comparison operator for the notification (GREATER_THAN, LESS_THAN, EQUAL_TO).
       type: string
     - contextPath: AWS.Billing.Budget.Notification.Notification.Threshold
-      description: Threshold value that triggers the notification
+      description: Threshold value that triggers the notification.
       type: number
     - contextPath: AWS.Billing.Budget.Notification.Notification.ThresholdType
-      description: Type of threshold (PERCENTAGE or ABSOLUTE_VALUE)
+      description: Type of threshold (PERCENTAGE or ABSOLUTE_VALUE).
       type: string
     - contextPath: AWS.Billing.Budget.Notification.Notification.NotificationState
-      description: Current state of the notification (OK or ALARM)
+      description: Current state of the notification (OK or ALARM).
       type: string
     - contextPath: AWS.Billing.Budget.Notification.Subscribers
-      description: List of subscribers for the notification
+      description: List of subscribers for the notification.
     - contextPath: AWS.Billing.Budget.Notification.Subscribers.SubscriptionType
-      description: Type of subscription (EMAIL or SNS)
+      description: Subscription type (EMAIL or SNS).
       type: string
     - contextPath: AWS.Billing.Budget.Notification.Subscribers.Address
-      description: Email address or SNS topic ARN for the subscriber
+      description: Email address or SNS topic ARN for the subscriber.
       type: string
     - contextPath: AWS.Billing.NotificationNextToken
-      description: Next page token for pagination
+      description: Next page token for pagination.
       type: string
 
   isfetch: false
@@ -1328,7 +1328,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.3575453
+  dockerimage: demisto/boto3py3:1.0.0.4745625
 fromversion: 5.5.0
 tests:
 - No test - No playbook part of this release.

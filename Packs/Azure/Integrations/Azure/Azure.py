@@ -1941,11 +1941,11 @@ def cosmosdb_update_command(client: AzureClient, params: dict[str, Any], args: D
 def azure_billing_usage_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Retrieves actual usage and cost details from Azure Consumption API.
-    
+
     This command provides detailed billing usage information for Azure resources over a specified time period.
     It supports filtering by various criteria and includes pagination for large datasets. The command returns
     usage quantities, costs, and resource details for comprehensive billing analysis.
-    
+
     Args:
         client (AzureClient): Azure client instance for API communication
         params (dict): Configuration parameters from integration settings
@@ -1956,11 +1956,11 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
             - metric: Specific metric to retrieve (e.g., ActualCost, UsageQuantity)
             - max_results: Maximum number of results to return (default: 50)
             - next_page_token: Token for pagination
-    
+
     Returns:
         CommandResults: Contains usage data with costs, quantities, and time periods,
                       including pagination support via next page tokens
-    
+
     Raises:
         DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
     """
@@ -1990,7 +1990,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
     else:
         demisto.debug(f"Azure billing usage request: {url}, params: {params_}")
         res = client.http_request("GET", url_suffix=url, params=params_)
-    
+
     results_count = len(res.get("value", []))
     next_token = res.get("nextLink", "")
     demisto.debug(f"Azure billing usage response - results count: {results_count},\n nextLink: {bool(next_token)}")
@@ -2007,7 +2007,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
                 "PeriodEndDate": item.get("properties", {}).get("billingPeriodEndDate"),
             }
         )
-    outputs = {"Azure.Billing.Usage": results}
+    outputs = {"Azure.Billing.Usage": res}
     readable = tableToMarkdown(
         "Azure Billing Usage",
         results,
@@ -2026,22 +2026,22 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
 def azure_billing_forecast_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Retrieves cost forecast data from Azure Consumption API.
-    
+
     This command provides forecasted cost information for Azure resources based on historical usage patterns.
     It uses Azure's machine learning algorithms to predict future spending and helps with budget planning.
     The forecast includes charge amounts, currency information, and time granularity details.
-    
+
     Args:
         client (AzureClient): Azure client instance for API communication
         params (dict): Configuration parameters from integration settings
         args (dict): Command arguments containing:
             - subscription_id: Azure subscription ID (required)
             - filter: OData filter expression for filtering forecast results
-    
+
     Returns:
         CommandResults: Contains forecast data with predicted charges, currency information,
                       and time periods for future cost planning
-    
+
     Raises:
         DemistoException: If Azure API call fails, subscription not found, or invalid parameters provided
     """
@@ -2054,12 +2054,12 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     if filter_:
         params_["$filter"] = filter_
     demisto.debug(f"Azure billing forecast request: {url}, params: {params_}")
-    
+
     res = client.http_request("GET", url_suffix=url, params=params_)
-    
+
     items = res.get("value", [])
     demisto.debug(f"Azure billing forecast response - results count: {len(items)}")
-    
+
     results = []
     for item in items:
         results.append(
@@ -2083,22 +2083,22 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
 def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
     Retrieves budget information from Azure Consumption API.
-    
+
     This command lists all configured budgets for a specified Azure subscription or resource group,
     providing detailed information about budget limits, current spending, and time periods.
     Supports retrieving either all budgets or a specific budget by name for targeted analysis.
-    
+
     Args:
         client (AzureClient): Azure client instance for API communication
         params (dict): Configuration parameters from integration settings
         args (dict): Command arguments containing:
             - subscription_id: Azure subscription ID (required)
             - budget_name: Optional specific budget name to retrieve (if not provided, returns all budgets)
-    
+
     Returns:
         CommandResults: Contains budget data including names, amounts, current spending,
                       resource types, and time periods for budget monitoring
-    
+
     Raises:
         DemistoException: If Azure API call fails, subscription not found, budget doesn't exist, or invalid parameters provided
     """
@@ -2121,7 +2121,7 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
         items = res.get("value", [])
         demisto.debug(f"Azure billing budgets response - budgets count: {len(items)}")
-    
+
     results = []
     for item in items:
         time_period = item.get("properties", {}).get("timePeriod", {})
