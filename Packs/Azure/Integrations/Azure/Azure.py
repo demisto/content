@@ -230,7 +230,6 @@ class AzureClient:
             DemistoException: For permission errors and other API errors
         """
         error_msg = str(e).lower()
-        print(f"{error_msg=}")
         demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
 
         demisto.debug(f"Error message: {error_msg}, {e=}")
