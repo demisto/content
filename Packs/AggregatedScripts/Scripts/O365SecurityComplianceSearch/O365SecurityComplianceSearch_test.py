@@ -48,24 +48,6 @@ def test_arg_parse():
     assert expected_args == parse_args(args)
 
 
-def test_get_result_value():
-    """
-    Given:
-       - The integration, CommandResults, key name, value
-    When:
-       - Parsing the CommandResults
-    Then:
-       - The value for the given key
-    """
-
-    from O365SecurityComplianceSearch import get_result_value
-
-    cmd_result = [{"Contents": {"OuterKey": {"InnerKey": "Value"}}}]
-    expected_value = "Value"
-
-    assert get_result_value(cmd_result, "OuterKey.InnerKey") == expected_value  # type: ignore
-
-
 def test_add_to_context():
     """
     Given:
@@ -107,9 +89,12 @@ def test_wait_for_results(mocker):
 
     args = {"polling_interval": 2, "polling_timeout": 10}
 
-    expected_results = [{"Contents": {"Status": "Completed", "SuccessResults": '{Location: "location",Count: 10}'}}]
+    execute_command_results = [
+        {"Type": 1, "Contents": {"Status": "Completed", "SuccessResults": '{Location: "location",Count: 10}'}}
+    ]
+    expected_results = {"Status": "Completed", "SuccessResults": '{Location: "location",Count: 10}'}
 
-    mocker.patch.object(demisto, "executeCommand", return_value=expected_results)
+    mocker.patch.object(demisto, "executeCommand", return_value=execute_command_results)
     mock_results = wait_for_results(args=args, cmd="o365-sc-get-search", result_key="SuccessResults")
 
     assert mock_results == expected_results
