@@ -1887,12 +1887,12 @@ script:
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.InterfaceType
       description: The type of network interface.
       type: String
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes
       description: The IPv4 delegated prefixes that are assigned to the network interface.
-      type: String
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes
       description: The IPv6 delegated prefixes that are assigned to the network interface.
-      type: String
+      type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
       description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
       type: Dictionary
@@ -2485,12 +2485,12 @@ script:
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.InterfaceType
       description: The type of network interface.
       type: String
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes
       description: The IPv4 delegated prefixes that are assigned to the network interface.
-      type: String
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes
       description: The IPv6 delegated prefixes that are assigned to the network interface.
-      type: String
+      type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
       description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
       type: Dictionary
