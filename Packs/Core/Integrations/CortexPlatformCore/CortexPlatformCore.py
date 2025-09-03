@@ -48,19 +48,6 @@ def filter_context_fields(output_keys: list, context: list):
 
 
 class Client(CoreClient):
-    # def test_module(self):
-    #     """
-    #     Performs basic get request to get item samples
-    #     """
-    #     try:
-    #         self._http_request(method="POST", headers=self._headers, url_suffix="/unified-asset-inventory/get_asset_counts/")
-    #     except Exception as err:
-    #         if "API request Unauthorized" in str(err):
-    #             # this error is received from the Core server when the client clock is not in sync to the server
-    #             raise DemistoException(f"{err!s} please validate that your both XSOAR and Core server clocks are in sync")
-    #         else:
-    #               raise
-            
     def test_module(self):
         """
         Performs basic get request to get item samples
