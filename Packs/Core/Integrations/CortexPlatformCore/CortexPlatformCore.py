@@ -37,6 +37,17 @@ def alert_to_issue(outputs):
 
 
 def recursive_replace_response_names(obj, old_to_new=True):
+    """
+    Recursively replace 'incident' with 'case' and 'alert' with 'issue' in a given object.
+
+    Args:
+        obj: The object to be processed.
+        old_to_new (bool): If True, replace 'incident' with 'case' and 'alert' with 'issue'.
+            If False, replace 'case' with 'incident' and 'issue' with 'alert'.
+
+    Returns:
+        The processed object with the replaced strings.
+    """
     if isinstance(obj, str):
         if old_to_new:
             return obj.replace("incident", "case").replace("alert", "issue")
@@ -138,7 +149,21 @@ def get_cases_command(client, args):
     )
 
 
-def get_extra_data_for_case_id_command(client, args, remove_nulls_from_alerts=True):
+def get_extra_data_for_case_id_command(client, args):
+    """
+    Retrieves extra data for a specific case ID.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - case_id (str): The ID of the case to retrieve extra data for.
+                         - issues_limit (int): The maximum number of issues to return per case. Default is 1000.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_extra_data(case_id, issues_limit)
