@@ -237,15 +237,21 @@ class AWSErrorHandler:
             err (ClientError): The boto3 ClientError exception
             account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
         """
-        error_code = err.response.get("Error", {}).get("Code", "")
-        error_message = err.response.get("Error", {}).get("Message", "")
-        http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
-        # Check if this is a permission-related error
-        if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
-            cls._handle_permission_error(err, error_code, error_message, account_id)
-        else:
-            cls._handle_general_error(err, error_code, error_message)
+        try:
+            error_code = err.response.get("Error", {}).get("Code")
+            error_message = err.response.get("Error", {}).get("Message")
+            http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
+            if not error_code or not error_message or not http_status_code:
+                raise DemistoException(err)
+            # Check if this is a permission-related error
+            if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
+                cls._handle_permission_error(err, error_code, error_message, account_id)
+            else:
+                cls._handle_general_error(err, error_code, error_message)
+        except Exception as e:
+            demisto.debug(f"[AWSErrorHandler] Unhandled error: {str(e)}")
+            raise DemistoException(str(err))
 
     @classmethod
     def _handle_permission_error(
