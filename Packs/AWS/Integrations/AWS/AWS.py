@@ -105,7 +105,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError("Limit must be greater than 0")
 
     # AWS API constraints - most services have a max of 1000 items per request
-    if limit and limit > MAX_LIMIT_VALUE:
+    if limit is not None and limit > MAX_LIMIT_VALUE:
         demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
         limit = MAX_LIMIT_VALUE
 
