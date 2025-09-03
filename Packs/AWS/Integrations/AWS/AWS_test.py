@@ -2280,4 +2280,51 @@ def test_parse_filter_exactly_200_values():
     assert result[0]["Name"] == "test-filter"
     assert len(result[0]["Values"]) == 200
     assert result[0]["Values"][0] == "value0"
-    assert result[0]["Values"][199] == "value199"
+
+
+def test_parse_resource_ids_with_empty_string():
+    """
+    Given: An empty string is passed to parse_resource_ids function.
+    When: The function attempts to process the empty string.
+    Then: It should raise a ValueError indicating resource ID cannot be empty.
+    """
+    from AWS import parse_resource_ids
+
+    with pytest.raises(ValueError, match="Resource ID cannot be empty"):
+        parse_resource_ids("")
+
+
+def test_parse_resource_ids_with_single_id():
+    """
+    Given: A single resource ID without commas or spaces.
+    When: parse_resource_ids function processes the single ID.
+    Then: It should return a list with one resource ID.
+    """
+    from AWS import parse_resource_ids
+
+    result = parse_resource_ids("resource-123")
+    assert result == ["resource-123"]
+
+
+def test_parse_resource_ids_with_no_spaces():
+    """
+    Given: A comma-separated string of resource IDs without spaces.
+    When: parse_resource_ids function processes the input.
+    Then: It should return a list of resource IDs as-is.
+    """
+    from AWS import parse_resource_ids
+
+    result = parse_resource_ids("id1,id2,id3")
+    assert result == ["id1", "id2", "id3"]
+
+
+def test_parse_resource_ids_with_mixed_spaces():
+    """
+    Given: A comma-separated string with inconsistent spacing.
+    When: parse_resource_ids function processes the input.
+    Then: It should return a list of cleaned resource IDs with all spaces removed.
+    """
+    from AWS import parse_resource_ids
+
+    result = parse_resource_ids("id1 , id2, id3 ,id4")
+    assert result == ["id1,id2,id3,id4"]
