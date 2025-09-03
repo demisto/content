@@ -85,6 +85,8 @@ configuration:
   options:
   - corporate
   - infected
+  - email_domain
+  - target_domain
   required: false
   type: 15
 - additionalinfo: 'This parameters lets you filter results for only emails or only domains on your watchlist. The allowed values are: [''email'', ''domain'', ''subdomain'', ''ip'']. If no value has been provided, the API will return all watchlist types.'
@@ -116,6 +118,17 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Domain Search
+  name: domain_search
+  type: 12
+  required: false
+  additionalinfo: please enter the domains to search here, if left empty, your full watchlist will be pulled
+- display: Fetch Limit
+  name: fetch_limit
+  defaultvalue: "200"
+  type: 0
+  required: false
+  additionalinfo: Volume of incidents captured at a single time. By default this is set to 200.
 description: Fetch SpyCloud watchlist data (breach and malware records) for daily monitoring, incident response, and mitigation.
 display: SpyCloud Enterprise Protection Feed
 name: SpyCloudEnterpriseProtectionFeed
@@ -126,7 +139,7 @@ script:
   subtype: python3
   isfetch: true
   dockerimage: demisto/python3:3.11.10.115186
-fromversion: 6.10.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
 defaultclassifier: SpyCloud - Classifier
