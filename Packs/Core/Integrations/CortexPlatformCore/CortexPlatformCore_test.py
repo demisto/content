@@ -366,7 +366,7 @@ def test_recursive_replace_response_names_string():
         - 'incident' is replaced with 'case', 'alert' with 'issue'.
         - Unmatched strings remain unchanged.
     """
-    from CoreIRApiModule import recursive_replace_response_names
+    from CortexPlatformCore import recursive_replace_response_names
 
     assert recursive_replace_response_names("incident and alert") == "case and issue"
     assert recursive_replace_response_names("no match here") == "no match here"
@@ -381,7 +381,7 @@ def test_recursive_replace_response_names_list():
     Then:
         - Each relevant string is replaced, unrelated strings remain unchanged.
     """
-    from CoreIRApiModule import recursive_replace_response_names
+    from CortexPlatformCore import recursive_replace_response_names
 
     data = ["incident", "alert", "foo"]
     assert recursive_replace_response_names(data) == ["case", "issue", "foo"]
@@ -561,8 +561,8 @@ def test_get_cases_command_mapping_and_markdown(mocker):
 
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": "1"}]
-    mock_replace = mocker.patch("CoreIRApiModule.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
-    mock_table = mocker.patch("CoreIRApiModule.tableToMarkdown", return_value="table")
+    mock_replace = mocker.patch("CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
+    mock_table = mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
     args = {"case_id_list": "1"}
     result = get_cases_command(client, args)
     assert result.outputs == [{"case_id": "mapped"}]
