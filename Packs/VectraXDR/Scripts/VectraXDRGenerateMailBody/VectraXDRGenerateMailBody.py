@@ -28,7 +28,7 @@ def generate_mail_body(body_content: dict) -> CommandResults:
 
     for index, (key, val) in enumerate(body_content.items(), start=1):
         detection_id, detection_name = key.split("-", 1)
-        index_str = f"{index:>2}"  # noqa: E231
+        index_str = f"{index:>2}"
         detection_body += f"{index_str}.Detection ID: {detection_id}\n"
         detection_body += f"{SPACER}Detection Name: {detection_name}\n"
         detection_body += f"{SPACER}- Assessment Reason: {val.get('0')}\n"

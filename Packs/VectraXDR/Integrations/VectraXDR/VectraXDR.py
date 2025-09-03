@@ -1522,7 +1522,7 @@ def get_entity_list_command_hr(entities: dict, page: int, page_size: int, count:
             "State",
             "Tags",
         ],
-        removeNull=True,  # noqa: E225
+        removeNull=True,
     )
 
     return human_readable
@@ -1571,7 +1571,7 @@ def get_entity_get_command_hr(entity: dict):
 
     # Prepare human-readable output table
     human_readable = tableToMarkdown(
-        f"Entity detail:\n#### Entity ID: {entity_res.get('id')}",  # noqa: E231
+        f"Entity detail:\n#### Entity ID: {entity_res.get('id')}",
         hr_dict,
         [
             "Name",
@@ -1661,7 +1661,7 @@ def get_list_entity_detections_command_hr(detections: dict[Any, Any], page: Opti
             "Tags",
             "Last Timestamp",
         ],
-        removeNull=True,  # noqa: E225
+        removeNull=True,
     )
 
     return human_readable
@@ -1713,7 +1713,7 @@ def get_assignment_list_command_hr(assignments: dict, page: Optional[int], page_
             "Outcome ID",
             "Outcome",
         ],
-        removeNull=True,  # noqa: E225
+        removeNull=True,
     )
     return human_readable, assignments
 
@@ -1783,7 +1783,7 @@ def get_assignment_outcome_list_command_hr(outcomes: dict, page: Optional[int], 
         f"Assignment Outcomes Table (Showing Page {page} out of {pages})",
         hr_dict,
         ["Outcome ID", "Title", "Category", "Built IN", "User Selectable"],
-        removeNull=True,  # noqa: E225
+        removeNull=True,
     )
     return human_readable, outcomes
 
@@ -1927,7 +1927,7 @@ def get_group_unassign_and_assign_command_hr(group: dict, changed_members: List,
     change_action = "assigned to" if assign_flag else "unassigned from"
     changed_members = [re.escape(member) for member in changed_members]
     human_readable = tableToMarkdown(
-        f"Member(s) {', '.join(changed_members)} have been {change_action} the group.\n### Updated group details:",  # noqa: E231
+        f"Member(s) {', '.join(changed_members)} have been {change_action} the group.\n### Updated group details:",
         hr_dict,
         ["Group ID", "Name", "Group Type", "Description", "Members", "Last Modified Timestamp"],
         removeNull=True,
@@ -2150,7 +2150,7 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
                 mirroring_fields.update({"mirror_id": str(entity_id) + "-" + entity_type})
                 entity.update(mirroring_fields)
 
-                incident_name = f"Vectra XDR Entity {entity_name}:{entity_id}"  # noqa: E231
+                incident_name = f"Vectra XDR Entity {entity_name}:{entity_id}"
                 # Calculate severity based on urgency score using the urgency_score_to_severity function.
                 severity = urgency_score_to_severity(entity_urgency_score, params)  # type: ignore
                 entity["urgency_score_based_severity"] = severity
@@ -3139,7 +3139,7 @@ def vectra_entity_detections_mark_fixed_command(client: VectraClient, args: dict
     detection_set = response.get("detection_set")
     detection_ids = [url.split("/")[-1] for url in detection_set] if detection_set else ""
 
-    hr_string = f"There are no detections to mark as fixed for this entity ID:{entity_id}."  # noqa: E231
+    hr_string = f"There are no detections to mark as fixed for this entity ID:{entity_id}."
     if not detection_ids:
         return CommandResults(readable_output=hr_string)
 
@@ -3269,7 +3269,7 @@ def vectra_group_unassign_command(client: VectraClient, args: dict[str, Any]):
         updated_members = ids
     if not removed_members:
         members_list = [re.escape(member) for member in members_list]
-        hr_string = f"##### Member(s) {', '.join(members_list)} do not exist in the group."  # noqa: E713
+        hr_string = f"##### Member(s) {', '.join(members_list)} do not exist in the group."
         return CommandResults(readable_output=hr_string)
     # Call Vectra API to unassign members in group
     res = client.update_group_members_request(group_id=group_id, members=updated_members)
@@ -3318,14 +3318,14 @@ def vectra_group_assign_command(client: VectraClient, args: dict[str, Any]):
     elif group_type.lower() == "account":  # type: ignore
         uids = [i.get("uid") for i in group_members]  # type: ignore
         for member in members_list:
-            if member not in uids:  # noqa: E713
+            if member not in uids:
                 added_members.append(member)
                 uids.append(member)
         updated_members = uids
     elif group_type.lower() == "host":  # type: ignore
         ids = [str(i.get("id")) for i in group_members]  # type: ignore
         for member in members_list:
-            if member not in ids:  # noqa: E713
+            if member not in ids:
                 added_members.append(member)
                 ids.append(member)
         updated_members = ids
@@ -3459,11 +3459,11 @@ def get_remote_data_command(client: VectraClient, args: dict, params: dict) -> G
     new_entries_to_return: List[dict] = []
 
     dbot_mirror_id: str = args.get("id")  # type: ignore
-    demisto.debug(f"dbot_mirror_id:{dbot_mirror_id}")  # noqa: E231
+    demisto.debug(f"dbot_mirror_id:{dbot_mirror_id}")
     entity_id_type = dbot_mirror_id.split("-")
     vectra_entity_id = entity_id_type[0] if entity_id_type else ""
     vectra_entity_type = entity_id_type[1] if entity_id_type else ""
-    demisto.debug(f"vectra_entity_id:{vectra_entity_type}")  # noqa: E231
+    demisto.debug(f"vectra_entity_id:{vectra_entity_type}")
     demisto.debug(f"Getting update for remote {vectra_entity_id}.")
 
     command_last_run_dt = arg_to_datetime(args.get("lastUpdate"), arg_name="lastUpdate", required=True)
@@ -3556,7 +3556,7 @@ def get_remote_data_command(client: VectraClient, args: dict, params: dict) -> G
                     "Note": True,
                 }
             )
-    demisto.debug(f"remote_incident_data:{remote_incident_data}")  # noqa: E231
+    demisto.debug(f"remote_incident_data:{remote_incident_data}")
     return GetRemoteDataResponse(remote_incident_data, new_entries_to_return)
 
 
@@ -3594,7 +3594,7 @@ def update_remote_system_command(client: VectraClient, args: dict, params: dict)
             entry_content = re.sub(r"([^\n])\n", r"\1\n\n", entry.get("contents", ""))
             if len(entry_content) > MAX_OUTGOING_NOTE_LIMIT:
                 demisto.info(
-                    f"Skipping outgoing mirroring for entity note with XSOAR Incident ID:{xsoar_incident_id}, "  # noqa: E231
+                    f"Skipping outgoing mirroring for entity note with XSOAR Incident ID:{xsoar_incident_id}, "
                     "because the note length exceeds 8000 characters."
                 )
                 entry_user = ""
@@ -3724,7 +3724,7 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")  # noqa: E231
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
