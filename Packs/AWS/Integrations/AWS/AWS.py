@@ -94,7 +94,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     # Parse and validate limit
     try:
         if limit_arg is not None:
-            limit = arg_to_number(limit_arg) or DEFAULT_LIMIT_VALUE
+            limit =  arg_to_number(limit_arg) if isinstance((arg_to_number(limit_arg)),int) else DEFAULT_LIMIT_VALUE
             if limit is None:
                 raise ValueError(f"Invalid limit value: {limit_arg}")
         else:
@@ -113,7 +113,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
 
     # Handle pagination with next_token (for continuing previous requests)
     if next_token := args.get("next_token"):
-        if not isinstance(next_token, str) or not next_token.strip():
+        if (not isinstance(next_token, str)) or (len(next_token.strip()) == 0):
             raise ValueError("next_token must be a non-empty string")
         kwargs["NextToken"] = next_token.strip()
     kwargs.update({"MaxResults": limit})

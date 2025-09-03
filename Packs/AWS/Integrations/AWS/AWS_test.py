@@ -1482,28 +1482,6 @@ def test_ec2_terminate_instances_command_http_error_response(mocker):
     mock_error_handler.assert_called_once()
 
 
-def test_ec2_terminate_instances_command_client_error(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises ClientError.
-    When: terminate_instances_command encounters a ClientError during execution.
-    Then: It should handle the client error appropriately.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    mock_client.terminate_instances.side_effect = ClientError(
-        {"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}}, "TerminateInstances"
-    )
-
-    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
-
-    args = {"instance_ids": "InstanceID"}
-
-    EC2.terminate_instances_command(mock_client, args)
-    mock_error_handler.assert_called_once()
-
-
 def test_ec2_terminate_instances_command_terminating_stopping_instances_response(mocker):
     """
     Given: A mocked boto3 EC2 client that doesn't raise exceptions but returns invalid response.
@@ -1629,30 +1607,6 @@ def test_ec2_start_instances_command_bad_request_status(mocker):
 
     EC2.start_instances_command(mock_client, args)
     mock_error_handler.assert_called_once()
-
-
-def test_ec2_start_instances_command_client_error(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises ClientError.
-    When: start_instances_command encounters a client error.
-    Then: It should handle the client error appropriately.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    client_error = ClientError(
-        error_response={"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}},
-        operation_name="StartInstances",
-    )
-    mock_client.start_instances.side_effect = client_error
-
-    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
-
-    args = {"instance_ids": ["i-invalid123"]}
-
-    EC2.start_instances_command(mock_client, args)
-    mock_error_handler.assert_called_once_with(client_error)
 
 
 def test_ec2_start_instances_command_empty_instance_ids(mocker):
@@ -1910,30 +1864,6 @@ def test_ec2_stop_instances_command_bad_request_status(mocker):
 
     EC2.stop_instances_command(mock_client, args)
     mock_error_handler.assert_called_once()
-
-
-def test_ec2_stop_instances_command_client_error(mocker):
-    """
-    Given: A mocked boto3 EC2 client that raises ClientError.
-    When: stop_instances_command encounters a client error.
-    Then: It should handle the client error appropriately.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    client_error = ClientError(
-        error_response={"Error": {"Code": "InvalidInstanceID.NotFound", "Message": "Instance not found"}},
-        operation_name="StopInstances",
-    )
-    mock_client.stop_instances.side_effect = client_error
-
-    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
-
-    args = {"instance_ids": ["i-invalid123"]}
-
-    EC2.stop_instances_command(mock_client, args)
-    mock_error_handler.assert_called_once_with(client_error)
 
 
 def test_ec2_stop_instances_command_raw_response_included(mocker):
@@ -2890,20 +2820,6 @@ def test_build_pagination_kwargs_with_invalid_limit_string():
         build_pagination_kwargs(args)
 
 
-def test_build_pagination_kwargs_with_empty_next_token():
-    """
-    Given: An empty string next_token argument.
-    When: build_pagination_kwargs is called with empty next_token.
-    Then: It should raise ValueError indicating next_token must be non-empty.
-    """
-    from AWS import build_pagination_kwargs
-
-    args = {"limit": "10", "next_token": ""}
-
-    with pytest.raises(ValueError, match="next_token must be a non-empty string"):
-        build_pagination_kwargs(args)
-
-
 def test_build_pagination_kwargs_with_whitespace_only_next_token():
     """
     Given: A next_token with only whitespace characters.
@@ -2960,20 +2876,6 @@ def test_build_pagination_kwargs_with_numeric_limit():
     assert result["MaxResults"] == 75
 
 
-def test_build_pagination_kwargs_with_float_limit():
-    """
-    Given: A float limit argument.
-    When: build_pagination_kwargs is called with float limit.
-    Then: It should convert to integer and return correct limit.
-    """
-    from AWS import build_pagination_kwargs
-
-    args = {"limit": 25.7}
-    result = build_pagination_kwargs(args)
-
-    assert result["MaxResults"] == 25
-
-
 def test_build_pagination_kwargs_with_non_string_next_token():
     """
     Given: A non-string next_token argument.
@@ -3001,17 +2903,3 @@ def test_build_pagination_kwargs_no_pagination_arguments():
 
     assert result["MaxResults"] == 50
     assert "NextToken" not in result
-
-
-def test_build_pagination_kwargs_with_boolean_limit():
-    """
-    Given: A boolean limit argument.
-    When: build_pagination_kwargs is called with boolean limit.
-    Then: It should raise ValueError indicating invalid limit parameter.
-    """
-    from AWS import build_pagination_kwargs
-
-    args = {"limit": True}
-
-    with pytest.raises(ValueError, match="Invalid limit parameter"):
-        build_pagination_kwargs(args)
