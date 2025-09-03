@@ -959,8 +959,8 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | AWS.EC2.Instances.NetworkInterfaces.SubnetId | String | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
 | AWS.EC2.Instances.NetworkInterfaces.VpcId | String | The ID of the VPC. |
 | AWS.EC2.Instances.NetworkInterfaces.InterfaceType | String | The type of network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix | String | The IPv4 delegated prefixes that are assigned to the network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix | String | The IPv6 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes | Array | The IPv4 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes | Array | The IPv6 delegated prefixes that are assigned to the network interface. |
 | AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration | Dictionary | A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface. |
 | AWS.EC2.Instances.NetworkInterfaces.Operator | Dictionary | The service provider that manages the network interface. |
 | AWS.EC2.Instances.OutpostArn | String | The Amazon Resource Name \(ARN\) of the Outpost. |
