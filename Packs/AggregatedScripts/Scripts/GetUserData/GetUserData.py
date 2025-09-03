@@ -4,6 +4,7 @@ from collections.abc import Callable
 import demistomock as demisto
 from CommonServerPython import *
 
+
 class Command:
     def __init__(self, brand: str, name: str, args: dict) -> None:
         """
@@ -525,7 +526,7 @@ def xdr_and_core_list_all_users(
             else:
                 user["Status"] = "found"
             users.append(user)
-        
+
     if list_non_risky_users:
         email_set = set(email_list)
         if additional_fields:
@@ -548,18 +549,19 @@ def xdr_and_core_list_all_users(
                             user.additional_fields.update(output)
                         break
                 if not found:
-                    users.append(create_user(
-                        source=second_command.brand,
-                        id=outputs.get("id"),
-                        risk_level=outputs.pop("risk_level", None),
-                        username=outputs.pop("id", None),
-                        instance=output.get("instance"),
-                        email=outputs.pop("user_email", None),
-                        **outputs,
-                        additional_fields=additional_fields,
-                    ))
-    
-    
+                    users.append(
+                        create_user(
+                            source=second_command.brand,
+                            id=outputs.get("id"),
+                            risk_level=outputs.pop("risk_level", None),
+                            username=outputs.pop("id", None),
+                            instance=output.get("instance"),
+                            email=outputs.pop("user_email", None),
+                            **outputs,
+                            additional_fields=additional_fields,
+                        )
+                    )
+
     return readable_outputs_list, users
 
 
@@ -638,29 +640,31 @@ def get_core_and_xdr_data(
     email_list: List[str] = [],
     outputs_key_field: str = "",
 ) -> tuple[list[str], list[dict]]:
-    
     # prepare both commands
-    first_commands = [Command(
-        brand=brand_name,
-        name=first_command,
-        args={first_arg_name: first_arg_value, "using-brand": brand_name},
-    ) for first_arg_value in first_arg_values]
+    first_commands = [
+        Command(
+            brand=brand_name,
+            name=first_command,
+            args={first_arg_name: first_arg_value, "using-brand": brand_name},
+        )
+        for first_arg_value in first_arg_values
+    ]
     second_command = Command(
         brand=brand_name,
         name=second_command,
         args={"using-brand": brand_name},
     )
-    
+
     if first_commands and modules.is_brand_available(first_commands[0]) and is_valid_args(first_commands[0]):
         demisto.debug(f"Starting execution flow for list-users for {brand_name}")
         readable_outputs, outputs = xdr_and_core_list_all_users(
-        first_commands,
-        second_command,
-        outputs_key_field=outputs_key_field,
-        additional_fields=additional_fields,
-        list_non_risky_users=list_non_risky_users,
-        email_list=email_list,
-    )
+            first_commands,
+            second_command,
+            outputs_key_field=outputs_key_field,
+            additional_fields=additional_fields,
+            list_non_risky_users=list_non_risky_users,
+            email_list=email_list,
+        )
         return readable_outputs, outputs
     return [], []
 
@@ -1040,7 +1044,7 @@ def main():
         if readable_output and outputs:
             users_outputs.extend(outputs)
             users_readables.extend(readable_output)
-        
+
         #################################
         ### Running for Core ###
         #################################
