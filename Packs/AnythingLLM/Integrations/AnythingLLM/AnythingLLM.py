@@ -223,14 +223,14 @@ class Client(BaseClient):
         if demisto.params().get("airs_scan_prompt"):
             result = self.airs_client.airs_sync_scan_prompt(message)
             if result['action'] == "block":
-                msg = f"AnythingLLM: workspace_thread_chat: prompt was blocked due to a security violation [{result.get("prompt_detected")}]"
+                msg = f"AnythingLLM: workspace_thread_chat: prompt blocked [{result.get('prompt_detected')}]"
                 demisto.debug(msg)
                 raise Exception(msg)
         response = self._tchat(workspace, thread, message, mode, "chat")
         if demisto.params().get("airs_scan_response"):
             result = self.airs_client.airs_sync_scan_response(response['textResponse'])
             if result['action'] == "block":
-                msg = f"AnythingLLM: workspace_thread_chat: response was blocked due to a security violation [{result.get("response_detected")}]"
+                msg = f"AnythingLLM: workspace_thread_chat: response blocked [{result.get('response_detected')}]"
                 demisto.debug(msg)
                 raise Exception(msg)
 
@@ -305,14 +305,14 @@ class Client(BaseClient):
             if demisto.params().get("airs_scan_prompt"):
                 result = self.airs_client.airs_sync_scan_prompt(message)
                 if result['action'] == "block":
-                    msg = f"AnythingLLM: _chat: prompt was blocked due to a security violation [{result.get("prompt_detected")}]"
+                    msg = f"AnythingLLM: _chat: prompt blocked [{result.get("prompt_detected")}]"
                     demisto.debug(msg)
                     raise Exception(msg)
             response = self._http_request(method="POST", url_suffix=f"/v1/workspace/{slug}/{ttype}", json_data=data)
             if demisto.params().get("airs_scan_response"):
                 result = self.airs_client.airs_sync_scan_response(response.get("textResponse"))
                 if result['action'] == "block":
-                    msg = f"AnythingLLM: _chat: response was blocked due to a security violation [{result.get("response_detected")}]"
+                    msg = f"AnythingLLM: _chat: response blocked [{result.get("response_detected")}]"
                     demisto.debug(msg)
                     raise Exception(msg)
         except Exception as e:
@@ -805,8 +805,7 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            if result == "ok":
-                if params.get("airs_url", "") != "":
+            if result == "ok" and params.get("airs_url", "") != "":
                     airs_client.test_module()
             return_results('ok')
 
