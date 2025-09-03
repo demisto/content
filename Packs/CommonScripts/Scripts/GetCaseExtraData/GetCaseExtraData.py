@@ -46,12 +46,15 @@ def main():
             case_data = get_case_extra_data({"case_id": str(case_id), "issues_limit": issues_limit})
             final_results.append(case_data)
         mapped_cases = replace_response_names(final_results)
-        return_results( CommandResults(
-            readable_output=tableToMarkdown("Cases Extra Data", mapped_cases, headerTransform=string_to_table_header),
-            outputs_prefix="Core.CaseExtraData",
-            outputs_key_field="case_id",
-            outputs=mapped_cases,
-            raw_response=mapped_cases))
+        return_results(
+            CommandResults(
+                readable_output=tableToMarkdown("Cases Extra Data", mapped_cases, headerTransform=string_to_table_header),
+                outputs_prefix="Core.CaseExtraData",
+                outputs_key_field="case_id",
+                outputs=mapped_cases,
+                raw_response=mapped_cases,
+            )
+        )
     except Exception as e:
         return_error("Error occurred while retrieving cases. Exception info:\n" + str(e))
 

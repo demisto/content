@@ -45,7 +45,10 @@ def recursive_replace_response_names(obj, old_to_new=True):
     elif isinstance(obj, list):
         return [recursive_replace_response_names(item, old_to_new) for item in obj]
     elif isinstance(obj, dict):
-        return {recursive_replace_response_names(key, old_to_new): recursive_replace_response_names(value,old_to_new) for key, value in obj.items()}
+        return {
+            recursive_replace_response_names(key, old_to_new): recursive_replace_response_names(value, old_to_new)
+            for key, value in obj.items()
+        }
     else:
         return obj
 
@@ -115,6 +118,7 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         outputs=reply,
         raw_response=reply,
     )
+
 
 def get_cases_command(client, args):
     """
@@ -192,13 +196,11 @@ def main():  # pragma: no cover
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in
-                                                  issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
 
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys,
-                                                                       issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
 
@@ -217,4 +219,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-

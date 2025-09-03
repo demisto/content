@@ -4384,6 +4384,7 @@ def test_replace_response_names_string():
         - Unmatched strings remain unchanged.
     """
     from CoreIRApiModule import replace_response_names
+
     assert replace_response_names("incident and alert") == "case and issue"
     assert replace_response_names("no match here") == "no match here"
 
@@ -4398,6 +4399,7 @@ def test_replace_response_names_list():
         - Each relevant string is replaced, unrelated strings remain unchanged.
     """
     from CoreIRApiModule import replace_response_names
+
     data = ["incident", "alert", "foo"]
     assert replace_response_names(data) == ["case", "issue", "foo"]
 
@@ -4412,6 +4414,7 @@ def test_replace_response_names_dict():
         - Both keys and values are replaced accordingly.
     """
     from CoreIRApiModule import replace_response_names
+
     data = {"incident": "alert", "foo": "bar"}
     assert replace_response_names(data) == {"case": "issue", "foo": "bar"}
 
@@ -4426,6 +4429,7 @@ def test_replace_response_names_nested():
         - All occurrences, at any depth, are replaced accordingly.
     """
     from CoreIRApiModule import replace_response_names
+
     data = {"incident": ["alert", {"incident": "alert"}]}
     expected = {"case": ["issue", {"case": "issue"}]}
     assert replace_response_names(data) == expected
@@ -4441,8 +4445,10 @@ def test_replace_response_names_noop():
         - The object is returned unchanged.
     """
     from CoreIRApiModule import replace_response_names
+
     assert replace_response_names(123) == 123
     assert replace_response_names(None) is None
+
 
 def test_get_cases_command_case_id_as_int(mocker):
     """
@@ -4454,6 +4460,7 @@ def test_get_cases_command_case_id_as_int(mocker):
         - client.get_incidents is called with incident_id_list as a list of string
     """
     from CoreIRApiModule import get_cases_command
+
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": "1"}]
     mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: x)
@@ -4476,11 +4483,10 @@ def test_get_cases_command_status_filter(mocker):
         - Output is limited to 'limit' param
     """
     from CoreIRApiModule import get_cases_command
+
     client = mocker.Mock()
     # simulate two calls for two statuses
-    client.get_incidents.side_effect = [
-        [{"case_id": "1"}], [{"case_id": "2"}]
-    ]
+    client.get_incidents.side_effect = [[{"case_id": "1"}], [{"case_id": "2"}]]
     mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
     mocker.patch("CoreIRApiModule.tableToMarkdown", return_value="table")
     args = {"status": ["new", "closed"], "limit": 1}
@@ -4501,6 +4507,7 @@ def test_get_cases_command_limit_enforced(mocker):
         - client.get_incidents is called with limit=MAX_GET_INCIDENTS_LIMIT
     """
     from CoreIRApiModule import get_cases_command, MAX_GET_INCIDENTS_LIMIT
+
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
     mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
@@ -4534,6 +4541,7 @@ def test_get_cases_command_no_filters_error(mocker):
         - ValueError is raised
     """
     from CoreIRApiModule import get_cases_command
+
     client = mocker.Mock()
     args = {}
     with pytest.raises(ValueError, match="Specify a query for the incidents"):
@@ -4550,6 +4558,7 @@ def test_get_cases_command_conflicting_time_filters(mocker):
         - ValueError is raised
     """
     from CoreIRApiModule import get_cases_command
+
     client = mocker.Mock()
     args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
     with pytest.raises(ValueError):
@@ -4566,6 +4575,7 @@ def test_get_cases_command_mapping_and_markdown(mocker):
         - replace_response_names and tableToMarkdown are called
     """
     from CoreIRApiModule import get_cases_command
+
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": "1"}]
     mock_replace = mocker.patch("CoreIRApiModule.replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])

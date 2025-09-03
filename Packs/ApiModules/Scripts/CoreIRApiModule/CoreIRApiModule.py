@@ -169,8 +169,6 @@ ALLOW_RESPONSE_AS_BINARY = is_demisto_version_ge(
     version=ALLOW_BIN_CONTENT_RESPONSE_SERVER_VERSION, build_number=ALLOW_BIN_CONTENT_RESPONSE_BUILD_NUM
 )
 
-MAX_GET_INCIDENTS_PAGE_SIZE = 100
-
 
 class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
@@ -411,11 +409,8 @@ class CoreClient(BaseClient):
         return incidents
 
     def get_incident_extra_data(
-        self,
-        incident_id: str,
-        alerts_limit: int,
-        full_alert_fields: bool = False,
-        remove_nulls_from_alerts: bool = True) -> dict:
+        self, incident_id: str, alerts_limit: int, full_alert_fields: bool = False, remove_nulls_from_alerts: bool = True
+    ) -> dict:
         """
         Returns incident extra data by id
         :param incident_id: The id of case
@@ -423,10 +418,12 @@ class CoreClient(BaseClient):
         :param full_alert_fields: Whether to return full alert fields
         :return:
         """
-        request_data = {"incident_id": incident_id,
-                        "alerts_limit": alerts_limit,
-                        "full_alert_fields": full_alert_fields,
-                        "drop_nulls": remove_nulls_from_alerts}
+        request_data = {
+            "incident_id": incident_id,
+            "alerts_limit": alerts_limit,
+            "full_alert_fields": full_alert_fields,
+            "drop_nulls": remove_nulls_from_alerts,
+        }
 
         demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
         response = self._http_request(
@@ -1891,7 +1888,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
             headers=["action_id", "endpoint_id", "status", "error_description"],
         ),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                       f'GetActionStatus(val.action_id == obj.action_id)',
+        f'GetActionStatus(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=result,
     )
@@ -2278,7 +2275,7 @@ def unisolate_endpoint_command(client, args):
         else:
             return CommandResults(
                 readable_output=f"Warning: un-isolation action is pending for the following disconnected "
-                                f"endpoint: {endpoint_id}.",
+                f"endpoint: {endpoint_id}.",
                 outputs={
                     f'{args.get("integration_context_brand", "CoreApiModule")}.'
                     f'UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
@@ -2320,7 +2317,7 @@ def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandR
     return CommandResults(
         readable_output=tableToMarkdown(name="Retrieve files", t=result, headerTransform=string_to_table_header),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}'
-                       f'.RetrievedFiles(val.action_id == obj.action_id)',
+        f'.RetrievedFiles(val.action_id == obj.action_id)',
         outputs=result,
         raw_response=reply,
     )
@@ -3322,7 +3319,7 @@ def get_scripts_command(client: CoreClient, args: Dict[str, str]) -> tuple[str, 
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk],
     )
-    scripts = copy.deepcopy(result.get("scripts")[offset: (offset + limit)])  # type: ignore
+    scripts = copy.deepcopy(result.get("scripts")[offset : (offset + limit)])  # type: ignore
     for script in scripts:
         timestamp = script.get("modification_date")
         script["modification_date_timestamp"] = timestamp
