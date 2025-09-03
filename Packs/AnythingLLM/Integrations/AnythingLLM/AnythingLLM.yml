@@ -29,14 +29,14 @@ configuration:
   defaultvalue: https://service.api.aisecurity.paloaltonetworks.com
   display: AIRS API URL
   name: airs_url
-  required: false
+  required: true
   type: 0
 - additionalinfo: Leave blank if AIRS is not being used
   display: ''
   displaypassword: AIRS API Key
   hiddenusername: true
   name: airs_apikey
-  required: false
+  required: true
   type: 9
 - defaultvalue: 'false'
   display: Sync Scan LLM Prompts with AIRS
