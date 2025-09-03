@@ -220,17 +220,17 @@ class Client(BaseClient):
             raise Exception(msg)
 
     def workspace_thread_chat(self, workspace: str, thread: str, message: str, mode: str):
-        if demisto.params()['airs_scan_prompt']:
+        if demisto.params().get("airs_scan_prompt"):
             result = self.airs_client.airs_sync_scan_prompt(message)
             if result['action'] == "block":
-                msg = f"AnythingLLM: workspace_thread_chat: prompt was blocked due to a security violation [{result['prompt_detected']}]"
+                msg = f"AnythingLLM: workspace_thread_chat: prompt was blocked due to a security violation [{result.get("prompt_detected")}]"
                 demisto.debug(msg)
                 raise Exception(msg)
         response = self._tchat(workspace, thread, message, mode, "chat")
-        if demisto.params()['airs_scan_response']:
+        if demisto.params().get("airs_scan_response"):
             result = self.airs_client.airs_sync_scan_response(response['textResponse'])
             if result['action'] == "block":
-                msg = f"AnythingLLM: workspace_thread_chat: response was blocked due to a security violation [{result['response_detected']}]"
+                msg = f"AnythingLLM: workspace_thread_chat: response was blocked due to a security violation [{result.get("response_detected")}]"
                 demisto.debug(msg)
                 raise Exception(msg)
 
@@ -302,17 +302,17 @@ class Client(BaseClient):
         try:
             data = {"message": message, "mode": validate_chat_mode(mode)}
             slug = workspace_slug(workspace, self.workspace_list())
-            if demisto.params()['airs_scan_prompt']:
+            if demisto.params().get("airs_scan_prompt"):
                 result = self.airs_client.airs_sync_scan_prompt(message)
                 if result['action'] == "block":
-                    msg = f"AnythingLLM: _chat: prompt was blocked due to a security violation [{result['prompt_detected']}]"
+                    msg = f"AnythingLLM: _chat: prompt was blocked due to a security violation [{result.get("prompt_detected")}]"
                     demisto.debug(msg)
                     raise Exception(msg)
             response = self._http_request(method="POST", url_suffix=f"/v1/workspace/{slug}/{ttype}", json_data=data)
-            if demisto.params()['airs_scan_response']:
-                result = self.airs_client.airs_sync_scan_response(response['textResponse'])
+            if demisto.params().get("airs_scan_response"):
+                result = self.airs_client.airs_sync_scan_response(response.get("textResponse"))
                 if result['action'] == "block":
-                    msg = f"AnythingLLM: _chat: response was blocked due to a security violation [{result['response_detected']}]"
+                    msg = f"AnythingLLM: _chat: response was blocked due to a security violation [{result.get("response_detected")}]"
                     demisto.debug(msg)
                     raise Exception(msg)
         except Exception as e:
@@ -381,15 +381,6 @@ class Client(BaseClient):
 
 
 class AirsClient(BaseClient):
-    # def __init__(self, server_url: str, verify: bool, proxy: bool, headers, auth: str):
-    #    super().__init__(
-    #        base_url=server_url,
-    #        verify=verify,
-    #        proxy=proxy,
-    #        headers=headers,
-    #        auth=auth
-    #        )
-
     def test_module(self):
         self.airs_sync_scan_prompt("Hello!")
 
@@ -810,6 +801,8 @@ def main() -> None:  # pragma: no cover
             # Register the AIRS client with the Anything LLM client so it can scan prompts and responses with AIRS
             client.set_airs_client(airs_client)
             airs_client.set_params(params)
+        else:
+            raise Exception(f"AIRS URL not defined")
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
