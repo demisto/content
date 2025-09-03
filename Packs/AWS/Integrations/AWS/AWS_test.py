@@ -2774,3 +2774,244 @@ def test_parse_filter_exactly_200_values():
     assert len(result[0]["Values"]) == 200
     assert result[0]["Values"][0] == "value0"
     assert result[0]["Values"][199] == "value199"
+
+
+def test_build_pagination_kwargs_with_default_limit():
+    """
+    Given: No limit argument provided in args.
+    When: build_pagination_kwargs is called without limit.
+    Then: It should return kwargs with default limit value.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {}
+    result = build_pagination_kwargs(args)
+
+    assert "MaxResults" in result
+    assert result["MaxResults"] == 50  # DEFAULT_LIMIT_VALUE
+
+
+def test_build_pagination_kwargs_with_valid_limit():
+    """
+    Given: A valid limit argument in args.
+    When: build_pagination_kwargs is called with valid limit.
+    Then: It should return kwargs with the specified limit.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "25"}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 25
+
+
+def test_build_pagination_kwargs_with_valid_next_token():
+    """
+    Given: Valid limit and next_token arguments in args.
+    When: build_pagination_kwargs is called with both parameters.
+    Then: It should return kwargs with both MaxResults and NextToken.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "30", "next_token": "token123"}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 30
+    assert result["NextToken"] == "token123"
+
+
+def test_build_pagination_kwargs_with_next_token_whitespace():
+    """
+    Given: A next_token with leading and trailing whitespace.
+    When: build_pagination_kwargs is called with whitespace token.
+    Then: It should strip whitespace and return clean NextToken.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "10", "next_token": "  token_with_spaces  "}
+    result = build_pagination_kwargs(args)
+
+    assert result["NextToken"] == "token_with_spaces"
+
+
+def test_build_pagination_kwargs_with_limit_exceeding_maximum():
+    """
+    Given: A limit argument exceeding the maximum allowed value.
+    When: build_pagination_kwargs is called with oversized limit.
+    Then: It should cap the limit at maximum value and log debug message.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "2000"}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 1000  # MAX_LIMIT_VALUE
+
+
+def test_build_pagination_kwargs_with_zero_limit():
+    """
+    Given: A limit argument of zero.
+    When: build_pagination_kwargs is called with zero limit.
+    Then: It should raise ValueError indicating limit must be greater than 0.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "0"}
+
+    with pytest.raises(ValueError, match="Limit must be greater than 0"):
+        build_pagination_kwargs(args)
+
+
+def test_build_pagination_kwargs_with_negative_limit():
+    """
+    Given: A negative limit argument.
+    When: build_pagination_kwargs is called with negative limit.
+    Then: It should raise ValueError indicating limit must be greater than 0.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "-5"}
+
+    with pytest.raises(ValueError, match="Limit must be greater than 0"):
+        build_pagination_kwargs(args)
+
+
+def test_build_pagination_kwargs_with_invalid_limit_string():
+    """
+    Given: A non-numeric string limit argument.
+    When: build_pagination_kwargs is called with invalid limit.
+    Then: It should raise ValueError indicating invalid limit parameter.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "not_a_number"}
+
+    with pytest.raises(ValueError, match="Invalid limit parameter"):
+        build_pagination_kwargs(args)
+
+
+def test_build_pagination_kwargs_with_empty_next_token():
+    """
+    Given: An empty string next_token argument.
+    When: build_pagination_kwargs is called with empty next_token.
+    Then: It should raise ValueError indicating next_token must be non-empty.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "10", "next_token": ""}
+
+    with pytest.raises(ValueError, match="next_token must be a non-empty string"):
+        build_pagination_kwargs(args)
+
+
+def test_build_pagination_kwargs_with_whitespace_only_next_token():
+    """
+    Given: A next_token with only whitespace characters.
+    When: build_pagination_kwargs is called with whitespace-only token.
+    Then: It should raise ValueError indicating next_token must be non-empty.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "10", "next_token": "   "}
+
+    with pytest.raises(ValueError, match="next_token must be a non-empty string"):
+        build_pagination_kwargs(args)
+
+
+def test_build_pagination_kwargs_with_none_limit():
+    """
+    Given: A None value for limit argument.
+    When: build_pagination_kwargs is called with None limit.
+    Then: It should use default limit value.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": None}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 50  # DEFAULT_LIMIT_VALUE
+
+
+def test_build_pagination_kwargs_with_limit_at_maximum():
+    """
+    Given: A limit argument exactly at the maximum allowed value.
+    When: build_pagination_kwargs is called with maximum limit.
+    Then: It should return kwargs with the maximum limit without capping.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "1000"}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 1000
+
+
+def test_build_pagination_kwargs_with_numeric_limit():
+    """
+    Given: A numeric limit argument instead of string.
+    When: build_pagination_kwargs is called with numeric limit.
+    Then: It should handle the numeric type and return correct limit.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 75}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 75
+
+
+def test_build_pagination_kwargs_with_float_limit():
+    """
+    Given: A float limit argument.
+    When: build_pagination_kwargs is called with float limit.
+    Then: It should convert to integer and return correct limit.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": 25.7}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 25
+
+
+def test_build_pagination_kwargs_with_non_string_next_token():
+    """
+    Given: A non-string next_token argument.
+    When: build_pagination_kwargs is called with non-string token.
+    Then: It should raise ValueError indicating next_token must be a string.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": "10", "next_token": 12345}
+
+    with pytest.raises(ValueError, match="next_token must be a non-empty string"):
+        build_pagination_kwargs(args)
+
+
+def test_build_pagination_kwargs_no_pagination_arguments():
+    """
+    Given: Args dictionary with no pagination-related arguments.
+    When: build_pagination_kwargs is called with non-pagination args.
+    Then: It should return kwargs with default limit only.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"other_param": "value", "unrelated_arg": "test"}
+    result = build_pagination_kwargs(args)
+
+    assert result["MaxResults"] == 50
+    assert "NextToken" not in result
+
+
+def test_build_pagination_kwargs_with_boolean_limit():
+    """
+    Given: A boolean limit argument.
+    When: build_pagination_kwargs is called with boolean limit.
+    Then: It should raise ValueError indicating invalid limit parameter.
+    """
+    from AWS import build_pagination_kwargs
+
+    args = {"limit": True}
+
+    with pytest.raises(ValueError, match="Invalid limit parameter"):
+        build_pagination_kwargs(args)

@@ -1120,37 +1120,34 @@ class EC2:
             pagination_kwargs = build_pagination_kwargs(args)
             kwargs.update(pagination_kwargs)
 
-        try:
-            print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
-            remove_nulls_from_dictionary(kwargs)
-            response = client.describe_instances(**kwargs)
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            response = serialize_response_with_datetime_encoding(response)
-            # Extract instances from reservations
-            reservations = response.get("Reservations", [])
-            if not reservations:
-                return CommandResults(
-                    readable_output="No instances found matching the specified criteria.",
-                )
-            readable_outputs = []
-            instances_list = []
-            for reservation in reservations:
-                instances_list.extend(reservation.get("Instances", []))
-                for instance in reservation.get("Instances", []):
-                    readable_outputs.append(process_instance_data(instance))
-            outputs = {
-                "AWS.EC2.Instances(val.InstanceId && val.InstanceId == obj.InstanceId)": instances_list,
-                "AWS.EC2(true)": {"InstancesNextToken": response.get("NextToken")},
-            }
-
+        print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_instances(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        # Extract instances from reservations
+        reservations = response.get("Reservations", [])
+        if not reservations:
             return CommandResults(
-                outputs=outputs,
-                readable_output=tableToMarkdown("AWS EC2 Instances", readable_outputs, removeNull=True),
-                raw_response=response,
+                readable_output="No instances found matching the specified criteria.",
             )
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        readable_outputs = []
+        instances_list = []
+        for reservation in reservations:
+            instances_list.extend(reservation.get("Instances", []))
+            for instance in reservation.get("Instances", []):
+                readable_outputs.append(process_instance_data(instance))
+        outputs = {
+            "AWS.EC2.Instances(val.InstanceId && val.InstanceId == obj.InstanceId)": instances_list,
+            "AWS.EC2(true)": {"InstancesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown("AWS EC2 Instances", readable_outputs, removeNull=True),
+            raw_response=response,
+        )
 
         return CommandResults(readable_output="Failed to describe instances")
 
@@ -1250,49 +1247,43 @@ class EC2:
         if tags:
             kwargs["TagSpecifications"] = [{"ResourceType": "instance", "Tags": parse_tag_field(tags)}]
 
-        try:
-            # Remove null values to clean up API call
-            kwargs = remove_empty_elements(kwargs)
+        # Remove null values to clean up API call
+        kwargs = remove_empty_elements(kwargs)
 
-            response = client.run_instances(**kwargs)
+        response = client.run_instances(**kwargs)
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            response = serialize_response_with_datetime_encoding(response)
-            instances = response.get("Instances", [])
-            if not instances:
-                return CommandResults(readable_output="No instances were launched.")
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        instances = response.get("Instances", [])
+        if not instances:
+            return CommandResults(readable_output="No instances were launched.")
 
-            # Format output data
-            instances_data = []
-            for instance in instances:
-                instances_data.append(process_instance_data(instance))
-            readable_output = tableToMarkdown(
-                f"Launched {len(instances)} EC2 Instance(s)",
-                instances_data,
-                headers=[
-                    "InstanceId",
-                    "ImageId",
-                    "State",
-                    "Type",
-                    "PublicIPAddress",
-                    "PrivateIpAddress",
-                    "LaunchDate",
-                    "AvailabilityZone",
-                    "PublicDNSName",
-                    "Monitoring",
-                ],
-                headerTransform=string_to_table_header,
-                removeNull=True,
-            )
-            return CommandResults(
-                outputs_prefix="AWS.EC2.Instances", outputs=instances, readable_output=readable_output, raw_response=response
-            )
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-
-        return CommandResults(readable_output="Failed to launch instances")
+        # Format output data
+        instances_data = []
+        for instance in instances:
+            instances_data.append(process_instance_data(instance))
+        readable_output = tableToMarkdown(
+            f"Launched {len(instances)} EC2 Instance(s)",
+            instances_data,
+            headers=[
+                "InstanceId",
+                "ImageId",
+                "State",
+                "Type",
+                "PublicIPAddress",
+                "PrivateIpAddress",
+                "LaunchDate",
+                "AvailabilityZone",
+                "PublicDNSName",
+                "Monitoring",
+            ],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances", outputs=instances, readable_output=readable_output, raw_response=response
+        )
 
     @staticmethod
     def _manage_instances_command(
@@ -1358,25 +1349,21 @@ class EC2:
 
         config = action_config[action]
 
-        try:
-            print_debug_logs(client, f"{action.title()}ing instances: {instance_ids}")
+        print_debug_logs(client, f"{action.title()}ing instances: {instance_ids}")
 
-            # Get the appropriate client method dynamically
-            client_method = getattr(client, config["method_name"])
-            response = client_method(**base_params)
+        # Get the appropriate client method dynamically
+        client_method = getattr(client, config["method_name"])
+        response = client_method(**base_params)
 
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
-                readable_output = (
-                    f"The instances have been {config['success_message']} successfully."
-                    if response.get(config["response_key"])
-                    else f"No instances were {config['success_message']}."
-                )
-                return CommandResults(readable_output=readable_output, raw_response=response)
-            else:
-                AWSErrorHandler.handle_response_error(response)
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            readable_output = (
+                f"The instances have been {config['success_message']} successfully."
+                if response.get(config["response_key"])
+                else f"No instances were {config['success_message']}."
+            )
+            return CommandResults(readable_output=readable_output, raw_response=response)
+        else:
+            AWSErrorHandler.handle_response_error(response)
 
         return CommandResults(readable_output=config["failure_message"])
 
@@ -2056,6 +2043,15 @@ def main():  # pragma: no cover
             return_results(execute_aws_command(command, args, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
+
+    except ClientError as client_err:
+        # Catch ClientError at the main level and try to handle it
+        try:
+            account_id = args.get("account_id", "")
+            AWSErrorHandler.handle_client_error(client_err, account_id)
+        except DemistoException as handler_err:
+            # If we can't handle or parse the error, raise an exception
+            return_error(f"Failed to execute {command} command.\nError:\n{str(handler_err)}")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
