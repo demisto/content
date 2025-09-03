@@ -776,7 +776,7 @@ Describes the specified security groups or all of your security groups. Returns 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.SecurityGroupsNextToken | List | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. |
+| AWS.EC2.SecurityGroupsNextToken | string | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. |
 | AWS.EC2.SecurityGroups.Description | string | A description of the security group. |
 | AWS.EC2.SecurityGroups.GroupName | string | The name of the security group. |
 | AWS.EC2.SecurityGroups.IpPermissions | unknown | The inbound rules associated with the security group. |
@@ -787,6 +787,7 @@ Describes the specified security groups or all of your security groups. Returns 
 | AWS.EC2.SecurityGroups.Tags.Key | string | The key of the tag. |
 | AWS.EC2.SecurityGroups.Tags.Value | string | The value of the tag. |
 | AWS.EC2.SecurityGroups.AccountId | string | The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided. |
+| AWS.EC2.SecurityGroups.SecurityGroupArn | string | The ARN of the security group. |
 
 ### aws-ec2-security-group-egress-authorize
 
