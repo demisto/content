@@ -36,6 +36,34 @@ def alert_to_issue(outputs):
     return outputs
 
 
+def recursive_replace_response_names(obj, old_to_new=True):
+    """
+    Recursively replace 'incident' with 'case' and 'alert' with 'issue' in a given object.
+
+    Args:
+        obj: The object to be processed.
+        old_to_new (bool): If True, replace 'incident' with 'case' and 'alert' with 'issue'.
+            If False, replace 'case' with 'incident' and 'issue' with 'alert'.
+
+    Returns:
+        The processed object with the replaced strings.
+    """
+    if isinstance(obj, str):
+        if old_to_new:
+            return obj.replace("incident", "case").replace("alert", "issue")
+        return obj.replace("case", "incident").replace("issue", "alert")
+
+    elif isinstance(obj, list):
+        return [recursive_replace_response_names(item, old_to_new) for item in obj]
+    elif isinstance(obj, dict):
+        return {
+            recursive_replace_response_names(key, old_to_new): recursive_replace_response_names(value, old_to_new)
+            for key, value in obj.items()
+        }
+    else:
+        return obj
+
+
 def filter_context_fields(output_keys: list, context: list):
     """
     Filters only specific keys from the context dictionary based on provided output_keys.
@@ -103,6 +131,51 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_cases_command(client, args):
+    """
+    Retrieve a list of Cases from XDR, filtered by some filters.
+    """
+    demisto.debug(f"get_cases_command original args: {args}")
+    args = recursive_replace_response_names(args, old_to_new=False)
+    demisto.debug(f"get_cases_command after recursive_replace_response_names args: {args}")
+    _, _, raw_incidents = get_incidents_command(client, args)
+    mapped_raw_cases = recursive_replace_response_names(raw_incidents)
+    return CommandResults(
+        readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
+        outputs_prefix="Core.Case",
+        outputs_key_field="case_id",
+        outputs=mapped_raw_cases,
+        raw_response=mapped_raw_cases,
+    )
+
+
+def get_extra_data_for_case_id_command(client, args):
+    """
+    Retrieves extra data for a specific case ID.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - case_id (str): The ID of the case to retrieve extra data for.
+                         - issues_limit (int): The maximum number of issues to return per case. Default is 1000.
+
+    Returns:
+        CommandResults: Object containing the formatted extra data,
+                        raw response, and outputs for integration context.
+    """
+    case_id = args.get("case_id")
+    issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
+    response = client.get_incident_extra_data(case_id, issues_limit)
+    mapped_response = recursive_replace_response_names(response)
+    return CommandResults(
+        readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
+        outputs_prefix="Core.CaseExtraData",
+        outputs=mapped_response,
+        raw_response=mapped_response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -155,6 +228,14 @@ def main():  # pragma: no cover
                 issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
+
+        elif command == "core-get-cases":
+            client._base_url = "/api/webapp/public_api/v1"
+            return_results(get_cases_command(client, args))
+
+        elif command == "core-get-case-extra-data":
+            client._base_url = "/api/webapp/public_api/v1"
+            return_results(get_extra_data_for_case_id_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
