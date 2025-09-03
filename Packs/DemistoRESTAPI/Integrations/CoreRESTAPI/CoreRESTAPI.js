@@ -80,7 +80,7 @@ getRequestURL = function (uri) {
             (!serverURL.endsWith('/xsoar'))
             && !(
                 uri.startsWith('/public_api')
-                || uri.startsWith('/v1/issue')  // this endpoint does not require a prefix 
+                || uri.startsWith('/v1/issue')  // This endpoint does not use a prefix. Remove this when CRTX-186185 is merged.
             )
         ) {
             requestUrl += '/xsoar'
