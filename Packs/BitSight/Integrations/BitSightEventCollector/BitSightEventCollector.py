@@ -102,8 +102,8 @@ def findings_to_events(findings: list[dict[str, Any]]) -> tuple[list[dict[str, A
         if first_seen:
             # Bitsight returns YYYY-MM-DD for first_seen
             try:
-                dt = datetime.strptime(first_seen, BITSIGHT_DATE_FORMAT)
-                event["_time"] = dt.strftime("%Y-%m-%dT%H:%M:%S")
+                first_seen_dt = datetime.strptime(first_seen, BITSIGHT_DATE_FORMAT)
+                event["_time"] = first_seen_dt.strftime("%Y-%m-%dT%H:%M:%S")
             except Exception as e:
                 demisto.debug(f"Failed to parse first_seen date '{first_seen}' for finding {f.get('id', 'unknown')}: {e}")
                 event["_time"] = first_seen
