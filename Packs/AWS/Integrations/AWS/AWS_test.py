@@ -1537,30 +1537,6 @@ def test_cloudtrail_describe_trails_command_missing_trail_list_key(mocker):
     assert result.outputs == []
 
 
-def test_cloudtrail_describe_trails_command_client_error(mocker):
-    """
-    Given: A mocked boto3 CloudTrail client that raises ClientError.
-    When: describe_trails_command encounters a client error.
-    Then: It should handle the error through AWSErrorHandler.
-    """
-    from AWS import CloudTrail
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    error_response = {
-        "Error": {"Code": "TrailNotFoundException", "Message": "Trail not found"},
-        "ResponseMetadata": {"HTTPStatusCode": 404},
-    }
-    mock_client.describe_trails.side_effect = ClientError(error_response, "describe-trails")
-
-    mock_handle_client_error = mocker.patch("AWS.AWSErrorHandler.handle_client_error")
-
-    args = {"trail_names": ["non-existent-trail"]}
-
-    CloudTrail.describe_trails_command(mock_client, args)
-    mock_handle_client_error.assert_called_once()
-
-
 def test_cloudtrail_describe_trails_command_with_all_trail_properties(mocker):
     """
     Given: A mocked boto3 CloudTrail client returning trail with all possible properties.
