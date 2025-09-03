@@ -801,8 +801,6 @@ def main() -> None:  # pragma: no cover
             # Register the AIRS client with the Anything LLM client so it can scan prompts and responses with AIRS
             client.set_airs_client(airs_client)
             airs_client.set_params(params)
-        else:
-            raise Exception(f"AIRS URL not defined")
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
