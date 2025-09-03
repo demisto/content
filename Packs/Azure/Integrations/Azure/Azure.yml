@@ -450,6 +450,92 @@ script:
     - contextPath: Azure.StorageAccountBlobServiceProperties.sku.tier
       description: The SKU tier.
       type: String
+  - description: Run this command to get the blob service properties of a specific account storage.
+    name: azure-storage-blob-service-properties-get
+    outputs:
+      - contextPath: Azure.StorageBlobServiceProperties.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.enable
+        description: When set to true last access time based tracking is enabled.
+        type: Boolean
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.name
+        description: Name of the policy. The valid value is AccessTimeTracking.
+        type: String
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.trackingGranularityInDays
+        description: The field specifies blob object tracking granularity in days, typically how often the blob object should be tracked.
+        type: Number
+      - contextPath: Azure.StorageBlobServiceProperties.properties.lastAccessTimeTrackingPolicy.blobType
+        description: An array of predefined supported blob types. Only blockBlob is the supported value.
+        type: String
+    arguments:
+      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+        name: subscription_id
+        required: true
+      - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+        name: resource_group_name
+        required: true
+      - description: The name of the storage account.
+        name: account_name
+        required: true
+  - description: Run this command to update an specific blob container.
+    name: azure-storage-blob-containers-update
+    outputs:
+      - contextPath: Azure.StorageBlobContainer.id
+        description: Fully qualified resource ID for the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.name
+        description: The name of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.type
+        description: The type of the resource.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.metadata.metadata
+        description: A name-value pair to associate with the container as metadata.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.publicAccess
+        description: Specifies whether data in the container may be accessed publicly and the level of access.
+        type: String
+      - contextPath: Azure.StorageBlobContainer.properties.hasImmutabilityPolicy
+        description: The hasImmutabilityPolicy public property is set to true by SRP if ImmutabilityPolicy has been created for this container. The hasImmutabilityPolicy public property is set to false by SRP if ImmutabilityPolicy has not been created for this container.
+        type: Boolean
+      - contextPath: Azure.StorageBlobContainer.properties.hasLegalHold
+        description: The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out.
+        type: Boolean
+    arguments:
+      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+        name: subscription_id
+        required: true
+      - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+        name: resource_group_name
+        required: true
+      - description: The name of the storage account.
+        name: account_name
+        required: true
+      - description: The name of the container.
+        name: container_name
+        required: true
+      - description: Default the container to use specified encryption scope for all writes.
+        name: default_encryption_scope
+      - auto: PREDEFINED
+        description: Block override of encryption scope from the container default.
+        name: deny_encryption_scope_override
+        predefined:
+          - 'true'
+          - 'false'
+      - auto: PREDEFINED
+        description: Specifies the level of access.
+        name: public_access
+        predefined:
+          - Blob
+          - Container
+          - None
   - arguments:
     - name: name
       required: true

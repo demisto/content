@@ -2037,3 +2037,97 @@ def test_get_monitor_log_profile_error_handling(mocker, client):
         subscription_id=subscription_id,
         resource_group_name=None,
     )
+
+
+def test_storage_blob_service_properties_get_command(mocker):
+    """
+    Given: An Azure client mock and the get_blob_service_properties.json file.
+    When: storage_blob_service_properties_get_command is called.
+    Then:
+        1. It should call client.storage_blob_service_properties_get_request with correct parameters.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+    from Azure import storage_blob_service_properties_get_command
+
+    mock_response = util_load_json("test_data/get_blob_service_properties.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage"}
+
+    result: CommandResults = storage_blob_service_properties_get_command(mock_client, params, args)
+
+    mock_client.storage_blob_service_properties_get_request.assert_called_once_with(
+        account_name="teststorage", resource_group_name="rg1", subscription_id="subid"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobServiceProperties"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Service Properties" in result.readable_output
+    assert "default" in result.readable_output
+    assert "sto8607" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res4410" in result.readable_output
+    assert "true" in result.readable_output.lower()
+
+    expected_headers = [
+        "Name",
+        "Account Name",
+        "Subscription ID",
+        "Resource Group",
+        "Change Feed",
+        "Delete Retention Policy",
+        "Versioning",
+    ]
+    for header in expected_headers:
+        assert header in result.readable_output
+
+
+def test_storage_blob_containers_update_command(mocker):
+    """
+    Given: An Azure client mock and the update_blob_container.json file.
+    When: storage_blob_containers_update_command is called.
+    Then:
+        1. It should call client.storage_blob_containers_create_update_request with correct parameters and PATCH method.
+        2. It should extract subscription_id, resource_group, and account_name from the response ID.
+        3. The CommandResults should have correct outputs, readable_output, and metadata.
+    """
+    from Azure import storage_blob_containers_update_command
+
+    mock_response = util_load_json("test_data/update_blob_container.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_containers_create_update_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage", "container_name": "testcontainer"}
+
+    result: CommandResults = storage_blob_containers_update_command(mock_client, params, args)
+
+    mock_client.storage_blob_containers_create_update_request.assert_called_once_with(
+        subscription_id="subid", resource_group_name="rg1", args=args, method="PATCH"
+    )
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+    assert "Azure Storage Blob Containers Properties" in result.readable_output
+    assert "container6185" in result.readable_output
+    assert "sto328" in result.readable_output
+    assert "subscription-id" in result.readable_output
+    assert "res3376" in result.readable_output
+    assert "Container" in result.readable_output
+
+    expected_headers = ["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"]
+    for header in expected_headers:
+        assert header in result.readable_output
