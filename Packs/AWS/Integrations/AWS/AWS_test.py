@@ -2590,3 +2590,187 @@ def test_parse_tag_field_debug_logging_for_invalid_tag(mocker):
     invalid_tag = "invalid-format"
     with pytest.raises(ValueError):
         parse_tag_field(invalid_tag)
+
+
+def test_parse_filter_field_with_valid_single_filter():
+    """
+    Given: A single valid filter string with name and values.
+    When: parse_filter_field function processes the input.
+    Then: It should return a list with one filter dict containing Name and Values.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-state-name,values=running")
+    assert len(result) == 1
+    assert result[0]["Name"] == "instance-state-name"
+    assert result[0]["Values"] == ["running"]
+
+
+def test_parse_filter_field_with_multiple_filters():
+    """
+    Given: Multiple valid filter strings separated by semicolons.
+    When: parse_filter_field function processes the input.
+    Then: It should return a list with multiple filter dicts.
+    """
+    from AWS import parse_filter_field
+
+    filter_string = "name=instance-state-name,values=running;name=tag:Environment,values=production,staging"
+    result = parse_filter_field(filter_string)
+    assert len(result) == 2
+    assert result[0]["Name"] == "instance-state-name"
+    assert result[0]["Values"] == ["running"]
+    assert result[1]["Name"] == "tag:Environment"
+    assert result[1]["Values"] == ["production", "staging"]
+
+
+def test_parse_filter_field_with_multiple_values():
+    """
+    Given: A filter string with multiple comma-separated values.
+    When: parse_filter_field function processes the input.
+    Then: It should return a filter dict with Values as a list of multiple items.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-type,values=1,2,3")
+    assert len(result) == 1
+    assert result[0]["Name"] == "instance-type"
+    assert result[0]["Values"] == ["1", "2", "3"]
+
+
+def test_parse_filter_field_with_none_input():
+    """
+    Given: A None value passed to parse_filter_field function.
+    When: The function attempts to process the None input.
+    Then: It should return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field(None)
+    assert result == []
+
+
+def test_parse_filter_field_with_empty_string():
+    """
+    Given: An empty string passed to parse_filter_field function.
+    When: The function attempts to process the empty input.
+    Then: It should return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("")
+    assert result == []
+
+
+def test_parse_filter_field_with_invalid_format():
+    """
+    Given: A filter string that doesn't match the expected regex pattern.
+    When: parse_filter_field function processes the malformed input.
+    Then: Raise an ValueError.
+    """
+    from AWS import parse_filter_field
+
+    with pytest.raises(ValueError):
+        parse_filter_field("invalid-filter-format")
+
+
+def test_parse_filter_field_with_mixed_valid_invalid_filters():
+    """
+    Given: Multiple filter strings where some are valid and some are invalid.
+    When: parse_filter_field function processes the mixed input.
+    Then: Raise an ValueError.
+    """
+    from AWS import parse_filter_field
+
+    filter_string = "name=valid-filter,values=test;invalid-format;name=another-valid,values=value1,value2"
+    with pytest.raises(ValueError):
+        parse_filter_field(filter_string)
+
+
+def test_parse_filter_field_with_spaces_in_values():
+    """
+    Given: A filter string with spaces in the values field.
+    When: parse_filter_field function processes the input with spaces.
+    Then: It should successfully parse the filter preserving spaces in values.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=tag:Name,values=My App Server,Test Instance")
+    assert len(result) == 1
+    assert result[0]["Name"] == "tag:Name"
+    assert result[0]["Values"] == ["My App Server", "Test Instance"]
+
+
+def test_parse_filter_field_with_missing_values():
+    """
+    Given: A filter string with name but missing values part.
+    When: parse_filter_field function processes the incomplete input.
+    Then: Raises ValueError.
+    """
+    from AWS import parse_filter_field
+
+    with pytest.raises(ValueError):
+        parse_filter_field("name=instance-state-name")
+
+
+def test_parse_filter_field_with_missing_name():
+    """
+    Given: A filter string with values but missing name part.
+    When: parse_filter_field function processes the incomplete input.
+    Then: Raises ValueError.
+    """
+    from AWS import parse_filter_field
+
+    with pytest.raises(ValueError):
+        parse_filter_field("values=running,stopped")
+
+
+def test_parse_filter_field_with_colon_in_value():
+    """
+    Given: A filter string with values but missing name part.
+    When: parse_filter_field function processes the incomplete input.
+    Then: It should skip the invalid filter and return an empty list.
+    """
+    from AWS import parse_filter_field
+
+    result = parse_filter_field("name=instance-state-name,values=running:active,stopped:inactive")
+    expected = [{"Name": "instance-state-name", "Values": ["running:active", "stopped:inactive"]}]
+    assert result == expected
+
+
+def test_parse_filter_more_then_200_values():
+    """
+    Given: A filter string with more than 200 values in a single filter.
+    When: parse_filter_field function processes the input with excessive values.
+    Then: It should raise DemistoException indicating too many values in filter.
+    """
+    from AWS import parse_filter_field
+
+    # Create a filter with 51 values (exceeding the 50 value limit)
+    values = ",".join([f"value{i}" for i in range(2011)])
+    filter_string = f"name=test-filter,values={values}"
+    result = parse_filter_field(filter_string)
+    assert len(result) == 1
+    assert result[0]["Name"] == "test-filter"
+    assert len(result[0]["Values"]) == 200
+    assert result[0]["Values"][0] == "value0"
+    assert result[0]["Values"][199] == "value199"
+
+
+def test_parse_filter_exactly_200_values():
+    """
+    Given: A filter string with exactly 50 values in a single filter.
+    When: parse_filter_field function processes the input with 50 values.
+    Then: It should successfully parse the filter without raising an exception.
+    """
+    from AWS import parse_filter_field
+
+    # Create a filter with exactly 50 values (at the limit)
+    values = ",".join([f"value{i}" for i in range(200)])
+    filter_string = f"name=test-filter,values={values}"
+
+    result = parse_filter_field(filter_string)
+    assert len(result) == 1
+    assert result[0]["Name"] == "test-filter"
+    assert len(result[0]["Values"]) == 200
+    assert result[0]["Values"][0] == "value0"
+    assert result[0]["Values"][199] == "value199"
