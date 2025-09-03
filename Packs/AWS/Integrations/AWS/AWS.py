@@ -1214,6 +1214,30 @@ class CostExplorer:
 
     @staticmethod
     def billing_cost_usage_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves cost and usage data from AWS Cost Explorer API.
+
+        This command provides detailed cost and usage information for AWS services over a specified time period.
+        It supports multiple metrics including costs (blended, unblended, amortized) and usage quantities.
+        Results can be filtered by AWS services and support pagination for large datasets.
+
+        Args:
+            client (BotoClient): AWS Cost Explorer boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - metrics: List of metrics to retrieve (UsageQuantity, BlendedCost, etc.)
+                - start_date: Start date for the report (YYYY-MM-DD format)
+                - end_date: End date for the report (YYYY-MM-DD format)
+                - granularity: Time granularity (Daily, Monthly, Hourly)
+                - aws_services: Optional filter for specific AWS services
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains usage data grouped by time periods and metrics,
+                          with separate tables for each metric type in readable output
+
+        Raises:
+            DemistoException: If AWS API call fails or invalid parameters provided
+        """
         metrics = argToList(args.get("metrics", "UsageQuantity"))
         start_date = args.get("start_date")
         end_date = args.get("end_date")
@@ -1226,7 +1250,6 @@ class CostExplorer:
             start_date = (today - timedelta(days=7)).isoformat()
         if not end_date:
             end_date = today.isoformat()
-
         request = {
             "TimePeriod": {"Start": start_date, "End": end_date},
             "Granularity": granularity,
@@ -1242,37 +1265,35 @@ class CostExplorer:
             }
         if token:
             request["NextPageToken"] = token
+        demisto.debug(f"AWS get_cost_and_usage request: {request}")
+
         response = client.get_cost_and_usage(**request)
-        demisto.debug(f"\nAWS response\n{response}\n")
-        
-        # Group results by metric for separate tables
+
+        results = response.get('ResultsByTime', [])
+        next_token = response.get("NextPageToken", "")
+        demisto.debug(f"AWS get_cost_and_usage response - ResultsByTime count: {len(results)},\n NextToken: {next_token}")
+
         results_by_metric = {metric: [] for metric in metrics}
-        
-        for group in response.get("ResultsByTime", []):
-            # for g in group.get("Groups", [{}]):
-            g = group.get("Total")
-            service = g.get("Keys", [None])[0] if g.get("Keys") else None
+        for result in results:
+            total = result.get("Total")
+            service = total.get("Keys", [None])[0] if total.get("Keys") else None
             for metric in metrics:
                 results_by_metric[metric].append(
                     {
                         "Service": service,
-                        "StartDate": group.get("TimePeriod", {}).get("Start"),
-                        "EndDate": group.get("TimePeriod", {}).get("End"),
-                        "Amount": g.get(metric, {}).get("Amount", ""),
-                        "Unit": g.get(metric, {}).get("Unit", ""),
+                        "StartDate": result.get("TimePeriod", {}).get("Start"),
+                        "EndDate": result.get("TimePeriod", {}).get("End"),
+                        "Amount": total.get(metric, {}).get("Amount", ""),
+                        "Unit": total.get(metric, {}).get("Unit", ""),
                     }
                 )
-        
-        next_token = response.get("NextPageToken")
-        outputs = {"AWS.Billing.Usage": response.get("ResultsByTime", [])}
+        outputs = {"AWS.Billing.Usage": results}
         if next_token:
             outputs["AWS.Billing.UsageNextToken"] = next_token
-        
-        # Create separate table for each metric
         readable_tables = []
         for metric in metrics:
             metric_results = results_by_metric[metric]
-            if metric_results:  # Only create table if there are results for this metric
+            if metric_results:
                 table = tableToMarkdown(
                     f"AWS Billing Usage - {metric}",
                     metric_results,
@@ -1280,9 +1301,7 @@ class CostExplorer:
                     removeNull=True,
                 )
                 readable_tables.append(table)
-        
-        readable = "\n\n".join(readable_tables) if readable_tables else "No billing usage data found."
-        
+        readable = "\n".join(readable_tables) if readable_tables else "No billing usage data found."
         if next_token:
             readable += f"\n\nNext Page Token: {next_token}"
         return CommandResults(
@@ -1293,6 +1312,30 @@ class CostExplorer:
 
     @staticmethod
     def billing_forecast_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves cost forecast data from AWS Cost Explorer API.
+
+        This command provides forecasted cost information for AWS services over a future time period.
+        It uses historical data to predict future spending patterns and supports multiple cost metrics.
+        Results can be filtered by AWS services and include prediction intervals for accuracy assessment.
+
+        Args:
+            client (BotoClient): AWS Cost Explorer boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - metrics: List of forecast metrics (AMORTIZED_COST, BLENDED_COST, etc.)
+                - start_date: Start date for the forecast (YYYY-MM-DD format, defaults to today)
+                - end_date: End date for the forecast (YYYY-MM-DD format, defaults to +7 days)
+                - granularity: Time granularity (Daily, Monthly, Hourly)
+                - aws_services: Optional filter for specific AWS services
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains forecast data with mean values and prediction intervals,
+                          organized by time periods and metrics with separate tables per metric
+
+        Raises:
+            DemistoException: If AWS API call fails or invalid parameters provided
+        """
         metrics = argToList(args.get("metrics"))
         start_date = args.get("start_date")
         end_date = args.get("end_date")
@@ -1327,19 +1370,25 @@ class CostExplorer:
                 }
             if token:
                 request["NextPageToken"] = token
+            demisto.debug(f"AWS Cost Forecast request for {metric}: {request}")
+
             response = client.get_cost_forecast(**request)
+
+            results = response.get("ForecastResultsByTime", [])
+            next_token = response.get("NextPageToken", "")
+            demisto.debug(
+                f"AWS Cost Forecast response for {metric} - ForecastResultsByTime count: {len(results)},\nNextToken: {next_token}"
+            )
             raw_responses.append(response)
-            demisto.debug(f"\nAWS response for {metric}\n{response}\n")
-            forecast = response.get("ForecastResultsByTime", [])
 
             metric_results = []
-            for entry in forecast:
+            for result in results:
                 metric_results.append(
                     {
                         "Service": aws_services[0] if aws_services else None,
-                        "StartDate": entry.get("TimePeriod", {}).get("Start"),
-                        "EndDate": entry.get("TimePeriod", {}).get("End"),
-                        "TotalAmount": f"{float(entry.get('MeanValue', 0)):.2f}",
+                        "StartDate": result.get("TimePeriod", {}).get("Start"),
+                        "EndDate": result.get("TimePeriod", {}).get("End"),
+                        "TotalAmount": f"{float(result.get('MeanValue', 0)):.2f}",
                         "TotalUnit": response.get("Unit"),
                     }
                 )
@@ -1352,8 +1401,6 @@ class CostExplorer:
                 removeNull=True,
             )
             all_tables.append(table)
-
-            next_token = response.get("NextPageToken")
             if next_token:
                 outputs["AWS.Billing.ForecastNextToken"] = next_token
 
@@ -1371,17 +1418,42 @@ class CostExplorer:
 
 class Budgets:
     service = AWSServices.BUDGETS
-
     @staticmethod
     def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves budget information from AWS Budgets API.
+
+        This command lists all configured budgets for a specified AWS account, providing detailed
+        information about budget limits, actual spending, forecasted spending, and time periods.
+        Supports various budget types including cost, usage, and savings plans budgets.
+
+        Args:
+            client (BotoClient): AWS Budgets boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - account_id: AWS account ID to retrieve budgets for (required)
+                - max_result: Maximum number of results to return (default: 50, max: 1000)
+                - show_filter_expression: Whether to include filter expressions in output
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains budget data including names, types, limits, actual spend,
+                          forecasted spend, and time periods with pagination support
+
+        Raises:
+            DemistoException: If AWS API call fails, account_id is invalid, or other errors occur
+        """
         max_results = int(args.get("max_result", 50))
         token = args.get("next_page_token")
         request = {"AccountId": args["account_id"], "MaxResults": max_results}
         if token:
             request["NextToken"] = token
+        demisto.debug(f"AWS Budgets request: {request}")
+
         response = client.describe_budgets(**request)
-        demisto.debug(f"\nAWS response\n{response}\n")
+
         budgets = response.get("Budgets", [])
+        next_token = response.get("NextToken")
+        demisto.debug(f"AWS Budgets response - Budgets count: {len(budgets)},\n NextToken: {next_token}")
         results = []
         for b in budgets:
             budget_limit = b.get("BudgetLimit", {})
@@ -1400,7 +1472,6 @@ class Budgets:
                 }
             )
         outputs = {"AWS.Billing.Budget": results}
-        next_token = response.get("NextToken")
         if next_token:
             outputs["AWS.Billing.Budget.NextToken"] = next_token
         readable = tableToMarkdown(
@@ -1415,6 +1486,7 @@ class Budgets:
                 "ActualSpendUnit",
                 "TimePeriod",
             ],
+            removeNull=True,
         )
         if next_token:
             readable += f"\nNext Page Token: {next_token}"
@@ -1426,19 +1498,47 @@ class Budgets:
 
     @staticmethod
     def billing_budget_notification_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves notification configurations for a specific budget from AWS Budgets API.
+
+        This command lists all notification settings associated with a particular budget,
+        including notification types (actual vs forecasted), thresholds, comparison operators,
+        and subscriber information (email addresses or SNS topics).
+
+        Args:
+            client (BotoClient): AWS Budgets boto3 client
+            args (Dict[str, Any]): Command arguments containing:
+                - account_id: AWS account ID that owns the budget (required)
+                - budget_name: Name of the budget to retrieve notifications for (required)
+                - max_result: Maximum number of results to return (default: 50, max: 100)
+                - next_page_token: Token for pagination
+
+        Returns:
+            CommandResults: Contains notification configurations including notification types,
+                          thresholds, comparison operators, and subscriber details
+
+        Raises:
+            DemistoException: If AWS API call fails, budget doesn't exist, or invalid parameters provided
+        """
         budget_name = args.get("budget_name")
         max_results = int(args.get("max_result", 50))
         token = args.get("next_page_token")
         request = {"AccountId": args["account_id"], "BudgetName": budget_name, "MaxResults": max_results}
         if token:
             request["NextToken"] = token
+        demisto.debug(f"AWS Budget Notifications request: {request}")
+
         response = client.describe_notifications_for_budget(**request)
-        demisto.debug(f"\nAWS response\n{response}\n")
-        outputs = {"AWS.Billing.Notification": response.get("Notifications", [])}
-        next_token = response.get("NextToken")
+
+        notifications = response.get("Notifications", [])
+        next_token = response.get("NextToken", "")
+        demisto.debug(
+            f"AWS Budget Notifications response - Notifications count: {len(notifications)},\n NextToken: {next_token}"
+        )
+        outputs = {"AWS.Billing.Notification": notifications}
         if next_token:
             outputs["AWS.Billing.Notification.NextToken"] = next_token
-        readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", response.get("Notifications", []))
+        readable = tableToMarkdown(f"Notifications for Budget: {budget_name}", notifications)
         if next_token:
             readable += f"\nNext Page Token: {next_token}"
         return CommandResults(

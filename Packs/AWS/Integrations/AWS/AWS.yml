@@ -107,6 +107,39 @@ configuration:
   section: Connect
   advanced: true
   required: false
+aws_regions: &aws_regions
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - af-south-1
+  - ap-east-1
+  - ap-south-2
+  - ap-southeast-3
+  - ap-southeast-5
+  - ap-southeast-4
+  - ap-south-1
+  - ap-northeast-3
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-southeast-7
+  - ap-northeast-1
+  - ca-central-1
+  - ca-west-1
+  - eu-central-1
+  - eu-west-1
+  - eu-west-2
+  - eu-south-1
+  - eu-west-3
+  - eu-south-2
+  - eu-north-1
+  - eu-central-2
+  - il-central-1
+  - mx-central-1
+  - me-south-1
+  - me-central-1
+  - sa-east-1
 script:
   commands:
   - name: aws-s3-public-access-block-update
@@ -119,39 +152,7 @@ script:
       name: region
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - description: The name of the Amazon S3 bucket.
       name: bucket
       required: true
@@ -191,39 +192,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: acl
       description: 'The canned ACL to apply to the bucket.'
@@ -248,39 +217,7 @@ script:
       name: region
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - description: 'The name of the bucket for which to set the logging parameters.'
       name: bucket
       required: true
@@ -300,39 +237,7 @@ script:
       name: region
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - description: The name of the bucket for which to set the logging parameters.
       name: bucket
       required: true
@@ -356,39 +261,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: bucket
       description: 'The name of the bucket to which the policy will be applied.'
       required: true
@@ -407,39 +280,7 @@ script:
       name: region
       required: false
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     outputs:
     - contextPath: AWS.IAM.PasswordPolicy.MinimumPasswordLength
@@ -533,39 +374,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: role_name
       description: 'The name of the role to associate the policy with. This parameter accepts a string of upper and lowercase letters and numbers, with no spaces. You can also include any of the following characters: _+=,.@-.'
@@ -587,39 +396,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: user_name
       description: The name of the user whose password you want to delete.
       required: true
@@ -634,39 +411,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: user_name
       description: The name of the user to associate the policy with.
       required: true
@@ -687,39 +432,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: instance_profile_name
       description: The name of the instance profile to update.
       required: true
@@ -737,39 +450,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: access_key_id
       description: The access key ID of the secret access key you want to update.
       required: true
@@ -794,39 +475,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: cluster_name
       description: 'The name of the Amazon EKS cluster to update.'
       required: true
@@ -848,39 +497,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: db_cluster_identifier
       description: 'The DB cluster identifier for the modified cluster. This parameter is not case sensitive and is valid for Aurora DB and Multi-AZ DB cluster types. It must match the identifier of an existing DB cluster.'
       required: true
@@ -906,39 +523,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: db_cluster_snapshot_identifier
       description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
       required: true
@@ -962,39 +547,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: db_instance_identifier
       description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
       required: true
@@ -1060,39 +613,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: db_snapshot_identifier
       description: 'The identifier for the DB snapshot to modify the attributes for.'
       required: true
@@ -1119,39 +640,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -1179,39 +668,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -1239,39 +696,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: group_id
       description: 'The ID of the security group.'
@@ -1299,39 +724,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: snapshot_id
       description: 'The ID of the snapshot.'
@@ -1369,39 +762,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: instance_id
       description: 'The ID of the instance.'
@@ -1445,39 +806,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
 
     - name: image_id
       description: 'The ID of the AMI.'
@@ -1518,39 +847,7 @@ script:
       name: region
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - description: The ID of the instance.
       name: instance_id
       required: true
@@ -1578,39 +875,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: name
       description: The name of the trail or trail ARN.
       required: true
@@ -1713,39 +978,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: name
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
@@ -1760,52 +993,11 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: metrics
       description: Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]
       isArray: true
       required: false
-      auto: PREDEFINED
-      predefined:
-      - AmortizedCost
-      - BlendedCost
-      - NetAmortizedCost
-      - NetUnblendedCost
-      - NormalizedUsageAmount
-      - UnblendedCost
-      - UsageQuantity
     - name: start_date
       description: Start date for the report (YYYY-MM-DD). Default - 7 days ago
       required: false
@@ -1828,21 +1020,83 @@ script:
       description: Next page token for pagination. Use value from AWS.Billing.UsageNextToken.
       required: false
     outputs:
-    - contextPath: AWS.BillingUsage.Service
-      description: AWS Service (if exists)
-      type: string
-    - contextPath: AWS.BillingUsage.StartDate
-      description: Start date of the report
+    - contextPath: AWS.Billing.Usage
+      description: Complete usage data from AWS Cost Explorer API
+    - contextPath: AWS.Billing.Usage.TimePeriod
+      description: Time period for the usage data
+    - contextPath: AWS.Billing.Usage.TimePeriod.Start
+      description: Start date of the time period
       type: date
-    - contextPath: AWS.BillingUsage.EndDate
-      description: End date of the report
+    - contextPath: AWS.Billing.Usage.TimePeriod.End
+      description: End date of the time period
       type: date
-    - contextPath: AWS.BillingUsage.Amount
-      description: Amount for the metric
+    - contextPath: AWS.Billing.Usage.Total
+      description: Total cost and usage metrics for the time period
+    - contextPath: AWS.Billing.Usage.Total.AmortizedCost
+      description: Amortized cost information
+    - contextPath: AWS.Billing.Usage.Total.AmortizedCost.Amount
+      description: Amortized cost amount
       type: string
-    - contextPath: AWS.BillingUsage.Unit
-      description: Unit of the metric
+    - contextPath: AWS.Billing.Usage.Total.AmortizedCost.Unit
+      description: Amortized cost unit (e.g., USD)
       type: string
+    - contextPath: AWS.Billing.Usage.Total.BlendedCost
+      description: Blended cost information
+    - contextPath: AWS.Billing.Usage.Total.BlendedCost.Amount
+      description: Blended cost amount
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.BlendedCost.Unit
+      description: Blended cost unit (e.g., USD)
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.NetAmortizedCost
+      description: Net amortized cost information
+    - contextPath: AWS.Billing.Usage.Total.NetAmortizedCost.Amount
+      description: Net amortized cost amount
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.NetAmortizedCost.Unit
+      description: Net amortized cost unit (e.g., USD)
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.NetUnblendedCost
+      description: Net unblended cost information
+    - contextPath: AWS.Billing.Usage.Total.NetUnblendedCost.Amount
+      description: Net unblended cost amount
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.NetUnblendedCost.Unit
+      description: Net unblended cost unit (e.g., USD)
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.NormalizedUsageAmount
+      description: Normalized usage amount information
+    - contextPath: AWS.Billing.Usage.Total.NormalizedUsageAmount.Amount
+      description: Normalized usage amount
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.NormalizedUsageAmount.Unit
+      description: Normalized usage amount unit
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.UnblendedCost
+      description: Unblended cost information
+    - contextPath: AWS.Billing.Usage.Total.UnblendedCost.Amount
+      description: Unblended cost amount
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.UnblendedCost.Unit
+      description: Unblended cost unit (e.g., USD)
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.UsageQuantity
+      description: Usage quantity information
+    - contextPath: AWS.Billing.Usage.Total.UsageQuantity.Amount
+      description: Usage quantity amount
+      type: string
+    - contextPath: AWS.Billing.Usage.Total.UsageQuantity.Unit
+      description: Usage quantity unit (e.g., Hrs, GB)
+      type: string
+    - contextPath: AWS.Billing.Usage.Groups
+      description: Usage data grouped by dimensions (when grouping is applied)
+    - contextPath: AWS.Billing.Usage.Groups.Keys
+      description: Group keys (dimension values)
+    - contextPath: AWS.Billing.Usage.Groups.Metrics
+      description: Metrics for the group
+    - contextPath: AWS.Billing.Usage.Estimated
+      description: Whether the data is estimated
+      type: boolean
     - contextPath: AWS.Billing.UsageNextToken
       description: Next page token for pagination
       type: string
@@ -1857,55 +1111,16 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: metrics
       description: Metrics to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST]
       isArray: true
       required: true
-      auto: PREDEFINED
-      predefined:
-      - AMORTIZED_COST
-      - BLENDED_COST
-      - NET_AMORTIZED_COST
-      - NET_UNBLENDED_COST
-      - UNBLENDED_COST
     - name: start_date
-      description: Start date for the forecast (YYYY-MM-DD). Default - 7 days ago
+      description: Start date for the forecast (YYYY-MM-DD). Default - current day
       required: false
     - name: end_date
-      description: End date for the forecast (YYYY-MM-DD). Default - current day
+      description: End date for the forecast (YYYY-MM-DD). Default - in 7 days
       required: false
     - name: granularity
       description: Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly]
@@ -1923,20 +1138,49 @@ script:
       description: Next page token for pagination. Use value from AWS.Billing.ForecastNextToken.
       required: false
     outputs:
-    - contextPath: AWS.BillingForecast.Service
+    - contextPath: AWS.Billing.Forecast
+      description: Complete forecast data from AWS Cost Explorer API
+    - contextPath: AWS.Billing.Forecast.Service
       description: AWS Service (if exists)
       type: string
-    - contextPath: AWS.BillingForecast.StartDate
+    - contextPath: AWS.Billing.Forecast.StartDate
       description: Start date of the forecast
       type: date
-    - contextPath: AWS.BillingForecast.EndDate
+    - contextPath: AWS.Billing.Forecast.EndDate
       description: End date of the forecast
       type: date
-    - contextPath: AWS.BillingForecast.TotalAmount
+    - contextPath: AWS.Billing.Forecast.TotalAmount
       description: Total forecasted amount
       type: string
-    - contextPath: AWS.BillingForecast.TotalUnit
+    - contextPath: AWS.Billing.Forecast.TotalUnit
       description: Unit for the forecasted amount
+      type: string
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime
+      description: Forecast results grouped by time period
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod
+      description: Time period for the forecast
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.Start
+      description: Start date of the forecast period
+      type: date
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.TimePeriod.End
+      description: End date of the forecast period
+      type: date
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.MeanValue
+      description: Mean forecasted value for the time period
+      type: string
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalLowerBound
+      description: Lower bound of the prediction interval
+      type: string
+    - contextPath: AWS.Billing.Forecast.ForecastResultsByTime.PredictionIntervalUpperBound
+      description: Upper bound of the prediction interval
+      type: string
+    - contextPath: AWS.Billing.Forecast.Total
+      description: Total forecast information
+    - contextPath: AWS.Billing.Forecast.Total.Amount
+      description: Total forecasted amount
+      type: string
+    - contextPath: AWS.Billing.Forecast.Total.Unit
+      description: Unit for the total forecasted amount
       type: string
     - contextPath: AWS.Billing.ForecastNextToken
       description: Next page token for pagination
@@ -1952,39 +1196,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: max_result
       description: Maximum results to return. Default - 50, Max - 1000
       required: false
@@ -1995,27 +1207,66 @@ script:
       description: Next page token for pagination. Use value from AWS.Billing.BudgetNextToken.
       required: false
     outputs:
-    - contextPath: AWS.BillingBudget.BudgetName
+    - contextPath: AWS.Billing.Budget
+      description: Complete budget data from AWS Budgets API
+    - contextPath: AWS.Billing.Budget.BudgetName
       description: Budget name
       type: string
-    - contextPath: AWS.BillingBudget.BudgetType
-      description: Budget type
+    - contextPath: AWS.Billing.Budget.BudgetType
+      description: Budget type (COST, USAGE, RI_UTILIZATION, RI_COVERAGE, SAVINGS_PLANS_UTILIZATION, SAVINGS_PLANS_COVERAGE)
       type: string
-    - contextPath: AWS.BillingBudget.BudgetLimitAmount
+    - contextPath: AWS.Billing.Budget.TimeUnit
+      description: Time unit for the budget (DAILY, MONTHLY, QUARTERLY, ANNUALLY)
+      type: string
+    - contextPath: AWS.Billing.Budget.TimePeriod
+      description: Time period for the budget
+    - contextPath: AWS.Billing.Budget.TimePeriod.Start
+      description: Start date of the budget time period
+      type: date
+    - contextPath: AWS.Billing.Budget.TimePeriod.End
+      description: End date of the budget time period
+      type: date
+    - contextPath: AWS.Billing.Budget.BudgetLimit
+      description: Budget limit information
+    - contextPath: AWS.Billing.Budget.BudgetLimit.Amount
       description: Budget limit amount
       type: string
-    - contextPath: AWS.BillingBudget.BudgetLimitUnit
-      description: Budget limit unit
+    - contextPath: AWS.Billing.Budget.BudgetLimit.Unit
+      description: Budget limit unit (e.g., USD)
       type: string
-    - contextPath: AWS.BillingBudget.ActualSpendAmount
+    - contextPath: AWS.Billing.Budget.CostFilters
+      description: Cost filters applied to the budget
+    - contextPath: AWS.Billing.Budget.TimeUnit
+      description: Time unit for the budget period
+      type: string
+    - contextPath: AWS.Billing.Budget.CalculatedSpend
+      description: Calculated spend information
+    - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend
+      description: Actual spend information
+    - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend.Amount
       description: Actual spend amount
       type: string
-    - contextPath: AWS.BillingBudget.ActualSpendUnit
-      description: Actual spend unit
+    - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend.Unit
+      description: Actual spend unit (e.g., USD)
       type: string
-    - contextPath: AWS.BillingBudget.TimePeriod
-      description: Time period
+    - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend
+      description: Forecasted spend information
+    - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Amount
+      description: Forecasted spend amount
       type: string
+    - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend.Unit
+      description: Forecasted spend unit (e.g., USD)
+      type: string
+    - contextPath: AWS.Billing.Budget.BudgetType
+      description: Type of budget (COST, USAGE, etc.)
+      type: string
+    - contextPath: AWS.Billing.Budget.LastUpdatedTime
+      description: Last time the budget was updated
+      type: date
+    - contextPath: AWS.Billing.Budget.AutoAdjustData
+      description: Auto-adjust data for the budget
+    - contextPath: AWS.Billing.Budget.PlannedBudgetLimits
+      description: Planned budget limits for future periods
     - contextPath: AWS.Billing.BudgetNextToken
       description: Next page token for pagination
       type: string
@@ -2030,39 +1281,7 @@ script:
       description: The AWS region.
       required: true
       auto: PREDEFINED
-      predefined:
-      - us-east-1
-      - us-east-2
-      - us-west-1
-      - us-west-2
-      - af-south-1
-      - ap-east-1
-      - ap-south-2
-      - ap-southeast-3
-      - ap-southeast-5
-      - ap-southeast-4
-      - ap-south-1
-      - ap-northeast-3
-      - ap-northeast-2
-      - ap-southeast-1
-      - ap-southeast-2
-      - ap-southeast-7
-      - ap-northeast-1
-      - ca-central-1
-      - ca-west-1
-      - eu-central-1
-      - eu-west-1
-      - eu-west-2
-      - eu-south-1
-      - eu-west-3
-      - eu-south-2
-      - eu-north-1
-      - eu-central-2
-      - il-central-1
-      - mx-central-1
-      - me-south-1
-      - me-central-1
-      - sa-east-1
+      predefined: *aws_regions
     - name: budget_name
       description: Name of the budget
       required: true
@@ -2073,9 +1292,33 @@ script:
       description: Next page token for pagination. Use value from AWS.Billing.NotificationNextToken.
       required: false
     outputs:
-    - contextPath: AWS.BillingNotification
-      description: Budget notifications
-      type: unknown
+    - contextPath: AWS.Billing.Budget.Notification
+      description: Complete budget notification data from AWS Budgets API
+    - contextPath: AWS.Billing.Budget.Notification.Notification
+      description: Notification configuration
+    - contextPath: AWS.Billing.Budget.Notification.Notification.NotificationType
+      description: Type of notification (ACTUAL or FORECASTED)
+      type: string
+    - contextPath: AWS.Billing.Budget.Notification.Notification.ComparisonOperator
+      description: Comparison operator for the notification (GREATER_THAN, LESS_THAN, EQUAL_TO)
+      type: string
+    - contextPath: AWS.Billing.Budget.Notification.Notification.Threshold
+      description: Threshold value that triggers the notification
+      type: number
+    - contextPath: AWS.Billing.Budget.Notification.Notification.ThresholdType
+      description: Type of threshold (PERCENTAGE or ABSOLUTE_VALUE)
+      type: string
+    - contextPath: AWS.Billing.Budget.Notification.Notification.NotificationState
+      description: Current state of the notification (OK or ALARM)
+      type: string
+    - contextPath: AWS.Billing.Budget.Notification.Subscribers
+      description: List of subscribers for the notification
+    - contextPath: AWS.Billing.Budget.Notification.Subscribers.SubscriptionType
+      description: Type of subscription (EMAIL or SNS)
+      type: string
+    - contextPath: AWS.Billing.Budget.Notification.Subscribers.Address
+      description: Email address or SNS topic ARN for the subscriber
+      type: string
     - contextPath: AWS.Billing.NotificationNextToken
       description: Next page token for pagination
       type: string
