@@ -904,7 +904,6 @@ Gets network interfaces in a resource group.
 | Azure.NSGNetworkInterfaces.location | String | The network interface's location. |
 | Azure.NSGNetworkInterfaces.kind | String | The network interface's kind. |
 
-
 ### azure-nsg-security-rule-create
 
 ***
@@ -951,7 +950,6 @@ Create a security rule.
 | Azure.NSGRule.access | String | The rule's access. Can be "Allow" or "Deny". |
 | Azure.NSGRule.priority | Number | The rule's priority. Can be from 100 to 4096. |
 | Azure.NSGRule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". |
-
 
 ### azure-nsg-security-rule-get
 
