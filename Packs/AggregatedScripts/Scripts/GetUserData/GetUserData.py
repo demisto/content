@@ -308,7 +308,7 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         output_key = get_output_key("ActiveDirectory.Users", output)
         outputs = get_outputs(output_key, output)
 
-        username = outputs.pop("name", None)
+        username = outputs.pop("sAMAccountName", None)
         if isinstance(username, list) and len(username) == 1:
             username = username[0]
         mail = outputs.pop("mail", None)
@@ -642,7 +642,7 @@ def main():
                     modules=modules,
                     brand_name="Active Directory Query v2",
                     command_name="ad-get-user",
-                    arg_name="name",
+                    arg_name="username",
                     arg_value=user_name,
                     cmd=ad_get_user,
                     additional_fields=additional_fields,
