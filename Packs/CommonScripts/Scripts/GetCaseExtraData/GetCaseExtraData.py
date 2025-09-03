@@ -43,7 +43,6 @@ def replace_response_names(obj):
 
 
 def get_case_extra_data(args):
-
     """
     Calls the core-get-case-extra-data command and parses the output to a standard structure.
 
@@ -66,7 +65,6 @@ def get_case_extra_data(args):
     file_artifacts = case_extra_data.get("file_artifacts")
     case.update({"issue_ids": issue_ids, "network_artifacts": network_artifacts, "file_artifacts": file_artifacts})
     return case
-
 
 
 def main():
