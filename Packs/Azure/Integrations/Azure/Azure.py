@@ -2379,7 +2379,6 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
         t=data_from_response,
         headers=["name", "location", "tags", "provisioningState"],
         removeNull=True,
-        removeNull=True,
         headerTransform=string_to_table_header,
     )
     return CommandResults(
