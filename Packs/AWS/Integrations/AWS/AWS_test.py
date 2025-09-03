@@ -1472,7 +1472,6 @@ def test_cost_explorer_billing_forecast_list_command_success(mocker):
     assert "AWS.Billing.Forecast" in result.outputs
     assert "AWS.Billing.ForecastNextToken" in result.outputs
     assert result.outputs["AWS.Billing.ForecastNextToken"] == "forecast-token-456"
-    assert isinstance(result.raw_response, list)
 
 
 def test_budgets_billing_budgets_list_command_success(mocker):

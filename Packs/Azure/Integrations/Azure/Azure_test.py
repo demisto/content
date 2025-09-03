@@ -2147,9 +2147,9 @@ def test_azure_billing_budgets_list_command_success(mocker, client, mock_params)
     assert "Azure Budgets" in result.readable_output
     assert "Azure.Billing.Budget" in result.outputs
     assert len(result.outputs["Azure.Billing.Budget"]) == 1
-    assert result.outputs["Azure.Billing.Budget"][0]["BudgetName"] == "test-budget"
-    assert result.outputs["Azure.Billing.Budget"][0]["Amount"] == 1000.0
-    assert result.outputs["Azure.Billing.Budget"][0]["CurrentSpend"] == 750.25
+    assert result.outputs["Azure.Billing.Budget"][0]["name"] == "test-budget"
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["amount"] == 1000.0
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["currentSpend"]["amount"] == 750.25
     assert result.raw_response == mock_response
 
 
@@ -2181,8 +2181,8 @@ def test_azure_billing_budgets_list_command_single_budget(mocker, client, mock_p
     assert "Azure Budgets" in result.readable_output
     assert "Azure.Billing.Budget" in result.outputs
     assert len(result.outputs["Azure.Billing.Budget"]) == 1
-    assert result.outputs["Azure.Billing.Budget"][0]["BudgetName"] == "specific-budget"
-    assert result.outputs["Azure.Billing.Budget"][0]["Amount"] == 500.0
+    assert result.outputs["Azure.Billing.Budget"][0]["name"] == "specific-budget"
+    assert result.outputs["Azure.Billing.Budget"][0]["properties"]["amount"] == 500.0
     assert result.raw_response == mock_response
 
 
@@ -2218,7 +2218,7 @@ def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_par
     assert isinstance(result, CommandResults)
     assert "Azure.Billing.UsageNextToken" not in result.outputs
     assert "Next Page Token" not in result.readable_output
-    assert result.outputs["Azure.Billing.Usage"][0]["Product"] == "Storage"
+    assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Storage"
 
 
 def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, mock_params):
@@ -2256,4 +2256,4 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
     assert call_args["params"].keys() == {"api-version"}
 
     assert isinstance(result, CommandResults)
-    assert result.outputs["Azure.Billing.Usage"][0]["Product"] == "Networking"
+    assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Networking"

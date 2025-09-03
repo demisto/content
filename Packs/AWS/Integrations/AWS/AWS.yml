@@ -999,13 +999,13 @@ script:
       isArray: true
       required: false
     - name: start_date
-      description: Start date for the report (YYYY-MM-DD). Default - 7 days ago
+      description: Start date for the report (YYYY-MM-DD). Default - 7 days ago.
       required: false
     - name: end_date
-      description: End date for the report (YYYY-MM-DD). Default - current day
+      description: End date for the report (YYYY-MM-DD). Default - current day.
       required: false
     - name: granularity
-      description: Granularity of the data. Default - Daily. Valid values [Daily, Monthly, Hourly]
+      description: Granularity of the data. Default - Daily. Valid values [Daily, Monthly, Hourly].
       required: false
       auto: PREDEFINED
       predefined:
@@ -1112,18 +1112,25 @@ script:
       required: true
       auto: PREDEFINED
       predefined: *aws_regions
-    - name: metrics
-      description: Metrics to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST]
-      isArray: true
-      required: true
+    - name: metric
+      description: Metric to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST].
+      required: false
+      defaultValue: AMORTIZED_COST
+      auto: PREDEFINED
+      predefined:
+      - AMORTIZED_COST
+      - BLENDED_COST
+      - NET_AMORTIZED_COST
+      - NET_UNBLENDED_COST
+      - UNBLENDED_COST
     - name: start_date
-      description: Start date for the forecast (YYYY-MM-DD). Default - current day
+      description: Start date for the forecast (YYYY-MM-DD). Default - current day.
       required: false
     - name: end_date
-      description: End date for the forecast (YYYY-MM-DD). Default - in 7 days
+      description: End date for the forecast (YYYY-MM-DD). Default - in 7 days.
       required: false
     - name: granularity
-      description: Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly]
+      description: Granularity of the forecast. Default - Daily. Valid values [ Daily, Monthly, Hourly].
       required: false
       auto: PREDEFINED
       predefined:
