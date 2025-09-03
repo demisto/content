@@ -15,23 +15,11 @@ args:
   - description: "The end time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
     name: end_time
   - auto: PREDEFINED
-    description: Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending).
-    name: sort_by_modification_time
-    predefined:
-      - asc
-      - desc
-  - auto: PREDEFINED
     description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
     name: sort_by_creation_time
     predefined:
       - asc
       - desc
-  - defaultValue: '0'
-    description: Page number (for pagination). The default is 0 (the first page).
-    name: page
-  - defaultValue: '100'
-    description: Maximum number of cases to return per page. The default and maximum is 100.
-    name: page_size
   - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
     name: status
   - auto: PREDEFINED
@@ -40,6 +28,12 @@ args:
     predefined:
       - 'true'
       - 'false'
+  - defaultValue: '0'
+    description: Page number (for pagination). The default is 0 (the first page).
+    name: page
+  - defaultValue: '100'
+    description: Maximum number of cases to return per page. The default and maximum is 100.
+    name: page_size
 outputs:
   - contextPath: Core.Case.case_id
     description: Unique ID assigned to each returned case.

@@ -63,6 +63,7 @@ def main():
     try:
         demisto.debug(f"Calling core-get-cases with arguments: {args}")
         results: dict = demisto.executeCommand("core-get-cases", args)[0]  # type: ignore
+        demisto.debug(f"core-get-cases command results {results}")
 
         if is_error(results):
             error = get_error(results)
