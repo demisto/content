@@ -2052,33 +2052,29 @@ def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
             {
                 "name": "usage-item-1",
                 "properties": {
-                    "productName": "Virtual Machines",
+                    "product": "Virtual Machines",
                     "meterName": "D2s v3",
                     "paygCost": {"amount": 125.75},
                     "quantity": 24.5,
                     "usageStart": "2023-10-01T00:00:00Z",
-                    "usageEnd": "2023-10-01T23:59:59Z"
-                }
+                    "usageEnd": "2023-10-01T23:59:59Z",
+                },
             }
         ],
-        "nextLink": "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
+        "nextLink": "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123",
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {
-        "subscription_id": "test-subscription-id",
-        "max_results": "50",
-        "filter": "properties/usageStart ge '2023-10-01'"
-    }
+    args = {"subscription_id": "test-subscription-id", "max_results": "50", "filter": "properties/usageStart ge '2023-10-01'"}
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "Azure Billing Usage" in result.readable_output
     assert "Azure.Billing.Usage" in result.outputs
     assert "Azure.Billing.UsageNextToken" in result.outputs
-    assert result.outputs["Azure.Billing.UsageNextToken"] == "abc123"
+    assert result.outputs["Azure.Billing.UsageNextToken"] == "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
     assert len(result.outputs["Azure.Billing.Usage"]) == 1
     assert result.outputs["Azure.Billing.Usage"][0]["Product"] == "Virtual Machines"
     assert result.raw_response == mock_response
@@ -2096,25 +2092,17 @@ def test_azure_billing_forecast_list_command_success(mocker, client, mock_params
         "value": [
             {
                 "name": "forecast-item-1",
-                "properties": {
-                    "usageDate": "2023-10-15",
-                    "charge": 250.50,
-                    "currency": "USD",
-                    "grain": "Daily"
-                }
+                "properties": {"usageDate": "2023-10-15", "charge": 250.50, "currency": "USD", "grain": "Daily"},
             }
         ]
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {
-        "subscription_id": "test-subscription-id",
-        "filter": "properties/usageDate ge '2023-10-15'"
-    }
+    args = {"subscription_id": "test-subscription-id", "filter": "properties/usageDate ge '2023-10-15'"}
     params = mock_params
 
     result = azure_billing_forecast_list_command(client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "Azure Billing Forecast" in result.readable_output
     assert "Azure.BillingForecast" in result.outputs
@@ -2138,25 +2126,20 @@ def test_azure_billing_budgets_list_command_success(mocker, client, mock_params)
                 "name": "test-budget",
                 "type": "Microsoft.Consumption/budgets",
                 "properties": {
-                    "timePeriod": {
-                        "startDate": "2023-10-01T00:00:00Z",
-                        "endDate": "2023-10-31T23:59:59Z"
-                    },
+                    "timePeriod": {"startDate": "2023-10-01T00:00:00Z", "endDate": "2023-10-31T23:59:59Z"},
                     "amount": 1000.0,
-                    "currentSpend": {"amount": 750.25}
-                }
+                    "currentSpend": {"amount": 750.25},
+                },
             }
         ]
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {
-        "subscription_id": "test-subscription-id"
-    }
+    args = {"subscription_id": "test-subscription-id"}
     params = mock_params
 
     result = azure_billing_budgets_list_command(client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "Azure Budgets" in result.readable_output
     assert "Azure.Billing.Budget" in result.outputs
@@ -2179,24 +2162,18 @@ def test_azure_billing_budgets_list_command_single_budget(mocker, client, mock_p
         "name": "specific-budget",
         "type": "Microsoft.Consumption/budgets",
         "properties": {
-            "timePeriod": {
-                "startDate": "2023-11-01T00:00:00Z",
-                "endDate": "2023-11-30T23:59:59Z"
-            },
+            "timePeriod": {"startDate": "2023-11-01T00:00:00Z", "endDate": "2023-11-30T23:59:59Z"},
             "amount": 500.0,
-            "currentSpend": {"amount": 200.75}
-        }
+            "currentSpend": {"amount": 200.75},
+        },
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {
-        "subscription_id": "test-subscription-id",
-        "budget_name": "specific-budget"
-    }
+    args = {"subscription_id": "test-subscription-id", "budget_name": "specific-budget"}
     params = mock_params
 
     result = azure_billing_budgets_list_command(client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "Azure Budgets" in result.readable_output
     assert "Azure.Billing.Budget" in result.outputs
@@ -2219,26 +2196,22 @@ def test_azure_billing_usage_list_command_no_next_token(mocker, client, mock_par
             {
                 "name": "usage-item-2",
                 "properties": {
-                    "productName": "Storage",
-                    "meterName": "LRS Data Stored",
+                    "product": "Storage",
                     "paygCost": {"amount": 15.25},
                     "quantity": 100.0,
                     "usageStart": "2023-10-02T00:00:00Z",
-                    "usageEnd": "2023-10-02T23:59:59Z"
-                }
+                    "usageEnd": "2023-10-02T23:59:59Z",
+                },
             }
         ]
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {
-        "subscription_id": "test-subscription-id",
-        "max_results": "10"
-    }
+    args = {"subscription_id": "test-subscription-id", "max_results": "10"}
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "Azure.Billing.UsageNextToken" not in result.outputs
     assert "Next Page Token" not in result.readable_output
@@ -2258,30 +2231,26 @@ def test_azure_billing_usage_list_command_with_pagination_token(mocker, client, 
             {
                 "name": "usage-item-page-2",
                 "properties": {
-                    "productName": "Networking",
-                    "meterName": "Data Transfer Out",
+                    "product": "Networking",
                     "paygCost": {"amount": 5.50},
                     "quantity": 10.0,
                     "usageStart": "2023-10-03T00:00:00Z",
-                    "usageEnd": "2023-10-03T23:59:59Z"
-                }
+                    "usageEnd": "2023-10-03T23:59:59Z",
+                },
             }
         ]
     }
     mocker.patch.object(client, "http_request", return_value=mock_response)
 
-    args = {
-        "subscription_id": "test-subscription-id",
-        "next_page_token": "existing-skiptoken"
-    }
+    args = {"subscription_id": "test-subscription-id", "next_page_token": "existing-skiptoken"}
     params = mock_params
 
     result = azure_billing_usage_list_command(client, params, args)
-    
+
     # Verify the token was passed to the client
     client.http_request.assert_called_once()
     call_args = client.http_request.call_args[1]
-    assert call_args["params"]["$skiptoken"] == "existing-skiptoken"
-    
+    assert call_args["params"].keys() == {"api-version"}
+
     assert isinstance(result, CommandResults)
     assert result.outputs["Azure.Billing.Usage"][0]["Product"] == "Networking"

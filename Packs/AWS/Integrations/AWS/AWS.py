@@ -1062,6 +1062,7 @@ class RDS:
 
 class CostExplorer:
     service = AWSServices.CostExplorer
+
     @staticmethod
     def billing_cost_usage_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         metrics = argToList(args.get("metrics", "UsageQuantity"))
@@ -1071,7 +1072,6 @@ class CostExplorer:
         aws_services = argToList(args.get("aws_services"))
         token = args.get("next_page_token")
 
-        # Defaults
         today = datetime.now().date()
         if not start_date:
             start_date = (today - timedelta(days=7)).isoformat()
@@ -1095,31 +1095,47 @@ class CostExplorer:
             request["NextPageToken"] = token
         response = client.get_cost_and_usage(**request)
         demisto.debug(f"\nAWS response\n{response}\n")
-        results = []
+        
+        # Group results by metric for separate tables
+        results_by_metric = {metric: [] for metric in metrics}
+        
         for group in response.get("ResultsByTime", []):
             # for g in group.get("Groups", [{}]):
             g = group.get("Total")
             service = g.get("Keys", [None])[0] if g.get("Keys") else None
             for metric in metrics:
-                results.append({
-                    "Service": service,
-                    "StartDate": group.get("TimePeriod", {}).get("Start"),
-                    "EndDate": group.get("TimePeriod", {}).get("End"),
-                    "Amount": g.get(metric, {}).get("Amount", ""),
-                    "Unit": g.get(metric, {}).get("Unit", ""),
-                })
+                results_by_metric[metric].append(
+                    {
+                        "Service": service,
+                        "StartDate": group.get("TimePeriod", {}).get("Start"),
+                        "EndDate": group.get("TimePeriod", {}).get("End"),
+                        "Amount": g.get(metric, {}).get("Amount", ""),
+                        "Unit": g.get(metric, {}).get("Unit", ""),
+                    }
+                )
+        
         next_token = response.get("NextPageToken")
         outputs = {"AWS.Billing.Usage": response.get("ResultsByTime", [])}
         if next_token:
             outputs["AWS.Billing.UsageNextToken"] = next_token
-        readable = tableToMarkdown(
-            "AWS Billing Usage",
-            results,
-            headers=["Service", "StartDate", "EndDate", "Amount", "Unit"],
-            removeNull=True,
-        )
+        
+        # Create separate table for each metric
+        readable_tables = []
+        for metric in metrics:
+            metric_results = results_by_metric[metric]
+            if metric_results:  # Only create table if there are results for this metric
+                table = tableToMarkdown(
+                    f"AWS Billing Usage - {metric}",
+                    metric_results,
+                    headers=["Service", "StartDate", "EndDate", "Amount", "Unit"],
+                    removeNull=True,
+                )
+                readable_tables.append(table)
+        
+        readable = "\n\n".join(readable_tables) if readable_tables else "No billing usage data found."
+        
         if next_token:
-            readable += f"\nNext Page Token: {next_token}"
+            readable += f"\n\nNext Page Token: {next_token}"
         return CommandResults(
             readable_output=readable,
             outputs=outputs,
@@ -1166,16 +1182,18 @@ class CostExplorer:
             raw_responses.append(response)
             demisto.debug(f"\nAWS response for {metric}\n{response}\n")
             forecast = response.get("ForecastResultsByTime", [])
-            
+
             metric_results = []
             for entry in forecast:
-                metric_results.append({
-                    "Service": aws_services[0] if aws_services else None,
-                    "StartDate": entry.get("TimePeriod", {}).get("Start"),
-                    "EndDate": entry.get("TimePeriod", {}).get("End"),
-                    "TotalAmount": f"{float(entry.get('MeanValue', 0)):.2f}",
-                    "TotalUnit": response.get("Unit"),
-                })
+                metric_results.append(
+                    {
+                        "Service": aws_services[0] if aws_services else None,
+                        "StartDate": entry.get("TimePeriod", {}).get("Start"),
+                        "EndDate": entry.get("TimePeriod", {}).get("End"),
+                        "TotalAmount": f"{float(entry.get('MeanValue', 0)):.2f}",
+                        "TotalUnit": response.get("Unit"),
+                    }
+                )
 
             results.extend(metric_results)
             table = tableToMarkdown(
@@ -1204,14 +1222,12 @@ class CostExplorer:
 
 class Budgets:
     service = AWSServices.BUDGETS
+
     @staticmethod
     def billing_budgets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         max_results = int(args.get("max_result", 50))
         token = args.get("next_page_token")
-        request = {
-            "AccountId": args["account_id"],
-            "MaxResults": max_results
-        }
+        request = {"AccountId": args["account_id"], "MaxResults": max_results}
         if token:
             request["NextToken"] = token
         response = client.describe_budgets(**request)
@@ -1221,22 +1237,36 @@ class Budgets:
         for b in budgets:
             budget_limit = b.get("BudgetLimit", {})
             actual_spend = b.get("CalculatedSpend", {}).get("ActualSpend", {})
-            start = b.get('TimePeriod', {}).get('Start').strftime('%Y-%m-%d')
-            end = b.get('TimePeriod', {}).get('End').strftime('%Y-%m-%d')
-            results.append({
-                "BudgetName": b.get("BudgetName"),
-                "BudgetType": b.get("BudgetType"),
-                "BudgetLimitAmount": budget_limit.get("Amount"),
-                "BudgetLimitUnit": budget_limit.get("Unit"),
-                "ActualSpendAmount": actual_spend.get("Amount"),
-                "ActualSpendUnit": actual_spend.get("Unit"),
-                "TimePeriod": f"{start} - {end}"
-            })
+            start = b.get("TimePeriod", {}).get("Start").strftime("%Y-%m-%d")
+            end = b.get("TimePeriod", {}).get("End").strftime("%Y-%m-%d")
+            results.append(
+                {
+                    "BudgetName": b.get("BudgetName"),
+                    "BudgetType": b.get("BudgetType"),
+                    "BudgetLimitAmount": budget_limit.get("Amount"),
+                    "BudgetLimitUnit": budget_limit.get("Unit"),
+                    "ActualSpendAmount": actual_spend.get("Amount"),
+                    "ActualSpendUnit": actual_spend.get("Unit"),
+                    "TimePeriod": f"{start} - {end}",
+                }
+            )
         outputs = {"AWS.Billing.Budget": results}
         next_token = response.get("NextToken")
         if next_token:
             outputs["AWS.Billing.Budget.NextToken"] = next_token
-        readable = tableToMarkdown("AWS Budgets", results, headers=["BudgetName", "BudgetType", "BudgetLimitAmount", "BudgetLimitUnit", "ActualSpendAmount", "ActualSpendUnit", "TimePeriod"])
+        readable = tableToMarkdown(
+            "AWS Budgets",
+            results,
+            headers=[
+                "BudgetName",
+                "BudgetType",
+                "BudgetLimitAmount",
+                "BudgetLimitUnit",
+                "ActualSpendAmount",
+                "ActualSpendUnit",
+                "TimePeriod",
+            ],
+        )
         if next_token:
             readable += f"\nNext Page Token: {next_token}"
         return CommandResults(
@@ -1267,10 +1297,11 @@ class Budgets:
             outputs=outputs,
             raw_response=response,
         )
-        
-        
+
+
 class CloudTrail:
     service = AWSServices.CloudTrail
+
     @staticmethod
     def start_logging_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -1412,14 +1443,14 @@ REQUIRED_ACTIONS: list[str] = [
     "ce:GetCostAndUsage",
     "ce:GetCostForecast",
     "budgets:DescribeBudgets",
-    "budgets:DescribeNotificationsForBudget"
+    "budgets:DescribeNotificationsForBudget",
 ]
 
 COMMAND_SERVICE_MAP = {
     "aws-billing-cost-usage-list": "ce",
     "aws-billing-forecast-list": "ce",
     "aws-billing-budgets-list": "budgets",
-    "aws-billing-budget-notification-list": "budgets"
+    "aws-billing-budget-notification-list": "budgets",
 }
 
 

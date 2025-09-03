@@ -1084,13 +1084,10 @@ def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
         "ResultsByTime": [
             {
                 "TimePeriod": {"Start": "2023-10-01", "End": "2023-10-02"},
-                "Total": {
-                    "UsageQuantity": {"Amount": "100.5", "Unit": "Hrs"},
-                    "BlendedCost": {"Amount": "25.75", "Unit": "USD"}
-                }
+                "Total": {"UsageQuantity": {"Amount": "100.5", "Unit": "Hrs"}, "BlendedCost": {"Amount": "25.75", "Unit": "USD"}},
             }
         ],
-        "NextPageToken": "next-token-123"
+        "NextPageToken": "next-token-123",
     }
     mock_client.get_cost_and_usage.return_value = mock_response
 
@@ -1099,11 +1096,11 @@ def test_cost_explorer_billing_cost_usage_list_command_success(mocker):
         "start_date": "2023-10-01",
         "end_date": "2023-10-02",
         "granularity": "Daily",
-        "aws_services": "EC2-Instance"
+        "aws_services": "EC2-Instance",
     }
 
     result = CostExplorer.billing_cost_usage_list_command(mock_client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "AWS Billing Usage" in result.readable_output
     assert "AWS.Billing.Usage" in result.outputs
@@ -1122,14 +1119,9 @@ def test_cost_explorer_billing_forecast_list_command_success(mocker):
 
     mock_client = mocker.Mock()
     mock_response = {
-        "ForecastResultsByTime": [
-            {
-                "TimePeriod": {"Start": "2023-10-15", "End": "2023-10-16"},
-                "MeanValue": "150.25"
-            }
-        ],
+        "ForecastResultsByTime": [{"TimePeriod": {"Start": "2023-10-15", "End": "2023-10-16"}, "MeanValue": "150.25"}],
         "Unit": "USD",
-        "NextPageToken": "forecast-token-456"
+        "NextPageToken": "forecast-token-456",
     }
     mock_client.get_cost_forecast.return_value = mock_response
 
@@ -1138,11 +1130,11 @@ def test_cost_explorer_billing_forecast_list_command_success(mocker):
         "start_date": "2023-10-15",
         "end_date": "2023-10-22",
         "granularity": "Daily",
-        "aws_services": "EC2-Instance"
+        "aws_services": "EC2-Instance",
     }
 
     result = CostExplorer.billing_forecast_list_command(mock_client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "AWS Billing Forecast" in result.readable_output
     assert "AWS.Billing.Forecast" in result.outputs
@@ -1167,26 +1159,18 @@ def test_budgets_billing_budgets_list_command_success(mocker):
                 "BudgetName": "test-budget",
                 "BudgetType": "COST",
                 "BudgetLimit": {"Amount": "1000.00", "Unit": "USD"},
-                "CalculatedSpend": {
-                    "ActualSpend": {"Amount": "750.50", "Unit": "USD"}
-                },
-                "TimePeriod": {
-                    "Start": datetime(2023, 10, 1),
-                    "End": datetime(2023, 10, 31)
-                }
+                "CalculatedSpend": {"ActualSpend": {"Amount": "750.50", "Unit": "USD"}},
+                "TimePeriod": {"Start": datetime(2023, 10, 1), "End": datetime(2023, 10, 31)},
             }
         ],
-        "NextToken": "budget-token-789"
+        "NextToken": "budget-token-789",
     }
     mock_client.describe_budgets.return_value = mock_response
 
-    args = {
-        "account_id": "123456789012",
-        "max_result": "50"
-    }
+    args = {"account_id": "123456789012", "max_result": "50"}
 
     result = Budgets.billing_budgets_list_command(mock_client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "AWS Budgets" in result.readable_output
     assert "AWS.Billing.Budget" in result.outputs
@@ -1209,9 +1193,7 @@ def test_cost_explorer_billing_cost_usage_list_command_no_next_token(mocker):
         "ResultsByTime": [
             {
                 "TimePeriod": {"Start": "2023-10-01", "End": "2023-10-02"},
-                "Total": {
-                    "UsageQuantity": {"Amount": "50.0", "Unit": "Hrs"}
-                }
+                "Total": {"UsageQuantity": {"Amount": "50.0", "Unit": "Hrs"}},
             }
         ]
     }
@@ -1220,7 +1202,7 @@ def test_cost_explorer_billing_cost_usage_list_command_no_next_token(mocker):
     args = {"metrics": "UsageQuantity"}
 
     result = CostExplorer.billing_cost_usage_list_command(mock_client, args)
-    
+
     assert isinstance(result, CommandResults)
     assert "AWS.Billing.UsageNextToken" not in result.outputs
     assert "Next Page Token" not in result.readable_output
@@ -1242,29 +1224,21 @@ def test_budgets_billing_budgets_list_command_with_next_token(mocker):
                 "BudgetName": "budget-page-2",
                 "BudgetType": "USAGE",
                 "BudgetLimit": {"Amount": "500.00", "Unit": "USD"},
-                "CalculatedSpend": {
-                    "ActualSpend": {"Amount": "300.25", "Unit": "USD"}
-                },
-                "TimePeriod": {
-                    "Start": datetime(2023, 11, 1),
-                    "End": datetime(2023, 11, 30)
-                }
+                "CalculatedSpend": {"ActualSpend": {"Amount": "300.25", "Unit": "USD"}},
+                "TimePeriod": {"Start": datetime(2023, 11, 1), "End": datetime(2023, 11, 30)},
             }
         ]
     }
     mock_client.describe_budgets.return_value = mock_response
 
-    args = {
-        "account_id": "123456789012",
-        "next_page_token": "existing-token"
-    }
+    args = {"account_id": "123456789012", "next_page_token": "existing-token"}
 
     result = Budgets.billing_budgets_list_command(mock_client, args)
-    
+
     # Verify the token was passed to the client
     mock_client.describe_budgets.assert_called_once()
     call_args = mock_client.describe_budgets.call_args[1]
     assert call_args["NextToken"] == "existing-token"
-    
+
     assert isinstance(result, CommandResults)
     assert result.outputs["AWS.Billing.Budget"][0]["BudgetName"] == "budget-page-2"

@@ -5,6 +5,7 @@ from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 from COOCApiModule import *
 from requests.exceptions import ConnectionError, Timeout
+from urllib.parse import parse_qs, urlparse, urlencode, urlunparse
 
 
 # Disable insecure warnings
@@ -97,8 +98,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     "Microsoft.Consumption/usageDetails/read",
     "Microsoft.Consumption/forecast/read",
-    "Microsoft.Consumption/budgets/read"
-    
+    "Microsoft.Consumption/budgets/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -1952,39 +1952,43 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
     scope = f"/{subscription_id}"
     url = f"{scope}/providers/Microsoft.Consumption/usageDetails"
     api_version = "2021-10-01"
-    params_ = {"api-version": api_version, "$top": max_results}
+    params_ = {}
     if expand:
         params_["$expand"] = expand
     if filter_:
         params_["$filter"] = filter_
     if metric:
         params_["metric"] = metric.lower().replace(" ", "")
+    params_["api-version"] = api_version
+    params_["$top"] = max_results
     if next_page_token:
-        params_["$skiptoken"] = next_page_token
-
-    res = client.http_request("GET", url_suffix=url, params=params_)
+        new_url = remove_query_param_from_url(next_page_token, "api-version")
+        res = client.http_request("GET", full_url=new_url, params={"api-version": api_version})
+    else:
+        res = client.http_request("GET", url_suffix=url, params=params_)
+    demisto.debug(f"\nAzure response\n{res}\n")
     items = res.get("value", [])
     results = []
     for item in items:
-        results.append({
-            "Name": item.get("name"),
-            "Product": item.get("properties", {}).get("productName"),
-            "MeterName": item.get("properties", {}).get("meterName"),
-            "PayGCostUSD": item.get("properties", {}).get("paygCost", {}).get("amount"),
-            "UsageQuantity": item.get("properties", {}).get("quantity"),
-            "PeriodStartDate": item.get("properties", {}).get("usageStart"),
-            "PeriodEndDate": item.get("properties", {}).get("usageEnd"),
-        })
+        results.append(
+            {
+                "Name": item.get("name"),
+                "Product": item.get("properties", {}).get("product"),
+                "PayGCostUSD": item.get("properties", {}).get("payGPrice"),
+                "UsageQuantity": item.get("properties", {}).get("quantity"),
+                "PeriodStartDate": item.get("properties", {}).get("billingPeriodStartDate"),
+                "PeriodEndDate": item.get("properties", {}).get("billingPeriodEndDate"),
+            }
+        )
     outputs = {"Azure.Billing.Usage": results}
     next_token = res.get("nextLink")
     if next_token:
-        # Azure returns a full URL in nextLink; extract the skiptoken
-        from urllib.parse import parse_qs, urlparse
-        qs = parse_qs(urlparse(next_token).query)
-        skiptoken = qs.get("$skiptoken", [None])[0]
-        if skiptoken:
-            outputs["Azure.Billing.UsageNextToken"] = skiptoken
-    readable = tableToMarkdown("Azure Billing Usage", results, headers=["Name", "Product", "MeterName", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"])
+        outputs["Azure.Billing.UsageNextToken"] = next_token
+    readable = tableToMarkdown(
+        "Azure Billing Usage",
+        results,
+        headers=["Name", "Product", "PayGCostUSD", "UsageQuantity", "PeriodStartDate", "PeriodEndDate"],
+    )
     if outputs.get("Azure.Billing.UsageNextToken"):
         readable += f"\nNext Page Token: {outputs['Azure.Billing.UsageNextToken']}"
     return CommandResults(
@@ -1992,6 +1996,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         outputs=outputs,
         raw_response=res,
     )
+
 
 def azure_billing_forecast_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
@@ -2006,16 +2011,19 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     if filter_:
         params_["$filter"] = filter_
     res = client.http_request("GET", url_suffix=url, params=params_)
+    demisto.debug(f"\nAzure response\n{res}\n")
     items = res.get("value", [])
     results = []
     for item in items:
-        results.append({
-            "Name": item.get("name"),
-            "TimePeriod": item.get("properties", {}).get("usageDate"),
-            "Charge": item.get("properties", {}).get("charge"),
-            "Currency": item.get("properties", {}).get("currency"),
-            "Grain": item.get("properties", {}).get("grain"),
-        })
+        results.append(
+            {
+                "Name": item.get("name"),
+                "TimePeriod": item.get("properties", {}).get("usageDate"),
+                "Charge": item.get("properties", {}).get("charge"),
+                "Currency": item.get("properties", {}).get("currency"),
+                "Grain": item.get("properties", {}).get("grain"),
+            }
+        )
     outputs = {"Azure.BillingForecast": results}
     readable = tableToMarkdown("Azure Billing Forecast", results, headers=["Name", "TimePeriod", "Charge", "Currency", "Grain"])
     return CommandResults(
@@ -2023,6 +2031,7 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
         outputs=outputs,
         raw_response=res,
     )
+
 
 def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
     """
@@ -2041,17 +2050,28 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
         url = f"{scope}/providers/Microsoft.Consumption/budgets"
         res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
         items = res.get("value", [])
+    demisto.debug(f"\nAzure response\n{res}\n")
     results = []
     for item in items:
-        results.append({
-            "BudgetName": item.get("name"),
-            "ResourceType": item.get("type"),
-            "TimePeriod": str(item.get("properties", {}).get("timePeriod")),
-            "Amount": item.get("properties", {}).get("amount"),
-            "CurrentSpend": item.get("properties", {}).get("currentSpend", {}).get("amount"),
-        })
-    outputs = {"Azure.BillingBudget": results}
-    readable = tableToMarkdown("Azure Budgets", results, headers=["BudgetName", "ResourceType", "TimePeriod", "Amount", "CurrentSpend"])
+        time_period = item.get("properties", {}).get("timePeriod", {})
+        start_raw = time_period.get("startDate")
+        end_raw = time_period.get("endDate")
+
+        start = datetime.fromisoformat(start_raw.replace("Z", "+00:00")).strftime("%Y-%m-%d") if start_raw else None
+        end = datetime.fromisoformat(end_raw.replace("Z", "+00:00")).strftime("%Y-%m-%d") if end_raw else None
+        results.append(
+            {
+                "BudgetName": item.get("name"),
+                "ResourceType": item.get("type"),
+                "TimePeriod": f"{start} - {end}",
+                "Amount": item.get("properties", {}).get("amount"),
+                "CurrentSpend": item.get("properties", {}).get("currentSpend", {}).get("amount"),
+            }
+        )
+    outputs = {"Azure.Billing.Budget": results}
+    readable = tableToMarkdown(
+        "Azure Budgets", results, headers=["BudgetName", "ResourceType", "TimePeriod", "Amount", "CurrentSpend"]
+    )
     return CommandResults(
         readable_output=readable,
         outputs=outputs,
@@ -2093,6 +2113,14 @@ def remove_member_from_group_command(client: AzureClient, args: dict) -> Command
 
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
     return CommandResults(readable_output=human_readable)
+
+
+def remove_query_param_from_url(url: str, param: str) -> str:
+    parsed = urlparse(url)
+    qs = parse_qs(parsed.query)
+    qs.pop(param, None)
+    new_query = urlencode(qs, doseq=True)
+    return urlunparse(parsed._replace(query=new_query))
 
 
 def test_module(client: AzureClient) -> str:
