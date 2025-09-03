@@ -818,36 +818,6 @@ Updates the properties of an existing Azure Cosmos DB database account.
 | Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
 | Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
-### azure-nsg-subscriptions-list
-
-***
-Gets all subscriptions for a tenant.
-
-#### Base Command
-
-`azure-nsg-subscriptions-list`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGSubscription.id | String | The unique identifier of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.authorizationSource | String | The source of authorization for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.managedByTenants | Unknown | The tenants that have access to manage the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionId | String | The ID of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.tenantId | String | The ID of the tenant associated with the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.displayName | String | The display name of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.state | String | The current state of the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure Network Security Groups subscription. |
-| Azure.NSGSubscription.count.type | String | The type of the Azure Network Security Groups subscription count. |
-| Azure.NSGSubscription.count.value | Number | The value of the Azure Network Security Groups subscription count. |
-
 ### azure-nsg-security-groups-list
 
 ***

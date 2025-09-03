@@ -20,7 +20,6 @@
 !azure-nsg-resource-group-list subscription_id="my-subscription-id"
 !azure-nsg-security-groups-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
 !azure-nsg-network-interfaces-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
-!azure-nsg-subscriptions-list subscription_id="my-subscription-id"
 !azure-nsg-public-ip-addresses-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
 !azure-nsg-security-rule-create subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule" direction=Inbound
 !azure-nsg-security-rule-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule"

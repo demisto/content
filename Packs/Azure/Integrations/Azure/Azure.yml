@@ -2051,45 +2051,6 @@ script:
       - description: The name of the rule to be deleted.
         name: security_rule_name
         required: true
-  - description: Gets all subscriptions for a tenant.
-    name: azure-nsg-subscriptions-list
-    outputs:
-      - contextPath: Azure.NSGSubscription.id
-        description: 'The unique identifier of the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.authorizationSource
-        description: 'The source of authorization for the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.managedByTenants
-        description: 'The tenants that have access to manage the Azure Network Security Groups subscription.'
-        type: Unknown
-      - contextPath: Azure.NSGSubscription.subscriptionId
-        description: 'The ID of the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.tenantId
-        description: 'The ID of the tenant associated with the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.displayName
-        description: 'The display name of the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.state
-        description: 'The current state of the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.subscriptionPolicies.locationPlacementId
-        description: 'The ID of the location placement policy for the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.subscriptionPolicies.quotaId
-        description: 'The ID of the quota policy for the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.subscriptionPolicies.spendingLimit
-        description: 'The spending limit policy for the Azure Network Security Groups subscription.'
-        type: String
-      - contextPath: Azure.NSGSubscription.count.type
-        description: 'The type of the Azure Network Security Groups subscription count.'
-        type: String
-      - contextPath: Azure.NSGSubscription.count.value
-        description: 'The value of the Azure Network Security Groups subscription count.'
-        type: Number
   - description: Gets all resource groups for a subscription.
     name: azure-nsg-resource-group-list
     arguments:
