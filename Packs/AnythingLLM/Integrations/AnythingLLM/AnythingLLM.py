@@ -305,14 +305,14 @@ class Client(BaseClient):
             if demisto.params().get("airs_scan_prompt"):
                 result = self.airs_client.airs_sync_scan_prompt(message)
                 if result['action'] == "block":
-                    msg = f"AnythingLLM: _chat: prompt blocked [{result.get("prompt_detected")}]"
+                    msg = f"AnythingLLM: _chat: prompt blocked [{result.get('prompt_detected')}]"
                     demisto.debug(msg)
                     raise Exception(msg)
             response = self._http_request(method="POST", url_suffix=f"/v1/workspace/{slug}/{ttype}", json_data=data)
             if demisto.params().get("airs_scan_response"):
                 result = self.airs_client.airs_sync_scan_response(response.get("textResponse"))
                 if result['action'] == "block":
-                    msg = f"AnythingLLM: _chat: response blocked [{result.get("response_detected")}]"
+                    msg = f"AnythingLLM: _chat: response blocked [{result.get('response_detected')}]"
                     demisto.debug(msg)
                     raise Exception(msg)
         except Exception as e:
