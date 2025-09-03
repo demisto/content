@@ -3,6 +3,16 @@ from CommonServerPython import *  # noqa: F401
 
 
 def extract_ids(command_res, field_name):
+    """
+    Extract a list of IDs from a command result.
+
+    Args:
+        command_res: The result of a command. It can be either a dictionary or a list.
+        field_name: The name of the field that contains the ID.
+
+    Returns:
+        A list of the IDs extracted from the command result.
+    """
     ids = []
     if command_res:
         if isinstance(command_res, dict):
@@ -13,6 +23,15 @@ def extract_ids(command_res, field_name):
 
 
 def replace_response_names(obj):
+    """
+    Recursively replace 'incident' with 'case' and 'alert' with 'issue' in a given object.
+
+    Args:
+        obj: The object to be processed.
+
+    Returns:
+        The processed object with the replaced strings.
+    """
     if isinstance(obj, str):
         return obj.replace("incident", "case").replace("alert", "issue")
     elif isinstance(obj, list):
@@ -24,6 +43,19 @@ def replace_response_names(obj):
 
 
 def get_case_extra_data(args):
+
+    """
+    Calls the core-get-case-extra-data command and parses the output to a standard structure.
+
+    Args:
+        args: The arguments to pass to the core-get-case-extra-data command.
+
+    Returns:
+        A dictionary containing the case data with the following keys:
+            issue_ids: A list of IDs of issues in the case.
+            network_artifacts: A list of network artifacts in the case.
+            file_artifacts: A list of file artifacts in the case.
+    """
     demisto.debug(f"Calling core-get-case-extra-data, {args=}")
     case_extra_data = execute_command("core-get-case-extra-data", args)
     demisto.debug(f"After calling core-get-case-extra-data, {case_extra_data=}")
@@ -36,7 +68,13 @@ def get_case_extra_data(args):
     return case
 
 
+
 def main():
+    """
+    This function will retrieve the extra data for the given case ID/s.
+
+    It will take the case IDs and issues limit as input and will return a list of cases with their extra data.
+    """
     args = demisto.args()
     case_ids = argToList(args.get("case_id", ""))
     issues_limit = str(min(int(args.get("issues_limit", 1000)), 1000))

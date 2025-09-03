@@ -46,6 +46,15 @@ def prepare_start_end_time(args: dict):
 
 
 def replace_response_names(obj):
+    """
+    Recursively replace 'incident' with 'case' and 'alert' with 'issue' in a given object.
+
+    Args:
+        obj: The object to be processed.
+
+    Returns:
+        The processed object with the replaced strings.
+    """
     if isinstance(obj, str):
         return obj.replace("incident", "case").replace("alert", "issue")
     elif isinstance(obj, list):
@@ -57,6 +66,9 @@ def replace_response_names(obj):
 
 
 def main():
+    """
+    Gets cases using the core-get-cases command with the given arguments.
+    """
     args: dict = demisto.args()
     prepare_start_end_time(args)
     args["limit"] = args.pop("page_size", 100)
