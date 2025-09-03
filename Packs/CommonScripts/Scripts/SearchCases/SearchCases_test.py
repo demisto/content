@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 import demistomock as demisto
 from CommonServerPython import DemistoException
-from SearchCases import prepare_start_end_time, replace_response_names, main, return_results, CommandResults, is_error, get_error, return_error
+from SearchCases import prepare_start_end_time, replace_response_names, main
 
 
 def test_prepare_start_end_time_normal(monkeypatch):
@@ -58,7 +58,9 @@ def test_main_success(mocker):
     mocker.patch("SearchCases.prepare_start_end_time")
     mocker.patch("SearchCases.return_results")
     mocker.patch("SearchCases.CommandResults")
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"EntryContext": {"Core.Case": [{"case_id": "1"}]}, "HumanReadable": "hr"}])
+    mocker.patch.object(
+        demisto, "executeCommand", return_value=[{"EntryContext": {"Core.Case": [{"case_id": "1"}]}, "HumanReadable": "hr"}]
+    )
     mocker.patch("SearchCases.is_error", return_value=False)
     main()
     SearchCases.return_results.assert_called()

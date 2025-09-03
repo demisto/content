@@ -561,7 +561,9 @@ def test_get_cases_command_mapping_and_markdown(mocker):
 
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": "1"}]
-    mock_replace = mocker.patch("CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
+    mock_replace = mocker.patch(
+        "CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}]
+    )
     mock_table = mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
     args = {"case_id_list": "1"}
     result = get_cases_command(client, args)
