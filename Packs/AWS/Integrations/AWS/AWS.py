@@ -101,7 +101,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
         raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
 
     # Validate limit constraints
-    if limit and limit <= 0:
+    if limit is not None and limit <= 0:
         raise ValueError("Limit must be greater than 0")
 
     # AWS API constraints - most services have a max of 1000 items per request
