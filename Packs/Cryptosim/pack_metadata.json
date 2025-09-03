@@ -12,7 +12,10 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
+    "tags": [
+        "Threat Intelligence",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Alerts",

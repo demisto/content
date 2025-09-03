@@ -12,6 +12,19 @@ Use this integration to fetch email security incidents from Ironscales as XSIAM 
 | First fetch | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
+| Collect all incidents | False |
+
+## Scopes
+
+partner.all
+company.all
+partner.company.view
+company.view
+
+## Collect All Events
+
+Checking this box will fetch all events, not just open ones.
+Note: Currently, ATO and MTS event types are not supported.
 
 ## Commands
 
