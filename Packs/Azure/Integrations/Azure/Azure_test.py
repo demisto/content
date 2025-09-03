@@ -2194,40 +2194,6 @@ def test_nsg_resource_group_list_command(mocker):
     assert result_default.outputs[0]["id"] == "/subscriptions/subscription1/resourceGroups/resourceGroup1"
 
 
-def test_nsg_subscriptions_list_command(mocker):
-    """
-    Given: An Azure client mock and the list_subscriptions_response.json file.
-    When: nsg_subscriptions_list_command is called.
-    Then:
-          1. It should return the subscription data with expected fields.
-          2. The outputs_prefix, outputs_key_field, and raw_response should be correct.
-    """
-    from Azure import nsg_subscriptions_list_command
-
-    mock_response = util_load_json("test_data/list_subscriptions_response.json")
-
-    mock_client = mocker.Mock()
-    mock_client.list_subscriptions_request.return_value = mock_response
-    args = {}
-    params = {}
-
-    result: CommandResults = nsg_subscriptions_list_command(mock_client, params, args)
-
-    # Basic assertions
-    assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGSubscription"
-    assert result.outputs_key_field == "id"
-    assert result.raw_response == mock_response
-
-    # Check subscription data
-    assert len(result.outputs) == len(mock_response["value"])
-    subscription = result.outputs[0]
-    assert subscription["subscriptionId"] == "subscription_id1"
-    assert subscription["displayName"] == "SubscriptionName"
-    assert subscription["state"] == "Enabled"
-    assert subscription["id"] == "/subscriptions/subscription_id1"
-
-
 def test_nsg_security_rule_create_command(mocker):
     """
     Given: An Azure client mock and arguments for creating a security rule.

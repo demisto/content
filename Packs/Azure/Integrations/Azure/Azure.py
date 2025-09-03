@@ -1421,21 +1421,6 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_subscriptions_request(self):
-        """
-        List all Azure subscriptions available to the authenticated account.
-
-        Args:
-            None
-
-        Return:
-            A dictionary containing the list of subscriptions.
-
-        Docs:
-            https://learn.microsoft.com/en-us/rest/api/subscription/subscriptions/list?view=rest-subscription-2021-10-01
-        """
-        return self.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}")
-
 
 """ HELPER FUNCTIONS """
 
@@ -2567,32 +2552,6 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
     return CommandResults(readable_output=message)
 
 
-def nsg_subscriptions_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
-    """
-        Gets a list of subscriptions.
-    Args:
-        client: The microsoft client.
-    Returns:
-        CommandResults: The command results in MD table and context data.
-    """
-    response = client.list_subscriptions_request()
-    subscriptions = response.get("value", [])
-
-    readable_output = tableToMarkdown(
-        name="Subscriptions list",
-        t=subscriptions,
-        headers=["subscriptionId", "tenantId", "displayName", "state"],
-    )
-
-    return CommandResults(
-        outputs_prefix="Azure.NSGSubscription",
-        outputs_key_field="id",
-        outputs=subscriptions,
-        readable_output=readable_output,
-        raw_response=response,
-    )
-
-
 def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
     """
     List all resource groups in the subscription.
@@ -2614,6 +2573,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
         name="Resource Groups List",
         t=data_from_response,
         headers=["name", "location", "tags", "provisioningState"],
+        removeNull=True,
         removeNull=True,
         headerTransform=string_to_table_header,
     )
@@ -2850,6 +2810,7 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
 def get_azure_client(params: dict, args: dict):
     headers = {}
     if not params.get("credentials", {}).get("password"):
+        args["subscription_id"] = "194cfdc7-41f0-4eec-8bfb-1b805cf74f53"
         credentials = get_cloud_credentials(
             CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id")
         )
@@ -2906,7 +2867,6 @@ def main():
             "azure-nsg-security-rule-get": nsg_security_rule_get_command,
             "azure-nsg-security-rule-create": nsg_security_rule_create_command,
             "azure-nsg-security-rule-delete": nsg_security_rule_delete_command,
-            "azure-nsg-subscriptions-list": nsg_subscriptions_list_command,
             "azure-nsg-resource-group-list": nsg_resource_group_list_command,
             "azure-nsg-network-interfaces-list": nsg_network_interfaces_list_command,
             "azure-nsg-public-ip-addresses-list": nsg_public_ip_addresses_list_command,
