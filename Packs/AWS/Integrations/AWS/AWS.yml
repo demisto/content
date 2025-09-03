@@ -1806,78 +1806,288 @@ script:
       required: false
       defaultValue: 50
     outputs:
-    - contextPath: AWS.EC2.Instances.InstanceId
-      description: The ID of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.ImageId
-      description: The ID of the AMI used to launch the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.State.Code
-      description: The current state of the instance as a 16-bit unsigned integer.
-      type: number
-    - contextPath: AWS.EC2.Instances.State.Name
-      description: The current state of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PrivateDnsName
-      description: The private DNS hostname name assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PrivateIpAddress
-      description: The private IPv4 address assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PublicDnsName
-      description: The public DNS name assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PublicIpAddress
-      description: The public IPv4 address assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.InstanceType
-      description: The instance type.
-      type: string
-    - contextPath: AWS.EC2.Instances.KeyName
-      description: The name of the key pair used when the instance was launched.
-      type: string
-    - contextPath: AWS.EC2.Instances.LaunchTime
-      description: The time the instance was launched.
-      type: date
-    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
-      description: The availability zone of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.Placement.GroupName
-      description: The name of the placement group the instance is in.
-      type: string
-    - contextPath: AWS.EC2.Instances.Placement.Tenancy
-      description: The tenancy of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.Platform
-      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
-      type: string
-    - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled.
-      type: string
-    - contextPath: AWS.EC2.Instances.SubnetId
-      description: The ID of the subnet in which the instance is running.
-      type: string
-    - contextPath: AWS.EC2.Instances.VpcId
-      description: The ID of the VPC in which the instance is running.
-      type: string
-    - contextPath: AWS.EC2.Instances.Architecture
-      description: The architecture of the image.
-      type: string
-    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
-      description: The name of the security group.
-      type: string
-    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
-      description: The ID of the security group.
-      type: string
-    - contextPath: AWS.EC2.Instances.Tags.Key
-      description: The key of the tag.
-      type: string
-    - contextPath: AWS.EC2.Instances.Tags.Value
-      description: The value of the tag.
-      type: string
     - contextPath: AWS.EC2.InstancesNextToken
       description: Token to use for pagination in subsequent requests.
-      type: string
+      type: String
+    - contextPath: AWS.EC2.Instances.Architecture
+      description: The architecture of the image.
+      type: String
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
+      description: The device name.
+      type: String
+    - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs
+      description: Parameters used to automatically set up EBS volumes when the instance is launched.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.ClientToken
+      description: The idempotency token you provided when you launched the instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.EbsOptimized
+      description: Indicates whether the instance is optimized for Amazon EBS I/O.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.EnaSupport
+      description: Specifies whether enhanced networking with ENA is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Hypervisor
+      description: The hypervisor type of the instance. 
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.InstanceLifecycle
+      description: Indicates whether this is a Spot Instance or a Scheduled Instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Association
+      description: The association information for an Elastic IPv4 associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment
+      description: The network interface attachment.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Description
+      description: The description of the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Groups
+      description: The security groups.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Addresses
+      description: The IPv6 addresses associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.MacAddress
+      description: The MAC address.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.OwnerId
+      description: The ID of the AWS account that owns the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName
+      description: The private DNS name.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress
+      description: The IPv4 address of the network interface within the subnet.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses
+      description: The private IPv4 addresses associated with the network interface.
+      type: Array
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
+      description: Indicates whether to validate network traffic to or from this network interface.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
+      description: The status of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SubnetId
+      description: The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.InterfaceType
+      description: The type of network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix
+      description: The IPv4 delegated prefixes that are assigned to the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix
+      description: The IPv6 delegated prefixes that are assigned to the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
+      description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Operator
+      description: The service provider that manages the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.OutpostArn
+      description: The Amazon Resource Name (ARN) of the Outpost.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceName
+      description: The device name of the root device volume.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceType
+      description: The root device type used by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SourceDestCheck
+      description: Indicates whether source/destination checking is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
+      description: If the request is a Spot Instance request, the ID of the request.
+      type: String
+    - contextPath: AWS.EC2.Instances.SriovNetSupport
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateReason
+      description: The reason for the most recent state transition.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.VirtualizationType
+      description: The virtualization type of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.CpuOptions
+      description: The CPU options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.CapacityBlockId
+      description: The ID of the Capacity Block.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationId
+      description: The ID of the Capacity Reservation.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationSpecification
+      description: Information about the Capacity Reservation targeting option.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.HibernationOptions.Configured
+      description: Indicates whether the instance is enabled for hibernation.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Licenses.LicenseConfigurationArn
+      description: The Amazon Resource Name (ARN) of the license configuration.
+      type: String
+    - contextPath: AWS.EC2.Instances.MetadataOptions
+      description: The metadata options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.EnclaveOptions.Enabled
+      description: Indicates whether the instance is enabled for Amazon Web Services Nitro Enclaves.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.BootMode
+      description: The boot mode that was specified by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.PlatformDetails
+      description: The platform details value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperation
+      description: The usage operation value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperationUpdateTime
+      description: The time that the usage operation was last updated.
+      type: Date
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.HostnameType
+      description: The type of hostname to assign to an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Ipv6Address
+      description: The IPv6 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.TpmSupport
+      description: If the instance is configured for NitroTPM support, the value is v2.0.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.AutoRecovery
+      description: Provides information on the current automatic recovery behavior of your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.RebootMigration
+      description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
+      type: String
+    - contextPath: AWS.EC2.Instances.CurrentInstanceBootMode
+      description: The boot mode that is used to boot the instance at launch or start. 
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting
+      description: Contains settings for the network performance options for your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Operator
+      description: The service provider that manages the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.ImageId
+      description: The ID of the AMI used to launch the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.State.Code
+      description: The current state of the instance as a 16-bit unsigned integer.
+      type: Number
+    - contextPath: AWS.EC2.Instances.State.Name
+      description: The current state of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsName
+      description: The private DNS hostname name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicDnsName
+      description: The public DNS name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateTransitionReason
+      description: The reason for the most recent state transition. This might be an empty string.
+      type: String
+    - contextPath: AWS.EC2.Instances.KeyName
+      description: The name of the key pair used when the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.AmiLaunchIndex
+      description: The AMI launch index, which can be used to find this instance in the launch group.
+      type: Number
+    - contextPath: AWS.EC2.Instances.ProductCodes
+      description: The product codes attached to this instance, if applicable.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceType
+      description: The instance type.
+      type: String
+    - contextPath: AWS.EC2.Instances.LaunchTime
+      description: The time the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZoneId
+      description: The ID of the Availability Zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Affinity
+      description: The affinity setting for the instance on the Dedicated Host.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.PartitionNumber
+      description: The number of the partition that the instance is in.
+      type: Number
+    - contextPath: AWS.EC2.Instances.Placement.HostId
+      description: The ID of the Dedicated Host on which the instance resides.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Tenancy
+      description: The tenancy of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.HostResourceGroupArn
+      description: The ARN of the host resource group in which to launch the instances.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupId
+      description: The ID of the placement group that the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
+      description: The availability zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.KernelId
+      description: The kernel associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.RamdiskId
+      description: The RAM disk associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.Platform
+      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.SubnetId
+      description: The ID of the subnet in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.VpcId
+      description: The ID of the VPC in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateIpAddress
+      description: The private IPv4 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicIpAddress
+      description: The public IPv4 address assigned to the instance.
+      type: String
 
   - name: aws-ec2-instances-start
     description: "Starts an Amazon EBS-backed instance that was previously stopped."
@@ -2197,132 +2407,285 @@ script:
       - 'false'
       defaultValue: 'false'
     outputs:
-    - contextPath: AWS.EC2.Instances.InstanceId
-      description: The ID of the newly created instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.ImageId
-      description: The ID of the AMI used to launch the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.State.Code
-      description: The current state of the instance as a 16-bit unsigned integer.
-      type: number
-    - contextPath: AWS.EC2.Instances.State.Name
-      description: The current state of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PrivateDnsName
-      description: The private DNS hostname name assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PrivateIpAddress
-      description: The private IPv4 address assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PublicDnsName
-      description: The public DNS name assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.PublicIpAddress
-      description: The public IPv4 address assigned to the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.InstanceType
-      description: The instance type.
-      type: string
-    - contextPath: AWS.EC2.Instances.KeyName
-      description: The name of the key pair used when the instance was launched.
-      type: string
-    - contextPath: AWS.EC2.Instances.LaunchTime
-      description: The time the instance was launched.
-      type: date
-    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
-      description: The availability zone of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.Placement.GroupName
-      description: The name of the placement group the instance is in.
-      type: string
-    - contextPath: AWS.EC2.Instances.Placement.Tenancy
-      description: The tenancy of the instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.Platform
-      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
-      type: string
-    - contextPath: AWS.EC2.Instances.Monitoring.State
-      description: Indicates whether detailed monitoring is enabled.
-      type: string
-    - contextPath: AWS.EC2.Instances.SubnetId
-      description: The ID of the subnet in which the instance is running.
-      type: string
-    - contextPath: AWS.EC2.Instances.VpcId
-      description: The ID of the VPC in which the instance is running.
-      type: string
     - contextPath: AWS.EC2.Instances.Architecture
       description: The architecture of the image.
-      type: string
+      type: String
     - contextPath: AWS.EC2.Instances.BlockDeviceMappings.DeviceName
       description: The device name.
-      type: string
+      type: String
     - contextPath: AWS.EC2.Instances.BlockDeviceMappings.Ebs
       description: Parameters used to automatically set up EBS volumes when the instance is launched.
       type: Dictionary
-    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
-      description: The name of the security group.
-      type: string
-    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
-      description: The ID of the security group.
-      type: string
-    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
-      description: The Amazon Resource Name (ARN) of the instance profile.
-      type: string
-    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Id
-      description: The ID of the instance profile.
-      type: string
-    - contextPath: AWS.EC2.Instances.Tags.Key
-      description: The key of the tag.
-      type: string
-    - contextPath: AWS.EC2.Instances.Tags.Value
-      description: The value of the tag.
-      type: string
+    - contextPath: AWS.EC2.Instances.ClientToken
+      description: The idempotency token you provided when you launched the instance, if applicable.
+      type: String
     - contextPath: AWS.EC2.Instances.EbsOptimized
       description: Indicates whether the instance is optimized for Amazon EBS I/O.
-      type: boolean
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId
-      description: The ID of the network interface.
-      type: string
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SubnetId
-      description: The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.VpcId
-      description: The ID of the VPC.
-      type: string
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.EnaSupport
+      description: Specifies whether enhanced networking with ENA is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Hypervisor
+      description: The hypervisor type of the instance. 
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Arn
+      description: The Amazon Resource Name (ARN) of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.IamInstanceProfile.Id
+      description: The ID of the instance profile.
+      type: String
+    - contextPath: AWS.EC2.Instances.InstanceLifecycle
+      description: Indicates whether this is a Spot Instance or a Scheduled Instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Association
+      description: The association information for an Elastic IPv4 associated with the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Attachment
+      description: The network interface attachment.
+      type: Dictionary
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Description
       description: The description of the network interface. Applies only if creating a network interface when launching an instance.
-      type: string
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.OwnerId
-      description: The ID of the AWS account that owns the network interface.
-      type: string
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
-      description: The status of the network interface.
-      type: string
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Groups
+      description: The security groups.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Addresses
+      description: The IPv6 addresses associated with the network interface.
+      type: Dictionary
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.MacAddress
       description: The MAC address.
-      type: string
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId
+      description: The ID of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.OwnerId
+      description: The private DNS name.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName
+      description: The IPv4 address of the network interface within the subnet.
+      type: String
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress
       description: The IPv4 address of the network interface within the subnet.
-      type: string
-    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName
-      description: The private DNS name.
-      type: string
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses
+      description: The private IPv4 addresses associated with the network interface.
+      type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck
       description: Indicates whether to validate network traffic to or from this network interface.
-      type: boolean
-    - contextPath: AWS.EC2.ReservationId
-      description: The ID of the reservation.
-      type: string
-    - contextPath: AWS.EC2.OwnerId
-      description: The ID of the AWS account that owns the reservation.
-      type: string
-    - contextPath: AWS.EC2.ResponseMetadata.RequestId
-      description: The request ID for the run instances operation.
-      type: string
-    - contextPath: AWS.EC2.ResponseMetadata.HTTPStatusCode
-      description: The HTTP status code of the response.
-      type: number
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Status
+      description: The status of the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.SubnetId
+      description: The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.InterfaceType
+      description: The type of network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix
+      description: The IPv4 delegated prefixes that are assigned to the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix
+      description: The IPv6 delegated prefixes that are assigned to the network interface.
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
+      description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.NetworkInterfaces.Operator
+      description: The service provider that manages the network interface.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.OutpostArn
+      description: The Amazon Resource Name (ARN) of the Outpost.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceName
+      description: The device name of the root device volume.
+      type: String
+    - contextPath: AWS.EC2.Instances.RootDeviceType
+      description: The root device type used by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupId
+      description: The ID of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SecurityGroups.GroupName
+      description: The name of the security group.
+      type: String
+    - contextPath: AWS.EC2.Instances.SourceDestCheck
+      description: Indicates whether source/destination checking is enabled.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
+      description: If the request is a Spot Instance request, the ID of the request.
+      type: String
+    - contextPath: AWS.EC2.Instances.SriovNetSupport
+      description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateReason
+      description: The reason for the most recent state transition.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.Tags.Key
+      description: The key of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.Tags.Value
+      description: The value of the tag.
+      type: String
+    - contextPath: AWS.EC2.Instances.VirtualizationType
+      description: The virtualization type of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.CpuOptions
+      description: The CPU options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.CapacityBlockId
+      description: The ID of the Capacity Block.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationId
+      description: The ID of the Capacity Reservation.
+      type: String
+    - contextPath: AWS.EC2.Instances.CapacityReservationSpecification
+      description: Information about the Capacity Reservation targeting option.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.HibernationOptions.Configured
+      description: Indicates whether the instance is enabled for hibernation.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Licenses.LicenseConfigurationArn
+      description: The Amazon Resource Name (ARN) of the license configuration.
+      type: String
+    - contextPath: AWS.EC2.Instances.MetadataOptions
+      description: The metadata options for the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.EnclaveOptions.Enabled
+      description: Indicates whether the instance is enabled for Amazon Web Services Nitro Enclaves.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.BootMode
+      description: The boot mode that was specified by the AMI.
+      type: String
+    - contextPath: AWS.EC2.Instances.PlatformDetails
+      description: The platform details value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperation
+      description: The usage operation value for the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.UsageOperationUpdateTime
+      description: The time that the usage operation was last updated.
+      type: Date
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.HostnameType
+      description: The type of hostname to assign to an instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS A records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord
+      description: Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.
+      type: Boolean
+    - contextPath: AWS.EC2.Instances.Ipv6Address
+      description: The IPv6 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.TpmSupport
+      description: If the instance is configured for NitroTPM support, the value is v2.0.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.AutoRecovery
+      description: Provides information on the current automatic recovery behavior of your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.MaintenanceOptions.RebootMigration
+      description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
+      type: String
+    - contextPath: AWS.EC2.Instances.CurrentInstanceBootMode
+      description: The boot mode that is used to boot the instance at launch or start. 
+      type: String
+    - contextPath: AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting
+      description: Contains settings for the network performance options for your instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Operator
+      description: The service provider that manages the instance.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceId
+      description: The ID of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.ImageId
+      description: The ID of the AMI used to launch the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.State.Code
+      description: The current state of the instance as a 16-bit unsigned integer.
+      type: Number
+    - contextPath: AWS.EC2.Instances.State.Name
+      description: The current state of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateDnsName
+      description: The private DNS hostname name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicDnsName
+      description: The public DNS name assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.StateTransitionReason
+      description: The reason for the most recent state transition. This might be an empty string.
+      type: String
+    - contextPath: AWS.EC2.Instances.KeyName
+      description: The name of the key pair used when the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.AmiLaunchIndex
+      description: The AMI launch index, which can be used to find this instance in the launch group.
+      type: Number
+    - contextPath: AWS.EC2.Instances.ProductCodes
+      description: The product codes attached to this instance, if applicable.
+      type: Dictionary
+    - contextPath: AWS.EC2.Instances.InstanceType
+      description: The instance type.
+      type: String
+    - contextPath: AWS.EC2.Instances.LaunchTime
+      description: The time the instance was launched.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZoneId
+      description: The ID of the Availability Zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Affinity
+      description: The affinity setting for the instance on the Dedicated Host.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupName
+      description: The name of the placement group the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.PartitionNumber
+      description: The number of the partition that the instance is in.
+      type: Number
+    - contextPath: AWS.EC2.Instances.Placement.HostId
+      description: The ID of the Dedicated Host on which the instance resides.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.Tenancy
+      description: The tenancy of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.HostResourceGroupArn
+      description: The ARN of the host resource group in which to launch the instances.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.GroupId
+      description: The ID of the placement group that the instance is in.
+      type: String
+    - contextPath: AWS.EC2.Instances.Placement.AvailabilityZone
+      description: The availability zone of the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.KernelId
+      description: The kernel associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.RamdiskId
+      description: The RAM disk associated with this instance, if applicable.
+      type: String
+    - contextPath: AWS.EC2.Instances.Platform
+      description: The platform the instance uses. The value is Windows for Windows instances; otherwise, blank.
+      type: String
+    - contextPath: AWS.EC2.Instances.Monitoring.State
+      description: Indicates whether detailed monitoring is enabled.
+      type: String
+    - contextPath: AWS.EC2.Instances.SubnetId
+      description: The ID of the subnet in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.VpcId
+      description: The ID of the VPC in which the instance is running.
+      type: String
+    - contextPath: AWS.EC2.Instances.PrivateIpAddress
+      description: The private IPv4 address assigned to the instance.
+      type: String
+    - contextPath: AWS.EC2.Instances.PublicIpAddress
+      description: The public IPv4 address assigned to the instance.
+      type: String
   isfetch: false
   runonce: false
   script: '-'

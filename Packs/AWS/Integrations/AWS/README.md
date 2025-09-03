@@ -727,30 +727,100 @@ Describes specified instances or all instances.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Instances.InstanceId | string | The ID of the instance. |
-| AWS.EC2.Instances.ImageId | string | The ID of the AMI used to launch the instance. |
-| AWS.EC2.Instances.State.Code | number | The current state of the instance as a 16-bit unsigned integer. |
-| AWS.EC2.Instances.State.Name | string | The current state of the instance. |
-| AWS.EC2.Instances.PrivateDnsName | string | The private DNS hostname name assigned to the instance. |
-| AWS.EC2.Instances.PrivateIpAddress | string | The private IPv4 address assigned to the instance. |
-| AWS.EC2.Instances.PublicDnsName | string | The public DNS name assigned to the instance. |
-| AWS.EC2.Instances.PublicIpAddress | string | The public IPv4 address assigned to the instance. |
-| AWS.EC2.Instances.InstanceType | string | The instance type. |
-| AWS.EC2.Instances.KeyName | string | The name of the key pair used when the instance was launched. |
-| AWS.EC2.Instances.LaunchTime | date | The time the instance was launched. |
-| AWS.EC2.Instances.Placement.AvailabilityZone | string | The availability zone of the instance. |
-| AWS.EC2.Instances.Placement.GroupName | string | The name of the placement group the instance is in. |
-| AWS.EC2.Instances.Placement.Tenancy | string | The tenancy of the instance. |
-| AWS.EC2.Instances.Platform | string | The platform the instance uses. The value is Windows for Windows instances; otherwise, blank. |
-| AWS.EC2.Instances.Monitoring.State | string | Indicates whether detailed monitoring is enabled. |
-| AWS.EC2.Instances.SubnetId | string | The ID of the subnet in which the instance is running. |
-| AWS.EC2.Instances.VpcId | string | The ID of the VPC in which the instance is running. |
-| AWS.EC2.Instances.Architecture | string | The architecture of the image. |
-| AWS.EC2.Instances.SecurityGroups.GroupName | string | The name of the security group. |
-| AWS.EC2.Instances.SecurityGroups.GroupId | string | The ID of the security group. |
-| AWS.EC2.Instances.Tags.Key | string | The key of the tag. |
-| AWS.EC2.Instances.Tags.Value | string | The value of the tag. |
-| AWS.EC2.InstancesNextToken | string | Token to use for pagination in subsequent requests. |
+| AWS.EC2.InstancesNextToken | String | Token to use for pagination in subsequent requests. |
+| AWS.EC2.Instances.Architecture | String | The architecture of the image. |
+| AWS.EC2.Instances.BlockDeviceMappings.DeviceName | String | The device name. |
+| AWS.EC2.Instances.BlockDeviceMappings.Ebs | Dictionary | Parameters used to automatically set up EBS volumes when the instance is launched. |
+| AWS.EC2.Instances.ClientToken | String | The idempotency token you provided when you launched the instance, if applicable. |
+| AWS.EC2.Instances.EbsOptimized | Boolean | Indicates whether the instance is optimized for Amazon EBS I/O. |
+| AWS.EC2.Instances.EnaSupport | Boolean | Specifies whether enhanced networking with ENA is enabled. |
+| AWS.EC2.Instances.Hypervisor | String | The hypervisor type of the instance. |
+| AWS.EC2.Instances.IamInstanceProfile.Arn | String | The Amazon Resource Name \(ARN\) of the instance profile. |
+| AWS.EC2.Instances.IamInstanceProfile.Id | String | The ID of the instance profile. |
+| AWS.EC2.Instances.InstanceLifecycle | String | Indicates whether this is a Spot Instance or a Scheduled Instance. |
+| AWS.EC2.Instances.NetworkInterfaces.Association | Dictionary | The association information for an Elastic IPv4 associated with the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Attachment | Dictionary | The network interface attachment. |
+| AWS.EC2.Instances.NetworkInterfaces.Description | String | The description of the network interface. Applies only if creating a network interface when launching an instance. |
+| AWS.EC2.Instances.NetworkInterfaces.Groups | Dictionary | The security groups. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Addresses | Dictionary | The IPv6 addresses associated with the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.MacAddress | String | The MAC address. |
+| AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId | String | The ID of the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.OwnerId | String | The ID of the AWS account that owns the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName | String | The private DNS name. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress | String | The IPv4 address of the network interface within the subnet. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses | Array | The private IPv4 addresses associated with the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck | Boolean | Indicates whether to validate network traffic to or from this network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Status | String | The status of the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.SubnetId | String | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
+| AWS.EC2.Instances.NetworkInterfaces.VpcId | String | The ID of the VPC. |
+| AWS.EC2.Instances.NetworkInterfaces.InterfaceType | String | The type of network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix | String | The IPv4 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix | String | The IPv6 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration | Dictionary | A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Operator | Dictionary | The service provider that manages the network interface. |
+| AWS.EC2.Instances.OutpostArn | String | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Instances.RootDeviceName | String | The device name of the root device volume. |
+| AWS.EC2.Instances.RootDeviceType | String | The root device type used by the AMI. |
+| AWS.EC2.Instances.SecurityGroups.GroupId | String | The ID of the security group. |
+| AWS.EC2.Instances.SecurityGroups.GroupName | String | The name of the security group. |
+| AWS.EC2.Instances.SourceDestCheck | Boolean | Indicates whether source/destination checking is enabled. |
+| AWS.EC2.Instances.SpotInstanceRequestId | String | If the request is a Spot Instance request, the ID of the request. |
+| AWS.EC2.Instances.SriovNetSupport | String | Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled. |
+| AWS.EC2.Instances.StateReason | Dictionary | The reason for the most recent state transition. |
+| AWS.EC2.Instances.Tags.Key | String | The key of the tag. |
+| AWS.EC2.Instances.Tags.Value | String | The value of the tag. |
+| AWS.EC2.Instances.VirtualizationType | String | The virtualization type of the instance. |
+| AWS.EC2.Instances.CpuOptions | Dictionary | The CPU options for the instance. |
+| AWS.EC2.Instances.CapacityBlockId | String | The ID of the Capacity Block. |
+| AWS.EC2.Instances.CapacityReservationId | String | The ID of the Capacity Reservation. |
+| AWS.EC2.Instances.CapacityReservationSpecification | Dictionary | Information about the Capacity Reservation targeting option. |
+| AWS.EC2.Instances.HibernationOptions.Configured | Boolean | Indicates whether the instance is enabled for hibernation. |
+| AWS.EC2.Instances.Licenses.LicenseConfigurationArn | String | The Amazon Resource Name \(ARN\) of the license configuration. |
+| AWS.EC2.Instances.MetadataOptions | Dictionary | The metadata options for the instance. |
+| AWS.EC2.Instances.EnclaveOptions.Enabled | Boolean | Indicates whether the instance is enabled for Amazon Web Services Nitro Enclaves. |
+| AWS.EC2.Instances.BootMode | String | The boot mode that was specified by the AMI. |
+| AWS.EC2.Instances.PlatformDetails | String | The platform details value for the instance. |
+| AWS.EC2.Instances.UsageOperation | String | The usage operation value for the instance. |
+| AWS.EC2.Instances.UsageOperationUpdateTime | Date | The time that the usage operation was last updated. |
+| AWS.EC2.Instances.PrivateDnsNameOptions.HostnameType | String | The type of hostname to assign to an instance. |
+| AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsARecord | Boolean | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. |
+| AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord | Boolean | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. |
+| AWS.EC2.Instances.Ipv6Address | String | The IPv6 address assigned to the instance. |
+| AWS.EC2.Instances.TpmSupport | String | If the instance is configured for NitroTPM support, the value is v2.0. |
+| AWS.EC2.Instances.MaintenanceOptions.AutoRecovery | String | Provides information on the current automatic recovery behavior of your instance. |
+| AWS.EC2.Instances.MaintenanceOptions.RebootMigration | String | Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event. |
+| AWS.EC2.Instances.CurrentInstanceBootMode | String | The boot mode that is used to boot the instance at launch or start. |
+| AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting | String | Contains settings for the network performance options for your instance. |
+| AWS.EC2.Instances.Operator | Dictionary | The service provider that manages the instance. |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.ImageId | String | The ID of the AMI used to launch the instance. |
+| AWS.EC2.Instances.State.Code | Number | The current state of the instance as a 16-bit unsigned integer. |
+| AWS.EC2.Instances.State.Name | String | The current state of the instance. |
+| AWS.EC2.Instances.PrivateDnsName | String | The private DNS hostname name assigned to the instance. |
+| AWS.EC2.Instances.PublicDnsName | String | The public DNS name assigned to the instance. |
+| AWS.EC2.Instances.StateTransitionReason | String | The reason for the most recent state transition. This might be an empty string. |
+| AWS.EC2.Instances.KeyName | String | The name of the key pair used when the instance was launched. |
+| AWS.EC2.Instances.AmiLaunchIndex | Number | The AMI launch index, which can be used to find this instance in the launch group. |
+| AWS.EC2.Instances.ProductCodes | Dictionary | The product codes attached to this instance, if applicable. |
+| AWS.EC2.Instances.InstanceType | String | The instance type. |
+| AWS.EC2.Instances.LaunchTime | String | The time the instance was launched. |
+| AWS.EC2.Instances.Placement.AvailabilityZoneId | String | The ID of the Availability Zone of the instance. |
+| AWS.EC2.Instances.Placement.Affinity | String | The affinity setting for the instance on the Dedicated Host. |
+| AWS.EC2.Instances.Placement.GroupName | String | The name of the placement group the instance is in. |
+| AWS.EC2.Instances.Placement.PartitionNumber | Number | The number of the partition that the instance is in. |
+| AWS.EC2.Instances.Placement.HostId | String | The ID of the Dedicated Host on which the instance resides. |
+| AWS.EC2.Instances.Placement.Tenancy | String | The tenancy of the instance. |
+| AWS.EC2.Instances.Placement.HostResourceGroupArn | String | The ARN of the host resource group in which to launch the instances. |
+| AWS.EC2.Instances.Placement.GroupId | String | The ID of the placement group that the instance is in. |
+| AWS.EC2.Instances.Placement.AvailabilityZone | String | The availability zone of the instance. |
+| AWS.EC2.Instances.KernelId | String | The kernel associated with this instance, if applicable. |
+| AWS.EC2.Instances.RamdiskId | String | The RAM disk associated with this instance, if applicable. |
+| AWS.EC2.Instances.Platform | String | The platform the instance uses. The value is Windows for Windows instances; otherwise, blank. |
+| AWS.EC2.Instances.Monitoring.State | String | Indicates whether detailed monitoring is enabled. |
+| AWS.EC2.Instances.SubnetId | String | The ID of the subnet in which the instance is running. |
+| AWS.EC2.Instances.VpcId | String | The ID of the VPC in which the instance is running. |
+| AWS.EC2.Instances.PrivateIpAddress | String | The private IPv4 address assigned to the instance. |
+| AWS.EC2.Instances.PublicIpAddress | String | The public IPv4 address assigned to the instance. |
 
 ### aws-ec2-instances-start
 
@@ -863,45 +933,96 @@ Launches a specified number of instances using an AMI you have access to. You ca
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EC2.Instances.InstanceId | string | The ID of the newly created instance. |
-| AWS.EC2.Instances.ImageId | string | The ID of the AMI used to launch the instance. |
-| AWS.EC2.Instances.State.Code | number | The current state of the instance as a 16-bit unsigned integer. |
-| AWS.EC2.Instances.State.Name | string | The current state of the instance. |
-| AWS.EC2.Instances.PrivateDnsName | string | The private DNS hostname name assigned to the instance. |
-| AWS.EC2.Instances.PrivateIpAddress | string | The private IPv4 address assigned to the instance. |
-| AWS.EC2.Instances.PublicDnsName | string | The public DNS name assigned to the instance. |
-| AWS.EC2.Instances.PublicIpAddress | string | The public IPv4 address assigned to the instance. |
-| AWS.EC2.Instances.InstanceType | string | The instance type. |
-| AWS.EC2.Instances.KeyName | string | The name of the key pair used when the instance was launched. |
-| AWS.EC2.Instances.LaunchTime | date | The time the instance was launched. |
-| AWS.EC2.Instances.Placement.AvailabilityZone | string | The availability zone of the instance. |
-| AWS.EC2.Instances.Placement.GroupName | string | The name of the placement group the instance is in. |
-| AWS.EC2.Instances.Placement.Tenancy | string | The tenancy of the instance. |
-| AWS.EC2.Instances.Platform | string | The platform the instance uses. The value is Windows for Windows instances; otherwise, blank. |
-| AWS.EC2.Instances.Monitoring.State | string | Indicates whether detailed monitoring is enabled. |
-| AWS.EC2.Instances.SubnetId | string | The ID of the subnet in which the instance is running. |
-| AWS.EC2.Instances.VpcId | string | The ID of the VPC in which the instance is running. |
-| AWS.EC2.Instances.Architecture | string | The architecture of the image. |
-| AWS.EC2.Instances.BlockDeviceMappings.DeviceName | string | The device name. |
+| AWS.EC2.Instances.Architecture | String | The architecture of the image. |
+| AWS.EC2.Instances.BlockDeviceMappings.DeviceName | String | The device name. |
 | AWS.EC2.Instances.BlockDeviceMappings.Ebs | Dictionary | Parameters used to automatically set up EBS volumes when the instance is launched. |
-| AWS.EC2.Instances.SecurityGroups.GroupName | string | The name of the security group. |
-| AWS.EC2.Instances.SecurityGroups.GroupId | string | The ID of the security group. |
-| AWS.EC2.Instances.IamInstanceProfile.Arn | string | The Amazon Resource Name \(ARN\) of the instance profile. |
-| AWS.EC2.Instances.IamInstanceProfile.Id | string | The ID of the instance profile. |
-| AWS.EC2.Instances.Tags.Key | string | The key of the tag. |
-| AWS.EC2.Instances.Tags.Value | string | The value of the tag. |
-| AWS.EC2.Instances.EbsOptimized | boolean | Indicates whether the instance is optimized for Amazon EBS I/O. |
-| AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId | string | The ID of the network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.SubnetId | string | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
-| AWS.EC2.Instances.NetworkInterfaces.VpcId | string | The ID of the VPC. |
-| AWS.EC2.Instances.NetworkInterfaces.Description | string | The description of the network interface. Applies only if creating a network interface when launching an instance. |
-| AWS.EC2.Instances.NetworkInterfaces.OwnerId | string | The ID of the AWS account that owns the network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Status | string | The status of the network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.MacAddress | string | The MAC address. |
-| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress | string | The IPv4 address of the network interface within the subnet. |
-| AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName | string | The private DNS name. |
-| AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck | boolean | Indicates whether to validate network traffic to or from this network interface. |
-| AWS.EC2.ReservationId | string | The ID of the reservation. |
-| AWS.EC2.OwnerId | string | The ID of the AWS account that owns the reservation. |
-| AWS.EC2.ResponseMetadata.RequestId | string | The request ID for the run instances operation. |
-| AWS.EC2.ResponseMetadata.HTTPStatusCode | number | The HTTP status code of the response. |
+| AWS.EC2.Instances.ClientToken | String | The idempotency token you provided when you launched the instance, if applicable. |
+| AWS.EC2.Instances.EbsOptimized | Boolean | Indicates whether the instance is optimized for Amazon EBS I/O. |
+| AWS.EC2.Instances.EnaSupport | Boolean | Specifies whether enhanced networking with ENA is enabled. |
+| AWS.EC2.Instances.Hypervisor | String | The hypervisor type of the instance. |
+| AWS.EC2.Instances.IamInstanceProfile.Arn | String | The Amazon Resource Name \(ARN\) of the instance profile. |
+| AWS.EC2.Instances.IamInstanceProfile.Id | String | The ID of the instance profile. |
+| AWS.EC2.Instances.InstanceLifecycle | String | Indicates whether this is a Spot Instance or a Scheduled Instance. |
+| AWS.EC2.Instances.NetworkInterfaces.Association | Dictionary | The association information for an Elastic IPv4 associated with the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Attachment | Dictionary | The network interface attachment. |
+| AWS.EC2.Instances.NetworkInterfaces.Description | String | The description of the network interface. Applies only if creating a network interface when launching an instance. |
+| AWS.EC2.Instances.NetworkInterfaces.Groups | Dictionary | The security groups. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Addresses | Dictionary | The IPv6 addresses associated with the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.MacAddress | String | The MAC address. |
+| AWS.EC2.Instances.NetworkInterfaces.NetworkInterfaceId | String | The ID of the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.OwnerId | String | The private DNS name. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateDnsName | String | The IPv4 address of the network interface within the subnet. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress | String | The IPv4 address of the network interface within the subnet. |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses | Array | The private IPv4 addresses associated with the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.SourceDestCheck | Boolean | Indicates whether to validate network traffic to or from this network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Status | String | The status of the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.SubnetId | String | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
+| AWS.EC2.Instances.NetworkInterfaces.VpcId | String | The ID of the VPC. |
+| AWS.EC2.Instances.NetworkInterfaces.InterfaceType | String | The type of network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes.Ipv4Prefix | String | The IPv4 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes.Ipv6Prefix | String | The IPv6 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration | Dictionary | A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Operator | Dictionary | The service provider that manages the network interface. |
+| AWS.EC2.Instances.OutpostArn | String | The Amazon Resource Name \(ARN\) of the Outpost. |
+| AWS.EC2.Instances.RootDeviceName | String | The device name of the root device volume. |
+| AWS.EC2.Instances.RootDeviceType | String | The root device type used by the AMI. |
+| AWS.EC2.Instances.SecurityGroups.GroupId | String | The ID of the security group. |
+| AWS.EC2.Instances.SecurityGroups.GroupName | String | The name of the security group. |
+| AWS.EC2.Instances.SourceDestCheck | Boolean | Indicates whether source/destination checking is enabled. |
+| AWS.EC2.Instances.SpotInstanceRequestId | String | If the request is a Spot Instance request, the ID of the request. |
+| AWS.EC2.Instances.SriovNetSupport | String | Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled. |
+| AWS.EC2.Instances.StateReason | Dictionary | The reason for the most recent state transition. |
+| AWS.EC2.Instances.Tags.Key | String | The key of the tag. |
+| AWS.EC2.Instances.Tags.Value | String | The value of the tag. |
+| AWS.EC2.Instances.VirtualizationType | String | The virtualization type of the instance. |
+| AWS.EC2.Instances.CpuOptions | Dictionary | The CPU options for the instance. |
+| AWS.EC2.Instances.CapacityBlockId | String | The ID of the Capacity Block. |
+| AWS.EC2.Instances.CapacityReservationId | String | The ID of the Capacity Reservation. |
+| AWS.EC2.Instances.CapacityReservationSpecification | Dictionary | Information about the Capacity Reservation targeting option. |
+| AWS.EC2.Instances.HibernationOptions.Configured | Boolean | Indicates whether the instance is enabled for hibernation. |
+| AWS.EC2.Instances.Licenses.LicenseConfigurationArn | String | The Amazon Resource Name \(ARN\) of the license configuration. |
+| AWS.EC2.Instances.MetadataOptions | Dictionary | The metadata options for the instance. |
+| AWS.EC2.Instances.EnclaveOptions.Enabled | Boolean | Indicates whether the instance is enabled for Amazon Web Services Nitro Enclaves. |
+| AWS.EC2.Instances.BootMode | String | The boot mode that was specified by the AMI. |
+| AWS.EC2.Instances.PlatformDetails | String | The platform details value for the instance. |
+| AWS.EC2.Instances.UsageOperation | String | The usage operation value for the instance. |
+| AWS.EC2.Instances.UsageOperationUpdateTime | Date | The time that the usage operation was last updated. |
+| AWS.EC2.Instances.PrivateDnsNameOptions.HostnameType | String | The type of hostname to assign to an instance. |
+| AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsARecord | Boolean | Indicates whether to respond to DNS queries for instance hostnames with DNS A records. |
+| AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord | Boolean | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. |
+| AWS.EC2.Instances.Ipv6Address | String | The IPv6 address assigned to the instance. |
+| AWS.EC2.Instances.TpmSupport | String | If the instance is configured for NitroTPM support, the value is v2.0. |
+| AWS.EC2.Instances.MaintenanceOptions.AutoRecovery | String | Provides information on the current automatic recovery behavior of your instance. |
+| AWS.EC2.Instances.MaintenanceOptions.RebootMigration | String | Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event. |
+| AWS.EC2.Instances.CurrentInstanceBootMode | String | The boot mode that is used to boot the instance at launch or start. |
+| AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting | String | Contains settings for the network performance options for your instance. |
+| AWS.EC2.Instances.Operator | Dictionary | The service provider that manages the instance. |
+| AWS.EC2.Instances.InstanceId | String | The ID of the instance. |
+| AWS.EC2.Instances.ImageId | String | The ID of the AMI used to launch the instance. |
+| AWS.EC2.Instances.State.Code | Number | The current state of the instance as a 16-bit unsigned integer. |
+| AWS.EC2.Instances.State.Name | String | The current state of the instance. |
+| AWS.EC2.Instances.PrivateDnsName | String | The private DNS hostname name assigned to the instance. |
+| AWS.EC2.Instances.PublicDnsName | String | The public DNS name assigned to the instance. |
+| AWS.EC2.Instances.StateTransitionReason | String | The reason for the most recent state transition. This might be an empty string. |
+| AWS.EC2.Instances.KeyName | String | The name of the key pair used when the instance was launched. |
+| AWS.EC2.Instances.AmiLaunchIndex | Number | The AMI launch index, which can be used to find this instance in the launch group. |
+| AWS.EC2.Instances.ProductCodes | Dictionary | The product codes attached to this instance, if applicable. |
+| AWS.EC2.Instances.InstanceType | String | The instance type. |
+| AWS.EC2.Instances.LaunchTime | String | The time the instance was launched. |
+| AWS.EC2.Instances.Placement.AvailabilityZoneId | String | The ID of the Availability Zone of the instance. |
+| AWS.EC2.Instances.Placement.Affinity | String | The affinity setting for the instance on the Dedicated Host. |
+| AWS.EC2.Instances.Placement.GroupName | String | The name of the placement group the instance is in. |
+| AWS.EC2.Instances.Placement.PartitionNumber | Number | The number of the partition that the instance is in. |
+| AWS.EC2.Instances.Placement.HostId | String | The ID of the Dedicated Host on which the instance resides. |
+| AWS.EC2.Instances.Placement.Tenancy | String | The tenancy of the instance. |
+| AWS.EC2.Instances.Placement.HostResourceGroupArn | String | The ARN of the host resource group in which to launch the instances. |
+| AWS.EC2.Instances.Placement.GroupId | String | The ID of the placement group that the instance is in. |
+| AWS.EC2.Instances.Placement.AvailabilityZone | String | The availability zone of the instance. |
+| AWS.EC2.Instances.KernelId | String | The kernel associated with this instance, if applicable. |
+| AWS.EC2.Instances.RamdiskId | String | The RAM disk associated with this instance, if applicable. |
+| AWS.EC2.Instances.Platform | String | The platform the instance uses. The value is Windows for Windows instances; otherwise, blank. |
+| AWS.EC2.Instances.Monitoring.State | String | Indicates whether detailed monitoring is enabled. |
+| AWS.EC2.Instances.SubnetId | String | The ID of the subnet in which the instance is running. |
+| AWS.EC2.Instances.VpcId | String | The ID of the VPC in which the instance is running. |
+| AWS.EC2.Instances.PrivateIpAddress | String | The private IPv4 address assigned to the instance. |
+| AWS.EC2.Instances.PublicIpAddress | String | The public IPv4 address assigned to the instance. |
