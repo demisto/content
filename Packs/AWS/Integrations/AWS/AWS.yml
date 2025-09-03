@@ -1842,6 +1842,12 @@ script:
     - contextPath: AWS.CloudTrail.HasCustomEventSelectors
       description: Specifies if the trail has custom event selectors.
       type: boolean
+    - contextPath: AWS.CloudTrail.HasInsightSelectors
+      description: Specifies whether a trail has insight types specified in an InsightSelector list.
+      type: boolean
+    - contextPath: AWS.CloudTrail.IsOrganizationTrail
+      description: Specifies whether the trail is an organization trail.
+      type: boolean
   isfetch: false
   runonce: false
   script: '-'

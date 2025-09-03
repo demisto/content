@@ -1455,7 +1455,7 @@ def test_cloudtrail_describe_trails_command_with_multiple_trails(mocker):
 
     result = CloudTrail.describe_trails_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert len(result.outputs["trailList"]) == 2
+    assert len(result.outputs) == 2
 
 
 def test_cloudtrail_describe_trails_command_no_trail_names(mocker):
@@ -1515,7 +1515,7 @@ def test_cloudtrail_describe_trails_command_empty_trail_list(mocker):
 
     result = CloudTrail.describe_trails_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs["trailList"] == []
+    assert result.outputs == []
     assert "Trail List" in result.readable_output
 
 
@@ -1534,7 +1534,7 @@ def test_cloudtrail_describe_trails_command_missing_trail_list_key(mocker):
 
     result = CloudTrail.describe_trails_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs == {}
+    assert result.outputs == []
 
 
 def test_cloudtrail_describe_trails_command_client_error(mocker):
@@ -1597,7 +1597,7 @@ def test_cloudtrail_describe_trails_command_with_all_trail_properties(mocker):
     result = CloudTrail.describe_trails_command(mock_client, args)
     assert isinstance(result, CommandResults)
     assert "trail" in result.readable_output
-    assert result.outputs["trailList"][0]["Name"] == "trail"
+    assert result.outputs[0]["Name"] == "trail"
 
 
 def test_cloudtrail_describe_trails_command_default_include_shadow_trails(mocker):
