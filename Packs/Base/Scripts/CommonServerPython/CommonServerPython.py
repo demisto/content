@@ -12170,7 +12170,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_size += future.result()
     :rtype: ``List[Future]`` or ``None``
     """
-    return
     return send_data_to_xsiam(
         events,
         vendor,
