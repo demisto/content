@@ -1919,7 +1919,7 @@ def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
     """
     Given: A ClientError with missing error code in response.
     When: handle_client_error is called with incomplete error response.
-    Then: It should raise DemistoException with the original error.
+    Then: It should raise SystemExit with the original error.
     """
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
@@ -1929,7 +1929,7 @@ def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
     error_response = {"Error": {"Message": "Some error message"}, "ResponseMetadata": {"HTTPStatusCode": 400}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -1937,7 +1937,7 @@ def test_aws_error_handler_handle_client_error_missing_error_message(mocker):
     """
     Given: A ClientError with missing error message in response.
     When: handle_client_error is called with incomplete error response.
-    Then: It should raise DemistoException with the original error.
+    Then: It should raise SystemExit with the original error.
     """
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
@@ -1947,7 +1947,7 @@ def test_aws_error_handler_handle_client_error_missing_error_message(mocker):
     error_response = {"Error": {"Code": "TestError"}, "ResponseMetadata": {"HTTPStatusCode": 400}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -1955,7 +1955,7 @@ def test_aws_error_handler_handle_client_error_missing_http_status_code(mocker):
     """
     Given: A ClientError with missing HTTP status code in response metadata.
     When: handle_client_error is called with incomplete response metadata.
-    Then: It should raise DemistoException with the original error.
+    Then: It should raise SystemExit with the original error.
     """
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
@@ -1965,7 +1965,7 @@ def test_aws_error_handler_handle_client_error_missing_http_status_code(mocker):
     error_response = {"Error": {"Code": "TestError", "Message": "Test message"}, "ResponseMetadata": {}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -1973,7 +1973,7 @@ def test_aws_error_handler_handle_client_error_missing_response_metadata(mocker)
     """
     Given: A ClientError with missing ResponseMetadata entirely.
     When: handle_client_error is called with incomplete response structure.
-    Then: It should raise DemistoException with the original error.
+    Then: It should raise SystemExit with the original error.
     """
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
@@ -1983,7 +1983,7 @@ def test_aws_error_handler_handle_client_error_missing_response_metadata(mocker)
     error_response = {"Error": {"Code": "TestError", "Message": "Test message"}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -1991,7 +1991,7 @@ def test_aws_error_handler_handle_client_error_missing_error_section(mocker):
     """
     Given: A ClientError with missing Error section entirely.
     When: handle_client_error is called with incomplete response structure.
-    Then: It should raise DemistoException with the original error.
+    Then: It should raise SystemExit with the original error.
     """
     from AWS import AWSErrorHandler
     from botocore.exceptions import ClientError
@@ -2001,7 +2001,7 @@ def test_aws_error_handler_handle_client_error_missing_error_section(mocker):
     error_response = {"ResponseMetadata": {"HTTPStatusCode": 400}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -2023,7 +2023,7 @@ def test_aws_error_handler_handle_client_error_unhandled_exception_debug_logging
     }
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
     mock_debug.assert_any_call("[AWSErrorHandler] Unhandled error: Unexpected error")
