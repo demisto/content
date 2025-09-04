@@ -25,6 +25,23 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def parse_tag_field(tags_str: str) -> list[dict[str, str]]:
+    """
+    Parse tag field from string to list of dictionaries.
+    """
+    tags = []
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
+    for f in tags_str.split(";"):
+        match = regex.match(f)
+        if match is None:
+            demisto.debug(f"could not parse field: {f}")
+            continue
+
+        tags.append({"Key": match.group(1), "Value": match.group(2)})
+
+    return tags
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -182,6 +199,7 @@ class AWSServices(str, Enum):
     EKS = "eks"
     LAMBDA = "lambda"
     CloudTrail = "cloudtrail"
+    ECS = "ecs"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -927,6 +945,96 @@ class EC2:
                 raise DemistoException(f"Security group {group_id} not found.")
             raise DemistoException(f"Failed to revoke egress rule: {e}")
 
+    @staticmethod
+    def create_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Creates a snapshot of an Amazon EBS volume.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - volume_id (str): The ID of the volume to snapshot
+                - description (str, optional): Description for the snapshot
+                - tag_specifications (str, optional): Tag specifications for the snapshot
+        Returns:
+            CommandResults: Results of the snapshot creation operation
+        """
+
+        kwargs = {"VolumeId": args.get("volume_id")}
+
+        if args.get("description") is not None:
+            kwargs.update({"Description": args.get("description")})
+        if args.get("tags") is not None:
+            kwargs.update({"TagSpecifications": [{"ResourceType": "snapshot", "Tags": parse_tag_field(args.get("tags", ""))}]})
+
+        try:
+            response = client.create_snapshot(**kwargs)
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+            try:
+                start_time = datetime.strftime(response["StartTime"], "%Y-%m-%dT%H:%M:%SZ")
+            except ValueError as e:
+                raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
+
+            data = {
+                "Description": response["Description"],
+                "Encrypted": response["Encrypted"],
+                "Progress": response["Progress"],
+                "SnapshotId": response["SnapshotId"],
+                "State": response["State"],
+                "VolumeId": response["VolumeId"],
+                "VolumeSize": response["VolumeSize"],
+                "StartTime": start_time,
+                "Region": args.get("region"),
+            }
+
+            if "Tags" in response:
+                for tag in response["Tags"]:
+                    data.update({tag["Key"]: tag["Value"]})
+
+            try:
+                output = json.dumps(response, cls=DatetimeEncoder)
+                raw = json.loads(output)
+                raw.update({"Region": args.get("region")})
+            except ValueError as err_msg:
+                raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+            return CommandResults(
+                outputs=raw,
+                outputs_prefix="AWS.EC2.Snapshots",
+                readable_output=tableToMarkdown("AWS EC2 Snapshots", data),
+                raw_response=raw,
+            )
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+
+        return CommandResults(readable_output="Failed to create snapshot")
+
+    @staticmethod
+    def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        group_names = argToList(args.get("group_names"))
+        user_ids = argToList(args.get("user_ids"))
+        if (group_names and user_ids) or not (group_names or user_ids):
+            raise DemistoException('Please provide either "group_names" or "user_ids"')
+
+        accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
+        operation_type = args.get("operation_type")
+        try:
+            response = client.modify_snapshot_attribute(
+                Attribute="createVolumePermission",
+                SnapshotId=args.get("snapshot_id"),
+                OperationType=operation_type,
+                DryRun=argToBoolean(args.get("dry_run", False)),
+                **accounts,
+            )
+            if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
+                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions was successfully updated.")
+
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+
+        return CommandResults(readable_output="Failed to modify snapshot permissions")
+
 
 class EKS:
     service = AWSServices.EKS
@@ -1009,6 +1117,99 @@ class EKS:
                 return CommandResults(readable_output="No changes needed for the required update.")
             else:
                 raise e
+
+    @staticmethod
+    def describe_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Describes an Amazon EKS cluster.
+        Args:
+            client(boto3 client): The configured AWS session.
+            args: command arguments
+
+        Returns:
+            A Command Results object
+        """
+        cluster_name = args.get("cluster_name")
+
+        print_debug_logs(client, f"Describing clusters with parameters: {cluster_name}")
+        response = client.describe_cluster(name=cluster_name)
+        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response_data = response.get("cluster", {})
+        response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
+        activation_expiry = response_data.get("connectorConfig", {}).get("activationExpiry")
+        if activation_expiry:
+            response_data.get("connectorConfig", {})["activationExpiry"] = datetime_to_string(activation_expiry)
+
+        headers = ["name", "id", "status", "arn", "createdAt", "version"]
+        readable_output = tableToMarkdown(
+            name="Describe Cluster Information",
+            t=response_data,
+            removeNull=True,
+            headers=headers,
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EKS.DescribeCluster",
+            outputs=response_data,
+            raw_response=response_data,
+            outputs_key_field="name",
+        )
+
+    @staticmethod
+    def associate_access_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Associates an access policy and its scope to an access entry.
+        Args:
+            client(boto3 client): The configured AWS session.
+            args: command arguments
+
+        Returns:
+            A Command Results object
+        """
+        cluster_name = args.get("cluster_name")
+        principal_arn = args.get("principal_arn")
+        policy_arn = args.get("policy_arn")
+        type_arg = args.get("type")
+        namespaces = argToList(args.get("namespaces"))
+        if type_arg and type_arg == "namespace" and not namespaces:
+            raise Exception(f"When the {type_arg=}, you must enter a namespace.")
+
+        access_scope = {"type": type_arg, "namespaces": namespaces}
+
+        print_debug_logs(
+            client,
+            f"Associating access policy with parameters: {cluster_name=}, {principal_arn=}, {policy_arn=}, {access_scope=}",
+        )
+        response = client.associate_access_policy(
+            clusterName=cluster_name, principalArn=principal_arn, policyArn=policy_arn, accessScope=access_scope
+        )
+        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response_data = response.get("associatedAccessPolicy", {})
+        response_data["clusterName"] = response.get("clusterName")
+        response_data["principalArn"] = response.get("principalArn")
+
+        response_data["associatedAt"] = datetime_to_string(response_data.get("associatedAt"))
+        response_data["modifiedAt"] = datetime_to_string(response_data.get("modifiedAt"))
+
+        headers = ["clusterName", "principalArn", "policyArn", "associatedAt"]
+        readable_output = tableToMarkdown(
+            name="The access policy was associated to the access entry successfully.",
+            t=response_data,
+            removeNull=True,
+            headers=headers,
+            headerTransform=pascalToSpace,
+        )
+
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EKS.AssociatedAccessPolicy",
+            outputs=response_data,
+            raw_response=response_data,
+            outputs_key_field="clusterName",
+        )
 
 
 class RDS:
@@ -1281,6 +1482,53 @@ class CloudTrail:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
 
+class ECS:
+    service = AWSServices.ECS
+
+    @staticmethod
+    def update_cluster_settings_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Updates the containerInsights setting of an ECS cluster.
+
+        Args:
+            client (BotoClient): The boto3 client for ECS service
+            args (Dict[str, Any]): Command arguments including cluster name and setting value
+
+        Returns:
+            CommandResults: Results of the operation with updated cluster settings
+        """
+        setting_value = args.get("value")
+        print_debug_logs(client, f"Updating ECS cluster settings with parameters: {setting_value=}")  # noqa: E501
+        response = client.update_cluster_settings(
+            cluster=args.get("cluster_name"),
+            settings=[
+                {"name": "containerInsights", "value": setting_value},
+            ],
+        )
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            cluster_data = response.get("cluster", {})
+            readable_output = f"Successfully updated ECS cluster: {args.get('cluster_name')}"
+
+            if cluster_data:
+                readable_output += "\n\nUpdated Cluster Details:ֿֿֿֿֿ\n"
+                readable_output += tableToMarkdown("", cluster_data)
+
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix="AWS.ECS.Cluster",
+                outputs=cluster_data,
+                outputs_key_field="clusterArn",
+                raw_response=response,
+            )
+        else:
+            raise DemistoException(
+                f"Failed to update ECS cluster. "
+                f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                f"{json.dumps(response)}"
+            )
+
+
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
@@ -1301,13 +1549,18 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-security-group-ingress-revoke": EC2.revoke_security_group_ingress_command,
     "aws-ec2-security-group-ingress-authorize": EC2.authorize_security_group_ingress_command,
     "aws-ec2-security-group-egress-revoke": EC2.revoke_security_group_egress_command,
+    "aws-ec2-create-snapshot": EC2.create_snapshot_command,
+    "aws-ec2-modify-snapshot-permission": EC2.modify_snapshot_permission_command,
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
+    "aws-eks-describe-cluster": EKS.describe_cluster_command,
+    "aws-eks-associate-access-policy": EKS.associate_access_policy_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
     "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_snapshot_attribute_command,
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -1334,6 +1587,9 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifyInstanceAttribute",
     "ec2:ModifySnapshotAttribute",
     "ec2:RevokeSecurityGroupIngress",
+    "ec2:CreateSnapshot",
+    "eks:DescribeCluster",
+    "eks:AssociateAccessPolicy",
     "eks:UpdateClusterConfig",
     "iam:DeleteLoginProfile",
     "iam:PutUserPolicy",
@@ -1344,6 +1600,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "ecs:UpdateClusterSettings",
 ]
 
 
