@@ -1446,20 +1446,45 @@ class AzureClient:
 """ HELPER FUNCTIONS """
 
 
-def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> str:
+def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> str | None:
+    """
+    Extract a missing permission by checking command-to-permissions mapping against an error message.
+    Iterates over the permissions mapped to a specific API function and returns the first permission
+    that appears in the given error message.
+
+    Args:
+        api_function_name (str): The name of the API function used for permission lookup.
+        error_msg (str): The error message string to check for missing permissions.
+
+    Returns:
+        str: The matching permission if found, otherwise None.
+    """
     for permissions in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
         for permission in permissions:
             if permission.lower() in error_msg.lower():
                 demisto.debug(f"Found missing permission via command mapping: {permission}")
                 return permission
+    return None
 
 
-def get_permissions_from_required_role_permissions_list(error_msg: str):
+def get_permissions_from_required_role_permissions_list(error_msg: str) -> str | None:
+    """
+    Extract a missing permission by searching the required role permissions list against an error message.
+    Iterates over the predefined required role permissions and returns the first permission
+    that appears in the given error message.
+
+    Args:
+        error_msg (str): The error message string to check for missing permissions.
+
+    Returns:
+        str: The matching permission if found, otherwise None.
+    """
     permissions_to_check = set(REQUIRED_ROLE_PERMISSIONS)
     for permission in permissions_to_check:
         if permission.lower() in error_msg.lower():
             demisto.debug(f"Found missing permission via fallback search: {permission}")
             return permission
+    return None
 
 def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
     """
