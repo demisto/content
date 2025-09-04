@@ -9,6 +9,7 @@ This integration was integrated and tested with version 3 of SailPoint API.
 | Client ID <br /> In order to generate the Client ID and Client Secret, follow this [link](https://developer.sailpoint.com/docs/api/authentication/#generate-a-personal-access-token).  | True |
 | Client Secret | True |
 | Max number of events per fetch | False |
+| Minutes to look back when fetching | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 
