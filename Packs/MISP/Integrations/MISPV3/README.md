@@ -2873,7 +2873,7 @@ Add sighting to an attribute.
 | type | Type of sighting to add. Possible values: "sighting", "false_positive", and "expiration". Possible values are: sighting, false_positive, expiration. | Required |
 | id | ID of attribute to add sighting to (Must be filled if UUID or value is empty). Can be retrieved from the misp-search commands. | Optional |
 | uuid | UUID of the attribute to add sighting to (Must be filled if ID or value is empty). Can be retrieved from the misp-search commands. | Optional |
-| value | Value of the attributeto add sighting to. (Must be filled if ID or UUID is empty). Can be retrieved from the misp-search commands. Adds sighting to the latest attribute. | Optional |
+| value | Value of the attribute to add sighting to. (Must be filled if ID or UUID is empty). Adds sighting to all attributes with this value. Takes precedence over (UU)ID. Can be retrieved from the misp-search commands. | Optional |
 | source | Sighting source. | Optional |
 
 #### Context Output

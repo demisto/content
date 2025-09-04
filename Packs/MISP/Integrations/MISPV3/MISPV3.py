@@ -1473,8 +1473,8 @@ def add_sighting(demisto_args: dict):
     attribute_value = demisto_args.get("value")
     sighting_source = demisto_args.get("source")
     sighting_type = demisto_args["type"]  # mandatory arg
-    att_id = attribute_id or attribute_uuid or attribute_value
-    if not att_id:
+    att_id = attribute_id or attribute_uuid
+    if not (att_id or attribute_value):
         raise DemistoException("ID, UUID or value not specified")
     sighting_args = {
         "id": attribute_id,
@@ -1485,23 +1485,15 @@ def add_sighting(demisto_args: dict):
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
+    
     if attribute_value:
-        search_response = PYMISP.search(value=attribute_value, controller="attributes")
-        if not search_response or not search_response.get("Attribute"):
-            raise DemistoException(f"Attribute with value {attribute_value} was not found in MISP.")
-        # Find the attribute with the highest ID
-        attributes = search_response.get("Attribute", [])
-        if not attributes:
-            raise DemistoException(f"No attribute found with value {attribute_value}.")
-        # Use the attribute with the highest ID (Newest attribute)
-        max_attribute = max(attributes, key=lambda attr: int(attr["id"]))
-        response = PYMISP.add_sighting(sigh_obj, max_attribute["id"])
+        response = PYMISP.add_sighting(sigh_obj)
     else:
         response = PYMISP.add_sighting(sigh_obj, att_id)
     if response.get("message"):
         raise DemistoException(f"An error was occurred: {response.get('message')}")
     elif response.get("Sighting"):
-        human_readable = f"Sighting '{sighting_type}' has been successfully added to attribute {att_id}"
+        human_readable = f"Sighting '{sighting_type}' has been successfully added to attribute {attribute_value or att_id}"
         return CommandResults(readable_output=human_readable)
     raise DemistoException(f"An error was occurred: {json.dumps(response)}")
 
