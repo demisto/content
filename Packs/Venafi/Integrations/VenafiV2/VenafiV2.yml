@@ -34,7 +34,7 @@ configuration:
   required: false
   section: Connect
 description: Retrieves information about certificates stored in Venafi.
-display: Venafi TLS Protect
+display: CyberArk Certificate Manager
 name: VenafiTLSProtect
 script:
   commands:
