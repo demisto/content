@@ -8,7 +8,9 @@ from typing import Any
 import urllib3
 import jwt
 from CommonServerPython import *
+
 from dateutil.parser import parse
+
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
 
@@ -19,6 +21,7 @@ urllib3.disable_warnings()
 APP_NAME = "ms-defender-atp"
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
+VERDICT_SOURCE = "MDE"
 """ HELPER FUNCTIONS """
 
 SEVERITY_TO_NUMBER = {"Informational": 0, "Low": 1, "MediumLow": 2, "MediumHigh": 3, "High": 4}
@@ -1437,7 +1440,7 @@ class MsClient:
 
         Args:
             machine_id (str): Machine ID
-            comment (str): 	Comment to associate with the action
+            comment (str):     Comment to associate with the action
             scan_type (str): Defines the type of the Scan (Quick, Full)
 
         Notes:
@@ -5591,6 +5594,65 @@ def create_related_cve_list_for_machine(machines):
 def get_file_context(file_info_response: dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
+def get_dbot_score(determination_type):
+    if determination_type == "Clean":
+        verdict = Common.DBotScore.GOOD
+    elif determination_type == "Unknown":
+        verdict = Common.DBotScore.NONE
+    else:
+        verdict = Common.DBotScore.BAD
+    return verdict
+    
+def build_file_output(raw_response, file_hash):
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=get_dbot_score(raw_response.get('DeterminationType'))
+    )
+    dbot_score.integration_name = VERDICT_SOURCE
+    
+    file_object = Common.File(
+        md5=raw_response.get('Md5'),
+        sha1=raw_response.get("Sha1"),
+        sha256=raw_response.get("Sha256"),
+        file_type=raw_response.get('FileType'),
+        dbot_score=dbot_score,
+    )
+    
+    result = CommandResults(
+        outputs_prefix="MDE.File",
+        outputs_key_field="Sha1",
+        outputs=raw_response,
+        raw_response=raw_response,
+        indicator=file_object
+    )
+    return result
+
+
+def file_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Returns verdict for files
+
+    Returns:
+        CommandResults list.
+    """
+    file_hashes = argToList(args["file"])
+    results = []
+    for file_hash in file_hashes:
+        try:
+            file_info_response = client.get_file_data(file_hash)
+            results.append(build_file_output(get_file_data(file_info_response), file_hash))
+        except DemistoException as f:
+            if f.res.json().get('error', {}).get('code') == 'ResourceNotFound':
+                result = create_indicator_result_with_dbotscore_unknown(
+                    indicator=file_hash,
+                    indicator_type=DBotScoreType.FILE,
+                )
+                result.indicator.dbot_score.integration_name = VERDICT_SOURCE
+                results.append(result)
+            else:
+                demisto.error(f)
+    return results
 
 def get_file_info_command(client: MsClient, args: dict):
     """Retrieves file info by a file hash (Sha1 or Sha256).
@@ -5776,6 +5838,7 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
 
     return handle_machines(machines_response)
+
 
 
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
@@ -6357,6 +6420,9 @@ def main():  # pragma: no cover
         elif command == "endpoint":
             return_results(endpoint_command(client, args))
 
+        elif command == "file":
+            return_results(file_command(client, args))
+
         elif command in ("microsoft-atp-indicator-list", "microsoft-atp-indicator-get-by-id"):
             return_outputs(*list_indicators_command(client, args))
         elif command == "microsoft-atp-indicator-create-file":
@@ -6427,3 +6493,4 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+

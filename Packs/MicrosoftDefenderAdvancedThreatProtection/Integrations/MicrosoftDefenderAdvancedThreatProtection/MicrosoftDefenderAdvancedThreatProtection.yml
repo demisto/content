@@ -5754,6 +5754,23 @@ script:
       description: The OS build.
       type: String
   - arguments:
+    - default: true
+      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+      isArray: true
+      name: file
+      required: true
+    description: Checks the file reputation of the specified hash.
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+  - arguments:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
       required: true
