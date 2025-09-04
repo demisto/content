@@ -15,7 +15,6 @@ from GetUserData import (
     okta_get_user,
     prepare_human_readable,
     run_execute_command,
-    xdr_list_risky_users,
     get_data,
     prisma_cloud_get_user,
     azure_get_risky_user,
@@ -1078,45 +1077,6 @@ class TestGetUserData:
         assert isinstance(result, dict)
         assert result == expected_account
 
-    def test_xdr_list_risky_users(self, mocker: MockerFixture):
-        """
-        Given:
-            A Command object for xdr_list_risky_users.
-        When:
-            The function is called with the Command object.
-        Then:
-            It returns the expected tuple of readable outputs and account output.
-        """
-        user_name = "xdr_user"
-        outputs_key_field = "PaloAltoNetworksXDR"
-        command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
-        mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
-        expected_account = [
-            {
-                "ID": "xdr_user",
-                "RiskLevel": "HIGH",
-                "Source": "Cortex XDR - IR",
-                "Brand": "Cortex XDR - IR",
-                "Username": "xdr_user",
-                "Instance": None,
-            }
-        ]
-
-        mocker.patch(
-            "GetUserData.run_execute_command",
-            return_value=([mock_outputs], "Human readable output", []),
-        )
-        mocker.patch("GetUserData.get_output_key", return_value="PaloAltoNetworksXDR.RiskyUser")
-        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
-        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
-
-        result = xdr_list_risky_users(command, outputs_key_field, additional_fields=True)
-
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        assert isinstance(result[0], list)
-        assert result[1] == expected_account
-
     def test_azure_list_risky_users(self, mocker: MockerFixture):
         """
         Given:
@@ -1298,7 +1258,7 @@ def test_main_successful_execution(mocker: MockerFixture):
     mocker.patch("GetUserData.okta_get_user", return_value=([], []))
     mocker.patch("GetUserData.aws_iam_get_user", return_value=([], []))
     mocker.patch("GetUserData.msgraph_user_get", return_value=([], []))
-    mocker.patch("GetUserData.xdr_list_risky_users", return_value=([], []))
+    mocker.patch("GetUserData.get_core_and_xdr_data", return_value=([], []))
     mocker.patch("GetUserData.azure_get_risky_user", return_value=([], []))
     mocker.patch("GetUserData.prisma_cloud_get_user", return_value=([], []))
     mocker.patch("GetUserData.iam_get_user", return_value=([], []))
@@ -1424,3 +1384,42 @@ def test_get_data_without_found_user(mocker: MockerFixture):
     )
 
     assert result[1][0].get("Status") == "User not found - userId: test_value."
+
+    # def test_xdr_list_risky_users(self, mocker: MockerFixture):
+    #     """
+    #     Given:
+    #         A Command object for xdr_list_risky_users.
+    #     When:
+    #         The function is called with the Command object.
+    #     Then:
+    #         It returns the expected tuple of readable outputs and account output.
+    #     """
+    #     user_name = "xdr_user"
+    #     outputs_key_field = "PaloAltoNetworksXDR"
+    #     command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
+    #     mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
+    #     expected_account = [
+    #         {
+    #             "ID": "xdr_user",
+    #             "RiskLevel": "HIGH",
+    #             "Source": "Cortex XDR - IR",
+    #             "Brand": "Cortex XDR - IR",
+    #             "Username": "xdr_user",
+    #             "Instance": None,
+    #         }
+    #     ]
+
+    #     mocker.patch(
+    #         "GetUserData.run_execute_command",
+    #         return_value=([mock_outputs], "Human readable output", []),
+    #     )
+    #     mocker.patch("GetUserData.get_output_key", return_value="PaloAltoNetworksXDR.RiskyUser")
+    #     mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
+    #     mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+    #     result = xdr_list_risky_users(command, outputs_key_field, additional_fields=True)
+
+    #     assert isinstance(result, tuple)
+    #     assert len(result) == 2
+    #     assert isinstance(result[0], list)
+    #     assert result[1] == expected_account
