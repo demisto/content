@@ -3463,12 +3463,7 @@ def parse_get_script_execution_results(results: List[Dict]) -> List[Dict]:
                 parsed_res["command_output"] = result[key]
                 parsed_results.append(parsed_res)
         else:
-            parsed_results.append(
-                result.copy() | {
-                    "command": "",
-                    "command_output": []
-                }
-            )
+            parsed_results.append(result.copy())
     return parsed_results
 
 
