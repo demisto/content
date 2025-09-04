@@ -511,7 +511,7 @@ def test_reformat_output():
             ],
         },
     ]
-    assert reformatted_outputs == excepted_output
+    assert str(reformatted_outputs) == str(excepted_output)
 
 
 def test_reformat_readable():
@@ -533,7 +533,7 @@ def test_reformat_readable():
 |---|---|---|---|---|---|
 | dummy_id | echo |  | 2.2.2.2 | name | STATUS_010_CONNECTED |
 | dummy_id | echo hello | hello | 2.2.2.2 | name | STATUS_010_CONNECTED |
-| dummy_id2 | echo |  | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
+| dummy_id2 |  |  | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output

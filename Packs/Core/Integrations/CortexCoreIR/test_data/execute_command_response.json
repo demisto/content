@@ -40,14 +40,10 @@
                     "domain": "", 
                     "endpoint_id":"dummy_id2",
                     "execution_status": "COMPLETED_SUCCESSFULLY",
-                    "command": "_echo",
-                    "_echo hello": ["hello"],
-                    "_echo": [],
                     "failed_files": 0,
                     "retention_date": null,
                     "retrieved_files": 0,
-                    "standard_output": "out",
-                    "command_output": []
+                    "standard_output": "out"
                 },
                 {
                     "endpoint_name": "name2",
