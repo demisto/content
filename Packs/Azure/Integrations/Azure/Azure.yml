@@ -1761,11 +1761,11 @@ script:
         type: String
     arguments:
       - name: subscription_id
-        description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+        description: "The subscription ID."
         type: String
         required: true
       - name: resource_group_name
-        description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+        description: "The resource group name."
         type: String
         required: true
   - name: azure-nsg-security-rule-get
@@ -1820,11 +1820,11 @@ script:
         description: The rule's direction. Can be "Inbound" or "Outbound".
         type: String
     arguments:
-      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      - description: "The subscription ID."
         name: subscription_id
         type: String
         required: true
-      - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      - description: "The name of the resource group."
         name: resource_group_name
         type: String
         required: true
@@ -1832,8 +1832,7 @@ script:
         name: security_group_name
         type: String
         required: true
-      - description: A comma-separated list of the names of the rules to get.
-        isArray: true
+      - description: The name of the rule to get.
         name: security_rule_name
         required: true
   - name: azure-nsg-security-rule-create
@@ -1885,11 +1884,11 @@ script:
         description: The rule's direction. Can be "Inbound" or "Outbound".
         type: String
     arguments:
-      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      - description: "The subscription ID."
         name: subscription_id
         type: String
         required: true
-      - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      - description: "The name of the resource group."
         name: resource_group_name
         type: String
         required: true
@@ -1930,9 +1929,9 @@ script:
         name: source
         defaultValue: Any
         type: String
-      - description: The priority by which the rules will be processed. The lower the number, the higher the priority. We recommend leaving gaps between rules - 100, 200, 300, etc. - so that it is easier to add new rules without having to edit existing rules. Default is "4096".
+      - description: The priority of the rule. The value can be between 100 and 4096. The priority number must be unique for each rule in the collection. The lower the priority number, the higher the priority of the rule.
         name: priority
-        defaultValue: 4096
+        required: true
         type: Number
       - description: The source ports from which traffic will be allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is "*".
         name: source_ports
@@ -1951,11 +1950,11 @@ script:
   - description: Delete a security rule.
     name: azure-nsg-security-rule-delete
     arguments:
-      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      - description: "The subscription ID."
         name: subscription_id
         type: String
         required: true
-      - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      - description: "The name of the resource group."
         name: resource_group_name
         type: String
         required: true
@@ -1968,7 +1967,7 @@ script:
   - description: Gets all resource groups for a subscription.
     name: azure-nsg-resource-group-list
     arguments:
-      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      - description: "The subscription ID."
         name: subscription_id
         type: String
         required: true
@@ -2062,11 +2061,11 @@ script:
         description: The network interface's kind.
         type: String
     arguments:
-      - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      - description: "The resource group name."
         name: resource_group_name
         type: String
         required: true
-      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      - description: "The subscription ID."
         name: subscription_id
         type: String
         required: true
@@ -2109,11 +2108,11 @@ script:
         description: The public IP address's fully qualified domain name (FQDN).
         type: String
     arguments:
-      - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name’."
+      - description: "The resource group name."
         name: resource_group_name
         type: String
         required: true
-      - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      - description: "The subscription ID."
         name: subscription_id
         type: String
         required: true

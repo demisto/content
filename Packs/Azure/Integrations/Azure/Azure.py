@@ -1488,61 +1488,6 @@ def get_permissions_from_required_role_permissions_list(error_msg: str) -> str |
             return permission
     return None
 
-def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
-    """
-    Reformat data by extract nested dict.
-    Example:
-        Before: data = {'key1': 'value1', 'key2': {'key3': 'value3', 'key4': 'value4'}}
-        Calling:
-             - extract_inner_dict(data, inner_dict_key='key2', fields=['key3'])
-                After: data = {'key1': 'value1', 'key2': {'key3': 'value3', 'key4': 'value4'}, 'key3': 'value3'}
-             - extract_inner_dict(data, inner_dict_key='key2')
-                After: data = {'key1': 'value1', 'key2': {'key3': 'value3', 'key4': 'value4'}, 'key3': 'value3', 'key4': 'value4'}
-    the changes are made in the data argument.
-
-    Args:
-        data (Dict): nested dict
-        inner_dict_key (str): the key to extract by
-        fields (List, optional): specific fields from the inner dict to extract. Defaults to None.
-    """
-    inner_dict = data.get(inner_dict_key, {})
-    for key in inner_dict:
-        if not fields or key in fields:
-            data[key] = inner_dict.get(key)
-
-
-def extract_list(data: Dict, list_key: str, property_name: str, field_name: str = "") -> None:
-    """
-    Reformat data by extracting to list.
-    Example: {'key': [{'k': 'val1'}, {'k': 'val2'}]} to {'key': 'k':['val1', 'val2']},
-    the changes are made in the data argument.
-
-    Args:
-        data (Dict): dict with list of dict that contains the same 'property_name' field
-        list_key (str): the key of the list
-        property_name (str): the property to extract
-        field_name (str, optional): new name for the dict key
-    """
-    properties = [item[property_name] for item in data.get(list_key, []) if property_name in item]
-    if properties:
-        data[field_name or property_name] = properties
-
-
-def reformat_data(data: Dict, dict_to_extract: List = [], list_to_extract: List = []) -> None:
-    """
-    Reformat the data argument using extract_inner_dict and extract_list
-
-    Args:
-        data (Dict): data to reformat
-        dict_to_extract (List, optional): keys of inner dict to extract to outer dict. Defaults to [].
-        list_to_extract (List, optional): keys of inner list to extract to outer dict. Defaults to [].
-    """
-    for data_to_extract in dict_to_extract:
-        extract_inner_dict(data, *data_to_extract)
-
-    for data_to_extract in list_to_extract:
-        extract_list(data, *data_to_extract)
-
 
 def format_rule(rule_json: dict | list, security_rule_name: str):
     """
@@ -2346,11 +2291,17 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
     network_groups = response.get("value", [])
 
-    # # popping out the properties key as in the original command
-    # for group in network_groups:
-    #     group.pop("properties", "")
+    for group in network_groups:
+        group["etag"] = group.get("etag", "")[3:-1]
+        for rule in group.get("defaultSecurityRules", []):
+            rule["etag"] = rule.get("etag", "")[3:-1]
 
-    hr = tableToMarkdown("Network Security Groups", network_groups)
+    hr = tableToMarkdown(
+        name="Network Security Groups",
+        t=network_groups,
+        headers=["name", "id", "type", "etag", "location"],
+        headerTransform=string_to_table_header
+    )
     return CommandResults(
         raw_response=response,
         outputs_prefix="Azure.NSGSecurityGroup",
@@ -2378,18 +2329,29 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
     if not security_rule_name or not security_group_name:
         return_error("Please provide security_group_name and security_rule_name.")
 
-    security_rule_list = argToList(security_rule_name)
+    rule = client.get_rule(
+        security_group=security_group_name,
+        rule_name=security_rule_name,
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
 
-    rules = [
-        client.get_rule(
-            security_group=security_group_name,
-            rule_name=rule,
-            subscription_id=subscription_id,
-            resource_group_name=resource_group_name,
-        )
-        for rule in security_rule_list
-    ]
-    return format_rule(rules, security_rule_name)
+    rule["etag"] = rule.get("etag", "")[3:-1]
+
+    hr = tableToMarkdown(
+        name=f"Rule {security_rule_name}",
+        t=rule,
+        removeNull=True,
+        headers=["name", "id", "etag", "type"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.NSGRule",
+        outputs_key_field="id",
+        outputs=rule,
+        readable_output=hr
+    )
 
 
 def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -2407,8 +2369,8 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     security_group_name = args.get("security_group_name", "")
     security_rule_name = args.get("security_rule_name", "")
     direction = args.get("direction", "")  # required in API
+    priority = args.get("priority", "")  # required in API
     action = args.get("action", "Allow")  # required in API, named as "access" in the API
-    priority = args.get("priority", "4096")  # required in API
     protocol = args.get("protocol", "Any")  # required in API
     source = args.get("source", "Any")
     source_ports = args.get("source_ports", "*")
@@ -2416,8 +2378,8 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
     destination_ports = args.get("destination_ports", "*")
     description = args.get("description", "")
 
-    if not security_rule_name or not security_group_name or not direction:
-        return_error("Please provide security_group_name, security_rule_name and direction.")
+    if not security_rule_name or not security_group_name or not direction or not priority:
+        return_error("Please provide security_group_name, security_rule_name, direction and priority.")
 
     # The reason for using 'Any' as default instead of '*' is to adhere to the standards in the UI.
     properties = {
@@ -2461,7 +2423,21 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
         resource_group_name=resource_group_name,
     )
 
-    return format_rule(rule, security_rule_name)
+    rule["etag"] = rule.get("etag", "")[3:-1]
+
+    hr = tableToMarkdown(
+        name=f"Rules {security_rule_name}",
+        t=rule,
+        removeNull=True,
+        headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        outputs_prefix="Azure.NSGRule",
+        outputs_key_field="id",
+        outputs=rule,
+        readable_output=hr
+    )
 
 
 def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -2573,40 +2549,12 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
         data_from_response = data_from_response[:limit]
 
     for data in data_from_response:
-        reformat_data(
-            data,
-            dict_to_extract=[("properties",), ("dnsSettings",)],
-            list_to_extract=[
-                ("ipConfigurations", "name", "ipConfigurationName"),
-                ("ipConfigurations", "id", "ipConfigurationID"),
-                ("ipConfigurations", "properties", "ipConfigurationsProperties"),
-                ("ipConfigurationsProperties", "privateIPAddress", "ipConfigurationPrivateIPAddress"),
-                ("ipConfigurationsProperties", "publicIPAddress", "ipConfigurationPublicIPAddress"),
-                ("ipConfigurationPublicIPAddress", "id", "ipConfigurationPublicIPAddressName"),
-            ],
-        )
-        if vm := data.get("virtualMachine"):
-            data["virtualMachineId"] = vm.get("id")
+        data["etag"] = data.get("etag", "")[3:-1]
 
     readable_output = tableToMarkdown(
         name="Network Interfaces List",
         t=data_from_response,
-        headers=[
-            "name",
-            "id",
-            "provisioningState",
-            "ipConfigurationName",
-            "ipConfigurationID",
-            "ipConfigurationPrivateIPAddress",
-            "ipConfigurationPublicIPAddressName",
-            "dnsServers",
-            "appliedDnsServers",
-            "internalDomainNameSuffix",
-            "macAddress",
-            "virtualMachineId",
-            "location",
-            "kind",
-        ],
+        headers=["name", "id", "type", "etag", "location", "kind"],
         removeNull=True,
         headerTransform=pascalToSpace,
     )
@@ -2643,8 +2591,8 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
         data_from_response = data_from_response[:limit]
 
     for output in data_from_response:
-        reformat_data(output, dict_to_extract=[("properties",), ("dnsSettings",)])
         output["etag"] = output.get("etag", "")[3:-1]  # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+
     readable_output = tableToMarkdown(
         name="Public IP Addresses List",
         t=data_from_response,
@@ -2725,7 +2673,7 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
     to verify connectivity and permissions.
     Args:
         shared_creds (dict): Pre-fetched cloud credentials (format varies by provider).
-        project_id (str): The Azure subscription ID to check against.
+        subscription_id (str): The Azure subscription ID to check against.
         connector_id (str): The connector ID for the Cloud integration.
     Returns:
         HealthCheckError or None: HealthCheckError if there's an issue, None if successful.

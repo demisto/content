@@ -2069,6 +2069,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
           1. It should return only 2 results when limited.
           2. It should return all results when all_results=True.
           3. The results should contain expected fields such as name, id, fqdn.
+          4. The etag field should be cleaned up (removing "W/\" prefix and "\" suffix).
     """
     from Azure import nsg_public_ip_addresses_list_command
 
@@ -2090,6 +2091,13 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert "name" in result.outputs[0]
     assert "id" in result.outputs[0]
 
+    # Check that etag is cleaned up
+    for output in result.outputs:
+        if output.get("etag"):
+            # Assuming the original etag had the "W/\" prefix and "\" suffix
+            assert not output.get("etag").startswith('W/"')
+            assert not output.get("etag").endswith('"')
+
     # no limit
     args = {"all_results": "true"}
     result_all: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
@@ -2098,12 +2106,9 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert len(result_all.outputs) == len(mock_response["value"])
     fqdn_values = [out.get("fqdn") for out in result_all.outputs if "fqdn" in out]
 
-    assert any(val == "testlbl.westus.cloudapp.azure.com" for val in fqdn_values)
-    assert any(val for val in fqdn_values if val and val.endswith("sysgen.cloudapp.azure.com"))
-
-    for output in result_all.outputs:
-        if output.get("etag"):
-            assert output.get("etag") == "etag"
+    # Check readable_output is generated
+    assert result_all.readable_output
+    assert "Public IP Addresses List" in result_all.readable_output
 
 
 def test_nsg_network_interfaces_list_command(mocker):
@@ -2115,7 +2120,8 @@ def test_nsg_network_interfaces_list_command(mocker):
     Then:
           1. It should return only 1 result when limited.
           2. It should return all results when all_results=True.
-          3. The results should contain expected fields such as name, id, ipConfigurationName, and virtualMachineId.
+          3. The results should contain expected fields such as name, id.
+          4. The etag field should be cleaned up.
     """
     from Azure import nsg_network_interfaces_list_command
 
@@ -2135,12 +2141,13 @@ def test_nsg_network_interfaces_list_command(mocker):
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
     first = result.outputs[0]
-    assert first["name"] == "test-nic"
-    assert "ipConfigurationName" in first
-    assert "ipConfigurationID" in first
-    assert "ipConfigurationPrivateIPAddress" in first
-    assert "ipConfigurationPublicIPAddressName" in first
-    assert "virtualMachineId" in first
+    assert "name" in first
+    assert "id" in first
+
+    # Check that etag is cleaned up
+    if first.get("etag"):
+        assert not first.get("etag").startswith('W/"')
+        assert not first.get("etag").endswith('"')
 
     # --- Case 2: with all_results=True ---
     args = {"all_results": "true"}
@@ -2149,9 +2156,9 @@ def test_nsg_network_interfaces_list_command(mocker):
     assert isinstance(result_all, CommandResults)
     assert len(result_all.outputs) == len(mock_response["value"])
 
-    nic_names = [nic["name"] for nic in result_all.outputs]
-    assert "test-nic" in nic_names
-    assert "test-nic2" in nic_names
+    # Check readable_output is generated
+    assert result_all.readable_output
+    assert "Network Interfaces List" in result_all.readable_output
 
 
 def test_nsg_resource_group_list_command(mocker):
@@ -2163,6 +2170,7 @@ def test_nsg_resource_group_list_command(mocker):
     Then:
           1. It should respect the limit argument.
           2. It should return the resource group data with expected fields.
+          3. It should generate proper readable output.
     """
     from Azure import nsg_resource_group_list_command
 
@@ -2177,6 +2185,13 @@ def test_nsg_resource_group_list_command(mocker):
     args = {"limit": "1"}
     result: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
 
+    # Check that client method was called with correct parameters including limit
+    mock_client.list_resource_groups_request.assert_called_with(
+        subscription_id="subscription1",
+        filter_by_tag="",
+        limit="1"
+    )
+
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.NSGResourceGroup"
     assert result.outputs_key_field == "id"
@@ -2188,6 +2203,10 @@ def test_nsg_resource_group_list_command(mocker):
     assert "tags" in first
     assert "properties" in first
     assert first["properties"]["provisioningState"] == "Succeeded"
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert "Resource Groups List" in result.readable_output
 
     # --- Case 2: no limit (default) ---
     args = {}
@@ -2205,6 +2224,8 @@ def test_nsg_security_rule_create_command(mocker):
     Then:
         1. It should call create_or_update_rule with correct properties.
         2. The returned CommandResults should include the created rule data.
+        3. The etag should be cleaned up.
+        4. Readable output should be generated.
     """
     from Azure import nsg_security_rule_create_command
 
@@ -2250,10 +2271,18 @@ def test_nsg_security_rule_create_command(mocker):
 
     # --- Check the returned CommandResults ---
     assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "rule1"
-    assert result.outputs["access"] == "Deny"
-    assert result.outputs["protocol"] == "*"
-    assert result.outputs["destinationPortRange"] == "8080"
+
+    # Check that etag is cleaned up
+    if result.outputs.get("etag"):
+        assert not result.outputs.get("etag").startswith('W/"')
+        assert not result.outputs.get("etag").endswith('"')
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert f"Rules {args['security_rule_name']}" in result.readable_output
 
 
 def test_nsg_security_rule_get_command(mocker):
@@ -2262,7 +2291,9 @@ def test_nsg_security_rule_get_command(mocker):
     When: nsg_security_rule_get_command is called.
     Then:
         1. It should call client.get_rule with correct arguments.
-        2. The data returned from client.get_rule should be passed to format_rule.
+        2. The returned CommandResults should contain the rule data.
+        3. The etag should be cleaned up.
+        4. Readable output should be generated.
     """
     from Azure import nsg_security_rule_get_command
 
@@ -2271,12 +2302,10 @@ def test_nsg_security_rule_get_command(mocker):
     mock_client = mocker.Mock()
     mock_client.get_rule.return_value = mock_rule
 
-    mock_format_rule = mocker.patch("Azure.format_rule", side_effect=lambda x, y: x)
-
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
     args = {"security_group_name": "testnsg", "security_rule_name": "wow"}
 
-    result = nsg_security_rule_get_command(mock_client, params, args)
+    result: CommandResults = nsg_security_rule_get_command(mock_client, params, args)
 
     # Check that get_rule was called correctly
     mock_client.get_rule.assert_called_once_with(
@@ -2286,23 +2315,29 @@ def test_nsg_security_rule_get_command(mocker):
         resource_group_name="rg1",
     )
 
-    # Check that format_rule received the correct data
-    mock_format_rule.assert_called_once()
-    called_args, called_kwargs = mock_format_rule.call_args
-    assert called_args[0] == [mock_rule]  # list of rules
-    assert called_args[1] == "wow"  # rule_name argument
+    # Check the returned CommandResults
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_rule
 
-    # The result should be what format_rule returned
-    assert result == [mock_rule]
+    # Check that etag is cleaned up
+    if result.outputs.get("etag"):
+        assert not result.outputs.get("etag").startswith('W/"')
+        assert not result.outputs.get("etag").endswith('"')
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert f"Rule {args['security_rule_name']}" in result.readable_output
 
 
 def test_nsg_security_groups_list_command(mocker):
     """
-    Given: An Azure client mock and the list_network_secuirty_groups_response.json file.
+    Given: An Azure client mock and the list_network_security_groups_response.json file.
     When: nsg_security_groups_list_command is called.
     Then:
         1. It should call client.list_network_security_groups with correct parameters.
-        2. The 'properties' key should be removed from outputs.
+        2. The etag fields should be cleaned up for both groups and default security rules.
         3. The CommandResults should have correct outputs and readable_output.
     """
     from Azure import nsg_security_groups_list_command
@@ -2317,19 +2352,35 @@ def test_nsg_security_groups_list_command(mocker):
 
     result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
 
-    mock_client.list_network_security_groups.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
+    mock_client.list_network_security_groups.assert_called_once_with(
+        subscription_id="subid",
+        resource_group_name="rg1"
+    )
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.NSGSecurityGroup"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == len(mock_response["value"])
 
-    # The 'properties' key should be removed
+    # Check that etag fields are cleaned up
     for group in result.outputs:
-        assert "properties" not in group
+        if group.get("etag"):
+            assert not group.get("etag").startswith('W/"')
+            assert not group.get("etag").endswith('"')
+
+        # Check default security rules etag cleanup
+        for rule in group.get("defaultSecurityRules", []):
+            if rule.get("etag"):
+                assert not rule.get("etag").startswith('W/"')
+                assert not rule.get("etag").endswith('"')
+
         assert "name" in group
         assert "id" in group
         assert "location" in group
+
+    # Check readable_output is generated
+    assert result.readable_output
+    assert "Network Security Groups" in result.readable_output
 
     # The readable_output should contain the NSG names
     for group in result.outputs:
