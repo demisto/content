@@ -267,7 +267,7 @@ class AzureClient:
         params: dict | None = None,
         resp_type: str = "json",
         json_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> requests.Response | dict:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
@@ -1287,7 +1287,7 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str) -> dict:
         """
         List all network security groups in a specific resource group.
 
@@ -1354,7 +1354,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str):
+    def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str) -> dict:
         """
         List resource groups in a subscription, optionally filtered by tag and limited in number.
 
@@ -1382,7 +1382,7 @@ class AzureClient:
                 resource_group_name=None,
             )
 
-    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
+    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str) -> dict:
         """
         List all network interfaces in a specific resource group.
 
@@ -1412,7 +1412,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
+    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str) -> dict:
         """
         List all public IP addresses in a specific resource group.
 
@@ -2344,9 +2344,9 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
     network_groups = response.get("value", [])
 
-    # popping out the properties key as in the original command
-    for group in network_groups:
-        group.pop("properties", "")
+    # # popping out the properties key as in the original command
+    # for group in network_groups:
+    #     group.pop("properties", "")
 
     hr = tableToMarkdown("Network Security Groups", network_groups)
     return CommandResults(
@@ -2512,7 +2512,7 @@ def nsg_resource_group_list_command(client: AzureClient, params: dict[str, Any],
     """
     List all resource groups in the subscription.
     Args:
-        client (AzureNSGClient): AzureNSG client.
+        client (AzureClient): Azure Client.
         args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
     Returns:
@@ -2552,7 +2552,7 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
                 properties.ipConfiguration.properties.publicIPAddress.id as ipConfigurationPublicIPAddressName,
                 properties.dnsSettings.dnsServers as dnsServers
     Args:
-        client (AzureNSGClient): AzureNSG client.
+        client (AzureClient): Azure Client.
         args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
     Returns:
@@ -2623,7 +2623,7 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     List all network interfaces in a resource group. Extract those fields to main dict:
 
     Args:
-        client (AzureNSGClient): AzureNSG client.
+        client (AzureClient): Azure client.
         args (Dict[str, Any]): command arguments.
         params (Dict[str, Any]): configuration parameters.
     Returns:
