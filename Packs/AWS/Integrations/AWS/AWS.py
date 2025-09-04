@@ -1370,9 +1370,7 @@ class CostExplorer:
 
         results = response.get("ForecastResultsByTime", [])
         next_token = response.get("NextPageToken", "")
-        demisto.debug(
-            f"AWS Cost Forecast response - ForecastResultsByTime count: {len(results)},\nNextToken: {next_token}"
-        )
+        demisto.debug(f"AWS Cost Forecast response - ForecastResultsByTime count: {len(results)},\nNextToken: {next_token}")
 
         metric_results = []
         for result in results:
@@ -1389,7 +1387,7 @@ class CostExplorer:
         outputs = {"AWS.Billing.Forecast": results}
         if next_token:
             outputs["AWS.Billing.ForecastNextToken"] = next_token
-            
+
         readable = tableToMarkdown(
             f"AWS Billing Forecast - {metric}",
             metric_results,

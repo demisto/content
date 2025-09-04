@@ -2079,7 +2079,7 @@ def test_azure_billing_usage_list_command_success(mocker, client, mock_params):
         == "https://management.azure.com/subscriptions/test/providers/Microsoft.Consumption/usageDetails?$skiptoken=abc123"
     )
     assert len(result.outputs["Azure.Billing.Usage"]) == 1
-    assert result.outputs["Azure.Billing.Usage"][0]["Product"] == "Virtual Machines"
+    assert result.outputs["Azure.Billing.Usage"][0]["properties"]["product"] == "Virtual Machines"
     assert result.raw_response == mock_response
 
 

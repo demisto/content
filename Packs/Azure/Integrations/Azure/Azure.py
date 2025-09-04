@@ -1991,10 +1991,10 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
         demisto.debug(f"Azure billing usage request: {url}, params: {params_}")
         res = client.http_request("GET", url_suffix=url, params=params_)
 
-    results_count = len(res.get("value", []))
-    next_token = res.get("nextLink", "")
-    demisto.debug(f"Azure billing usage response - results count: {results_count},\n nextLink: {bool(next_token)}")
-    items = res.get("value", [])
+    response_data = res.json() if hasattr(res, "json") else res
+    items = response_data.get("value", [])
+    next_token = response_data.get("nextLink", "")
+    demisto.debug(f"Azure billing usage response - results count: {len(items)},\n nextLink: {bool(next_token)}")
     results = []
     for item in items:
         results.append(
@@ -2007,7 +2007,7 @@ def azure_billing_usage_list_command(client: AzureClient, params: dict, args: di
                 "PeriodEndDate": item.get("properties", {}).get("billingPeriodEndDate"),
             }
         )
-    outputs = {"Azure.Billing.Usage": res}
+    outputs = {"Azure.Billing.Usage": items}
     readable = tableToMarkdown(
         "Azure Billing Usage",
         results,
@@ -2056,8 +2056,8 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     demisto.debug(f"Azure billing forecast request: {url}, params: {params_}")
 
     res = client.http_request("GET", url_suffix=url, params=params_)
-
-    items = res.get("value", [])
+    response_data = res.json() if hasattr(res, "json") else res
+    items = response_data.get("value", [])
     demisto.debug(f"Azure billing forecast response - results count: {len(items)}")
 
     results = []
@@ -2076,7 +2076,7 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     return CommandResults(
         readable_output=readable,
         outputs=outputs,
-        raw_response=res,
+        raw_response=response_data,
     )
 
 
@@ -2110,17 +2110,17 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
     if budget_name:
         # Single budget response
         url = f"{scope}/providers/Microsoft.Consumption/budgets/{budget_name}"
-        demisto.debug(f"Azure billing budgets request (single): {url}")
         res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
-        items = [res]
-        demisto.debug(f"Azure billing budgets response - single budget: {res.get('name', "'unknown'")}")
+        response_data = res.json() if hasattr(res, "json") else res
+        items = [response_data]
+        demisto.debug(f"Azure billing budgets response - single budget: {response_data.get('name', '')}, request url: {url}")
     else:
         # List of budgets response
         url = f"{scope}/providers/Microsoft.Consumption/budgets"
-        demisto.debug(f"Azure billing budgets request (all): {url}")
         res = client.http_request("GET", url_suffix=url, params={"api-version": api_version})
-        items = res.get("value", [])
-        demisto.debug(f"Azure billing budgets response - budgets count: {len(items)}")
+        response_data = res.json() if hasattr(res, "json") else res
+        items = response_data.get("value", [])
+        demisto.debug(f"Azure billing budgets response - budgets count: {len(items)}, request url: {url}")
 
     results = []
     for item in items:
@@ -2139,7 +2139,7 @@ def azure_billing_budgets_list_command(client: AzureClient, params: dict, args: 
                 "CurrentSpend": item.get("properties", {}).get("currentSpend", {}).get("amount"),
             }
         )
-    outputs = {"Azure.Billing.Budget": results}
+    outputs = {"Azure.Billing.Budget": items}
     readable = tableToMarkdown(
         "Azure Budgets", results, headers=["BudgetName", "ResourceType", "TimePeriod", "Amount", "CurrentSpend"]
     )

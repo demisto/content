@@ -1794,7 +1794,7 @@ script:
       - me-central-1
       - sa-east-1
     - name: metrics
-      description: Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]
+      description: Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity].
       isArray: true
       required: false
     - name: start_date
@@ -2068,10 +2068,10 @@ script:
       - me-central-1
       - sa-east-1
     - name: max_result
-      description: Maximum results to return. Default - 50, Max - 1000
+      description: Maximum results to return. Default - 50, Max - 1000.
       required: false
     - name: show_filter_expression
-      description: Whether to show filter expression. Default - False
+      description: Whether to show filter expression. Default - False.
       required: false
     - name: next_page_token
       description: Next page token for pagination. Use value from AWS.Billing.BudgetNextToken.
@@ -2117,7 +2117,7 @@ script:
       description: Actual spend amount.
       type: string
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ActualSpend.Unit
-      description: Actual spend unit (e.g., USD)
+      description: Actual spend unit (e.g., USD).
       type: string
     - contextPath: AWS.Billing.Budget.CalculatedSpend.ForecastedSpend
       description: Forecasted spend information.
