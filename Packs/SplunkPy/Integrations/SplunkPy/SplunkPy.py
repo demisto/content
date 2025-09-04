@@ -2,13 +2,16 @@ import hashlib
 import io
 import json
 import re
+import urllib.parse
 from datetime import datetime, timedelta
 
 import dateparser
+from collections import defaultdict
 import demistomock as demisto  # noqa: F401
 import pytz
 import requests
 from CommonServerPython import *  # noqa: F401
+from packaging.version import Version  # noqa: F401
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
 from splunklib.data import Record
@@ -1749,6 +1752,128 @@ def get_comments_data(service: client.Service, notable_id: str, comment_tag_from
     demisto.debug(f"notes={notes}")
     return notes
 
+def format_splunk_note_for_xsoar(note: dict) -> str:
+    """Formats a Splunk note to look like it does in the Splunk UI."""
+    author = demisto.get(note, "author.username", "Unknown author")
+    timestamp_epoch = note.get("update_time", 0)
+    try:
+        timestamp_dt = datetime.fromtimestamp(int(timestamp_epoch))
+        # Format: Jul 15, 1:21 PM
+        timestamp_str = timestamp_dt.strftime('%b %d, %I:%M %p')
+    except (ValueError, TypeError):
+        timestamp_str = ""
+
+    raw_title = note.get("title", "")
+    decoded_title = urllib.parse.unquote(raw_title)
+
+    raw_content = note.get("content", "")
+    decoded_content = urllib.parse.unquote(raw_content)
+
+    # Add a blank line after the title only if there's content
+    content_separator = "\n" if decoded_content else ""
+
+    return f"""*From Splunk*
+{author} {timestamp_str}
+{decoded_title}{content_separator}
+{decoded_content}
+"""
+
+
+def is_splunk_es_version_or_higher(service: client.Service, version_to_compare: str) -> bool:
+    """Check if the Splunk ES version is equal to or higher than the provided version."""
+    try:
+        # The app name for Splunk Enterprise Security
+        es_app_name = "SplunkEnterpriseSecuritySuite"
+
+        # Access the specific app's details
+        es_app = service.apps[es_app_name]
+
+        # The version is in the 'content' dictionary
+        app_info = es_app.content
+        es_version = app_info.get("version")
+
+        demisto.debug(f"Found Splunk ES version: {es_version}")
+
+        if es_version and Version(es_version) >= Version(version_to_compare):
+            return True
+
+    except HTTPError as e:
+        # This can happen if the app is not found (404) or other permission issues
+        demisto.debug(f"Splunk ES app not found or could not be accessed. Assuming older version. Error: {e}")
+    except Exception as e:
+        demisto.debug(f"An unexpected error occurred while checking Splunk ES version. Assuming older version. Error: {e}")
+
+    return False
+
+
+def get_comments_data_old(updated_notable: dict, comment_tag_from_splunk: str) -> dict | None:
+    """Handles comment fetching for older Splunk versions."""
+    if (comment := updated_notable.get("comment")) and COMMENT_MIRRORED_FROM_XSOAR not in comment:
+        notable_id = updated_notable.get("rule_id")
+        return {
+            "EntryContext": {"mirrorRemoteId": notable_id},
+            "Type": EntryType.NOTE,
+            "Contents": comment,
+            "ContentsFormat": EntryFormat.TEXT,
+            "Tags": [comment_tag_from_splunk],  # The list of tags to add to the entry
+            "Note": True,
+        }
+    return None
+
+
+def get_comments_data_v1(service: client.Service, notable_ids: list[str], comment_tag_from_splunk: str, last_update_splunk_timestamp):
+    """get notable comments data and add new entries if needed
+    Args:
+        comment_tag_from_splunk (str): the tag indicating the source of the comment
+        last_update_splunk_timestamp (str): the last update timestamp of the comment
+        notable_ids (list[str]): the list of notable ids
+    Returns:
+        A tuple containing:
+            - notes (list): The entries to create in XSOAR.
+            - all_comments (dict): A dict mapping notable_id to its comments.
+    """
+    demisto.debug(f"mirror-in: getting all comments for: {notable_ids}.")
+    notes = []
+    all_comments = defaultdict(list)
+
+    if not notable_ids:
+        return [], {}
+
+    query = json.dumps({"notable_id": {"$in": notable_ids}})
+    try:
+        mc_notes = service.kvstore['mc_notes'].data.query(query=query)
+    except Exception as e:
+        demisto.error(f"mirror-in: Failed to query mc_notes: {e}")
+        return [], {}
+
+    for note in mc_notes:
+        notable_id = note.get("notable_id")
+        if not notable_id:
+            demisto.debug(f"mirror-in: Skipping note without notable_id: {note}")
+            continue
+
+        content = urllib.parse.unquote(note.get("content", ""))
+        all_comments[notable_id].append(content)
+
+        if note.get("update_time", 0) > int(last_update_splunk_timestamp):
+            if COMMENT_MIRRORED_FROM_XSOAR not in content:
+                # Creating a note for a new comment
+                markdown_content = format_splunk_note_for_xsoar(note)
+                demisto.debug(f"mirror-in: Creating new note for {note['notable_id']}: {markdown_content}")
+                notes.append(
+                    {
+                        "EntryContext": {"mirrorRemoteId": note["notable_id"]},
+                        "Type": EntryType.NOTE,
+                        "Contents": markdown_content,
+                        "ContentsFormat": EntryFormat.MARKDOWN,
+                        "Tags": [comment_tag_from_splunk],  # The list of tags to add to the entry
+                        "Note": True,
+                    }
+                )
+                demisto.debug(f"mirror-in: Update new comment-{markdown_content}")
+
+    return notes, all_comments
+
 
 def handle_enriching_notables(modified_notables: dict[str, dict]):
     """Store the mirror in "delta" of the notables which not yet created because of enrichment mechanism.
@@ -1856,7 +1981,8 @@ def get_modified_remote_data_command(
     demisto.debug(f"Loaded {len(processed_events_cache)} processed events from cache.")
 
     # Build the query with the 60-second look-behind buffer.
-    last_update_splunk_timestamp = get_last_update_in_splunk_time(remote_args.last_update) - SPLUNK_INDEXING_TIME
+    original_last_update = get_last_update_in_splunk_time(remote_args.last_update)
+    last_update_splunk_timestamp = original_last_update - SPLUNK_INDEXING_TIME
     incident_review_search = (
         "|`incident_review` "
         "| eval last_modified_timestamp=_time "
@@ -1868,6 +1994,7 @@ def get_modified_remote_data_command(
     modified_notables_map = {}
     entries: list[dict] = []
     current_run_processed_events = set()
+    is_new_version = is_splunk_es_version_or_higher(service, "8.1.0")
 
     demisto.debug(f"mirror-in: performing `incident_review` search with query: {incident_review_search}.")
     for item in results.JSONResultsReader(
@@ -1893,26 +2020,44 @@ def get_modified_remote_data_command(
         modified_notables_map[notable_id] = updated_notable
         current_run_processed_events.add(event_key)
 
-        # If the update contains a new comment, create a corresponding entry.
-        if (comment := updated_notable.get("comment")) and COMMENT_MIRRORED_FROM_XSOAR not in comment:
-            # comment, here in the `incident_review` macro results, hold only the updated comment
-            # Creating a note
-            entries.append(
-                {
-                    "EntryContext": {"mirrorRemoteId": notable_id},
-                    "Type": EntryType.NOTE,
-                    "Contents": comment,
-                    "ContentsFormat": EntryFormat.TEXT,
-                    "Tags": [comment_tag_from_splunk],  # The list of tags to add to the entry
-                    "Note": True,
-                }
-            )
+        if not is_new_version and (comment_entry := get_comments_data_old(updated_notable, comment_tag_from_splunk)):
+            entries.append(comment_entry)
 
+    # In older Splunk ES versions (below 8.1.0), comments were part of the `incident_review` event itself.
+    # Therefore, any comment update would also update the notable's modification time, causing it to appear in our search.
+    # We could extract the comment directly from the notable's data within the loop.
+    #
+    # Starting from version 8.1.0, comments were moved to a separate KV Store (`mc_notes`).
+    # This means a comment can be added or updated without changing the notable's modification time in `incident_review`.
+    # To ensure we don't miss any comments, in newer versions, we must perform a separate, direct query against the KV Store
+    # for all relevant notables. This action is performed outside the loop to fetch all comments in bulk,
+    # even for events that showed no other change in `incident_review`.
+    if is_new_version and (notable_ids := list(modified_notables_map.keys())):
+        # get comments from splunk and create entries
+        comment_entries, all_comments = get_comments_data_v1(service, notable_ids, comment_tag_from_splunk, original_last_update)
+        entries.extend(comment_entries)
+
+        for notable_id, comments in all_comments.items():
+            if notable_id in modified_notables_map:
+                modified_notables_map[notable_id]["SplunkComments"] = [{
+                    "Comment": comment
+                } for comment in comments]
+
+        # comment_entries = get_comments_data_v1(
+        #     service,
+        #     list(modified_notables_map.keys()),
+        #     comment_tag_from_splunk,
+        #     original_last_update
+        # )
+        # entries.extend(comment_entries)
     # Persist the cache of events processed in this run for the next iteration.
     integration_context["processed_mirror_in_events_cache"] = list(current_run_processed_events)
     set_integration_context(integration_context)
+    if modified_notables_map and not is_new_version:
+        # For older versions, we perform an additional query using the `notable` macro.
+        # This is necessary to enrich the initial data from `incident_review` with the full event details,
+        # including all comments, which are not fully available in the `incident_review` results for these versions.
 
-    if modified_notables_map:
         notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
         notable_search = f'search `notable` | where {EVENT_ID} in ({",".join(notable_ids_with_quotes)}) | expandtoken'
         kwargs = {"query": notable_search, "earliest_time": "-3d", "count": MIRROR_LIMIT, "output_mode": OUTPUT_MODE_JSON}
