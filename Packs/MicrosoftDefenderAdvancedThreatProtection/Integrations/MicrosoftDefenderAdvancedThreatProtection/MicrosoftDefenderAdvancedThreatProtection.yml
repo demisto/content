@@ -5762,6 +5762,18 @@ script:
     description: Checks the file reputation of the specified hash.
     name: file
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: File.MD5
       description: Bad MD5 hash.
     - contextPath: File.MD5
@@ -5832,7 +5844,7 @@ script:
     - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   isfetch: true
   runonce: false
   script: '-'
