@@ -1,0 +1,37 @@
+args:
+- description: Indicator value to set.
+  name: value
+  required: true
+- description: Indicator type to set.
+  name: type
+- description: Sets indicator reputation.
+  name: verdict
+  auto: PREDEFINED
+  predefined:
+  - Unknown
+  - Benign
+  - Suspicious
+  - Malicious
+- description: Comma-separated list of tags to set for the indicator.
+  name: tags
+  isArray: true
+- description: Comma-separated list of issues IDs to associate the indicator with.
+  name: related_issues
+  isArray: true
+comment: Changes the properties of an existing indicator.
+commonfields:
+  id: SetIndicator
+  version: -1
+enabled: false
+name: SetIndicator
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- platform
+supportedModules:
+- agentix
