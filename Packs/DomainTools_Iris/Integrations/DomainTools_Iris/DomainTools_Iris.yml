@@ -43,6 +43,16 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: Domain Result Type
+  name: domain_result_type
+  type: 15
+  required: false
+  additionalinfo: "Result type of the domain command: Iris returns full investigate results; Verdict returns only the domain risk score"
+  defaultvalue: Iris
+  options:
+  - Iris
+  - Verdict
+  section: Collect
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -2472,6 +2482,9 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: Name of the domain returned by the query.
+    # outputs:
+    # - contextPath: Domain.Name
+    #   description: Name of the domain returned by the query.
   dockerimage: demisto/vendors-sdk:1.0.0.3242986
   runonce: false
   script: '-'
