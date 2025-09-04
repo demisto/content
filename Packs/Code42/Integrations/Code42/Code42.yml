@@ -2,7 +2,7 @@ category: Endpoint
 commonfields:
   id: Code42
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

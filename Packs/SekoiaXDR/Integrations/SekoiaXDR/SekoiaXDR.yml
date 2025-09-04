@@ -4,7 +4,7 @@ commonfields:
 name: Sekoia XDR
 display: Sekoia XDR
 category: Analytics & SIEM
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 description: Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions.

@@ -1522,7 +1522,7 @@ script:
   type: python
 tests:
   - PrismaSASE Test
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 fromversion: 6.5.0

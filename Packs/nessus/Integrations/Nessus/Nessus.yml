@@ -1,7 +1,7 @@
 commonfields:
   id: Nessus
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 name: Nessus
 display: Nessus

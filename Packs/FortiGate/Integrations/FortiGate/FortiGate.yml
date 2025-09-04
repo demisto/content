@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: FortiGate
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
   - Collect
 configuration:

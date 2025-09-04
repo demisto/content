@@ -1,7 +1,7 @@
 commonfields:
   id: Vectra_Detect
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: Vectra_Detect

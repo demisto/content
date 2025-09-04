@@ -2,7 +2,7 @@ category: Utilities
 commonfields:
   id: Tavily
   version: -1
-sectionOrder:
+sectionorder:
   - Connect
 configuration:
 - name: url

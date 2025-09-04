@@ -1,7 +1,7 @@
 commonfields:
   id: TheHive Project
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: TheHive Project

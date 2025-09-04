@@ -2,7 +2,7 @@ commonfields:
   id: ThreatGridv2
   version: -1
 name: ThreatGridv2
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 display: Cisco Secure Malware Analytics (Threat Grid) v2

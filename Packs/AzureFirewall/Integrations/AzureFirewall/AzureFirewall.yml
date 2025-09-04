@@ -1097,6 +1097,6 @@ script:
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
