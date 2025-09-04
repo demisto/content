@@ -1387,8 +1387,7 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args) -> Comma
     Returns:
         CommandResults: command-results object.
     """
-
-    # Cast to sets for faster operations and to remove duplicates
+    # get existing md5 values from the Prisma feed
     current_md5_feeds = (client.get_custom_md5_malware() or {}).get("feed") or []
 
     # populate variable for md5 input
