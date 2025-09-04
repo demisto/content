@@ -55,4 +55,4 @@ tags:
 type: javascript
 fromversion: 6.0.0
 tests:
-- MergeDictArray - Test
+- playbook-MergeDictArray_Test

@@ -1,6 +1,5 @@
 id: MergeDictArray - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: MergeDictArray - Test
 description: Test playbook for MergeDictArray
 starttaskid: "0"
