@@ -11,7 +11,7 @@ def test_arg_parse():
        - The arguments with correct python types
     """
 
-    from O365SecurityComplianceSearch import parse_args
+    from O365SecurityComplianceSearch import O365SearchRunner
 
     args = {
         "search_name": "test search",
@@ -45,7 +45,8 @@ def test_arg_parse():
         "polling_timeout": 300,
     }
 
-    assert expected_args == parse_args(args)
+    search_runner = O365SearchRunner(args=args, modules={})
+    assert expected_args == search_runner.args
 
 
 def test_add_to_context():
@@ -58,21 +59,20 @@ def test_add_to_context():
        - The updated context
     """
 
-    from O365SecurityComplianceSearch import add_to_context
-
-    context = {"Search": {}, "Preview": {}}
+    from O365SecurityComplianceSearch import O365SearchRunner
 
     expected_context = {
         "Search": {"Name": "search name", "Results": "search results"},
         "Preview": {"Name": "preview name", "Results": "preview results"},
     }
 
-    add_to_context(context=context, sub_key="Search", new_key="Name", new_value="search name")
-    add_to_context(context=context, sub_key="Search", new_key="Results", new_value="search results")
-    add_to_context(context=context, sub_key="Preview", new_key="Name", new_value="preview name")
-    add_to_context(context=context, sub_key="Preview", new_key="Results", new_value="preview results")
+    search_runner = O365SearchRunner(args={}, modules={})
+    search_runner._add_to_context(sub_key="Search", new_key="Name", new_value="search name")
+    search_runner._add_to_context(sub_key="Search", new_key="Results", new_value="search results")
+    search_runner._add_to_context(sub_key="Preview", new_key="Name", new_value="preview name")
+    search_runner._add_to_context(sub_key="Preview", new_key="Results", new_value="preview results")
 
-    assert expected_context == context
+    assert expected_context == search_runner.context
 
 
 def test_wait_for_results(mocker):
@@ -85,9 +85,9 @@ def test_wait_for_results(mocker):
        - The search results
     """
 
-    from O365SecurityComplianceSearch import wait_for_results
+    from O365SecurityComplianceSearch import O365SearchRunner
 
-    args = {"polling_interval": 2, "polling_timeout": 10}
+    search_runner = O365SearchRunner(args={"polling_interval": 2, "polling_timeout": 10}, modules={})
 
     execute_command_results = [
         {"Type": 1, "Contents": {"Status": "Completed", "SuccessResults": '{Location: "location",Count: 10}'}}
@@ -95,6 +95,6 @@ def test_wait_for_results(mocker):
     expected_results = {"Status": "Completed", "SuccessResults": '{Location: "location",Count: 10}'}
 
     mocker.patch.object(demisto, "executeCommand", return_value=execute_command_results)
-    mock_results = wait_for_results(args=args, cmd="o365-sc-get-search", result_key="SuccessResults")
+    mock_results = search_runner._wait_for_results(cmd="o365-sc-get-search")
 
     assert mock_results == expected_results
