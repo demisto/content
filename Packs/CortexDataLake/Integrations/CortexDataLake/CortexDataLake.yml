@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Cortex Data Lake
+  id: Cortex Data Lake 2
   version: -1
 configuration:
 - display: Token
@@ -170,8 +170,8 @@ configuration:
   type: 19
   section: Collect
 description: Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your organization on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
-display: Strata Logging Service XSOAR Connector
-name: Cortex Data Lake
+display: Strata Logging Service XSOAR Connector 2
+name: Cortex Data Lake 2
 script:
   commands:
   - arguments:
