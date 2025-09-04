@@ -1,5 +1,5 @@
 {
-    "name": "CyberArk Certificate Manager",
+    "name": "CyberArk Certificate Manager Self-Hosted",
     "description": "Retrieves information about certificates stored in Venafi.",
     "support": "xsoar",
     "currentVersion": "2.0.9",
