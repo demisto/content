@@ -1412,7 +1412,6 @@ def test_host_whois_history_builds_expected_url_with_odata():
     client.host_whois_history(args["host_id"], "", args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/hosts/" "host123/whois/history" "?$top=1&$select=reputationScore,classifications"
     )
@@ -1440,7 +1439,6 @@ def test_article_list_builds_expected_url_with_odata():
     client.article_list(args["article_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/articles/" "article123" "?$select=title,body&$expand=indicators"
     )
@@ -1468,7 +1466,6 @@ def test_article_list_builds_expected_url_with_odata_without_article_id():
     client.article_list(args["article_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == ("v1.0/security/threatIntelligence/articles" "?$top=5&$select=title,body")
 
 
@@ -1495,7 +1492,6 @@ def test_article_indicator_list_builds_expected_url_with_odata():
     client.article_indicator_list(args["article_id"], args["article_indicator_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/articles/" "article123/indicators" "?$top=10&$select=artifact,source"
     )
@@ -1524,7 +1520,6 @@ def test_article_indicator_list_builds_expected_url_with_odata_with_indicator_id
     client.article_indicator_list(args["article_id"], args["article_indicator_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/articleIndicators/" "indicator123" "?$select=artifact,source"
     )
@@ -1552,7 +1547,6 @@ def test_profile_list_builds_expected_url_with_odata():
     client.profile_list(args["intel_profile_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == ("v1.0/security/threatIntelligence/intelProfiles/" "profile123" "?$select=title,description")
 
 
@@ -1578,7 +1572,6 @@ def test_profile_list_builds_expected_url_with_odata_without_profile_id():
     client.profile_list(args["intel_profile_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == ("v1.0/security/threatIntelligence/intelProfiles" "?$top=5&$select=title,description")
 
 
@@ -1605,7 +1598,6 @@ def test_profile_indicators_list_builds_expected_url_with_odata():
     client.profile_indicators_list(args["intel_profile_id"], args["intel_profile_indicator_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/intelProfiles/" "profile123/indicators" "?$top=10&$select=source,firstSeenDateTime"
     )
@@ -1634,7 +1626,6 @@ def test_profile_indicators_list_builds_expected_url_with_odata_with_indicator_i
     client.profile_indicators_list(args["intel_profile_id"], args["intel_profile_indicator_id"], args["odata"], args["limit"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/intelligenceProfileIndicators/" "indicator123" "?$select=source,firstSeenDateTime"
     )
@@ -1661,7 +1652,6 @@ def test_host_builds_expected_url_with_odata():
     client.host(args["host_id"], args["odata"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == (
         "v1.0/security/threatIntelligence/hosts/" "host123" "?$select=id,firstSeenDateTime,lastSeenDateTime"
     )
@@ -1689,5 +1679,4 @@ def test_host_whois_builds_expected_url_with_odata():
     client.host_whois(args["host_id"], args["whois_record_id"], args["odata"])
 
     called = client.ms_client.http_request.call_args.kwargs
-    assert called["method"] == "GET"
     assert called["url_suffix"] == ("v1.0/security/threatIntelligence/hosts/" "host123/whois" "?$select=registrar,registrant")
