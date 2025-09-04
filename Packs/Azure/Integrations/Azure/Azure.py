@@ -322,6 +322,7 @@ class AzureClient:
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
+            demisto.debug("Permission error, trying to find the missing permission.")
             found_permission = None
             # If we have api_function_name, use the reverse mapping for O(1) lookup
             if api_function_name in API_FUNCTION_TO_PERMISSIONS:
@@ -1339,12 +1340,11 @@ class AzureClient:
             f"/securityRules/{security_rule_name}"
         )
         response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
-        if response in (200, 202, 204):
+        if response.status_code in (200, 202, 204):
             return response
-
-        try:  # in case we didn't get success we want to get the error message
-            return self.http_request(method="DELETE", full_url=full_url)
-        except Exception as e:
+        else:
+            demisto.debug("Failed to delete security rule.")
+            e = response.json()
             self.handle_azure_error(
                 e=e,
                 resource_name=f"{security_group_name}/{security_rule_name}",
@@ -2486,7 +2486,7 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
-
+    demisto.debug(f"{rule_deleted=}")
     message = ""
     if rule_deleted.status_code == 204:
         message = (
