@@ -136,7 +136,7 @@ def remove_prefix(prefix, full_str):
     :return: full_str without the provided prefix
     """
     if full_str.startswith(prefix):
-        return full_str[len(prefix):]
+        return full_str[len(prefix) :]
     return full_str
 
 

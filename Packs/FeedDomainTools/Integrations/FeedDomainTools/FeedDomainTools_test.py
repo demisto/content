@@ -19,7 +19,6 @@ def dt_feeds_client():
 
 
 class TestDTClient:
-
     def test_nod_build_iterator(self, mocker, dt_feeds_client):
         """
         Given:
@@ -78,9 +77,7 @@ class TestDTClient:
             return_value=feed_mock_response.NOD_FEED_RESPONSE,
         )
 
-        indicators = list(
-            dt_feeds_client.build_iterator(feed_type="nod", dt_feed_kwargs={"top": 5})
-        )
+        indicators = list(dt_feeds_client.build_iterator(feed_type="nod", dt_feed_kwargs={"top": 5}))
         [indicator.get("value") for indicator in indicators]
 
         assert len(indicators) == 5
@@ -106,9 +103,7 @@ def test_conversion_feed_to_indicato_obj(mocker, dt_feeds_client):
         "before": "-60",
     }
 
-    indicators = fetch_indicators(
-        dt_feeds_client, feed_type="nod", dt_feed_kwargs=mock_dt_feeds_kwargs
-    )
+    indicators = fetch_indicators(dt_feeds_client, feed_type="nod", dt_feed_kwargs=mock_dt_feeds_kwargs)
 
     assert len(indicators) == 10
     assert indicators == feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE
@@ -116,13 +111,7 @@ def test_conversion_feed_to_indicato_obj(mocker, dt_feeds_client):
 
 @pytest.mark.parametrize(
     "feed_type",
-    [
-        "nod",
-        "nad",
-        "noh",
-        "domaindiscovery",
-        "domainrdap"
-    ],
+    ["nod", "nad", "noh", "domaindiscovery", "domainrdap"],
 )
 def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
     """
@@ -148,16 +137,14 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "_get_dt_feeds",
         return_value=mock_feed_response[feed_type],
     )
-    results = get_indicators_command(
-        dt_feeds_client, args={"feed_type": feed_type, "top": "10"}, params={}
-    )
+    results = get_indicators_command(dt_feeds_client, args={"feed_type": feed_type, "top": "10"}, params={})
 
     expected_indicator_results = {
         "nod": feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE,
         "nad": feed_mock_response.NAD_PARSED_INDICATOR_RESPONSE,
         "noh": feed_mock_response.NOH_PARSED_INDICATOR_RESPONSE,
         "domaindiscovery": feed_mock_response.DOMAINDISCOVERY_PARSED_INDICATOR_RESPONSE,
-        "domainrdap": feed_mock_response.DOMAINRDAP_PARSED_INDICATOR_RESPONSE
+        "domainrdap": feed_mock_response.DOMAINRDAP_PARSED_INDICATOR_RESPONSE,
     }
 
     human_readable = tableToMarkdown(
@@ -182,9 +169,7 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
     """
 
     mock_return_value = (
-        feed_mock_response.NAD_FEED_RESPONSE
-        + feed_mock_response.NOD_FEED_RESPONSE
-        + feed_mock_response.DOMAINDISCOVERY_RESPONSE
+        feed_mock_response.NAD_FEED_RESPONSE + feed_mock_response.NOD_FEED_RESPONSE + feed_mock_response.DOMAINDISCOVERY_RESPONSE
     )
     mocker.patch.object(
         dt_feeds_client,
@@ -210,9 +195,7 @@ def test_calling_command_using_main(mocker, dt_feeds_client):
     mocker.patch.object(
         demisto,
         "params",
-        return_value={
-            "credentials": {"identifier": "test_username", "password": "test_key"}
-        },
+        return_value={"credentials": {"identifier": "test_username", "password": "test_key"}},
     )
     mocker.patch(
         "FeedDomainTools.DomainToolsClient._get_dt_feeds",
