@@ -834,7 +834,7 @@ class TestGetUserData:
         command = Command("Active Directory Query v2", "ad-get-user", {"username": "ad_user"})
         mock_outputs = {
             "name": ["ad_user"],
-            "sAMAccountName": ["ad_user"],
+            "sAMAccountName": ["ad_user_sam"],
             "displayName": ["AD User"],
             "mail": ["ad_user@example.com"],
             "memberOf": ["Group1", "Group2"],
@@ -847,13 +847,13 @@ class TestGetUserData:
                     "displayName": "AD User",
                     "manager": "CN=Manager,OU=Users,DC=example,DC=com",
                     "memberOf": ["Group1", "Group2"],
-                    "sAMAccountName": "ad_user",
+                    "name": "ad_user",
                     "userAccountControlFields": {"ACCOUNTDISABLE": False},
                 },
                 "Email": "ad_user@example.com",
                 "Source": "Active Directory Query v2",
                 "Brand": "Active Directory Query v2",
-                "Username": "ad_user",
+                "Username": "ad_user_sam",
                 "Instance": None,
             }
         ]
@@ -884,7 +884,7 @@ class TestGetUserData:
         """
         command = Command("Active Directory Query v2", "ad-get-user", {"username": "ad_user", "attributes": "whenCreated"})
         mock_outputs = {
-            "sAMAccountName": "ad_user",
+            "name": "ad_user",
             "displayName": "AD User",
             "mail": "ad_user@example.com",
             "memberOf": ["Group1"],
@@ -898,7 +898,7 @@ class TestGetUserData:
                     "displayName": "AD User",
                     "manager": "CN=Manager,OU=Users,DC=example,DC=com",
                     "memberOf": "Group1",
-                    "sAMAccountName": "ad_user",
+                    "name": "ad_user",
                     "userAccountControlFields": {"ACCOUNTDISABLE": False},
                     "whenCreated": "2024-11-05 09:11:18+00:00",
                 },

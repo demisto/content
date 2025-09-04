@@ -5,9 +5,7 @@ description: |-
     - WildFire
     - GlobalProtect Clientless VPN
 
-  Use the "itemsToUpdate" input to control which update type(s) to download and install.  All types are updated by default.
-
-  NOTE: This playbook is intended for use with a single PAN-OS Integration Instance.
+  NOTE: This playbook is intended for use with a single PAN-OS integration instance.
 id: 'PAN-OS - Download and Install Dynamic Content Updates'
 inputSections:
 - description: Generic group for inputs
@@ -42,8 +40,7 @@ outputSections:
   - DynamicUpdates
 outputs:
 - contextPath: DynamicUpdates
-  description: A dictionary containing details of the Dynamic Update type(s) downloaded
-    and installed, including their version number and associated job IDs.
+  description: A dictionary containing details of the Dynamic Update type(s) downloaded and installed, including their version number and associated job IDs.
   type: unknown
 quiet: true
 starttaskid: "0"
@@ -160,12 +157,12 @@ tasks:
     task:
       brand: ""
       description: Determine dynamic update type(s) to install based on playbook input.
-      id: 5636c50b-9e65-4bc2-a1e4-e7c85617cbb2
+      id: 3ba18f71-0382-47fe-8b70-81de9506373b
       iscommand: false
       name: Check Dynamic Updates Type
       type: condition
       version: -1
-    taskid: 5636c50b-9e65-4bc2-a1e4-e7c85617cbb2
+    taskid: 3ba18f71-0382-47fe-8b70-81de9506373b
     timertriggers: []
     type: condition
     view: |-
@@ -210,7 +207,7 @@ tasks:
         }
       }
   "3":
-    continueonerrortype: ""
+    continueonerrortype: "errorPath"
     id: "3"
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -218,6 +215,8 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+      '#error#':
+      - "34"
     note: false
     quietmode: 0
     scriptarguments:
@@ -230,22 +229,23 @@ tasks:
     task:
       brand: ""
       description: Downloads the latest app/threat dynamic update.
-      id: 59fe2ce7-0434-4a61-95b5-2ef74e8a56af
+      id: d5d78a40-a9db-441d-9966-ed43e682e356
       iscommand: true
       name: Download Latest App/Threat Update
       script: '|||pan-os-download-latest-content-update'
       type: regular
       version: -1
-    taskid: 59fe2ce7-0434-4a61-95b5-2ef74e8a56af
+    taskid: d5d78a40-a9db-441d-9966-ed43e682e356
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -800,
+          "x": -1140,
           "y": 520
         }
       }
+    continueonerror: true
   "4":
     continueonerrortype: ""
     id: "4"
@@ -279,12 +279,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -800,
-          "y": 710
+          "x": -1140,
+          "y": 810
         }
       }
   "5":
-    continueonerrortype: ""
+    continueonerrortype: "errorPath"
     id: "5"
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -292,6 +292,8 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+      '#error#':
+      - "35"
     note: false
     quietmode: 0
     scriptarguments:
@@ -302,13 +304,13 @@ tasks:
     task:
       brand: ""
       description: Downloads the latest antivirus dynamic update.
-      id: e0715674-719c-4179-b3a7-e5b8e15bb0e9
+      id: c71c9faa-fbad-4b05-b02b-ae97e3269ab9
       iscommand: true
       name: Download Latest Anti-Virus Update
       script: '|||pan-os-download-latest-antivirus-update'
       type: regular
       version: -1
-    taskid: e0715674-719c-4179-b3a7-e5b8e15bb0e9
+    taskid: c71c9faa-fbad-4b05-b02b-ae97e3269ab9
     timertriggers: []
     type: regular
     view: |-
@@ -318,6 +320,7 @@ tasks:
           "y": 520
         }
       }
+    continueonerror: true
   "6":
     continueonerrortype: ""
     id: "6"
@@ -337,24 +340,24 @@ tasks:
     task:
       brand: ""
       description: Installs the latest Antivirus update.
-      id: b3244c7a-9b57-4fc0-8f7d-205aee1d3d56
+      id: 666470de-248b-4c25-bb81-b9b198674377
       iscommand: true
       name: Install Latest Anti-Virus Update
       script: '|||pan-os-install-latest-antivirus-update'
       type: regular
       version: -1
-    taskid: b3244c7a-9b57-4fc0-8f7d-205aee1d3d56
+    taskid: 666470de-248b-4c25-bb81-b9b198674377
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": -360,
-          "y": 710
+          "y": 810
         }
       }
   "7":
-    continueonerrortype: ""
+    continueonerrortype: "errorPath"
     id: "7"
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -362,6 +365,8 @@ tasks:
     nexttasks:
       '#none#':
       - "8"
+      '#error#':
+      - "36"
     note: false
     quietmode: 0
     scriptarguments:
@@ -372,13 +377,13 @@ tasks:
     task:
       brand: ""
       description: Downloads the latest WildFire dynamic update.
-      id: 6f02f605-8d84-4f88-abf2-ca5230bf192c
+      id: 8a1d6d58-cc2b-4e60-99ab-e65d00021ce9
       iscommand: true
       name: Download Latest WildFire Update
       script: '|||pan-os-download-latest-wildfire-update'
       type: regular
       version: -1
-    taskid: 6f02f605-8d84-4f88-abf2-ca5230bf192c
+    taskid: 8a1d6d58-cc2b-4e60-99ab-e65d00021ce9
     timertriggers: []
     type: regular
     view: |-
@@ -388,6 +393,7 @@ tasks:
           "y": 520
         }
       }
+    continueonerror: true
   "8":
     continueonerrortype: ""
     id: "8"
@@ -420,11 +426,11 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 710
+          "y": 810
         }
       }
   "9":
-    continueonerrortype: ""
+    continueonerrortype: "errorPath"
     id: "9"
     ignoreworker: false
     isautoswitchedtoquietmode: false
@@ -432,6 +438,8 @@ tasks:
     nexttasks:
       '#none#':
       - "10"
+      '#error#':
+      - "37"
     note: false
     quietmode: 0
     scriptarguments:
@@ -442,22 +450,23 @@ tasks:
     task:
       brand: ""
       description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
-      id: c1eefc32-ce5e-4858-b73c-fb6e3c63455c
+      id: 526711cd-f768-4f64-acbd-1fb0a6d104af
       iscommand: true
       name: Download Latest GP Clientless VPN Update
       script: '|||pan-os-download-latest-gp-update'
       type: regular
       version: -1
-    taskid: c1eefc32-ce5e-4858-b73c-fb6e3c63455c
+    taskid: 526711cd-f768-4f64-acbd-1fb0a6d104af
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 1210,
           "y": 520
         }
       }
+    continueonerror: true
   "10":
     continueonerrortype: ""
     id: "10"
@@ -489,8 +498,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 710
+          "x": 1210,
+          "y": 810
         }
       }
   "11":
@@ -520,7 +529,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -800,
+          "x": -1140,
           "y": 340
         }
       }
@@ -613,7 +622,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 1210,
           "y": 340
         }
       }
@@ -632,27 +641,26 @@ tasks:
       key:
         simple: AppThreat
       value:
-        simple: '{"AppThreat":{"DownloadJobID":"${Panorama.Content.Download.JobID}","VersionDownloaded":"${Panorama.Content.Download.Details.details.line.[2]}","InstallJobID":
-          "${Panorama.Content.Install.JobID}"}}'
+        simple: '{"AppThreat":{"DownloadJobID":"${Panorama.Content.Download.JobID}","VersionDownloaded":"${Panorama.Content.Download.Details.details.line.[2]}","InstallJobID": "${Panorama.Content.Install.JobID}","Result":"Installation Successful"}}'
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 604eacdb-7323-47eb-8cbc-411b3fbc2709
+      id: 6097c1ae-a310-4ccb-82db-bb13e32e6a4e
       iscommand: false
       name: Store Formatted Details
       script: Set
       type: regular
       version: -1
-    taskid: 604eacdb-7323-47eb-8cbc-411b3fbc2709
+    taskid: 6097c1ae-a310-4ccb-82db-bb13e32e6a4e
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": -800,
-          "y": 900
+          "x": -1140,
+          "y": 1030
         }
       }
   "16":
@@ -670,27 +678,26 @@ tasks:
       key:
         simple: AntiVirus
       value:
-        simple: '{"AntiVirus":{"DownloadJobID":"${Panorama.AntiVirus.Download.JobID}","VersionDownloaded":"${Panorama.AntiVirus.Download.Details.details.line.[2]}","InstallJobID":
-          "${Panorama.AntiVirus.Install.JobID}"}}'
+        simple: '{"AntiVirus":{"DownloadJobID":"${Panorama.AntiVirus.Download.JobID}","VersionDownloaded":"${Panorama.AntiVirus.Download.Details.details.line.[2]}","InstallJobID": "${Panorama.AntiVirus.Install.JobID}","Result":"Installation Successful"}}'
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 4dc031ad-a262-43ae-978f-b4de2abc6eab
+      id: 95b88615-5a00-4a4c-a1c3-4d4f21b77292
       iscommand: false
       name: Store Formatted Details
       script: Set
       type: regular
       version: -1
-    taskid: 4dc031ad-a262-43ae-978f-b4de2abc6eab
+    taskid: 95b88615-5a00-4a4c-a1c3-4d4f21b77292
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": -360,
-          "y": 900
+          "y": 1030
         }
       }
   "17":
@@ -708,27 +715,26 @@ tasks:
       key:
         simple: WildFire
       value:
-        simple: '{"WildFire": {"DownloadJobID":"${Panorama.WildFire.Download.JobID}","VersionDownloaded":"${Panorama.WildFire.Download.Details.details.line.[2]}","InstallJobID":
-          "${Panorama.WildFire.Install.JobID}"}}'
+        simple: '{"WildFire": {"DownloadJobID":"${Panorama.WildFire.Download.JobID}","VersionDownloaded":"${Panorama.WildFire.Download.Details.details.line.[2]}","InstallJobID": "${Panorama.WildFire.Install.JobID}","Result":"Installation Successful"}}'
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 2ae1939f-0d9e-4944-94a8-663d7caf3729
+      id: e3cf8dbf-baab-482b-bc4f-39af56d8b5f5
       iscommand: false
       name: Store Formatted Details
       script: Set
       type: regular
       version: -1
-    taskid: 2ae1939f-0d9e-4944-94a8-663d7caf3729
+    taskid: e3cf8dbf-baab-482b-bc4f-39af56d8b5f5
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 510,
-          "y": 900
+          "y": 1030
         }
       }
   "18":
@@ -746,26 +752,26 @@ tasks:
       key:
         simple: GP
       value:
-        simple: '{"GP": {"DownloadJobID": "${Panorama.GP.Download.JobID}","VersionDownloaded":"${Panorama.GP.Download.Details.details.line.[2]}","InstallJobID":"${Panorama.GP.Install.JobID}"}}'
+        simple: '{"GP": {"DownloadJobID": "${Panorama.GP.Download.JobID}","VersionDownloaded":"${Panorama.GP.Download.Details.details.line.[2]}","InstallJobID":"${Panorama.GP.Install.JobID}","Result":"Installation Successful"}}'
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 358fe409-821d-4a9b-b225-01dc055098ae
+      id: 1c57d1e3-0688-47e6-bc57-7dd19ed2e6a7
       iscommand: false
       name: Store Formatted Details
       script: Set
       type: regular
       version: -1
-    taskid: 358fe409-821d-4a9b-b225-01dc055098ae
+    taskid: 1c57d1e3-0688-47e6-bc57-7dd19ed2e6a7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 900
+          "x": 1210,
+          "y": 1030
         }
       }
   "19":
@@ -809,20 +815,20 @@ tasks:
     task:
       brand: ""
       description: Combine the results of all download and install tasks into a single context key.
-      id: 6d86fc0c-be5a-43a5-a012-353c545b00b2
+      id: 27ab556a-ca83-4217-b0b9-2bc71280039d
       iscommand: false
       name: Combine Update Details
       script: SetAndHandleEmpty
       type: regular
       version: -1
-    taskid: 6d86fc0c-be5a-43a5-a012-353c545b00b2
+    taskid: 27ab556a-ca83-4217-b0b9-2bc71280039d
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 110,
-          "y": 1100
+          "y": 1260
         }
       }
   "20":
@@ -840,8 +846,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Playbook concluded after successful execution of Download and Install
-        commands.
+      description: Playbook concluded after successful execution of Download and Install commands.
       id: fa1bf705-f780-4208-9545-72902a308dee
       iscommand: false
       name: Completed with Success
@@ -854,7 +859,7 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 1280
+          "y": 1410
         }
       }
   "21":
@@ -948,8 +953,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2380,
-          "y": -200
+          "x": 2140,
+          "y": -190
         }
       }
   "23":
@@ -984,8 +989,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Prints an error entry when the playbook input for itemsToUpdate
-        did not match any valid options.
+      description: Prints an error entry when the playbook input for itemsToUpdate did not match any valid options.
       id: 7c9dc2d4-42a6-445b-803e-625cae82fe78
       iscommand: false
       name: Invalid option selected
@@ -998,7 +1002,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
+          "x": 1700,
           "y": 335
         }
       }
@@ -1074,13 +1078,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f75717c9-b98c-4cc4-89db-de7d4ed8d513
+      id: f1fe9e51-37ad-4c17-9d12-664a4c9b2ae0
       description: Check if a target firewall is specified when running on a Panorama instance.
       iscommand: false
       name: If it is a Panorama instance was target firewall provided?
       type: condition
       version: -1
-    taskid: f75717c9-b98c-4cc4-89db-de7d4ed8d513
+    taskid: f1fe9e51-37ad-4c17-9d12-664a4c9b2ae0
     timertriggers: []
     type: condition
     view: |-
@@ -1103,8 +1107,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       message:
-        simple: A target firewall ID is required when running this playbook with a
-          Panorama instance
+        simple: A target firewall ID is required when running this playbook with a Panorama instance
     separatecontext: false
     skipunavailable: false
     task:
@@ -1122,8 +1125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1830,
-          "y": 140
+          "x": 1920,
+          "y": 100
         }
       }
   "28":
@@ -1153,8 +1156,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 1280
+          "x": 1700,
+          "y": 1420
         }
       }
   "29":
@@ -1182,7 +1185,155 @@ tasks:
       {
         "position": {
           "x": 110,
-          "y": 1470
+          "y": 1600
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AppThreat
+      value:
+        simple: '{"AppThreat":{"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 19a3f46e-61bf-4a0e-bba7-5e8d70bff208
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 19a3f46e-61bf-4a0e-bba7-5e8d70bff208
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 910
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AntiVirus
+      value:
+        simple: '{"AntiVirus":{"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 0f844dee-7674-405f-957f-8d29eaaf3e7a
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 0f844dee-7674-405f-957f-8d29eaaf3e7a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 910
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: WildFire
+      value:
+        simple: '{"WildFire": {"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 770ff331-00f4-4327-a8e6-c2f82b6cf007
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 770ff331-00f4-4327-a8e6-c2f82b6cf007
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 940
+        }
+      }
+  "37":
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: GP
+      value:
+        simple: '{"GP": {"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 74db7145-d9a5-45f5-8402-3bc9c24a32c4
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 74db7145-d9a5-45f5-8402-3bc9c24a32c4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 940
         }
       }
 version: -1
@@ -1193,13 +1344,17 @@ view: |-
       "21_22_#default#": 0.22,
       "21_24_yes": 0.44,
       "25_1_#default#": 0.48,
-      "25_27_Panorama with no target ID": 0.37
+      "25_27_Panorama with no target ID": 0.37,
+      "3_34_#error#": 0.36,
+      "5_35_#error#": 0.36,
+      "7_36_#error#": 0.34,
+      "9_37_#error#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 2070,
-        "width": 3560,
-        "x": -800,
+        "height": 2200,
+        "width": 3900,
+        "x": -1380,
         "y": -540
       }
     }
