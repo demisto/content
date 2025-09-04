@@ -14,8 +14,8 @@ configuration:
   additionalinfo: The base URL for the Unit 42 Intelligence API
 - display: API Key
   name: credentials
+  displaypassword: API Key
   hiddenusername: true
-  required: true
   type: 9
   section: Connect
   additionalinfo: API key for authentication with Unit 42 Intelligence service

@@ -198,35 +198,8 @@ def create_indicators_from_relationships(
         # Retrieve the indicator type from the mapping dictionary based on the indicator type
         indicator_type = INDICATOR_TYPE_MAPPING.get(indicator_type, "Indicator")
 
-        # dbot_score = create_dbot_score(
-        #     indicator=indicator_name,
-        #     indicator_type=indicator_type if DBotScoreType.is_valid_type(indicator_type) else DBotScoreType.CUSTOM,
-        #     verdict=verdict,
-        #     reliability=reliability,
-        # )
-
-        # # Create indicator based on type
-        # indicator: Common.IP | Common.Domain | Common.URL | Common.File | Common.CustomIndicator | None = None
-        # if indicator_type == "IP":
-        #     indicator = Common.IP(ip=indicator_name, dbot_score=dbot_score)
-        # elif indicator_type == "Domain":
-        #     indicator = Common.Domain(domain=indicator_name, dbot_score=dbot_score)
-        # elif indicator_type == "URL":
-        #     indicator = Common.URL(url=indicator_name, dbot_score=dbot_score)
-        # elif indicator_type == "File":
-        #     indicator = Common.File(sha256=indicator_name, dbot_score=dbot_score)
-        # else:
-        #     # Create custom indicator for unknown types
-        #     indicator = Common.CustomIndicator(
-        #         indicator_type=indicator_type,
-        #         value=indicator_name,
-        #         dbot_score=dbot_score,
-        #         data={"value": indicator_name},
-        #         context_prefix=indicator_type.capitalize(),
-        #     )
-
         indicator_data = {
-            "value": indicator_name.replace("Threat.U42.", ""),
+            "value": indicator_name,
             "type": indicator_type,
             "rawJSON": {},
         }
@@ -271,13 +244,13 @@ def create_context_data(response_data: dict[str, Any]) -> dict[str, Any]:
     """
     return {
         "Value": response_data["indicator_value"],
-        "Type": response_data["indicator_type"],
-        "Verdict": response_data["verdict"],
-        "VerdictCategory": response_data["verdict_category"],
+        "Type": INDICATOR_TYPE_MAPPING.get(response_data["indicator_type"]),
+        "Verdict": string_to_table_header(response_data["verdict"]),
+        "VerdictCategory": list({string_to_table_header(item) for item in response_data["verdict_category"]}),
         "Counts": response_data["counts"],
         "FirstSeen": response_data["first_seen"],
         "LastSeen": response_data["last_seen"],
-        "SeenBy": response_data["seen_by"],
+        "SeenBy": list({string_to_table_header(item) for item in response_data["seen_by"]}),
         "EnrichedThreatObjectAssociation": response_data["relationships"],
     }
 
@@ -315,7 +288,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"], client.reliability)
+        demisto.createIndicators(create_indicators_from_relationships(response_data["relationships"], client.reliability))
 
     # Create context data
     context_data = create_context_data(response_data)
@@ -429,7 +402,7 @@ def url_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"], client.reliability)
+        demisto.createIndicators(create_indicators_from_relationships(response_data["relationships"], client.reliability))
 
     # Create context data
     context_data = create_context_data(response_data)
@@ -478,12 +451,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     dbot_score = create_dbot_score(file_hash, DBotScoreType.FILE, response_data["verdict"], client.reliability)
 
     # Create File indicator
-    file_indicator = Common.File(
-        sha256=file_hash if len(file_hash) == 64 else None,
-        sha1=file_hash if len(file_hash) == 40 else None,
-        md5=file_hash if len(file_hash) == 32 else None,
-        dbot_score=dbot_score,
-    )
+    file_indicator = Common.File(sha256=file_hash, dbot_score=dbot_score)
 
     # Create relationships
     relationships = create_relationships(
@@ -492,7 +460,7 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     # Create indicators from relationships
     if create_indicators_from_relationships_flag:
-        create_indicators_from_relationships(response_data["relationships"], client.reliability)
+        demisto.createIndicators(create_indicators_from_relationships(response_data["relationships"], client.reliability))
 
     # Create context data
     context_data = create_context_data(response_data)
