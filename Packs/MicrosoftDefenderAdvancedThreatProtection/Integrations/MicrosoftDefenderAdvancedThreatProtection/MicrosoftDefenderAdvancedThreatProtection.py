@@ -19,7 +19,6 @@ urllib3.disable_warnings()
 APP_NAME = "ms-defender-atp"
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-VERDICT_SOURCE = "MDE"
 """ HELPER FUNCTIONS """
 
 SEVERITY_TO_NUMBER = {"Informational": 0, "Low": 1, "MediumLow": 2, "MediumHigh": 3, "High": 4}
@@ -5610,7 +5609,7 @@ def build_file_output(raw_response, file_hash):
         integration_name=INTEGRATION_NAME,
         score=get_dbot_score(raw_response.get("DeterminationType")),
     )
-    dbot_score.integration_name = VERDICT_SOURCE
+    dbot_score.integration_name = INTEGRATION_NAME
 
     file_object = Common.File(
         md5=raw_response.get("Md5"),
@@ -5621,7 +5620,7 @@ def build_file_output(raw_response, file_hash):
     )
 
     result = CommandResults(
-        outputs_prefix="MDE.File",
+        outputs_prefix="MicrosoftATP.File",
         outputs_key_field="Sha1",
         outputs=raw_response,
         raw_response=raw_response,
@@ -5648,7 +5647,7 @@ def file_command(client: MsClient, args: dict) -> list[CommandResults]:
                     indicator=file_hash,
                     indicator_type=DBotScoreType.FILE,
                 )
-                result.indicator.dbot_score.integration_name = VERDICT_SOURCE
+                result.indicator.dbot_score.integration_name = INTEGRATION_NAME
                 results.append(result)
             else:
                 demisto.error(f)
