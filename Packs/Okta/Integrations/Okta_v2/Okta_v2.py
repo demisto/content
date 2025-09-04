@@ -725,10 +725,10 @@ def get_user_command(client: Client, args: dict):
     if not (args.get("username") or args.get("userId") or args.get("userEmail")):
         raise Exception("You must supply either 'Username' or 'userId' or 'userEmail'")
 
-    if args.get("userEmail"):
-        user, _ = client.list_users({"filter": f'profile.email eq "{args.get("userEmail")}"', "limit": 1})
+    if userEmail := args.get("userEmail"):
+        user, _ = client.list_users({"filter": f'profile.email eq "{userEmail}"', "limit": 1})
         if not user:
-            raise Exception(f"User with email {args.get("userEmail")} not found")
+            return (f'User {userEmail!r} was not found.', {}, {})
         user_term = user[0].get("id")
     else:
         user_term = args.get("userId") or args.get("username")
@@ -737,7 +737,7 @@ def get_user_command(client: Client, args: dict):
         raw_response = client.get_user(user_term)
     except Exception as e:
         if "404" in str(e):
-            return (f'User {args.get("username")} was not found.', {}, {})
+            return (f'User {user_term!r} was not found.', {}, {})
         raise e
 
     verbose = args.get("verbose")
