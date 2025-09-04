@@ -17,6 +17,20 @@ TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
 
 
+def get_file_path(file_id):
+    """
+    Retrieve the file path for a given file ID from Demisto.
+
+    Args:
+        file_id: The file ID to retrieve the path for
+
+    Returns:
+        The file path result from demisto.getFilePath()
+    """
+    filepath_result = demisto.getFilePath(file_id)
+    return filepath_result
+
+
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
         raise ValueError("Resource ID cannot be empty")
@@ -369,6 +383,216 @@ class S3:
             )
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
+
+    @staticmethod
+    def download_file_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Download a file from an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - key (str): The key (path) of the file in the bucket
+        """
+        import io
+
+        data = io.BytesIO()
+        try:
+            kwargs = {"Bucket": args.get("bucket", ""), "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+            remove_nulls_from_dictionary(kwargs)
+            client.download_fileobj(Bucket=args.get("bucket", "").lower(), Key=args.get("key"), Fileobj=data)
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        return return_results(fileResult(args.get("key"), data.getvalue()))
+
+    @staticmethod
+    def upload_file_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Upload a file to an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - key (str): The key (path) where the file will be stored in the bucket
+                - entry_id (str): The file to upload.
+
+        Returns:
+            CommandResults: Results of the upload operation with success/failure message
+        """
+        path = get_file_path(args.get("entry_id"))
+        try:
+            with open(path["path"], "rb") as data:
+                client.upload_fileobj(data, args.get("bucket"), args.get("key"))
+                return CommandResults(readable_output=f"File {args.get('key')} was uploaded successfully to {args.get('bucket')}")
+        except ClientError as err:
+            AWSErrorHandler.handle_client_error(err)
+        return CommandResults(readable_output="Failed to upload file")
+
+    @staticmethod
+    def delete_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Delete the bucket policy from an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+
+        Returns:
+            CommandResults: Results of the delete operation with success/failure message
+        """
+        bucket = args.get("bucket")
+
+        try:
+            print_debug_logs(client, f"Deleting bucket policy for bucket: {bucket}")
+
+            response = client.delete_bucket_policy(Bucket=bucket)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.NO_CONTENT:
+                return CommandResults(readable_output=f"Successfully deleted bucket policy from bucket '{bucket}'")
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            # Handle specific S3 errors
+            AWSErrorHandler.handle_client_error(err)
+
+        return CommandResults(readable_output="Failed to delete bucket policy")
+
+    @staticmethod
+    def get_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Get the Public Access Block configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the Public Access Block configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            print_debug_logs(client, f"Gets public access block for bucket: {bucket_name}")
+
+            response = client.get_public_access_block(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                return CommandResults(
+                    outputs_prefix="AWS.S3-Buckets",
+                    outputs_key_field="BucketName",
+                    outputs={"BucketName": bucket_name, "PublicAccessBlock": response.get("PublicAccessBlockConfiguration", {})},
+                    readable_output=tableToMarkdown(
+                        "Public Access Block configuration",
+                        t=response.get("PublicAccessBlockConfiguration", {}),
+                        removeNull=True,
+                        headerTransform=pascalToSpace,
+                    ),
+                )
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            # Handle specific S3 errors
+            AWSErrorHandler.handle_client_error(err)
+        return CommandResults(readable_output="Failed to get public access block")
+
+    @staticmethod
+    def get_bucket_encryption_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Get the encryption configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket encryption configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            print_debug_logs(client, f"Gets encryption configuration for an Amazon S3 bucket: {bucket_name}")
+
+            response = client.get_bucket_encryption(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                return CommandResults(
+                    outputs_prefix="AWS.S3-Buckets",
+                    outputs_key_field="BucketName",
+                    outputs={
+                        "BucketName": bucket_name,
+                        "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
+                    },
+                    readable_output=tableToMarkdown(
+                        "Server Side Encryption Configuration",
+                        t=response.get("ServerSideEncryptionConfiguration", {}),
+                        removeNull=True,
+                        headerTransform=pascalToSpace,
+                    ),
+                )
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            # Handle specific S3 errors
+            AWSErrorHandler.handle_client_error(err)
+        return CommandResults(readable_output="Failed to get bucket encryption")
+
+    @staticmethod
+    def get_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Get the policy configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket policy configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        try:
+            print_debug_logs(client, f"Gets bucket policy for an Amazon S3 bucket: {bucket_name}")
+
+            response = client.get_bucket_policy(**kwargs)
+
+            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+                json_response = json.loads(response.get("Policy", {}))
+                return CommandResults(
+                    outputs_prefix="AWS.S3-Buckets",
+                    outputs_key_field="BucketName",
+                    outputs={
+                        "BucketName": bucket_name,
+                        "Policy": json_response,
+                    },
+                    readable_output=tableToMarkdown(
+                        "Bucket Policy",
+                        t=json_response,
+                        removeNull=True,
+                        headerTransform=pascalToSpace,
+                    ),
+                )
+            else:
+                AWSErrorHandler.handle_response_error(response)
+
+        except ClientError as err:
+            # Handle specific S3 errors
+            AWSErrorHandler.handle_client_error(err)
+        return CommandResults(readable_output="Failed to get bucket policy")
 
 
 class IAM:
@@ -1281,7 +1505,7 @@ class CloudTrail:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
 
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
+COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
@@ -1308,6 +1532,12 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-s3-file-download": S3.download_file_command,
+    "aws-s3-file-upload": S3.upload_file_command,
+    "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
+    "aws-s3-public-access-block-get": S3.get_public_access_block_command,
+    "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
+    "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -1344,6 +1574,12 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "s3:GetBucketPolicy",
+    "s3:GetObject",
+    "s3:PutObject",
+    "s3:GetBucketPublicAccessBlock",
+    "s3:GetEncryptionConfiguration",
+    "s3:DeleteBucketPolicy",
 ]
 
 
@@ -1497,7 +1733,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
