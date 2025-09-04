@@ -166,7 +166,7 @@ class AzureClient:
         params: dict | None = None,
         resp_type: str = "json",
         json_data: dict | None = None,
-    ) -> requests.Response:
+    ) -> requests.Response | dict[str, Any]:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
