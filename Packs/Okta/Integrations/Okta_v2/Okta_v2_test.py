@@ -598,7 +598,7 @@ def test_get_user_command_email(mocker):
     }
     expected_readable = "isaac.brock@example.com"
 
-    mocker.patch.object(client, "list_users", return_value=[{"id": "TestID"}])
+    mocker.patch.object(client, "list_users", return_value=([{"id": "TestID"}], None))
     mock_get_user = mocker.patch.object(client, "get_user", return_value=user_data)
     readable, outputs, _ = get_user_command(client, args)
 

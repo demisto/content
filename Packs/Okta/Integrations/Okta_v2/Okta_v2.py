@@ -726,7 +726,7 @@ def get_user_command(client: Client, args: dict):
         raise Exception("You must supply either 'Username' or 'userId' or 'userEmail'")
 
     if args.get("userEmail"):
-        user = client.list_users({"filter": f'profile.email eq "{args.get("userEmail")}"'})
+        user, _ = client.list_users({"filter": f'profile.email eq "{args.get("userEmail")}"', "limit": 1})
         if not user:
             raise Exception(f"User with email {args.get("userEmail")} not found")
         user_term = user[0].get("id")
