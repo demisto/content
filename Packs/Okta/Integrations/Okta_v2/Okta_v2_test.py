@@ -534,6 +534,23 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     assert expected_readable in readable
 
 
+def test_get_user_command_not_found_user(mocker):
+    """
+     Given:
+    - Username.
+
+    When:
+    - running get_user_command.
+
+    Then:
+    - Ensure that no exception was raised, and assert the readable output.
+    """
+    args = {"username": "test@this.com"}
+    mocker.patch.object(client, "get_user", side_effect=Exception("Error in API call [404] - Not found"))
+    readable, _, _ = get_user_command(client, args)
+    assert "User test@this.com was not found." in readable
+
+
 def test_get_user_command_email(mocker):
     """
     Given:
@@ -791,20 +808,28 @@ def test_assign_group_to_app_command(mocker, args):
     assert _.get("id") == "00g3q8tjdyoOw6fJE1d7"
 
 
-@pytest.mark.parametrize("args", [{"groupId": "Test Group", "limit": 5}])
-def test_get_group_members_command(mocker, args):
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        (
+            {"groupId": "Test Group", "limit": 5},
+            {
+                "ID": "TestID2",
+                "Username": "john@doe.com",
+                "DisplayName": "Test2 Test2",
+                "Email": "john@doe.com",
+                "Status": "STAGED",
+                "Type": "Okta",
+                "Created": "2018-07-24T20:20:04.000Z",
+            },
+        )
+    ],
+)
+def test_get_group_members_command(mocker, args, expected):
     mocker.patch.object(client, "get_group_members", return_value=group_members)
     readable, outputs, _ = get_group_members_command(client, args)
     assert "Test Group" in readable
-    assert outputs.get("Account(val.ID && val.ID === obj.ID)")[1] == {
-        "ID": "TestID2",
-        "Username": "john@doe.com",
-        "DisplayName": "Test2 Test2",
-        "Email": "john@doe.com",
-        "Status": "STAGED",
-        "Type": "Okta",
-        "Created": "2018-07-24T20:20:04.000Z",
-    }
+    assert expected == outputs.get("Account(val.ID && val.ID === obj.ID)")[1]
 
 
 def test_get_logs_command(mocker):
