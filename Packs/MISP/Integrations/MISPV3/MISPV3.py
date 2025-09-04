@@ -2026,9 +2026,11 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
     if warninglist_types:
         data["matching_attributes"] = warninglist_types
     try:
+        logging.log(logging.DEBUG, f"Sending request to edit warninglist {warninglist_id}: {data}")
         response = PYMISP._prepare_request("POST", f"warninglists/edit/{warninglist_id}", data=data)
 
         response = response.json()
+        logging.log(logging.DEBUG, f"Status {response.status_code}: warninglists/edit/{warninglist_id}")
         warninglist_output = {}
         if entity := response.get("Warninglist", {}):
             warninglist_output = {
