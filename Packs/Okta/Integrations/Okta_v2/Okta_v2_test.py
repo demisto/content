@@ -534,21 +534,60 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     assert expected_readable in readable
 
 
-def test_get_user_command_not_found_user(mocker):
+def test_get_user_command_email(mocker):
     """
-     Given:
-    - Username.
-
+    Given:
+        - User email parameter.
     When:
-    - running get_user_command.
-
+        - Running get_user_command with userEmail.
     Then:
-    - Ensure that no exception was raised, and assert the readable output.
+        - Ensure that the user is found via email search and returned correctly.
     """
-    args = {"username": "test@this.com"}
-    mocker.patch.object(client, "get_user", side_effect=Exception("Error in API call [404] - Not found"))
-    readable, _, _ = get_user_command(client, args)
-    assert "User test@this.com was not found." in readable
+    args = {"userEmail": "isaac.brock@example.com", "verbose": "false"}
+    user_data = {
+        "id": "TestID",
+        "status": "ACTIVE",
+        "created": "2013-06-24T16:39:18.000Z",
+        "activated": "2013-06-24T16:39:19.000Z",
+        "statusChanged": "2013-06-24T16:39:19.000Z",
+        "lastLogin": "2013-06-24T17:39:19.000Z",
+        "lastUpdated": "2013-07-02T21:36:25.344Z",
+        "passwordChanged": "2013-07-02T21:36:25.344Z",
+        "profile": {
+            "login": "isaac.brock@example.com",
+            "firstName": "Isaac",
+            "lastName": "Brock",
+            "nickName": "issac",
+            "displayName": "Isaac Brock",
+            "email": "isaac.brock@example.com",
+            "secondEmail": "isaac@example.org",
+            "manager": "manager",
+            "managerEmail": "manager@test.com",
+        },
+    }
+    expected_context = {
+        "ID": "TestID",
+        "Username": "isaac.brock@example.com",
+        "DisplayName": "Isaac Brock",
+        "Email": "isaac.brock@example.com",
+        "Status": "ACTIVE",
+        "Type": "Okta",
+        "Created": "2013-06-24T16:39:18.000Z",
+        "Activated": "2013-06-24T16:39:19.000Z",
+        "StatusChanged": "2013-06-24T16:39:19.000Z",
+        "PasswordChanged": "2013-07-02T21:36:25.344Z",
+        "Manager": "manager",
+        "ManagerEmail": "manager@test.com",
+    }
+    expected_readable = "isaac.brock@example.com"
+
+    mocker.patch.object(client, "list_users", return_value=[{"id": "TestID"}])
+    mock_get_user = mocker.patch.object(client, "get_user", return_value=user_data)
+    readable, outputs, _ = get_user_command(client, args)
+
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)")[0] == expected_context
+    assert expected_readable in readable
+    mock_get_user.assert_called_once_with("TestID")
 
 
 @pytest.mark.parametrize(
@@ -752,28 +791,20 @@ def test_assign_group_to_app_command(mocker, args):
     assert _.get("id") == "00g3q8tjdyoOw6fJE1d7"
 
 
-@pytest.mark.parametrize(
-    "args, expected",
-    [
-        (
-            {"groupId": "Test Group", "limit": 5},
-            {
-                "ID": "TestID2",
-                "Username": "john@doe.com",
-                "DisplayName": "Test2 Test2",
-                "Email": "john@doe.com",
-                "Status": "STAGED",
-                "Type": "Okta",
-                "Created": "2018-07-24T20:20:04.000Z",
-            },
-        )
-    ],
-)
-def test_get_group_members_command(mocker, args, expected):
+@pytest.mark.parametrize("args", [{"groupId": "Test Group", "limit": 5}])
+def test_get_group_members_command(mocker, args):
     mocker.patch.object(client, "get_group_members", return_value=group_members)
     readable, outputs, _ = get_group_members_command(client, args)
     assert "Test Group" in readable
-    assert expected == outputs.get("Account(val.ID && val.ID === obj.ID)")[1]
+    assert outputs.get("Account(val.ID && val.ID === obj.ID)")[1] == {
+        "ID": "TestID2",
+        "Username": "john@doe.com",
+        "DisplayName": "Test2 Test2",
+        "Email": "john@doe.com",
+        "Status": "STAGED",
+        "Type": "Okta",
+        "Created": "2018-07-24T20:20:04.000Z",
+    }
 
 
 def test_get_logs_command(mocker):

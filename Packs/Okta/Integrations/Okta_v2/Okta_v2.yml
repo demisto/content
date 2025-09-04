@@ -308,6 +308,8 @@ script:
       name: username
     - description: User ID of the user for which to get information.
       name: userId
+    - description: Email of the user for which to get information.
+      name: userEmail
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to return extended user information. Can be "true" or "false". The default is "false".
