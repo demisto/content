@@ -1956,7 +1956,6 @@ class TestJiraIssueQueryField:
             assert expected_command_result["EntryContext"] == command_result.to_context()["EntryContext"]
             assert expected_command_result["HumanReadable"] == command_result.to_context()["HumanReadable"]
 
-
     def test_issue_query_command_uses_new_endpoint_for_cloud(self, mocker, requests_mock):
         """
         Given:
