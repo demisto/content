@@ -23,3 +23,5 @@ This integration was integrated and tested with version 3.5 of SpyCloud Enterpri
 | Use system proxy settings | Use system proxy settings | False        |
 | Incidents Fetch Interval | Incidents Fetch Interval | False        |
 | Incident type | Incident type | False        |
+| Domain Search | Please enter the domains to search here, if left empty, your full watchlist will be pulled | False        |
+| Fetch Limit | Volume of incidents captured at a single time. By default this is set to 200 | False        |
