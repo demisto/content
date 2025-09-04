@@ -834,7 +834,7 @@ class TestGetUserData:
         command = Command("Active Directory Query v2", "ad-get-user", {"username": "ad_user"})
         mock_outputs = {
             "name": ["ad_user"],
-            "sAMAccountName": ["ad_user"],
+            "sAMAccountName": ["ad_user_sam"],
             "displayName": ["AD User"],
             "mail": ["ad_user@example.com"],
             "memberOf": ["Group1", "Group2"],
@@ -847,13 +847,13 @@ class TestGetUserData:
                     "displayName": "AD User",
                     "manager": "CN=Manager,OU=Users,DC=example,DC=com",
                     "memberOf": ["Group1", "Group2"],
-                    "sAMAccountName": "ad_user",
+                    "name": "ad_user",
                     "userAccountControlFields": {"ACCOUNTDISABLE": False},
                 },
                 "Email": "ad_user@example.com",
                 "Source": "Active Directory Query v2",
                 "Brand": "Active Directory Query v2",
-                "Username": "ad_user",
+                "Username": "ad_user_sam",
                 "Instance": None,
             }
         ]
@@ -884,7 +884,7 @@ class TestGetUserData:
         """
         command = Command("Active Directory Query v2", "ad-get-user", {"username": "ad_user", "attributes": "whenCreated"})
         mock_outputs = {
-            "sAMAccountName": "ad_user",
+            "name": "ad_user",
             "displayName": "AD User",
             "mail": "ad_user@example.com",
             "memberOf": ["Group1"],
@@ -898,7 +898,7 @@ class TestGetUserData:
                     "displayName": "AD User",
                     "manager": "CN=Manager,OU=Users,DC=example,DC=com",
                     "memberOf": "Group1",
-                    "sAMAccountName": "ad_user",
+                    "name": "ad_user",
                     "userAccountControlFields": {"ACCOUNTDISABLE": False},
                     "whenCreated": "2024-11-05 09:11:18+00:00",
                 },
@@ -1063,7 +1063,7 @@ class TestGetUserData:
         """
         command = Command("Microsoft Graph User", "msgraph-user-get-manager", {"user": "graph_user"})
         mock_outputs = {"Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}}
-        expected_account = {"manager_display_name": "Graph Manager", "manager_email": "manager@example.com"}
+        expected_account = {"ManagerDisplayName": "Graph Manager", "ManagerEmail": "manager@example.com"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1073,7 +1073,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = msgraph_user_get_manager(command, additional_fields=True)
+        result = msgraph_user_get_manager(command)
 
         assert isinstance(result, dict)
         assert result == expected_account

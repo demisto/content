@@ -119,6 +119,7 @@ Returns information about a specified secret in a specified KV V2 engine.
 | HashiCorp.Secret.Engine | string | Secret engine type. |
 | HashiCorp.Secret.CurrentVersion | number | Secret current version. |
 | HashiCorp.Secret.Path | string | Secret path. |
+| HashiCorp.Secret.CustomMetadata | unknown | The custom metadata saved in the secret. |
 
 #### Command example
 
