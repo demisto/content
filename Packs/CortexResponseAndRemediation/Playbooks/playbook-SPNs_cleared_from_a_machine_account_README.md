@@ -8,7 +8,6 @@ Playbook Stages:
 Triage:
 
 - Retrieve additional data about the Account Changed event, including the Machine Account whose SPNs were cleared and the number of times the user cleared SPNs in the last 30 days.
-
 Investigation:
 
 - Search for creation of suspicious account on the Domain Controller.
@@ -42,13 +41,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* IncreaseAlertSeverity
 * SearchAlertsV2
 * Set
 * SetAndHandleEmpty
+* disable-user
 
 ### Commands
 
-* ad-disable-account
 * closeInvestigation
 * core-get-cloud-original-alerts
 
