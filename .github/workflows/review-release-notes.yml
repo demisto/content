@@ -23,7 +23,7 @@ jobs:
           since_last_remote_commit: false
       - name: Setup Python
         if: ${{ steps.changed-files.outputs.all_changed_files }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
       - name: Setup Poetry

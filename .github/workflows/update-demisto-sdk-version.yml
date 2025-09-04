@@ -34,7 +34,7 @@ jobs:
         token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
 
     - name: Setup python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
         cache: 'poetry'
