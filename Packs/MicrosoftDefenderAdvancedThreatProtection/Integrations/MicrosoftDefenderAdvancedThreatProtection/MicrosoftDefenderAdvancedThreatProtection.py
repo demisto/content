@@ -8,9 +8,7 @@ from typing import Any
 import urllib3
 import jwt
 from CommonServerPython import *
-
 from dateutil.parser import parse
-
 from MicrosoftApiModule import *  # noqa: E402
 from requests import Response
 
