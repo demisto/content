@@ -71,4 +71,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SSO Password Spray](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/SSO_Password_Spray.png)
+![SSO Password Spray](../doc_files/SSO_Password_Spray.png)

@@ -68,4 +68,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Office process creates a scheduled task via file access](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Office_process_creates_a_scheduled_task_via_file_access.png)
+![Office process creates a scheduled task via file access](../doc_files/Office_process_creates_a_scheduled_task_via_file_access.png)

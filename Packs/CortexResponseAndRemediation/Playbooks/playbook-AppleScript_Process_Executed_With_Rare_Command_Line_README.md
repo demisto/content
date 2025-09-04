@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ---
 
-![AppleScript Process Executed With Rare Command Line](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/AppleScript_Process_Executed_With_Rare_Command_Line.png)
+![AppleScript Process Executed With Rare Command Line](../doc_files/AppleScript_Process_Executed_With_Rare_Command_Line.png)

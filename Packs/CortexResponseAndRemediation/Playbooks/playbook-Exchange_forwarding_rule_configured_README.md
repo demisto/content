@@ -81,4 +81,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Exchange forwarding rule configured](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Exchange_forwarding_rule_configured.png)
+![Exchange forwarding rule configured](../doc_files/Exchange_forwarding_rule_configured.png)

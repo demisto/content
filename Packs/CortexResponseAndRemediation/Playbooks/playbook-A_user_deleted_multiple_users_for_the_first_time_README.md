@@ -72,4 +72,4 @@ There are no outputs for this playbook.
 
 ---
 
-![A user deleted multiple users for the first time](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/A_user_deleted_multiple_users_for_the_first_time.png)
+![A user deleted multiple users for the first time](../doc_files/A_user_deleted_multiple_users_for_the_first_time.png)

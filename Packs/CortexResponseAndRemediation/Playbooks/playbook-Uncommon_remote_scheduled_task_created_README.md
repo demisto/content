@@ -58,4 +58,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-![Uncommon remote scheduled task created](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Uncommon_remote_scheduled_task_created.png)
+![Uncommon remote scheduled task created](../doc_files/Uncommon_remote_scheduled_task_created.png)

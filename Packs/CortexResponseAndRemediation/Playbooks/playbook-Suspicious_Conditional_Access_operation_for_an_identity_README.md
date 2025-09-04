@@ -80,4 +80,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious Conditional Access operation for an identity](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_Conditional_Access_operation_for_an_identity.png)
+![Suspicious Conditional Access operation for an identity](../doc_files/Suspicious_Conditional_Access_operation_for_an_identity.png)

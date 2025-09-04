@@ -79,4 +79,4 @@ There are no outputs for this playbook.
 
 ---
 
-![A mail forwarding rule was configured in Google Workspace](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/A_mail_forwarding_rule_was_configured_in_Google_Workspace.png)
+![A mail forwarding rule was configured in Google Workspace](../doc_files/A_mail_forwarding_rule_was_configured_in_Google_Workspace.png)

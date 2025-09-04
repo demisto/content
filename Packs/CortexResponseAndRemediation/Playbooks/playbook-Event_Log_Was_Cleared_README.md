@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Event Log Was Cleared](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Event_Log_Was_Cleared.png)
+![Event Log Was Cleared](../doc_files/Event_Log_Was_Cleared.png)

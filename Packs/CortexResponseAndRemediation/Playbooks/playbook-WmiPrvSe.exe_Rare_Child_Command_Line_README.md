@@ -67,4 +67,4 @@ There are no outputs for this playbook.
 
 ---
 
-![WmiPrvSe.exe Rare Child Command Line](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/WmiPrvSe_exe_Rare_Child_Command_Line.png)
+![WmiPrvSe.exe Rare Child Command Line](../doc_files/WmiPrvSe_exe_Rare_Child_Command_Line.png)

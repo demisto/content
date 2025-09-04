@@ -78,4 +78,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SSO Authentication With Suspicious Characteristics](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/SSO_Authentication_With_Suspicious_Characteristics.png)
+![SSO Authentication With Suspicious Characteristics](../doc_files/SSO_Authentication_With_Suspicious_Characteristics.png)

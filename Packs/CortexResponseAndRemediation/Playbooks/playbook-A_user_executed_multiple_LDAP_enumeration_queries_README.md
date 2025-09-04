@@ -78,4 +78,4 @@ There are no outputs for this playbook.
 
 ---
 
-![A user executed multiple LDAP enumeration queries](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/A_user_executed_multiple_LDAP_enumeration_queries.png)
+![A user executed multiple LDAP enumeration queries](../doc_files/A_user_executed_multiple_LDAP_enumeration_queries.png)

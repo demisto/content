@@ -85,4 +85,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious certutil command line](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_certutil_command_line.png)
+![Suspicious certutil command line](../doc_files/Suspicious_certutil_command_line.png)

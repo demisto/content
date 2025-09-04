@@ -72,4 +72,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious Hidden User Created](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_Hidden_User_Created.png)
+![Suspicious Hidden User Created](../doc_files/Suspicious_Hidden_User_Created.png)

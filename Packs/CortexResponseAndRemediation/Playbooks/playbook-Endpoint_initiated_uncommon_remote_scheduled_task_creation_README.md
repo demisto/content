@@ -62,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Endpoint initiated uncommon remote scheduled task creation](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Endpoint_initiated_uncommon_remote_scheduled_task_creation.png)
+![Endpoint initiated uncommon remote scheduled task creation](../doc_files/Endpoint_initiated_uncommon_remote_scheduled_task_creation.png)

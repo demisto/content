@@ -72,4 +72,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Azure AD PIM role settings change](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Azure_AD_PIM_role_settings_change.png)
+![Azure AD PIM role settings change](../doc_files/Azure_AD_PIM_role_settings_change.png)

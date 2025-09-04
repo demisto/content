@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Unprivileged process opened a registry hive](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Unprivileged_process_opened_a_registry_hive.png)
+![Unprivileged process opened a registry hive](../doc_files/Unprivileged_process_opened_a_registry_hive.png)

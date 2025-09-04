@@ -81,4 +81,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Unsigned and unpopular process performed an injection](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Unsigned_and_unpopular_process_performed_an_injection.png)
+![Unsigned and unpopular process performed an injection](../doc_files/Unsigned_and_unpopular_process_performed_an_injection.png)

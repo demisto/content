@@ -62,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Unusual process accessed web browser credentials and executed by a terminal process](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Unusual_process_accessed_web_browser_credentials_and_executed_by_a_terminal_process.png)
+![Unusual process accessed web browser credentials and executed by a terminal process](../doc_files/Unusual_process_accessed_web_browser_credentials_and_executed_by_a_terminal_process.png)

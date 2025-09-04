@@ -73,4 +73,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SSO Brute Force](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/SSO_Brute_Force.png)
+![SSO Brute Force](../doc_files/SSO_Brute_Force.png)

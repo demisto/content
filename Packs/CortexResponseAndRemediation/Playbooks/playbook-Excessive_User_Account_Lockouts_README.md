@@ -66,4 +66,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Excessive User Account Lockouts](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Excessive_User_Account_Lockouts.png)
+![Excessive User Account Lockouts](../doc_files/Excessive_User_Account_Lockouts.png)

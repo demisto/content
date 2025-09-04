@@ -56,4 +56,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Credential Dumping using a known tool](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Credential_Dumping_using_a_known_tool.png)
+![Credential Dumping using a known tool](../doc_files/Credential_Dumping_using_a_known_tool.png)

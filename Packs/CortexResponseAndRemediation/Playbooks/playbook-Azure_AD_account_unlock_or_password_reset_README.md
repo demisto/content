@@ -80,4 +80,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Azure AD account unlock or password reset](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Azure_AD_account_unlock_or_password_reset.png)
+![Azure AD account unlock or password reset](../doc_files/Azure_AD_account_unlock_or_password_reset.png)

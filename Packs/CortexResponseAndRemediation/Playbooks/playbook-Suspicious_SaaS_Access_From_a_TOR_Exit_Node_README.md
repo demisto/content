@@ -71,4 +71,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious SaaS Access From a TOR Exit Node](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_SaaS_Access_From_a_TOR_Exit_Node.png)
+![Suspicious SaaS Access From a TOR Exit Node](../doc_files/Suspicious_SaaS_Access_From_a_TOR_Exit_Node.png)

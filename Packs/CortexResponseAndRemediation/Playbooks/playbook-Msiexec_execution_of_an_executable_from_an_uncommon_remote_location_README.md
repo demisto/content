@@ -83,4 +83,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Msiexec execution of an executable from an uncommon remote location](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Msiexec_execution_of_an_executable_from_an_uncommon_remote_location.png)
+![Msiexec execution of an executable from an uncommon remote location](../doc_files/Msiexec_execution_of_an_executable_from_an_uncommon_remote_location.png)
