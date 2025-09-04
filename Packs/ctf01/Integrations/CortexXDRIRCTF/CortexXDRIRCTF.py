@@ -298,6 +298,7 @@ class Client(CoreClient):
         request_data = {
             "incident_id": incident_id,
             "alerts_limit": alerts_limit,
+            "full_alert_fields": True,
         }
 
         reply = self._http_request(

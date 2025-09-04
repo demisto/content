@@ -1,0 +1,5 @@
+[INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw", no_hit = drop]
+filter
+    _raw_log != null
+| alter
+    _time = to_timestamp(to_integer(_raw_log -> timestamp.epochSecond),"SECONDS");
