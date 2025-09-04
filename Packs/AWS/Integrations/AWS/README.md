@@ -754,8 +754,8 @@ Describes specified instances or all instances.
 | AWS.EC2.Instances.NetworkInterfaces.SubnetId | String | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
 | AWS.EC2.Instances.NetworkInterfaces.VpcId | String | The ID of the VPC. |
 | AWS.EC2.Instances.NetworkInterfaces.InterfaceType | String | The type of network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes | Array | The IPv4 delegated prefixes that are assigned to the network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes | Array | The IPv6 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes | Array | The IPv4 prefixes assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes | Array | The IPv6 prefixes assigned to the network interface. |
 | AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration | Dictionary | A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface. |
 | AWS.EC2.Instances.NetworkInterfaces.Operator | Dictionary | The service provider that manages the network interface. |
 | AWS.EC2.Instances.OutpostArn | String | The Amazon Resource Name \(ARN\) of the Outpost. |
@@ -764,9 +764,9 @@ Describes specified instances or all instances.
 | AWS.EC2.Instances.SecurityGroups.GroupId | String | The ID of the security group. |
 | AWS.EC2.Instances.SecurityGroups.GroupName | String | The name of the security group. |
 | AWS.EC2.Instances.SourceDestCheck | Boolean | Indicates whether source/destination checking is enabled. |
-| AWS.EC2.Instances.SpotInstanceRequestId | String | If the request is a Spot Instance request, the ID of the request. |
+| AWS.EC2.Instances.SpotInstanceRequestId | String | The ID of the request for a Spot Instance request. |
 | AWS.EC2.Instances.SriovNetSupport | String | Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled. |
-| AWS.EC2.Instances.StateReason | Dictionary | The reason for the most recent state transition. |
+| AWS.EC2.Instances.StateReason | Dictionary | The reason for the most recent state transition. May be an empty string. |
 | AWS.EC2.Instances.Tags.Key | String | The key of the tag. |
 | AWS.EC2.Instances.Tags.Value | String | The value of the tag. |
 | AWS.EC2.Instances.VirtualizationType | String | The virtualization type of the instance. |
@@ -787,7 +787,7 @@ Describes specified instances or all instances.
 | AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord | Boolean | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. |
 | AWS.EC2.Instances.Ipv6Address | String | The IPv6 address assigned to the instance. |
 | AWS.EC2.Instances.TpmSupport | String | If the instance is configured for NitroTPM support, the value is v2.0. |
-| AWS.EC2.Instances.MaintenanceOptions.AutoRecovery | String | Provides information on the current automatic recovery behavior of your instance. |
+| AWS.EC2.Instances.MaintenanceOptions.AutoRecovery | String | Information on the current automatic recovery behavior of your instance. |
 | AWS.EC2.Instances.MaintenanceOptions.RebootMigration | String | Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event. |
 | AWS.EC2.Instances.CurrentInstanceBootMode | String | The boot mode that is used to boot the instance at launch or start. |
 | AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting | String | Contains settings for the network performance options for your instance. |
@@ -798,7 +798,7 @@ Describes specified instances or all instances.
 | AWS.EC2.Instances.State.Name | String | The current state of the instance. |
 | AWS.EC2.Instances.PrivateDnsName | String | The private DNS hostname name assigned to the instance. |
 | AWS.EC2.Instances.PublicDnsName | String | The public DNS name assigned to the instance. |
-| AWS.EC2.Instances.StateTransitionReason | String | The reason for the most recent state transition. This might be an empty string. |
+| AWS.EC2.Instances.StateTransitionReason | String | The reason for the most recent state transition. May be an empty string. |
 | AWS.EC2.Instances.KeyName | String | The name of the key pair used when the instance was launched. |
 | AWS.EC2.Instances.AmiLaunchIndex | Number | The AMI launch index, which can be used to find this instance in the launch group. |
 | AWS.EC2.Instances.ProductCodes | Dictionary | The product codes attached to this instance, if applicable. |
@@ -959,8 +959,8 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | AWS.EC2.Instances.NetworkInterfaces.SubnetId | String | The ID of the subnet associated with the network interface. Applies only if creating a network interface when launching an instance. |
 | AWS.EC2.Instances.NetworkInterfaces.VpcId | String | The ID of the VPC. |
 | AWS.EC2.Instances.NetworkInterfaces.InterfaceType | String | The type of network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes | Array | The IPv4 delegated prefixes that are assigned to the network interface. |
-| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes | Array | The IPv6 delegated prefixes that are assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes | Array | The IPv4 prefixes assigned to the network interface. |
+| AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes | Array | The IPv6 prefixes assigned to the network interface. |
 | AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration | Dictionary | A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface. |
 | AWS.EC2.Instances.NetworkInterfaces.Operator | Dictionary | The service provider that manages the network interface. |
 | AWS.EC2.Instances.OutpostArn | String | The Amazon Resource Name \(ARN\) of the Outpost. |
@@ -969,9 +969,9 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | AWS.EC2.Instances.SecurityGroups.GroupId | String | The ID of the security group. |
 | AWS.EC2.Instances.SecurityGroups.GroupName | String | The name of the security group. |
 | AWS.EC2.Instances.SourceDestCheck | Boolean | Indicates whether source/destination checking is enabled. |
-| AWS.EC2.Instances.SpotInstanceRequestId | String | If the request is a Spot Instance request, the ID of the request. |
+| AWS.EC2.Instances.SpotInstanceRequestId | String | The ID of the request for a Spot Instance request. |
 | AWS.EC2.Instances.SriovNetSupport | String | Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled. |
-| AWS.EC2.Instances.StateReason | Dictionary | The reason for the most recent state transition. |
+| AWS.EC2.Instances.StateReason | Dictionary | The reason for the most recent state transition. May be an empty string. |
 | AWS.EC2.Instances.Tags.Key | String | The key of the tag. |
 | AWS.EC2.Instances.Tags.Value | String | The value of the tag. |
 | AWS.EC2.Instances.VirtualizationType | String | The virtualization type of the instance. |
@@ -992,7 +992,7 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | AWS.EC2.Instances.PrivateDnsNameOptions.EnableResourceNameDnsAAAARecord | Boolean | Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records. |
 | AWS.EC2.Instances.Ipv6Address | String | The IPv6 address assigned to the instance. |
 | AWS.EC2.Instances.TpmSupport | String | If the instance is configured for NitroTPM support, the value is v2.0. |
-| AWS.EC2.Instances.MaintenanceOptions.AutoRecovery | String | Provides information on the current automatic recovery behavior of your instance. |
+| AWS.EC2.Instances.MaintenanceOptions.AutoRecovery | String | Information on the current automatic recovery behavior of your instance. |
 | AWS.EC2.Instances.MaintenanceOptions.RebootMigration | String | Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event. |
 | AWS.EC2.Instances.CurrentInstanceBootMode | String | The boot mode that is used to boot the instance at launch or start. |
 | AWS.EC2.Instances.NetworkPerformanceOptions.BandwidthWeighting | String | Contains settings for the network performance options for your instance. |
@@ -1003,7 +1003,7 @@ Launches a specified number of instances using an AMI you have access to. You ca
 | AWS.EC2.Instances.State.Name | String | The current state of the instance. |
 | AWS.EC2.Instances.PrivateDnsName | String | The private DNS hostname name assigned to the instance. |
 | AWS.EC2.Instances.PublicDnsName | String | The public DNS name assigned to the instance. |
-| AWS.EC2.Instances.StateTransitionReason | String | The reason for the most recent state transition. This might be an empty string. |
+| AWS.EC2.Instances.StateTransitionReason | String | The reason for the most recent state transition. May be an empty string. |
 | AWS.EC2.Instances.KeyName | String | The name of the key pair used when the instance was launched. |
 | AWS.EC2.Instances.AmiLaunchIndex | Number | The AMI launch index, which can be used to find this instance in the launch group. |
 | AWS.EC2.Instances.ProductCodes | Dictionary | The product codes attached to this instance, if applicable. |

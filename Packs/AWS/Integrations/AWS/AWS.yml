@@ -1888,10 +1888,10 @@ script:
       description: The type of network interface.
       type: String
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes
-      description: The IPv4 delegated prefixes that are assigned to the network interface.
+      description: The IPv4 prefixes assigned to the network interface.
       type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes
-      description: The IPv6 delegated prefixes that are assigned to the network interface.
+      description: The IPv6 prefixes assigned to the network interface.
       type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
       description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
@@ -1918,13 +1918,13 @@ script:
       description: Indicates whether source/destination checking is enabled.
       type: Boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
-      description: If the request is a Spot Instance request, the ID of the request.
+      description: The ID of the request for a Spot Instance request.
       type: String
     - contextPath: AWS.EC2.Instances.SriovNetSupport
       description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
       type: String
     - contextPath: AWS.EC2.Instances.StateReason
-      description: The reason for the most recent state transition.
+      description: The reason for the most recent state transition. May be an empty string.
       type: Dictionary
     - contextPath: AWS.EC2.Instances.Tags.Key
       description: The key of the tag.
@@ -1987,7 +1987,7 @@ script:
       description: If the instance is configured for NitroTPM support, the value is v2.0.
       type: String
     - contextPath: AWS.EC2.Instances.MaintenanceOptions.AutoRecovery
-      description: Provides information on the current automatic recovery behavior of your instance.
+      description: Information on the current automatic recovery behavior of your instance.
       type: String
     - contextPath: AWS.EC2.Instances.MaintenanceOptions.RebootMigration
       description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
@@ -2020,7 +2020,7 @@ script:
       description: The public DNS name assigned to the instance.
       type: String
     - contextPath: AWS.EC2.Instances.StateTransitionReason
-      description: The reason for the most recent state transition. This might be an empty string.
+      description: The reason for the most recent state transition. May be an empty string.
       type: String
     - contextPath: AWS.EC2.Instances.KeyName
       description: The name of the key pair used when the instance was launched.
@@ -2195,7 +2195,7 @@ script:
       - 'false'
       defaultValue: 'false'
     - name: hibernate
-      description: "Hibernates the instance if the instance was enabled for hibernation at launch. Default: false. If the instance cannot hibernate successfully, a normal shutdown occurs."
+      description: "Hibernates the instance if the instance was enabled for hibernation at launch. If the instance cannot hibernate successfully, a normal shutdown occurs."
       required: false
       auto: PREDEFINED
       predefined:
@@ -2486,10 +2486,10 @@ script:
       description: The type of network interface.
       type: String
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv4Prefixes
-      description: The IPv4 delegated prefixes that are assigned to the network interface.
+      description: The IPv4 prefixes assigned to the network interface.
       type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.Ipv6Prefixes
-      description: The IPv6 delegated prefixes that are assigned to the network interface.
+      description: The IPv6 prefixes assigned to the network interface.
       type: Array
     - contextPath: AWS.EC2.Instances.NetworkInterfaces.ConnectionTrackingConfiguration
       description: A security group connection tracking configuration that enables you to set the timeout for connection tracking on an Elastic network interface.
@@ -2516,13 +2516,13 @@ script:
       description: Indicates whether source/destination checking is enabled.
       type: Boolean
     - contextPath: AWS.EC2.Instances.SpotInstanceRequestId
-      description: If the request is a Spot Instance request, the ID of the request.
+      description: The ID of the request for a Spot Instance request.
       type: String
     - contextPath: AWS.EC2.Instances.SriovNetSupport
       description: Specifies whether enhanced networking with the Intel 82599 Virtual Function interface is enabled.
       type: String
     - contextPath: AWS.EC2.Instances.StateReason
-      description: The reason for the most recent state transition.
+      description: The reason for the most recent state transition. May be an empty string.
       type: Dictionary
     - contextPath: AWS.EC2.Instances.Tags.Key
       description: The key of the tag.
@@ -2585,7 +2585,7 @@ script:
       description: If the instance is configured for NitroTPM support, the value is v2.0.
       type: String
     - contextPath: AWS.EC2.Instances.MaintenanceOptions.AutoRecovery
-      description: Provides information on the current automatic recovery behavior of your instance.
+      description: Information on the current automatic recovery behavior of your instance.
       type: String
     - contextPath: AWS.EC2.Instances.MaintenanceOptions.RebootMigration
       description: Specifies whether to attempt reboot migration during a user-initiated reboot of an instance that has a scheduled system-reboot event.
@@ -2618,7 +2618,7 @@ script:
       description: The public DNS name assigned to the instance.
       type: String
     - contextPath: AWS.EC2.Instances.StateTransitionReason
-      description: The reason for the most recent state transition. This might be an empty string.
+      description: The reason for the most recent state transition. May be an empty string.
       type: String
     - contextPath: AWS.EC2.Instances.KeyName
       description: The name of the key pair used when the instance was launched.
