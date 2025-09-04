@@ -1344,15 +1344,17 @@ class AzureClient:
             return response
         else:
             demisto.debug("Failed to delete security rule.")
-            e = response.json()
-            self.handle_azure_error(
-                e=e,
-                resource_name=f"{security_group_name}/{security_rule_name}",
-                resource_type="Security Group",
-                api_function_name="delete_rule",
-                subscription_id=subscription_id,
-                resource_group_name=resource_group_name,
-            )
+            try:
+                response.raise_for_status()
+            except Exception as e:
+                self.handle_azure_error(
+                    e=e,
+                    resource_name=f"{security_group_name}/{security_rule_name}",
+                    resource_type="Security Group",
+                    api_function_name="delete_rule",
+                    subscription_id=subscription_id,
+                    resource_group_name=resource_group_name,
+                )
 
     def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str) -> dict:
         """
