@@ -3,7 +3,7 @@ description: The Silent Push Platform uses first-party data and a proprietary sc
 commonfields:
   id: SilentPush
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: SilentPush

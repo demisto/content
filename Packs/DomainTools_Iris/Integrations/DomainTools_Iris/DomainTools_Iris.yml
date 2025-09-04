@@ -2483,6 +2483,6 @@ script:
 tests:
 - No test - test 'DomainTools Iris - Test' was moved to NonCircleFolder
 fromversion: 5.0.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

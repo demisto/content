@@ -2,7 +2,7 @@ category: Case Management
 commonfields:
   id: RTIR
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

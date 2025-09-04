@@ -2,7 +2,7 @@ category: Identity and Access Management
 commonfields:
   id: AWS - Organizations
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 configuration:
 - display: Role Arn
