@@ -2886,7 +2886,7 @@ script:
       name: name
       required: true
       type: unknown
-    - description: A comma-separated list of MD5 hashes to be removed.
+    - description: The MD5 value to be removed.
       isArray: true
       name: md5
       required: true
