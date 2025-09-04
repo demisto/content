@@ -25,6 +25,23 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+def parse_tag_field(tags_str: str) -> list[dict[str, str]]:
+    """
+    Parse tag field from string to list of dictionaries.
+    """
+    tags = []
+    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
+    for f in tags_str.split(";"):
+        match = regex.match(f)
+        if match is None:
+            demisto.debug(f"could not parse field: {f}")
+            continue
+
+        tags.append({"Key": match.group(1), "Value": match.group(2)})
+
+    return tags
+
+
 class AWSErrorHandler:
     """
     Centralized error handling for AWS boto3 client errors.
@@ -942,22 +959,6 @@ class EC2:
             CommandResults: Results of the snapshot creation operation
         """
 
-        def parse_tag_field(tags_str: str) -> list[dict[str, str]]:
-            """
-            Parse tag field from string to list of dictionaries.
-            """
-            tags = []
-            regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
-            for f in tags_str.split(";"):
-                match = regex.match(f)
-                if match is None:
-                    demisto.debug(f"could not parse field: {f}")
-                    continue
-
-                tags.append({"Key": match.group(1), "Value": match.group(2)})
-
-            return tags
-
         kwargs = {"VolumeId": args.get("volume_id")}
 
         if args.get("description") is not None:
@@ -994,12 +995,14 @@ class EC2:
             try:
                 output = json.dumps(response, cls=DatetimeEncoder)
                 raw = json.loads(output)
-                del raw["ResponseMetadata"]
                 raw.update({"Region": args.get("region")})
             except ValueError as err_msg:
                 raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
             return CommandResults(
-                outputs=raw, outputs_prefix="AWS.EC2.Snapshots", readable_output=tableToMarkdown("AWS EC2 Snapshots", data)
+                outputs=raw,
+                outputs_prefix="AWS.EC2.Snapshots",
+                readable_output=tableToMarkdown("AWS EC2 Snapshots", data),
+                raw_response=raw,
             )
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
@@ -1128,37 +1131,32 @@ class EKS:
         """
         cluster_name = args.get("cluster_name")
 
-        try:
-            print_debug_logs(client, f"Describing clusters with parameters: {cluster_name}")
-            response = client.describe_cluster(name=cluster_name)
-            if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            response_data = response.get("cluster", {})
-            response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
-            if response_data.get("connectorConfig", {}).get("activationExpiry"):
-                response_data.get("connectorConfig", {})["activationExpiry"] = datetime_to_string(
-                    response_data.get("connectorConfig", {}).get("activationExpiry")
-                )
-
-            headers = ["name", "id", "status", "arn", "createdAt", "version"]
-            readable_output = tableToMarkdown(
-                name="Describe Cluster Information",
-                t=response_data,
-                removeNull=True,
-                headers=headers,
-                headerTransform=pascalToSpace,
+        print_debug_logs(client, f"Describing clusters with parameters: {cluster_name}")
+        response = client.describe_cluster(name=cluster_name)
+        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response_data = response.get("cluster", {})
+        response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
+        if response_data.get("connectorConfig", {}).get("activationExpiry"):
+            response_data.get("connectorConfig", {})["activationExpiry"] = datetime_to_string(
+                response_data.get("connectorConfig", {}).get("activationExpiry")
             )
-            return CommandResults(
-                readable_output=readable_output,
-                outputs_prefix="AWS.EKS.DescribeCluster",
-                outputs=response_data,
-                raw_response=response_data,
-                outputs_key_field="name",
-            )
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
 
-        return CommandResults(readable_output="Failed to describe cluster")
+        headers = ["name", "id", "status", "arn", "createdAt", "version"]
+        readable_output = tableToMarkdown(
+            name="Describe Cluster Information",
+            t=response_data,
+            removeNull=True,
+            headers=headers,
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EKS.DescribeCluster",
+            outputs=response_data,
+            raw_response=response_data,
+            outputs_key_field="name",
+        )
 
     @staticmethod
     def associate_access_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1181,43 +1179,38 @@ class EKS:
 
         access_scope = {"type": type_arg, "namespaces": namespaces}
 
-        try:
-            print_debug_logs(
-                client,
-                f"Associating access policy with parameters: {cluster_name=}, {principal_arn=}, {policy_arn=}, {access_scope=}",
-            )  # noqa: E501
-            response = client.associate_access_policy(
-                clusterName=cluster_name, principalArn=principal_arn, policyArn=policy_arn, accessScope=access_scope
-            )
-            if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            response_data = response.get("associatedAccessPolicy", {})
-            response_data["clusterName"] = response.get("clusterName")
-            response_data["principalArn"] = response.get("principalArn")
+        print_debug_logs(
+            client,
+            f"Associating access policy with parameters: {cluster_name=}, {principal_arn=}, {policy_arn=}, {access_scope=}",
+        )  # noqa: E501
+        response = client.associate_access_policy(
+            clusterName=cluster_name, principalArn=principal_arn, policyArn=policy_arn, accessScope=access_scope
+        )
+        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response_data = response.get("associatedAccessPolicy", {})
+        response_data["clusterName"] = response.get("clusterName")
+        response_data["principalArn"] = response.get("principalArn")
 
-            response_data["associatedAt"] = datetime_to_string(response_data.get("associatedAt"))
-            response_data["modifiedAt"] = datetime_to_string(response_data.get("modifiedAt"))
+        response_data["associatedAt"] = datetime_to_string(response_data.get("associatedAt"))
+        response_data["modifiedAt"] = datetime_to_string(response_data.get("modifiedAt"))
 
-            headers = ["clusterName", "principalArn", "policyArn", "associatedAt"]
-            readable_output = tableToMarkdown(
-                name="The access policy was associated to the access entry successfully.",
-                t=response_data,
-                removeNull=True,
-                headers=headers,
-                headerTransform=pascalToSpace,
-            )
+        headers = ["clusterName", "principalArn", "policyArn", "associatedAt"]
+        readable_output = tableToMarkdown(
+            name="The access policy was associated to the access entry successfully.",
+            t=response_data,
+            removeNull=True,
+            headers=headers,
+            headerTransform=pascalToSpace,
+        )
 
-            return CommandResults(
-                readable_output=readable_output,
-                outputs_prefix="AWS.EKS.AssociatedAccessPolicy",
-                outputs=response_data,
-                raw_response=response_data,
-                outputs_key_field="clusterName",
-            )
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-
-        return CommandResults(readable_output="Failed to associate access policy")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="AWS.EKS.AssociatedAccessPolicy",
+            outputs=response_data,
+            raw_response=response_data,
+            outputs_key_field="clusterName",
+        )
 
 
 class RDS:
@@ -1536,12 +1529,8 @@ class ECS:
                     f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
                     f"{json.dumps(response)}"
                 )
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
         except Exception as e:
             raise DemistoException(f"Error updating ECS cluster {args.get('cluster_name')}: {str(e)}")
-
-        return CommandResults(readable_output="Failed to update ECS cluster")
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
