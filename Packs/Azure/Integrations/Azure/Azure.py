@@ -1,5 +1,6 @@
 import demistomock as demisto
 import urllib3
+import sys
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
@@ -71,8 +72,93 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
-    "Microsoft.Resources/subscriptions/read": ["azure-nsg-subscriptions-list"],
     "Microsoft.Resources/subscriptions/resourceGroups/read": ["azure-nsg-resource-group-list"],
+}
+
+API_FUNCTION_TO_PERMISSIONS = {
+    "acr_update": [
+        "Microsoft.ContainerRegistry/registries/read",
+        "Microsoft.ContainerRegistry/registries/write"
+    ],
+    "cosmos_db_update": [
+        "Microsoft.DocumentDB/databaseAccounts/read",
+        "Microsoft.DocumentDB/databaseAccounts/write"
+    ],
+    "disk-update": [
+        "Microsoft.Compute/disks/read",
+        "Microsoft.Compute/disks/write"
+    ],
+    "update_key_vault_request": [
+        "Microsoft.KeyVault/vaults/read",
+        "Microsoft.KeyVault/vaults/write"
+    ],
+    "monitor_log_profile_update": [
+        "Microsoft.Insights/logprofiles/read",
+        "Microsoft.Insights/logprofiles/write"
+    ],
+    "flexible_server_param_set": [
+        "Microsoft.DBforMySQL/flexibleServers/configurations/read",
+        "Microsoft.DBforMySQL/flexibleServers/configurations/write"
+    ],
+    "list_networks_interfaces_request": [
+        "Microsoft.Network/networkInterfaces/read"
+    ],
+    "list_public_ip_addresses_request": [
+        "Microsoft.Network/publicIPAddresses/read"
+    ],
+    "list_resource_groups_request": [
+        "Microsoft.Resources/subscriptions/resourceGroups/read"
+    ],
+    "list_network_security_groups": [
+        "Microsoft.Network/networkSecurityGroups/read"
+    ],
+    "create_or_update_rule": [
+        "Microsoft.Network/networkSecurityGroups/securityRules/read",
+        "Microsoft.Network/networkSecurityGroups/securityRules/write"
+    ],
+    "delete_rule": [
+        "Microsoft.Network/networkSecurityGroups/securityRules/delete"
+    ],
+    "create_policy_assignment": [
+        "Microsoft.Authorization/policyAssignments/read",
+        "Microsoft.Authorization/policyAssignments/write"
+    ],
+    "set_postgres_config": [
+        "Microsoft.DBforPostgreSQL/servers/configurations/read",
+        "Microsoft.DBforPostgreSQL/servers/configurations/write"
+    ],
+    "postgres_server_update": [
+        "Microsoft.DBforPostgreSQL/servers/read",
+        "Microsoft.DBforPostgreSQL/servers/write"
+    ],
+    "sql_db_threat_policy_update": [
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/write"
+    ],
+    "sql_db_tde_set": [
+        "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
+        "Microsoft.Sql/servers/databases/transparentDataEncryption/write"
+    ],
+    "storage_account_update_request": [
+        "Microsoft.Storage/storageAccounts/read",
+        "Microsoft.Storage/storageAccounts/write"
+    ],
+    "storage_blob_service_properties_set_request": [
+        "Microsoft.Storage/storageAccounts/blobServices/read",
+        "Microsoft.Storage/storageAccounts/blobServices/write"
+    ],
+    "update_webapp_auth": [
+        "Microsoft.Web/sites/config/read",
+        "Microsoft.Web/sites/config/write"
+    ],
+    "set_webapp_config": [
+        "Microsoft.Web/sites/config/read",
+        "Microsoft.Web/sites/config/write"
+    ],
+    "webapp_update": [
+        "Microsoft.Web/sites/read",
+        "Microsoft.Web/sites/write"
+    ]
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -207,7 +293,7 @@ class AzureClient:
         )
 
     def handle_azure_error(
-        self, e: Exception, resource_name: str, resource_type: str, subscription_id: str = None, resource_group_name: str = None
+        self, e: Exception, resource_name: str, resource_type: str, api_function_name: str, subscription_id: str = None, resource_group_name: str = None
     ) -> None:
         """
         Standardized error handling for Azure API calls
@@ -216,9 +302,9 @@ class AzureClient:
             e: The exception that was raised
             resource_name: Name of the resource that caused the error
             resource_type: Type of the resource (e.g., 'Security Rule', 'Storage Account')
+            api_function_name: The api function name, used when need to know the permissions.
             subscription_id: Azure subscription ID (optional, for better error messages)
             resource_group_name: Resource group name (optional, for better error messages)
-            command_name: The command name, used when need to know the permissions.
 
         Raises:
             ValueError: For 404 (not found) errors
@@ -226,8 +312,6 @@ class AzureClient:
         """
         error_msg = str(e).lower()
         demisto.debug(f"Azure API error for {resource_type} '{resource_name}': {type(e).__name__}")
-
-        demisto.debug(f"Error message: {error_msg}, {e=}")
 
         if "404" in error_msg or "not found" in error_msg:
             error_details = f'{resource_type} "{resource_name}"'
@@ -238,21 +322,23 @@ class AzureClient:
             raise ValueError(f"{error_details} was not found. {str(e)}")
 
         elif ("403" in error_msg or "forbidden" in error_msg) or ("401" in error_msg or "unauthorized" in error_msg):
-            # in case it's permissions error we want to handle it with the return_multiple_permissions_error function
-            name = ""
-            for permission in REQUIRED_ROLE_PERMISSIONS:
-                if permission.lower() in error_msg.lower():
-                    name = permission
-                    demisto.debug(f"Found missing permission: {permission}.")
-            if not name:
+            found_permission = None
+            # If we have api_function_name, use the reverse mapping for O(1) lookup
+            if api_function_name in API_FUNCTION_TO_PERMISSIONS:
+                found_permission = get_permissions_from_api_function_name(api_function_name, error_msg)
+
+            if not found_permission:
+                found_permission = get_permissions_from_required_role_permissions_list(error_msg)
+
+            if not found_permission:
                 demisto.debug("Didn't find the missing permission, raising a regular exception.")
                 # if didn't find permission, raise regular exception
                 if "403" in error_msg or "forbidden" in error_msg:
                     raise DemistoException(f'Insufficient permissions to access {resource_type} "{resource_name}". {str(e)}')
-
                 if "401" in error_msg or "unauthorized" in error_msg:
                     raise DemistoException(f'Authentication failed when accessing {resource_type} "{resource_name}". {str(e)}')
-            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": name}]
+
+            error_entries = [{"account_id": subscription_id, "message": error_msg, "name": found_permission}]
             demisto.debug(f"Calling return_multiple_permissions_error function with {error_entries=}")
             return_multiple_permissions_error(error_entries)
 
@@ -299,6 +385,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{security_group}/{rule_name}",
                 resource_type="Security Rule",
+                api_function_name="create_or_update_rule",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -331,6 +418,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{security_group}/{rule_name}",
                 resource_type="Security Rule",
+                api_function_name="get_rule",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -414,6 +502,7 @@ class AzureClient:
                 e=e,
                 resource_name=account_name,
                 resource_type="Storage Account",
+                api_function_name="storage_account_update_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -461,6 +550,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{account_name}/blobServices",
                 resource_type="Storage Blob Service",
+                api_function_name="storage_blob_service_properties_set_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -532,6 +622,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{configuration_name}",
                 resource_type="PostgreSQL Configuration",
+                api_function_name="set_postgres_config",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -585,6 +676,7 @@ class AzureClient:
                 resource_name=name,
                 resource_type="Web App",
                 subscription_id=subscription_id,
+                api_function_name="set_webapp_config",
                 resource_group_name=resource_group_name,
             )
 
@@ -616,6 +708,7 @@ class AzureClient:
                 e=e,
                 resource_name=name,
                 resource_type="Web App",
+                api_function_name="get_webapp_auth",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -651,6 +744,7 @@ class AzureClient:
                 e=e,
                 resource_name=name,
                 resource_type="Web App",
+                api_function_name="update_webapp_auth",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -689,6 +783,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{configuration_name}",
                 resource_type="MySQL Flexible Server Configuration",
+                api_function_name="flexible_server_param_set",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -718,6 +813,7 @@ class AzureClient:
                 e=e,
                 resource_name=log_profile_name,
                 resource_type="Monitor Log Profile",
+                api_function_name="get_monitor_log_profile",
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
@@ -750,6 +846,7 @@ class AzureClient:
                 e=e,
                 resource_name=log_profile_name,
                 resource_type="Monitor Log Profile",
+                api_function_name="monitor_log_profile_update",
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
@@ -802,6 +899,7 @@ class AzureClient:
                 e=e,
                 resource_name=disk_name,
                 resource_type="Disk",
+                api_function_name="disk_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -855,6 +953,7 @@ class AzureClient:
                 e=e,
                 resource_name=name,
                 resource_type="Web App",
+                api_function_name="webapp_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -912,6 +1011,7 @@ class AzureClient:
                 e=e,
                 resource_name=registry_name,
                 resource_type="Container Registry",
+                api_function_name="acr_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -950,6 +1050,7 @@ class AzureClient:
                 e=e,
                 resource_name=server_name,
                 resource_type="PostgreSQL Server",
+                api_function_name="postgres_server_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -993,6 +1094,7 @@ class AzureClient:
                 e=e,
                 resource_name=vault_name,
                 resource_type="Key Vault",
+                api_function_name="update_key_vault_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1027,6 +1129,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Threat Policy",
+                api_function_name="sql_db_threat_policy_get",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1065,6 +1168,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Threat Policy",
+                api_function_name="sql_db_threat_policy_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1101,6 +1205,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{server_name}/{db_name}",
                 resource_type="SQL Database Transparent Data Encryption",
+                api_function_name="sql_db_tde_set",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1143,6 +1248,7 @@ class AzureClient:
                 e=e,
                 resource_name=account_name,
                 resource_type="Cosmos DB Account",
+                api_function_name="cosmos_db_update",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1206,6 +1312,7 @@ class AzureClient:
                 e=e,
                 resource_name=resource_group_name,
                 resource_type="Security Group",
+                api_function_name="list_network_security_groups",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1242,6 +1349,7 @@ class AzureClient:
                 e=e,
                 resource_name=f"{security_group_name}/{security_rule_name}",
                 resource_type="Security Group",
+                api_function_name="delete_rule",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1269,6 +1377,7 @@ class AzureClient:
                 e=e,
                 resource_name=subscription_id,
                 resource_type="Resource Group",
+                api_function_name="list_resource_groups_request",
                 subscription_id=subscription_id,
                 resource_group_name=None,
             )
@@ -1298,6 +1407,7 @@ class AzureClient:
                 e=e,
                 resource_name=resource_group_name,
                 resource_type="Network Interface",
+                api_function_name="list_networks_interfaces_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1327,6 +1437,7 @@ class AzureClient:
                 e=e,
                 resource_name=resource_group_name,
                 resource_type="Public IP Addresses",
+                api_function_name="list_public_ip_addresses_request",
                 subscription_id=subscription_id,
                 resource_group_name=resource_group_name,
             )
@@ -1334,6 +1445,21 @@ class AzureClient:
 
 """ HELPER FUNCTIONS """
 
+
+def get_permissions_from_api_function_name(api_function_name: str, error_msg: str) -> str:
+    for permissions in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
+        for permission in permissions:
+            if permission.lower() in error_msg.lower():
+                demisto.debug(f"Found missing permission via command mapping: {permission}")
+                return permission
+
+
+def get_permissions_from_required_role_permissions_list(error_msg: str):
+    permissions_to_check = set(REQUIRED_ROLE_PERMISSIONS)
+    for permission in permissions_to_check:
+        if permission.lower() in error_msg.lower():
+            demisto.debug(f"Found missing permission via fallback search: {permission}")
+            return permission
 
 def extract_inner_dict(data: Dict, inner_dict_key: str, fields: List = []) -> None:
     """
@@ -2614,7 +2740,6 @@ def health_check(shared_creds: dict, subscription_id: str, connector_id: str) ->
 def get_azure_client(params: dict, args: dict):
     headers = {}
     if not params.get("credentials", {}).get("password"):
-        args["subscription_id"] = "194cfdc7-41f0-4eec-8bfb-1b805cf74f53"
         credentials = get_cloud_credentials(
             CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id")
         )
