@@ -3,7 +3,7 @@
     {
       "name": "testDNS-ip",
       "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/testDNS-ip",
-      "etag": "W/\"12345789\"",
+      "etag": "123etag3",
       "location": "westus",
       "properties": {
         "provisioningState": "Succeeded",

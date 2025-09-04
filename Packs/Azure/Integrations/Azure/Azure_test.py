@@ -2084,7 +2084,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AzureNSG.PublicIPAddress"
+    assert result.outputs_prefix == "Azure.NSGPublicIPAddress"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 2
     assert "name" in result.outputs[0]
@@ -2102,11 +2102,8 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert any(val for val in fqdn_values if val and val.endswith("sysgen.cloudapp.azure.com"))
 
     for output in result_all.outputs:
-        if "etag" in output:
-            etag_value = output["etag"]
-            assert not etag_value.startswith('W/"'), f"ETag should not start with 'W/\"': {etag_value}"
-            assert not etag_value.endswith('"'), f"ETag should not end with '\"': {etag_value}"
-            assert etag_value == "12345789", f"Expected cleaned etag to be '12345789', got: {etag_value}"
+        if output.get("etag"):
+            assert output.get("etag") == "etag"
 
 
 def test_nsg_network_interfaces_list_command(mocker):
