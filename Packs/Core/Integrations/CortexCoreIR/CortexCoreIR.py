@@ -440,9 +440,7 @@ def core_execute_command_reformat_readable_output(script_res: list) -> str:
                 reformatted_result[key] = res.get(key)
             # remove the underscore prefix from the command name
             if isinstance(reformatted_result["command"], str):
-                reformatted_result["command"] = reformatted_result[
-                    "command"
-                ].removeprefix("_")
+                reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
             reformatted_results.append(reformatted_result)
     return tableToMarkdown(
         f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
@@ -467,9 +465,7 @@ def core_execute_command_reformat_command_data(result: dict) -> dict:
     for key in COMMAND_DATA_KEYS:
         reformatted_command[key] = result.get(key)
     reformatted_command["command"] = (
-        result["command"].removeprefix("_")
-        if isinstance(result.get("command"), str)
-        else None
+        result["command"].removeprefix("_") if isinstance(result.get("command"), str) else None
     )  # remove the underscore prefix from the command name
     return reformatted_command
 

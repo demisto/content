@@ -524,10 +524,10 @@ def test_reformat_output():
                     "standard_output": "output",
                     "execution_status": "COMPLETED_SUCCESSFULLY",
                     "command_output": None,
-                    "command": None
+                    "command": None,
                 }
             ],
-        }
+        },
     ]
     assert reformatted_outputs == excepted_output
 
