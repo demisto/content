@@ -4357,7 +4357,7 @@ Retrieves a list of events from the Atlassian Confluence Cloud instance.
 ### confluence-cloud-content-get
 
 ***
-Retrieves a page with all it's content from the Atlassian Confluence Cloud instance.
+Retrieves a piece of content (e.g., page, blogpost) from Confluence Cloud by its ID.
 
 #### Base Command
 
@@ -4367,13 +4367,13 @@ Retrieves a page with all it's content from the Atlassian Confluence Cloud insta
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| `content_id` | The ID of the content to retrieve. This is the `{id}` path parameter in `/wiki/rest/api/content/{id}`. | Required |
+| content_id | The ID of the content to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. |
+| ConfluenceCloud.Content.id | String | The content ID. |
 | ConfluenceCloud.Content.type | String | The type of the content (e.g., page, blogpost). |
 | ConfluenceCloud.Content.ari | String | The Atlassian Resource Identifier (ARI) for the content. |
 | ConfluenceCloud.Content.base64EncodedAri | String | The Base64 encoded ARI of the content. |
@@ -4381,11 +4381,11 @@ Retrieves a page with all it's content from the Atlassian Confluence Cloud insta
 | ConfluenceCloud.Content.title | String | The title of the content. |
 | ConfluenceCloud.Content.body | Unknown | The body of the content. |
 | ConfluenceCloud.Content.body.storage.value | String | The raw storage-format value of the content body (may contain HTML/XML). |
-| ConfluenceCloud.Content.body.storage.representation | String | The representation format of the body (e.g., `storage`, `view`). |
+| ConfluenceCloud.Content.body.storage.representation | String | The representation format of the body (e.g., storage, view). |
 | ConfluenceCloud.Content.body.storage.embeddedContent | Unknown | A list of embedded content objects in the body. |
 | ConfluenceCloud.Content.body.storage._expandable.content | String | Link to the content resource for the body. |
-| ConfluenceCloud.Content.extensions.position | Number | Position of the content in the page tree or ordering. |
-| ConfluenceCloud.Content._links.editui | String | Link to edit the content in UI. |
+| ConfluenceCloud.Content.extensions.position | Number | Position of the content in the page tree or order. |
+| ConfluenceCloud.Content._links.editui | String | Link to edit the content in the UI. |
 | ConfluenceCloud.Content._links.webui | String | Web UI link to the content. |
 | ConfluenceCloud.Content._links.edituiv2 | String | Link to edit the content in the new UI. |
 | ConfluenceCloud.Content._links.context | String | Context path of the Confluence instance. |
@@ -4396,67 +4396,37 @@ Retrieves a page with all it's content from the Atlassian Confluence Cloud insta
 
 #### Command Example
 
-```!confluence-cloud-content-get content_id="12345"```
+```!confluence-cloud-content-get content_id="123456"```
 
 #### Context Example
 
 ```json
 {
-  "confluenceCloud": {
+  "ConfluenceCloud": {
     "Content": {
-      "id": "123456789",
+      "id": "123456",
       "type": "page",
-      "ari": "ari:cloud:confluence:11111111-2222-3333-4444-555555555555:page/123456789",
-      "base64EncodedAri": "YXJpOmNsb3VkOmNvbmZsdWVuY2U6MTExMTExMTEtMjIyMi0zMzMzLTQ0NDQtNTU1NTU1NTU1NTU1OnBhZ2UvMTIzNDU2Nzg5",
+      "ari": "ari:cloud:confluence::content/123456",
+      "base64EncodedAri": "YXJpOmNsb3VkOmNvbmZsdWVuY2U6OmNvbnRlbnQvMTIzNDU2",
       "status": "current",
-      "title": "Example Page Title",
-      "macroRenderedOutput": {},
+      "title": "Demo Page",
       "body": {
         "storage": {
-          "value": "<ac:layout><ac:layout-section ac:type=\"two_equal\"><ac:layout-cell><p>Example content body...</p></ac:layout-cell></ac:layout-section></ac:layout>",
+          "value": "<p>This is a demo body.</p>",
           "representation": "storage",
-          "embeddedContent": [],
-          "_expandable": {
-            "content": "/rest/api/content/123456789"
-          }
-        },
-        "_expandable": {
-          "editor": "",
-          "atlas_doc_format": "",
-          "view": "",
-          "export_view": "",
-          "styled_view": "",
-          "dynamic": "",
-          "editor2": "",
-          "anonymous_export_view": ""
+          "embeddedContent": []
         }
       },
       "extensions": {
-        "position": 169901646
-      },
-      "_expandable": {
-        "container": "/rest/api/space/EXAMPLE",
-        "metadata": "",
-        "restrictions": "/rest/api/content/123456789/restriction/byOperation",
-        "history": "/rest/api/content/123456789/history",
-        "version": "",
-        "descendants": "/rest/api/content/123456789/descendant",
-        "space": "/rest/api/space/EXAMPLE",
-        "childTypes": "",
-        "schedulePublishInfo": "",
-        "operations": "",
-        "schedulePublishDate": "",
-        "children": "/rest/api/content/123456789/child",
-        "ancestors": "",
-        "draftVersion": ""
+        "position": 42
       },
       "_links": {
-        "editui": "/pages/resumedraft.action?draftId=123456789",
-        "webui": "/spaces/EXAMPLE/pages/123456789/Example-Page-Title",
-        "edituiv2": "/spaces/EXAMPLE/pages/edit-v2/123456789",
+        "editui": "/pages/editpage.action?pageId=123456",
+        "edituiv2": "/wiki/edit-v2/123456",
+        "webui": "/spaces/ABC/pages/123456/Demo+Page",
         "context": "/wiki",
-        "self": "https://example.atlassian.net/wiki/rest/api/content/123456789",
-        "tinyui": "/x/ABCDE",
+        "self": "https://example.atlassian.net/wiki/rest/api/content/123456",
+        "tinyui": "/x/abc123",
         "collection": "/rest/api/content",
         "base": "https://example.atlassian.net/wiki"
       }
