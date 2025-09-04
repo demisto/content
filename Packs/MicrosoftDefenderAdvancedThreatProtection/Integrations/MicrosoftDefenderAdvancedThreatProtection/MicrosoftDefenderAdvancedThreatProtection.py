@@ -1440,7 +1440,7 @@ class MsClient:
 
         Args:
             machine_id (str): Machine ID
-            comment (str):     Comment to associate with the action
+            comment (str): Comment to associate with the action
             scan_type (str): Defines the type of the Scan (Quick, Full)
 
         Notes:
