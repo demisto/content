@@ -2396,7 +2396,7 @@ script:
       description: "One or more tags to apply to a resource when the resource is being created, separated by ';' (for example, key=<name>;value=<value>)."
       required: false
     - name: host_id
-      description: "The dedicated Host ID."
+      description: "The Dedicated Host ID."
       required: false
     - name: enabled_monitoring
       description: "Indicates whether detailed monitoring is enabled. Otherwise, basic monitoring is enabled."
