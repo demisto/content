@@ -24,92 +24,12 @@ MAX_LIMIT_VALUE = 1000
 DEFAULT_LIMIT_VALUE = 50
 
 
-def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Build pagination parameters for AWS API calls with proper validation and limits.
-
-    Args:
-        args (Dict[str, Any]): Command arguments containing pagination parameters
-
-    Returns:
-        Dict[str, Any]: Validated pagination parameters for AWS API
-
-    Raises:
-        ValueError: If limit exceeds maximum allowed value or is invalid
-    """
-    kwargs: Dict[str, Any] = {}
-
-    limit_arg = args.get("limit")
-
-    # Parse and validate limit
-    try:
-        if limit_arg is not None:
-            limit = arg_to_number(limit_arg) or DEFAULT_LIMIT_VALUE
-        else:
-            limit = DEFAULT_LIMIT_VALUE  # Default limit
-    except (ValueError, TypeError) as e:
-        raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
-
-    # Validate limit constraints
-    if limit <= 0:
-        raise ValueError("Limit must be greater than 0")
-
-    # AWS API constraints - most services have a max of 1000 items per request
-    if limit > MAX_LIMIT_VALUE:
-        demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
-        limit = MAX_LIMIT_VALUE
-
-    # Handle pagination with next_token (for continuing previous requests)
-    if next_token := args.get("next_token"):
-        if not isinstance(next_token, str) or not next_token.strip():
-            raise ValueError("next_token must be a non-empty string")
-        kwargs["NextToken"] = next_token.strip()
-    kwargs.update({"MaxResults": limit})
-    return kwargs
-
-
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
         raise ValueError("Resource ID cannot be empty")
     id_list = resource_id.replace(" ", "")
     resource_ids = id_list.split(",")
     return resource_ids
-
-
-def parse_filter_field(filter_string: str | None):
-    """
-    Parses a list representation of name and values with the form of 'name=<name>,values=<values>.
-    You can specify up to 50 filters and up to 200 values per filter in a single request.
-    Filter strings can be up to 255 characters in length.
-    Args:
-        filter_list: The name and values list
-    Returns:
-        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
-    """
-    filters = []
-    list_filters = argToList(filter_string, separator=";")
-    if len(list_filters) > MAX_FILTERS:
-        list_filters = list_filters[0:50]
-        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
-    regex = re.compile(
-        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+)",
-        flags=re.I,
-    )
-    for filter in list_filters:
-        match_filter = regex.match(filter)
-        if match_filter is None:
-            raise ValueError(
-                f"Could not parse field: {filter}. Please make sure you provided "
-                "like so: name=<name>,values=<values>;name=<name>,values=<value1>,<value2>..."
-            )
-        demisto.debug(
-            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
-            f' if larger than {MAX_FILTER_VALUES},'
-            f' parsing only first {MAX_FILTER_VALUES} values.'
-        )
-        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
-
-    return filters
 
 
 class AWSErrorHandler:
@@ -995,7 +915,7 @@ class EC2:
             raise DemistoException(f"Failed to revoke egress rule: {e}")
 
     @staticmethod
-    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a new security group in the specified VPC or EC2-Classic.
 
@@ -1021,12 +941,10 @@ class EC2:
                 raw_response=response,
             )
         else:
-            AWSErrorHandler.handle_response_error(response)
-        # Should Not Reach Here: handle_response_error should raise an error
-        return CommandResults(readable_output="Failed to Create Security Group")
+            return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_security_group_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes a security group.
 
@@ -1064,12 +982,10 @@ class EC2:
             )
         else:
             # If group_id was not found or no GroupId in response, raise an exception
-            AWSErrorHandler.handle_response_error(response)
-        # Should Not Reach Here: handle_response_error should raise an error
-        return CommandResults(readable_output="Failed to Delete Security Group.")
+            return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_security_groups_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more security groups in your account.
         Returns detailed information about security groups including their rules, tags, and associated VPC information.
@@ -1125,12 +1041,10 @@ class EC2:
                 raw_response=response,
             )
         else:
-            AWSErrorHandler.handle_response_error(response)
-        # Should Not Reach Here: handle_response_error should raise an error
-        return CommandResults(readable_output="Failed to Describe Security Groups.")
+            return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def authorize_security_group_egress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds the specified outbound (egress) rules to a security group.
 
@@ -1169,9 +1083,7 @@ class EC2:
             )
             return CommandResults(readable_output=readable_output, raw_response=response)
         else:
-            AWSErrorHandler.handle_response_error(response)
-        # Should Not Reach Here: handle_response_error should raise an error
-        return CommandResults(readable_output="Failed to Authorize Security Groups.")
+            return AWSErrorHandler.handle_response_error(response)
 
 
 class EKS:
@@ -1527,7 +1439,7 @@ class CloudTrail:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
 
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
+COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
@@ -1754,7 +1666,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
@@ -1802,12 +1714,8 @@ def main():  # pragma: no cover
 
     except ClientError as client_err:
         # Catch ClientError at the main level and try to handle it
-        try:
-            account_id = args.get("account_id", "")
-            AWSErrorHandler.handle_client_error(client_err, account_id)
-        except DemistoException as handler_err:
-            # If we can't handle or parse the error, raise an exception
-            return_error(f"Failed to execute {command} command.\nError:\n{str(handler_err)}")
+        account_id = args.get("account_id", "")
+        AWSErrorHandler.handle_client_error(client_err, account_id)
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
