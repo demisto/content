@@ -2919,7 +2919,7 @@ def test_aws_error_handler_handle_client_error_missing_error_code(mocker):
     error_response = {"Error": {"Message": "Some error message"}, "ResponseMetadata": {"HTTPStatusCode": 400}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -2937,7 +2937,7 @@ def test_aws_error_handler_handle_client_error_missing_error_message(mocker):
     error_response = {"Error": {"Code": "TestError"}, "ResponseMetadata": {"HTTPStatusCode": 400}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -2955,7 +2955,7 @@ def test_aws_error_handler_handle_client_error_missing_http_status_code(mocker):
     error_response = {"Error": {"Code": "TestError", "Message": "Test message"}, "ResponseMetadata": {}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -2973,7 +2973,7 @@ def test_aws_error_handler_handle_client_error_missing_response_metadata(mocker)
     error_response = {"Error": {"Code": "TestError", "Message": "Test message"}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -2991,7 +2991,7 @@ def test_aws_error_handler_handle_client_error_missing_error_section(mocker):
     error_response = {"ResponseMetadata": {"HTTPStatusCode": 400}}
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
 
@@ -3013,7 +3013,7 @@ def test_aws_error_handler_handle_client_error_unhandled_exception_debug_logging
     }
     client_error = ClientError(error_response, "test-operation")
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(SystemExit):
         AWSErrorHandler.handle_client_error(client_error, "accountID")
 
     mock_debug.assert_any_call("[AWSErrorHandler] Unhandled error: Unexpected error")

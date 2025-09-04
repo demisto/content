@@ -241,7 +241,7 @@ class AWSErrorHandler:
             http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
             demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
             if not error_code or not error_message or not http_status_code:
-                raise DemistoException(err)
+                return_error(err)
             # Check if this is a permission-related error
             if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
                 cls._handle_permission_error(err, error_code, error_message, account_id)
@@ -249,7 +249,7 @@ class AWSErrorHandler:
                 cls._handle_general_error(err, error_code, error_message)
         except Exception as e:
             demisto.debug(f"[AWSErrorHandler] Unhandled error: {str(e)}")
-            raise DemistoException(str(err))
+            return_error(err)
 
     @classmethod
     def _handle_permission_error(
@@ -1292,7 +1292,7 @@ class EC2:
     @staticmethod
     def _manage_instances_command(
         client: BotoClient, args: Dict[str, Any], action: str, additional_params: Optional[Dict[str, str]] = None
-    ) -> CommandResults:
+    ) -> CommandResults | None:
         """
         General function to manage EC2 instances (start, stop, terminate).
 
@@ -1367,12 +1367,10 @@ class EC2:
             )
             return CommandResults(readable_output=readable_output, raw_response=response)
         else:
-            AWSErrorHandler.handle_response_error(response)
-
-        return CommandResults(readable_output=config["failure_message"])
+            return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def stop_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def stop_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Stops one or more Amazon EC2 instances.
 
@@ -1387,7 +1385,7 @@ class EC2:
         return EC2._manage_instances_command(client, args, "stop", additional_params)
 
     @staticmethod
-    def terminate_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def terminate_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Terminates one or more Amazon EC2 instances.
 
@@ -1401,7 +1399,7 @@ class EC2:
         return EC2._manage_instances_command(client, args, "terminate")
 
     @staticmethod
-    def start_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def start_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Starts one or more stopped Amazon EC2 instances.
 
@@ -1768,7 +1766,7 @@ class CloudTrail:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
 
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
+COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
@@ -1990,7 +1988,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
@@ -2050,12 +2048,8 @@ def main():  # pragma: no cover
 
     except ClientError as client_err:
         # Catch ClientError at the main level and try to handle it
-        try:
-            account_id = args.get("account_id", "")
-            AWSErrorHandler.handle_client_error(client_err, account_id)
-        except DemistoException as handler_err:
-            # If we can't handle or parse the error, raise an exception
-            return_error(f"Failed to execute {command} command.\nError:\n{str(handler_err)}")
+        account_id = args.get("account_id", "")
+        AWSErrorHandler.handle_client_error(client_err, account_id)
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
