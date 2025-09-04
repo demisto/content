@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious LDAP search query](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_LDAP_search_query.png)
+![Suspicious LDAP search query](../doc_files/Suspicious_LDAP_search_query.png)

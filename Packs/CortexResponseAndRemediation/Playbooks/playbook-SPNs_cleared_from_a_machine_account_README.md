@@ -66,4 +66,4 @@ There are no outputs for this playbook.
 
 ---
 
-![SPNs cleared from a machine account](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/SPNs_cleared_from_a_machine_account.png)
+![SPNs cleared from a machine account](../doc_files/SPNs_cleared_from_a_machine_account.png)

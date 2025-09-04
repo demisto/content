@@ -64,4 +64,4 @@ There are no outputs for this playbook.
 
 ---
 
-![A successful SSO sign-in from TOR](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/A_successful_SSO_sign-in_from_TOR.png)
+![A successful SSO sign-in from TOR](../doc_files/A_successful_SSO_sign-in_from_TOR.png)

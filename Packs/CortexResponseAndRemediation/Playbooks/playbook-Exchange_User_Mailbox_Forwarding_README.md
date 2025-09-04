@@ -90,4 +90,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Exchange User Mailbox Forwarding](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Exchange_User_Mailbox_Forwarding.png)
+![Exchange User Mailbox Forwarding](../doc_files/Exchange_User_Mailbox_Forwarding.png)

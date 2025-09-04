@@ -49,4 +49,4 @@ There are no outputs for this playbook.
 
 ---
 
-![User added to local administrator group using a PowerShell command](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/User_added_to_local_administrator_group_using_a_PowerShell_command.png)
+![User added to local administrator group using a PowerShell command](../doc_files/User_added_to_local_administrator_group_using_a_PowerShell_command.png)

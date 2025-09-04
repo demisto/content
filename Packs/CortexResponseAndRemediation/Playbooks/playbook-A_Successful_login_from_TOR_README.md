@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ---
 
-![A Successful login from TOR](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/A_Successful_login_from_TOR.png)
+![A Successful login from TOR](../doc_files/A_Successful_login_from_TOR.png)

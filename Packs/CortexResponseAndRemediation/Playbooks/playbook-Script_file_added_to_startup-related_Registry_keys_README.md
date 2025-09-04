@@ -79,4 +79,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Script file added to startup-related Registry keys](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Script_file_added_to_startup-related_Registry_keys.png)
+![Script file added to startup-related Registry keys](../doc_files/Script_file_added_to_startup-related_Registry_keys.png)

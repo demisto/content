@@ -71,4 +71,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Azure Temporary Access Pass TAP registered to an account](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Azure_Temporary_Access_Pass_TAP_registered_to_an_account.png)
+![Azure Temporary Access Pass TAP registered to an account](../doc_files/Azure_Temporary_Access_Pass_TAP_registered_to_an_account.png)

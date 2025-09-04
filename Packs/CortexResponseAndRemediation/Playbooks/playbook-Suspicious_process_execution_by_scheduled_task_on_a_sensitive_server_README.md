@@ -58,4 +58,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious process execution by scheduled task on a sensitive server](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_process_execution_by_scheduled_task_on_a_sensitive_server.png)
+![Suspicious process execution by scheduled task on a sensitive server](../doc_files/Suspicious_process_execution_by_scheduled_task_on_a_sensitive_server.png)

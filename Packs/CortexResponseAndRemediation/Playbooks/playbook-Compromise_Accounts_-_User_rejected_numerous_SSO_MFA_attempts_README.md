@@ -76,4 +76,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Compromise Accounts - User rejected numerous SSO MFA attempts](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Compromise_Accounts_-_User_rejected_numerous_SSO_MFA_attempts.png)
+![Compromise Accounts - User rejected numerous SSO MFA attempts](../doc_files/Compromise_Accounts_-_User_rejected_numerous_SSO_MFA_attempts.png)

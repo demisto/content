@@ -60,4 +60,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Uncommon creation or access operation of sensitive shadow copy by a high-risk process](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high-risk_process.png)
+![Uncommon creation or access operation of sensitive shadow copy by a high-risk process](../doc_files/Uncommon_creation_or_access_operation_of_sensitive_shadow_copy_by_a_high-risk_process.png)

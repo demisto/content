@@ -54,4 +54,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Scheduled task created with HTTP or FTP reference](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Scheduled_task_created_with_HTTP_or_FTP_reference.png)
+![Scheduled task created with HTTP or FTP reference](../doc_files/Scheduled_task_created_with_HTTP_or_FTP_reference.png)

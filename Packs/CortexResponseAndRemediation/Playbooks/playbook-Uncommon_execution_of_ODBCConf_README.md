@@ -68,4 +68,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Uncommon execution of ODBCConf](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Uncommon_execution_of_ODBCConf.png)
+![Uncommon execution of ODBCConf](../doc_files/Uncommon_execution_of_ODBCConf.png)

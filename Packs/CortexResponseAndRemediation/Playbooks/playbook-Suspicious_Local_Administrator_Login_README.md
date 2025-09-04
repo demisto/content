@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious Local Administrator Login](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_Local_Administrator_Login.png)
+![Suspicious Local Administrator Login](../doc_files/Suspicious_Local_Administrator_Login.png)

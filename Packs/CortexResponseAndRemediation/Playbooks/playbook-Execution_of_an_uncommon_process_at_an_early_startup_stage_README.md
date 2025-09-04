@@ -75,4 +75,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Execution of an uncommon process at an early startup stage](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Execution_of_an_uncommon_process_at_an_early_startup_stage.png)
+![Execution of an uncommon process at an early startup stage](../doc_files/Execution_of_an_uncommon_process_at_an_early_startup_stage.png)

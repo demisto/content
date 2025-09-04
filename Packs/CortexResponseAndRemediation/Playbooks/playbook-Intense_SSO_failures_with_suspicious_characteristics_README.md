@@ -82,4 +82,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Intense SSO failures with suspicious characteristics](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Intense_SSO_failures_with_suspicious_characteristics.png)
+![Intense SSO failures with suspicious characteristics](../doc_files/Intense_SSO_failures_with_suspicious_characteristics.png)

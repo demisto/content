@@ -67,4 +67,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Remote WMI Process Execution](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Remote_WMI_Process_Execution.png)
+![Remote WMI Process Execution](../doc_files/Remote_WMI_Process_Execution.png)

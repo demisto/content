@@ -75,4 +75,4 @@ There are no outputs for this playbook.
 
 ---
 
-![MFA was disabled for an Azure identity](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/MFA_was_disabled_for_an_Azure_identity.png)
+![MFA was disabled for an Azure identity](../doc_files/MFA_was_disabled_for_an_Azure_identity.png)

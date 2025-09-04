@@ -76,4 +76,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Authentication method added to an Azure account](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Authentication_method_added_to_an_Azure_account.png)
+![Authentication method added to an Azure account](../doc_files/Authentication_method_added_to_an_Azure_account.png)

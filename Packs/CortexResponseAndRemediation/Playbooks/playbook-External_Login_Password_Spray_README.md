@@ -73,4 +73,4 @@ There are no outputs for this playbook.
 
 ---
 
-![External Login Password Spray](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/External_Login_Password_Spray.png)
+![External Login Password Spray](../doc_files/External_Login_Password_Spray.png)

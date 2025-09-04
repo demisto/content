@@ -76,4 +76,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Suspicious execution from tmp folder](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/Suspicious_execution_from_tmp_folder.png)
+![Suspicious execution from tmp folder](../doc_files/Suspicious_execution_from_tmp_folder.png)

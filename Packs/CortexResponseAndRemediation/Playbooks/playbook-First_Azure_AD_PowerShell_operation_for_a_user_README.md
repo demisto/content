@@ -82,4 +82,4 @@ There are no outputs for this playbook.
 
 ---
 
-![First Azure AD PowerShell operation for a user](../../../../../content/Packs/CortexResponseAndRemediation/doc_files/First_Azure_AD_PowerShell_operation_for_a_user.png)
+![First Azure AD PowerShell operation for a user](../doc_files/First_Azure_AD_PowerShell_operation_for_a_user.png)
