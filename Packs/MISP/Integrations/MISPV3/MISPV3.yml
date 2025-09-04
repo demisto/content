@@ -2822,7 +2822,7 @@ script:
     - name: version
       description: Updated version number of the warninglist.
     - name: default
-      description: Whether the warninglist is set as default
+      description: Whether the warninglist is set as default.
       type: boolean
     - name: values
       description: Updated values of the warninglist.
@@ -2850,7 +2850,7 @@ script:
       description: Whether the warninglist is enabled.
       type: boolean
     - contextPath: MISP.Warninglist.Default
-      description: Whether the warninglist is set as default
+      description: Whether the warninglist is set as default.
       type: boolean
     - contextPath: MISP.Warninglist.Category
       description: The updated category of the warninglist.
