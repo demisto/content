@@ -1,9 +1,9 @@
 [MODEL: dataset=manage_engine_raw]
 alter
-    userip_v4 = if(userIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",userIP ,null),
-    userip_v6 = if(userIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",userIP ,null),
-    viewerip_v4 = if(viewerIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",viewerIP ,null),
-    viewerip_v6 = if(viewerIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",viewerIP ,null),
+    user_ipv4 = if(userIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",userIP ,null),
+    user_ipv6 = if(userIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",userIP ,null),
+    viewer_ipv4 = if(viewerIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",viewerIP ,null),
+    viewer_ipv6 = if(viewerIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",viewerIP ,null),
     check_domain_name_null = if(domainName = "--", null, domainName),
     check_hostname_null = if(hostName = "--", null, hostName),
     check_event_id_null = if(eventId = "--", null, eventId),
@@ -22,8 +22,8 @@ alter
     xdm.source.application.name = check_application_null,
     xdm.target.host.hostname = check_computername_null,
     xdm.target.domain = check_domain_name_null,
-    xdm.intermediate.ipv4 = viewerip_v4,
-    xdm.intermediate.ipv6 = viewerip_v6,
-    xdm.source.ipv4 = userip_v4,
-    xdm.source.ipv6 = userip_v6,
+    xdm.intermediate.ipv4 = viewer_ipv4,
+    xdm.intermediate.ipv6 = viewer_ipv6,
+    xdm.source.ipv4 = user_ipv4,
+    xdm.source.ipv6 = user_ipv6,
     xdm.event.outcome = check_remarks_null;
