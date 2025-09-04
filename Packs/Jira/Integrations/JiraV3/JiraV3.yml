@@ -323,8 +323,11 @@ script:
       description: The JQL query string.
       name: query
       required: true
-    - description: The index (integer) of the first issue to return (0-based).
+    - description: The token for the next page of the query (if such exists).
+      name: next_page_token
+    - description: The index (integer) of the first issue to return (0-based). Deprecated, Please use next_page_token.
       name: start_at
+      deprecated: true
     - description: Deprecated. Please use start_at.
       name: startAt
       hidden: true
@@ -344,6 +347,9 @@ script:
     description: Queries Jira issues.
     name: jira-issue-query
     outputs:
+    - contextPath: Jira.Query.nextPageToken
+      description: A token for fetching the next page of the query if such exists.
+      type: String
     - contextPath: Ticket.Id
       description: The ticket ID.
       type: String
@@ -1829,7 +1835,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.3150379
+  dockerimage: demisto/btfl-soup:1.0.1.4649489
   isfetch: true
   ismappable: true
   isremotesyncin: true
