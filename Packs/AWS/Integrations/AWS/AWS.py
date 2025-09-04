@@ -1137,10 +1137,9 @@ class EKS:
             AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         response_data = response.get("cluster", {})
         response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
-        if response_data.get("connectorConfig", {}).get("activationExpiry"):
-            response_data.get("connectorConfig", {})["activationExpiry"] = datetime_to_string(
-                response_data.get("connectorConfig", {}).get("activationExpiry")
-            )
+        activation_expiry = response_data.get("connectorConfig", {}).get("activationExpiry")
+        if activation_expiry:
+            response_data.get("connectorConfig", {})["activationExpiry"] = datetime_to_string(activation_expiry)
 
         headers = ["name", "id", "status", "arn", "createdAt", "version"]
         readable_output = tableToMarkdown(
@@ -1182,7 +1181,7 @@ class EKS:
         print_debug_logs(
             client,
             f"Associating access policy with parameters: {cluster_name=}, {principal_arn=}, {policy_arn=}, {access_scope=}",
-        )  # noqa: E501
+        )
         response = client.associate_access_policy(
             clusterName=cluster_name, principalArn=principal_arn, policyArn=policy_arn, accessScope=access_scope
         )
@@ -1499,38 +1498,35 @@ class ECS:
             CommandResults: Results of the operation with updated cluster settings
         """
         setting_value = args.get("value")
-        try:
-            print_debug_logs(client, f"Updating ECS cluster settings with parameters: {setting_value=}")  # noqa: E501
-            response = client.update_cluster_settings(
-                cluster=args.get("cluster_name"),
-                settings=[
-                    {"name": "containerInsights", "value": setting_value},
-                ],
+        print_debug_logs(client, f"Updating ECS cluster settings with parameters: {setting_value=}")  # noqa: E501
+        response = client.update_cluster_settings(
+            cluster=args.get("cluster_name"),
+            settings=[
+                {"name": "containerInsights", "value": setting_value},
+            ],
+        )
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            cluster_data = response.get("cluster", {})
+            readable_output = f"Successfully updated ECS cluster: {args.get('cluster_name')}"
+
+            if cluster_data:
+                readable_output += "\n\nUpdated Cluster Details:ֿֿֿֿֿ\n"
+                readable_output += tableToMarkdown("", cluster_data)
+
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix="AWS.ECS.Cluster",
+                outputs=cluster_data,
+                outputs_key_field="clusterArn",
+                raw_response=response,
             )
-
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-                cluster_data = response.get("cluster", {})
-                readable_output = f"Successfully updated ECS cluster: {args.get('cluster_name')}"
-
-                if cluster_data:
-                    readable_output += "\n\nUpdated Cluster Details:ֿֿֿֿֿ\n"
-                    readable_output += tableToMarkdown("", cluster_data)
-
-                return CommandResults(
-                    readable_output=readable_output,
-                    outputs_prefix="AWS.ECS.Cluster",
-                    outputs=cluster_data,
-                    outputs_key_field="clusterArn",
-                    raw_response=response,
-                )
-            else:
-                raise DemistoException(
-                    f"Failed to update ECS cluster. "
-                    f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
-                    f"{json.dumps(response)}"
-                )
-        except Exception as e:
-            raise DemistoException(f"Error updating ECS cluster {args.get('cluster_name')}: {str(e)}")
+        else:
+            raise DemistoException(
+                f"Failed to update ECS cluster. "
+                f"Status code: {response['ResponseMetadata']['HTTPStatusCode']}. "
+                f"{json.dumps(response)}"
+            )
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
