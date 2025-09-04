@@ -2101,6 +2101,13 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert any(val == "testlbl.westus.cloudapp.azure.com" for val in fqdn_values)
     assert any(val for val in fqdn_values if val and val.endswith("sysgen.cloudapp.azure.com"))
 
+    for output in result_all.outputs:
+        if "etag" in output:
+            etag_value = output["etag"]
+            assert not etag_value.startswith('W/"'), f"ETag should not start with 'W/\"': {etag_value}"
+            assert not etag_value.endswith('"'), f"ETag should not end with '\"': {etag_value}"
+            assert etag_value == "12345789", f"Expected cleaned etag to be '12345789', got: {etag_value}"
+
 
 def test_nsg_network_interfaces_list_command(mocker):
     """
