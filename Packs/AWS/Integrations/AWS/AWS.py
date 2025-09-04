@@ -77,7 +77,7 @@ class AWSErrorHandler:
             http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
             demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
             if not error_code or not error_message or not http_status_code:
-                raise DemistoException(err)
+                return_error(err)
             # Check if this is a permission-related error
             if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
                 cls._handle_permission_error(err, error_code, error_message, account_id)
@@ -85,7 +85,7 @@ class AWSErrorHandler:
                 cls._handle_general_error(err, error_code, error_message)
         except Exception as e:
             demisto.debug(f"[AWSErrorHandler] Unhandled error: {str(e)}")
-            raise DemistoException(str(err))
+            return_error(err)
 
     @classmethod
     def _handle_permission_error(
@@ -1594,17 +1594,12 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
+    except ClientError as client_err:
+        account_id = args.get("account_id", "")
+        AWSErrorHandler.handle_client_error(client_err, account_id)
+
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
-
-    except ClientError as client_err:
-        # Catch ClientError at the main level and try to handle it
-        try:
-            account_id = args.get("account_id", "")
-            AWSErrorHandler.handle_client_error(client_err, account_id)
-        except DemistoException as handler_err:
-            # If we can't handle or parse the error, raise an exception
-            return_error(f"Failed to execute {command} command.\nError:\n{str(handler_err)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
