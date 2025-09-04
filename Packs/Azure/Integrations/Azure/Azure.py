@@ -2643,7 +2643,6 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     for output in data_from_response:
         reformat_data(output, dict_to_extract=[("properties",), ("dnsSettings",)])
         output["etag"] = output.get("etag", "")[3:-1]  # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
-
     readable_output = tableToMarkdown(
         name="Public IP Addresses List",
         t=data_from_response,
@@ -2652,7 +2651,7 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
         headerTransform=pascalToSpace,
     )
     return CommandResults(
-        outputs_prefix="AzureNSG.PublicIPAddress",
+        outputs_prefix="Azure.NSGPublicIPAddress",
         outputs_key_field="id",
         outputs=data_from_response,
         raw_response=response,
