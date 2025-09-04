@@ -268,6 +268,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             url_suffix = f"rest/api/{self.api_version}/search"
         else:
             url_suffix = f"rest/api/{self.api_version}/search/jql"
+
         query_params |= {"expand": "renderedFields,transitions,names", "fields": ["*all"]}
         return self.http_request(method="GET", url_suffix=url_suffix, params=query_params)
 
