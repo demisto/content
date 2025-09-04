@@ -544,7 +544,7 @@ def xdr_and_core_list_all_users(
             else:
                 outputs = []
             demisto.debug(f"found {len(outputs)} users")
-            for output in outputs:
+            for output in outputs:  # type: ignore[assignment]
                 if (mail := output.get("user_email", "")) and mail in email_set:
                     demisto.debug(f"found user with email: {mail}")
                     email_set.remove(mail)
@@ -559,7 +559,7 @@ def xdr_and_core_list_all_users(
                                 user["AdditionalFields"].update(output)
                             break
                     if not found:
-                        demisto.debug(f"User with {mail} was not found in previous results, adding new user.")
+                        demisto.debug(f"User with {mail} was not found in previous results, creating new user.")
                         user = create_user(
                             source=second_command.brand,
                             id=output.get("id"),
@@ -1056,7 +1056,7 @@ def main():
         #################################
         ### Running for XDR ###
         #################################
-        readable_output, outputs = get_core_and_xdr_data(
+        readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
             modules=modules,
             brand_name="Cortex XDR - IR",
             first_command="xdr-list-risky-users",
@@ -1075,7 +1075,7 @@ def main():
         #################################
         ### Running for Core ###
         #################################
-        readable_output, outputs = get_core_and_xdr_data(
+        readable_output, outputs = get_core_and_xdr_data(  # type: ignore[assignment]
             modules=modules,
             brand_name="Cortex Core - IR",
             first_command="core-list-risky-users",
