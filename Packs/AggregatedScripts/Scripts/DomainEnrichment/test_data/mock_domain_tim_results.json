@@ -1,39 +1,93 @@
-[
-    {
+{
+    "pages": [
+      {
         "iocs": [
-            {
-                "score": 3,
-                "value": "domain1.com",
-                "indicator_type": "Domain",
-                "insightCache": {
-                    "scores": {
-                        "brand1": {
-                            "score": 1,
-                            "context": {
-                                "Domain(obj.Name == val.Name)": {
-                                    "Name": "domain1.com",
-                                    "PositiveDetections": 2
-                                }
-                            }
-                        },
-                        "brand2": {
-                            "score": 2,
-                            "context": {
-                                "Domain(obj.Name == val.Name)": {
-                                    "Name": "domain1.com",
-                                    "PositiveDetections": 5
-                                },
-                                "DBotScore": {
-                                    "Indicator": "domain1.com",
-                                    "Score": 2,
-                                    "Vendor": "brand2",
-                                    "Type": "domain"
-                                }
-                            }
-                        }
-                    }
+          {
+            "value": "example.com",
+            "score": 3,
+            "CustomFields": {
+              "name": "example.com",
+              "detectionengines": 70,
+              "positivedetections": 37,
+              "score": 3
+            },
+            "insightCache": {
+              "scores": {
+                "brand1": {
+                  "score": 2,
+                  "context": {
+                    "Domain(val.Name && val.Name == obj.Name)": [
+                      {
+                        "Name": "example.com",
+                        "Brand": "brand1",
+                        "DetectionEngines": 60,
+                        "PositiveDetections": 5,
+                        "Score": 2
+                      }
+                    ]
+                  }
+                },
+                "brand2": {
+                  "score": 3,
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "example.com",
+                        "Vendor": "brand2",
+                        "Score": 3
+                      }
+                    ],
+                    "Domain(val.Name && val.Name == obj.Name)": [
+                      {
+                        "Name": "example.com",
+                        "Brand": "brand2",
+                        "DetectionEngines": 70,
+                        "PositiveDetections": 37,
+                        "Score": 3
+                      }
+                    ]
+                  }
                 }
+              }
             }
+          },
+          {
+            "value": "example2.com",
+            "score": 1,
+            "CustomFields": {
+              "name": "example2.com",
+              "detectionengines": 10,
+              "positivedetections": 1,
+              "score": 1
+            },
+            "insightCache": {
+              "scores": {
+                "brand3": {
+                  "score": 1,
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "example2.com",
+                        "Vendor": "brand3",
+                        "Score": 1
+                      }
+                    ],
+                    "Domain(val.Name && val.Name == obj.Name)": [
+                      {
+                        "Name": "example2.com",
+                        "Brand": "brand3",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 1,
+                        "Score": 1
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
         ]
-    }
-]
+      }
+    ]
+  }
+  

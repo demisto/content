@@ -28,10 +28,23 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
             context_output_mapping={
                 "WildFire.Verdicts(val.url && val.url == obj.url)": "WildFire.Verdicts(val.url && val.url == obj.url)[]"
             },
+            is_multi_input=True,
+            is_aggregated_output=False
         )]
     
-    create_new_indicator_commands = [Command(name="createNewIndicator", args={"value": url}, command_type=CommandType.INTERNAL) for url in url_list]
-    enrich_indicator_commands = [Command(name="enrichIndicators", args={"indicatorsValues": url, "indicatorType": "URL"}, command_type=CommandType.EXTERNAL) for url in url_list]
+    create_new_indicator_commands = [
+        Command(name="createNewIndicator", args={"value": url,"type":"URL"},
+                command_type=CommandType.BUILTIN,
+                context_output_mapping=None,
+                ignore_using_brand=True)
+        for url in url_list
+    ]
+    enrich_indicator_commands = [
+        Command(name="enrichIndicators", args={"indicatorsValues": url},
+                command_type=CommandType.EXTERNAL,
+                )
+        for url in url_list
+    ]
     
     commands = [
         create_new_indicator_commands,

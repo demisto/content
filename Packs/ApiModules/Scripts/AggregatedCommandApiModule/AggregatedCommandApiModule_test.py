@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from CommonServerPython import DemistoException, entryTypes
+from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
 
 
@@ -11,7 +11,10 @@ class DummyModule(AggregatedCommand):
     def process_batch_results(self, execution_results):
         pass
 
-    def aggregated_command_main_loop(self):
+    def run(self):
+        pass
+
+    def validate_input(self) -> None:
         pass
 
 
@@ -28,13 +31,34 @@ def make_entry(indicators: list[ContextResult] = [], dbots: list[ContextResult] 
     """The expected entry result under the context from each command result."""
     return {
         "Indicator(val.Data && val.Data == obj.Data)": indicators,
-        "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": dbots,
+        # Use the canonical DBotScore context path
+        Common.DBotScore.CONTEXT_PATH: dbots,
     }
 
 
-def build_ioc(scores: dict) -> dict:
-    """The expected ioc result from TIM."""
-    return {"insightCache": {"scores": scores}}
+def build_ioc(
+    scores: dict,
+    *,
+    value: str = "indicator1",
+    score: int | None = None,
+    custom_fields: dict | None = None,
+) -> dict:
+    """
+    Build a TIM IOC shaped for process_tim_results/create_tim_indicator.
+    - scores: mapping of brand -> { "score": int, "context": {...} }
+    - value: indicator value
+    - score: overall TIM score (optional)
+    - custom_fields: lower-cased custom fields (optional)
+    """
+    out = {
+        "value": value,
+        "insightCache": {"scores": scores or {}},
+    }
+    if score is not None:
+        out["score"] = score
+    if custom_fields is not None:
+        out["CustomFields"] = custom_fields
+    return out
 
 
 def as_map(merged_list, value_key):
@@ -78,8 +102,7 @@ def module_factory():
             "external_enrichment": False,
             "additional_fields": False,
             "verbose": False,
-            "commands": [],
-            "validate_input_function": lambda args: None,
+            "commands": [[]],
         }
         factory_defaults.update(kwargs)
         return ReputationAggregatedCommand(**factory_defaults)
@@ -119,16 +142,16 @@ def module_factory():
         ),
     ],
 )
-def test_merge_nested_dicts_in_place(dict1, dict2, expected):
+def test_deep_merge_in_place(dict1, dict2, expected):
     """
     Given:
         - Two dictionaries to merge.
     When:
-        - Calling merge_nested_dicts_in_place.
+        - Calling deep_merge_in_place.
     Then:
         - The first dictionary is merged with the second dictionary.
     """
-    merge_nested_dicts_in_place(dict1, dict2)
+    deep_merge_in_place(dict1, dict2)
     assert dict1 == expected
 
 
@@ -186,7 +209,7 @@ def test_set_dict_value(initial, path, value, expected):
         ({"A": {"C": 3}}, "A..B", None, {"A": {"C": 3}}),
     ],
 )
-def test_get_and_remove_dict_value(initial, path, expected_value, expected_remaining):
+def test_pop_dict_value(initial, path, expected_value, expected_remaining):
     """
     Given:
         - A dictionary to modify.
@@ -344,18 +367,42 @@ def test_extract_cvss_rating(cvss_input, expected_rating):
 
 
 # -------------------------------------------------------------------------------------------------
-# -- Level 2: Core Class Units (Command)
+# -- Level 2: Core Class Units (Command + EntryResult)
 # -------------------------------------------------------------------------------------------------
 
-
+def test_entry_result_to_entry():
+    """
+    Given:
+        - An EntryResult instance.
+    When:
+        - Calling to_entry.
+    Then:
+        - Returns a dictionary with the expected structure.
+    """
+    entry_result = EntryResult(
+        command_name="test-command",
+        args={"arg1": "value1"},
+        brand="test-brand",
+        status=Status.SUCCESS,
+        message="test-message",
+    )
+    entry = entry_result.to_entry()
+    assert entry == {
+        "args": {"arg1": "value1"},
+        "brand": "test-brand",
+        "status": "Success",
+        "message": "test-message",
+    }
+    
 @pytest.mark.parametrize(
-    "brands_to_run,expected_result",
+    "brands_to_run, ignore_using_brand, expected_result",
     [
-        (["brand1", "brand2"], {"test-command": {"arg1": "value1", "using-brand": "brand1,brand2"}}),
-        ([], {"test-command": {"arg1": "value1"}}),
+        (["brand1", "brand2"], False, {"test-command": {"arg1": "value1", "using-brand": "brand1,brand2"}}),
+        ([], False, {"test-command": {"arg1": "value1"}}),
+        (["brand1", "brand2"], True, {"test-command": {"arg1": "value1"}}),
     ],
 )
-def test_to_batch_item_with_brands(brands_to_run, expected_result):
+def test_to_batch_item_with_brands(brands_to_run, ignore_using_brand, expected_result):
     """
     Given:
         - A Command instance with name and args.
@@ -366,49 +413,74 @@ def test_to_batch_item_with_brands(brands_to_run, expected_result):
         - Returns a dictionary with the command name as key and args as value.
         - The using-brand parameter is added only when brands are provided.
     """
-    cmd = Command(name="test-command", args={"arg1": "value1"})
+    cmd = Command(name="test-command", args={"arg1": "value1"}, ignore_using_brand=ignore_using_brand)
     batch_item = cmd.to_batch_item(brands_to_run)
 
     assert batch_item == expected_result
-
-
-def test_batch_executor_init_raises_on_empty_commands():
+    
+# -------------------------------------------------------------------------------------------------
+# -- Level 3: Core Class Units (BatchExecutor)
+# -------------------------------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "results, commands_list, expected_result",
+    [
+        (
+            # One Command return 3 results
+            [[{"Brand": "TIM","Type":1}, {"Brand": "brandA","Type":1}, {"Brand": "TIM","Type":1}]],
+            [Command(name="test-command", args={"arg1": "value1"})],
+            [[({"Brand": "TIM","Type":1}, "", ""), ({"Brand": "brandA","Type":1}, "", ""), ({"Brand": "TIM","Type":1}, "", "")]],
+        ),
+        (
+            # First and last Command dont return, middle command return 2 results
+            [[],[{"Type":1},{"Type":1}],[]],
+            [Command(name="test", args={"a": "a"}),Command(name="test", args={"a": "a"}),Command(name="test", args={"a": "a"})],
+            [[],[({"Type":1},"", ""),({"Type":1},"", "")],[]]
+        ),
+        (
+            # First command return 2 results one is debug, second Command return only debug
+            [[{"Type":16}, {"Type":1}],[{"Type":16}]],
+            [Command(name="test", args={"a": "a"}),Command(name="test", args={"a": "a"})],
+            [[({"Type":1},"","")],[]]
+        )
+        
+    ],
+)
+def test_batch_executer_process_results_various(results, commands_list, expected_result):
     """
     Given:
-        - An empty list of commands.
+        - A BatchExecutor instance.
     When:
-        - BatchExecutor is initialized.
+        - Calling process_results method with results and commands list.
     Then:
-        - A ValueError is raised.
+        - Returns a list of lists of tuples (result, hr_output, error_message).
     """
-    with pytest.raises(ValueError, match="initialized with no commands"):
-        BatchExecutor(commands=[])
+    batch_executor = BatchExecutor()
+    processed_results = batch_executor.process_results(results, commands_list)
+    assert processed_results == expected_result
+
 
 
 # -------------------------------------------------------------------------------------------------
 # -- Level 3: Core Class Units (ContextBuilder)
 # -------------------------------------------------------------------------------------------------
 
-
-def test_add_reputation_context():
+def test_add_tim_context():
     """
     Given:
         - A ContextBuilder instance.
     When:
-        - add_reputation_context is called with reputation and DBot score data.
+        - add_tim_context is called with TIM and DBot score data.
     Then:
-        - The internal state should be updated with the provided data and priority.
+        - The internal state should be updated with the provided data.
     """
     builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
-    rep_ctx = {"indicator1": {"brandA": [{"data": "value"}]}}
+    tim_ctx = {"indicator1": [{"Brand": "brandA", "data": "value"}]}
     dbot_list = [make_dbot("indicator1", "brandA", 2)]
 
-    builder.add_reputation_context(rep_ctx, dbot_list, priority=10)
+    builder.add_tim_context(tim_ctx, dbot_list)
 
-    assert len(builder.reputation_context) == 1
-    assert builder.reputation_context[0] == (10, rep_ctx)
-    assert len(builder.dbot_context) == 1
-    assert builder.dbot_context[0] == (10, dbot_list)
+    assert builder.tim_context == tim_ctx
+    assert builder.dbot_context == dbot_list
 
 
 def test_add_other_commands_results():
@@ -430,100 +502,19 @@ def test_add_other_commands_results():
 
 # --- Tests for the build() method and its helpers ---
 @pytest.mark.parametrize(
-    "batch_map, tim_map, expected_results",
-    [
-        # Case 1: Batch only
-        (
-            {"indicator1": {"brandA": [{"batch": "data"}]}},
-            {},
-            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"batch": "data"}]}],
-        ),
-        # Case 2: TIM only
-        (
-            {},
-            {"indicator1": {"brandA": [{"tim": "data"}]}},
-            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"tim": "data"}]}],
-        ),
-        # Case 3: Batch overrides TIM for the same brand, but keeps other TIM brands
-        (
-            {"indicator1": {"brandA": [{"batch": "data"}]}},
-            {"indicator1": {"brandA": [{"tim": "ignored"}], "brandB": [{"tim": "kept"}]}},
-            [{"Value": "indicator1", "MaxScore": 0, "MaxVerdict": "Unknown", "Results": [{"batch": "data"}, {"tim": "kept"}]}],
-        ),
-    ],
-)
-def test_build_merges_indicators_correctly(batch_map, tim_map, expected_results):
-    """
-    Given:
-        - Reputation context from TIM and a batch source with different priorities.
-    When:
-        - The build() method is called.
-    Then:
-        - The final context correctly merges indicator results, prioritizing batch data.
-    """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
-
-    builder.add_reputation_context(reputation_ctx=tim_map, dbot_scores=[], priority=10)
-    builder.add_reputation_context(reputation_ctx=batch_map, dbot_scores=[], priority=20)
-
-    final_context = builder.build()
-
-    assert final_context["Test.Path(val.Value && val.Value == obj.Value)"] == expected_results
-
-
-@pytest.mark.parametrize(
-    "batch_dbot, tim_dbot, expected_output",
-    [
-        # Batch overrides TIM
-        (
-            [make_dbot("a.com", "brand1", 3)],
-            [make_dbot("a.com", "brand1", 1), make_dbot("b.com", "brand2", 2)],
-            [make_dbot("a.com", "brand1", 3), make_dbot("b.com", "brand2", 2)],
-        ),
-        # No overlap
-        (
-            [make_dbot("a.com", "brand1", 3)],
-            [make_dbot("b.com", "brand2", 2)],
-            [make_dbot("a.com", "brand1", 3), make_dbot("b.com", "brand2", 2)],
-        ),
-    ],
-)
-def test_build_merges_dbot_scores_correctly(batch_dbot, tim_dbot, expected_output):
-    """
-    Given:
-        - DBotScore lists from TIM and a batch source with different priorities.
-    When:
-        - The build() method is called.
-    Then:
-        - The final DBotScore list is correctly merged and de-duplicated, with batch scores taking priority.
-    """
-    builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
-
-    builder.add_reputation_context(reputation_ctx={}, dbot_scores=tim_dbot, priority=10)
-    builder.add_reputation_context(reputation_ctx={}, dbot_scores=batch_dbot, priority=20)
-
-    final_context = builder.build()
-
-    def sort_key(item):
-        return item.get("Indicator"), item.get("Vendor")
-
-    assert sorted(final_context[Common.DBotScore.CONTEXT_PATH], key=sort_key) == sorted(expected_output, key=sort_key)
-
-
-@pytest.mark.parametrize(
     "results, expected_tim_score",
     [
         (
             [{"Score": 5, "Brand": "TIM"}, {"Score": 8, "Brand": "brandA"}, {"Score": 3, "Brand": "TIM"}],
-            5,  # The max score from results where Brand is "TIM"
+            5,  # max Score from entries where Brand == "TIM"
         ),
         (
             [{"Score": 8, "Brand": "brandA"}, {"Score": 9, "Brand": "brandB"}],
-            0,  # No TIM results, so should default to 0
+            0,  # no TIM entries -> TIMScore not set -> .get(..., 0) == 0
         ),
         (
             [],
-            0,  # Empty results, should default to 0
+            0,  # empty Results -> no TIMScore
         ),
     ],
 )
@@ -537,15 +528,21 @@ def test_build_calculates_tim_score_correctly(results, expected_tim_score):
         - The final indicator should have a TIMScore calculated only from results where the brand is "TIM".
     """
     indicator_with_score = Indicator(
-        type="test", value_field="ID", context_path_prefix="Test(", context_output_mapping={"Score": "Score"}
+        type="test",
+        value_field="ID",
+        context_path_prefix="Test(",
+        context_output_mapping={"Score": "Score"},
     )
+
     builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
-    batch_context = {"indicator1": {"brandX": results}}  # Brand doesn't matter, structure does
-    builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
+
+    tim_ctx = {"indicator1": results}
+
+    builder.add_tim_context(tim_ctx, dbot_scores=[])
 
     final_context = builder.build()
-
     final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
+
     assert final_indicator.get("TIMScore", 0) == expected_tim_score
 
 
@@ -567,20 +564,39 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
         - The final output is enriched with the correct MaxScore and MaxVerdict.
     """
     builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
-    batch_context = {"indicator1": {"brandA": results}}
-    builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
+
+    tim_ctx = {"indicator1": results}
+    builder.add_tim_context(tim_ctx, dbot_scores=[])
 
     final_context = builder.build()
-
     final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
+
     assert final_indicator["MaxScore"] == expected_max
     assert final_indicator["MaxVerdict"] == expected_verdict
 
+def test_build_without_tim_context_carries_dbot_and_other():
+    """
+    Given:
+        - No TIM context.
+        - Only DBot and Other results present.
+    When:
+        - build() is called.
+    Then:
+        - Final context contains DBot + Other but no TIM key.
+    """
+    builder = ContextBuilder(indicator=default_indicator, final_context_path="Final.Path")
+    builder.add_tim_context({}, dbot_scores=[make_dbot("ind1", "V", 1)])
+    builder.add_other_commands_results({"K1": {"v": 2}})
+
+    final_ctx = builder.build()
+    assert "Final.Path(val.Value && val.Value == obj.Value)" not in final_ctx
+    assert Common.DBotScore.CONTEXT_PATH in final_ctx
+    assert final_ctx["K1"]["v"] == 2
 
 def test_build_assembles_all_context_types():
     """
     Given:
-        - Data for reputation, DBot scores, and other commands.
+        - Data for TIM results, DBot scores, and other commands.
     When:
         - The build() method is called.
     Then:
@@ -589,8 +605,9 @@ def test_build_assembles_all_context_types():
     builder = ContextBuilder(indicator=default_indicator, final_context_path="Test.Path")
 
     # Add all types of context
-    builder.add_reputation_context(
-        reputation_ctx={"indicator1": {"brandA": [{"Score": 3}]}}, dbot_scores=[make_dbot("indicator1", "brandA", 3)], priority=10
+    builder.add_tim_context(
+        tim_ctx={"indicator1": [{"Score": 3, "Brand": "brandA"}]},
+        dbot_scores=[make_dbot("indicator1", "brandA", 3)],
     )
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
 
@@ -603,9 +620,6 @@ def test_build_assembles_all_context_types():
     assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "brandA"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
-
-
-import pytest
 
 
 @pytest.mark.parametrize(
@@ -652,8 +666,8 @@ def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expecte
     indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
     builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
 
-    batch_context = {"CVE-TEST": {"brandA": results}}
-    builder.add_reputation_context(reputation_ctx=batch_context, dbot_scores=[], priority=20)
+    tim_ctx = {"CVE-TEST": results}
+    builder.add_tim_context(tim_ctx, dbot_scores=[])
 
     final_context = builder.build()
     final_indicator = final_context["FinalEnrichment(val.Value && val.Value == obj.Value)"][0]
@@ -661,11 +675,45 @@ def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expecte
     assert final_indicator["MaxCVSS"] == expected_max_cvss
     assert final_indicator["MaxSeverity"] == expected_max_severity
 
+def test_builder_create_indicator():
+    """
+    Given:
+        - Indicator results with various CVSS formats (numeric, textual, dict, invalid).
+    When:
+        - The builder processes enrichment.
+    Then:
+        - MaxCVSS should reflect the highest numeric score (or None if absent).
+        - MaxSeverity should reflect the highest severity rating (or None if none valid).
+    """
+    indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping={"CVSS": "CVSS"})
+    builder = ContextBuilder(indicator=indicator, final_context_path="FinalEnrichment")
+
+    tim_ctx = {"CVE-TEST": [{"CVSS": 7.5}, {"CVSS": "High"}, {"CVSS": {"Score": 9.8}}, {"CVSS": "N/A"}]}
+    builder.add_tim_context(tim_ctx, dbot_scores=[])
+
+    final_context = builder.build()
+    final_indicator = final_context["FinalEnrichment(val.Value && val.Value == obj.Value)"][0]
+
+    assert final_indicator["MaxCVSS"] == 9.8
+    assert final_indicator["MaxSeverity"] == "Critical"
 
 # -------------------------------------------------------------------------------------------------
-# -- Level 4: Base Module Logic (AggregatedCommandAPIModule)
+# -- Level 4: Core Class Units (BrandManager)
 # -------------------------------------------------------------------------------------------------
 
+def test_brand_manager_to_run_empty_means_all(mocker):
+    """
+    Given:
+        - Active brands present.
+        - No brands requested.
+    When:
+        - brand_manager.to_run is accessed.
+    Then:
+        - Returns [] to signal “all brands”.
+    """
+    stub_modules(mocker, [{"brand": "A", "state": "active"}, {"brand": "B", "state": "active"}])
+    module = DummyModule(args={}, brands=[], verbose=False, commands=[])
+    assert module.brand_manager.to_run == []
 
 def test_enabled_brands_filters_only_active_brands(mocker):
     """
@@ -682,10 +730,11 @@ def test_enabled_brands_filters_only_active_brands(mocker):
             {"brand": "A", "state": "active"},
             {"brand": "B", "state": "inactive"},
             {"brand": "C", "state": "active"},
+            {"brand": "D", "state": "unknown"},
         ],
     )
     module = DummyModule(args={}, brands=[], verbose=False, commands=[])
-    result = module.enabled_brands
+    result = module.brand_manager.enabled
     assert set(result) == {"A", "C"}
 
 
@@ -721,21 +770,21 @@ def test_enabled_brands_filters_only_active_brands(mocker):
 def test_brands_to_run_various(mocker, modules, input_brands, expected, exception):
     """
     Given:
-        - demisto.getModules returns various active brands.
+        - Some active brand.
         - A set of user-provided brands.
     When:
         - Accessing brands_to_run.
     Then:
-        - Returns the expected list or raises the expected exception.
+        - Returns the expected list or raises the expected exception based on the intersection between both.
     """
     stub_modules(mocker, modules)
     module = DummyModule(args={}, brands=input_brands, verbose=False, commands=[])
 
     if exception:
         with pytest.raises(exception):
-            _ = module.brands_to_run
+            _ = module.brand_manager.to_run
     else:
-        result = module.brands_to_run
+        result = module.brand_manager.to_run
         assert set(result) == set(expected)
 
 
@@ -771,18 +820,17 @@ def test_missing_brands_various(mocker, modules, input_brands, expected_missing)
     """
     stub_modules(mocker, modules)
     module = DummyModule(args={}, brands=input_brands, verbose=False, commands=[])
-    result = module.missing_brands
+    result = module.brand_manager.missing
     # order is not guaranteed, so compare as sets
     assert set(result) == set(expected_missing)
 
 
 # -------------------------------------------------------------------------------------------------
-# -- Level 5: ReputationAggregatedCommand Logic (Bottom-Up)
+# -- Level 5: AggregatedCommand
 # -------------------------------------------------------------------------------------------------
 
-
 @pytest.mark.parametrize(
-    "enabled_brands, brands, commands_info, expected_external_missing",
+    "enabled_brands, brands, commands_info, expected_unsupported_enrichment_brands",
     [
         # no brands → empty result
         ([], [], [], []),
@@ -795,131 +843,140 @@ def test_missing_brands_various(mocker, modules, input_brands, expected_missing)
         ),
     ],
 )
-def test_external_missing_brands_various(module_factory, enabled_brands, brands, commands_info, expected_external_missing):
+def test_unsupported_enrichment_brands_various(module_factory, enabled_brands, brands, commands_info, expected_unsupported_enrichment_brands):
     """
     Given:
         - enabled_brands is mocked directly on the module.
         - module.brands and module.commands are overridden.
     When:
-        - Accessing external_missing_brands.
+        - Accessing unsupported_enrichment_brands.
     Then:
         - Returns the expected list of external missing brands.
     """
     # instantiate with defaults
     module = module_factory(brands=brands)
-    module.enabled_brands = enabled_brands  # directly inject the enabled_brands list
+    module.brand_manager.enabled = enabled_brands  # directly inject the enabled_brands list
 
     # override inputs
-    module.commands = [
-        Command(name=f"cmd{i}", args={}, brand=brand, command_type=ctype) for i, (brand, ctype) in enumerate(commands_info)
-    ]
+    module.commands = [[
+        Command(name=f"cmd{i}", args={}, brand=brand, command_type=ctype)
+        for i, (brand, ctype) in enumerate(commands_info)
+    ]]
 
-    result = module.external_missing_brands
-    assert set(result) == set(expected_external_missing)
+    result = module.unsupported_enrichment_brands
+    assert set(result) == set(expected_unsupported_enrichment_brands)
 
+# -------------------------------------------------------------------------------------------------
+# -- Level 6: ReputationAggregatedCommand
+# -------------------------------------------------------------------------------------------------
 
+# --- Validation Tests ---
+@pytest.mark.parametrize(
+    "data, indicator_type, extracted",
+    [
+        # Exact match
+        (["https://a.com"], "URL", {"URL": ["https://a.com"]}),
+        # Case-insensitive type
+        (["https://a.com"], "url", {"URL": ["https://a.com"]}),
+        # Duplicates in input are OK (compare as sets)
+        (["https://a.com", "https://b.com", "https://b.com"], "URL", {"URL": ["https://a.com", "https://b.com"]}),
+        # Irrelevant types can be present; we only compare the requested type
+        (["https://a.com"], "URL", {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}),
+    ],
+)
+def test_validate_input_success(module_factory, mocker, data, indicator_type, extracted):
+    """
+    Given:
+        - Different data and result from extract_indicators.
+    When:
+        - Calling `validate_input`.
+    Then:
+        - Should not raise.
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}])
+    inst = module_factory(
+        data=data,
+        indicator=Indicator(type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}),
+    )
+
+    # Should not raise
+    inst.validate_input()
+
+@pytest.mark.parametrize(
+    "data, indicator_type, extracted, missing",
+    [
+        # Partial extraction: one of the inputs wasn't extracted
+        (["https://a.com", "https://b.com"], "URL", {"URL": ["https://a.com"]}, {"https://b.com"}),
+        # No key for the requested type at all
+        (["https://a.com"], "URL", {"Domain": ["a.com"]}, {"https://a.com"}),
+        # Extracted different type entirely
+        (["https://a.com"], "url", {"IP": ["1.2.3.4"]}, {"https://a.com"}),
+        # Empty extracted set
+        (["https://a.com", "https://b.com"], "URL", {}, {"https://a.com", "https://b.com"}),
+    ],
+)
+def test_validate_input_raises_on_mismatch(module_factory, mocker, data, indicator_type, extracted, missing):
+    """
+    Given:
+        - Different data and result from extract_indicators.
+    When:
+        - Calling `validate_input`.
+    Then:
+        - Should raise ValueError.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command", return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}]
+    )
+    inst = module_factory(
+        data=data,
+        indicator=Indicator(type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={})
+    )
+
+    with pytest.raises(ValueError) as excinfo:
+        inst.validate_input()
+
+    msg = str(excinfo.value)
+    # Error mentions each missing item and the type
+    for item in missing:
+        assert item in msg
+    assert indicator_type.lower() in msg.lower()
+
+# --- Prepare Commands Tests ---
 @pytest.mark.parametrize(
     "requested_brands, external_enrichment, expected_names",
     [
-        ([], False, ["intA", "intB"]),  # no brands, no external → INTERNAL only
-        ([], True, ["intA", "intB", "url"]),  # no brands, external → INTERNAL + EXTERNAL
-        (["A"], False, ["intA", "url"]),  # brand A, no external → INTERNAL(A)
-        (["B"], True, ["intB", "url"]),  # brand B, no external → INTERNAL(B)
-        (["X"], False, ["url"]),  # brand not matching INTERNAL → EXTERNAL only
-        (["A", "B"], False, ["intA", "intB", "url"]),  # both INTERNAL brands
+        ([], False, {"intA", "intB"}),  # no brands, no external → INTERNAL only
+        ([], True, {"intA", "intB", "enrichIndicators"}),  # no brands, external → INTERNAL + EXTERNAL
+        (["A"], False, {"intA", "enrichIndicators"}),  # brand A, no external → INTERNAL(A)
+        (["B"], True, {"intB", "enrichIndicators"}),  # brand B, no external → INTERNAL(B)
+        (["X"], False, {"enrichIndicators"}),  # brand not matching INTERNAL → EXTERNAL only
+        (["A", "B"], False, {"intA", "intB", "enrichIndicators"}),  # both INTERNAL brands
     ],
 )
 def test_prepare_commands_various(module_factory, requested_brands, external_enrichment, expected_names):
     """
     Given:
-        - A ReputationAggregatedCommand instance.
-        - A set of requested brands.
         - A boolean flag indicating whether external enrichment is enabled.
+        - Different commands for different brands.
     When:
         - Calling `prepare_commands`.
     Then:
         - If no brands are requested all internal commands are returned.
         - If no brands and external_enrichment=true all commands return.
-        - If brands are requested, only the requested internal commands are returned + reputation commands.
+        - If brands are requested, only the requested internal commands are returned + external commands (e.g., enrichIndicators).
     """
     indicator = Indicator(type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping={})
     cmd_intA = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
     cmd_intB = Command(name="intB", args={}, brand="B", command_type=CommandType.INTERNAL)
-    cmd_ext = ReputationCommand(indicator=indicator, data="example.com")  # name == "url"
+    cmd_ext = Command(name="enrichIndicators", args={"indicatorsValues": "example.com"}, command_type=CommandType.EXTERNAL)
+    
     all_commands = [cmd_intA, cmd_intB, cmd_ext]
-
-    module = module_factory(brands=requested_brands, indicator=indicator, commands=all_commands)
-
-    result = module.prepare_commands(external_enrichment=external_enrichment)
-    assert {c.name for c in result} == set(expected_names)
-
-
-# -- Context Mapping --
-@pytest.mark.parametrize(
-    "mapping, entry, expected",
-    [
-        # Empty entry
-        ({"a..b": "x..y"}, {}, {}),
-        # empty mapping
-        ({}, {"a": {"b": 10}}, {"a": {"b": 10}}),
-        # simple nested mapping
-        ({"a..b": "x..y"}, {"a": {"b": 10}}, {"x": {"y": 10}}),
-        # mapping to list via '[]'
-        ({"a..b": "x..y[]"}, {"a": {"b": 5}}, {"x": {"y": [5]}}),
-        # multiple mappings
-        ({"a..b": "out..b", "c": "out..c"}, {"a": {"b": 1}, "c": 2}, {"out": {"b": 1, "c": 2}}),
-    ],
-)
-def test_map_command_context_basic(module_factory, mapping, entry, expected):
-    """
-    Given:
-        - Various mappings and entry contexts.
-    When:
-        - Calling map_command_context.
-    Then:
-        - Returns a dict matching the expected mapped_context.
-    """
-    module = module_factory()
-    # Copy entry so the original in test is not mutated
-    entry_copy = {k: (v.copy() if isinstance(v, dict) else v) for k, v in entry.items()}
-    result = module.map_command_context(entry_copy, mapping, is_indicator=False)
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    "mapping, entry, is_indicator, additional_fields, expected",
-    [
-        # is_indicator False even if additional_fields True → no AdditionalFields
-        ({"x": "y"}, {"x": 1, "z": 2}, False, True, {"y": 1}),
-        # is_indicator True even if additional_fields False → no AdditionalFields
-        ({"x": "y"}, {"x": 1, "z": 2}, True, False, {"y": 1}),
-        # is_indicator True and additional_fields True → AdditionalFields full
-        ({"x": "y"}, {"x": 1, "z": 2}, True, True, {"y": 1, "AdditionalFields": {"z": 2}}),
-        # mapping consumes all keys → AdditionalFields empty dict
-        ({"m": "n"}, {"m": 5}, True, True, {"n": 5, "AdditionalFields": {}}),
-    ],
-)
-def test_map_command_context_indicator_flag(module_factory, mapping, entry, is_indicator, additional_fields, expected):
-    """
-    Given:
-        - Mapping and entry that may or may not leave leftovers.
-        - Flags is_indicator and additional_fields combinations.
-    When:
-        - Calling map_command_context.
-    Then:
-        - AdditionalFields only appears when both flags are True.
-    """
-    module = module_factory(additional_fields=additional_fields)
-    entry_copy = {k: (v.copy() if isinstance(v, dict) else v) for k, v in entry.items()}
-    result = module.map_command_context(entry_copy, mapping, is_indicator=is_indicator)
-
-    for k, v in expected.items():
-        assert result.get(k) == v
-
-    if not (is_indicator and additional_fields):
-        assert "AdditionalFields" not in result
-    else:
-        assert "AdditionalFields" in result
+    module = module_factory(brands=requested_brands, indicator=indicator, commands=[all_commands])
+    
+    batches = module.prepare_commands_batches(external_enrichment=external_enrichment)
+    flattened = [c for batch in batches for c in batch]
+    
+    assert {c.name for c in flattened} == expected_names
 
 
 # -- Result Parsing --
@@ -948,78 +1005,282 @@ def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores)
     assert len(dbots) == len(expected_scores)
     assert [item["Score"] for item in dbots] == expected_scores
 
-
-@pytest.mark.parametrize("verbose, include_hr", [(True, True), (True, False), (False, True), (False, False)])
-def test_parse_result_with_error(module_factory, mocker, verbose, include_hr):
-    """
-    Given:
-        - A command result with an error.
-        - Verbose is True or False.
-        - HumanReadable exists or not.
-    When:
-        - Calling parse_result.
-    Then:
-        - Returns an entry result with status "Failure".
-        - Returns an entry result with message "Error Message".
-    """
-    mod = module_factory(verbose=verbose)
-
-    cmd = ReputationCommand(indicator=default_indicator, data="example.com")
-    result = {"HumanReadable": "hr_text"} if include_hr else {}
-
-    mocker.patch("AggregatedCommandApiModule.is_error", return_value=True)
-    mocker.patch("AggregatedCommandApiModule.get_error", return_value="Error Message")
-    mocker.patch.object(mod, "parse_indicator", return_value=({"indicator": "indicator"}, []))
-
-    _, _, hr, entry = mod.parse_result(result, cmd, "BrandX")
-
-    assert entry.command_name == cmd.name
-    assert entry.brand == "BrandX"
-    assert entry.status == Status.FAILURE
-    assert entry.args == "example.com"
-    assert entry.message == "Error Message"
-
-    if verbose:
-        assert "Error Message" in hr
-        if include_hr:
-            assert "hr" in hr
-        else:
-            assert "hr" not in hr
-    else:
-        assert hr == ""
-
-
 @pytest.mark.parametrize(
-    "is_error, command_context, expected_status, expected_message",
+    "result_tuple, mock_mapped_context_return, expected_entry_status, expected_entry_msg, expected_dbots",
     [
-        (True, {}, Status.FAILURE, "Error Message"),  # error
-        (False, {}, Status.SUCCESS, "No matching indicators found."),  # no matching indicator
-        (False, {"indicator": "indicator"}, Status.SUCCESS, ""),
+        (   # Success
+            (
+                {"EntryContext": {"DBotScore": [make_dbot("a.com", "VendorA", 2)], "URL": {"Data": "a.com"}}},
+                "Human Readable for success",
+                "",
+            ),
+            {"URL": "a.com"},
+            Status.SUCCESS,
+            "",
+            [make_dbot("a.com", "VendorA", 2)],
+        ),
+        (   # Success without context
+            ({}, "", ""),
+            {},
+            Status.SUCCESS,
+            "No matching indicators found.",
+            [],
+        ),
+        (   # Failure with partial context
+            (
+                {"EntryContext": {"DBotScore": [make_dbot("b.com", "VendorB", 3)]}},
+                "Human Readable for error",
+                "Command failed",
+            ),
+            {"Partial": "Data"},
+            Status.FAILURE,
+            "Command failed",
+            [make_dbot("b.com", "VendorB", 3)],
+        ),
+        (   # Failure without context
+            ({}, "", "error"),
+            {},
+            Status.FAILURE,
+            "error",
+            [],
+        ),
     ],
-)  # success
-def test_parse_result_no_matching_indicator(module_factory, mocker, is_error, command_context, expected_status, expected_message):
+)
+def test_process_single_command_result(
+    mocker,
+    module_factory,
+    result_tuple,
+    mock_mapped_context_return,
+    expected_entry_status,
+    expected_entry_msg,
+    expected_dbots,
+):
     """
     Given:
-        - Result error or no matching indicator.
+        - A result tuple (raw_result, hr_output, error) and a Command object.
     When:
-        - Calling parse_result.
+        - Calling _process_single_command_result.
     Then:
-        - If is error status is fail and appropriate message.
-        - If not error and no matching indicator status is success and appropriate message.
+        - Ensure the returned tuple of (entry, mapped_context, dbot_scores, verbose_output) is correct.
+        - The EntryResult status and message should reflect the error state and presence of context.
+        - The mapped_context and dbot_scores should be correctly extracted from the raw result.
+        - The verbose_output should depend on the 'verbose' instance flag.
     """
-    mod = module_factory()
-    cmd = ReputationCommand(indicator=default_indicator, data="example.com")
-    mocker.patch("AggregatedCommandApiModule.is_error", return_value=is_error)
-    mocker.patch("AggregatedCommandApiModule.get_error", return_value="Error Message")
-    mocker.patch.object(mod, "parse_indicator", return_value=(command_context, []))
+    module = module_factory()
+    mocker.patch.object(module, "map_command_context", return_value=mock_mapped_context_return)
+    raw_result, _, _ = result_tuple
 
-    _, _, _, entry = mod.parse_result({"EntryContext": command_context}, cmd, "BrandX")
+    command_obj = Command(name="test-cmd", brand="TestBrand", args={})
+    entry, mapped_ctx, dbots, verbose_out = module._process_single_command_result(result_tuple, command_obj)
 
-    assert entry.status == expected_status
-    assert entry.message == expected_message
+    # Assert
+    # --- Assert EntryResult ---
+    assert isinstance(entry, EntryResult)
+    assert entry.status == expected_entry_status
+    assert entry.message == expected_entry_msg
+    assert entry.command_name == command_obj.name
+    assert entry.brand == command_obj.brand
 
+    # --- Assert Other Return Values ---
+    if raw_result.get("EntryContext"):
+        assert mapped_ctx == mock_mapped_context_return
+    else:
+        assert mapped_ctx == {}
+
+    assert dbots == expected_dbots
 
 # -- TIM Logic --
+@pytest.mark.parametrize(
+    "iocs,status,message",
+    [
+        (None,                 Status.FAILURE, "boom"),
+        ([],                Status.SUCCESS, "no results"),
+        ([],                Status.FAILURE, "empty failure"),
+        ([{"value":"x"}],   Status.FAILURE, "failed despite hits"),
+    ],
+)
+def test_get_indicators_from_tim_early_return(module_factory, mocker, iocs, status, message):
+    """
+    Given:
+        - Different IOCs and status from search_indicators_in_tim.
+    When:
+        - Calling get_indicators_from_tim.
+    Then:
+        - Should not process on FAILURE or empty IOCs.
+    """
+    mod = module_factory(indicator=default_indicator)
+    mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, status, message))
+    proc = mocker.patch.object(mod, "process_tim_results")
+
+    ctx, dbots, entries = mod.get_indicators_from_tim()
+
+    # Shouldn't process on FAILURE or empty IOCs
+    proc.assert_not_called()
+    assert ctx == {}
+    assert dbots == []
+    assert isinstance(entries, list)
+    assert len(entries) == 1
+
+    entry = entries[0]
+    assert entry.command_name == "search-indicators-in-tim"
+    assert entry.args == ",".join(mod.data)  # preserves order & comma-join
+    assert entry.brand == "TIM"
+    # Status on the entry mirrors the status returned by search_indicators_in_tim
+    assert entry.status == status
+    assert entry.message == message
+
+def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
+    """
+    Given:
+        - IndicatorsSearcher returns IOCs and Status.SUCCESS.
+    When:
+        - Calling get_indicators_from_tim.
+    Then:
+        - Returns IOCs and Status.SUCCESS.
+    """
+    iocs = [{"value": "https://a.com"}]
+
+    mod = module_factory(indicator=default_indicator)
+
+    mocker.patch.object(mod, "search_indicators_in_tim",
+                        return_value=(iocs, Status.SUCCESS, "ok"))
+
+    expected_ctx = {"TIM": {"some": "context"}}
+    expected_dbots = [{"Indicator": "https://a.com", "Vendor": "TIM", "Score": 1}]
+    expected_entries = [object()]  # sentinel list we can identity-check
+
+    proc = mocker.patch.object(
+        mod, "process_tim_results",
+        return_value=(expected_ctx, expected_dbots, expected_entries),
+    )
+
+    ctx, dbots, entries = mod.get_indicators_from_tim()
+
+    proc.assert_called_once_with(iocs)
+    assert ctx == expected_ctx
+    assert dbots == expected_dbots
+    # Ensure exact passthrough of the entries list
+    assert entries is expected_entries
+
+@pytest.mark.parametrize(
+    "ioc_input, mock_tim_indicator_return, mock_parse_indicator_side_effect, expected_indicators, expected_dbots, expected_entry_msg",
+    [
+        (
+            build_ioc(
+                value="ioc.example.com",
+                score=2,
+                scores={
+                    "BrandA": {"score": 2, "context": {"data": "A"}},
+                    "BrandB": {"score": 3, "context": {"data": "B"}},
+                },
+            ),
+            {"Value": "ioc.example.com", "Brand": "TIM", "Score": 2},
+            {
+                "BrandA": ([{"Value": "from_brand_a"}], [make_dbot("ioc.example.com", "BrandA", 2)]),
+                "BrandB": ([{"Value": "from_brand_b"}], [make_dbot("ioc.example.com", "BrandB", 3)]),
+            },
+            [
+                {"Value": "ioc.example.com", "Brand": "TIM", "Score": 2},
+                {"Value": "from_brand_a"},
+                {"Value": "from_brand_b"},
+            ],
+            [make_dbot("ioc.example.com", "BrandA", 2), make_dbot("ioc.example.com", "BrandB", 3)],
+            "Found indicator from brands: BrandA, BrandB.",
+        ),
+        (
+            build_ioc(value="1.1.1.1", score=1, scores={}),
+            {"Value": "1.1.1.1", "Brand": "TIM", "Score": 1},
+            {},
+            [{"Value": "1.1.1.1", "Brand": "TIM", "Score": 1}],
+            [],
+            "No matching indicators found.",
+        ),
+        (
+            build_ioc(value="evil.com", scores={"BrandC": {"score": 3, "context": {}}}),
+            None,  # create_tim_indicator returns nothing
+            {"BrandC": ([{"Value": "from_brand_c"}], [])},
+            [{"Value": "from_brand_c"}],
+            [],
+            "Found indicator from brands: BrandC.",
+        ),
+        (
+            build_ioc(value="nothing.here", scores={}),
+            None,
+            {},
+            [],
+            [],
+            "No matching indicators found.",
+        ),
+    ],
+)
+def test_process_single_tim_ioc(
+    mocker,
+    module_factory,
+    ioc_input,
+    mock_tim_indicator_return,
+    mock_parse_indicator_side_effect,
+    expected_indicators,
+    expected_dbots,
+    expected_entry_msg,
+):
+    """
+    Given:
+        - An IOC dictionary representing a result from a TIM search.
+    When:
+        - Calling _process_single_tim_ioc with the IOC.
+    Then:
+        - Ensure the returned tuple of (parsed_indicators, dbot_scores, entry_result) is correct.
+        - The indicators list should include results from both the main TIM object and brand-specific contexts.
+        - The DBot score list should aggregate scores from all brands.
+        - The EntryResult message should reflect which brands were processed.
+    """
+    # Arrange
+    module = module_factory()
+    mocker.patch.object(module, "create_tim_indicator", return_value=mock_tim_indicator_return)
+
+    def side_effect(context, brand, score):
+        return mock_parse_indicator_side_effect.get(brand, ([], []))
+
+    mocker.patch.object(module, "parse_indicator", side_effect=side_effect)
+
+    indicators, dbots, entry = module._process_single_tim_ioc(ioc_input)
+
+    assert indicators == expected_indicators
+    assert dbots == expected_dbots
+
+    assert isinstance(entry, EntryResult)
+    assert entry.command_name == "search-indicators-in-tim"
+    assert entry.brand == "TIM"
+    assert entry.status == Status.SUCCESS
+    assert entry.args == ioc_input.get("value")
+    assert entry.message == expected_entry_msg
+
+
+def test_create_tim_indicator_extracting_custom_fields_case_insensitive(module_factory):
+    """
+    Given:
+        - Indicator mapping contains 'CVSS' (upper).
+        - TIM IOC CustomFields are lower-case ('cvss').
+    When:
+        - create_tim_indicator is used.
+    Then:
+        - The 'CVSS' field appears in the output with the original structure.
+    """
+    indicator = Indicator(
+        type="cve",
+        value_field="Value",
+        context_path_prefix="CVE(",
+        context_output_mapping={"CVSS": "CVSS"},
+    )
+    mod = module_factory(indicator=indicator)
+
+    ioc = build_ioc(scores={}, value="CVE-1", custom_fields={"cvss": {"Score": 7.1}})
+    out = mod.create_tim_indicator(ioc)
+
+    assert out["CVSS"] == {"Score": 7.1}
+    assert out["Value"] == "CVE-1"
+    assert out["Brand"] == "TIM"
+    
 def test_search_indicators_in_tim_exception_path(module_factory, mocker):
     """
     Given:
@@ -1027,18 +1288,18 @@ def test_search_indicators_in_tim_exception_path(module_factory, mocker):
     When:
         - Calling search_indicators_in_tim.
     Then:
-        - Returns an empty list of IOCs and an entry result with status "Failure" and the exception message.
+        - Returns empty IOCs and Status.FAILURE with the exception message.
     """
     mod = module_factory()
     mod.data = ["example.com"]
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", side_effect=Exception("Error"))
     mocker.patch("AggregatedCommandApiModule.traceback", autospec=True)
 
-    iocs, entry = mod.search_indicators_in_tim()
+    iocs, status, msg = mod.search_indicators_in_tim()
 
     assert iocs == []
-    assert entry.status == Status.FAILURE
-    assert entry.message == "Error"
+    assert status == Status.FAILURE
+    assert "Error" in msg
 
 
 @pytest.mark.parametrize(
@@ -1059,13 +1320,13 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, search_p
         - Calling search_indicators_in_tim.
     Then:
         - Construct the query and call IndicatorsSearcher.
-        - Return the IOCs and an entry result with status "Success" and the expected message.
+        - Return the IOCs and Status.SUCCESS with the expected message.
     """
     mod = module_factory(data=data)
 
     ind_mock = mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=search_pages)
 
-    _, entry = mod.search_indicators_in_tim()
+    iocs, status, msg = mod.search_indicators_in_tim()
 
     # Called with the right size and query containing type + each value
     assert ind_mock.call_count == 1
@@ -1073,119 +1334,15 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, search_p
     assert kwargs["size"] == len(data)
     q = kwargs["query"]
     assert "type:indicator" in q
-    assert "value: a.com" in q
-    assert "value: b.com" in q
+    assert "value:a.com" in q
+    assert "value:b.com" in q
     # Flattening behavior and entry fields
-    assert entry.command_name == "search-indicators-in-tim"
-    assert entry.brand == "TIM"
-    assert entry.status == Status.SUCCESS
-    assert entry.message == expected_msg
+    assert status == Status.SUCCESS
+    assert msg == expected_msg
 
 
-@pytest.mark.parametrize(
-    "iocs_input, side_effect_returns, expected_ctx, expected_dbots",
-    [
-        # One IOC, two brands → two calls, merged under the same indicator key
-        (
-            [build_ioc({"BrandA": {"score": 1, "context": {"ctx": "A"}}, "BrandB": {"score": 3, "context": {"ctx": "B"}}})],
-            [({"ind1": {"BrandA": [{"k": "A"}]}}, [{"Score": 7}]), ({"ind1": {"BrandB": [{"k": "B"}]}}, [{"Score": 8}])],
-            {"ind1": {"BrandA": [{"k": "A"}], "BrandB": [{"k": "B"}]}},
-            [{"Score": 7}, {"Score": 8}],
-        ),
-        # Two IOCs, same brand/key → lists should extend/append
-        (
-            [build_ioc({"BrandX": {"score": 2, "context": {"a": 1}}}), build_ioc({"BrandX": {"score": 4, "context": {"a": 2}}})],
-            [({"indX": {"BrandX": [{"a": 1}]}}, [{"Score": 2}]), ({"indX": {"BrandX": [{"a": 2}]}}, [{"Score": 4}])],
-            {"indX": {"BrandX": [{"a": 1}, {"a": 2}]}},
-            [{"Score": 2}, {"Score": 4}],
-        ),
-        # IOC missing scores → nothing parsed
-        (
-            [{"insightCache": {}}],  # no 'scores' key
-            [],
-            {},
-            [],
-        ),
-        # No IOCs → returns empty ctx/dbots and still returns the single EntryResult from search
-        (
-            [],
-            [],
-            {},
-            [],
-        ),
-    ],
-)
-def test_process_tim_results_merging_and_calls(
-    module_factory, mocker, iocs_input, side_effect_returns, expected_ctx, expected_dbots
-):
-    """
-    Given:
-        - A list of IOCs with scores and contexts.
-        - Expected Context structure as above.
-    When:
-        - Calling process_tim_results.
-    Then:
-        - Returns the merged context and accumulated DBotScores.
-        - parse_indicator is called with the right arguments.
-    """
-    mod = module_factory()
-    mocker.patch.object(demisto, "debug", autospec=True)
-    mocker.patch.object(mod, "parse_indicator", side_effect=side_effect_returns)
 
-    ctx, dbots = mod.process_tim_results(iocs_input)
-
-    assert ctx == expected_ctx
-    assert dbots == expected_dbots
-
-
-@pytest.mark.parametrize(
-    "iocs, proc_return, expected_ctx, expected_dbots",
-    [
-        # No IOCs → returns empty ctx/dbots and still returns the single EntryResult from search
-        ([], ({"IGNORED": 1}, [{"Score": 9}]), {}, []),
-        # IOCs found → returns whatever process_tim_results returns
-        ([{"id": 1}, {"id": 2}], ({"ctx": {"k": "v"}}, [{"Score": 2}]), {"ctx": {"k": "v"}}, [{"Score": 2}]),
-    ],
-)
-def test_get_indicators_from_tim_various(module_factory, mocker, iocs, proc_return, expected_ctx, expected_dbots):
-    """
-    Given:
-        - search_indicators_in_tim returns either no IOCs or some IOCs plus an EntryResult.
-    When:
-        - Calling get_indicators_from_tim.
-    Then:
-        - With no IOCs -> {}, [], [entry]
-        - With IOCs    -> process_tim_results is called and its return is passed through.
-        - Always returns a single-entry list with the same EntryResult (fields compared).
-    """
-    mod = module_factory()
-
-    search_entry = EntryResult(
-        command_name="search-indicators-in-tim",
-        args={"query": "type:indicator and (value: x)"},
-        brand="TIM",
-        status=Status.SUCCESS,
-        message="",
-    )
-
-    # Patch instance methods called by get_indicators_from_tim
-    mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, search_entry))
-    mocker.patch.object(mod, "process_tim_results", return_value=proc_return)
-
-    ctx, dbots, entries = mod.get_indicators_from_tim()
-    assert ctx == expected_ctx
-    assert dbots == expected_dbots
-
-    assert isinstance(entries, list)
-    assert len(entries) == 1
-    entry = entries[0]
-    assert entry.command_name == search_entry.command_name
-    assert entry.brand == search_entry.brand
-    assert entry.status == search_entry.status
-    assert entry.message == search_entry.message
-    assert entry.args == search_entry.args
-
-
+# --- Summarize Command Results Tests ---
 @pytest.mark.parametrize(
     "entries, expect_error",
     [
@@ -1203,14 +1360,6 @@ def test_get_indicators_from_tim_various(module_factory, mocker, iocs, proc_retu
         ([make_entry_result("c1", "A", Status.SUCCESS, ""), make_entry_result("c2", "B", Status.FAILURE, "Error")], False),
         # single real success -> success
         ([make_entry_result("c1", "A", Status.SUCCESS, "")], False),
-        # Mix of failure and no matching indicators -> error
-        (
-            [
-                make_entry_result("c1", "A", Status.FAILURE, "Error"),
-                make_entry_result("c2", "B", Status.SUCCESS, "No matching indicators found."),
-            ],
-            True,
-        ),
         # Only no matching indicators -> success
         (
             [
@@ -1239,7 +1388,38 @@ def test_summarize_command_results_error_condition(module_factory, mocker, entri
 
     assert (res.entry_type == entryTypes["error"]) == expect_error
 
+def test_summarize_command_results_appends_unsupported_enrichment_row(module_factory, mocker):
+    """
+    Given:
+        - Unsupported enrichment brands exist ('X','Y').
+    When:
+        - summarize_command_results is called.
+    Then:
+        - The HR table includes a row for the unsupported brands.
+    """
+    mod = module_factory(brands=["X", "Y"])
+    # Make the property return our list
+    mod.brand_manager.unsupported_external = lambda _commands: ["X", "Y"]
 
+    # Avoid raising inside summarize
+    mocker.patch.object(mod, "raise_non_enabled_brands_error")
+    tbl = mocker.patch("AggregatedCommandApiModule.tableToMarkdown", return_value="TBL")
+
+    entries = [make_entry_result("c1", "A", Status.SUCCESS, "")]
+    res = mod.summarize_command_results(entries, verbose_outputs=[], final_context={"ctx": 1})
+    assert res.readable_output == "TBL"
+
+    # Inspect the table rows passed to tableToMarkdown
+    args, kwargs = tbl.call_args
+    table_rows = kwargs.get("t", args[1] if len(args) > 1 else None)
+    assert any(
+        row.get("brand") == "X,Y"
+        and row.get("status") == Status.FAILURE.value
+        and "Unsupported Command" in (row.get("message") or "")
+        for row in table_rows
+    )
+    
+    
 # === Test raise_non_enabled_brands_error ===
 def test_raise_non_enabled_brands_error_raises_when_all_unsupported(module_factory):
     """
@@ -1279,3 +1459,71 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
         module.raise_non_enabled_brands_error(entries)
     except DemistoException:
         pytest.fail("raise_non_enabled_brands_error raised an exception unexpectedly.")
+
+# -- Context Mapping --
+@pytest.mark.parametrize(
+    "mapping, entry, expected",
+    [
+        # Empty entry
+        ({"a..b": "x..y"}, {}, {}),
+        # empty mapping
+        ({}, {"a": {"b": 10}}, {}),
+        # simple nested mapping
+        ({"a..b": "x..y"}, {"a": {"b": 10}}, {"x": {"y": 10}}),
+        # mapping to list via '[]'
+        ({"a..b": "x..y[]"}, {"a": {"b": 5}}, {"x": {"y": [5]}}),
+        # multiple mappings
+        ({"a..b": "out..b", "c": "out..c"}, {"a": {"b": 1}, "c": 2}, {"out": {"b": 1, "c": 2}}),
+    ],
+)
+def test_map_command_context_basic(module_factory, mapping, entry, expected):
+    """
+    Given:
+        - Various mappings and entry contexts.
+    When:
+        - Calling map_command_context.
+    Then:
+        - Returns a dict matching the expected mapped_context.
+    """
+    module = module_factory()
+    # Copy entry so the original in test is not mutated
+    entry_copy = {k: (v.copy() if isinstance(v, dict) else v) for k, v in entry.items()}
+    result = module.map_command_context(entry_copy, mapping, is_indicator=False)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "mapping, entry, is_indicator, additional_fields, expected",
+    [
+        # is_indicator False even if additional_fields True → no AdditionalFields
+        ({"x": "y"}, {"x": 1, "z": 2}, False, True, {"y": 1}),
+        # is_indicator True even if additional_fields False → no AdditionalFields
+        ({"x": "y"}, {"x": 1, "z": 2}, True, False, {"y": 1}),
+        # is_indicator True and additional_fields True → AdditionalFields full
+        ({"x": "y"}, {"x": 1, "z": 2}, True, True, {"y": 1,"AdditionalFields": {"z": 2}}),
+        # mapping consumes all keys → AdditionalFields empty dict
+        ({"m": "n"}, {"m": 5}, True, True, {"n": 5}),
+    ],
+)
+def test_map_command_context_indicator_flag(module_factory, mapping, entry, is_indicator, additional_fields, expected):
+    """
+    Given:
+        - Mapping and entry that may or may not leave leftovers.
+        - Flags is_indicator and additional_fields combinations.
+    When:
+        - Calling map_command_context.
+    Then:
+        - AdditionalFields only appears when both flags are True.
+    """
+    module = module_factory(additional_fields=additional_fields)
+    entry_copy = {k: (v.copy() if isinstance(v, dict) else v) for k, v in entry.items()}
+    result = module.map_command_context(entry_copy, mapping, is_indicator=is_indicator)
+
+    for k, v in expected.items():
+        assert result.get(k) == v
+
+    if "AdditionalFields" in expected:
+        assert "AdditionalFields" in result
+        assert result["AdditionalFields"] == expected["AdditionalFields"]
+    else:
+        assert "AdditionalFields" not in result

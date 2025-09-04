@@ -4,25 +4,18 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 
-def validate_input_function(args):
-    """
-    Validate the input arguments.
-    """
-    domain_list = argToList(args.get("domain_list"))
-    if not domain_list:
-        raise ValueError("domain_list is required")
-
-    for domain in domain_list:
-        if auto_detect_indicator_type(domain) != FeedIndicatorType.Domain:
-            raise ValueError("Invalid domain name")
-
-
 def domain_enrichment_script(
-    domain_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False
+    domain_list,
+    external_enrichment: bool = False,
+    verbose: bool = False,
+    enrichment_brands: list[str] | None = None,
+    additional_fields: bool = False,
 ):
     """
-    Enriches Domain data with information from various integrations
+    Enriches Domain data with information from various integrations.
     """
+
+    # Mapping for the final indicator objects (what you want to surface on each result)
     indicator_mapping = {
         "Name": "Name",
         "DetectionEngines": "DetectionEngines",
@@ -32,28 +25,56 @@ def domain_enrichment_script(
     }
 
     domain_indicator = Indicator(
-        type="domain", value_field="Name", context_path_prefix="Domain(", context_output_mapping=indicator_mapping
+        type="domain",
+        value_field="Name",
+        context_path_prefix="Domain(",
+        context_output_mapping=indicator_mapping,
     )
 
-    commands: list[Command] = [ReputationCommand(indicator=domain_indicator, data=data) for data in domain_list]
-    commands.extend(
-        [
-            Command(
-                name="core-get-domain-analytics-prevalence",
-                args={"domain_name": domain_list},
-                command_type=CommandType.INTERNAL,
-                brand="Cortex Core - IR",
-                context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
-            )
-        ]
+    # --- Batch 1: create indicators (BUILTIN) ---
+    create_new_indicator_commands = [
+        Command(
+            name="createNewIndicator",
+            args={"value": domain, "type": "Domain"},
+            command_type=CommandType.BUILTIN,
+            context_output_mapping=None,
+            ignore_using_brand=True,  # never inject using-brand for server builtins
+        )
+        for domain in domain_list
+    ]
+
+    # --- Batch 2: internal analytics + external enrichment ---
+    core_domain_analytics_cmd = Command(
+        name="core-get-domain-analytics-prevalence",
+        args={"domain_name": domain_list},
+        command_type=CommandType.INTERNAL,
+        brand="Cortex Core - IR",  # keep the brand you use elsewhere
+        context_output_mapping={
+            "Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"
+        },
     )
+
+    enrich_indicator_commands = [
+        Command(
+            name="enrichIndicators",
+            args={"indicatorsValues": domain},
+            command_type=CommandType.EXTERNAL,
+        )
+        for domain in domain_list
+    ]
+
+    # Important: commands are a list of *batches* (each batch is a list[Command])
+    commands: list[list[Command]] = [
+        create_new_indicator_commands,
+        [core_domain_analytics_cmd] + enrich_indicator_commands,
+    ]
 
     demisto.debug(f"Data list: {domain_list}")
+
     domain_reputation = ReputationAggregatedCommand(
-        brands=enrichment_brands,
+        brands=enrichment_brands or [],
         verbose=verbose,
         commands=commands,
-        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="DomainEnrichment",
@@ -74,11 +95,20 @@ def main():  # pragma: no cover
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
+
     demisto.debug(f"Data list: {domain_list}")
     demisto.debug(f"Brands: {brands}")
 
     try:
-        return_results(domain_enrichment_script(domain_list, external_enrichment, verbose, brands, additional_fields))
+        return_results(
+            domain_enrichment_script(
+                domain_list=domain_list,
+                external_enrichment=external_enrichment,
+                verbose=verbose,
+                enrichment_brands=brands,
+                additional_fields=additional_fields,
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !domain-enrichment. Error: {str(ex)}")
 

@@ -1,44 +1,33 @@
-[
-    [
-        {
-            "Type": 1,
-            "Brand": "brand1",
-            "Metadata": { "brand": "brand1" },
-            "EntryContext": {
-                "Domain(obj.Name == val.Name)": {
-                    "Name": "domain1.com",
-                    "PositiveDetections": 15
-                },
-                "DBotScore": { "Indicator": "domain1.com", "Score": 3, "Vendor": "brand1", "Type": "domain" }
-            }
-        }
+{
+    "batch1_createNewIndicator": [
+      { "Type": 1, "EntryContext": {} },
+      { "Type": 1, "EntryContext": {} }
     ],
-    [
-        {
-            "Type": 1,
-            "Brand": "brand3",
-            "Metadata": { "brand": "brand3" },
-            "EntryContext": {
-                "Domain(obj.Name == val.Name)": {
-                    "Name": "domain2.com",
-                    "PositiveDetections": 0
-                },
-                "DBotScore": { "Indicator": "domain2.com", "Score": 1, "Vendor": "brand3", "Type": "domain" }
-            }
+    "batch2_core": [
+      {
+        "Type": 1,
+        "EntryContext": {
+          "Core.AnalyticsPrevalence.Domain": [
+            { "Domain": "example.com", "FirstSeen": "2024-01-01" },
+            { "Domain": "example2.com", "FirstSeen": "2024-01-02" }
+          ]
         }
+      }
     ],
-    [
-        {
-            "Type": 1,
-            "Brand": "Cortex Core - IR",
-            "Metadata": { "brand": "Cortex Core - IR" },
-            "EntryContext": {
-                "Core.AnalyticsPrevalence.Domain": {
-                    "domain_name": "domain1.com",
-                    "total_count": 500,
-                    "is_rare": false
-                }
-            }
+    "batch2_enrichIndicators": [
+      {
+        "Type": 1,
+        "Metadata": { "brand": "brand1" },
+        "EntryContext": {
+          "DBotScore(val.Indicator && val.Vendor)": [
+            { "Indicator": "example.com", "Vendor": "brand1", "Score": 2 }
+          ]
         }
+      },
+      {
+        "Type": 1,
+        "EntryContext": {}
+      }
     ]
-]
+  }
+  

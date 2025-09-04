@@ -3,35 +3,38 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
-ENDPOINT_PATH = "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)"  # noqa: E501
+# Context key used for Core endpoint data passthrough
+ENDPOINT_PATH = (
+    "EndpointData(val.Brand && val.Brand == obj.Brand && "
+    "val.ID && val.ID == obj.ID && "
+    "val.Hostname && val.Hostname == obj.Hostname)"
+)
 
-
-def validate_input_function(args):
-    """
-    Validates the input arguments.
-    Args:
-        args (dict[str, Any]): The arguments from `demisto.args()`.
-    Raises:
-        ValueError: If the input is invalid.
-    """
-    ip_list = argToList(args.get("ip_list"))
-    if not ip_list:
-        raise ValueError("ip_list is required")
-
-    for ip in ip_list:
-        if not is_ip_valid(ip, accept_v6_ips=True):
-            raise ValueError(f"Invalid IP address: {ip}")
 
 
 def ip_enrichment_script(
-    ip_list,
-    external_enrichment=False,
-    verbose=False,
-    enrichment_brands=None,
-    additional_fields=False,
-):
+    ip_list: list[str],
+    external_enrichment: bool = False,
+    verbose: bool = False,
+    enrichment_brands: list[str] | None = None,
+    additional_fields: bool = False,
+) -> CommandResults:
     """
-    Enriches IP data with information from various integrations
+    Enrich IP indicators by orchestrating built-in creation, internal Core lookups,
+    and optional external enrichment via `enrichIndicators`.
+
+    Args:
+        ip_list: IPs to enrich.
+        external_enrichment: If True, run external enrichment (or whenever brands are provided).
+        verbose: If True, include human-readable outputs from executed commands.
+        enrichment_brands: Specific brands to use (overrides external_enrichment routing).
+        additional_fields: If True, keep unmapped fields from indicator contexts under "AdditionalFields".
+
+    Returns:
+        CommandResults with aggregated context:
+          - IPEnrichment(val.Value && val.Value == obj.Value): [...]
+          - DBotScore: [...]
+          - passthrough results (e.g., Core endpoint data, prevalence)
     """
     indicator_mapping = {
         "Address": "Address",
@@ -41,35 +44,66 @@ def ip_enrichment_script(
         "PositiveDetections": "PositiveDetections",
         "Score": "Score",
     }
+    
     ip_indicator = Indicator(
-        type="ip", value_field="Address", context_path_prefix="IP(", context_output_mapping=indicator_mapping
+        type="ip",
+        value_field="Address",
+        context_path_prefix="IP(",
+        context_output_mapping=indicator_mapping,
     )
 
-    commands: list[Command] = [ReputationCommand(indicator=ip_indicator, data=data) for data in ip_list]
-    commands.extend(
-        [
-            Command(
-                name="get-endpoint-data",
-                args={"endpoint_ip": ip_list},
-                command_type=CommandType.INTERNAL,
-                brand="Core",
-                context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
-            ),
-            Command(
-                name="core-get-IP-analytics-prevalence",
-                args={"ip_address": ip_list},
-                command_type=CommandType.INTERNAL,
-                brand="Cortex Core - IR",
-                context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
-            ),
-        ]
-    )
+    create_new_indicator_commands = [
+        Command(
+            name="createNewIndicator",
+            args={"value": ip, "type": "IP"},
+            command_type=CommandType.BUILTIN,
+            context_output_mapping=None,
+            ignore_using_brand=True,
+        )
+        for ip in ip_list
+    ]
+    
+    enrich_indicator_commands = [
+        Command(
+            name="enrichIndicators",
+            args={"indicatorsValues": ip},
+            command_type=CommandType.EXTERNAL,
+        )
+        for ip in ip_list
+    ]
+    
+    # Internal Core lookups (single calls with all IPs)
+    internal_core_commands = [
+        Command(
+            name="get-endpoint-data",
+            args={"endpoint_ip": ip_list},
+            command_type=CommandType.INTERNAL,
+            brand="Core",
+            context_output_mapping={ENDPOINT_PATH: ENDPOINT_PATH},
+        ),
+        Command(
+            name="core-get-IP-analytics-prevalence",
+            args={"ip_address": ip_list},
+            command_type=CommandType.INTERNAL,
+            brand="Cortex Core - IR",
+            context_output_mapping={
+                "Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"
+            },
+        ),
+    ]
+    
+    # Run in two batches:
+    #   1) createNewIndicator
+    #   2) internal core lookups + external enrichment
+    commands: list[list[Command]] = [
+        create_new_indicator_commands,
+        internal_core_commands + enrich_indicator_commands,
+    ]
 
-    ip_reputation = ReputationAggregatedCommand(
-        brands=enrichment_brands,
+    ip_enrichment = ReputationAggregatedCommand(
+        brands=enrichment_brands or [],
         verbose=verbose,
         commands=commands,
-        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="IPEnrichment",
@@ -77,7 +111,7 @@ def ip_enrichment_script(
         data=ip_list,
         indicator=ip_indicator,
     )
-    return ip_reputation.run()
+    return ip_enrichment.run()
 
 
 """ MAIN FUNCTION """

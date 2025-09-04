@@ -4,37 +4,65 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 
-def validate_input_function(args):
+def cve_enrichment_script(
+    cve_list,
+    external_enrichment: bool = False,
+    verbose: bool = False,
+    enrichment_brands: list[str] | None = None,
+    additional_fields: bool = False,
+):
     """
-    Validates the input arguments.
-    Args:
-        args (dict[str, Any]): The arguments from `demisto.args()`.
-    Raises:
-        ValueError: If the input is invalid.
+    Enriches CVE data with information from various integrations.
     """
-    cve_list = argToList(args.get("cve_list"))
-    if not cve_list:
-        raise ValueError("cve_list is required")
-    for cve in cve_list:
-        if auto_detect_indicator_type(cve) != FeedIndicatorType.CVE:
-            raise ValueError(f"Invalid CVE ID: {cve}")
+    indicator_mapping = {
+        "ID": "ID",
+        "Brand": "Brand",
+        "CVSS": "CVSS",
+        "Description": "Description",
+        "Published": "Published",
+    }
 
+    cve_indicator = Indicator(
+        type="cve",
+        value_field="ID",
+        context_path_prefix="CVE(",
+        context_output_mapping=indicator_mapping,
+    )
 
-def cve_enrichment_script(cve_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False):
-    """
-    Enriches CVE data with information from various integrations
-    """
-    indicator_mapping = {"ID": "ID", "Brand": "Brand", "CVSS": "CVSS", "Description": "Description", "Published": "Published"}
+    # --- Batch 1: create indicators (BUILTIN) ---
+    create_new_indicator_commands = [
+        Command(
+            name="createNewIndicator",
+            args={"value": cve, "type": "CVE"},
+            command_type=CommandType.BUILTIN,
+            context_output_mapping=None,
+            ignore_using_brand=True,  # never inject using-brand for server builtins
+        )
+        for cve in cve_list
+    ]
 
-    cve_indicator = Indicator(type="cve", value_field="ID", context_path_prefix="CVE(", context_output_mapping=indicator_mapping)
+    # --- Batch 2: external enrichment per CVE ---
+    enrich_indicator_commands = [
+        Command(
+            name="enrichIndicators",
+            args={"indicatorsValues": cve},
+            command_type=CommandType.EXTERNAL,
+        )
+        for cve in cve_list
+    ]
 
-    commands: list[Command] = [ReputationCommand(indicator=cve_indicator, data=data) for data in cve_list]
+    # commands is a list of *batches* (each batch is list[Command])
+    commands: list[list[Command]] = [
+        create_new_indicator_commands,
+        enrich_indicator_commands,
+    ]
+
+    demisto.debug(f"Data list: {cve_list}")
 
     cve_reputation = ReputationAggregatedCommand(
-        brands=enrichment_brands,
+        brands=enrichment_brands or [],
         verbose=verbose,
         commands=commands,
-        validate_input_function=validate_input_function,
         additional_fields=additional_fields,
         external_enrichment=external_enrichment,
         final_context_path="CVEEnrichment",
@@ -55,10 +83,20 @@ def main():  # pragma: no cover
     verbose = argToBoolean(args.get("verbose", False))
     brands = argToList(args.get("brands"))
     additional_fields = argToBoolean(args.get("additional_fields", False))
+
     demisto.debug(f"Data list: {cve_list}")
     demisto.debug(f"Brands: {brands}")
+
     try:
-        return_results(cve_enrichment_script(cve_list, external_enrichment, verbose, brands, additional_fields))
+        return_results(
+            cve_enrichment_script(
+                cve_list=cve_list,
+                external_enrichment=external_enrichment,
+                verbose=verbose,
+                enrichment_brands=brands,
+                additional_fields=additional_fields,
+            )
+        )
     except Exception as ex:
         return_error(f"Failed to execute !cve-enrichment. Error: {str(ex)}")
 

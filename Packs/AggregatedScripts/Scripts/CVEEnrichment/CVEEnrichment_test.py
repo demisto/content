@@ -1,132 +1,200 @@
+import json
 import pytest
 import demistomock as demisto
-from CommonServerPython import *
-from CVEEnrichment import validate_input_function, cve_enrichment_script
+from CommonServerPython import Common
+from CVEEnrichment import cve_enrichment_script  # <-- adjust if your file name differs
 
 
-def util_load_json(path):
-    """A helper function to load mock JSON files."""
+def util_load_json(path: str):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-# -------------------------------------------------------------------------------------------------
-# -- 1. Test Input Validation
-# -------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# 1) Validation tests (validate_input is invoked inside AggregatedCommand.run())
+# --------------------------------------------------------------------------------------
 
-
-def test_validate_input_function_success(mocker):
+def test_validate_input_success(mocker):
     """
     Given:
-        - An args dictionary with a list of valid CVE IDs.
+        - Valid CVE list.
+        - extractIndicators returns both under ExtractedIndicators.CVE.
     When:
-        - The validate_input_function is called.
+        - cve_enrichment_script runs.
     Then:
-        - The function runs without raising an exception.
+        - No exception is raised.
     """
-    args = {"cve_list": "CVE-2021-44228"}
-    try:
-        validate_input_function(args)
-    except ValueError:
-        pytest.fail("validate_input_function raised an unexpected ValueError.")
-
-
-def test_validate_input_function_raises_error_on_empty_list():
-    """
-    Given:
-        - An args dictionary where 'cve_list' is empty.
-    When:
-        - The validate_input_function is called.
-    Then:
-        - A ValueError is raised with the correct message.
-    """
-    with pytest.raises(ValueError, match="cve_list is required"):
-        validate_input_function({"cve_list": ""})
-
-
-def test_validate_input_function_raises_error_on_invalid_cve(mocker):
-    """
-    Given:
-        - An args dictionary containing an item that is not a valid CVE ID.
-    When:
-        - The validate_input_function is called.
-    Then:
-        - A ValueError is raised with the correct message.
-    """
-    with pytest.raises(ValueError, match=r"Invalid CVE ID: not-a-cve"):
-        validate_input_function({"cve_list": "not-a-cve"})
-
-
-# -------------------------------------------------------------------------------------------------
-# -- 2. Test Main Script Logic end-to-end
-# -------------------------------------------------------------------------------------------------
-
-
-def test_cve_enrichment_script_end_to_end(mocker):
-    """
-    Given:
-        - A list of CVEs to enrich, with mocked TIM and batch command data.
-    When:
-        - The cve_enrichment_script is called in an end-to-end fashion.
-    Then:
-        - The script should correctly merge TIM and batch results, prioritizing batch data.
-        - The final context should be structured correctly with all expected data.
-    """
-    # --- Arrange ---
-    mock_tim_results = util_load_json("test_data/mock_cve_tim_results.json")
-    mock_batch_results = util_load_json("test_data/mock_cve_batch_results.json")
-
-    cve_list = ["CVE-2023-1001", "CVE-2023-1002"]
+    cve_list = ["CVE-2024-0001", "CVE-2023-9999"]
     mocker.patch.object(demisto, "args", return_value={"cve_list": ",".join(cve_list)})
 
-    # Mock the external dependencies to return our mock data
-    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute", return_value=mock_batch_results)
-    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=mock_tim_results)
+    # Patch extractIndicators via the execute_command wrapper
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{
+            "EntryContext": {"ExtractedIndicators": {"CVE": cve_list}}
+        }],
+    )
+
+    # Make the pipeline a no-op beyond validation
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+    class _EmptySearcher:
+        def __iter__(self):
+            return iter([])
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
+    mocker.patch.object(demisto, "getModules", return_value={})
+
+    res = cve_enrichment_script(
+        cve_list=cve_list,
+        external_enrichment=False,
+        verbose=False,
+        enrichment_brands=[],
+        additional_fields=False,
+    )
+    assert res is not None
+
+
+def test_validate_input_invalid_cve(mocker):
+    """
+    Given:
+        - A list with an invalid item ("NOT-A-CVE").
+        - extractIndicators only returns the valid CVE.
+    When:
+        - cve_enrichment_script runs.
+    Then:
+        - ValueError is raised by validate_input.
+    """
+    cve_list = ["CVE-2024-0001", "NOT-A-CVE"]
+    mocker.patch.object(demisto, "args", return_value={"cve_list": ",".join(cve_list)})
+
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{
+            "EntryContext": {"ExtractedIndicators": {"CVE": ["CVE-2024-0001"]}}
+        }],
+    )
+
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+    class _EmptySearcher:
+        def __iter__(self):
+            return iter([])
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
+    mocker.patch.object(demisto, "getModules", return_value={})
+
+    with pytest.raises(ValueError, match=r"are not valid cve"):
+        cve_enrichment_script(
+            cve_list=cve_list,
+            external_enrichment=False,
+            verbose=False,
+            enrichment_brands=[],
+            additional_fields=False,
+        )
+
+
+# --------------------------------------------------------------------------------------
+# 2) End-to-end: TIM + enrichIndicators (batch data from file)
+# --------------------------------------------------------------------------------------
+
+def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
+    """
+    Given:
+        - Two CVEs.
+        - TIM returns:
+            * CVE-2024-0001 with TIM cvss 7.5, brand1 cvss {"Score": 9.8}, brand2 cvss "High"
+            * CVE-2023-9999 with TIM cvss 1.2, brand3 cvss 1.0
+        - Batches:
+            * createNewIndicator (no-op)
+            * enrichIndicators per CVE (DBotScore only for CVE-2024-0001 / brand1)
+    When:
+        - cve_enrichment_script runs end-to-end.
+    Then:
+        - CVEEnrichment contains both CVEs.
+        - For CVE-2024-0001:
+            * Results include TIM + brand1 + brand2 (3 items)
+            * MaxCVSS = 9.8 and MaxSeverity = "Critical"
+            * No MaxScore/MaxVerdict/TIMScore (Score not in mapping)
+        - DBotScore vendors across both = {"brand1","brand2","brand3"}.
+    """
+    tim_pages = util_load_json("test_data/mock_cve_tim_results.json")["pages"]
+    batch_data = util_load_json("test_data/mock_cve_batch_results.json")
+
+    cve_list = ["CVE-2024-0001", "CVE-2023-9999"]
+    mocker.patch.object(demisto, "args", return_value={"cve_list": ",".join(cve_list)})
+
+    # Validation: extractIndicators returns both CVEs
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{
+            "EntryContext": {"ExtractedIndicators": {"CVE": cve_list}}
+        }],
+    )
+
+    # IndicatorsSearcher -> TIM pages
+    class _MockSearcher:
+        def __init__(self, pages): self.pages = pages
+        def __iter__(self): return iter(self.pages)
+    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
+
+    # Enabled brands
     mocker.patch.object(
         demisto,
         "getModules",
         return_value={
-            "brand1": {"state": "active", "brand": "brand1"},
-            "brand2": {"state": "active", "brand": "brand2"},
-            "brand3": {"state": "active", "brand": "brand3"},
+            "m1": {"state": "active", "brand": "brand1"},
+            "m2": {"state": "active", "brand": "brand2"},
+            "m3": {"state": "active", "brand": "brand3"}
         },
     )
 
-    # --- Act ---
-    command_results = cve_enrichment_script(cve_list=cve_list, external_enrichment=True, enrichment_brands=[])
-    outputs = command_results.outputs
+    # Helper: wrap raw entries into processed tuple shape [(entry, hr, err)]
+    def _wrap(entries, hr=""):
+        return [[(e, hr, "")] for e in entries]
 
-    # --- Assert ---
-    enrichment_map = {item["Value"]: item for item in outputs.get("CVEEnrichment(val.Value && val.Value == obj.Value)", [])}
-    assert len(enrichment_map) == 2
+    # Batch executor mock (aligns fixture arrays to command batches)
+    def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
+        out = []
 
-    # 1. Verify results for CVE-2023-1001 (overlapping TIM and batch data)
-    cve_result = enrichment_map.get("CVE-2023-1001")
-    assert cve_result is not None
-    assert len(cve_result["Results"]) == 3  # brand1 (from batch) + brand2 (from TIM) + TIM Itself
+        # Batch 1: createNewIndicator per CVE
+        b1_expected = len(list_of_batches[0])
+        b1_entries = batch_data["batch1_createNewIndicator"]
+        assert len(b1_entries) == b1_expected, "batch1 size mismatch vs fixture"
+        out.append(_wrap(b1_entries))
 
-    # The brand1 result should be from the BATCH (CVSS: 9.8), not TIM (CVSS: 7.5)
-    brand1_result = next(r for r in cve_result["Results"] if r["Brand"] == "brand1")
-    assert brand1_result["CVSS"] == 9.8
-    assert brand1_result["Description"] == "A critical vulnerability."
+        # Batch 2: enrichIndicators per CVE
+        b2_cmds = list_of_batches[1]
+        enrich_entries = batch_data["batch2_enrichIndicators"]
+        assert len(enrich_entries) == len(b2_cmds), "enrichIndicators size mismatch vs fixture"
+        out.append(_wrap(enrich_entries))
+        return out
 
-    # The brand2 result from TIM should still be present as it did not conflict
-    brand2_result = next(r for r in cve_result["Results"] if r["Brand"] == "brand2")
-    assert brand2_result["CVSS"] == 7.8
+    mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)
 
-    # 2. Verify results for CVE-2023-1002 (batch only)
-    cve2_result = enrichment_map.get("CVE-2023-1002")
-    assert cve2_result is not None
-    assert len(cve2_result["Results"]) == 1
-    assert cve2_result["Results"][0]["Brand"] == "brand3"
-    assert cve2_result["Results"][0]["CVSS"] == 5.3
+    # Act
+    res = cve_enrichment_script(
+        cve_list=cve_list,
+        external_enrichment=True,
+        verbose=True,
+        enrichment_brands=["brand1", "brand2", "brand3"],
+        additional_fields=False,
+    )
+    outputs = res.outputs
 
-    # The max CVSS should be 9.8 (from brand1)
-    assert cve_result["MaxCVSS"] == 9.8
-    # The max severity should be "Critical"
-    assert cve_result["MaxSeverity"] == "Critical"
+    # Assert: CVEEnrichment indicators
+    enrichment_list = outputs.get("CVEEnrichment(val.Value && val.Value == obj.Value)", [])
+    enrichment_map = {item["Value"]: item for item in enrichment_list}
+    assert set(enrichment_map.keys()) == set(cve_list)
 
-    # 3. Verify DBotScore context was populated and merged correctly
+    cve1 = enrichment_map["CVE-2024-0001"]
+    # TIM + brand1 + brand2
+    assert len(cve1["Results"]) == 3
+
+    # MaxCVSS/MaxSeverity computed (Score not mapped => MaxScore absent)
+    assert cve1.get("MaxScore") is None  # should not exist / be None after cleanup
+    assert "MaxVerdict" not in cve1
+    assert "TIMScore" not in cve1
+    assert cve1["MaxCVSS"] == 9.8
+    assert cve1["MaxSeverity"] == "Critical"
+
+    # DBotScore vendors exactly brand1, brand2, brand3 (from TIM + batch)
     dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
-    assert len(dbot_scores) == 3  # 1 from TIM, 2 from Batch
-    assert {s["Vendor"] for s in dbot_scores} == {"brand1", "brand2", "brand3"}
+    vendors = {s.get("Vendor") for s in dbot_scores}
+    assert vendors == {"brand1", "brand2", "brand3"}

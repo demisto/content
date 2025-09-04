@@ -1,41 +1,93 @@
-[
-    {
+{
+    "pages": [
+      {
         "iocs": [
-            {
-                "score": 3,
-                "value": "https://example.com",
-                "indicator_type": "URL",
-                "insightCache": {
-                    "scores": {
-                        "brand1": {
-                            "score": 1,
-                            "context": {
-                                "URL(obj.Data == val.Data)": {
-                                    "Data": "https://example.com",
-                                    "PositiveDetections": 1,
-                                    "DetectionEngines": 90
-                                }
-                            }
-                        },
-                        "brand3": {
-                            "score": 2,
-                            "context": {
-                                "URL(obj.Data == val.Data)": {
-                                    "Data": "https://example.com",
-                                    "PositiveDetections": 10,
-                                    "DetectionEngines": 60
-                                },
-                                "DBotScore": {
-                                    "Indicator": "https://example.com",
-                                    "Score": 2,
-                                    "Vendor": "brand3",
-                                    "Type": "url"
-                                }
-                            }
-                        }
-                    }
+          {
+            "value": "https://example.com",
+            "score": 3,
+            "CustomFields": {
+              "data": "https://example.com",
+              "detectionengines": 70,
+              "positivedetections": 37,
+              "score": 3
+            },
+            "insightCache": {
+              "scores": {
+                "brand1": {
+                  "score": 2,
+                  "context": {
+                    "URL(val.Data && val.Data == obj.Data)": [
+                      {
+                        "Data": "https://example.com",
+                        "Brand": "brand1",
+                        "DetectionEngines": 60,
+                        "PositiveDetections": 5,
+                        "Score": 2
+                      }
+                    ]
+                  }
+                },
+                "brand2": {
+                  "score": 3,
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "https://example.com",
+                        "Vendor": "brand2",
+                        "Score": 3
+                      }
+                    ],
+                    "URL(val.Data && val.Data == obj.Data)": [
+                      {
+                        "Data": "https://example.com",
+                        "Brand": "brand2",
+                        "DetectionEngines": 70,
+                        "PositiveDetections": 37,
+                        "Score": 3
+                      }
+                    ]
+                  }
                 }
+              }
             }
+          },
+          {
+            "value": "https://example2.com",
+            "score": 1,
+            "CustomFields": {
+              "data": "https://example2.com",
+              "detectionengines": 10,
+              "positivedetections": 1,
+              "score": 1
+            },
+            "insightCache": {
+              "scores": {
+                "brand3": {
+                  "score": 1,
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "https://example2.com",
+                        "Vendor": "brand3",
+                        "Score": 1
+                      }
+                    ],
+                    "URL(val.Data && val.Data == obj.Data)": [
+                      {
+                        "Data": "https://example2.com",
+                        "Brand": "brand3",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 1,
+                        "Score": 1
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
         ]
-    }
-]
+      }
+    ]
+  }
+  
