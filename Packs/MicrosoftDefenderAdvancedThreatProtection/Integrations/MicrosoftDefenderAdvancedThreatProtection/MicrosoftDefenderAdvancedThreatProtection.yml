@@ -1616,6 +1616,8 @@ script:
       predefined:
         - 'true'
         - 'false'
+    - name: timeout_in_seconds
+      description: Timeout for polling. Default is 300 seconds.
     - description: action IDs to use in polling commands. (automatically filled by polling).
       name: action_ids
       deprecated: true
