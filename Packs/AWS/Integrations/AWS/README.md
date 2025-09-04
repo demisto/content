@@ -791,12 +791,12 @@ Retrieves the public access block configuration for an Amazon S3 bucket. Shows t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3.Buckets.PublicAccessBlock.Bucket | string | Name of the S3 bucket. |
-| AWS.S3.Buckets.PublicAccessBlock.BlockPublicAcls | boolean | Whether Amazon S3 blocks public access control lists \(ACLs\) for this bucket and objects in this bucket. |
-| AWS.S3.Buckets.PublicAccessBlock.IgnorePublicAcls | boolean | Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket. |
-| AWS.S3.Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
-| AWS.S3.Buckets.PublicAccessBlock.RestrictPublicBuckets | boolean | Whether Amazon S3 restricts public bucket policies for this bucket. |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.Bucket | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls | boolean | Whether Amazon S3 blocks public access control lists \(ACLs\) for this bucket and objects in this bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls | boolean | Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets | boolean | Whether Amazon S3 restricts public bucket policies for this bucket. |
 
 ### aws-s3-bucket-encryption-get
 
@@ -819,9 +819,9 @@ Retrieves the default encryption configuration for an Amazon S3 bucket. Shows th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3.Buckets.ServerSideEncryptionConfiguration | string | Specifies the default server-side-encryption configuration. |
-| AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.ServerSideEncryptionConfiguration | string | Specifies the default server-side-encryption configuration. |
+| AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
 
 ### aws-s3-bucket-policy-get
 
@@ -845,6 +845,13 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3.Buckets.ServerSideEncryptionConfiguration | dictionary | Specifies the default server-side-encryption configuration. |
-| AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
+| AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
+| AWS.S3-Buckets.Policy.Statement.Sid | string | Statement identifier. |
+| AWS.S3-Buckets.Policy.Statement.Effect | string | Allow or Deny. |
+| AWS.S3-Buckets.Policy.Statement.Principal | string | Principal to whom the statement applies. |
+| AWS.S3-Buckets.Policy.Statement.Action | Array | List of actions the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Resource | Array | List of actions the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Condition | string | Conditions for when the statement applies. |
+| AWS.S3-Buckets.PolicyExists | boolean | Whether a bucket policy exists. |

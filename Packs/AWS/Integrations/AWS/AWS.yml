@@ -1847,22 +1847,22 @@ script:
     - description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
       name: expected_bucket_owner
     outputs:
-    - contextPath: AWS.S3.Buckets.BucketName
+    - contextPath: AWS.S3-Buckets.BucketName
       description: Name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3.Buckets.PublicAccessBlock.Bucket
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.Bucket
       description: Name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3.Buckets.PublicAccessBlock.BlockPublicAcls
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls
       description: Whether Amazon S3 blocks public access control lists (ACLs) for this bucket and objects in this bucket.
       type: boolean
-    - contextPath: AWS.S3.Buckets.PublicAccessBlock.IgnorePublicAcls
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls
       description: Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket.
       type: boolean
-    - contextPath: AWS.S3.Buckets.PublicAccessBlock.BlockPublicPolicy
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy
       description: Whether Amazon S3 blocks public bucket policies for this bucket.
       type: boolean
-    - contextPath: AWS.S3.Buckets.PublicAccessBlock.RestrictPublicBuckets
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets
       description: Whether Amazon S3 restricts public bucket policies for this bucket.
       type: boolean
 
@@ -1914,13 +1914,13 @@ script:
       name: bucket
       required: true
     outputs:
-    - contextPath: AWS.S3.Buckets.BucketName
+    - contextPath: AWS.S3-Buckets.BucketName
       description: Name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3.Buckets.ServerSideEncryptionConfiguration
+    - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration
       description: Specifies the default server-side-encryption configuration.
       type: string
-    - contextPath: AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules
+    - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules
       description: Container for information about a particular server-side encryption configuration rule.
       type: array
   
@@ -1974,15 +1974,36 @@ script:
     - description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
       name: expected_bucket_owner
     outputs:
-    - contextPath: AWS.S3.Buckets.BucketName
+    - contextPath: AWS.S3-Buckets.BucketName
       description: Name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3.Buckets.ServerSideEncryptionConfiguration
-      description: Specifies the default server-side-encryption configuration.
-      type: dictionary
-    - contextPath: AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules
-      description: Container for information about a particular server-side encryption configuration rule.
-      type: array
+    - contextPath: AWS.S3-Buckets.Policy.Version
+      description: The version of the policy.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Id
+      description: The id of the policy.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Sid
+      description: Statement identifier.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Effect
+      description: Allow or Deny.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Principal
+      description: Principal to whom the statement applies.
+      type: string
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Action
+      description: List of actions the statement applies to.
+      type: Array
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Resource
+      description: List of actions the statement applies to.
+      type: Array
+    - contextPath: AWS.S3-Buckets.Policy.Statement.Condition
+      description: Conditions for when the statement applies.
+      type: string
+    - contextPath: AWS.S3-Buckets.PolicyExists
+      description: Whether a bucket policy exists.
+      type: boolean
   
   - name: aws-s3-file-upload
     description: Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
