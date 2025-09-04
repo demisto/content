@@ -1357,3 +1357,326 @@ def test_host_reputation_with_host_id():
     assert result.outputs_key_field == "id"
     assert "malicious" in result.readable_output
     assert "100" in result.readable_output
+
+
+from unittest.mock import MagicMock
+
+
+def test_host_reputation_builds_expected_url_with_odata():
+    """
+    Test host_reputation method builds expected URL with odata parameter.
+
+    Given: A client is configured and odata parameter is provided
+    When: The host_reputation method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    # Make http_request a mock so we can inspect how it was called
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "host_id": "host123",
+        "odata": "$select=reputationScore,classifications&$top=1",
+    }
+
+    client.host_reputation(args["host_id"], args["odata"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/hosts/" "host123/reputation" "?$select=reputationScore,classifications&$top=1"
+    )
+
+
+def test_host_whois_history_builds_expected_url_with_odata():
+    """
+    Test host_whois_history method builds expected URL with odata parameter.
+
+    Given: A client is configured and odata parameter is provided
+    When: The host_whois_history method is called with odata and limit
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "host_id": "host123",
+        # IMPORTANT: don't repeat $top here if you're also passing limit
+        "odata": "$select=reputationScore,classifications",
+        "limit": 1,
+    }
+
+    client.host_whois_history(args["host_id"], "", args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/hosts/" "host123/whois/history" "?$top=1&$select=reputationScore,classifications"
+    )
+
+
+def test_article_list_builds_expected_url_with_odata():
+    """
+    Test article_list method builds expected URL with odata parameter.
+
+    Given: A client is configured and article_id and odata are provided
+    When: The article_list method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "article_id": "article123",
+        "odata": "$select=title,body&$expand=indicators",
+        "limit": 1,
+    }
+
+    client.article_list(args["article_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/articles/" "article123" "?$select=title,body&$expand=indicators"
+    )
+
+
+def test_article_list_builds_expected_url_with_odata_without_article_id():
+    """
+    Test article_list method builds expected URL without article_id.
+
+    Given: A client is configured and odata is provided without article_id
+    When: The article_list method is called with empty article_id
+    Then: The correct URL suffix is built for listing all articles
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"value": []})
+
+    args = {
+        "article_id": "",
+        "odata": "$select=title,body",
+        "limit": 5,
+    }
+
+    client.article_list(args["article_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == ("v1.0/security/threatIntelligence/articles" "?$top=5&$select=title,body")
+
+
+def test_article_indicator_list_builds_expected_url_with_odata():
+    """
+    Test article_indicator_list method builds expected URL with odata parameter.
+
+    Given: A client is configured and article_id and odata are provided
+    When: The article_indicator_list method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"value": []})
+
+    args = {
+        "article_id": "article123",
+        "article_indicator_id": "",
+        "odata": "$select=artifact,source",
+        "limit": 10,
+    }
+
+    client.article_indicator_list(args["article_id"], args["article_indicator_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/articles/" "article123/indicators" "?$top=10&$select=artifact,source"
+    )
+
+
+def test_article_indicator_list_builds_expected_url_with_odata_with_indicator_id():
+    """
+    Test article_indicator_list method builds expected URL with indicator_id.
+
+    Given: A client is configured and indicator_id and odata are provided
+    When: The article_indicator_list method is called with indicator_id
+    Then: The correct URL suffix is built for specific indicator
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "article_id": "",
+        "article_indicator_id": "indicator123",
+        "odata": "$select=artifact,source",
+        "limit": 10,
+    }
+
+    client.article_indicator_list(args["article_id"], args["article_indicator_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/articleIndicators/" "indicator123" "?$select=artifact,source"
+    )
+
+
+def test_profile_list_builds_expected_url_with_odata():
+    """
+    Test profile_list method builds expected URL with odata parameter.
+
+    Given: A client is configured and profile_id and odata are provided
+    When: The profile_list method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "intel_profile_id": "profile123",
+        "odata": "$select=title,description",
+        "limit": 5,
+    }
+
+    client.profile_list(args["intel_profile_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == ("v1.0/security/threatIntelligence/intelProfiles/" "profile123" "?$select=title,description")
+
+
+def test_profile_list_builds_expected_url_with_odata_without_profile_id():
+    """
+    Test profile_list method builds expected URL without profile_id.
+
+    Given: A client is configured and odata is provided without profile_id
+    When: The profile_list method is called with empty profile_id
+    Then: The correct URL suffix is built for listing all profiles
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"value": []})
+
+    args = {
+        "intel_profile_id": "",
+        "odata": "$select=title,description",
+        "limit": 5,
+    }
+
+    client.profile_list(args["intel_profile_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == ("v1.0/security/threatIntelligence/intelProfiles" "?$top=5&$select=title,description")
+
+
+def test_profile_indicators_list_builds_expected_url_with_odata():
+    """
+    Test profile_indicators_list method builds expected URL with odata parameter.
+
+    Given: A client is configured and profile_id and odata are provided
+    When: The profile_indicators_list method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"value": []})
+
+    args = {
+        "intel_profile_id": "profile123",
+        "intel_profile_indicator_id": "",
+        "odata": "$select=source,firstSeenDateTime",
+        "limit": 10,
+    }
+
+    client.profile_indicators_list(args["intel_profile_id"], args["intel_profile_indicator_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/intelProfiles/" "profile123/indicators" "?$top=10&$select=source,firstSeenDateTime"
+    )
+
+
+def test_profile_indicators_list_builds_expected_url_with_odata_with_indicator_id():
+    """
+    Test profile_indicators_list method builds expected URL with indicator_id.
+
+    Given: A client is configured and indicator_id and odata are provided
+    When: The profile_indicators_list method is called with indicator_id
+    Then: The correct URL suffix is built for specific indicator
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "intel_profile_id": "profile123",
+        "intel_profile_indicator_id": "indicator123",
+        "odata": "$select=source,firstSeenDateTime",
+        "limit": 10,
+    }
+
+    client.profile_indicators_list(args["intel_profile_id"], args["intel_profile_indicator_id"], args["odata"], args["limit"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/intelligenceProfileIndicators/" "indicator123" "?$select=source,firstSeenDateTime"
+    )
+
+
+def test_host_builds_expected_url_with_odata():
+    """
+    Test host method builds expected URL with odata parameter.
+
+    Given: A client is configured and host_id and odata are provided
+    When: The host method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "host_id": "host123",
+        "odata": "$select=id,firstSeenDateTime,lastSeenDateTime",
+    }
+
+    client.host(args["host_id"], args["odata"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == (
+        "v1.0/security/threatIntelligence/hosts/" "host123" "?$select=id,firstSeenDateTime,lastSeenDateTime"
+    )
+
+
+def test_host_whois_builds_expected_url_with_odata():
+    """
+    Test host_whois method builds expected URL with odata parameter.
+
+    Given: A client is configured and host_id and odata are provided
+    When: The host_whois method is called with odata
+    Then: The correct URL suffix is built with the odata parameters
+    """
+    from MicrosoftDefenderThreatIntelligence import Client
+
+    client = Client(app_id="test_app_id", verify=False, proxy=False)
+    client.ms_client.http_request = MagicMock(return_value={"ok": True})
+
+    args = {
+        "host_id": "host123",
+        "whois_record_id": "",
+        "odata": "$select=registrar,registrant",
+    }
+
+    client.host_whois(args["host_id"], args["whois_record_id"], args["odata"])
+
+    called = client.ms_client.http_request.call_args.kwargs
+    assert called["url_suffix"] == ("v1.0/security/threatIntelligence/hosts/" "host123/whois" "?$select=registrar,registrant")
