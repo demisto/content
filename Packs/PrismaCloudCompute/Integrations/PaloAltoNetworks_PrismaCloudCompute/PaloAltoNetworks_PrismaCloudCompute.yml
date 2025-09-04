@@ -2882,12 +2882,8 @@ script:
       description: The audited event modified time.
       type: Date
   - arguments:
-    - description: The name that will be attached to the MD5 records.
-      name: name
-      required: true
-      type: unknown
-    - description: The MD5 value to be removed.
-      isArray: true
+    - description: The MD5 hash value to remove from Prisma.
+      isArray: false
       name: md5
       required: true
       type: unknown

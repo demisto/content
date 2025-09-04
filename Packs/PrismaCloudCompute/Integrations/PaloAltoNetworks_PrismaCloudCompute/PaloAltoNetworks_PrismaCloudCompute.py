@@ -1376,7 +1376,7 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
 
 def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
     """
-    Remove a list of hashes from the system's malware list.
+    Remove a single hash and description from the system's malware list.
     Implements the command 'prisma-cloud-compute-custom-feeds-malware-remove'
 
     Args:
@@ -1386,25 +1386,18 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) ->
     Returns:
         CommandResults: command-results object.
     """
-
-    # Cast to sets for faster operations and to remove duplicates
+    # get existing md5 values from the Prisma feed
     current_md5_feeds = (client.get_custom_md5_malware() or {}).get("feed") or []
 
-    # populate variables for name and md5 input. String format.
-    md5s_to_remove = args.get("md5s_to_remove")
+    # populate variable for md5 input
+    md5 = args.get("md5")
 
-    # convert string to list of dictionaries
-    list_of_md5s = json.loads(md5s_to_remove)
+    # if md5 input is in current feed, remove it
+    for i in range(len(current_md5_feeds) - 1, -1, -1):
+        if current_md5_feeds[i].get("md5") == md5:
+            current_md5_feeds.pop(i)
 
-    # iterate for each md5 to remove
-    for item in list_of_md5s:
-        md5 = item.get("md5")
-        name = item.get("name")
-        # if md5 input is in current feed, remove it
-        for i in range(len(current_md5_feeds) - 1, -1, -1):
-            if current_md5_feeds[i].get("md5") == md5:
-                current_md5_feeds.pop(i)
-
+    # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
     # send updated list with removed md5 to Prisma
     client.add_custom_md5_malware(feeds=current_md5_feeds)
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
