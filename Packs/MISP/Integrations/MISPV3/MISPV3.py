@@ -1934,7 +1934,7 @@ def get_warninglists_command(demisto_args: dict) -> CommandResults:
                 readable_output="No warninglists found in MISP",
                 raw_response=[],
             )
-    except PyMISPError as e:
+    except Exception as e:
         raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
 
 
@@ -1987,7 +1987,7 @@ def get_warninglist_command(demisto_args: dict) -> CommandResults:
             readable_output=human_readable,
             raw_response=response,
         )
-    except PyMISPError as e:
+    except Exception as e:
         raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
 
 
@@ -2067,7 +2067,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
             raw_response=response,
         )
 
-    except PyMISPError as e:
+    except Exception as e:
         raise DemistoException(f"Error in `{demisto.command()}` command: {e}")
 
 
