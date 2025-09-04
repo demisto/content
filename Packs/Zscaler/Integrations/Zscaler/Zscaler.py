@@ -265,6 +265,8 @@ def fetch_oauth_token():
             verify=USE_SSL,
             proxy=PROXY,
             headers=headers,
+            #TODO remove after fixing Base
+            url_suffix="",
             data=data,
             ok_codes=(200,),
             resp_type="json"
