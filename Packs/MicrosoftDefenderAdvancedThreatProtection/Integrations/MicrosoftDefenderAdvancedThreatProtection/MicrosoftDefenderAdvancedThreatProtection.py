@@ -5594,6 +5594,7 @@ def create_related_cve_list_for_machine(machines):
 def get_file_context(file_info_response: dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
+
 def get_dbot_score(determination_type):
     if determination_type == "Clean":
         verdict = Common.DBotScore.GOOD
@@ -5602,30 +5603,31 @@ def get_dbot_score(determination_type):
     else:
         verdict = Common.DBotScore.BAD
     return verdict
-    
+
+
 def build_file_output(raw_response, file_hash):
     dbot_score = Common.DBotScore(
         indicator=file_hash,
         indicator_type=DBotScoreType.FILE,
         integration_name=INTEGRATION_NAME,
-        score=get_dbot_score(raw_response.get('DeterminationType'))
+        score=get_dbot_score(raw_response.get("DeterminationType")),
     )
     dbot_score.integration_name = VERDICT_SOURCE
-    
+
     file_object = Common.File(
-        md5=raw_response.get('Md5'),
+        md5=raw_response.get("Md5"),
         sha1=raw_response.get("Sha1"),
         sha256=raw_response.get("Sha256"),
-        file_type=raw_response.get('FileType'),
+        file_type=raw_response.get("FileType"),
         dbot_score=dbot_score,
     )
-    
+
     result = CommandResults(
         outputs_prefix="MDE.File",
         outputs_key_field="Sha1",
         outputs=raw_response,
         raw_response=raw_response,
-        indicator=file_object
+        indicator=file_object,
     )
     return result
 
@@ -5643,7 +5645,7 @@ def file_command(client: MsClient, args: dict) -> list[CommandResults]:
             file_info_response = client.get_file_data(file_hash)
             results.append(build_file_output(get_file_data(file_info_response), file_hash))
         except DemistoException as f:
-            if f.res.json().get('error', {}).get('code') == 'ResourceNotFound':
+            if f.res.json().get("error", {}).get("code") == "ResourceNotFound":
                 result = create_indicator_result_with_dbotscore_unknown(
                     indicator=file_hash,
                     indicator_type=DBotScoreType.FILE,
@@ -5653,6 +5655,7 @@ def file_command(client: MsClient, args: dict) -> list[CommandResults]:
             else:
                 demisto.error(f)
     return results
+
 
 def get_file_info_command(client: MsClient, args: dict):
     """Retrieves file info by a file hash (Sha1 or Sha256).
@@ -5838,7 +5841,6 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
 
     return handle_machines(machines_response)
-
 
 
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
@@ -6493,4 +6495,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
