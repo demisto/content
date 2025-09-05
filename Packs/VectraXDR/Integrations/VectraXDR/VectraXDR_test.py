@@ -3498,7 +3498,7 @@ def test_update_remote_system_closing_notes_refetch(client, mocker):
     - A client object.
     - A mocker for patching client functions.
     - Mocked arguments with JSON data from a test file, including closing notes and related data.
-    - reopen_closed_incidents is False
+    - refetch_closed_incidents is True
 
     When:
     - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
@@ -3523,7 +3523,7 @@ def test_update_remote_system_closing_notes_refetch(client, mocker):
     mocker.patch.object(client, "list_entity_tags_request", return_value={})
     mocker.patch.object(client, "add_entity_note_request", return_value={})
 
-    params = {"reopen_closed_incidents": "false"}
+    params = {"refetch_closed_incidents": "true"}
     remote_incident_id = update_remote_system_command(client, mock_args, params)
     assert remote_incident_id == "123"
 
@@ -3538,7 +3538,7 @@ def test_update_remote_system_closing_notes_refetch_invalid_id(client, mocker):
     - A client object.
     - A mocker for patching client functions.
     - Mocked arguments with JSON data from a test file, including closing notes and related data.
-    - reopen_closed_incidents is False
+    - refetch_closed_incidents is True
 
     When:
     - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
@@ -3557,7 +3557,7 @@ def test_update_remote_system_closing_notes_refetch_invalid_id(client, mocker):
     mocker.patch.object(client, "list_entity_tags_request", return_value={})
     mocker.patch.object(client, "add_entity_note_request", return_value={})
 
-    params = {"reopen_closed_incidents": "false"}
+    params = {"refetch_closed_incidents": "true"}
 
     with pytest.raises(ValueError) as exception:
         update_remote_system_command(client, mock_args, params)
@@ -3571,7 +3571,7 @@ def test_update_remote_system_closing_notes_reopen(client, mocker):
     - A client object.
     - A mocker for patching client functions.
     - Mocked arguments with JSON data from a test file, including closing notes and related data.
-    - reopen_closed_incidents is True
+    - refetch_closed_incidents is False
 
     When:
     - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
@@ -3590,19 +3590,19 @@ def test_update_remote_system_closing_notes_reopen(client, mocker):
     mocker.patch.object(client, "list_entity_tags_request", return_value={})
     mocker.patch.object(client, "add_entity_note_request", return_value={})
 
-    params = {"reopen_closed_incidents": "true"}
+    params = {"refetch_closed_incidents": "false"}
     remote_incident_id = update_remote_system_command(client, mock_args, params)
     assert remote_incident_id == "123"
 
 
-@pytest.mark.parametrize("reopen_closed_incidents", ["invalid", ""])
-def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, reopen_closed_incidents):
+@pytest.mark.parametrize("refetch_closed_incidents", ["invalid", ""])
+def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, refetch_closed_incidents):
     """
     Given:
     - A client object.
     - A mocker for patching client functions.
     - Mocked arguments with JSON data from a test file, including closing notes and related data.
-    - reopen_closed_incidents is invalid or empty
+    - refetch_closed_incidents is invalid or empty
 
     When:
     - Calling the 'update_remote_system_command' function with arguments indicating the closure of an incident.
@@ -3621,7 +3621,7 @@ def test_update_remote_system_closing_notes_refetch_invalid(client, mocker, reop
     mocker.patch.object(client, "list_entity_tags_request", return_value={})
     mocker.patch.object(client, "add_entity_note_request", return_value={})
 
-    params = {"reopen_closed_incidents": reopen_closed_incidents}
+    params = {"refetch_closed_incidents": refetch_closed_incidents}
 
     with pytest.raises(ValueError) as exception:
         update_remote_system_command(client, mock_args, params)

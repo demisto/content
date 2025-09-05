@@ -62,10 +62,10 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: "If selected, it reopens previously closed incidents. If not selected, new incidents will be created.\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
-  defaultvalue: "true"
-  display: Reopen closed incidents via mirroring
-  name: reopen_closed_incidents
+- additionalinfo: "If selected, new incidents will be created. If not selected, it reopens previously closed incidents.\n\nNote: This flow is triggered only when the relevant entity is still active and the previously fetched incident is closed."
+  defaultvalue: "false"
+  display: Re-Fetch closed incidents via mirroring
+  name: refetch_closed_incidents
   required: false
   type: 8
   section: Collect

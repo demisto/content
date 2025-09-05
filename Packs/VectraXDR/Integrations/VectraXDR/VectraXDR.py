@@ -3523,7 +3523,7 @@ def get_remote_data_command(client: VectraClient, args: dict, params: dict) -> G
         demisto.debug(f"Nothing new in the Vectra entity {entity_id_type}.")
     else:
         demisto.debug(f"The Vectra entity {entity_id_type} is updated.")
-        if detections and argToBoolean(params.get("reopen_closed_incidents", True)):
+        if detections and not argToBoolean(params.get("refetch_closed_incidents", False)):
             reopen_in_xsoar(new_entries_to_return, entity_id_type)
 
     notes = remote_incident_data.get("notes")
@@ -3627,7 +3627,7 @@ def update_remote_system_command(client: VectraClient, args: dict, params: dict)
         close_reason = parsed_args.data.get("closeReason", "")
         close_user_id = parsed_args.data.get("closingUserId", "")
 
-        if not argToBoolean(params.get("reopen_closed_incidents", True)):
+        if argToBoolean(params.get("refetch_closed_incidents", False)):
             add_refetch_id_to_integration_context(mirror_entity_id, remote_entity_type)
 
         if len(close_notes) > MAX_OUTGOING_NOTE_LIMIT:

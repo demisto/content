@@ -25,7 +25,7 @@ To fetch Vectra XDR Entity follow the next steps:
     1. Incoming - Mirrors changes from the Vectra XDR Entity into the Cortex XSOAR incident.
     2. Outgoing - Mirrors changes from the Cortex XSOAR incident to the Vectra XDR Entity.
     3. Incoming And Outgoing - Mirrors changes both Incoming and Outgoing directions on incidents.
-9. Uncheck the "Reopen closed incidents via mirroring" option if you want to prevent reopening and refetching closed incidents via mirroring on modification of an entity.
+9. Check the "Re-Fetch closed incidents via mirroring" option if you want to prevent reopening of closed incidents and refetch them via mirroring on modification of an entity.
 10. Enter the relevant tag name for mirror notes.
 **Note:** This value is mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles notes when you tag them in the War Room. This is required for mirroring notes from Cortex XSOAR to Vectra XDR.
 11. Provide appropriate values for filtering Entities, such as Entity Type, Prioritization, and Tags. Additionally, specify filters for detections, including Detection Name, Detection Category, and Detection Type.
@@ -42,8 +42,12 @@ To fetch Vectra XDR Entity follow the next steps:
 - Any tags removed from the Vectra entity will not be removed in the XSOAR incident, as XSOAR doesn't allow the removal of the tags field via the backend. However, tags removed from the XSOAR incident UI will be removed from the Vectra entity.
 - New notes from the XSOAR incident will be created as notes in the Vectra entity. Updates to existing notes in the XSOAR incident will not be reflected in the Vectra entity.
 - New notes from the Vectra entity will be created as notes in the XSOAR incident. Updates to existing notes in the Vectra entity will create new notes in the XSOAR incident.
-- If a closed XSOAR incident is tied to a specific entity and new detections for that entity arise or existing detections become active again, the incident will be automatically reopened.
-- When a XSOAR incident is closed but there are still active detections on the Vectra side, and the entity is subsequently updated, the corresponding XSOAR incident for that entity will be reopened.
+- If a closed XSOAR incident is tied to a specific entity and new detections for that entity arise or existing detections become active again:
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected, the incident will be automatically reopened.
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is selected, a new incident will be created for the entity.
+- When a XSOAR incident is closed but there are still active detections on the Vectra side, and the entity is subsequently updated:
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected, the corresponding XSOAR incident for that entity will be reopened.
+  - If "Re-Fetch closed Incidents while Mirroring" checkbox is selected, a new incident will be created for the entity.
 - The mirroring is strictly tied to Incident type "Vectra XDR Entity" & Incoming mapper "Vectra XDR - Incoming Mapper". If you want to change or use your custom incident type/mapper then make sure changes related to these are present.
 - If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, dbotMirrorTags.
 - To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. If you detach the out-of-the-box mapper and make changes to it, the pack does not automatically get updates.
@@ -52,7 +56,7 @@ To fetch Vectra XDR Entity follow the next steps:
   - mirror_direction: This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
   - mirror_tags: This field determines what would be the tag needed to mirror the XSOAR entry out to Vectra XDR. It is a required field for XSOAR to enable mirroring support.
   - mirror_instance: This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
-- If "Reopen closed Incidents while Mirroring" checkbox is selected and the incoming mirroring is enabled then closed XSOAR incidents will automatically reopen if the associated entity is modified after closure.
-- If "Reopen closed Incidents while Mirroring" checkbox is not selected and the outgoing mirroring is enabled then closed XSOAR incidents will automatically re-fetch and create new incidents in XSOAR if the associated entity is modified after closure.
+- If "Re-Fetch closed Incidents while Mirroring" checkbox is not selected and the incoming mirroring is enabled then closed XSOAR incidents will automatically reopen if the associated entity is modified after closure.
+- If "Re-Fetch closed Incidents while Mirroring" checkbox is selected and the outgoing mirroring is enabled then closed XSOAR incidents will automatically re-fetch and create new incidents in XSOAR if the associated entity is modified after closure.
 
 For more information about this integration, visit [Vectra's knwoledge base](https://support.vectra.ai/s/article/KB-VS-1692).
