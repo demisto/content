@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from math import floor
 from typing import Any
 
@@ -50,6 +50,43 @@ from datadog_api_client.v2.model.incident_update_attributes import (
 )
 from datadog_api_client.v2.model.incident_update_data import IncidentUpdateData
 from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRequest
+from datadog_api_client.v2.api.security_monitoring_api import SecurityMonitoringApi
+from datadog_api_client.v2.api.logs_api import LogsApi
+from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_attributes import (
+    SecurityMonitoringSignalAssigneeUpdateAttributes,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_data import (
+    SecurityMonitoringSignalAssigneeUpdateData,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_assignee_update_request import (
+    SecurityMonitoringSignalAssigneeUpdateRequest,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_state_update_attributes import (
+    SecurityMonitoringSignalStateUpdateAttributes,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_state_update_data import (
+    SecurityMonitoringSignalStateUpdateData,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_state_update_request import (
+    SecurityMonitoringSignalStateUpdateRequest,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_list_request import (
+    SecurityMonitoringSignalListRequest,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_list_request_filter import (
+    SecurityMonitoringSignalListRequestFilter,
+)
+from datadog_api_client.v2.model.security_monitoring_signal_list_request_page import (
+    SecurityMonitoringSignalListRequestPage,
+)
+from datadog_api_client.v2.model.security_monitoring_signals_sort import (
+    SecurityMonitoringSignalsSort,
+)
+from datadog_api_client.v2.model.logs_list_request import LogsListRequest
+from datadog_api_client.v2.model.logs_list_request_page import LogsListRequestPage
+from datadog_api_client.v2.model.logs_query_filter import LogsQueryFilter
+from datadog_api_client.v2.model.logs_sort import LogsSort
+import dateparser
 from dateparser import parse
 from urllib3 import disable_warnings
 
@@ -74,6 +111,7 @@ NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parame
 ERROR_MSG = "Something went wrong!\n"
 DATE_ERROR_MSG = "Unable to parse date. Please check help section for right format."
 URL_SEARCH_INCIDENTS = "https://api.datadoghq.com/api/v2/incidents/search"
+URL_SEARCH_SIGNALS = "https://api.datadoghq.com/api/v2/security_monitoring/signals/search"
 AUTHENTICATION_ERROR_MSG = "Authentication Error: Invalid API Key. Make sure API Key and Server URL are correct."
 
 
@@ -218,6 +256,263 @@ def incident_for_lookup(incident: dict) -> dict:
         if incident.get("attributes", {}).get("notification_handles")
         else None,
     }
+
+def flatten_json_attributes(data: dict, prefix: str = "", max_depth: int = 3, current_depth: int = 0) -> dict:
+    """
+    Dynamically flatten nested JSON structure into key-value pairs.
+    
+    Args:
+        data (Dict): The JSON data to flatten
+        prefix (str): Current prefix for nested keys
+        max_depth (int): Maximum depth to traverse (prevents infinite loops)
+        current_depth (int): Current depth level
+        
+    Returns:
+        Dict: Flattened key-value pairs
+    """
+    flattened = {}
+    
+    if current_depth >= max_depth:
+        return flattened
+        
+    for key, value in data.items():
+        new_key = f"{prefix}.{key}" if prefix else key
+        
+        if isinstance(value, dict) and value:
+            # Recursively flatten nested objects
+            nested_flattened = flatten_json_attributes(value, new_key, max_depth, current_depth + 1)
+            flattened.update(nested_flattened)
+        elif isinstance(value, list) and value:
+            # Handle lists - extract first few items or summarize
+            if len(value) <= 3:
+                for i, item in enumerate(value):
+                    if isinstance(item, dict):
+                        nested_flattened = flatten_json_attributes(item, f"{new_key}[{i}]", max_depth, current_depth + 1)
+                        flattened.update(nested_flattened)
+                    else:
+                        flattened[f"{new_key}[{i}]"] = str(item)
+            else:
+                # For large lists, show first few and indicate truncation
+                flattened[new_key] = f"[{len(value)} items: {', '.join(str(v) for v in value[:3])}{'...' if len(value) > 3 else ''}]"
+        elif isinstance(value, str) and value:
+            flattened[new_key] = value
+        elif value is not None:
+            flattened[new_key] = str(value)
+            
+    return flattened
+
+
+def signal_for_lookup_dynamic(signal: dict) -> dict:
+    """
+    Returns a comprehensive dictionary with all available security signal information using dynamic extraction.
+    Similar to how Splunk handles JSON data - extracts all fields dynamically.
+
+    Args:
+        signal (Dict): A dictionary representing a security signal.
+
+    Returns:
+        Dict: A dictionary containing dynamically extracted fields.
+    """
+    # Start with basic signal info
+    result = {
+        "ID": str(signal.get("id", "")),
+        "Type": str(signal.get("type", ""))
+    }
+    
+    # Get all attributes and flatten them
+    attributes = signal.get("attributes", {})
+    if attributes:
+        flattened_attributes = flatten_json_attributes(attributes)
+        result.update(flattened_attributes)
+    
+    # Format timestamp if it exists
+    if "timestamp" in result:
+        try:
+            result["Timestamp (Formatted)"] = datetime.fromisoformat(result["timestamp"]).strftime(UI_DATE_FORMAT)
+        except (ValueError, TypeError):
+            pass
+    
+    # Special handling for tags - both as list and as parsed key-value pairs
+    if "tags" in result and isinstance(attributes.get("tags"), list):
+        tags = attributes.get("tags", [])
+        result["Tags (List)"] = tags
+        # Parse tags into key-value pairs (Splunk-like behavior)
+        tag_dict = {}
+        for tag in tags:
+            if isinstance(tag, str) and ":" in tag:
+                key, value = tag.split(":", 1)
+                tag_dict[f"tag.{key}"] = value
+        result.update(tag_dict)
+    
+    # Add any relationships or other top-level fields
+    for key in ["relationships", "links", "meta"]:
+        if key in signal:
+            flattened_extra = flatten_json_attributes({key: signal[key]}, max_depth=2)
+            result.update(flattened_extra)
+    
+    return result
+
+
+def signal_for_lookup(signal: dict) -> dict:
+    """
+    Returns a dictionary with security signal information - now with enhanced dynamic extraction.
+    This version provides both the essential fields (for backward compatibility) 
+    and comprehensive dynamic extraction (like Splunk).
+
+    Args:
+        signal (Dict): A dictionary representing a security signal.
+
+    Returns:
+        Dict: A dictionary containing essential and dynamically extracted fields.
+    """
+    attributes = signal.get("attributes", {})
+    
+    # Essential fields for backward compatibility
+    essential_fields = {
+        "ID": str(signal.get("id")),
+        "Message": str(attributes.get("message", "")),
+        "Timestamp": datetime.fromisoformat(attributes.get("timestamp", "")).strftime(UI_DATE_FORMAT)
+        if attributes.get("timestamp", "")
+        else "",
+        "Severity": str(attributes.get("severity", "")),
+        "State": str(attributes.get("state", "")),
+        "Status": str(attributes.get("status", "")),
+        "Rule Name": str(attributes.get("rule", {}).get("name", "")),
+        "Rule ID": str(attributes.get("rule", {}).get("id", "")),
+        "Source": str(attributes.get("source", "")),
+        "Service": str(attributes.get("service", "")),
+        "Host": str(attributes.get("host", "")),
+        "Assignee": str(attributes.get("assignee", "")),
+        "Tags": attributes.get("tags", []),
+    }
+    
+    # Get comprehensive dynamic extraction
+    dynamic_fields = signal_for_lookup_dynamic(signal)
+    
+    # Merge essential and dynamic fields (essential fields take precedence for conflicts)
+    result = dynamic_fields.copy()
+    result.update(essential_fields)
+    
+    return result
+
+
+def log_for_lookup_dynamic(log: dict) -> dict:
+    """
+    Returns a comprehensive dictionary with all available log information using dynamic extraction.
+    Similar to how Splunk handles JSON data - extracts all fields dynamically.
+
+    Args:
+        log (Dict): A dictionary representing a log entry.
+
+    Returns:
+        Dict: A dictionary containing dynamically extracted fields.
+    """
+    # Start with basic log info
+    result = {
+        "ID": str(log.get("id", "")),
+        "Type": str(log.get("type", ""))
+    }
+    
+    # Get all attributes and flatten them
+    attributes = log.get("attributes", {})
+    if attributes:
+        flattened_attributes = flatten_json_attributes(attributes)
+        result.update(flattened_attributes)
+    
+    # Format timestamp if it exists
+    if "timestamp" in result:
+        try:
+            result["Timestamp (Formatted)"] = datetime.fromisoformat(result["timestamp"]).strftime(UI_DATE_FORMAT)
+        except (ValueError, TypeError):
+            pass
+    
+    # Special handling for tags - both as list and as parsed key-value pairs
+    if "tags" in result and isinstance(attributes.get("tags"), list):
+        tags = attributes.get("tags", [])
+        result["Tags (List)"] = tags
+        # Parse tags into key-value pairs (Splunk-like behavior)
+        tag_dict = {}
+        for tag in tags:
+            if isinstance(tag, str) and ":" in tag:
+                key, value = tag.split(":", 1)
+                tag_dict[f"tag.{key}"] = value
+        result.update(tag_dict)
+    
+    # Add any relationships or other top-level fields
+    for key in ["relationships", "links", "meta"]:
+        if key in log:
+            flattened_extra = flatten_json_attributes({key: log[key]}, max_depth=2)
+            result.update(flattened_extra)
+    
+    return result
+
+
+def log_for_lookup(log: dict) -> dict:
+    """
+    Returns a dictionary with log information - now with enhanced dynamic extraction.
+    This version provides both the essential fields (for backward compatibility) 
+    and comprehensive dynamic extraction (like Splunk).
+
+    Args:
+        log (Dict): A dictionary representing a log entry.
+
+    Returns:
+        Dict: A dictionary containing essential and dynamically extracted fields.
+    """
+    attributes = log.get("attributes", {})
+    
+    # Essential fields for backward compatibility
+    essential_fields = {
+        "ID": str(log.get("id")),
+        "Message": str(attributes.get("message", "")),
+        "Timestamp": datetime.fromisoformat(attributes.get("timestamp", "")).strftime(UI_DATE_FORMAT)
+        if attributes.get("timestamp", "")
+        else "",
+        "Service": str(attributes.get("service", "")),
+        "Host": str(attributes.get("host", "")),
+        "Source": str(attributes.get("source", "")),
+        "Status": str(attributes.get("status", "")),
+        "Tags": attributes.get("tags", []),
+    }
+    
+    # Get comprehensive dynamic extraction
+    dynamic_fields = log_for_lookup_dynamic(log)
+    
+    # Merge essential and dynamic fields (essential fields take precedence for conflicts)
+    result = dynamic_fields.copy()
+    result.update(essential_fields)
+    
+    return result
+
+
+def logs_search_query(args: dict) -> str:
+    """
+    Build a search query for logs based on provided arguments.
+
+    Args:
+        args (dict): Dictionary containing search parameters
+
+    Returns:
+        str: The constructed search query
+    """
+    query = args.get("query", "*")
+    service = args.get("service")
+    host = args.get("host")
+    source = args.get("source")
+    status = args.get("status")
+    
+    query_parts = [query] if query != "*" else []
+    
+    if service:
+        query_parts.append(f"service:{service}")
+    if host:
+        query_parts.append(f"host:{host}")
+    if source:
+        query_parts.append(f"source:{source}")
+    if status:
+        query_parts.append(f"status:{status}")
+    
+    return " AND ".join(query_parts) if query_parts else "*"
 
 
 def pagination(limit: int | None, page: int | None, page_size: int | None) -> tuple[int, int]:
@@ -1077,6 +1372,261 @@ def incident_serach_query(args: dict) -> str:
     return query
 
 
+def update_security_signal_assignee_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    """
+    Updates the assignee of a security monitoring signal in Datadog.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (Dict[str, Any]): A dictionary of arguments for updating the signal assignee.
+                              - signal_id (str): The ID of the signal to update
+                              - assignee (str): The user UUID to assign the signal to
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    signal_id = args.get("signal_id")
+    assignee = args.get("assignee")
+
+    if not signal_id:
+        return DemistoException("signal_id is required")
+
+    body = SecurityMonitoringSignalAssigneeUpdateRequest(
+        data=SecurityMonitoringSignalAssigneeUpdateData(
+            attributes=SecurityMonitoringSignalAssigneeUpdateAttributes(
+                assignee=assignee,
+            ),
+        ),
+    )
+
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        response = api_instance.edit_security_monitoring_signal_assignee(
+            signal_id=str(signal_id), body=body
+        )
+        results = response.to_dict()
+        formatted_data = convert_datetime_to_str(results.get("data"))
+        signal_lookup_data = [signal_for_lookup(formatted_data)]
+        readable_output = lookup_to_markdown(signal_lookup_data, "Security Signal Details")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal",
+            outputs_key_field="id",
+            outputs=formatted_data if results else {},
+        )
+
+
+def update_security_signal_state_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    """
+    Updates the state of a security monitoring signal.
+
+    Args:
+     configuration (Configuration): The configuration object for Datadog.
+     args: A dictionary of arguments for the command.
+            - signal_id (str): The ID of the signal to update
+            - state (str): The new state for the signal (open, under_review, resolved, etc.)
+            - reason (str): Reason for the state change
+            - comment (str): Comment about the state change
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    signal_id = args.get("signal_id")
+    state = args.get("state")
+    reason = args.get("reason")
+    comment = args.get("comment")
+
+    if not signal_id:
+        return DemistoException("signal_id is required.")
+    if not state:
+        return DemistoException("state is required.")
+
+    body = SecurityMonitoringSignalStateUpdateRequest(
+        data=SecurityMonitoringSignalStateUpdateData(
+            attributes=SecurityMonitoringSignalStateUpdateAttributes(
+                state=state,
+                reason=reason,
+                comment=comment,
+            ),
+        ),
+    )
+
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        response = api_instance.edit_security_monitoring_signal_state(
+            signal_id=str(signal_id), body=body
+        )
+        results = response.to_dict()
+        formatted_data = convert_datetime_to_str(results.get("data"))
+        signal_lookup_data = [signal_for_lookup(formatted_data)]
+        readable_output = lookup_to_markdown(signal_lookup_data, "Security Signal Details")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal",
+            outputs_key_field="id",
+            outputs=formatted_data if results else {},
+        )
+
+
+# Note: Security signals cannot be deleted, only their state can be updated
+# Use update_security_signal_state_command to resolve or close signals
+
+
+def get_security_signals_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    signal_id = args.get("signal_id")
+    with ApiClient(configuration) as api_client:
+        api_instance = SecurityMonitoringApi(api_client)
+        if signal_id:
+            signal_response = api_instance.get_security_monitoring_signal(
+                signal_id=signal_id,
+            )
+            results = signal_response.to_dict()
+            data = results.get("data", {})
+            if data:
+                data = convert_datetime_to_str(data)
+                signal_lookup = signal_for_lookup(data)
+                readable_output = lookup_to_markdown([signal_lookup], "Security Signal Details")
+            else:
+                readable_output = "No security signal to present.\n"
+        else:
+            sort = args.get("sort", "asc")
+            sort_data = {"asc": SecurityMonitoringSignalsSort.TIMESTAMP_ASCENDING, "desc": SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING}
+            page = arg_to_number(args.get("page"), arg_name="page")
+            page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+            limit = arg_to_number(args.get("limit"), arg_name="limit")
+            limit, offset = pagination(limit, page, page_size)
+
+            # Create filter for signals
+            filter_query = security_signals_search_query(args)
+
+            body = SecurityMonitoringSignalListRequest(
+                filter=SecurityMonitoringSignalListRequestFilter(
+                    query=filter_query,
+                    _from=parse(args.get("from_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"}),
+                    to=parse(args.get("to_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"}),
+                ),
+                page=SecurityMonitoringSignalListRequestPage(
+                    cursor="",
+                    limit=limit,
+                ),
+                sort=sort_data[sort],
+            )
+
+            from_date = parse(args.get("from_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"})
+            to_date = parse(args.get("to_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"})
+            demisto.debug(f"Command - from_date: {from_date}, to_date: {to_date}")
+            signal_list_response = api_instance.list_security_monitoring_signals(
+                filter_query=filter_query,
+                filter_from=from_date,
+                filter_to=to_date,
+                sort=sort_data[sort],
+                page_limit=limit,
+            )
+            results = signal_list_response.to_dict()
+            data = results.get("data", [])
+            data = [convert_datetime_to_str(signal) for signal in data]
+            lookup_data = [signal_for_lookup(obj) for obj in data]
+            readable_output = lookup_to_markdown(lookup_data, "Security Signals List")
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.SecuritySignal",
+        outputs_key_field="id",
+        outputs=data,
+    )
+
+
+def security_signals_search_query(args: dict) -> str:
+    query = ""
+    if args.get("state"):
+        query += f"state:{args.get('state')}"
+    if args.get("severity"):
+        query += f" AND severity:{args.get('severity')}" if len(query) else f"severity:{args.get('severity')}"
+    if args.get("status"):
+        query += f" AND status:{args.get('status')}" if len(query) else f"status:{args.get('status')}"
+    if args.get("rule_name"):
+        query += f" AND rule.name:{args.get('rule_name')}" if len(query) else f"rule.name:{args.get('rule_name')}"
+    if args.get("source"):
+        query += f" AND source:{args.get('source')}" if len(query) else f"source:{args.get('source')}"
+    if not query:
+        query = "*"
+    return query
+
+
+def logs_search_command(configuration: Configuration, args: dict[str, Any]) -> CommandResults | DemistoException:
+    """
+    Search for logs in Datadog.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (Dict[str, Any]): A dictionary of arguments for searching logs.
+                              - query (str): The search query
+                              - service (str): Filter by service name
+                              - host (str): Filter by host name
+                              - source (str): Filter by source
+                              - status (str): Filter by status
+                              - from_date (str): Start date for search
+                              - to_date (str): End date for search
+                              - limit (int): Number of logs to return
+                              - page (int): Page number
+                              - page_size (int): Page size
+                              - sort (str): Sort order (asc/desc)
+
+    Returns:
+        CommandResults: The object containing the command results.
+    """
+    try:
+        with ApiClient(configuration) as api_client:
+            api_instance = LogsApi(api_client)
+            
+            # Pagination
+            sort = args.get("sort", "desc")
+            sort_data = {"asc": LogsSort.TIMESTAMP_ASCENDING, "desc": LogsSort.TIMESTAMP_DESCENDING}
+            page = arg_to_number(args.get("page"), arg_name="page")
+            page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+            limit = arg_to_number(args.get("limit"), arg_name="limit")
+            limit, offset = pagination(limit, page, page_size)
+
+            # Build search query
+            search_query = logs_search_query(args)
+
+            # Date range - convert to ISO strings
+            from_date = parse(args.get("from_date", DEFAULT_FROM_DATE), settings={"TIMEZONE": "UTC"})
+            to_date = parse(args.get("to_date", DEFAULT_TO_DATE), settings={"TIMEZONE": "UTC"})
+            
+            from_date_str = from_date.isoformat() if from_date else None
+            to_date_str = to_date.isoformat() if to_date else None
+
+            # Execute the search using body with LogsListRequest
+            body = LogsListRequest(
+                filter=LogsQueryFilter(
+                    query=search_query,
+                    _from=from_date_str,
+                    to=to_date_str,
+                ),
+                page=LogsListRequestPage(
+                    limit=limit,
+                ),
+                sort=sort_data[sort],
+            )
+            response = api_instance.list_logs(body=body)
+            results = response.to_dict()
+            data = results.get("data", [])
+            data = [convert_datetime_to_str(log) for log in data]
+            lookup_data = [log_for_lookup(obj) for obj in data]
+            readable_output = lookup_to_markdown(lookup_data, table_header("Logs List", page, page_size))
+
+            return CommandResults(
+                readable_output=readable_output,
+                outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Log",
+                outputs_key_field="id",
+                outputs=data,
+            )
+    except Exception as e:
+        return DemistoException(f"Failed to search logs: {str(e)}")
+
+
 def query_timeseries_points_command(configuration: Configuration, args: dict[str, Any]):
     query = str(args.get("query"))
     from_time = parse(args.get("from", ""), settings={"TIMEZONE": "UTC"})
@@ -1166,6 +1716,92 @@ def fetch_incidents(configuration: Configuration, params: dict):
     return "OK"
 
 
+def fetch_security_signals(configuration: Configuration, params: dict):
+    first_fetch_time = params.get("first_fetch", "3 days")
+    fetch_limit = params.get("max_fetch", 50)
+    first_fetch_time = parse(f"-{first_fetch_time}", settings={"TIMEZONE": "UTC"})
+    last_run = demisto.getLastRun()
+
+    with ApiClient(configuration) as api_client:
+        incidents = []
+        api_instance = SecurityMonitoringApi(api_client)
+
+        # Create the request body for listing security signals
+        body = SecurityMonitoringSignalListRequest(
+            filter=SecurityMonitoringSignalListRequestFilter(
+                query="*",  # Get all signals
+                _from=first_fetch_time if first_fetch_time else parse("-3days", settings={"TIMEZONE": "UTC"}),
+                to=parse("now", settings={"TIMEZONE": "UTC"}),
+            ),
+            page=SecurityMonitoringSignalListRequestPage(
+                cursor="",
+                limit=min(200, int(fetch_limit)),
+            ),
+            sort=SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING,
+        )
+
+        from_time = first_fetch_time if first_fetch_time else parse("-3days", settings={"TIMEZONE": "UTC"})
+        to_time = parse("now", settings={"TIMEZONE": "UTC"})
+        demisto.debug(f"from_time: {from_time}, to_time: {to_time}")
+        response = api_instance.list_security_monitoring_signals(
+            filter_query="*",
+            filter_from=from_time,
+            filter_to=to_time,
+            sort=SecurityMonitoringSignalsSort.TIMESTAMP_DESCENDING,
+            page_limit=min(200, int(fetch_limit)),
+        )
+        results = response.to_dict()
+        data = results.get("data", [])
+        data = [convert_datetime_to_str(signal) for signal in data]
+
+        # Filter signals based on last run timestamp
+        data_list = [
+            signal
+            for signal in data
+            if (
+                datetime.fromisoformat(signal["attributes"]["timestamp"]).replace(tzinfo=None).timestamp()
+                > datetime.fromisoformat(last_run.get("lastRun")).timestamp()
+                if last_run.get("lastRun")
+                else first_fetch_time.timestamp()
+                if first_fetch_time
+                else None
+            )
+        ]
+
+        for signal in data_list:
+            attributes = signal["attributes"]
+            new_obj = {
+                "id": signal["id"],
+                "type": signal["type"],
+                "message": attributes.get("message", ""),
+                "timestamp": datetime.fromisoformat(attributes["timestamp"]).strftime(UI_DATE_FORMAT),
+                "severity": attributes.get("severity", ""),
+                "state": attributes.get("state", ""),
+                "status": attributes.get("status", ""),
+                "rule_name": attributes.get("rule", {}).get("name", ""),
+                "rule_id": attributes.get("rule", {}).get("id", ""),
+                "tags": attributes.get("tags", []),
+                "source": attributes.get("source", ""),
+                "service": attributes.get("service", ""),
+                "host": attributes.get("host", ""),
+            }
+
+            incident = {
+                "name": attributes.get("message", "Security Signal"),
+                "occurred": attributes["timestamp"],
+                "dbotMirrorId": signal["id"],
+                "rawJSON": json.dumps({"security_signal": new_obj}),
+                "type": "Datadog Cloud SIEM Security Signal",
+            }
+            incidents.append(incident)
+
+        if data_list:
+            demisto.setLastRun({"lastRun": data_list[0].get("attributes", {}).get("timestamp", "")})
+
+    demisto.incidents(incidents)
+    return "OK"
+
+
 def add_utc_offset(dt_str: str):
     """
     Converts a datetime string in ISO format to the equivalent datetime object
@@ -1178,7 +1814,7 @@ def add_utc_offset(dt_str: str):
         str: A string representing the input datetime with a UTC offset, in ISO format (YYYY-MM-DDTHH:MM:SS[.ffffff]+00:00)
     """
     dt = datetime.fromisoformat(dt_str)
-    dt_with_offset = dt.replace(tzinfo=UTC)
+    dt_with_offset = dt.replace(tzinfo=timezone.utc)
     return dt_with_offset.isoformat()
 
 
@@ -1212,12 +1848,18 @@ def main() -> None:
             "datadog-incident-update": update_incident_command,
             "datadog-incident-delete": delete_incident_command,
             "datadog-incident-list": get_incident_command,
+            "datadog-security-signal-assignee-update": update_security_signal_assignee_command,
+            "datadog-security-signal-state-update": update_security_signal_state_command,
+            "datadog-security-signals-list": get_security_signals_command,
+            "datadog-logs-search": logs_search_command,
             "datadog-time-series-point-query": query_timeseries_points_command,
         }
         if command == "test-module":
             return_results(module_test(configuration))
         elif command == "fetch-incidents":
             return_results(fetch_incidents(configuration, params))
+        elif command == "fetch-security-signals":
+            return_results(fetch_security_signals(configuration, params))
         elif command in commands:
             return_results(commands[command](configuration, args))
         else:
