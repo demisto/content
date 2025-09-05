@@ -4155,12 +4155,17 @@ def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | d
         CommandResults: JSON response of added feed.
     """
     result = client.add_feed(args)
+    feed_name = result.get("name")
+    feed_type = result.get("type")
+    readable_output = (
+        f"SilentPush feed: {feed_name} of type: {feed_type} was added successfully.\n"
+    )
 
     return CommandResults(
         outputs_prefix="SilentPush.Feed",
         outputs_key_field="name",
         outputs=result,
-        readable_output=tableToMarkdown("SilentPush Add Feed", result),
+        readable_output=tableToMarkdown(readable_output,result),
         raw_response=result,
     )
 
@@ -4199,13 +4204,15 @@ def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResult
     Returns:
         CommandResults: JSON response of added tags.
     """
-    result = client.add_feed_tags(args)
+    result = client.add_feed_tags(args).get('created_or_updated')
+    uuid = args.get('feed_uuid')
+    tags = args.get('tags')
 
     return CommandResults(
         outputs_prefix="SilentPush.AddFeedTags",
         outputs_key_field="feed_uuid",
         outputs=result,
-        readable_output=tableToMarkdown("SilentPush Add Feed Tags", result),
+        readable_output=tableToMarkdown(f"feed with uuid: {uuid} was updated with tags: {tags}", result),
         raw_response=result,
     )
 
@@ -4228,13 +4235,15 @@ def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: JSON response of added indicators.
     """
-    result = client.add_indicators(args)
+    result = client.add_indicators(args).get('created_or_updated')
+    indicators = args.get('indicators')
+    feed_uuid = args.get('feed_uuid')
 
     return CommandResults(
         outputs_prefix="SilentPush.AddIndicators",
         outputs_key_field="feed_uuid",
         outputs=result,
-        readable_output=tableToMarkdown("SilentPush Add Indicators", result),
+        readable_output=tableToMarkdown(f"Indicators: '{indicators}' were added successfully to SilentPush feed: '{feed_uuid}'.", result),
         raw_response=result,
     )
 
@@ -4258,12 +4267,14 @@ def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: JSON response of added indicator tags.
     """
     result = client.add_indicators_tags(args)
+    tags = args.get('tags')
+    indicator_name = args.get('indicator_name')
 
     return CommandResults(
         outputs_prefix="SilentPush.AddIndicatorTags",
         outputs_key_field="feed_uuid",
         outputs=result,
-        readable_output=tableToMarkdown("SilentPush Add Indicator Tags", result),
+        readable_output=tableToMarkdown(f"Indicator Tags: '{tags}' added to indicator '{indicator_name}' successfully", result),
         raw_response=result,
     )
 
@@ -4287,12 +4298,13 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
         CommandResults: JSON response of threat check.
     """
     result = client.run_threat_check(args)
+    ip = result.get("query")
 
     return CommandResults(
         outputs_prefix="SilentPush.RunThreatCheck",
         outputs_key_field="query",
         outputs=result,
-        readable_output=tableToMarkdown("SilentPush Threat Check", result),
+        readable_output=tableToMarkdown(f"Threat check for IP '{ip}' completed successfully", result),
         raw_response=result,
     )
 
