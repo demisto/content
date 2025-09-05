@@ -1,0 +1,30 @@
+[
+    {
+        "Warninglist": {
+            "id": 1,
+            "name": "Hello XSOAR!",
+            "type": "string",
+            "description": "The Quick Brown Fox Jumped Over The Lazy Dog",
+            "version": 1,
+            "enabled": false,
+            "default": false,
+            "category": "false_positive",
+            "warninglist_entry_count": 2,
+            "valid_attributes": "attrib1,attrib2"
+        }
+    },
+    {
+        "Warninglist": {
+            "id": 2,
+            "name": "Warninglist2",
+            "type": "string",
+            "description": "Description2",
+            "version": 42,
+            "enabled": true,
+            "default": true,
+            "category": "false_positive",
+            "warninglist_entry_count": 2,
+            "valid_attributes": "attrib1,attrib2"
+        }
+    }
+]
