@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudthreatclass",
+    "version": -1,
+    "modified": "2025-07-14T18:16:42.168997276+05:30",
+    "name": "Infoblox Cloud Threat Class",
+    "ownerOnly": false,
+    "description": "The threat class of the Infoblox Cloud Insight. ",
+    "cliName": "infobloxcloudthreatclass",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

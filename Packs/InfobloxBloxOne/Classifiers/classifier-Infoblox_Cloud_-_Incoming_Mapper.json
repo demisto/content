@@ -1,0 +1,161 @@
+{
+    "description": "Maps incoming Infoblox Cloud incident fields.",
+    "feed": false,
+    "id": "Infoblox Cloud - Incoming Mapper",
+    "mapping": {
+        "Infoblox Cloud Insight": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Changed": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dateChanged",
+                        "transformers": []
+                    }
+                },
+                "Comment": {
+                    "complex": {
+                        "filters": [],
+                        "root": "userComment",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_link",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Event Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "numEvents",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Event Not Blocked Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventsNotBlockedCount",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Feed Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "feedSource",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Changed Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "dateChanged",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "insightId",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Most Recent Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mostRecentAt",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Persistent Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "persistentDate",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priorityText",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Spreading Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "spreadingDate",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "startedAt",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Threat Class": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tClass",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Threat Family": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tFamily",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Threat Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threatType",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "startedAt",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priorityText",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "startedAt",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Infoblox Cloud - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
