@@ -745,6 +745,7 @@ def mirror_investigation():
             "Mirroring is enabled, however long running is disabled. For mirrors to work correctly,"
             " long running must be enabled."
         )
+    demisto.debug(f"SlackV3 integration: This is the arguments for the mirror-investigation command: {demisto.args()}")
     mirror_type = demisto.args().get("type", "all")
     auto_close = demisto.args().get("autoclose", "true")
     mirror_direction = demisto.args().get("direction", "both")

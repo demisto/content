@@ -1,0 +1,29 @@
+{
+    "meta": {
+        "count": 1
+    },
+    "data": [
+        {
+            "sender_config": {
+                "sender": {
+                    "domain_entries": [
+                        "yyo@[1.11.11.1]"
+                    ]
+                }
+            },
+            "receiver_config": {
+                "operation": "and",
+                "receiver_not": {
+                    "domain_entries": [
+                        "test@"
+                    ]
+                },
+                "receiver": {
+                    "domain_entries": [
+                        "test@"
+                    ]
+                }
+            }
+        }
+    ]
+}

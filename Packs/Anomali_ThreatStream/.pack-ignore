@@ -10,6 +10,12 @@ ignore=IN144
 [file:AnomaliThreatStream_image.png]
 ignore=IM111
 
+[file:playbook-Detonate_File_-_ThreatStream.yml]
+ignore=GR107
+
+[file:playbook-Detonate_URL_-_ThreatStream.yml]
+ignore=GR107
+
 [known_words]
 anomali
 threatstream

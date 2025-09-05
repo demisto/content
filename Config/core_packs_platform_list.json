@@ -80,7 +80,8 @@
                 "X1",
                 "X3",
                 "X5",
-                "ENT_PLUS"
+                "ENT_PLUS",
+                "agentix"
             ]
         },
         {
@@ -320,7 +321,8 @@
                 "C1", 
                 "C3",
                 "X5",
-                "agentix"
+                "agentix",
+                "cloud_posture"
             ]
         },
         {
@@ -328,7 +330,8 @@
             "supportedModules":[
                 "C1", 
                 "C3",
-                "X5"
+                "X5",
+                "cloud_posture"
             ]
         },
                 {
@@ -336,7 +339,8 @@
             "supportedModules":[
                 "C1", 
                 "C3",
-                "X5"
+                "X5",
+                "cloud_posture"
             ]
         }
     ]

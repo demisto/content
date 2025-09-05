@@ -30,6 +30,6 @@ filter to_string(edgeendtimestamp) ~= "\d{10}|\d{13}|\d{16}|\d{19}"
     tmp_len = 10, to_timestamp(tmp_epoch_int, "SECONDS"), 
     tmp_len = 13, to_timestamp(tmp_epoch_int, "MILLIS"),  
     tmp_len = 16, to_timestamp(tmp_epoch_int, "MICROS"),  
-    tmp_len = 19, to_timestamp(divide(tmp_epoch_int, 1000), "MICROS")) 
+    tmp_len = 19, to_timestamp(to_integer(divide(tmp_epoch_int, 1000)), "MICROS"))
 | alter _time = tmp_time
 | fields - tmp*;

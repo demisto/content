@@ -21,7 +21,7 @@ Remediation:
 
 Requirements:
 
-For response actions, the following integrations are required: 
+For response actions, the following integrations are required:
 
 - PAN-OS.
 

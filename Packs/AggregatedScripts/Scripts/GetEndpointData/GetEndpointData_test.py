@@ -351,11 +351,11 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
     When:
         The run_single_args_commands function is called with verbose mode enabled.
     Then:
-        It should return the aggregated endpoint outputs and command results from all commands.
+        It should return the aggregated endpoint outputs, command results from all commands and endpoint mapping.
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
-
+    endpoint_mapping = {}
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1"), ("id2", "192.168.1.2", "host2")]
     single_args_commands = [
@@ -371,10 +371,19 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
 
     # Mock command runner responses
     mock_command_runner.run_command.side_effect = [
-        (["Readable output 1"], [{"ID": "id1", "Hostname": "host1"}]),  # First command, first endpoint
+        (
+            ["Readable output 1"],
+            [{"ID": "id1", "Hostname": "host1", "Message": "Command successful", "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2}],
+        ),  # First command, first endpoint
         (["Readable output 2"], []),  # Second command, first endpoint (no results)
-        (["Readable output 3"], [{"ID": "id2", "Hostname": "host2"}]),  # First command, second endpoint
-        (["Readable output 4"], [{"ID": "id2", "Status": "Active"}]),  # Second command, second endpoint
+        (
+            ["Readable output 3"],
+            [{"ID": "id2", "Hostname": "host2", "Message": "Command successful", "Brand": Brands.CORTEX_CORE_IR}],
+        ),  # First command, second endpoint
+        (
+            ["Readable output 4"],
+            [{"ID": "id2", "Status": "Active", "Message": "Command successful", "Brand": Brands.FIREEYE_HX_V2}],
+        ),  # Second command, second endpoint
     ]
 
     # Mock debug function
@@ -382,21 +391,68 @@ def test_run_single_args_commands_with_results(mocker: MockerFixture, setup_comm
 
     # Call the function
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=zipped_args, single_args_commands=single_args_commands, command_runner=mock_command_runner, verbose=True
+        zipped_args=zipped_args,
+        single_args_commands=single_args_commands,
+        command_runner=mock_command_runner,
+        verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     # Assertions
     expected_endpoint_outputs = [
-        {"ID": "id1", "Hostname": "host1"},
-        {"ID": "id2", "Hostname": "host2"},
-        {"ID": "id2", "Status": "Active"},
+        {
+            "ID": "id1",
+            "Hostname": "host1",
+            "Message": "Command successful",
+            "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2,
+        },
+        {
+            "ID": "id2",
+            "Hostname": "host2",
+            "Message": "Command successful",
+            "Brand": Brands.CORTEX_CORE_IR,
+        },
+        {
+            "ID": "id2",
+            "Status": "Active",
+            "Message": "Command successful",
+            "Brand": Brands.FIREEYE_HX_V2,
+        },
     ]
     expected_command_results = ["Readable output 1", "Readable output 2", "Readable output 3", "Readable output 4"]
 
+    expected_endpoint_mapping = {
+        "Active Directory Query v2": {
+            "id1": {
+                "ID": "id1",
+                "Hostname": "host1",
+                "Message": "Command successful",
+                "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2,
+            }
+        },
+        "Cortex Core - IR": {
+            "id2": {
+                "ID": "id2",
+                "Hostname": "host2",
+                "Message": "Command successful",
+                "Brand": Brands.CORTEX_CORE_IR,
+            }
+        },
+        "FireEyeHX v2": {
+            "id2": {
+                "ID": "id2",
+                "Status": "Active",
+                "Message": "Command successful",
+                "Brand": Brands.FIREEYE_HX_V2,
+            }
+        },
+    }
+
+    assert endpoint_mapping == expected_endpoint_mapping
     assert endpoint_outputs == expected_endpoint_outputs
     assert command_results == expected_command_results
     assert mock_command_runner.run_command.call_count == 4
-    mock_debug.assert_called_once_with("ending single arg loop with 3 endpoints")
+    mock_debug.assert_called_with("ending single arg loop with 3 endpoints")
 
 
 def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_command_runner):
@@ -410,6 +466,7 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
+    endpoint_mapping = {}
 
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1")]
@@ -425,14 +482,18 @@ def test_run_single_args_commands_verbose_false(mocker: MockerFixture, setup_com
 
     # Call the function
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=zipped_args, single_args_commands=single_args_commands, command_runner=mock_command_runner, verbose=False
+        zipped_args=zipped_args,
+        single_args_commands=single_args_commands,
+        command_runner=mock_command_runner,
+        verbose=False,
+        endpoint_mapping=endpoint_mapping,
     )
 
     # Assertions
     assert endpoint_outputs == [{"ID": "id1"}]
     assert command_results == []  # Should be empty when verbose=False
     assert mock_command_runner.run_command.call_count == 1
-    mock_debug.assert_called_once_with("ending single arg loop with 1 endpoints")
+    mock_debug.assert_called_with("ending single arg loop with 1 endpoints")
 
 
 def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setup_command_runner):
@@ -446,6 +507,7 @@ def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setu
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
+    endpoint_mapping = {}
 
     # Setup test data
     zipped_args = [("id1", "192.168.1.1", "host1")]
@@ -461,7 +523,11 @@ def test_run_single_args_commands_no_endpoints_found(mocker: MockerFixture, setu
 
     # Call the function
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=zipped_args, single_args_commands=single_args_commands, command_runner=mock_command_runner, verbose=True
+        zipped_args=zipped_args,
+        single_args_commands=single_args_commands,
+        command_runner=mock_command_runner,
+        verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     # Assertions
@@ -482,6 +548,7 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
     """
     # Setup mock command runner
     mock_command_runner = setup_command_runner
+    endpoint_mapping = {}
 
     # Mock debug function
     mock_debug = mocker.patch("GetEndpointData.demisto.debug")
@@ -494,6 +561,7 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
         ],
         command_runner=mock_command_runner,
         verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     assert endpoint_outputs == []
@@ -507,7 +575,11 @@ def test_run_single_args_commands_empty_inputs(mocker: MockerFixture, setup_comm
 
     # Test with empty commands
     endpoint_outputs, command_results = run_single_args_commands(
-        zipped_args=[("id1", "ip1", "host1")], single_args_commands=[], command_runner=mock_command_runner, verbose=True
+        zipped_args=[("id1", "ip1", "host1")],
+        single_args_commands=[],
+        command_runner=mock_command_runner,
+        verbose=True,
+        endpoint_mapping=endpoint_mapping,
     )
 
     assert endpoint_outputs == []
@@ -1136,3 +1208,225 @@ def test_get_endpoints_not_found_list_partial_match_by_ip():
     result = get_endpoints_not_found_list(endpoints, zipped_args)
 
     assert result == []
+
+
+def test_add_endpoint_to_mapping_new_brand():
+    """
+    Given:
+        A list of endpoints with a new brand and ID.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should add the new endpoint to the mapping with the new brand and ID.
+    """
+    endpoints = [
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "id": 1},
+    ]
+    mapping = {}
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert mapping == {Brands.CORTEX_XDR_IR.value: {1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.CORTEX_XDR_IR, "id": 1}}}
+
+
+def test_add_endpoint_to_mapping_existing_brand():
+    """
+    Given:
+        A list of endpoints with an existing brand and ID.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should add the new endpoint to the existing brand and ID.
+    """
+    endpoints = [
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 2},
+    ]
+    mapping = {
+        Brands.ACTIVE_DIRECTORY_QUERY_V2.value: {
+            1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1}
+        }
+    }
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert 2 in mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value]
+    assert 1 in mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value]
+
+
+def test_add_endpoint_to_mapping_update_existing():
+    """
+    Given:
+        A list of endpoints with an existing brand and ID.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should update the existing endpoint with the new hostname.
+    """
+    endpoints = [
+        {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1, "hostname": "host1"},
+    ]
+    mapping = {
+        Brands.ACTIVE_DIRECTORY_QUERY_V2.value: {
+            1: {"Message": COMMAND_SUCCESS_MSG, "Brand": Brands.ACTIVE_DIRECTORY_QUERY_V2, "id": 1}
+        }
+    }
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert mapping[Brands.ACTIVE_DIRECTORY_QUERY_V2.value][1]["hostname"] == "host1"
+
+
+def test_add_endpoint_to_mapping_skips_unsuccessful():
+    """
+    Given:
+        A list of endpoints with a failed command message.
+    When:
+        The add_endpoint_to_mapping function is called with the endpoints.
+    Then:
+        It should skip the endpoint with the failed command message and return an empty mapping.
+    """
+    endpoints = [
+        {"Message": "Some error", "Brand": "BrandA", "id": 3},
+    ]
+    mapping = {}
+    add_endpoint_to_mapping(endpoints, mapping, "id")
+    assert mapping == {}
+
+
+def test_endpoint_mapping_to_list_merges_all():
+    """
+    Given:
+        A dictionary of endpoint mappings with multiple brands and IDs.
+    When:
+        The endpoint_mapping_to_list function is called with the endpoint mapping.
+    Then:
+        It should return a list of all endpoints merged from the mapping.
+    """
+    mapped = {
+        "BrandA": {
+            1: {"id": 1, "Brand": "BrandA"},
+            2: {"id": 2, "Brand": "BrandA"},
+        },
+        "brand2": {
+            3: {"id": 3, "Brand": "BrandB"},
+        },
+    }
+    result = endpoint_mapping_to_list(mapped)
+    ids = {ep["id"] for ep in result}
+    assert ids == {1, 2, 3}
+
+
+def test_endpoint_mapping_to_list_empty():
+    """
+    Given:
+        An empty endpoint mapping.
+    When:
+        The endpoint_mapping_to_list function is called with an empty mapping.
+    Then:
+        It should return an empty list.
+    """
+    assert endpoint_mapping_to_list({}) == []
+
+
+def test_get_generic_command_returns_correct_command():
+    """
+    Given:
+        - A list of commands including one with brand 'BrandA' and one with brand 'Generic Command'.
+    When:
+        The get_generic_command function is called with this list.
+    Then:
+        It should return the command with brand 'Generic Command'.
+    """
+    commands = [
+        Command(brand="BrandA", name="commandA", output_keys=[], args_mapping={}, output_mapping={}),
+        Command(brand=Brands.GENERIC_COMMAND, name="commandB", output_keys=[], args_mapping={}, output_mapping={}),
+    ]
+    result = get_generic_command(commands)
+    assert result.brand == "Generic Command"
+
+
+@pytest.mark.parametrize(
+    "brands_to_run, available_brands, predefined_brands, expected",
+    [
+        (
+            [],
+            {"BrandA", "BrandD", "BrandE"},
+            ["BrandA", "BrandB", "BrandC"],
+            {"BrandD", "BrandE"},
+        ),
+        (
+            ["BrandD"],
+            {"BrandA", "BrandD", "BrandE"},
+            ["BrandA", "BrandB", "BrandC"],
+            {"BrandD"},
+        ),
+    ],
+)
+def test_create_using_brand_argument_to_generic_command_all_default(
+    mocker, brands_to_run, available_brands, predefined_brands, expected
+):
+    """
+    Given:
+        - Enabled brands: BrandA, BrandD, BrandE (BrandB inactive).
+        - Predefined brands: BrandA, BrandB, BrandC.
+        - Empty 'using-brand' argument list provided.
+    When:
+        create_using_brand_argument_to_generic_command is called.
+    Then:
+        'using-brand' should contain only active brands not in the predefined list (BrandD, BrandE).
+    """
+    mocker.patch("GetEndpointData.Brands.get_all_values", return_value=predefined_brands)
+    mock_module_manager = mocker.Mock()
+    mock_module_manager.get_enabled_brands.return_value = available_brands
+
+    command = Command(brand="Generic Command", name="gc", output_keys=[], args_mapping={}, output_mapping={})
+
+    create_using_brand_argument_to_generic_command(brands_to_run, command, mock_module_manager)
+
+    actual_set = set(command.additional_args["using-brand"].split(","))
+    assert actual_set == expected
+
+
+def test_get_extended_hostnames_set_typical():
+    """
+    Given:
+        A mapping with Cortex XDR brand containing endpoints with hostnames and irrelevant brand.
+    When:
+        get_extended_hostnames_set is called with this mapping.
+    Then:
+        It returns a set of all hostnames from the Cortex XDR brand.
+    """
+    mapped_endpoints = {
+        Brands.CORTEX_XDR_IR.value: {
+            "1": {"Hostname": "host-xdr-1"},
+            "2": {"Hostname": "host-xdr-2"},
+        },
+        "OtherBrand": {
+            "x": {"Hostname": "should-not-appear"},
+        },
+    }
+    result = get_extended_hostnames_set(mapped_endpoints)
+    assert result == {"host-xdr-1", "host-xdr-2"}
+
+
+def test_get_extended_hostnames_set_empty():
+    """
+    Given:
+        An empty mapping.
+    When:
+        get_extended_hostnames_set is called.
+    Then:
+        It returns an empty set.
+    """
+    assert get_extended_hostnames_set({}) == set()
+
+
+def test_get_extended_hostnames_set_irrelevant_brand():
+    """
+    Given:
+        A mapping with only irrelevant brands (not Cortex XDR/Core).
+    When:
+        get_extended_hostnames_set is called.
+    Then:
+        It returns an empty set.
+    """
+    mapped_endpoints = {
+        "OtherBrand": {
+            "x": {"Hostname": "should-not-appear"},
+        }
+    }
+    assert get_extended_hostnames_set(mapped_endpoints) == set()

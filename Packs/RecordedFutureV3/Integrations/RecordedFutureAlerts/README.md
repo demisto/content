@@ -1,13 +1,17 @@
 # Recorded Future Alerts
 
 Fetch and triage **Recorded Future Classic Alerts** and **Recorded Future Playbook Alerts** directly from Cortex
-XSOAR.  
+XSOAR.
 
 The integration allows you to:
 
 * Search and fetch alerts from the Recorded Future platform.
 * Update alert status, assignee and comment/note from inside XSOAR.
 * Automatically fetch screenshots that accompany the alert.
+
+### Migration from Recorded Future Intelligence pack
+
+[Guide: migrating from Recorded Future Intelligence pack](https://github.com/demisto/content/blob/master/Packs/RecordedFutureV3/doc_files/migrate_from_recorded_future_intelligence_pack.md)
 
 ## Configure Recorded Future Alerts in Cortex
 
