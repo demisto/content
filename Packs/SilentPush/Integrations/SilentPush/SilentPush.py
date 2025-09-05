@@ -4304,7 +4304,7 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_prefix="SilentPush.RunThreatCheck",
         outputs_key_field="query",
         outputs=result,
-        readable_output=tableToMarkdown(f"Threat check for IP '{ip}' completed successfully", result),
+        readable_output=tableToMarkdown(f"Threat check for query '{ip}' completed successfully", result),
         raw_response=result,
     )
 

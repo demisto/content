@@ -1371,6 +1371,7 @@ def test_add_feed_command_success(mock_client):
 
     # Mock arguments passed to the command
     args = {"name": unique_name, "type": "domain", "tags": "Test,Demo"}
+    expected_output = f"### SilentPush feed: {unique_name} of type: domain was added successfully.\n"
 
     # Simulated API response
     mock_response = {
@@ -1394,12 +1395,13 @@ def test_add_feed_command_success(mock_client):
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == unique_name
     assert result.outputs["vendor"] == "SilentPush"
-    assert "SilentPush Add Feed" in result.readable_output
+    assert expected_output in result.readable_output
 
 
 def test_add_indicators_command_success(mock_client):
     # Generate unique UUID for test feed
     test_uuid = str(uuid.uuid4())
+    expected_output = f"### Indicators: '['example.com', 'malicious.net']' were added successfully to SilentPush feed: '{test_uuid}'."
 
     # Mock arguments
     args = {"feed_uuid": test_uuid, "indicators": ["example.com", "malicious.net"]}
@@ -1407,7 +1409,7 @@ def test_add_indicators_command_success(mock_client):
     # Mock response returned by the API client
     mock_response = {"feed_uuid": test_uuid, "added": 2, "indicators": ["example.com", "malicious.net"]}
 
-    mock_client.add_indicators.return_value = mock_response
+    mock_client.add_indicators.return_value = {"created_or_updated": mock_response}
 
     # Execute command
     result = add_indicators_command(mock_client, args)
@@ -1418,13 +1420,14 @@ def test_add_indicators_command_success(mock_client):
     assert result.outputs_key_field == "feed_uuid"
     assert result.outputs["feed_uuid"] == test_uuid
     assert result.outputs["added"] == 2
-    assert "SilentPush Add Indicators" in result.readable_output
+    assert expected_output in result.readable_output
 
 
 def test_add_indicators_tags_command_success(mock_client):
     test_uuid = str(uuid.uuid4())
     test_indicator = "example.com"
     test_tags = ["test", "phishing"]
+    expected_output = f"### Indicator Tags: '['test', 'phishing']' added to indicator 'example.com"
 
     args = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags": test_tags}
 
@@ -1440,11 +1443,12 @@ def test_add_indicators_tags_command_success(mock_client):
     assert result.outputs["feed_uuid"] == test_uuid
     assert result.outputs["indicator_name"] == test_indicator
     assert result.outputs["tags_added"] == test_tags
-    assert "SilentPush Add Indicator Tags" in result.readable_output
+    assert expected_output in result.readable_output
 
 
 def test_run_threat_check_command_success(mock_client):
     args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user", "query": "test_query"}
+    expected_output = "### Threat check for query 'test_query' completed successfully"
 
     mock_response = {
         "type": "domain",
@@ -1463,7 +1467,7 @@ def test_run_threat_check_command_success(mock_client):
     assert result.outputs_key_field == "query"
     assert result.outputs["query"] == "test_query"
     assert result.outputs["result"] == "benign"
-    assert "SilentPush Threat Check" in result.readable_output
+    assert expected_output in result.readable_output
 
 
 def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
@@ -1498,9 +1502,11 @@ def test_get_data_exports_command_success(mock_client):
 def test_add_feed_tags_command_success(mocker):
     # Mock args
     args = {"feed_uuid": "abc123", "tags": "malware"}
+    expected_output = f"### feed with uuid: abc123 was updated with tags: malware"
 
     # Mocked result returned by client.add_feed_tags
     mock_response = {"created_or_updated": [{"uuid": "8eb9c1b8-edbb-4081-9978-590f5c5a0319", "tag": "phishing"}]}
+    expected_res = mock_response.get("created_or_updated")
 
     # Mock the Client and its method
     mock_client = mocker.Mock(spec=Client)
@@ -1513,9 +1519,9 @@ def test_add_feed_tags_command_success(mocker):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.AddFeedTags"
     assert result.outputs_key_field == "feed_uuid"
-    assert result.outputs == mock_response
-    assert result.raw_response == mock_response
-    assert "SilentPush Add Feed Tags" in result.readable_output
+    assert result.outputs == expected_res
+    assert result.raw_response == expected_res
+    assert expected_output in result.readable_output
 
 def test_parse_arguments_valid():
     """Test parsing with all valid arguments"""
