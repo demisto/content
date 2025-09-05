@@ -1,0 +1,18 @@
+{
+  "insightList": [
+    {
+      "insightId": "insight-004",
+      "priorityText": "INFO",
+      "description": "This insight is missing dateChanged field",
+      "threatType": "info",
+      "status": "closed"
+    },
+    {
+      "dateChanged": "2023-12-01T13:00:00Z",
+      "priorityText": "LOW", 
+      "description": "This insight is missing insightId field",
+      "threatType": "suspicious",
+      "status": "open"
+    }
+  ]
+}
