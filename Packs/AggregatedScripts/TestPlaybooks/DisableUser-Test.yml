@@ -195,7 +195,7 @@ tasks:
       brands:
         simple: Okta v2
       user_name:
-        simple: ${Account.Username}
+        simple: ${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -278,7 +278,7 @@ tasks:
       brands:
         simple: Okta v2
       user_name:
-        simple: ${Account.Username}
+        simple: ${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1102,7 +1102,7 @@ tasks:
       - "32"
     scriptarguments:
       user_name:
-        simple: ${Account.Username}
+        simple: ${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1500,7 +1500,7 @@ tasks:
       brands:
         simple: Okta v2
       user_name:
-        simple: ${Account.Username}
+        simple: ${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1965,7 +1965,7 @@ tasks:
       user_id:
         simple: ${MSGraphUser.ID}
       user_name:
-        simple: ${Account.Username}
+        simple: ${TimeNowUnix}
     separatecontext: false
     continueonerrortype: ""
     view: |-
