@@ -54,7 +54,6 @@ def build_name_regex(fields: str, anchor: bool) -> str:
     When anchor=True -> "^(co2|solar|load)$"
     When anchor=False -> "co2|solar|load"
     """
-    # Trim spaces around pipes to avoid regex issues
     parts = [p.strip() for p in fields.split("|") if p.strip()]
     if not parts:
         raise ValueError("fields resolved to an empty list.")
@@ -90,7 +89,7 @@ def format_result_rows(result: Dict[str, Any]) -> List[Dict[str, Any]]:
         try:
             value = float(value_str)
         except Exception:
-            value = value_str  # leave as string if not numeric
+            value = value_str
 
         ts_iso = datetime.fromtimestamp(ts_unix).replace(tzinfo=timezone.utc).isoformat()
         name = metric.get("__name__", "")
@@ -104,11 +103,10 @@ def prometheus_query_command(client: PrometheusClient, args: Dict[str, Any], def
     """
     Build query from fields (pipe-separated) and call /api/v1/query.
     """
-    # Allow explicit raw 'query' override to keep it flexible
     raw_query = args.get("query")
     fields = args.get("fields") or default_fields
-    anchor = argToBoolean(args.get("anchor", "true"))  # default True to avoid partial matches
-    at_time = args.get("time")  # optional (RFC3339 or unix seconds)
+    anchor = argToBoolean(args.get("anchor", "true"))
+    at_time = args.get("time")
 
     if raw_query:
         query = raw_query
@@ -190,7 +188,6 @@ def main() -> None:
     if not base_url:
         return_error('Parameter "url" is required.')
 
-    # Auth (optional)
     credentials = params.get("credentials") or {}
     username = credentials.get("identifier")
     password = credentials.get("password")
@@ -199,10 +196,9 @@ def main() -> None:
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     timeout = arg_to_number(params.get("timeout", 30)) or 30
-    default_fields = params.get("default_fields")  # optional
+    default_fields = params.get("default_fields")
 
     headers: Dict[str, str] = {}
-    # Optional: user can provide a bearer token in the password field with username "Bearer"
     if username == "Bearer" and password:
         headers["Authorization"] = f"Bearer {password}"
 

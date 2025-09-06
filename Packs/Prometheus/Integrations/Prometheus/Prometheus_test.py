@@ -1,14 +1,4 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
+"""PrometheusClient for Cortex XSOAR - Unit Tests file"""
 
 from CommonServerPython import Optional
 import Packs.Prometheus.Integrations.Prometheus.Prometheus as mod
@@ -21,21 +11,13 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# Prometheus_test.py
-# Unit tests for Prometheus.py
-# Requires: pytest, demistomock (bundled with XSOAR SDK)
-
-
-# Import the integration module under test
-
-
 class TestClient(mod.PrometheusClient):
     def __init__(self, response=None, raise_exc: Exception = None):
         self._response = response
         self._raise = raise_exc
         self.timeout = 30
 
-    def instant_query(self, query: str, at_time: Optional[str] = None):  # <-- Optional[str]
+    def instant_query(self, query: str, at_time: Optional[str] = None):
         if self._raise:
             raise self._raise
         self._last_query = query
@@ -68,11 +50,6 @@ def sample_error_response():
     return {"status": "error", "errorType": "bad_data", "error": "parse error"}
 
 
-# -----------------------
-# build_name_regex tests
-# -----------------------
-
-
 def test_build_name_regex_anchor_true():
     regex = mod.build_name_regex("co2| solar |load", anchor=True)
     assert regex == "^(co2|solar|load)$"
@@ -86,11 +63,6 @@ def test_build_name_regex_anchor_false():
 def test_build_name_regex_empty_raises():
     with pytest.raises(ValueError):
         mod.build_name_regex("   ||  |  ", anchor=True)
-
-
-# -----------------------
-# format_result_rows tests
-# -----------------------
 
 
 def test_format_result_rows_parses_vector(sample_vector_response):
@@ -120,21 +92,13 @@ def test_format_result_rows_non_vector_type_returns_empty():
     assert rows == []
 
 
-# ---------------------------------
-# prometheus-query command tests
-# ---------------------------------
-
-
 def test_prometheus_query_builds_query_from_fields(sample_vector_response):
     client = TestClient(response=sample_vector_response)
     args = {"fields": "co2|temperature", "anchor": "true", "time": "2025-09-03T09:00:00Z"}
 
     response = mod.prometheus_query_command(client, args, default_fields=None)
-    # Check query that was actually sent
     assert client._last_query == '{__name__=~"^(co2|temperature)$"}'
     assert client._last_time == "2025-09-03T09:00:00Z"
-
-    # Basic sanity on outputs
     assert response.outputs_prefix == "Prometheus.Metrics"
     assert isinstance(response.outputs, list)
     assert len(response.outputs) == 2
@@ -143,7 +107,7 @@ def test_prometheus_query_builds_query_from_fields(sample_vector_response):
 
 def test_prometheus_query_uses_default_fields_when_not_in_args(sample_vector_response):
     client = TestClient(response=sample_vector_response)
-    args = {"anchor": "false"}  # no fields in args
+    args = {"anchor": "false"}
     default_fields = "co2|temperature"
     response = mod.prometheus_query_command(client, args, default_fields=default_fields)
 
@@ -174,11 +138,6 @@ def test_prometheus_query_raises_on_api_error(sample_error_response):
     assert "Prometheus API error" in str(exc.value)
 
 
-# ------------------------------
-# prometheus-raw command tests
-# ------------------------------
-
-
 def test_prometheus_raw_happy_path(sample_vector_response):
     client = TestClient(response=sample_vector_response)
     response = mod.prometheus_raw_command(client, args={"query": "vector(1)"})
@@ -199,11 +158,6 @@ def test_prometheus_raw_raises_on_api_error(sample_error_response):
     client = TestClient(response=sample_error_response)
     with pytest.raises(mod.DemistoException):
         mod.prometheus_raw_command(client, args={"query": "up"})
-
-
-# -----------------------
-# test_module tests
-# -----------------------
 
 
 def test_test_module_ok():
