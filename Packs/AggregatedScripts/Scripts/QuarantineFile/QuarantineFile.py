@@ -324,10 +324,6 @@ class EndpointBrandMapper:
         online_endpoints = {}
         all_found_ids = set()
 
-        if not endpoint_data:
-            demisto.debug("[EndpointBrandMapper] No endpoint data found. Skipping.")
-            return {}
-
         # First pass: find all successful, online endpoints. These take precedence.
         for result in endpoint_data:
             if not (endpoint_id := result.get("ID")) or endpoint_id in online_endpoints:
