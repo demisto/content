@@ -1,6 +1,6 @@
 category: Network Security
 fromversion: 6.6.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 commonfields:

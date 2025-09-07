@@ -2,7 +2,7 @@ category: Network Security
 commonfields:
   id: ExtraHop v2
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

@@ -283,6 +283,6 @@ script:
 tests:
 - TAXII 2 Feed Test
 fromversion: 5.5.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

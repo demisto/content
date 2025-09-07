@@ -2,7 +2,7 @@ category: Utilities
 commonfields:
   id: AzureDevOps
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

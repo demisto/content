@@ -5,7 +5,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedMandiantThreatIntelligence
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:

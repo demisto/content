@@ -1578,5 +1578,5 @@ script:
 tests:
 - Cisco Umbrella Reporting Test
 fromversion: 6.5.0
-sectionOrder:
+sectionorder:
 - Connect
