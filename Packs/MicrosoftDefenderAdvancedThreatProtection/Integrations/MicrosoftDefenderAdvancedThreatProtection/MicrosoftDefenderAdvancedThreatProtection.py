@@ -3573,7 +3573,6 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
                 demisto.debug(f"Initiating quarantine for file {file_sha1} on machine {machine_id}.")
                 machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
                 machine_action_response["machineId"] = machine_id
-                demisto.debug(f"The quarantine raw response is: {machine_action_response}")
                 context_output = get_machine_action_data(machine_action_response)
                 demisto.debug(f"Successfully initiated quarantine for file {file_sha1} on machine {machine_id}. The context output is: {context_output}")
                 action_ids_to_poll.append(context_output.get('ID'))
@@ -3604,7 +3603,6 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
             finally:
                 all_context_outputs.append(context_output)
                 all_api_raw_responses.append(machine_action_response)
-                demisto.debug(f"Appending to output the context: {context_output}")
                 
         human_readable = tableToMarkdown(
             name=f"Stopping and quarantine",
@@ -3663,7 +3661,6 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
             all_api_raw_responses.append(context)
             context_output = context.get("MicrosoftATP.MachineAction(val.ID === obj.ID)")
             all_context_outputs.append(context_output)
-            demisto.debug(f"The context output is: {context_output}")
             if context_output.get("Status") in ["Succeeded", "Failed", "Cancelled", "TimeOut"]:
                 demisto.debug(f"Successfully polled for status of action {action_id}. The context output is: {context_output}")
                 completed_count +=1

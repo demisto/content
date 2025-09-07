@@ -152,7 +152,6 @@ class Command:
         """
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
         raw_response = demisto.executeCommand(self.name, self.args)
-        demisto.debug(f"[Command] Received response for '{self.name}'. Raw response: {raw_response}")
 
         verbose_results = []
         for result in raw_response:
@@ -323,7 +322,6 @@ class EndpointBrandMapper:
         Returns:
             dict: A dictionary mapping online endpoint IDs to their brand.
         """
-        demisto.debug(f"[EndpointBrandMapper] Processing raw endpoint data for {len(endpoint_data)} entries.")
         online_endpoints = {}
         all_found_ids = set()
 
@@ -337,7 +335,6 @@ class EndpointBrandMapper:
                 continue
 
             if result.get("Message") == "Command successful" and result.get("Status") == "Online":
-                demisto.debug(f"[EndpointBrandMapper] Found 'Online' status for endpoint {endpoint_id}.")
                 online_endpoints[endpoint_id] = Brands.normalize(result.get("Brand"))
 
         # Second pass: Create failure results for any endpoint that was not found or offline.
@@ -357,7 +354,6 @@ class EndpointBrandMapper:
                 get_endpoint_status_message = result.get("Message", QuarantineResult.Messages.ENDPOINT_OFFLINE)
                 message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=get_endpoint_status_message)
 
-            demisto.debug(f"[EndpointBrandMapper] Creating failure result for endpoint {endpoint_id}. Reason: {message}")
             self.initial_results.append(
                 QuarantineResult.create(
                     endpoint_id=endpoint_id,
@@ -604,7 +600,6 @@ class XDRHandler(BrandHandler):
                 "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             },
         }
-        demisto.debug(f"[{self.brand} Handler] Created new job object: {job}")
         return job
 
     def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
@@ -621,7 +616,6 @@ class XDRHandler(BrandHandler):
         Returns:
             list[QuarantineResult]: A list of final QuarantineResult objects.
         """
-        demisto.debug(f"[{self.brand} Handler] Finalizing job.")
         final_results = []
 
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
@@ -706,19 +700,18 @@ class MDEHandler(BrandHandler):
 
         cmd = Command(name=MDEHandler.QUARANTINE_COMMAND, args=quarantine_args, brand=self.brand)
         raw_response, verbose_res = cmd.execute()
-        demisto.debug(f"MDE Quarantine response is: {raw_response}")
+
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
         metadata = raw_response[0].get("Metadata", {})
-        demisto.debug(f"[{self.brand} Handler] Received metadata for polling: {metadata}")
 
         job = {
             "brand": self.brand,
             "poll_command": metadata.get("pollingCommand", MDEHandler.QUARANTINE_COMMAND),
             "poll_args": metadata.get("pollingArgs", {}),
         }
-        demisto.debug(f"[{self.brand} Handler] Created new job object: {job}")
+        demisto.debug(f"[{self.brand} Handler] Created new polling job object: {job}")
         return job
     
     def finalize(self, last_poll_response: list):
@@ -751,13 +744,10 @@ class MDEHandler(BrandHandler):
         Returns:
             list[QuarantineResult]: A list of final QuarantineResult objects.
         """
-        demisto.debug(f"[{self.brand} Handler] Finalizing job.")
         final_results = []
-        demisto.debug(f"The final results: {last_poll_response}")
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
             last_poll_response, "MachineAction"
         )
-        demisto.debug(f"the parsed results are: {quarantine_endpoints_final_results}")
 
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
@@ -772,8 +762,6 @@ class MDEHandler(BrandHandler):
             )
         return final_results
     
-       
-        
 
 def handler_factory(brand: str, orchestrator) -> BrandHandler:
     """
