@@ -1101,13 +1101,16 @@ def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict
             demisto.debug(f"skipping endpoint due to failure: {endpoint}")
             continue
         for ir_endpoint in ir_mapping.values():
-            if ir_endpoint["Hostname"] == endpoint["Hostname"]:
-                if "RiskLevel" in ir_endpoint:
-                    ir_endpoint["RiskLevel"] = IRRISKLEVEL[
-                        max(IRRISKLEVEL[endpoint["RiskLevel"]], IRRISKLEVEL[ir_endpoint["RiskLevel"]])
-                    ]
-                else:
-                    ir_endpoint["RiskLevel"] = endpoint["RiskLevel"]
+            if ir_endpoint.get("Hostname") == endpoint.get("Hostname"):
+                if not isinstance(endpoint.get("RiskLevel"), list):
+                    endpoint["RiskLevel"] = [endpoint.get("RiskLevel")]
+                for risk in endpoint.get("RiskLevel", []):
+                    if "RiskLevel" in ir_endpoint:
+                        ir_endpoint["RiskLevel"] = IRRISKLEVEL[
+                            max(IRRISKLEVEL[risk], IRRISKLEVEL[ir_endpoint.get("RiskLevel")])
+                            ]
+                    else:
+                        ir_endpoint["RiskLevel"] = risk
                 if "additional_fields" in endpoint:
                     ir_endpoint.update(endpoint["additional_fields"])
 
