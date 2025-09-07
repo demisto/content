@@ -1443,7 +1443,17 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     fields.update(additional_fields)
     input_display_value = argToBoolean(args.get("input_display_value", "false"))
 
+    current_ticket = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), use_display_value=True)
+
+    demisto.debug(f"Current Ticket: {current_ticket}")
+
     result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
+
+    updated_ticket = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), use_display_value=True)
+    demisto.debug(f"Updated Ticket: {updated_ticket}")
+
+    update_validation(custom_fields, fields, updated_ticket, current_ticket)
+
     if not result or "result" not in result:
         raise Exception("Unable to retrieve response.")
     ticket = result["result"]
@@ -1462,6 +1472,16 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     entry_context = {"ServiceNow.Ticket(val.ID===obj.ID)": get_ticket_context(ticket, additional_fields_keys)}
 
     return human_readable, entry_context, result, True
+
+
+def update_validation(custom_fields, fields, updated_ticket, current_ticket):
+    non_matching_keys = validate_ticket_fields_updated(updated_ticket["result"], current_ticket["result"], fields, custom_fields)
+
+    if non_matching_keys:
+        warning_message = "Warning: Some fields were not updated as expected.\n"
+        non_matching_fields = f"Non-matching fields: {non_matching_keys}" if non_matching_keys else ""
+        warning_message += f"{non_matching_fields}".strip()
+        demisto.results({"Type": entryTypes["warning"], "ContentsFormat": formats["text"], "Contents": warning_message})
 
 
 def create_ticket_command(client: Client, args: dict, is_quick_action: bool = False) -> tuple[str, dict, dict, bool]:
@@ -3775,6 +3795,73 @@ def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandRe
         )
 
     return f"Request for {method} method is not successful"
+
+
+def normalize_field_value(v):
+    """Canonicalize to a string so equality is meaningful across shapes."""
+    if v is None:
+        return ""
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    if isinstance(v, (list, tuple, set)):
+        return ",".join(normalize_field_value(x) for x in v)
+
+    return str(v).strip()
+
+
+def check_if_ticket_field_matches_expected_value(ticket_entry, expected) -> bool:
+    """
+    True if `expected` equals either:
+      - the scalar `a_entry` itself, or
+      - a_entry['value'], or
+      - a_entry['display_value'].
+    """
+    exp = normalize_field_value(expected)
+    demisto.debug(f"entry exp: {exp}")
+    candidates = []
+    candidates.append(ticket_entry["value"])
+    candidates.append(ticket_entry["display_value"])
+
+    return any(normalize_field_value(c) == exp for c in candidates)
+
+
+def normalize_custom_fields(custom_fields: dict):
+    to_rename = [k for k in custom_fields if not k.startswith("u_")]
+    for k in to_rename:
+        custom_fields[f"u_{k}"] = custom_fields.pop(k)
+
+
+def validate_ticket_fields_updated(updated_ticket: dict, current_ticket: dict, fields: dict, custom_fields: dict):
+    missing_keys = []
+    non_matching = []
+    matching_keys = []
+    normalize_custom_fields(custom_fields)
+    fields_that_should_be_updated = fields | custom_fields
+
+    for k, expected in fields_that_should_be_updated.items():
+        if k not in updated_ticket and k in current_ticket:
+            missing_keys.append(k)
+            continue
+
+        ticket_entry = updated_ticket[k]
+        demisto.debug(f"ticket_entry {ticket_entry}")
+        if check_if_ticket_field_matches_expected_value(ticket_entry, expected):
+            matching_keys.append(k)
+        else:
+            non_matching.append(
+                {
+                    "field": k,
+                    "expected": normalize_field_value(expected),
+                    "actual_value": normalize_field_value(ticket_entry.get("value")),
+                    "actual_display": normalize_field_value(ticket_entry.get("display_value")),
+                }
+            )
+
+    demisto.debug(f"Missing keys: {missing_keys}")
+    demisto.debug(f"Non-matching keys: {non_matching}")
+    demisto.debug(f"Matching keys: {matching_keys}")
+
+    return non_matching
 
 
 def main():
