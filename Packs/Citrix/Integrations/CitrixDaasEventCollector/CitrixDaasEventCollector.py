@@ -157,7 +157,7 @@ class Client(BaseClient):
         return self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params)
 
     def get_operations_with_pagination(self, limit, continuation_token=None):
-        operations = []
+        operations: list[dict] = []
 
         while len(operations) <= limit:
             raw_res = self.get_operations(continuation_token)
@@ -179,7 +179,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def get_events_command(client: Client, args: dict = None):  # type: ignore
+def get_events_command(client: Client, args: dict):  # type: ignore
     limit = args.get("limit", "100")
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
