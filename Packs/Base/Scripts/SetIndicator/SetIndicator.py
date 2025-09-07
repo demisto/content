@@ -13,29 +13,66 @@ def set_indicator_if_exist(args: dict):
         str: The result of setting the indicator or an error message.
     """
     if not any(key in args for key in ["type", "verdict", "tags", "related_issues"]):
-        return return_error("Please provide at lease one argument to update: type, verdict, tags, or related_issues.")
+        return_error("Please provide at lease one argument to update: type, verdict, tags, or related_issues.")
 
+    # Check if indicator exists
     indicator_value = args.get("value")
     demisto.debug(f"Checking if {indicator_value} exists by running findIndicators.")
-    exists = demisto.executeCommand("findIndicators", {"value": indicator_value})
+    exists = execute_command("findIndicators", {"value": indicator_value})
     if not exists:
-        return return_error("Indicator does not exist.")
-    
+        return_error("Indicator does not exist.")
+
+    success_results = ""
+    error_result = ""
+    # Set indicator with provided properties
     if any(key in args for key in ["type", "verdict", "tags"]):
         demisto.debug("running setIndicator command.")
         execute_command("setIndicator", args)
+        success_results += "Successfully set indicator properties.\n"
 
+    # Associate the indicator to the provided related issues and alert if don't exist.
     if related_issues := argToList(args.get("related_issues")):
-        issue_result_count = execute_command("core-get-issues", {"issue_id": related_issues}).get("result_count")
-        demisto.debug(f"Number issues found: {issue_result_count}.")
-        if issue_result_count < len(related_issues):
-            return return_error("One or more related issues do not exist.")
+        issues_found = execute_command("core-get-issues", {"issue_id": related_issues}).get("alerts", [])
+        existing_issues_ids = []
+        for existing_issue in issues_found:
+            issue_id = existing_issue.get("alert_fields", {}).get("internal_id")
+            if issue_id:
+                existing_issues_ids.append(issue_id)
 
-        for issue in related_issues:
+        demisto.debug(f"Found the following issues: {existing_issues_ids}.")
+        existing_set = set(existing_issues_ids)
+        related_issues = set(related_issues)
+        diff_issues = related_issues - existing_set
+        demisto.debug(f"The following issues were provided as related issues but don't exist: {diff_issues}.")
+        if diff_issues:
+            error_result = f"The following issues were provided as related issues but don't exist: {diff_issues}."
+
+        issues_associated = []
+        for issue in existing_issues_ids:
             demisto.debug(f"running associateIndicatorsToIssue command with issue id {issue}.")
             execute_command("associateIndicatorsToAlert", {"issueId": issue, "indicatorsValues": indicator_value})
+            issues_associated.append(issue)
 
-    return CommandResults(readable_output="Successfully set indicator.")
+        if issues_associated:
+            success_results += f"Successfully associated indicator to the following issues {issues_associated}. "
+
+    final_outputs = success_results + error_result
+    outputs = {"Value": indicator_value, "Result": final_outputs}
+    final_results = []
+    if success_results:
+        final_results.append(
+            CommandResults(
+                readable_output=success_results, outputs=outputs, outputs_key_field="Value", outputs_prefix="Indicator"
+            )
+        )
+    if error_result:
+        final_results.append(
+            CommandResults(
+                readable_output=error_result, entry_type=4, outputs=outputs, outputs_key_field="Value", outputs_prefix="Indicator"
+            )
+        )
+
+    return final_results
 
 
 def main():

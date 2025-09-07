@@ -34,9 +34,6 @@ tests:
 - No tests
 dockerimage: demisto/python3:3.12.11.4508456
 fromversion: 6.1.0
-dependson:
-  must:
-  - core-get-issues
 marketplaces:
 - platform
 supportedModules:

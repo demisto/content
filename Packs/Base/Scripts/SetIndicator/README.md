@@ -19,7 +19,7 @@ Updates the properties of an existing indicator and associates the indicator wit
 | type              | Indicator type to set. |
 | verdict           | Sets indicator reputation. |
 | tags              | Comma-separated list of tags to set for the indicator. |
-| related_issues    | Comma-separated list of issues IDs to associate the indicator with.
+| related_issues    | Comma-separated list of issues IDs to associate the indicator with. |
 
 ## Outputs
 

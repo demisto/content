@@ -1,319 +1,312 @@
+import pytest
+from unittest.mock import patch
 from SetIndicator import set_indicator_if_exist
 
 
-class TestSetIndicatorIfExist:
-    """Test cases for set_indicator_if_exist function"""
+class TestSetIndicator:
+    def test_no_arguments_provided(self):
+        """Test that function returns error when no valid arguments are provided"""
+        args = {"value": "1.1.1.1"}
 
-    def test_set_indicator_if_exist_success_with_all_fields(self, mocker):
-        """
-        Given:
-        - Valid args with type, verdict, tags, and related_issues
-        - Indicator exists in the system
-        - All related issues exist
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call findIndicators, setIndicator, core-get-issues, and associateIndicatorsToAlert
-        - Should return success message
-        """
-        args = {
-            "value": "test-indicator",
-            "type": "IP",
-            "verdict": "Malicious",
-            "tags": ["tag1", "tag2"],
-            "related_issues": ["issue1", "issue2"],
-        }
+        with pytest.raises(SystemExit):
+            set_indicator_if_exist(args)
 
-        # Mock demisto functions
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]  # Indicator exists
+    def test_empty_arguments(self):
+        """Test that function returns error when completely empty arguments"""
+        args = {}
 
-        # Mock execute_command calls
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        # mock_execute_command.return_value = {"result_count": 2}  # Simulating core-get-issues response
-        mock_execute_command.side_effect = [
-            None,  # setIndicator response
-            {"result_count": 2},  # core-get-issues response
-            None,  # associateIndicatorsToAlert response,
-            None,  # associateIndicatorsToAlert response for the second issue
+        with pytest.raises(SystemExit):
+            set_indicator_if_exist(args)
+
+    @patch("SetIndicator.execute_command")
+    def test_indicator_does_not_exist(self, mock_execute):
+        """Test that function returns error when indicator does not exist"""
+        args = {"value": "nonexistent.com", "type": "Domain"}
+        mock_execute.return_value = None
+
+        with pytest.raises(SystemExit):
+            set_indicator_if_exist(args)
+
+        mock_execute.assert_called_once_with("findIndicators", {"value": "nonexistent.com"})
+
+    @patch("SetIndicator.execute_command")
+    def test_set_indicator_type_only(self, mock_execute):
+        """Test setting indicator type only"""
+        args = {"value": "1.1.1.1", "type": "IP"}
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {},  # setIndicator response
         ]
 
-        # Mock argToList
-        mock_arg_to_list = mocker.patch("SetIndicator.argToList")
-        mock_arg_to_list.return_value = ["issue1", "issue2"]
+        results = set_indicator_if_exist(args)
 
-        result = set_indicator_if_exist(args)
+        assert len(results) == 1
+        assert "Successfully set indicator properties" in results[0].readable_output
+        assert results[0].outputs["Value"] == "1.1.1.1"
 
-        # Verify all calls were made
-        mock_demisto.executeCommand.assert_called_once_with("findIndicators", {"value": "test-indicator"})
+        # Verify calls
+        assert mock_execute.call_count == 2
+        mock_execute.assert_any_call("findIndicators", {"value": "1.1.1.1"})
+        mock_execute.assert_any_call("setIndicator", args)
 
-        expected_execute_calls = [
-            mocker.call("setIndicator", args),
-            mocker.call("core-get-issues", {"issue_id": ["issue1", "issue2"]}),
-            mocker.call("associateIndicatorsToAlert", {"issueId": "issue1", "indicatorsValues": "test-indicator"}),
-            mocker.call("associateIndicatorsToAlert", {"issueId": "issue2", "indicatorsValues": "test-indicator"}),
-        ]
-        mock_execute_command.assert_has_calls(expected_execute_calls)
-
-        assert result.readable_output == "Successfully set indicator."
-
-    def test_set_indicator_if_exist_only_type_verdict_tags(self, mocker):
-        """
-        Given:
-        - Args with only type, verdict, and tags (no related_issues)
-        - Indicator exists in the system
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call setIndicator but not issue-related commands
-        - Should return success message
-        """
-        args = {"value": "test-indicator", "type": "IP", "verdict": "Malicious", "tags": ["tag1"]}
-
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]
-
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        mocker.patch("SetIndicator.argToList", return_value=[])
-
-        result = set_indicator_if_exist(args)
-
-        mock_demisto.executeCommand.assert_called_once_with("findIndicators", {"value": "test-indicator"})
-        mock_execute_command.assert_called_once_with("setIndicator", args)
-
-        assert result.readable_output == "Successfully set indicator."
-
-    def test_set_indicator_if_exist_only_related_issues(self, mocker):
-        """
-        Given:
-        - Args with only related_issues (no type, verdict, or tags)
-        - Indicator exists in the system
-        - Related issues exist
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should not call setIndicator but should call issue-related commands
-        - Should return success message
-        """
-        args = {"value": "test-indicator", "related_issues": ["issue1"]}
-
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]
-
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        mock_execute_command.side_effect = [
-            {"result_count": 1},  # core-get-issues response
-            None,  # associateIndicatorsToAlert response
+    @patch("SetIndicator.execute_command")
+    def test_set_indicator_verdict_only(self, mock_execute):
+        """Test setting indicator verdict only"""
+        args = {"value": "example.com", "verdict": "malicious"}
+        mock_execute.side_effect = [
+            {"data": [{"value": "example.com"}]},  # findIndicators response
+            {},  # setIndicator response
         ]
 
-        mocker.patch("SetIndicator.argToList", return_value=["issue1"])
+        results = set_indicator_if_exist(args)
 
-        result = set_indicator_if_exist(args)
+        assert len(results) == 1
+        assert "Successfully set indicator properties" in results[0].readable_output
+        assert results[0].outputs["Value"] == "example.com"
 
-        # Verify setIndicator was NOT called (no type, verdict, or tags)
-        calls = [call for call in mock_execute_command.call_args_list if call[0][0] == "setIndicator"]
-        assert len(calls) == 0
+    @patch("SetIndicator.execute_command")
+    def test_set_indicator_tags_only(self, mock_execute):
+        """Test setting indicator tags only"""
+        args = {"value": "1.1.1.1", "tags": "malware,botnet"}
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {},  # setIndicator response
+        ]
 
-        # Verify issue-related calls were made
-        mock_execute_command.assert_any_call("core-get-issues", {"issue_id": ["issue1"]})
-        mock_execute_command.assert_any_call(
-            "associateIndicatorsToAlert", {"issueId": "issue1", "indicatorsValues": "test-indicator"}
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert "Successfully set indicator properties" in results[0].readable_output
+        assert results[0].outputs["Value"] == "1.1.1.1"
+
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_associate_with_existing_issues(self, mock_arg_to_list, mock_execute):
+        """Test associating indicator with existing issues"""
+        args = {"value": "1.1.1.1", "related_issues": "123,456"}
+        mock_arg_to_list.return_value = ["123", "456"]
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {  # core-get-issues response
+                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
+            },
+            {},  # associateIndicatorsToAlert for issue 123
+            {},  # associateIndicatorsToAlert for issue 456
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert "Successfully associated indicator to the following issues ['123', '456']" in results[0].readable_output
+        assert results[0].outputs["Value"] == "1.1.1.1"
+
+        # Verify associateIndicatorsToAlert was called for each issue
+        mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "123", "indicatorsValues": "1.1.1.1"})
+        mock_execute.assert_any_call("associateIndicatorsToAlert", {"issueId": "456", "indicatorsValues": "1.1.1.1"})
+
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_associate_with_nonexistent_issues(self, mock_arg_to_list, mock_execute):
+        """Test associating indicator with issues that don't exist"""
+        args = {"value": "1.1.1.1", "related_issues": "123,999"}
+        mock_arg_to_list.return_value = ["123", "999"]
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {  # core-get-issues response - only issue 123 exists
+                "alerts": [{"alert_fields": {"internal_id": "123"}}]
+            },
+            {},  # associateIndicatorsToAlert for issue 123
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 2  # One success, one error
+        assert any("Successfully associated indicator to the following issues ['123']" in r.readable_output for r in results)
+        assert any(
+            "The following issues were provided as related issues but don't exist: {'999'}" in r.readable_output for r in results
         )
 
-        assert result.readable_output == "Successfully set indicator."
+        # Check that error result has entry_type 4
+        error_result = next(r for r in results if "don't exist" in r.readable_output)
+        assert error_result.entry_type == 4
 
-    def test_set_indicator_if_exist_no_valid_args(self, mocker):
-        """
-        Given:
-        - Args without type, verdict, tags, or related_issues
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call return_error with appropriate message
-        """
-        args = {"value": "test-indicator", "other_field": "some_value"}
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = {"result_count": 1}
-        mock_return_error = mocker.patch("SetIndicator.return_error")
-
-        set_indicator_if_exist(args)
-
-        mock_return_error.assert_called_once_with(
-            "Please provide at lease one argument to update: type, verdict, tags, or related_issues."
-        )
-
-    def test_set_indicator_if_exist_indicator_not_exists(self, mocker):
-        """
-        Given:
-        - Valid args but indicator does not exist
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call return_error with indicator not exists message
-        """
-        args = {"value": "nonexistent-indicator", "type": "IP"}
-
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = []  # No indicators found
-
-        mock_return_error = mocker.patch("SetIndicator.return_error")
-
-        set_indicator_if_exist(args)
-
-        mock_demisto.executeCommand.assert_called_once_with("findIndicators", {"value": "nonexistent-indicator"})
-        mock_return_error.assert_called_once_with("Indicator does not exist.")
-
-    def test_set_indicator_if_exist_indicator_not_exists_none_response(self, mocker):
-        """
-        Given:
-        - Valid args but findIndicators returns None
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call return_error with indicator not exists message
-        """
-        args = {"value": "test-indicator", "type": "IP"}
-
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = None
-
-        mock_return_error = mocker.patch("SetIndicator.return_error")
-
-        set_indicator_if_exist(args)
-
-        mock_return_error.assert_called_once_with("Indicator does not exist.")
-
-    def test_set_indicator_if_exist_related_issues_not_found(self, mocker):
-        """
-        Given:
-        - Valid args with related_issues but some issues don't exist
-        - Indicator exists in the system
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call return_error about missing issues
-        """
-        args = {"value": "test-indicator", "type": "IP", "related_issues": ["issue1", "issue2", "issue3"]}
-
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]
-
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        mock_execute_command.side_effect = [
-            None,  # setIndicator response
-            {"result_count": 2},  # core-get-issues response - only 2 out of 3 issues found
-        ]
-
-        mocker.patch("SetIndicator.argToList", return_value=["issue1", "issue2", "issue3"])
-        mock_return_error = mocker.patch("SetIndicator.return_error")
-
-        set_indicator_if_exist(args)
-
-        mock_execute_command.assert_any_call("setIndicator", args)
-        mock_execute_command.assert_any_call("core-get-issues", {"issue_id": ["issue1", "issue2", "issue3"]})
-        mock_return_error.assert_called_once_with("One or more related issues do not exist.")
-
-    def test_set_indicator_if_exist_empty_related_issues(self, mocker):
-        """
-        Given:
-        - Args with related_issues that evaluates to empty list
-        - Indicator exists in the system
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should not process related issues but still call setIndicator
-        """
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_comprehensive_update(self, mock_arg_to_list, mock_execute):
+        """Test updating all properties and associating with issues"""
         args = {
-            "value": "test-indicator",
-            "type": "IP",
-            "related_issues": "",  # Empty string
+            "value": "example.com",
+            "type": "Domain",
+            "verdict": "suspicious",
+            "tags": "phishing,malware",
+            "related_issues": "123,456",
         }
+        mock_arg_to_list.return_value = ["123", "456"]
 
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]
-
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        mocker.patch("SetIndicator.argToList", return_value=[])  # Empty list
-
-        result = set_indicator_if_exist(args)
-
-        # Should only call setIndicator, not issue-related commands
-        mock_execute_command.assert_called_once_with("setIndicator", args)
-
-        assert result.readable_output == "Successfully set indicator."
-
-    def test_set_indicator_if_exist_individual_field_combinations(self, mocker):
-        """
-        Given:
-        - Different combinations of type, verdict, and tags
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call setIndicator for any combination of these fields
-        """
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]
-
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        mocker.patch("SetIndicator.argToList", return_value=[])
-
-        # Test with only type
-        args = {"value": "test-indicator", "type": "IP"}
-        result = set_indicator_if_exist(args)
-        mock_execute_command.assert_called_with("setIndicator", args)
-        assert result.readable_output == "Successfully set indicator."
-
-        # Reset mock
-        mock_execute_command.reset_mock()
-
-        # Test with only verdict
-        args = {"value": "test-indicator", "verdict": "Malicious"}
-        result = set_indicator_if_exist(args)
-        mock_execute_command.assert_called_with("setIndicator", args)
-        assert result.readable_output == "Successfully set indicator."
-
-        # Reset mock
-        mock_execute_command.reset_mock()
-
-        # Test with only tags
-        args = {"value": "test-indicator", "tags": ["tag1"]}
-        result = set_indicator_if_exist(args)
-        mock_execute_command.assert_called_with("setIndicator", args)
-        assert result.readable_output == "Successfully set indicator."
-
-    def test_set_indicator_if_exist_debug_logging(self, mocker):
-        """
-        Given:
-        - Valid args with related_issues
-        - Indicator exists and issues exist
-        When:
-        - Executing set_indicator_if_exist function
-        Then:
-        - Should call demisto.debug with appropriate messages
-        """
-        args = {"value": "test-indicator", "type": "IP", "related_issues": ["issue1"]}
-
-        mock_demisto = mocker.patch("SetIndicator.demisto")
-        mock_demisto.executeCommand.return_value = [{"value": "test-indicator"}]
-
-        mock_execute_command = mocker.patch("SetIndicator.execute_command")
-        mock_execute_command.side_effect = [
-            None,  # setIndicator
-            {"result_count": 1},  # core-get-issues
-            None,  # associateIndicatorsToAlert
+        mock_execute.side_effect = [
+            {"data": [{"value": "example.com"}]},  # findIndicators response
+            {},  # setIndicator response
+            {  # core-get-issues response
+                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
+            },
+            {},  # associateIndicatorsToAlert for issue 123
+            {},  # associateIndicatorsToAlert for issue 456
         ]
 
-        mocker.patch("SetIndicator.argToList", return_value=["issue1"])
+        results = set_indicator_if_exist(args)
 
-        set_indicator_if_exist(args)
+        assert len(results) == 1
+        result_output = results[0].readable_output
+        assert "Successfully set indicator properties" in result_output
+        assert "Successfully associated indicator to the following issues ['123', '456']" in result_output
+        assert results[0].outputs["Value"] == "example.com"
 
-        # Verify debug calls were made
-        debug_calls = mock_demisto.debug.call_args_list
-        assert len(debug_calls) >= 3  # At least 3 debug calls should be made
+        # Verify setIndicator was called with all args
+        mock_execute.assert_any_call("setIndicator", args)
 
-        # Check specific debug messages
-        debug_messages = [call[0][0] for call in debug_calls]
-        assert any("Checking if test-indicator exists" in msg for msg in debug_messages)
-        assert any("running setIndicator command" in msg for msg in debug_messages)
-        assert any("Number issues found: 1" in msg for msg in debug_messages)
-        assert any("running associateIndicatorsToIssue command with issue id issue1" in msg for msg in debug_messages)
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_mixed_existing_and_nonexistent_issues(self, mock_arg_to_list, mock_execute):
+        """Test associating with mix of existing and non-existing issues"""
+        args = {"value": "example.com", "related_issues": "123,456,999"}
+        mock_arg_to_list.return_value = ["123", "456", "999"]
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "example.com"}]},  # findIndicators response
+            {  # core-get-issues response - only 123 and 456 exist
+                "alerts": [{"alert_fields": {"internal_id": "123"}}, {"alert_fields": {"internal_id": "456"}}]
+            },
+            {},  # associateIndicatorsToAlert for issue 123
+            {},  # associateIndicatorsToAlert for issue 456
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 2  # One success, one error
+        success_result = next(r for r in results if "Successfully associated" in r.readable_output)
+        error_result = next(r for r in results if "don't exist" in r.readable_output)
+
+        assert "Successfully associated indicator to the following issues ['123', '456']" in success_result.readable_output
+        assert "The following issues were provided as related issues but don't exist: {'999'}" in error_result.readable_output
+        assert error_result.entry_type == 4
+
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_all_issues_nonexistent(self, mock_arg_to_list, mock_execute):
+        """Test when all provided issues don't exist"""
+        args = {"value": "1.1.1.1", "related_issues": "999,888"}
+        mock_arg_to_list.return_value = ["999", "888"]
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {"alerts": []},  # core-get-issues response - no issues found
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert results[0].entry_type == 4
+        assert "The following issues were provided as related issues but don't exist: " in results[0].readable_output
+        assert "888" in results[0].readable_output
+        assert "999" in results[0].readable_output
+
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_empty_related_issues_list(self, mock_arg_to_list, mock_execute):
+        """Test when related_issues argument is provided but empty"""
+        args = {"value": "1.1.1.1", "type": "IP", "related_issues": ""}
+        mock_arg_to_list.return_value = []
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {},  # setIndicator response
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert "Successfully set indicator properties" in results[0].readable_output
+        assert "associated" not in results[0].readable_output
+
+    @patch("SetIndicator.execute_command")
+    def test_only_related_issues_argument(self, mock_execute):
+        """Test with only related_issues argument (no type, verdict, or tags)"""
+        args = {"value": "example.com", "related_issues": "123"}
+
+        with patch("SetIndicator.argToList") as mock_arg_to_list:
+            mock_arg_to_list.return_value = ["123"]
+
+            mock_execute.side_effect = [
+                {"data": [{"value": "example.com"}]},  # findIndicators response
+                {  # core-get-issues response
+                    "alerts": [{"alert_fields": {"internal_id": "123"}}]
+                },
+                {},  # associateIndicatorsToAlert response
+            ]
+
+            results = set_indicator_if_exist(args)
+
+            assert len(results) == 1
+            assert "Successfully associated indicator to the following issues ['123']" in results[0].readable_output
+            assert "Successfully set indicator properties" not in results[0].readable_output
+
+    @patch("SetIndicator.execute_command")
+    def test_multiple_properties_update(self, mock_execute):
+        """Test updating multiple properties without related issues"""
+        args = {"value": "1.1.1.1", "type": "IP", "verdict": "malicious", "tags": "botnet,malware"}
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {},  # setIndicator response
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert "Successfully set indicator properties" in results[0].readable_output
+        assert results[0].outputs["Value"] == "1.1.1.1"
+
+        # Verify setIndicator was called with all properties
+        mock_execute.assert_any_call("setIndicator", args)
+
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_core_get_issues_returns_none_alerts(self, mock_arg_to_list, mock_execute):
+        """Test when core-get-issues returns structure without alerts key"""
+        args = {"value": "1.1.1.1", "related_issues": "123"}
+        mock_arg_to_list.return_value = ["123"]
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "1.1.1.1"}]},  # findIndicators response
+            {},  # core-get-issues response without alerts key
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert results[0].entry_type == 4
+        assert "The following issues were provided as related issues but don't exist: {'123'}" in results[0].readable_output
+
+    @patch("SetIndicator.execute_command")
+    @patch("SetIndicator.argToList")
+    def test_issue_without_internal_id(self, mock_arg_to_list, mock_execute):
+        """Test when issue response doesn't have internal_id field"""
+        args = {"value": "example.com", "related_issues": "123"}
+        mock_arg_to_list.return_value = ["123"]
+
+        mock_execute.side_effect = [
+            {"data": [{"value": "example.com"}]},  # findIndicators response
+            {  # core-get-issues response with malformed alert
+                "alerts": [
+                    {"alert_fields": {}}  # Missing internal_id
+                ]
+            },
+            None,
+        ]
+
+        results = set_indicator_if_exist(args)
+
+        assert len(results) == 1
+        assert results[0].entry_type == 4
