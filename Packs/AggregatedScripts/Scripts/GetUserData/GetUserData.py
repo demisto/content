@@ -493,27 +493,32 @@ def gsuite_get_user(
     return readable_outputs_list, account_outputs
 
 
-def xdr_and_core_list_all_users(
-    first_commands: list[Command],
-    second_command: Command,
-    outputs_key_field: str,
-    additional_fields: bool,
-    list_non_risky_users: bool,
-    email_list: List[str],
-) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+def run_list_risky_users_command(list_risky_users_commands: list[Command], additional_fields: bool, outputs_key_field: str):
+    """
+    Handles all the logic for the core/xdr list-risky-users command
+
+    Args:
+        list_risky_users_commands (list[Command]): list of commands to run.
+        additional_fields (bool): whether to add additional fields to the output.
+        outputs_key_field (str): the key field to use for the output.
+    Returns:
+        tuple[list[CommandResults], list[dict[str, Any]]]: readable outputs list and users list.
+    """
     readable_outputs_list = []
     users = []
-    risky_users_email_set = set()
-
-    for first_command in first_commands:
-        entry_context, human_readable, readable_errors = run_execute_command(first_command.name, first_command.args)
+    for list_risky_users_command in list_risky_users_commands:
+        entry_context, human_readable, readable_errors = run_execute_command(
+            list_risky_users_command.name, list_risky_users_command.args
+        )
         readable_outputs_list.extend(readable_errors)
-        readable_outputs_list.extend(prepare_human_readable(first_command.name, first_command.args, human_readable))
+        readable_outputs_list.extend(
+            prepare_human_readable(list_risky_users_command.name, list_risky_users_command.args, human_readable)
+        )
         for output in entry_context:
             output_key = get_output_key(f"{outputs_key_field}.RiskyUser", output)
             outputs = get_outputs(output_key, output)
             user = create_user(
-                source=first_command.brand,
+                source=list_risky_users_command.brand,
                 id=outputs.get("id"),
                 risk_level=outputs.pop("risk_level", None),
                 username=outputs.pop("id", None),
@@ -523,67 +528,98 @@ def xdr_and_core_list_all_users(
                 additional_fields=additional_fields,
             )
             if set(user) == {"Source", "Brand", "Instance"}:  # contains only the source and brand keys
-                user["Status"] = f"User not found - userId: {first_command.args.get('user_id')}."
+                user["Status"] = f"User not found - userId: {list_risky_users_command.args.get('user_id')}."
             else:
                 user["Status"] = "found"
             users.append(user)
 
-    if list_non_risky_users:
-        email_set = set(email_list)
-        for user in users:
-            if mail := user.get("Email"):
-                risky_users_email_set.add(mail)
-        if additional_fields:
-            email_set.update(risky_users_email_set)
-        entry_context, _, readable_errors = run_execute_command(second_command.name, second_command.args)
-        readable_outputs_list.extend(readable_errors)
-        for output in entry_context:
-            output_key = get_output_key(f"{outputs_key_field}.User", output)
-            if isinstance(output, dict):
-                outputs = output.get(output_key, [])
-            else:
-                outputs = []
-            demisto.debug(f"found {len(outputs)} users")
-            for output in outputs:  # type: ignore[assignment]
-                if (mail := output.get("user_email", "")) and mail in email_set:
-                    demisto.debug(f"found user with email: {mail}")
-                    email_set.remove(mail)
-                    found = False
-                    for user in users:
-                        if (mail := user.get("Email")) and mail == output.get("user_email"):
-                            demisto.debug(f"found user with email in results from risky-users: {mail}")
-                            found = True
-                            if additional_fields:
-                                demisto.debug(f"adding additional fields to user with email: {mail}")
-                                output.pop("user_email")
-                                user["AdditionalFields"].update(output)
-                            break
-                    if not found:
-                        demisto.debug(f"User with {mail} was not found in previous results, creating new user.")
-                        user = create_user(
-                            source=second_command.brand,
-                            id=output.get("id"),
-                            risk_level=output.pop("risk_level", None),
-                            username=output.pop("id", None),
-                            instance=output.get("instance"),
-                            email_address=output.pop("user_email", None),
-                            **output,
-                            additional_fields=additional_fields,
-                        )
-                        user["Status"] = "found"
-                        users.append(user)
-                    if not email_set:
-                        demisto.debug("all given users were found, breaking")
+    return readable_outputs_list, users
+
+
+def run_list_users_command(
+    list_users_command: Command,
+    additional_fields: bool,
+    outputs_key_field: str,
+    email_list: List[str],
+    users: list[dict[str, Any]],
+    readable_outputs_list: list[CommandResults]
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    email_set = set(email_list)
+    risky_users_email_set = set()
+    for user in users:
+        if mail := user.get("Email"):
+            risky_users_email_set.add(mail)
+    if additional_fields:
+        email_set.update(risky_users_email_set)
+    entry_context, _, readable_errors = run_execute_command(list_users_command.name, list_users_command.args)
+    readable_outputs_list.extend(readable_errors)
+    for output in entry_context:
+        output_key = get_output_key(f"{outputs_key_field}.User", output)
+        if isinstance(output, dict):
+            outputs = output.get(output_key, [])
+        else:
+            outputs = []
+        demisto.debug(f"found {len(outputs)} users")
+        for output in outputs:  # type: ignore[assignment]
+            if (mail := output.get("user_email", "")) and mail in email_set:
+                demisto.debug(f"found user with email: {mail}")
+                email_set.remove(mail)
+                found = False
+                for user in users:
+                    if (mail := user.get("Email")) and mail == output.get("user_email"):
+                        demisto.debug(f"found user with email in results from risky-users: {mail}")
+                        found = True
+                        if additional_fields:
+                            demisto.debug(f"adding additional fields to user with email: {mail}")
+                            output.pop("user_email")
+                            user["AdditionalFields"].update(output)
                         break
-        for mail in email_set:
+                if not found:
+                    demisto.debug(f"User with {mail} was not found in previous results, creating new user.")
+                    user = create_user(
+                        source=list_users_command.brand,
+                        id=output.get("id"),
+                        risk_level=output.pop("risk_level", None),
+                        username=output.pop("id", None),
+                        instance=output.get("instance"),
+                        email_address=output.pop("user_email", None),
+                        **output,
+                        additional_fields=additional_fields,
+                    )
+                    user["Status"] = "found"
+                    users.append(user)
+                if not email_set:
+                    demisto.debug("all given users were found, breaking")
+                    break
+    for mail in email_set:
             user = create_user(
-                source=second_command.brand,
+                source=list_users_command.brand,
                 instance=output.get("instance"),
                 email_address=mail,
                 additional_fields=additional_fields,
             )
             user["Status"] = "not found"
             users.append(user)
+    return readable_outputs_list, users
+
+def xdr_and_core_list_all_users(
+    list_risky_users_commands: list[Command],
+    list_users_command: Command,
+    outputs_key_field: str,
+    additional_fields: bool,
+    list_non_risky_users: bool,
+    email_list: List[str],
+) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    readable_outputs_list, users = run_list_risky_users_command(list_risky_users_commands, additional_fields, outputs_key_field)
+    if list_non_risky_users:
+        readable_outputs_list, users = run_list_risky_users_command(
+            list_users_command,
+            additional_fields,
+            outputs_key_field,
+            email_list, users,
+            readable_outputs_list
+        )
+
     return readable_outputs_list, users
 
 
