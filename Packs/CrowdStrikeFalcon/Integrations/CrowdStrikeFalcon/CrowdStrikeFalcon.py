@@ -7556,6 +7556,10 @@ def handle_resolve_detections(args: dict[str, Any], hr_template: str) -> Command
     show_in_ui = args.get("show_in_ui", "")
     # We pass the arguments in the form of **kwargs, since we also need the arguments' names for the API,
     # and it easier to achieve that using **kwargs
+
+    if sum(map(bool, [assign_to_uuid, assign_to_name, assign_to_user_id])) > 1:
+            raise ValueError("Only one of the arguments assign_to_uuid, assign_to_name, assign_to_user_id should be provided.")
+
     resolve_detections_request(
         ids=ids,
         update_status=update_status,
