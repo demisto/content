@@ -64,44 +64,20 @@ def case_to_incident(args):
 
 
 def preprocess_get_cases_args(args):
+    demisto.debug(f"original args: {args}")
     args = case_to_incident(args)
     args = issue_to_alert(args)
+    demisto.debug(f"after preprocess_get_cases_args args: {args}")
     return args
 
 
 def preprocess_get_cases_outputs(outputs):
-    outputs = incident_to_case(outputs)
-    outputs = alert_to_issue(outputs)
-    return outputs
-
-
-def recursive_replace_response_names(obj, old_to_new=True):
-    """
-    Recursively replace 'incident' with 'case' and 'alert' with 'issue' in a given object.
-
-    Args:
-        obj: The object to be processed.
-        old_to_new (bool): If True, replace 'incident' with 'case' and 'alert' with 'issue'.
-            If False, replace 'case' with 'incident' and 'issue' with 'alert'.
-
-    Returns:
-        The processed object with the replaced strings.
-    """
-    if isinstance(obj, str):
-        if old_to_new:
-            return obj.replace("incident", "case").replace("alert", "issue")
-        return obj.replace("case", "incident").replace("issue", "alert")
-
-    elif isinstance(obj, list):
-        return [recursive_replace_response_names(item, old_to_new) for item in obj]
-    elif isinstance(obj, dict):
-        return {
-            recursive_replace_response_names(key, old_to_new): recursive_replace_response_names(value, old_to_new)
-            for key, value in obj.items()
-        }
-    else:
-        return obj
-
+    processed_outputs = []
+    for output in outputs:
+        new_output = incident_to_case(output)
+        new_output = alert_to_issue(new_output)
+        processed_outputs.append(new_output)
+    return processed_outputs
 
 def filter_context_fields(output_keys: list, context: list):
     """
@@ -174,9 +150,7 @@ def get_cases_command(client, args):
     """
     Retrieve a list of Cases from XDR, filtered by some filters.
     """
-    demisto.debug(f"get_cases_command original args: {args}")
     args = preprocess_get_cases_args(args)
-    demisto.debug(f"get_cases_command after recursive_replace_response_names args: {args}")
     _, _, raw_incidents = get_incidents_command(client, args)
     mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
     return CommandResults(
