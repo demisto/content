@@ -233,7 +233,6 @@ def search_indicators(args):
 
 
 def main():  # pragma: no cover
-
     args = demisto.args()
     demisto.debug(f"Args: {args}")
 
