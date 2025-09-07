@@ -11,7 +11,6 @@ ENDPOINT_PATH = (
 )
 
 
-
 def ip_enrichment_script(
     ip_list: list[str],
     external_enrichment: bool = False,
@@ -44,7 +43,7 @@ def ip_enrichment_script(
         "PositiveDetections": "PositiveDetections",
         "Score": "Score",
     }
-    
+
     ip_indicator = Indicator(
         type="ip",
         value_field="Address",
@@ -62,7 +61,7 @@ def ip_enrichment_script(
         )
         for ip in ip_list
     ]
-    
+
     enrich_indicator_commands = [
         Command(
             name="enrichIndicators",
@@ -71,7 +70,7 @@ def ip_enrichment_script(
         )
         for ip in ip_list
     ]
-    
+
     # Internal Core lookups (single calls with all IPs)
     internal_core_commands = [
         Command(
@@ -86,12 +85,10 @@ def ip_enrichment_script(
             args={"ip_address": ip_list},
             command_type=CommandType.INTERNAL,
             brand="Cortex Core - IR",
-            context_output_mapping={
-                "Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"
-            },
+            context_output_mapping={"Core.AnalyticsPrevalence.Ip": "Core.AnalyticsPrevalence.Ip"},
         ),
     ]
-    
+
     # Run in two batches:
     #   1) createNewIndicator
     #   2) internal core lookups + external enrichment

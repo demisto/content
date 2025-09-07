@@ -49,9 +49,7 @@ def domain_enrichment_script(
         args={"domain_name": domain_list},
         command_type=CommandType.INTERNAL,
         brand="Cortex Core - IR",  # keep the brand you use elsewhere
-        context_output_mapping={
-            "Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"
-        },
+        context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
     )
 
     enrich_indicator_commands = [

@@ -14,6 +14,7 @@ def util_load_json(path: str):
 # 1) Validation tests (validate_input now lives inside the aggregated command .run())
 # --------------------------------------------------------------------------------------
 
+
 def test_validate_input_success(mocker):
     """
     Given:
@@ -33,27 +34,25 @@ def test_validate_input_success(mocker):
     # Patch extractIndicators (via AggregatedCommandApiModule.execute_command)
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "URL": url_list
-                }
-            }
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"URL": url_list}}}],
     )
 
     # Make the aggregated pipeline do nothing else (no-op batches and no TIM results)
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
 
     # Enabled modules (not used in this test but the code queries them)
     mocker.patch.object(demisto, "getModules", return_value={})
 
     # Should not raise
-    res = url_enrichment_script(url_list=url_list, external_enrichment=False, verbose=False, enrichment_brands=[], additional_fields=False)
+    res = url_enrichment_script(
+        url_list=url_list, external_enrichment=False, verbose=False, enrichment_brands=[], additional_fields=False
+    )
     assert res is not None
 
 
@@ -73,30 +72,29 @@ def test_validate_input_invalid_url(mocker):
     # Only the valid URL is extracted -> triggers ValueError
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "URL": ["https://google.com"]
-                }
-            }
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"URL": ["https://google.com"]}}}],
     )
 
     # No-op the rest of the pipeline
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
     with pytest.raises(ValueError, match=r"are not valid url"):
-        url_enrichment_script(url_list=url_list, external_enrichment=False, verbose=False, enrichment_brands=[], additional_fields=False)
+        url_enrichment_script(
+            url_list=url_list, external_enrichment=False, verbose=False, enrichment_brands=[], additional_fields=False
+        )
 
 
 # --------------------------------------------------------------------------------------
 # 2) End-to-end test with TIM + batches (WildFire + enrichIndicators side effect)
 # --------------------------------------------------------------------------------------
+
 
 def test_url_enrichment_script_end_to_end(mocker, tmp_path):
     """
@@ -126,19 +124,14 @@ def test_url_enrichment_script_end_to_end(mocker, tmp_path):
     # --- Validation: extractIndicators returns both URLs
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "URL": url_list
-                }
-            }
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"URL": url_list}}}],
     )
 
     # --- Mock IndicatorsSearcher to yield our pages
     class _MockSearcher:
         def __init__(self, pages):
             self.pages = pages
+
         def __iter__(self):
             return iter(self.pages)
 
@@ -179,7 +172,7 @@ def test_url_enrichment_script_end_to_end(mocker, tmp_path):
                             {"url": "https://example.com", "verdict": 1},
                             {"url": "https://example2.com", "verdict": 2},
                         ]
-                    }
+                    },
                 }
                 batch2_results.append([(entry, "wf-hr", "")])
             else:  # enrichIndicators per URL
@@ -190,9 +183,7 @@ def test_url_enrichment_script_end_to_end(mocker, tmp_path):
                         "Type": 1,
                         "Metadata": {"brand": "brand1"},
                         "EntryContext": {
-                            "DBotScore(val.Indicator && val.Vendor)": [
-                                {"Indicator": url, "Vendor": "brand1", "Score": 2}
-                            ]
+                            "DBotScore(val.Indicator && val.Vendor)": [{"Indicator": url, "Vendor": "brand1", "Score": 2}]
                         },
                     }
                 else:

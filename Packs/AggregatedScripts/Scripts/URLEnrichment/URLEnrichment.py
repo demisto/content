@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 from AggregatedCommandApiModule import *
 
 
-
 def url_enrichment_script(url_list, external_enrichment=False, verbose=False, enrichment_brands=None, additional_fields=False):
     """
     Enriches URL data with information from various integrations
@@ -19,8 +18,9 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
     url_indicator = Indicator(
         type="url", value_field="Data", context_path_prefix="URL(", context_output_mapping=indicator_mapping
     )
-    
-    wildfire_command = [Command(
+
+    wildfire_command = [
+        Command(
             name="wildfire-get-verdict",
             args={"url": url_list},
             command_type=CommandType.INTERNAL,
@@ -29,27 +29,30 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
                 "WildFire.Verdicts(val.url && val.url == obj.url)": "WildFire.Verdicts(val.url && val.url == obj.url)[]"
             },
             is_multi_input=True,
-            is_aggregated_output=False
-        )]
-    
+            is_aggregated_output=False,
+        )
+    ]
+
     create_new_indicator_commands = [
-        Command(name="createNewIndicator", args={"value": url,"type":"URL"},
-                command_type=CommandType.BUILTIN,
-                context_output_mapping=None,
-                ignore_using_brand=True)
+        Command(
+            name="createNewIndicator",
+            args={"value": url, "type": "URL"},
+            command_type=CommandType.BUILTIN,
+            context_output_mapping=None,
+            ignore_using_brand=True,
+        )
         for url in url_list
     ]
     enrich_indicator_commands = [
-        Command(name="enrichIndicators", args={"indicatorsValues": url},
-                command_type=CommandType.EXTERNAL,
-                )
+        Command(
+            name="enrichIndicators",
+            args={"indicatorsValues": url},
+            command_type=CommandType.EXTERNAL,
+        )
         for url in url_list
     ]
-    
-    commands = [
-        create_new_indicator_commands,
-        wildfire_command + enrich_indicator_commands
-    ]
+
+    commands = [create_new_indicator_commands, wildfire_command + enrich_indicator_commands]
 
     url_reputation = ReputationAggregatedCommand(
         brands=enrichment_brands,

@@ -14,6 +14,7 @@ def util_load_json(path: str):
 # 1) Validation tests (validate_input is invoked inside AggregatedCommand.run())
 # --------------------------------------------------------------------------------------
 
+
 def test_validate_input_success(mocker):
     """
     Given:
@@ -30,16 +31,16 @@ def test_validate_input_success(mocker):
     # Patch extractIndicators via the execute_command wrapper
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {"ExtractedIndicators": {"CVE": cve_list}}
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"CVE": cve_list}}}],
     )
 
     # Make the pipeline a no-op beyond validation
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
@@ -68,15 +69,15 @@ def test_validate_input_invalid_cve(mocker):
 
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {"ExtractedIndicators": {"CVE": ["CVE-2024-0001"]}}
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"CVE": ["CVE-2024-0001"]}}}],
     )
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
@@ -93,6 +94,7 @@ def test_validate_input_invalid_cve(mocker):
 # --------------------------------------------------------------------------------------
 # 2) End-to-end: TIM + enrichIndicators (batch data from file)
 # --------------------------------------------------------------------------------------
+
 
 def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
     """
@@ -123,15 +125,17 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
     # Validation: extractIndicators returns both CVEs
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {"ExtractedIndicators": {"CVE": cve_list}}
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"CVE": cve_list}}}],
     )
 
     # IndicatorsSearcher -> TIM pages
     class _MockSearcher:
-        def __init__(self, pages): self.pages = pages
-        def __iter__(self): return iter(self.pages)
+        def __init__(self, pages):
+            self.pages = pages
+
+        def __iter__(self):
+            return iter(self.pages)
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
 
     # Enabled brands
@@ -141,7 +145,7 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
         return_value={
             "m1": {"state": "active", "brand": "brand1"},
             "m2": {"state": "active", "brand": "brand2"},
-            "m3": {"state": "active", "brand": "brand3"}
+            "m3": {"state": "active", "brand": "brand3"},
         },
     )
 

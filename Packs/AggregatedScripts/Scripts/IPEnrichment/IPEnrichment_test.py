@@ -14,6 +14,7 @@ def util_load_json(path: str):
 # 1) Validation tests (validate_input is invoked inside AggregatedCommand.run())
 # --------------------------------------------------------------------------------------
 
+
 def test_validate_input_success(mocker):
     """
     Given:
@@ -31,20 +32,16 @@ def test_validate_input_success(mocker):
     # Patch extractIndicators (via AggregatedCommandApiModule.execute_command)
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "IP": ip_list
-                }
-            }
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ip_list}}}],
     )
 
     # No-op the rest of the pipeline
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
@@ -73,19 +70,15 @@ def test_validate_input_invalid_ip(mocker):
 
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "IP": ["1.1.1.1"]
-                }
-            }
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ["1.1.1.1"]}}}],
     )
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
@@ -102,6 +95,7 @@ def test_validate_input_invalid_ip(mocker):
 # --------------------------------------------------------------------------------------
 # 2) End-to-end: TIM + Core lookups + enrichIndicators (batch data from file)
 # --------------------------------------------------------------------------------------
+
 
 def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
     """
@@ -133,19 +127,17 @@ def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
     # Validation: extractIndicators returns both IPs
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {
-                "ExtractedIndicators": {
-                    "IP": ip_list
-                }
-            }
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"IP": ip_list}}}],
     )
 
     # Mock IndicatorsSearcher to yield our TIM pages
     class _MockSearcher:
-        def __init__(self, pages): self.pages = pages
-        def __iter__(self): return iter(self.pages)
+        def __init__(self, pages):
+            self.pages = pages
+
+        def __iter__(self):
+            return iter(self.pages)
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
 
     # Enabled brands/instances
@@ -225,16 +217,18 @@ def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
 
     # EndpointData passthrough
     endpoint_ctx = outputs.get(
-        "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)",
-        []
+        "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)",  # noqa: E501
+        [],
     )
-    assert isinstance(endpoint_ctx, list) and len(endpoint_ctx) == 2
+    assert isinstance(endpoint_ctx, list)
+    assert len(endpoint_ctx) == 2
     assert {e["Brand"] for e in endpoint_ctx} == {"Core"}
     assert {e["Hostname"] for e in endpoint_ctx} == {"host-1", "host-2"}
 
     # Core prevalence mapped
     prevalence_ctx = outputs.get("Core.AnalyticsPrevalence.Ip", [])
-    assert isinstance(prevalence_ctx, list) and len(prevalence_ctx) == 2
+    assert isinstance(prevalence_ctx, list)
+    assert len(prevalence_ctx) == 2
     assert {d["Ip"] for d in prevalence_ctx} == {"1.1.1.1", "8.8.8.8"}
 
     # DBotScore vendors exactly brand1, brand2, brand3

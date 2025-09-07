@@ -14,6 +14,7 @@ def util_load_json(path: str):
 # 1) Validation tests (validate_input is invoked inside AggregatedCommand.run())
 # --------------------------------------------------------------------------------------
 
+
 def test_validate_input_success(mocker):
     domain_list = ["example.com", "example2.com"]
     mocker.patch.object(demisto, "args", return_value={"domain_list": ",".join(domain_list)})
@@ -21,16 +22,16 @@ def test_validate_input_success(mocker):
     # extractIndicators returns both domains
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {"ExtractedIndicators": {"Domain": domain_list}}
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"Domain": domain_list}}}],
     )
 
     # No-op the rest of the pipeline
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
@@ -51,15 +52,15 @@ def test_validate_input_invalid_domain(mocker):
     # Only the valid domain is extracted -> should raise
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {"ExtractedIndicators": {"Domain": ["example.com"]}}
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"Domain": ["example.com"]}}}],
     )
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
+
     class _EmptySearcher:
         def __iter__(self):
             return iter([])
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
     mocker.patch.object(demisto, "getModules", return_value={})
 
@@ -77,6 +78,7 @@ def test_validate_input_invalid_domain(mocker):
 # 2) End-to-end: TIM + core analytics + enrichIndicators (batch data from file)
 # --------------------------------------------------------------------------------------
 
+
 def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     # Load TIM pages + batch entries from fixtures
     tim_pages = util_load_json("test_data/mock_domain_tim_results.json")["pages"]
@@ -88,15 +90,17 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     # Validation: extractIndicators returns both domains
     mocker.patch(
         "AggregatedCommandApiModule.execute_command",
-        return_value=[{
-            "EntryContext": {"ExtractedIndicators": {"Domain": domain_list}}
-        }],
+        return_value=[{"EntryContext": {"ExtractedIndicators": {"Domain": domain_list}}}],
     )
 
     # Mock IndicatorsSearcher to yield our TIM pages
     class _MockSearcher:
-        def __init__(self, pages): self.pages = pages
-        def __iter__(self): return iter(self.pages)
+        def __init__(self, pages):
+            self.pages = pages
+
+        def __iter__(self):
+            return iter(self.pages)
+
     mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
 
     # Enabled brands

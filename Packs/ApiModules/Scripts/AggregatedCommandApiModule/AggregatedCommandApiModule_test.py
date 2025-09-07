@@ -370,6 +370,7 @@ def test_extract_cvss_rating(cvss_input, expected_rating):
 # -- Level 2: Core Class Units (Command + EntryResult)
 # -------------------------------------------------------------------------------------------------
 
+
 def test_entry_result_to_entry():
     """
     Given:
@@ -393,7 +394,8 @@ def test_entry_result_to_entry():
         "status": "Success",
         "message": "test-message",
     }
-    
+
+
 @pytest.mark.parametrize(
     "brands_to_run, ignore_using_brand, expected_result",
     [
@@ -417,7 +419,8 @@ def test_to_batch_item_with_brands(brands_to_run, ignore_using_brand, expected_r
     batch_item = cmd.to_batch_item(brands_to_run)
 
     assert batch_item == expected_result
-    
+
+
 # -------------------------------------------------------------------------------------------------
 # -- Level 3: Core Class Units (BatchExecutor)
 # -------------------------------------------------------------------------------------------------
@@ -426,23 +429,28 @@ def test_to_batch_item_with_brands(brands_to_run, ignore_using_brand, expected_r
     [
         (
             # One Command return 3 results
-            [[{"Brand": "TIM","Type":1}, {"Brand": "brandA","Type":1}, {"Brand": "TIM","Type":1}]],
+            [[{"Brand": "TIM", "Type": 1}, {"Brand": "brandA", "Type": 1}, {"Brand": "TIM", "Type": 1}]],
             [Command(name="test-command", args={"arg1": "value1"})],
-            [[({"Brand": "TIM","Type":1}, "", ""), ({"Brand": "brandA","Type":1}, "", ""), ({"Brand": "TIM","Type":1}, "", "")]],
+            [
+                [
+                    ({"Brand": "TIM", "Type": 1}, "", ""),
+                    ({"Brand": "brandA", "Type": 1}, "", ""),
+                    ({"Brand": "TIM", "Type": 1}, "", ""),
+                ]
+            ],
         ),
         (
             # First and last Command dont return, middle command return 2 results
-            [[],[{"Type":1},{"Type":1}],[]],
-            [Command(name="test", args={"a": "a"}),Command(name="test", args={"a": "a"}),Command(name="test", args={"a": "a"})],
-            [[],[({"Type":1},"", ""),({"Type":1},"", "")],[]]
+            [[], [{"Type": 1}, {"Type": 1}], []],
+            [Command(name="test", args={"a": "a"}), Command(name="test", args={"a": "a"}), Command(name="test", args={"a": "a"})],
+            [[], [({"Type": 1}, "", ""), ({"Type": 1}, "", "")], []],
         ),
         (
             # First command return 2 results one is debug, second Command return only debug
-            [[{"Type":16}, {"Type":1}],[{"Type":16}]],
-            [Command(name="test", args={"a": "a"}),Command(name="test", args={"a": "a"})],
-            [[({"Type":1},"","")],[]]
-        )
-        
+            [[{"Type": 16}, {"Type": 1}], [{"Type": 16}]],
+            [Command(name="test", args={"a": "a"}), Command(name="test", args={"a": "a"})],
+            [[({"Type": 1}, "", "")], []],
+        ),
     ],
 )
 def test_batch_executer_process_results_various(results, commands_list, expected_result):
@@ -459,10 +467,10 @@ def test_batch_executer_process_results_various(results, commands_list, expected
     assert processed_results == expected_result
 
 
-
 # -------------------------------------------------------------------------------------------------
 # -- Level 3: Core Class Units (ContextBuilder)
 # -------------------------------------------------------------------------------------------------
+
 
 def test_add_tim_context():
     """
@@ -574,6 +582,7 @@ def test_build_enriches_final_indicators_correctly(results, expected_max, expect
     assert final_indicator["MaxScore"] == expected_max
     assert final_indicator["MaxVerdict"] == expected_verdict
 
+
 def test_build_without_tim_context_carries_dbot_and_other():
     """
     Given:
@@ -592,6 +601,7 @@ def test_build_without_tim_context_carries_dbot_and_other():
     assert "Final.Path(val.Value && val.Value == obj.Value)" not in final_ctx
     assert Common.DBotScore.CONTEXT_PATH in final_ctx
     assert final_ctx["K1"]["v"] == 2
+
 
 def test_build_assembles_all_context_types():
     """
@@ -675,6 +685,7 @@ def test_builder_enriches_with_cvss_variants(results, expected_max_cvss, expecte
     assert final_indicator["MaxCVSS"] == expected_max_cvss
     assert final_indicator["MaxSeverity"] == expected_max_severity
 
+
 def test_builder_create_indicator():
     """
     Given:
@@ -697,9 +708,11 @@ def test_builder_create_indicator():
     assert final_indicator["MaxCVSS"] == 9.8
     assert final_indicator["MaxSeverity"] == "Critical"
 
+
 # -------------------------------------------------------------------------------------------------
 # -- Level 4: Core Class Units (BrandManager)
 # -------------------------------------------------------------------------------------------------
+
 
 def test_brand_manager_to_run_empty_means_all(mocker):
     """
@@ -714,6 +727,7 @@ def test_brand_manager_to_run_empty_means_all(mocker):
     stub_modules(mocker, [{"brand": "A", "state": "active"}, {"brand": "B", "state": "active"}])
     module = DummyModule(args={}, brands=[], verbose=False, commands=[])
     assert module.brand_manager.to_run == []
+
 
 def test_enabled_brands_filters_only_active_brands(mocker):
     """
@@ -829,6 +843,7 @@ def test_missing_brands_various(mocker, modules, input_brands, expected_missing)
 # -- Level 5: AggregatedCommand
 # -------------------------------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "enabled_brands, brands, commands_info, expected_unsupported_enrichment_brands",
     [
@@ -843,7 +858,9 @@ def test_missing_brands_various(mocker, modules, input_brands, expected_missing)
         ),
     ],
 )
-def test_unsupported_enrichment_brands_various(module_factory, enabled_brands, brands, commands_info, expected_unsupported_enrichment_brands):
+def test_unsupported_enrichment_brands_various(
+    module_factory, enabled_brands, brands, commands_info, expected_unsupported_enrichment_brands
+):
     """
     Given:
         - enabled_brands is mocked directly on the module.
@@ -858,17 +875,18 @@ def test_unsupported_enrichment_brands_various(module_factory, enabled_brands, b
     module.brand_manager.enabled = enabled_brands  # directly inject the enabled_brands list
 
     # override inputs
-    module.commands = [[
-        Command(name=f"cmd{i}", args={}, brand=brand, command_type=ctype)
-        for i, (brand, ctype) in enumerate(commands_info)
-    ]]
+    module.commands = [
+        [Command(name=f"cmd{i}", args={}, brand=brand, command_type=ctype) for i, (brand, ctype) in enumerate(commands_info)]
+    ]
 
     result = module.unsupported_enrichment_brands
     assert set(result) == set(expected_unsupported_enrichment_brands)
 
+
 # -------------------------------------------------------------------------------------------------
 # -- Level 6: ReputationAggregatedCommand
 # -------------------------------------------------------------------------------------------------
+
 
 # --- Validation Tests ---
 @pytest.mark.parametrize(
@@ -893,14 +911,19 @@ def test_validate_input_success(module_factory, mocker, data, indicator_type, ex
     Then:
         - Should not raise.
     """
-    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}])
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command", return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}]
+    )
     inst = module_factory(
         data=data,
-        indicator=Indicator(type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}),
+        indicator=Indicator(
+            type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}
+        ),
     )
 
     # Should not raise
     inst.validate_input()
+
 
 @pytest.mark.parametrize(
     "data, indicator_type, extracted, missing",
@@ -929,7 +952,9 @@ def test_validate_input_raises_on_mismatch(module_factory, mocker, data, indicat
     )
     inst = module_factory(
         data=data,
-        indicator=Indicator(type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={})
+        indicator=Indicator(
+            type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}
+        ),
     )
 
     with pytest.raises(ValueError) as excinfo:
@@ -940,6 +965,7 @@ def test_validate_input_raises_on_mismatch(module_factory, mocker, data, indicat
     for item in missing:
         assert item in msg
     assert indicator_type.lower() in msg.lower()
+
 
 # --- Prepare Commands Tests ---
 @pytest.mark.parametrize(
@@ -969,13 +995,13 @@ def test_prepare_commands_various(module_factory, requested_brands, external_enr
     cmd_intA = Command(name="intA", args={}, brand="A", command_type=CommandType.INTERNAL)
     cmd_intB = Command(name="intB", args={}, brand="B", command_type=CommandType.INTERNAL)
     cmd_ext = Command(name="enrichIndicators", args={"indicatorsValues": "example.com"}, command_type=CommandType.EXTERNAL)
-    
+
     all_commands = [cmd_intA, cmd_intB, cmd_ext]
     module = module_factory(brands=requested_brands, indicator=indicator, commands=[all_commands])
-    
+
     batches = module.prepare_commands_batches(external_enrichment=external_enrichment)
     flattened = [c for batch in batches for c in batch]
-    
+
     assert {c.name for c in flattened} == expected_names
 
 
@@ -1005,10 +1031,11 @@ def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores)
     assert len(dbots) == len(expected_scores)
     assert [item["Score"] for item in dbots] == expected_scores
 
+
 @pytest.mark.parametrize(
     "result_tuple, mock_mapped_context_return, expected_entry_status, expected_entry_msg, expected_dbots",
     [
-        (   # Success
+        (  # Success
             (
                 {"EntryContext": {"DBotScore": [make_dbot("a.com", "VendorA", 2)], "URL": {"Data": "a.com"}}},
                 "Human Readable for success",
@@ -1019,14 +1046,14 @@ def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores)
             "",
             [make_dbot("a.com", "VendorA", 2)],
         ),
-        (   # Success without context
+        (  # Success without context
             ({}, "", ""),
             {},
             Status.SUCCESS,
             "No matching indicators found.",
             [],
         ),
-        (   # Failure with partial context
+        (  # Failure with partial context
             (
                 {"EntryContext": {"DBotScore": [make_dbot("b.com", "VendorB", 3)]}},
                 "Human Readable for error",
@@ -1037,7 +1064,7 @@ def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores)
             "Command failed",
             [make_dbot("b.com", "VendorB", 3)],
         ),
-        (   # Failure without context
+        (  # Failure without context
             ({}, "", "error"),
             {},
             Status.FAILURE,
@@ -1089,14 +1116,15 @@ def test_process_single_command_result(
 
     assert dbots == expected_dbots
 
+
 # -- TIM Logic --
 @pytest.mark.parametrize(
     "iocs,status,message",
     [
-        (None,                 Status.FAILURE, "boom"),
-        ([],                Status.SUCCESS, "no results"),
-        ([],                Status.FAILURE, "empty failure"),
-        ([{"value":"x"}],   Status.FAILURE, "failed despite hits"),
+        (None, Status.FAILURE, "boom"),
+        ([], Status.SUCCESS, "no results"),
+        ([], Status.FAILURE, "empty failure"),
+        ([{"value": "x"}], Status.FAILURE, "failed despite hits"),
     ],
 )
 def test_get_indicators_from_tim_early_return(module_factory, mocker, iocs, status, message):
@@ -1129,6 +1157,7 @@ def test_get_indicators_from_tim_early_return(module_factory, mocker, iocs, stat
     assert entry.status == status
     assert entry.message == message
 
+
 def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
     """
     Given:
@@ -1142,15 +1171,15 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
 
     mod = module_factory(indicator=default_indicator)
 
-    mocker.patch.object(mod, "search_indicators_in_tim",
-                        return_value=(iocs, Status.SUCCESS, "ok"))
+    mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, Status.SUCCESS, "ok"))
 
     expected_ctx = {"TIM": {"some": "context"}}
     expected_dbots = [{"Indicator": "https://a.com", "Vendor": "TIM", "Score": 1}]
     expected_entries = [object()]  # sentinel list we can identity-check
 
     proc = mocker.patch.object(
-        mod, "process_tim_results",
+        mod,
+        "process_tim_results",
         return_value=(expected_ctx, expected_dbots, expected_entries),
     )
 
@@ -1162,8 +1191,9 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
     # Ensure exact passthrough of the entries list
     assert entries is expected_entries
 
+
 @pytest.mark.parametrize(
-    "ioc_input, mock_tim_indicator_return, mock_parse_indicator_side_effect, expected_indicators, expected_dbots, expected_entry_msg",
+    "ioc_input, mock_tim_indicator_return, mock_parse_indicator_side_effect, expected_indicators, expected_dbots, expected_entry_msg",  # noqa: E501
     [
         (
             build_ioc(
@@ -1280,7 +1310,8 @@ def test_create_tim_indicator_extracting_custom_fields_case_insensitive(module_f
     assert out["CVSS"] == {"Score": 7.1}
     assert out["Value"] == "CVE-1"
     assert out["Brand"] == "TIM"
-    
+
+
 def test_search_indicators_in_tim_exception_path(module_factory, mocker):
     """
     Given:
@@ -1341,7 +1372,6 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, search_p
     assert msg == expected_msg
 
 
-
 # --- Summarize Command Results Tests ---
 @pytest.mark.parametrize(
     "entries, expect_error",
@@ -1388,6 +1418,7 @@ def test_summarize_command_results_error_condition(module_factory, mocker, entri
 
     assert (res.entry_type == entryTypes["error"]) == expect_error
 
+
 def test_summarize_command_results_appends_unsupported_enrichment_row(module_factory, mocker):
     """
     Given:
@@ -1418,8 +1449,8 @@ def test_summarize_command_results_appends_unsupported_enrichment_row(module_fac
         and "Unsupported Command" in (row.get("message") or "")
         for row in table_rows
     )
-    
-    
+
+
 # === Test raise_non_enabled_brands_error ===
 def test_raise_non_enabled_brands_error_raises_when_all_unsupported(module_factory):
     """
@@ -1460,6 +1491,7 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
     except DemistoException:
         pytest.fail("raise_non_enabled_brands_error raised an exception unexpectedly.")
 
+
 # -- Context Mapping --
 @pytest.mark.parametrize(
     "mapping, entry, expected",
@@ -1467,13 +1499,15 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
         # Empty entry
         ({"a..b": "x..y"}, {}, {}),
         # empty mapping
-        ({}, {"a": {"b": 10}}, {}),
+        ({}, {"a": {"b": 10}}, {"a": {"b": 10}}),
         # simple nested mapping
         ({"a..b": "x..y"}, {"a": {"b": 10}}, {"x": {"y": 10}}),
         # mapping to list via '[]'
         ({"a..b": "x..y[]"}, {"a": {"b": 5}}, {"x": {"y": [5]}}),
         # multiple mappings
         ({"a..b": "out..b", "c": "out..c"}, {"a": {"b": 1}, "c": 2}, {"out": {"b": 1, "c": 2}}),
+        # mapping is None
+        (None, {"a": {"b": 10}}, {}),
     ],
 )
 def test_map_command_context_basic(module_factory, mapping, entry, expected):
@@ -1500,7 +1534,7 @@ def test_map_command_context_basic(module_factory, mapping, entry, expected):
         # is_indicator True even if additional_fields False → no AdditionalFields
         ({"x": "y"}, {"x": 1, "z": 2}, True, False, {"y": 1}),
         # is_indicator True and additional_fields True → AdditionalFields full
-        ({"x": "y"}, {"x": 1, "z": 2}, True, True, {"y": 1,"AdditionalFields": {"z": 2}}),
+        ({"x": "y"}, {"x": 1, "z": 2}, True, True, {"y": 1, "AdditionalFields": {"z": 2}}),
         # mapping consumes all keys → AdditionalFields empty dict
         ({"m": "n"}, {"m": 5}, True, True, {"n": 5}),
     ],
