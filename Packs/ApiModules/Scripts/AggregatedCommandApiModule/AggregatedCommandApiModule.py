@@ -716,17 +716,16 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             tuple[list[ContextResult], Status, str]: The search results, status and message.
         """
+        demisto.debug(f"Searching TIM for {self.indicator.type} indicators: {self.data}")
+        
         indicators = " or ".join({f"value:{indicator}" for indicator in self.data})
         query = f"type:{self.indicator.type} and ({indicators})"
-        try:
-            demisto.debug(f"Executing TIM search with query: {query}")
-            searcher = IndicatorsSearcher(query=query, size=len(self.data))
-            iocs = flatten_list([res.get("iocs", []) for res in searcher])
-            demisto.debug(f"TIM search returned {len(iocs)} raw IOCs.")
-            return iocs, Status.SUCCESS, "No matching indicators found." if not iocs else ""
-        except Exception as e:
-            demisto.debug(f"Error searching TIM: {e}\n{traceback.format_exc()}")
-            return [], Status.FAILURE, f"{e}\n{traceback.format_exc()}"
+        is_success, results  = execute_command("findIndicators", {"query": query}, extract_contents=True, fail_on_error=False)
+        if not is_success:
+            demisto.debug("Failed to search TIM")
+            return [], Status.FAILURE, results
+        demisto.debug("Found indicators in TIM.")
+        return results, Status.SUCCESS, "No matching indicators found." if not results else ""
 
     def process_tim_results(self, iocs: list[dict[str, Any]]) -> tuple[ContextResult, DBotScoreList, list[EntryResult]]:
         """Processes raw IOCs from a TIM search into structured context.
@@ -751,6 +750,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         final_result_entries: list[EntryResult] = []
 
         for ioc in iocs:
+            demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
+            demisto.debug(f"IOC: {json.dumps(ioc,indent=2)}")
             parsed_indicators, dbot_scores, entry = self._process_single_tim_ioc(ioc)
 
             if value := ioc.get("value"):
@@ -781,11 +782,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         found_brands = []
         for brand, brand_data in ioc.get("insightCache", {}).get("scores", {}).items():
-            found_brands.append(brand)
             demisto.debug(f"Processing TIM indicators from brand: {brand}")
             score = brand_data.get("score", 0)
             context = brand_data.get("context", {})
             parsed_indicators, parsed_dbot = self.parse_indicator(context, brand, score)
+            if parsed_indicators:
+                found_brands.append(brand)
             all_parsed_indicators.extend(parsed_indicators)
             all_dbot_scores.extend(parsed_dbot)
 
@@ -1254,7 +1256,7 @@ def convert_cvss_score_to_rating(score: float) -> str:
     return "Unknown"
 
 
-def remove_empty_elements_with_exceptions(d, exceptions: set[str] = set()) -> dict | list | None:
+def remove_empty_elements_with_exceptions(d, exceptions: set[str] = set()) -> dict:
     """
     Recursively remove empty lists, empty dicts, or None elements from a dictionary,
     unless their key is in the `exceptions` set.
@@ -1268,7 +1270,7 @@ def remove_empty_elements_with_exceptions(d, exceptions: set[str] = set()) -> di
     """
     exceptions = exceptions or set()
 
-    def empty(k, v):
+    def empty(k, v) -> bool:
         """Check if a value is considered empty, unless the key is in exceptions."""
         if isinstance(v, (dict, list)):
             return not v  # empty dict or list

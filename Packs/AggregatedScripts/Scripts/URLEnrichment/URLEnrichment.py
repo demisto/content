@@ -35,13 +35,12 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
 
     create_new_indicator_commands = [
         Command(
-            name="createNewIndicator",
-            args={"value": url, "type": "URL"},
+            name="CreateNewIndicatorsOnly",
+            args={"indicator_values": url_list, "type": "URL"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
         )
-        for url in url_list
     ]
     enrich_indicator_commands = [
         Command(

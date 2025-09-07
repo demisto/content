@@ -52,6 +52,10 @@ outputs:
 - contextPath: URLEnrichment.Results
   description: list of all indicators found for the url.
   type: array
+- contextPath: URLEnrichment.TIMScore
+  description: the TIM score of the url.
+  type: number
+# URLEnrichment Main Keys
 - contextPath: URLEnrichment.Results.Brand
   description: the brand of the indicator.
   type: string

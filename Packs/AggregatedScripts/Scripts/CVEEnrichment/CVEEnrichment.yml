@@ -42,12 +42,6 @@ outputs:
 - contextPath: CVEEnrichment.Value
   description: the cve it self.
   type: string
-- contextPath: CVEEnrichment.MaxScore
-  description: the max score of the indicator.
-  type: number
-- contextPath: CVEEnrichment.MaxVerdict
-  description: the max verdict of the indicator.
-  type: string
 - contextPath: CVEEnrichment.MaxCVSS
   description: the max CVSS of the indicator.
   type: number

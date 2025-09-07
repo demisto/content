@@ -19,8 +19,7 @@ def ip_enrichment_script(
     additional_fields: bool = False,
 ) -> CommandResults:
     """
-    Enrich IP indicators by orchestrating built-in creation, internal Core lookups,
-    and optional external enrichment via `enrichIndicators`.
+    Enrich IP indicators.
 
     Args:
         ip_list: IPs to enrich.
@@ -71,7 +70,7 @@ def ip_enrichment_script(
         for ip in ip_list
     ]
 
-    # Internal Core lookups (single calls with all IPs)
+    # Internal Commands
     internal_core_commands = [
         Command(
             name="get-endpoint-data",
@@ -98,7 +97,7 @@ def ip_enrichment_script(
     ]
 
     ip_enrichment = ReputationAggregatedCommand(
-        brands=enrichment_brands or [],
+        brands=enrichment_brands,
         verbose=verbose,
         commands=commands,
         additional_fields=additional_fields,

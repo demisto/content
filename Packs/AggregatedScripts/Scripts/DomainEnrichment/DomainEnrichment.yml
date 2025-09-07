@@ -52,6 +52,9 @@ outputs:
 - contextPath: DomainEnrichment.Results
   description: list of all indicators found for the domain.
   type: array
+- contextPath: DomainEnrichment.TIMScore
+  description: the TIM score of the domain.
+  type: number
 # DomainEnrichment Main Keys
 - contextPath: DomainEnrichment.Results.Brand
   description: the brand of the indicator.

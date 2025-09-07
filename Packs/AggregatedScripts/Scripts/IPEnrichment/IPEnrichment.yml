@@ -41,7 +41,7 @@ name: ip-enrichment
 outputs:
 # IPEnrichment
 - contextPath: IPEnrichment.Value
-  description: the ip address .
+  description: the ip address.
   type: string
 - contextPath: IPEnrichment.MaxScore
   description: the max score of all the indicators found.
@@ -49,10 +49,13 @@ outputs:
 - contextPath: IPEnrichment.MaxVerdict
   description: the max verdict of all the indicators found.
   type: string
-# IPEnrichment results main keys
+- contextPath: IPEnrichment.TIMScore
+  description: the TIM score of the IP.
+  type: number
 - contextPath: IPEnrichment.Results
   description: list of all indicators found for the ip.
   type: array
+# IPEnrichment results main keys
 - contextPath: IPEnrichment.Results.Source
   description: the source of the indicator.
   type: string
