@@ -47,6 +47,8 @@ configuration:
   - noh
   - domainrdap
   - domaindiscovery
+  - domainrisk
+  - domainhotlist
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
