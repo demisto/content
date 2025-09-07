@@ -1185,6 +1185,73 @@ def test_azure_client_handle_azure_error_401(mocker, client):
     assert 'Authentication failed when accessing Web App "test-resource"' in str(excinfo.value)
 
 
+def test_azure_client_handle_azure_error_using_return_multiple_permissions_error_function(mocker):
+    """
+    Test the permission lookup logic and return_multiple_permissions_error call in handle_azure_error.
+
+    Tests:
+    1. Permission found via API function mapping
+    2. Permission found via fallback method
+    3. No permission found (raises Exception)
+    4. Correct parameters passed to return_multiple_permissions_error
+    """
+    from Azure import AzureClient
+
+    mock_get_permissions_from_api = mocker.patch('Azure.get_permissions_from_api_function_name')
+    mock_get_permissions_from_required = mocker.patch('Azure.get_permissions_from_required_role_permissions_list')
+    mock_return_multiple_permissions_error = mocker.patch('Azure.return_multiple_permissions_error')
+    client = AzureClient("tenant_id", "client_id", "client_secret")
+
+    # Test case 1: Permission found via API function mapping
+    mock_get_permissions_from_api.return_value = "Microsoft.Network/networkInterfaces/read"
+    mock_get_permissions_from_required.return_value = None
+    exception_403 = Exception("403 Forbidden: Access denied")
+
+    client.handle_azure_error(
+        e=exception_403,
+        resource_name="test-nic",
+        resource_type="Network Interface",
+        api_function_name="list_networks_interfaces_request",
+        subscription_id="sub123"
+    )
+
+    mock_get_permissions_from_api.assert_called_with("list_networks_interfaces_request", "403 forbidden: access denied")
+    mock_get_permissions_from_required.assert_not_called()
+
+    expected_error_entries = [{
+        "account_id": "sub123",
+        "message": "403 forbidden: access denied",
+        "name": "Microsoft.Network/networkInterfaces/read"
+    }]
+    mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
+
+    mock_get_permissions_from_api.reset_mock()
+    mock_get_permissions_from_required.reset_mock()
+    mock_return_multiple_permissions_error.reset_mock()
+
+    # Test case 2: Permission found via fallback method
+    mock_get_permissions_from_api.return_value = None
+    mock_get_permissions_from_required.return_value = "Microsoft.Storage/storageAccounts/write"
+    exception_401 = Exception("401 Unauthorized")
+
+    client.handle_azure_error(
+        e=exception_401,
+        resource_name="test-storage",
+        resource_type="Storage Account",
+        api_function_name="storage_account_update_request",
+        subscription_id="sub456"
+    )
+
+    mock_get_permissions_from_api.assert_called_with("storage_account_update_request", "401 unauthorized")
+    mock_get_permissions_from_required.assert_called_with("401 unauthorized")
+    expected_error_entries = [{
+        "account_id": "sub456",
+        "message": "401 unauthorized",
+        "name": "Microsoft.Storage/storageAccounts/write"
+    }]
+    mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
+
+
 def test_azure_client_handle_azure_error_400(mocker, client):
     """
     Given: An Azure client and a 400 error.
@@ -2435,3 +2502,70 @@ def test_nsg_security_rule_delete_command(mocker):
     mock_response.status_code = 204
     result = nsg_security_rule_delete_command(mock_client, params, args)
     assert "was not found" in result.readable_output
+
+
+def test_get_permissions_from_api_function_name(mocker):
+    """
+    Given: An API function name and an error message.
+    When: get_permissions_from_api_function_name is called.
+    Then:
+          1. It should return the first matching permission found in the error message.
+          2. It should return None if no permission is found in the error message.
+          3. It should be case-insensitive when matching.
+    """
+    from Azure import get_permissions_from_api_function_name
+
+    # Test case 1: Permission found in error message
+    api_function_name = "list_networks_interfaces_request"
+    error_msg = "Access denied. Missing permission: Microsoft.Network/networkInterfaces/read"
+    result = get_permissions_from_api_function_name(api_function_name, error_msg)
+    assert result == "Microsoft.Network/networkInterfaces/read"
+
+    # Test case 2: Case-insensitive matching
+    error_msg_upper = "Access denied. Missing permission: MICROSOFT.NETWORK/NETWORKINTERFACES/READ"
+    result = get_permissions_from_api_function_name(api_function_name, error_msg_upper)
+    assert result == "Microsoft.Network/networkInterfaces/read"
+
+    # Test case 3: No permission found in error message
+    error_msg_no_match = "Some unrelated error message"
+    result = get_permissions_from_api_function_name(api_function_name, error_msg_no_match)
+    assert result is None
+
+    # Test case 4: Multiple permissions in function, return first match
+    api_function_name_multi = "acr_update"  # Has both read and write permissions
+    error_msg_write = "Missing Microsoft.ContainerRegistry/registries/write permission"
+    result = get_permissions_from_api_function_name(api_function_name_multi, error_msg_write)
+    assert result == "Microsoft.ContainerRegistry/registries/write"
+
+
+def test_get_permissions_from_required_role_permissions_list(mocker):
+    """
+    Given: An error message.
+    When: get_permissions_from_required_role_permissions_list is called.
+    Then:
+          1. It should return the first matching permission found in the error message.
+          2. It should return None if no permission is found in the error message.
+          3. It should be case-insensitive when matching.
+          4. It should search through all required role permissions.
+    """
+    from Azure import get_permissions_from_required_role_permissions_list
+
+    # Test case 1: Permission found in error message
+    error_msg = "Access denied. Missing permission: Microsoft.Network/networkSecurityGroups/read"
+    result = get_permissions_from_required_role_permissions_list(error_msg)
+    assert result == "Microsoft.Network/networkSecurityGroups/read"
+
+    # Test case 2: Case-insensitive matching
+    error_msg_mixed_case = "Access denied. Missing permission: microsoft.network/networksecuritygroups/READ"
+    result = get_permissions_from_required_role_permissions_list(error_msg_mixed_case)
+    assert result == "Microsoft.Network/networkSecurityGroups/read"
+
+    # Test case 3: No permission found in error message
+    error_msg_no_match = "Some completely unrelated error message without permissions"
+    result = get_permissions_from_required_role_permissions_list(error_msg_no_match)
+    assert result is None
+
+    # Test case 4: Empty error message
+    error_msg_empty = ""
+    result = get_permissions_from_required_role_permissions_list(error_msg_empty)
+    assert result is None

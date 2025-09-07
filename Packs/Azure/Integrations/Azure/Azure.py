@@ -1461,11 +1461,10 @@ def get_permissions_from_api_function_name(api_function_name: str, error_msg: st
     Returns:
         str: The matching permission if found, otherwise None.
     """
-    for permissions in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
-        for permission in permissions:
-            if permission.lower() in error_msg.lower():
-                demisto.debug(f"Found missing permission via command mapping: {permission}")
-                return permission
+    for permission in API_FUNCTION_TO_PERMISSIONS[api_function_name]:
+        if permission.lower() in error_msg.lower():
+            demisto.debug(f"Found missing permission via command mapping: {permission}")
+            return permission
     return None
 
 
