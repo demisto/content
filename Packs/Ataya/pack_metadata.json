@@ -12,8 +12,13 @@
     "tags": [
         "Network"
     ],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Ataya",
+        "5G"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

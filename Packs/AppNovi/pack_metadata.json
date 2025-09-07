@@ -9,8 +9,13 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Security"
+    ],
+    "useCases": [
+        "Network Security",
+        "Incident Response"
+    ],
     "keywords": [
         "Asset intelligence",
         "Asset attribution",
