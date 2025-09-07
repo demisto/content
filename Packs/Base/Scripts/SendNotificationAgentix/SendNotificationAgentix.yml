@@ -1,0 +1,38 @@
+args:
+- description: The message content.
+  name: message
+- description: The user to whom to send the message. Can be either the username or email address.
+  name: to
+- description: The name of the channel to which to send the message.
+  name: channel
+- description: Comma separated list of brands to activate the command on.
+  name: brand
+  auto: PREDEFINED
+  predefined:
+  - Slack
+  - Microsoft Teams
+  - Mattermost
+  - Zoom
+comment: Sends a notification message to a user, group, or channel Supports sending messages to Slack, Microsoft Teams, Mattermost and Zoom.
+commonfields:
+  id: SendNotificationAgentix
+  version: -1
+name: SendNotificationAgentix
+outputs: []
+# isInternal: true
+script: "-"
+subtype: python3
+# hidden: true
+timeout: "0"
+type: python
+dockerimage: demisto/python3:3.12.8.3720084
+dependson:
+  must:
+  - send-notification
+fromversion: 5.0.0
+tests:
+  - No tests (auto formatted)
+marketplaces:
+  - platform
+supportedModules:
+  - agentix
