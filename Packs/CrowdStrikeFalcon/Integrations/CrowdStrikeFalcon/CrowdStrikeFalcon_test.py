@@ -6391,6 +6391,7 @@ class TestCSFalconResolveIdentityDetectionCommand:
             handle_resolve_detections(args, "")
         assert "Only one of the arguments assign_to_uuid, assign_to_name, assign_to_user_id should be provided." in str(e)
 
+
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
     # last run objects for each incident type, for IOA, that is the 6th position
