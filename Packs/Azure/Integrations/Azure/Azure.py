@@ -1306,7 +1306,7 @@ class AzureClient:
             f"/securityRules/{security_rule_name}"
         )
         response = self.http_request(method="DELETE", full_url=full_url, resp_type="response")
-        if response.status_code in (200, 202, 204):  # type: ignore[union-attr]
+        if response.status_code in (200, 202, 204):
             return response
         else:
             demisto.debug("Failed to delete security rule.")
