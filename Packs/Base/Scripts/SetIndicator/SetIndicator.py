@@ -20,7 +20,7 @@ def set_indicator_if_exist(args: dict):
     exists = demisto.executeCommand("findIndicators", {"value": indicator_value})
     if not exists:
         return return_error("Indicator does not exist.")
-
+    
     if any(key in args for key in ["type", "verdict", "tags"]):
         demisto.debug("running setIndicator command.")
         execute_command("setIndicator", args)
@@ -33,7 +33,7 @@ def set_indicator_if_exist(args: dict):
 
         for issue in related_issues:
             demisto.debug(f"running associateIndicatorsToIssue command with issue id {issue}.")
-            execute_command("associateIndicatorsToIssue", {"issueId": issue, "indicatorsValues": indicator_value})
+            execute_command("associateIndicatorsToAlert", {"issueId": issue, "indicatorsValues": indicator_value})
 
     return CommandResults(readable_output="Successfully set indicator.")
 
