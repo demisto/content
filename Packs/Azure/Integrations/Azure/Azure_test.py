@@ -1134,7 +1134,14 @@ def test_azure_client_handle_azure_error_404(mocker, client):
 
     # Verify ValueError is raised for 404 errors
     with pytest.raises(ValueError) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type, subscription_id, resource_group_name)
+        client.handle_azure_error(
+            e=error,
+            resource_name=resource_name,
+            resource_type=resource_type,
+            api_function_name="test",
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name
+        )
 
     assert 'Storage Account "test-resource"' in str(excinfo.value)
     assert 'subscription ID "test-subscription"' in str(excinfo.value)
@@ -1155,7 +1162,7 @@ def test_azure_client_handle_azure_error_403(mocker, client):
 
     # Verify DemistoException is raised for 403 errors
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+        client.handle_azure_error(e=error, resource_name=resource_name, resource_type=resource_type, api_function_name="test")
 
     assert 'Insufficient permissions to access Key Vault "test-resource"' in str(excinfo.value)
 
@@ -1173,7 +1180,7 @@ def test_azure_client_handle_azure_error_401(mocker, client):
 
     # Verify DemistoException is raised for 401 errors
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+        client.handle_azure_error(e=error, resource_name=resource_name, resource_type=resource_type, api_function_name="test")
 
     assert 'Authentication failed when accessing Web App "test-resource"' in str(excinfo.value)
 
@@ -1191,7 +1198,7 @@ def test_azure_client_handle_azure_error_400(mocker, client):
 
     # Verify DemistoException is raised for 400 errors
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+        client.handle_azure_error(e=error, resource_name=resource_name, resource_type=resource_type, api_function_name="test")
 
     assert 'Invalid request for Disk "test-resource"' in str(excinfo.value)
 
@@ -1209,7 +1216,7 @@ def test_azure_client_handle_azure_error_generic(mocker, client):
 
     # Verify DemistoException is raised for generic errors
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(error, resource_name, resource_type)
+        client.handle_azure_error(e=error, resource_name=resource_name, resource_type=resource_type, api_function_name="test")
 
     assert 'Failed to access Virtual Machine "test-resource"' in str(excinfo.value)
     assert "Some other error" in str(excinfo.value)
@@ -1672,7 +1679,7 @@ def test_azure_client_handle_azure_error_other(client):
     error = Exception("500 - Internal Server Error")
 
     with pytest.raises(DemistoException) as excinfo:
-        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="SQL Database")
+        client.handle_azure_error(e=error, resource_name="test-resource", resource_type="SQL Database", api_function_name="test")
 
     assert 'Failed to access SQL Database "test-resource"' in str(excinfo.value)
     assert "500 - Internal Server Error" in str(excinfo.value)
@@ -1840,6 +1847,7 @@ def test_get_webapp_auth_error_handling(mocker, client):
     client.handle_azure_error.assert_called_once_with(
         e=mock_exception,
         resource_name=name,
+        api_function_name="get_webapp_auth",
         resource_type="Web App",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
@@ -1875,6 +1883,7 @@ def test_update_webapp_auth_error_handling(mocker, client):
     client.handle_azure_error.assert_called_once_with(
         e=mock_exception,
         resource_name=name,
+        api_function_name="update_webapp_auth",
         resource_type="Web App",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
@@ -1971,6 +1980,7 @@ def test_flexible_server_param_set_error_handling(mocker, client):
         e=mock_exception,
         resource_name=f"{server_name}/{configuration_name}",
         resource_type="MySQL Flexible Server Configuration",
+        api_function_name="flexible_server_param_set",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
@@ -2038,6 +2048,7 @@ def test_get_monitor_log_profile_error_handling(mocker, client):
     client.handle_azure_error.assert_called_once_with(
         e=mock_exception,
         resource_name=log_profile_name,
+        api_function_name="get_monitor_log_profile",
         resource_type="Monitor Log Profile",
         subscription_id=subscription_id,
         resource_group_name=None,
@@ -2069,7 +2080,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
           1. It should return only 2 results when limited.
           2. It should return all results when all_results=True.
           3. The results should contain expected fields such as name, id, fqdn.
-          4. The etag field should be cleaned up (removing "W/\" prefix and "\" suffix).
+          4. The etag field should be cleaned up (first 3 chars and last char removed).
     """
     from Azure import nsg_public_ip_addresses_list_command
 
@@ -2080,7 +2091,6 @@ def test_nsg_public_ip_addresses_list_command(mocker):
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
 
-    # giving a limit
     args = {"limit": "2", "all_results": "false"}
     result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
 
@@ -2091,20 +2101,24 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert "name" in result.outputs[0]
     assert "id" in result.outputs[0]
 
-    # Check that etag is cleaned up
-    for output in result.outputs:
-        if output.get("etag"):
-            # Assuming the original etag had the "W/\" prefix and "\" suffix
-            assert not output.get("etag").startswith('W/"')
-            assert not output.get("etag").endswith('"')
+    # "123etag3" should become "etag" after [3:-1]
+    first_item_with_etag = result.outputs[0]  # First item has etag "123etag3"
+    if first_item_with_etag.get("etag"):
+        assert first_item_with_etag.get("etag") == "etag"
 
-    # no limit
     args = {"all_results": "true"}
     result_all: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
 
     assert isinstance(result_all, CommandResults)
-    assert len(result_all.outputs) == len(mock_response["value"])
-    fqdn_values = [out.get("fqdn") for out in result_all.outputs if "fqdn" in out]
+    assert len(result_all.outputs) == len(mock_response["value"])  # Should be 3 items
+
+    fqdn_values = [out.get("properties", {}).get("dnsSettings", {}).get("fqdn")
+                   for out in result_all.outputs
+                   if out.get("properties", {}).get("dnsSettings", {}).get("fqdn")]
+
+    assert len(fqdn_values) == 2
+    assert "testlbl.westus.cloudapp.azure.com" in fqdn_values
+    assert "testlbl.hxdwgjcdfgbhgebs.eastus.sysgen.cloudapp.azure.com" in fqdn_values
 
     # Check readable_output is generated
     assert result_all.readable_output
@@ -2121,7 +2135,7 @@ def test_nsg_network_interfaces_list_command(mocker):
           1. It should return only 1 result when limited.
           2. It should return all results when all_results=True.
           3. The results should contain expected fields such as name, id.
-          4. The etag field should be cleaned up.
+          4. The etag field should be cleaned up (first 3 chars and last char removed).
     """
     from Azure import nsg_network_interfaces_list_command
 
@@ -2136,27 +2150,30 @@ def test_nsg_network_interfaces_list_command(mocker):
     args = {"limit": "1", "all_results": "false"}
     result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
 
-    assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
     first = result.outputs[0]
-    assert "name" in first
-    assert "id" in first
 
-    # Check that etag is cleaned up
-    if first.get("etag"):
-        assert not first.get("etag").startswith('W/"')
-        assert not first.get("etag").endswith('"')
+    assert first["name"] == "test-nic"
+    assert first["id"] == "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/test-nic"
 
     # --- Case 2: with all_results=True ---
     args = {"all_results": "true"}
     result_all: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
 
     assert isinstance(result_all, CommandResults)
-    assert len(result_all.outputs) == len(mock_response["value"])
+    assert len(result_all.outputs) == len(mock_response["value"])  # Should be 2 items
+    assert len(result_all.outputs) == 2
 
-    # Check readable_output is generated
+    names = [item["name"] for item in result_all.outputs]
+    assert "test-nic" in names
+    assert "test-nic2" in names
+
+    for item in result_all.outputs:
+        if item.get("etag"):
+            assert item["etag"] == "etag"
+
     assert result_all.readable_output
     assert "Network Interfaces List" in result_all.readable_output
 
@@ -2277,8 +2294,7 @@ def test_nsg_security_rule_create_command(mocker):
 
     # Check that etag is cleaned up
     if result.outputs.get("etag"):
-        assert not result.outputs.get("etag").startswith('W/"')
-        assert not result.outputs.get("etag").endswith('"')
+        assert result.outputs.get("etag") == "etag"
 
     # Check readable_output is generated
     assert result.readable_output
@@ -2323,8 +2339,7 @@ def test_nsg_security_rule_get_command(mocker):
 
     # Check that etag is cleaned up
     if result.outputs.get("etag"):
-        assert not result.outputs.get("etag").startswith('W/"')
-        assert not result.outputs.get("etag").endswith('"')
+        assert result.outputs["etag"] == "etag"
 
     # Check readable_output is generated
     assert result.readable_output
@@ -2365,14 +2380,10 @@ def test_nsg_security_groups_list_command(mocker):
     # Check that etag fields are cleaned up
     for group in result.outputs:
         if group.get("etag"):
-            assert not group.get("etag").startswith('W/"')
-            assert not group.get("etag").endswith('"')
-
-        # Check default security rules etag cleanup
+            assert group["etag"] == "etag"
         for rule in group.get("defaultSecurityRules", []):
             if rule.get("etag"):
-                assert not rule.get("etag").startswith('W/"')
-                assert not rule.get("etag").endswith('"')
+                assert rule["etag"] == "etag"
 
         assert "name" in group
         assert "id" in group

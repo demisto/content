@@ -1,7 +1,7 @@
 {
     "name": "wow",
     "id": "some_id",
-    "etag": "",
+    "etag": "123etag3",
     "type": "Microsoft.Network/networkSecurityGroups/securityRules",
     "properties": {
         "provisioningState": "Succeeded",
