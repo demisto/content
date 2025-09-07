@@ -153,26 +153,48 @@ class ServiceNowClient(BaseClient):
 
     @staticmethod
     def _validate_and_format_private_key(private_key: str) -> str:
-        """Validate the private key format and reformat it to a valid PEM format.
+        """
+        Validate the private key format and reformat it to a valid PEM format.
+
+        Supports these private key types:
+            - PRIVATE KEY
+            - RSA PRIVATE KEY
+            - EC PRIVATE KEY
+            - ENCRYPTED PRIVATE KEY
+
         Args:
             private_key (str): The user Private key.
-        Raises:
-            ValueError: : If the private key format (PEM) is incorrect, a ValueError will be raised.
-        Returns:
-            str: key without whitespaces and invalid characters
-        """
-        # Define the start and end markers
-        start_marker = "-----BEGIN PRIVATE KEY-----"
-        end_marker = "-----END PRIVATE KEY-----"
 
-        if not private_key.startswith(start_marker) or not private_key.endswith(end_marker):
-            raise ValueError("Invalid private key format.")
-        # Remove the markers and replace whitespaces with '\n'
-        key_content = (
-            private_key.replace(start_marker, "").replace(end_marker, "").replace(" ", "\n").replace("\n\n", "\n").strip()
+        Raises:
+            ValueError: If the private key format is incorrect.
+
+        Returns:
+            str: Key formatted in valid PEM with consistent newlines.
+        """
+        # Match and extract the first valid private key block
+        pem_pattern = re.compile(
+            r"-----BEGIN (?P<label>(ENCRYPTED )?(RSA |EC )?PRIVATE KEY)-----\s*"
+            r"(?P<content>.*?)"
+            r"\s*-----END \1-----",
+            re.DOTALL
         )
-        # Reattach the markers
-        processed_key = f"{start_marker}\n{key_content}\n{end_marker}"
+
+        match = pem_pattern.search(private_key)
+        if not match:
+            raise ValueError("Invalid private key format.")
+
+        key_type = match.group("label")
+        key_content = match.group("content")
+
+        # Clean content: remove all non-base64 characters
+        key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
+
+        # Format content into 64-character lines
+        key_lines = [key_content[i:i + 64] for i in range(0, len(key_content), 64)]
+
+        # Reattach markers
+        processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
+
         return processed_key
 
     def create_jwt(self, jwt_params: dict) -> str:
