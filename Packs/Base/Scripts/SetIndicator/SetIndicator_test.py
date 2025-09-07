@@ -316,4 +316,4 @@ class TestSetIndicatorIfExist:
         assert any("Checking if test-indicator exists" in msg for msg in debug_messages)
         assert any("running setIndicator command" in msg for msg in debug_messages)
         assert any("Number issues found: 1" in msg for msg in debug_messages)
-        assert any("running associateIndicatorsToAlert command with issue id issue1" in msg for msg in debug_messages)
+        assert any("running associateIndicatorsToIssue command with issue id issue1" in msg for msg in debug_messages)
