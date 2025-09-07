@@ -4,13 +4,25 @@
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Ahmed Wael ElSherif",
-    "url": "",
+    "url": "https://www.spidersilk.com/",
     "email": "",
     "created": "2025-08-25T06:57:46Z",
-    "categories": "Data Enrichment & Threat Intelligence",
-    "tags": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web",
+        "Asset Management"
+        "Leaked Credentials"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "spidersilk",
+        "threat intelligence",
+        "dark web",
+        "credentials"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
