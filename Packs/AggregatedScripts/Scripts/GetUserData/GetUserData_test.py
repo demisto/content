@@ -1939,209 +1939,6 @@ def test_run_list_users_command_empty_email_list_and_one_risky_user(mocker: Mock
     assert users == existing_users  # Should remain unchanged since email_list is empty
 
 
-def test_xdr_and_core_list_all_users_empty_risky_commands(mocker: MockerFixture):
-    """
-    Given:
-        Empty list of risky user commands.
-    When:
-        xdr_and_core_list_all_users is called with list_non_risky_users=True.
-    Then:
-        It should handle empty risky results and still process non-risky users.
-    """
-    # Arrange
-    risky_commands = []
-    list_users_command = Command("Cortex XDR - IR", "xdr-list-users", {})
-    outputs_key_field = "PaloAltoNetworksXDR"
-    additional_fields = False
-    list_non_risky_users = True
-    email_list = ["user@example.com"]
-
-    empty_readable_outputs = []
-    empty_users = []
-
-    final_readable_outputs = [mocker.Mock(spec=CommandResults)]
-    final_users = [{"ID": "user1", "Status": "found", "Source": "XDR"}]
-
-    mock_run_list_risky_users = mocker.patch(
-        "GetUserData.run_list_risky_users_command", return_value=(empty_readable_outputs, empty_users)
-    )
-    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command", return_value=(final_readable_outputs, final_users))
-
-    # Act
-    readable_outputs, users = xdr_and_core_list_all_users(
-        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
-    )
-
-    # Assert
-    assert readable_outputs == final_readable_outputs
-    assert users == final_users
-    mock_run_list_risky_users.assert_called_once_with(risky_commands, additional_fields, outputs_key_field)
-    mock_run_list_users.assert_called_once_with(
-        list_users_command, additional_fields, outputs_key_field, email_list, empty_users, empty_readable_outputs
-    )
-
-
-def test_xdr_and_core_list_all_users_multiple_risky_commands(mocker: MockerFixture):
-    """
-    Given:
-        Multiple risky user commands.
-    When:
-        xdr_and_core_list_all_users is called with list_non_risky_users=False.
-    Then:
-        It should process all risky commands and not call list_users_command.
-    """
-    # Arrange
-    risky_commands = [
-        Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "risky1"}),
-        Command("Cortex Core - IR", "core-list-risky-users", {"user_id": "risky2"}),
-    ]
-    list_users_command = Command("Cortex XDR - IR", "xdr-list-users", {})
-    outputs_key_field = "Core"
-    additional_fields = True
-    list_non_risky_users = False
-    email_list = []
-
-    expected_readable_outputs = [mocker.Mock(spec=CommandResults), mocker.Mock(spec=CommandResults)]
-    expected_users = [{"ID": "risky1", "Status": "found", "Source": "XDR"}, {"ID": "risky2", "Status": "found", "Source": "Core"}]
-
-    mock_run_list_risky_users = mocker.patch(
-        "GetUserData.run_list_risky_users_command", return_value=(expected_readable_outputs, expected_users)
-    )
-    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command")
-
-    # Act
-    readable_outputs, users = xdr_and_core_list_all_users(
-        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
-    )
-
-    # Assert
-    assert readable_outputs == expected_readable_outputs
-    assert users == expected_users
-    mock_run_list_risky_users.assert_called_once_with(risky_commands, additional_fields, outputs_key_field)
-    mock_run_list_users.assert_not_called()
-
-
-def test_xdr_and_core_list_all_users_additional_fields_false(mocker: MockerFixture):
-    """
-    Given:
-        additional_fields is False.
-    When:
-        xdr_and_core_list_all_users is called with list_non_risky_users=True.
-    Then:
-        It should pass additional_fields=False to both function calls.
-    """
-    # Arrange
-    risky_commands = [Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "risky1"})]
-    list_users_command = Command("Cortex XDR - IR", "xdr-list-users", {})
-    outputs_key_field = "PaloAltoNetworksXDR"
-    additional_fields = False
-    list_non_risky_users = True
-    email_list = ["test@example.com"]
-
-    risky_readable_outputs = []
-    risky_users = [{"ID": "risky1", "Status": "found"}]
-
-    final_readable_outputs = []
-    final_users = [{"ID": "risky1", "Status": "found"}, {"ID": "normal1", "Status": "found"}]
-
-    mock_run_list_risky_users = mocker.patch(
-        "GetUserData.run_list_risky_users_command", return_value=(risky_readable_outputs, risky_users)
-    )
-    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command", return_value=(final_readable_outputs, final_users))
-
-    # Act
-    readable_outputs, users = xdr_and_core_list_all_users(
-        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
-    )
-
-    # Assert
-    assert readable_outputs == final_readable_outputs
-    assert users == final_users
-    mock_run_list_risky_users.assert_called_once_with(risky_commands, False, outputs_key_field)
-    mock_run_list_users.assert_called_once_with(
-        list_users_command, False, outputs_key_field, email_list, risky_users, risky_readable_outputs
-    )
-
-
-def test_xdr_and_core_list_all_users_different_outputs_key_field(mocker: MockerFixture):
-    """
-    Given:
-        A different outputs_key_field value.
-    When:
-        xdr_and_core_list_all_users is called.
-    Then:
-        It should pass the correct outputs_key_field to both function calls.
-    """
-    # Arrange
-    risky_commands = [Command("Cortex Core - IR", "core-list-risky-users", {"user_id": "risky1"})]
-    list_users_command = Command("Cortex Core - IR", "core-list-users", {})
-    outputs_key_field = "PaloAltoNetworksCore"
-    additional_fields = True
-    list_non_risky_users = True
-    email_list = ["test@example.com"]
-
-    risky_readable_outputs = []
-    risky_users = []
-
-    final_readable_outputs = []
-    final_users = []
-
-    mock_run_list_risky_users = mocker.patch(
-        "GetUserData.run_list_risky_users_command", return_value=(risky_readable_outputs, risky_users)
-    )
-    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command", return_value=(final_readable_outputs, final_users))
-
-    # Act
-    _, users = xdr_and_core_list_all_users(
-        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
-    )
-
-    # Assert
-    mock_run_list_risky_users.assert_called_once_with(risky_commands, additional_fields, "PaloAltoNetworksCore")
-    mock_run_list_users.assert_called_once_with(
-        list_users_command, additional_fields, "PaloAltoNetworksCore", email_list, risky_users, risky_readable_outputs
-    )
-
-
-def test_xdr_and_core_list_all_users_empty_email_list(mocker: MockerFixture):
-    """
-    Given:
-        An empty email_list.
-    When:
-        xdr_and_core_list_all_users is called with list_non_risky_users=True.
-    Then:
-        It should pass the empty email_list to run_list_users_command.
-    """
-    # Arrange
-    risky_commands = [Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "risky1"})]
-    list_users_command = Command("Cortex XDR - IR", "xdr-list-users", {})
-    outputs_key_field = "PaloAltoNetworksXDR"
-    additional_fields = True
-    list_non_risky_users = True
-    email_list = []
-
-    risky_readable_outputs = []
-    risky_users = [{"ID": "risky1", "Email": "risky@example.com"}]
-
-    final_readable_outputs = []
-    final_users = [{"ID": "risky1", "Email": "risky@example.com"}]
-
-    mocker.patch(
-        "GetUserData.run_list_risky_users_command", return_value=(risky_readable_outputs, risky_users)
-    )
-    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command", return_value=(final_readable_outputs, final_users))
-
-    # Act
-    _, users = xdr_and_core_list_all_users(
-        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
-    )
-
-    # Assert
-    mock_run_list_users.assert_called_once_with(
-        list_users_command, additional_fields, outputs_key_field, [], risky_users, risky_readable_outputs
-    )
-
-
 def test_run_list_users_command_multiple_users_found(mocker: MockerFixture):
     """
     Given:
@@ -2188,3 +1985,112 @@ def test_run_list_users_command_multiple_users_found(mocker: MockerFixture):
     assert found_users[0]["Email"] == "user1@example.com"
     assert found_users[1]["Email"] == "user2@example.com"
     assert not_found_users[0]["Email"] == "notfound@example.com"
+
+
+def test_xdr_and_core_list_all_users_with_list_non_risky_users_true_and_additional_fields_true(mocker: MockerFixture):
+    """
+    Given:
+        list_non_risky_users is set to True and additional_fields=True.
+        A user with an email that did not appear in the email_list was found.
+    When:
+        xdr_and_core_list_all_users is called.
+    Then:
+        It should process both risky and non-risky users with additional fields.
+    """
+    # Arrange
+    risky_commands = [Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "risky1"})]
+    list_users_command = Command("Cortex XDR - IR", "xdr-list-users", {})
+    outputs_key_field = "PaloAltoNetworksXDR"
+    additional_fields = True
+    list_non_risky_users = True
+    email_list = ["user1@example.com", "user2@example.com"]
+
+    # Mock risky users results
+    risky_readable_outputs = [mocker.Mock(spec=CommandResults)]
+    risky_users = [{"ID": "risky1", "Email": "risky@example.com", "Status": "found", "additional_field": "risky_value"}]
+
+    # Mock final results after processing non-risky users
+    # Include a user found that wasn't in the email_list
+    final_readable_outputs = [mocker.Mock(spec=CommandResults), mocker.Mock(spec=CommandResults)]
+    final_users = [
+        {"ID": "risky1", "Email": "risky@example.com", "Status": "found", "additional_field": "risky_value"},
+        {"ID": "user1", "Email": "user1@example.com", "Status": "found", "additional_field": "user1_value"},
+        {"ID": "user2", "Email": "user2@example.com", "Status": "found", "additional_field": "user2_value"},
+        {
+            "ID": "unexpected",
+            "Email": "unexpected@example.com",
+            "Status": "found",
+            "additional_field": "unexpected_value",
+        },  # Not in email_list
+    ]
+
+    mock_run_list_risky_users = mocker.patch(
+        "GetUserData.run_list_risky_users_command", return_value=(risky_readable_outputs, risky_users)
+    )
+    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command", return_value=(final_readable_outputs, final_users))
+
+    # Act
+    readable_outputs, users = xdr_and_core_list_all_users(
+        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
+    )
+
+    # Assert
+    assert readable_outputs == final_readable_outputs
+    assert users == final_users
+    assert len(users) == 4  # 1 risky + 3 non-risky users
+
+    # Verify that a user not in email_list was found
+    unexpected_users = [user for user in users if user["Email"] == "unexpected@example.com"]
+    assert len(unexpected_users) == 1
+    assert unexpected_users[0]["additional_field"] == "unexpected_value"
+
+    mock_run_list_risky_users.assert_called_once_with(risky_commands, True, outputs_key_field)
+    mock_run_list_users.assert_called_once_with(
+        list_users_command, True, outputs_key_field, email_list, risky_users, risky_readable_outputs
+    )
+
+
+def test_xdr_and_core_list_all_users_with_list_non_risky_users_false(mocker: MockerFixture):
+    """
+    Given:
+        list_non_risky_users is set to False.
+    When:
+        xdr_and_core_list_all_users is called.
+    Then:
+        It should only process risky users and not call run_list_users_command.
+    """
+    # Arrange
+    risky_commands = [
+        Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "risky1"}),
+        Command("Cortex Core - IR", "core-list-risky-users", {"user_id": "risky2"}),
+    ]
+    list_users_command = Command("Cortex XDR - IR", "xdr-list-users", {})
+    outputs_key_field = "PaloAltoNetworksXDR"
+    additional_fields = True
+    list_non_risky_users = False
+    email_list = ["user1@example.com", "user2@example.com"]
+
+    # Mock risky users results
+    risky_readable_outputs = [mocker.Mock(spec=CommandResults), mocker.Mock(spec=CommandResults)]
+    risky_users = [
+        {"ID": "risky1", "Email": "risky1@example.com", "Status": "found", "risk_level": "HIGH"},
+        {"ID": "risky2", "Email": "risky2@example.com", "Status": "found", "risk_level": "MEDIUM"},
+    ]
+
+    mock_run_list_risky_users = mocker.patch(
+        "GetUserData.run_list_risky_users_command", return_value=(risky_readable_outputs, risky_users)
+    )
+    mock_run_list_users = mocker.patch("GetUserData.run_list_users_command")
+
+    # Act
+    readable_outputs, users = xdr_and_core_list_all_users(
+        risky_commands, list_users_command, outputs_key_field, additional_fields, list_non_risky_users, email_list
+    )
+
+    # Assert
+    assert readable_outputs == risky_readable_outputs
+    assert users == risky_users
+    assert len(users) == 2  # Only risky users
+
+    mock_run_list_risky_users.assert_called_once_with(risky_commands, additional_fields, outputs_key_field)
+    mock_run_list_users.assert_not_called()  # Should not be called when list_non_risky_users=False
