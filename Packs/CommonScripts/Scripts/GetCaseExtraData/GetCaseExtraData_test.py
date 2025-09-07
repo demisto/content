@@ -1,5 +1,5 @@
 import demistomock as demisto
-from GetCaseExtraData import extract_ids, replace_response_names, get_case_extra_data, main
+from GetCaseExtraData import extract_ids, get_case_extra_data, main
 
 
 def test_extract_ids_dict():
@@ -17,32 +17,6 @@ def test_extract_ids_empty_and_none():
     assert extract_ids([], "issue_id") == []
     assert extract_ids(None, "issue_id") == []
     assert extract_ids("not_a_dict", "issue_id") == []
-
-
-def test_replace_response_names_string():
-    assert replace_response_names("incident and alert") == "case and issue"
-    assert replace_response_names("foo") == "foo"
-
-
-def test_replace_response_names_list():
-    data = ["incident", "alert", "foo"]
-    assert replace_response_names(data) == ["case", "issue", "foo"]
-
-
-def test_replace_response_names_dict():
-    data = {"incident": "alert", "foo": "bar"}
-    assert replace_response_names(data) == {"case": "issue", "foo": "bar"}
-
-
-def test_replace_response_names_nested():
-    data = {"incident": ["alert", {"incident": "alert"}]}
-    expected = {"case": ["issue", {"case": "issue"}]}
-    assert replace_response_names(data) == expected
-
-
-def test_replace_response_names_other_types():
-    assert replace_response_names(123) == 123
-    assert replace_response_names(None) is None
 
 
 def test_get_case_extra_data(mocker):
@@ -76,7 +50,6 @@ def test_get_case_extra_data_missing_fields(mocker):
 def test_main_success(mocker):
     mocker.patch.object(demisto, "args", return_value={"case_id": "1", "issues_limit": 5})
     mocker.patch("GetCaseExtraData.get_case_extra_data", return_value={"case_id": "1"})
-    mocker.patch("GetCaseExtraData.replace_response_names", side_effect=lambda x: x)
     mocker.patch("GetCaseExtraData.return_results")
     mocker.patch("GetCaseExtraData.CommandResults")
     mocker.patch("GetCaseExtraData.tableToMarkdown", return_value="table")

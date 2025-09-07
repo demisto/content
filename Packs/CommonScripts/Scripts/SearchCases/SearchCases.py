@@ -44,27 +44,6 @@ def prepare_start_end_time(args: dict):
         args["gte_creation_time"] = start_time
         args["lte_creation_time"] = end_time
 
-
-def replace_response_names(obj):
-    """
-    Recursively replace 'incident' with 'case' and 'alert' with 'issue' in a given object.
-
-    Args:
-        obj: The object to be processed.
-
-    Returns:
-        The processed object with the replaced strings.
-    """
-    if isinstance(obj, str):
-        return obj.replace("incident", "case").replace("alert", "issue")
-    elif isinstance(obj, list):
-        return [replace_response_names(item) for item in obj]
-    elif isinstance(obj, dict):
-        return {replace_response_names(key): replace_response_names(value) for key, value in obj.items()}
-    else:
-        return obj
-
-
 def main():
     """
     Gets cases using the core-get-cases command with the given arguments.

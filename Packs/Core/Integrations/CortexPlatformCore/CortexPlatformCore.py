@@ -245,11 +245,9 @@ def main():  # pragma: no cover
             return_results(issues_command_results)
 
         elif command == "core-get-cases":
-            client._base_url = "/api/webapp/public_api/v1"
             return_results(get_cases_command(client, args))
 
         elif command == "core-get-case-extra-data":
-            client._base_url = "/api/webapp/public_api/v1"
             return_results(get_extra_data_for_case_id_command(client, args))
 
     except Exception as err:

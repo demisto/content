@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 import demistomock as demisto
 from CommonServerPython import DemistoException
-from SearchCases import prepare_start_end_time, replace_response_names, main
+from SearchCases import prepare_start_end_time, main
 
 
 def test_prepare_start_end_time_normal(monkeypatch):
@@ -24,33 +24,6 @@ def test_prepare_start_end_time_only_start(monkeypatch):
     prepare_start_end_time(args)
     assert "gte_creation_time" in args
     assert "lte_creation_time" in args
-
-
-def test_replace_response_names_string():
-    assert replace_response_names("incident and alert") == "case and issue"
-    assert replace_response_names("nothing here") == "nothing here"
-
-
-def test_replace_response_names_list():
-    data = ["incident", "alert", "foo"]
-    assert replace_response_names(data) == ["case", "issue", "foo"]
-
-
-def test_replace_response_names_dict():
-    data = {"incident": "alert", "foo": "bar"}
-    assert replace_response_names(data) == {"case": "issue", "foo": "bar"}
-
-
-def test_replace_response_names_nested():
-    data = {"incident": ["alert", {"incident": "alert"}]}
-    expected = {"case": ["issue", {"case": "issue"}]}
-    assert replace_response_names(data) == expected
-
-
-def test_replace_response_names_other_types():
-    assert replace_response_names(123) == 123
-    assert replace_response_names(None) is None
-
 
 def test_main_success(mocker):
     args = {"page_size": 50}
