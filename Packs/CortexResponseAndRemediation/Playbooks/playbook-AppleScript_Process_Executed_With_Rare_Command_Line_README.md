@@ -31,17 +31,17 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchIncidentsV2
+* SearchAlertsV2
 * SetMultipleValues
+* file-enrichment
+* quarantine-file
 
 ### Commands
 
 * closeInvestigation
 * core-get-hash-analytics-prevalence
 * core-get-quarantine-status
-* core-quarantine-files
 * core-terminate-causality
-* file
 
 ## Playbook Inputs
 
@@ -57,4 +57,4 @@ There are no outputs for this playbook.
 
 ---
 
-![AppleScript Process Executed With Rare Command Line](../doc_files/AppleScript_Process_Executed_With_Rare_Command_Line.png)
+![AppleScript Process Executed With Rare Command Line_refactoring_omri](../doc_files/AppleScript_Process_Executed_With_Rare_Command_Line_refactoring_omri.png)
