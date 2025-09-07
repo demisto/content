@@ -1283,8 +1283,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def delete_rule(
-        self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
+    def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
         """
         Delete a specific security rule from a network security group.
 
@@ -1311,7 +1310,7 @@ class AzureClient:
         else:
             demisto.debug("Failed to delete security rule.")
             try:
-                response.raise_for_status()
+                response.raise_for_status() # type: ignore[union-attr]
             except Exception as e:
                 self.handle_azure_error(
                     e=e,
