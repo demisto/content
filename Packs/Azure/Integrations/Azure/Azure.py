@@ -1149,23 +1149,80 @@ class AzureClient:
         )
 
     def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
+        """
+        List all network security groups in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the network security groups.
+
+        Return:
+            A dictionary containing the list of network security groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-security-groups/list?view=rest-virtualnetwork-2024-05-01
+        """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Network/networkSecurityGroups"
         )
         return self.http_request(method="GET", full_url=full_url)
 
-    def delete_rule(self, security_group_name, security_rule_name, subscription_id, resource_group_name):
-        full_url = (f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-                    f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
-                    f"/securityRules/{security_rule_name}")
+    def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
+        """
+        Delete a specific security rule from a network security group.
+
+        Args:
+            security_group_name: The name of the network security group.
+            security_rule_name: The name of the security rule to delete.
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the network security group.
+
+        Return:
+            The HTTP response object from the delete operation.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/security-rules/delete?view=rest-virtualnetwork-2024-05-01
+        """
+        full_url = (
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Network/networkSecurityGroups/{security_group_name}"
+            f"/securityRules/{security_rule_name}"
+        )
         return self.http_request(method="DELETE", full_url=full_url, resp_type="response")
 
-    def list_resource_groups_request(self, subscription_id, filter_by_tag, limit):
+    def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str):
+        """
+        List resource groups in a subscription, optionally filtered by tag and limited in number.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            filter_by_tag: An OData filter expression to filter resource groups by tag.
+            limit: Maximum number of resource groups to return.
+
+        Return:
+            A dictionary containing the list of resource groups.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/resources/resource-groups/list?view=rest-resources-2021-04-01
+        """
         full_url = f"{PREFIX_URL_AZURE}{subscription_id}/resourcegroups"
         return self.http_request(method="GET", full_url=full_url, params={"$filter": filter_by_tag, "$top": limit})
 
     def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
+        """
+        List all network interfaces in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the network interfaces.
+
+        Return:
+            A dictionary containing the list of network interfaces.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/network-interfaces/list?view=rest-virtualnetwork-2024-05-01
+        """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/networkInterfaces"
@@ -1173,6 +1230,19 @@ class AzureClient:
         return self.http_request(method="GET", full_url=full_url, params=NEW_API_VERSION_PARAMS)
 
     def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
+        """
+        List all public IP addresses in a specific resource group.
+
+        Args:
+            subscription_id: The Azure subscription ID.
+            resource_group_name: The resource group containing the public IP addresses.
+
+        Return:
+            A dictionary containing the list of public IP addresses.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/virtualnetwork/public-ip-addresses/list?view=rest-virtualnetwork-2024-05-01
+        """
         full_url = (
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}/"
             f"providers/Microsoft.Network/publicIPAddresses"
@@ -1180,6 +1250,18 @@ class AzureClient:
         return self.http_request(method="GET", full_url=full_url)
 
     def list_subscriptions_request(self):
+        """
+        List all Azure subscriptions available to the authenticated account.
+
+        Args:
+            None
+
+        Return:
+            A dictionary containing the list of subscriptions.
+
+        Docs:
+            https://learn.microsoft.com/en-us/rest/api/subscription/subscriptions/list?view=rest-subscription-2021-10-01
+        """
         return self.http_request(method="GET", full_url=f"{PREFIX_URL_AZURE}")
 
 
