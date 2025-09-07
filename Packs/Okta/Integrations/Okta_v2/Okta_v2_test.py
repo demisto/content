@@ -598,13 +598,13 @@ def test_get_user_command_email(mocker):
     }
     expected_readable = "isaac.brock@example.com"
 
-    mocker.patch.object(client, "list_users", return_value=([{"id": "TestID"}], None))
+    mocker.patch.object(client, "list_users", return_value=([user_data], None))
     mock_get_user = mocker.patch.object(client, "get_user", return_value=user_data)
     readable, outputs, _ = get_user_command(client, args)
 
     assert outputs.get("Account(val.ID && val.ID === obj.ID)")[0] == expected_context
     assert expected_readable in readable
-    mock_get_user.assert_called_once_with("TestID")
+    mock_get_user.assert_not_called()
 
 
 @pytest.mark.parametrize(
