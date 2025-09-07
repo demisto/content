@@ -1213,7 +1213,7 @@ def test_change_warninglist_entries(demisto_args: dict, mocker):
     from requests.models import Response
 
     class MockResponse(Response):
-        def json(self_inner):
+        def json(self):
             return warninglists_response_data
 
     mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=MockResponse())
@@ -1244,7 +1244,7 @@ def test_change_warninglist_details(demisto_args: dict, mocker):
     from requests.models import Response
 
     class MockResponse(Response):
-        def json(self_inner):
+        def json(self):
             return warninglist_response_data
 
     # Mock the PYMISP.warninglists method to return the expected warninglists response data
