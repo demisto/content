@@ -14,6 +14,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "sailpoint"
 PRODUCT = "identitynow"
 CURRENT_TIME_STR = datetime.now(tz=UTC).strftime(DATE_FORMAT)
+MAX_EVENTS_PER_API_CALL = 10000  # API limitation
 
 """ CLIENT CLASS """
 
@@ -158,14 +159,15 @@ def get_events(client: Client, from_date: str, from_id: str | None, limit: int =
     hr = tableToMarkdown(name="Test Events", t=events)
     return events, CommandResults(readable_output=hr)
 
-#TODO remove
+
+# TODO remove
 def get_fetch_run_time_range_dev(
     last_run,
     first_fetch,
     look_back=0,
     timezone=0,
-    date_format='%Y-%m-%dT%H:%M:%S',
-    time_field_name='time',
+    date_format="%Y-%m-%dT%H:%M:%S",
+    time_field_name="time",
 ):
     """
     Calculates the time range for fetch depending the look_back argument and the previous fetch start time
@@ -195,18 +197,19 @@ def get_fetch_run_time_range_dev(
     last_run_time = last_run and time_field_name in last_run and last_run[time_field_name]
     now = get_current_time(timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        last_run_time = dateparser.parse(first_fetch, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
         if last_run_time:
             last_run_time += timedelta(hours=timezone)
     else:
-        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
+        last_run_time = dateparser.parse(last_run_time, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
 
     if look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
-    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(
-        last_run_time.strftime(date_format), now.strftime(date_format)))
+    demisto.debug(
+        "lb: fetch start time: {}, fetch end time: {}".format(last_run_time.strftime(date_format), now.strftime(date_format))
+    )
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
@@ -221,12 +224,12 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
     Returns:
         Tuple with the next run data and the list of events fetched
     """
-    # currently the API fails fetching events by id, so we are fetching by date only.
-    # Once the issue is resolved, we just need to uncomment the commented lines,
-    # and remove the dedup function and last_fetched_ids from everywhere..
+    # Currently the API fails fetching events by id, so we are fetching by date only.
+    # Once the issue is resolved, we can switch to ID-based fetching and remove
+    # all deduplication logic (dedup_events, _migrate_legacy_ids, etc.).
     demisto.debug(f"Starting fetch up to {limit} events with last_run: {last_run} and look_back: {look_back}.")
-    # last_fetched_id = last_run.get('prev_id')
-    #TODO remove the "dev"
+    
+    # Get fetch time range
     last_fetched_creation_date, _ = get_fetch_run_time_range_dev(
         last_run=last_run,
         first_fetch=CURRENT_TIME_STR,
@@ -234,46 +237,148 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
         date_format=DATE_FORMAT,
         time_field_name="prev_date",
     )
-    last_fetched_ids: list = last_run.get("last_fetched_ids", [])
-
-    all_events = []
-    remaining_events_to_fetch = limit
-    # since we allow the user to set the limit to 50,000, but the API only allows 10000 events per call
-    # we need to make multiple calls to the API to fetch all the events
-    while remaining_events_to_fetch > 0:
-        current_batch_to_fetch = min(remaining_events_to_fetch, 10000)
-        demisto.debug(f"trying to fetch {current_batch_to_fetch} events.")
-
-        events = client.search_events(
-            # prev_id=last_fetched_id
-            from_date=last_fetched_creation_date,
-            limit=current_batch_to_fetch,
-        )
-        demisto.debug(f"Successfully fetched {len(events)} events in this cycle.")
-        if not events:
-            demisto.debug("No events fetched. Exiting the loop.")
-        events = dedup_events(events, last_fetched_ids)
-        if events:
-            last_fetched_event = events[-1]
-            last_fetched_id = last_fetched_event["id"]
-            last_fetched_creation_date = last_fetched_event["created"]
-            demisto.debug(
-                f"information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}."
-            )
-            remaining_events_to_fetch -= len(events)
-            demisto.debug(f"{remaining_events_to_fetch} events are left to fetch in the next calls.")
-            last_fetched_ids = get_last_fetched_ids(events, look_back=look_back)
-            all_events.extend(events)
-        else:
-            # to avoid infinite loop, if no events are fetched, or all events are duplicates, exit the loop
-            break
-    # next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
-    next_run = {"prev_date": last_fetched_creation_date, "last_fetched_ids": last_fetched_ids}
+    
+    # Handle backward compatibility and get deduplication cache
+    last_fetched_ids_and_timestamps = _migrate_legacy_ids(last_run, last_fetched_creation_date)
+    
+    # Fetch events in batches with deduplication
+    all_events, updated_dedup_cache = _fetch_events_batch(client, limit, last_fetched_creation_date, last_fetched_ids_and_timestamps)
+    
+    # Build next_run with filtered deduplication cache
+    next_run = _build_next_run(all_events, updated_dedup_cache, last_fetched_creation_date, look_back)
+    
     demisto.debug(f"Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.")
     return next_run, all_events
 
 
 """ HELPER FUNCTIONS """
+
+
+def _migrate_legacy_ids(last_run: dict, fallback_date: str) -> dict:
+    """
+    Handles backward compatibility by migrating old last_fetched_ids format to new timestamped format.
+    
+    Args:
+        last_run: The last run data containing legacy or new format IDs
+        fallback_date: Date to use for legacy IDs that don't have timestamps
+        
+    Returns:
+        Dict of event_id -> timestamp mappings
+    """
+    last_fetched_ids_and_timestamps: dict = last_run.get("last_fetched_id_timestamps", {})
+    
+    # Backward compatibility: migrate old format if exists and new format is empty
+    if not last_fetched_ids_and_timestamps and "last_fetched_ids" in last_run:
+        old_ids = last_run.get("last_fetched_ids", [])
+        old_prev_date = last_run.get("prev_date", fallback_date)
+        # Migrate old IDs by assigning them the previous fetch date as timestamp
+        for old_id in old_ids:
+            last_fetched_ids_and_timestamps[old_id] = old_prev_date
+        demisto.debug(f"Migrated {len(old_ids)} IDs from old format to new timestamp format")
+    
+    return last_fetched_ids_and_timestamps
+
+
+def _fetch_events_batch(client: Client, limit: int, from_date: str, dedup_cache: dict) -> tuple[List[Dict], dict]:
+    """
+    Fetches events in batches with deduplication until limit is reached or no more events.
+    
+    Args:
+        client: API client for fetching events
+        limit: Maximum number of events to fetch total
+        from_date: Start date for fetching events
+        dedup_cache: Cache of event IDs to timestamps for deduplication
+        
+    Returns:
+        Tuple of (deduplicated events list, updated dedup_cache dict)
+    """
+    all_events = []
+    remaining_events_to_fetch = limit
+    
+    while remaining_events_to_fetch > 0:
+        current_batch_to_fetch = min(remaining_events_to_fetch, MAX_EVENTS_PER_API_CALL)
+        demisto.debug(f"trying to fetch {current_batch_to_fetch} events.")
+        
+        events = client.search_events(from_date=from_date, limit=current_batch_to_fetch)
+        demisto.debug(f"Successfully fetched {len(events)} events in this cycle.")
+        
+        if not events:
+            demisto.debug("No events fetched. Exiting the loop.")
+            break
+        
+        events = dedup_events(events, list(dedup_cache.keys()))
+        if events:
+            # Store ID-to-timestamp mappings from current cycle
+            for event in events:
+                dedup_cache[event["id"]] = event["created"]
+            all_events.extend(events)
+            
+            last_fetched_event = events[-1]
+            demisto.debug(
+                f"information of the last event in this cycle: id: {last_fetched_event['id']}, created: {last_fetched_event['created']}."
+            )
+            remaining_events_to_fetch -= len(events)
+            demisto.debug(f"{remaining_events_to_fetch} events are left to fetch in the next calls.")
+        else:
+            # Avoid infinite loop if all events are duplicates
+            demisto.debug("No new events after deduplication. Exiting the loop.")
+            break
+    
+    return all_events, dedup_cache
+
+
+def _build_next_run(all_events: List[Dict], dedup_cache: dict, fallback_date: str, look_back: int) -> dict:
+    """
+    Builds the next_run dict with the most recent timestamp and filtered deduplication cache.
+    
+    Args:
+        all_events: Events fetched in this cycle
+        dedup_cache: Current deduplication cache with timestamps
+        fallback_date: Date to use if no events were fetched
+        look_back: Lookback window in minutes
+        
+    Returns:
+        Dict with prev_date and filtered last_fetched_id_timestamps
+    """
+    # Determine the most recent timestamp for next_run
+    if all_events:
+        most_recent_timestamp = max(dedup_cache.values())
+    else:
+        most_recent_timestamp = fallback_date  # Keep original start time if no events
+    
+    # Filter ID timestamps to maintain only those within the lookback window
+    filtered_id_timestamps = _filter_dedup_cache(
+        dedup_cache, most_recent_timestamp, look_back, bool(all_events)
+    )
+    
+    return {"prev_date": most_recent_timestamp, "last_fetched_id_timestamps": filtered_id_timestamps}
+
+
+def _filter_dedup_cache(id_timestamps: dict, most_recent_timestamp: str, look_back: int, has_events: bool) -> dict:
+    """
+    Filters the deduplication cache based on lookback settings and current fetch results.
+    
+    Args:
+        id_timestamps: Dict of event_id -> timestamp mappings
+        most_recent_timestamp: The most recent timestamp from this fetch
+        look_back: Look back time in minutes (0 means no lookback)
+        has_events: Whether events were fetched in this cycle
+        
+    Returns:
+        Filtered dict of IDs within the appropriate time window
+    """
+    if look_back > 0:
+        return filter_id_timestamps_by_lookback_window(id_timestamps, most_recent_timestamp, look_back)
+    
+    # When no lookback, only keep IDs from the most recent timestamp
+    if has_events and id_timestamps:
+        return {
+            event_id: timestamp
+            for event_id, timestamp in id_timestamps.items()
+            if timestamp == most_recent_timestamp
+        }
+    
+    return id_timestamps
 
 
 def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
@@ -297,32 +402,39 @@ def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
     deduped_events = [event for event in events if event["id"] not in last_fetched_ids_set]
 
     demisto.debug(f"Done deduping. Number of events after deduping: {len(deduped_events)}")
-    for number, event in enumerate(deduped_events, start=1):  # For debugging custom version, remove before marketplace release!
+    for number, event in enumerate(
+        deduped_events, start=1
+    ):  # TODO For debugging custom version, remove before marketplace release!
         demisto.debug(f"New event {number} of {len(deduped_events)}: {event}")
     return deduped_events
 
 
-def get_last_fetched_ids(events: List[Dict], look_back: int = 0) -> List[str]:
+def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: str, look_back: int) -> dict:
     """
-    Gets the ids of the last fetched events
+    Filters ID-timestamp mappings to only keep those within the lookback time window.
+    This prevents the ID dict from growing indefinitely and maintains proper deduplication.
+
     Args:
-        events: List of events, assumed to be sorted ASC by creation date
+        id_timestamps: Dict of event_id -> timestamp mappings from previous fetches
+        current_date: Current fetch end date in string format
+        look_back: Look back time in minutes
+
     Returns:
-        List of the last fetched ids
+        Filtered dict of IDs within the lookback window
     """
-    if not look_back:
-        return [event["id"] for event in events if event["created"] == events[-1]["created"]]
+    if not id_timestamps:
+        return id_timestamps
 
-    last_fetched_ids: list[str] = []
-    last_creation_date = arg_to_datetime(events[-1]["created"], required=True)
-    look_back_last_creation_date = last_creation_date - timedelta(minutes=look_back)  # type: ignore
+    current_datetime = arg_to_datetime(current_date, required=True)
+    lookback_cutoff = current_datetime - timedelta(minutes=look_back)  # type: ignore
 
-    for event in events:
-        created_date_time = arg_to_datetime(event["created"], required=True)
-        if look_back_last_creation_date <= created_date_time <= last_creation_date:  # type: ignore
-            last_fetched_ids.append(event["id"])
+    filtered_id_timestamps = {}
+    for event_id, timestamp in id_timestamps.items():
+        event_datetime = arg_to_datetime(timestamp, required=True)
+        if event_datetime >= lookback_cutoff:  # type: ignore
+            filtered_id_timestamps[event_id] = timestamp
 
-    return last_fetched_ids
+    return filtered_id_timestamps
 
 
 def add_time_and_status_to_events(events: List[Dict]) -> None:
@@ -364,6 +476,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get("proxy", False)
     fetch_limit = arg_to_number(params.get("limit")) or 50000
     fetch_look_back = arg_to_number(params.get("look_back")) or 0
+    # TODO add here a validation for look_back to be greater than the fetch interval
 
     demisto.debug(f"Command being called is {command}")
     try:
