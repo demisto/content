@@ -1310,7 +1310,7 @@ class AzureClient:
         else:
             demisto.debug("Failed to delete security rule.")
             try:
-                response.raise_for_status() # type: ignore[union-attr]
+                response.raise_for_status()  # type: ignore[union-attr]
             except Exception as e:
                 self.handle_azure_error(
                     e=e,
@@ -2255,6 +2255,7 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
     response = client.list_network_security_groups(subscription_id=subscription_id, resource_group_name=resource_group_name)
     network_groups = response.get("value", [])
 
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for group in network_groups:
         group["etag"] = group.get("etag", "")[3:-1]
         for rule in group.get("defaultSecurityRules", []):
@@ -2300,6 +2301,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
         resource_group_name=resource_group_name,
     )
 
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     rule["etag"] = rule.get("etag", "")[3:-1]
 
     hr = tableToMarkdown(
@@ -2382,6 +2384,7 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
         resource_group_name=resource_group_name,
     )
 
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     rule["etag"] = rule.get("etag", "")[3:-1]
 
     hr = tableToMarkdown(name=f"Rules {security_rule_name}", t=rule, removeNull=True, headerTransform=pascalToSpace)
@@ -2413,7 +2416,6 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
-    demisto.debug(f"{rule_deleted=}")
     message = ""
     if rule_deleted.status_code == 204:
         message = (
@@ -2497,6 +2499,7 @@ def nsg_network_interfaces_list_command(client: AzureClient, params: dict[str, A
     if not all_results:
         data_from_response = data_from_response[:limit]
 
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for data in data_from_response:
         data["etag"] = data.get("etag", "")[3:-1]
 
@@ -2539,8 +2542,9 @@ def nsg_public_ip_addresses_list_command(client: AzureClient, params: dict[str, 
     if not all_results:
         data_from_response = data_from_response[:limit]
 
+    # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
     for output in data_from_response:
-        output["etag"] = output.get("etag", "")[3:-1]  # cleans up the tag, remove the "W/\" prefix and the "\" suffix.
+        output["etag"] = output.get("etag", "")[3:-1]
 
     readable_output = tableToMarkdown(
         name="Public IP Addresses List",
