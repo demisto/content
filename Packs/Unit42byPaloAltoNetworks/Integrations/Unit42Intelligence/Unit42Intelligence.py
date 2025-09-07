@@ -50,7 +50,7 @@ class Client(BaseClient):
         proxy: bool,
         reliability: str,
     ):
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {demisto.getLicenseID()}", "Content-Type": "application/json"}
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.reliability = reliability
 
