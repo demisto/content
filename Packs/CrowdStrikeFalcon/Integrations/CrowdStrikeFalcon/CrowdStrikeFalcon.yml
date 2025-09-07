@@ -4894,6 +4894,8 @@ script:
       required: true
     - description: Assign the specified detections to a user based on their username.
       name: assign_to_name
+    - description: Assign the specified detections to a user based on their user id (Email).
+      name: assign_to_user_id
     - description: Assign the specified detections to a user based on their UUID.
       name: assign_to_uuid
     - description: Appends a new comment to any existing comments for the specified detections.
