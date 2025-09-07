@@ -4,6 +4,11 @@ from CommonServerUserPython import *
 
 
 def send_notification_by_brand(brand: str, args: dict):
+    if brand == "Slack":
+        brand = "SlackV3"
+    elif brand == "Mattermost":
+        brand = "MattermostV2"
+        
     args.update({"using-brand": brand})
     return demisto.executeCommand("send-notification", args=args)
 

@@ -18,8 +18,7 @@ commonfields:
   id: SendNotificationAgentix
   version: -1
 name: SendNotificationAgentix
-outputs: []
-# isInternal: true
+isInternal: true
 script: "-"
 subtype: python3
 # hidden: true
