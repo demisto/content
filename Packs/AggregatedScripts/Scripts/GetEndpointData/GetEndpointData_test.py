@@ -1241,7 +1241,8 @@ def test_add_endpoint_to_mapping_skips_unsuccessful():
 def test_update_endpoint_in_mapping_updates_risk_level():
     """
     Given:
-        An ir_mapping with an endpoint having a lower risk level and an incoming endpoint with a higher risk level and a success message.
+        An ir_mapping with an endpoint having a lower risk level and an incoming endpoint
+        with a higher risk level and a success message.
     When:
         update_endpoint_in_mapping is called with the incoming endpoint and the mapping.
     Then:

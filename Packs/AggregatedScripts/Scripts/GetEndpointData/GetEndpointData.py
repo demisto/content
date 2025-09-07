@@ -1106,9 +1106,7 @@ def update_endpoint_in_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict
                     endpoint["RiskLevel"] = [endpoint.get("RiskLevel")]
                 for risk in endpoint.get("RiskLevel", []):
                     if "RiskLevel" in ir_endpoint:
-                        ir_endpoint["RiskLevel"] = IRRISKLEVEL[
-                            max(IRRISKLEVEL[risk], IRRISKLEVEL[ir_endpoint.get("RiskLevel")])
-                            ]
+                        ir_endpoint["RiskLevel"] = IRRISKLEVEL[max(IRRISKLEVEL[risk], IRRISKLEVEL[ir_endpoint.get("RiskLevel")])]
                     else:
                         ir_endpoint["RiskLevel"] = risk
                 if "additional_fields" in endpoint:
