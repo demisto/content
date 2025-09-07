@@ -1759,6 +1759,21 @@ script:
       - contextPath: Azure.NSGSecurityGroup.tags
         description: The security group's tags.
         type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.defaultSecurityRules
+        description: The default security rules.
+        type: List
+      - contextPath: Azure.NSGSecurityGroup.properties.networkInterfaces
+        description: The network interfaces.
+        type: List
+      - contextPath: Azure.NSGSecurityGroup.properties.provisioningState
+        description: The provisioning state.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.resourceGuid
+        description: The resource GUID.
+        type: String
+      - contextPath: Azure.NSGSecurityGroup.properties.SecurityRules
+        description: The security rules.
+        type: List
     arguments:
       - name: subscription_id
         description: "The subscription ID."
@@ -1786,37 +1801,37 @@ script:
       - contextPath: Azure.NSGRule.type
         description: The rule's type.
         type: String
-      - contextPath: Azure.NSGRule.provisioningState
+      - contextPath: Azure.NSGRule.properties.provisioningState
         description: The rule's provisioning state.
         type: String
-      - contextPath: Azure.NSGRule.protocol
+      - contextPath: Azure.NSGRule.properties.protocol
         description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
         type: String
-      - contextPath: Azure.NSGRule.sourcePortRange
+      - contextPath: Azure.NSGRule.properties.sourcePortRange
         description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.sourcePortRanges
+      - contextPath: Azure.NSGRule.properties.sourcePortRanges
         description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.destinationPortRange
+      - contextPath: Azure.NSGRule.properties.destinationPortRange
         description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.destinationPortRanges
+      - contextPath: Azure.NSGRule.properties.destinationPortRanges
         description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.sourceAddressPrefix
+      - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
         description: The source address.
         type: String
-      - contextPath: Azure.NSGRule.destinationAddressPrefix
+      - contextPath: Azure.NSGRule.properties.destinationAddressPrefix
         description: The destination address.
         type: String
-      - contextPath: Azure.NSGRule.access
+      - contextPath: Azure.NSGRule.properties.access
         description: The rule's access. Can be "Allow" or "Deny".
         type: String
-      - contextPath: Azure.NSGRule.priority
+      - contextPath: Azure.NSGRule.properties.priority
         description: The rule's priority. Can be from 100 to 4096.
         type: Number
-      - contextPath: Azure.NSGRule.direction
+      - contextPath: Azure.NSGRule.properties.direction
         description: The rule's direction. Can be "Inbound" or "Outbound".
         type: String
     arguments:
@@ -1850,37 +1865,37 @@ script:
       - contextPath: Azure.NSGRule.type
         description: The rule's type.
         type: String
-      - contextPath: Azure.NSGRule.provisioningState
+      - contextPath: Azure.NSGRule.properties.provisioningState
         description: The rule's provisioning state.
         type: String
-      - contextPath: Azure.NSGRule.protocol
+      - contextPath: Azure.NSGRule.properties.protocol
         description: The protocol. Can be "TCP", "UDP", "ICMP", or "*".
         type: String
-      - contextPath: Azure.NSGRule.sourcePortRange
+      - contextPath: Azure.NSGRule.properties.sourcePortRange
         description: For a single port, the source port or a range of ports. Note that for multiple ports, `sourcePortRanges` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.sourcePortRanges
+      - contextPath: Azure.NSGRule.properties.sourcePortRanges
         description: For multiple ports, a list of these ports. Note that for single ports, `sourcePortRange` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.destinationPortRange
+      - contextPath: Azure.NSGRule.properties.destinationPortRange
         description: For a single port, the destination port or range of ports. Note that for multiple ports, `destinationPortRanges` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.destinationPortRanges
+      - contextPath: Azure.NSGRule.properties.destinationPortRanges
         description: For multiple ports, a list of destination ports. Note that for single ports, `destinationPortRange` will appear instead.
         type: String
-      - contextPath: Azure.NSGRule.sourceAddressPrefix
+      - contextPath: Azure.NSGRule.properties.sourceAddressPrefix
         description: The source address.
         type: String
-      - contextPath: Azure.NSGRule.destinationAddressPrefix
+      - contextPath: Azure.NSGRule.properties.destinationAddressPrefix
         description: The destination address.
         type: String
-      - contextPath: Azure.NSGRule.access
+      - contextPath: Azure.NSGRule.properties.access
         description: The rule's access. Can be "Allow" or "Deny".
         type: String
-      - contextPath: Azure.NSGRule.priority
+      - contextPath: Azure.NSGRule.properties.priority
         description: The rule's priority. Can be from 100 to 4096.
         type: Number
-      - contextPath: Azure.NSGRule.direction
+      - contextPath: Azure.NSGRule.properties.direction
         description: The rule's direction. Can be "Inbound" or "Outbound".
         type: String
     arguments:
@@ -2024,41 +2039,44 @@ script:
       - contextPath: Azure.NSGNetworkInterfaces.id
         description: The network interface's ID.
         type: String
+      - contextPath: Azure.NSGNetworkInterfaces.kind
+        description: The kind of the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.etag
+        description: The etag of the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.location
+        description: The location of the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.managedBy
+        description: The entity that manages the network interface.
+        type: String
+      - contextPath: Azure.NSGNetworkInterfaces.tags
+        description: The tags associated with the network interface.
+        type: String
       - contextPath: Azure.NSGNetworkInterfaces.properties.provisioningState
         description: The network interface's provisioning state.
         type: String
-      - contextPath: Azure.NSGNetworkInterfaces.ipConfigurationName
-        description: The name of the resource that is unique within a resource group.
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.name
+        description: The name of the IP configuration resource that is unique within a resource group.
         type: List
-      - contextPath: Azure.NSGNetworkInterfaces.ipConfigurationID
-        description: The resource ID.
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.id
+        description: The IP configuration resource ID.
         type: List
-      - contextPath: Azure.NSGNetworkInterfaces.ipConfigurationPrivateIPAddress
-        description: The private IP address of the IP configuration.
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.etag
+        description: The etag of the IP configuration.
         type: List
-      - contextPath: Azure.NSGNetworkInterfaces.ipConfigurationPublicIPAddressName
-        description: The ID of the public IP address of the IP configuration.
+      - contextPath: Azure.NSGNetworkInterfaces.properties.ipConfigurations.type
+        description: The type of the IP configuration resource.
         type: List
-      - contextPath: Azure.NSGNetworkInterfaces.dnsServers
-        description: List of DNS servers IP addresses.
+      - contextPath: Azure.NSGNetworkInterfaces.properties.tapConfigurations
+        description: List of tap configurations.
         type: List
-      - contextPath: Azure.NSGNetworkInterfaces.appliedDnsServers
-        description: List of all DNS servers from all NICs that are part of the Availability Set.
-        type: List
-      - contextPath: Azure.NSGNetworkInterfaces.internalDomainNameSuffix
-        description: The network interface's internal domain name suffix.
-        type: String
-      - contextPath: Azure.NSGNetworkInterfaces.properties.macAddress
-        description: The network interface's MAC address.
-        type: String
-      - contextPath: Azure.NSGNetworkInterfaces.properties.virtualMachine.id
-        description: The network interface's virtual machine's ID.
-        type: String
-      - contextPath: Azure.NSGNetworkInterfaces.location
-        description: The network interface's location.
-        type: String
-      - contextPath: Azure.NSGNetworkInterfaces.kind
-        description: The network interface's kind.
+      - contextPath: Azure.NSGNetworkInterfaces.properties.allowPort25Out
+        description: Whether port 25 outbound traffic is allowed.
+        type: Boolean
+      - contextPath: Azure.NSGNetworkInterfaces.properties.nicType
+        description: The network interface card type (Standard/Basic).
         type: String
     arguments:
       - description: "The resource group name."
@@ -2089,23 +2107,44 @@ script:
       - contextPath: Azure.NSGPublicIPAddress.id
         description: The public IP address's ID.
         type: String
+      - contextPath: Azure.NSGPublicIPAddress.location
+        description: The location of the public IP address.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.sku
+        description: The public IP address's SKU.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.type
+        description: The type of the public IP address.
+        type: String
       - contextPath: Azure.NSGPublicIPAddress.etag
         description: The public IP address's etag.
         type: String
-      - contextPath: Azure.NSGPublicIPAddress.provisioningState
+      - contextPath: Azure.NSGPublicIPAddress.properties.provisioningState
         description: The public IP address's provisioning state.
         type: String
-      - contextPath: Azure.NSGPublicIPAddress.publicIPAddressVersion
+      - contextPath: Azure.NSGPublicIPAddress.properties.publicIPAddressVersion
         description: The public IP address's version.
         type: String
-      - contextPath: Azure.NSGPublicIPAddress.ipAddress
+      - contextPath: Azure.NSGPublicIPAddress.properties.ipAddress
         description: The public IP address's IP address.
         type: String
-      - contextPath: Azure.NSGPublicIPAddress.domainNameLabel
+      - contextPath: Azure.NSGPublicIPAddress.properties.domainNameLabel
         description: The public IP address's domain name label.
         type: String
-      - contextPath: Azure.NSGPublicIPAddress.fqdn
+      - contextPath: Azure.NSGPublicIPAddress.properties.publicIPAllocationMethod
+        description: The public IP address's allocation method.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.fqdn
         description: The public IP address's fully qualified domain name (FQDN).
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.properties.resourceGuid
+        description: The public IP address's resource GUID.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.sku.name
+        description: The public IP address's SKU name.
+        type: String
+      - contextPath: Azure.NSGPublicIPAddress.sku.tier
+        description: The public IP address's SKU tier.
         type: String
     arguments:
       - description: "The resource group name."
