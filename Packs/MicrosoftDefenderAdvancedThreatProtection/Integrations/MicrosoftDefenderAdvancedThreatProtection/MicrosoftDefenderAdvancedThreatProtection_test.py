@@ -254,6 +254,7 @@ def test_remove_app_restriction_command(mocker):
     _, res, _ = remove_app_restriction_command(client_mocker, {})
     assert res["MicrosoftATP.MachineAction(val.ID === obj.ID)"] == MACHINE_ACTION_DATA
 
+
 def test_get_investigations_by_id_command(mocker):
     import MicrosoftDefenderAdvancedThreatProtection as atp
     from MicrosoftDefenderAdvancedThreatProtection import get_investigations_by_id_command
@@ -3769,25 +3770,27 @@ def test_list_auth_permissions_command(mocker):
 
 
 class TestStopAndQuarantineFileCommand:
-    def _construct_stop_and_quarantine_raw_response(self, id = "123", machine_id = "12345678", file_hash = "hash", comment = "Test", status = "Pending"):
+    def _construct_stop_and_quarantine_raw_response(
+        self, id="123", machine_id="12345678", file_hash="hash", comment="Test", status="Pending"
+    ):
         return {
-        "cancellationComment": None,
-        "cancellationDateTimeUtc": None,
-        "cancellationRequestor": None,
-        "commands": [],
-        "computerDnsName": None,
-        "creationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
-        "errorHResult": 0,
-        "id": id,
-        "lastUpdateDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
-        "machineId": machine_id,
-        "relatedFileInfo": {"fileIdentifier": file_hash, "fileIdentifierType": "Sha1"},
-        "requestor": "123abc",
-        "requestorComment": comment,
-        "scope": None,
-        "status": status,
-        "type": "StopAndQuarantineFile",
-    }
+            "cancellationComment": None,
+            "cancellationDateTimeUtc": None,
+            "cancellationRequestor": None,
+            "commands": [],
+            "computerDnsName": None,
+            "creationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+            "errorHResult": 0,
+            "id": id,
+            "lastUpdateDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
+            "machineId": machine_id,
+            "relatedFileInfo": {"fileIdentifier": file_hash, "fileIdentifierType": "Sha1"},
+            "requestor": "123abc",
+            "requestorComment": comment,
+            "scope": None,
+            "status": status,
+            "type": "StopAndQuarantineFile",
+        }
 
     MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_CONTEXT_OUTPUT = {
         "ID": "123",
@@ -3801,10 +3804,10 @@ class TestStopAndQuarantineFileCommand:
         "CreationDateTimeUtc": "2020-03-20T14:21:49.9097785Z",
         "LastUpdateTimeUtc": "2020-03-20T14:21:49.9097785Z",
         "RelatedFileInfo": {"FileIdentifier": "hash", "FileIdentifierType": "Sha1"},
-        "Commands" : []
+        "Commands": [],
     }
 
-    def test_main_calls_quarantine_with_correct_args(self,mocker):
+    def test_main_calls_quarantine_with_correct_args(self, mocker):
         """
         GIVEN: demisto command 'microsoft-atp-stop-and-quarantine-file' is given.
         WHEN:  main function is executed.
@@ -3827,17 +3830,19 @@ class TestStopAndQuarantineFileCommand:
         }
 
         mocked_args = {
-            "timeout_in_seconds" : 44,
-            "interval_in_seconds" : 12,
-            "machine_id" : "12345678",
-            "file_hash" : "hash",
-            "comment" : "some comment"
+            "timeout_in_seconds": 44,
+            "interval_in_seconds": 12,
+            "machine_id": "12345678",
+            "file_hash": "hash",
+            "comment": "some comment",
         }
         mocker.patch.object(demisto, "params", return_value=mocked_params)
         mocker.patch.object(demisto, "args", return_value=mocked_args)
         mocker.patch.object(demisto, "command", return_value="microsoft-atp-stop-and-quarantine-file")
         mocker.patch("MicrosoftDefenderAdvancedThreatProtection.return_results")
-        mock_quarantine_command = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.stop_and_quarantine_file_command_polling")
+        mock_quarantine_command = mocker.patch(
+            "MicrosoftDefenderAdvancedThreatProtection.stop_and_quarantine_file_command_polling"
+        )
         mock_client_class = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.MsClient")
         mock_client_instance = mock_client_class.return_value
 
@@ -3856,27 +3861,32 @@ class TestStopAndQuarantineFileCommand:
                and does NOT call the polling status check command.
         """
         # --- MOCKING ---
-        mock_initiate_quarantine = mocker.patch.object(client_mocker, "stop_and_quarantine_file", return_value=self._construct_stop_and_quarantine_raw_response())
+        mock_initiate_quarantine = mocker.patch.object(
+            client_mocker, "stop_and_quarantine_file", return_value=self._construct_stop_and_quarantine_raw_response()
+        )
         # Mock the unique command used ONLY by polling_call
         mock_get_status = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.get_machine_action_by_id_command")
-        
+
         # --- EXECUTION ---
-        res = stop_and_quarantine_file_command_polling({"machine_id": "12345678", "file_hash": "hash", "comment": "comment"}, client_mocker)
-        
+        res = stop_and_quarantine_file_command_polling(
+            {"machine_id": "12345678", "file_hash": "hash", "comment": "comment"}, client_mocker
+        )
+
         # --- Assertion ---
         # Verify that the initial flow was called
         mock_initiate_quarantine.assert_called_once()
-        
+
         # Verify that the polling status command was NOT called
         mock_get_status.assert_not_called()
 
         # verify the non-polling response
         assert res.outputs == [TestStopAndQuarantineFileCommand.MACHINE_ACTION_STOP_AND_QUARANTINE_FILE_CONTEXT_OUTPUT]
-        assert res.readable_output == ('### Stopping and quarantine\n'
- '|ID|Type|Requestor|RequestorComment|Status|MachineID|\n'
- '|---|---|---|---|---|---|\n'
- '| 123 | StopAndQuarantineFile | 123abc | Test | Pending | 12345678 |\n')
-
+        assert res.readable_output == (
+            "### Stopping and quarantine\n"
+            "|ID|Type|Requestor|RequestorComment|Status|MachineID|\n"
+            "|---|---|---|---|---|---|\n"
+            "| 123 | StopAndQuarantineFile | 123abc | Test | Pending | 12345678 |\n"
+        )
 
     def test_multiple_machines_and_files_expected_output_non_polling(self, mocker):
         """
@@ -3955,7 +3965,7 @@ class TestStopAndQuarantineFileCommand:
         # --- THEN (Phase 1: Assert the Initial Run's Behavior) ---
 
         # The script should have returned a request to continue polling
-        assert first_poll_result.readable_output == 'Quarantine operations are still in progress...'
+        assert first_poll_result.readable_output == "Quarantine operations are still in progress..."
         assert first_poll_result.scheduled_command is not None
         final_outputs = first_poll_result.outputs
         assert isinstance(final_outputs, list)
@@ -3977,7 +3987,8 @@ class TestStopAndQuarantineFileCommand:
         # --- GIVEN (Phase 2: Setup for the Polling Run) ---
 
         # Mock the 'get_machine_action_by_id_command' to return different final statuses
-        # for the 3 pending actions. need to return them twice because in get_machine_action_by_id_command it calls the client.get_machine_action_by_id for some reason
+        # for the 3 pending actions. need to return them twice because in get_machine_action_by_id_command it calls the
+        # client.get_machine_action_by_id
         status_check_side_effects = [
             self._construct_stop_and_quarantine_raw_response("action_1A", status="Succeeded"),
             self._construct_stop_and_quarantine_raw_response("action_1A", status="Succeeded"),
@@ -4004,12 +4015,11 @@ class TestStopAndQuarantineFileCommand:
         final_statuses = {res.get("Status") for res in final_response}
         assert final_statuses == {"Succeeded", "Failed", "TimeOut"}
 
-        assert final_poll_result.readable_output ==('### Completed Quarantine\n'
- '|ID|Type|Requestor|RequestorComment|Status|MachineID|\n'
- '|---|---|---|---|---|---|\n'
- '| action_1A | StopAndQuarantineFile | 123abc | Test | Succeeded | 12345678 '
- '|\n'
- '| action_1B | StopAndQuarantineFile | 123abc | Test | Failed | 12345678 |\n'
- '| action_2B | StopAndQuarantineFile | 123abc | Test | TimeOut | 12345678 |\n')
-
-    
+        assert final_poll_result.readable_output == (
+            "### Completed Quarantine\n"
+            "|ID|Type|Requestor|RequestorComment|Status|MachineID|\n"
+            "|---|---|---|---|---|---|\n"
+            "| action_1A | StopAndQuarantineFile | 123abc | Test | Succeeded | 12345678 |\n"
+            "| action_1B | StopAndQuarantineFile | 123abc | Test | Failed | 12345678 |\n"
+            "| action_2B | StopAndQuarantineFile | 123abc | Test | TimeOut | 12345678 |\n"
+        )

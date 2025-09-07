@@ -17,6 +17,7 @@ from QuarantineFile import (
 SHA_256_HASH = "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
 SHA_1_HASH = "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
 
+
 # Pytest fixture to patch demisto functions
 @pytest.fixture(autouse=True)
 def mock_demisto(mocker):
@@ -198,7 +199,7 @@ class TestBrands:
         Then: Ensure all values are returned.
         """
 
-        assert Brands.values() == ['Cortex XDR - IR','Cortex Core - IR','Microsoft Defender Advanced Threat Protection']
+        assert Brands.values() == ["Cortex XDR - IR", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection"]
 
     def test_normalize_returns_normalized_brand_name_when_alias_given(self):
         """
@@ -839,6 +840,7 @@ class TestXDRHandler:
             assert result.FilePath == "/path/test.txt"
             assert result.Brand == Brands.CORTEX_CORE_IR
 
+
 class TestMDEHandler:
     def test_constructor_sets_correct_properties(self):
         """
@@ -854,6 +856,7 @@ class TestMDEHandler:
 
     class TestInitialQuarantine:
         """Tests the quarantine kickoff flow of the MDEHandler."""
+
         def test_initiate_quarantine_calls_expected_command_with_timeout(self, mocker):
             """
             Given: args for quarantining multiple endpoints with a timeout
@@ -867,12 +870,19 @@ class TestMDEHandler:
             # mock the Command class execute() method, and check that it was called with the expected arguments
             mock_command_instance = mocker.Mock()
             mock_command_instance.execute.return_value = (
-                [{"Metadata": {"pollingCommand": "microsoft-atp-stop-and-quarantine-file", "pollingArgs": {
-                              "action_ids": ["111111"],
-                              "machine_id": ["22222", "33333"],
-                              "file_hash": "sha1sha1",
-                              "timeout_in_seconds" : "300"
-                          }}}],
+                [
+                    {
+                        "Metadata": {
+                            "pollingCommand": "microsoft-atp-stop-and-quarantine-file",
+                            "pollingArgs": {
+                                "action_ids": ["111111"],
+                                "machine_id": ["22222", "33333"],
+                                "file_hash": "sha1sha1",
+                                "timeout_in_seconds": "300",
+                            },
+                        }
+                    }
+                ],
                 [],
             )
             mock_command_class = mocker.patch("QuarantineFile.Command", return_value=mock_command_instance)
@@ -880,11 +890,13 @@ class TestMDEHandler:
             job = handler.initiate_quarantine(args)
 
             # Assert that the Command class was instantiated correctly
-            expected_command_args = {'comment': 'Quarantine file hash: sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1',
-          'file_hash': 'sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1',
-          'machine_id': ['id1', 'id2'],
-          'polling': True,
-          'timeout_in_seconds': 123}
+            expected_command_args = {
+                "comment": "Quarantine file hash: sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                "file_hash": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                "machine_id": ["id1", "id2"],
+                "polling": True,
+                "timeout_in_seconds": 123,
+            }
             mock_command_class.assert_called_once_with(
                 name="microsoft-atp-stop-and-quarantine-file", args=expected_command_args, brand=Brands.MDE
             )
@@ -894,11 +906,11 @@ class TestMDEHandler:
                 "brand": Brands.MDE,
                 "poll_command": "microsoft-atp-stop-and-quarantine-file",
                 "poll_args": {
-                              "action_ids": ["111111"],
-                              "machine_id": ["22222", "33333"],
-                              "file_hash": "sha1sha1",
-                              "timeout_in_seconds" : "300"
-                          },
+                    "action_ids": ["111111"],
+                    "machine_id": ["22222", "33333"],
+                    "file_hash": "sha1sha1",
+                    "timeout_in_seconds": "300",
+                },
             }
             assert job == expected_job
 
@@ -908,18 +920,25 @@ class TestMDEHandler:
             When: MDEHandler initiate_quarantine is called
             Then: Adds verbose results to the orchestrator
             """
-            args = {"endpoint_id": ["id1", "id2"], "file_hash": SHA_1_HASH, "timeout": 123, "verbose":True}
+            args = {"endpoint_id": ["id1", "id2"], "file_hash": SHA_1_HASH, "timeout": 123, "verbose": True}
             orchestrator = _get_orchestrator(args)
             handler = XDRHandler(Brands.CORTEX_XDR_IR, orchestrator)
 
             mock_command_instance = mocker.Mock()
             mock_command_instance.execute.return_value = (
-                [{"Metadata": {"pollingCommand": "microsoft-atp-stop-and-quarantine-file", "pollingArgs": {
-                    "action_ids": ["111111"],
-                    "machine_id": ["22222", "33333"],
-                    "file_hash": "sha1sha1",
-                    "timeout_in_seconds": "300"
-                }}}],
+                [
+                    {
+                        "Metadata": {
+                            "pollingCommand": "microsoft-atp-stop-and-quarantine-file",
+                            "pollingArgs": {
+                                "action_ids": ["111111"],
+                                "machine_id": ["22222", "33333"],
+                                "file_hash": "sha1sha1",
+                                "timeout_in_seconds": "300",
+                            },
+                        }
+                    }
+                ],
                 [
                     {
                         "Type": 1,
@@ -951,40 +970,39 @@ class TestMDEHandler:
             """A fixture to set up a handler and job object for finalize tests."""
             args = {"file_hash": "hash123"}
             orchestrator = _get_orchestrator(args)
-            handler = MDEHandler( orchestrator)
+            handler = MDEHandler(orchestrator)
             last_poll_response = [
-            {
-                "Type" :1,
-                "EntryContext": {
-                    "MicrosoftATP.MachineAction(val.ID && val.ID == obj.ID)": [
-                        {
-                            "Commands": None,
-                            "ComputerDNSName": "win10",
-                            "CreationDateTimeUtc": "2025-09-04T16:30:40.190142Z",
-                            "ID": "a6e0718b-0267-461a-9a0b-dbd7284d0bde",
-                            "LastUpdateTimeUtc": "2025-09-04T16:30:55.3588394Z",
-                            "MachineID": "123",
-                            "RelatedFileInfo": {
-                                "FileIdentifier": "hash123",
-                                "FileIdentifierType": "Sha1",
-                            },
-                            "Requestor": "Cortex XSOAR - Microsoft Defender ATP",
-                            "RequestorComment": "Quarantine file hash: hash123",
-                            "Scope": None,
-                            "Status": "Succeeded",
-                            "Type": "StopAndQuarantineFile",
-                        }
-                    ]
+                {
+                    "Type": 1,
+                    "EntryContext": {
+                        "MicrosoftATP.MachineAction(val.ID && val.ID == obj.ID)": [
+                            {
+                                "Commands": None,
+                                "ComputerDNSName": "win10",
+                                "CreationDateTimeUtc": "2025-09-04T16:30:40.190142Z",
+                                "ID": "a6e0718b-0267-461a-9a0b-dbd7284d0bde",
+                                "LastUpdateTimeUtc": "2025-09-04T16:30:55.3588394Z",
+                                "MachineID": "123",
+                                "RelatedFileInfo": {
+                                    "FileIdentifier": "hash123",
+                                    "FileIdentifierType": "Sha1",
+                                },
+                                "Requestor": "Cortex XSOAR - Microsoft Defender ATP",
+                                "RequestorComment": "Quarantine file hash: hash123",
+                                "Scope": None,
+                                "Status": "Succeeded",
+                                "Type": "StopAndQuarantineFile",
+                            }
+                        ]
+                    },
                 },
-            },
-            {
-                "Type" : 16,
-                "EntryContext": None,
-            },
-        ]
+                {
+                    "Type": 16,
+                    "EntryContext": None,
+                },
+            ]
 
-
-            return handler,  last_poll_response
+            return handler, last_poll_response
 
         def test_finalize_returns_expected_final_results(self, setup_finalize):
             handler, last_poll_response = setup_finalize
@@ -997,9 +1015,6 @@ class TestMDEHandler:
             assert result.FileHash == "hash123"
             assert result.Message == "File successfully quarantined."
             assert result.Status == "Succeeded"
-
-
-
 
 
 class TestQuarantineOrchestrator:
@@ -1220,9 +1235,11 @@ class TestQuarantineOrchestrator:
                 orchestrator = QuarantineOrchestrator(args)
                 with pytest.raises(QuarantineException) as e:
                     orchestrator._sanitize_and_validate_args()
-                assert ('Could not find enabled integrations for the requested hash type.\n'
- 'For hash_type SHA1 please use one of the following brands: Microsoft '
- 'Defender Advanced Threat Protection') == str(e.value)
+                assert str(e.value) == (
+                    "Could not find enabled integrations for the requested hash type.\n"
+                    "For hash_type SHA1 please use one of the following brands: Microsoft "
+                    "Defender Advanced Threat Protection"
+                )
 
             def test_brands_to_run_will_only_be_those_active_and_matching_hash_type(self, mocker):
                 """
@@ -1237,7 +1254,7 @@ class TestQuarantineOrchestrator:
                     return_value={
                         "Cortex XDR - IR": {"state": "active", "brand": Brands.CORTEX_XDR_IR},
                         "Cortex Core - IR": {"state": "disabled", "brand": Brands.CORTEX_CORE_IR},
-                        "Microsoft Defender Advanced Threat Protection" : {"state":"disabled", "brand": Brands.MDE},
+                        "Microsoft Defender Advanced Threat Protection": {"state": "disabled", "brand": Brands.MDE},
                     },
                 )
 
@@ -1247,7 +1264,6 @@ class TestQuarantineOrchestrator:
                 orchestrator._sanitize_and_validate_args()
 
                 assert orchestrator.args["brands"] == [Brands.CORTEX_XDR_IR]
-
 
     class TestConstructor:
         def test_constructor_sets_args(self):

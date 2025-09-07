@@ -3526,14 +3526,14 @@ def remove_app_restriction_command(client: MsClient, args: dict):
     entry_context = {"MicrosoftATP.MachineAction(val.ID === obj.ID)": action_data}
     return human_readable, entry_context, machine_action_response
 
+
 @polling_function(
-    name='microsoft-atp-stop-and-quarantine-file',
+    name="microsoft-atp-stop-and-quarantine-file",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 50)),
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
-    requires_polling_arg=True, # If user provides polling arg as false, dont poll
-    
+    requires_polling_arg=True,  # If user provides polling arg as false, dont poll
 )
-def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
+def stop_and_quarantine_file_command_polling(args: dict, client: MsClient):
     """
     Stops the execution of files on machines and quarantines them.
     This command is asynchronous and polls for completion.
@@ -3555,7 +3555,6 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
 
     headers = ["ID", "Type", "Requestor", "RequestorComment", "Status", "MachineID", "ComputerDNSName"]
 
-    
     def _initial_call():
         demisto.debug("First run: Initiating quarantine actions.")
         machine_ids = argToList(args.get("machine_id"))
@@ -3574,11 +3573,11 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
                 machine_action_response = client.stop_and_quarantine_file(machine_id, file_sha1, comment)
                 machine_action_response["machineId"] = machine_id
                 context_output = get_machine_action_data(machine_action_response)
-                demisto.debug(f"Successfully initiated quarantine for file {file_sha1} on machine {machine_id}. The context output is: {context_output}")
-                action_ids_to_poll.append(context_output.get('ID'))
+                demisto.debug(f"Successfully initiated quarantine for file {file_sha1} on machine {machine_id}.")
+                action_ids_to_poll.append(context_output.get("ID"))
 
             except Exception as e:
-                demisto.error(f"Failed to initiate quarantine for file {file_sha1} on machine {machine_id}: {e}")
+                demisto.debug(f"Failed to initiate quarantine for file {file_sha1} on machine {machine_id}: {e}")
                 machine_action_response = {
                     "requestorComment": comment,
                     "status": "Failed",
@@ -3590,35 +3589,33 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
                     "computerDnsName": None,
                     "creationDateTimeUtc": None,
                     "lastUpdateTimeUtc": None,
-                    "relatedFileInfo" : {
-                    "fileIdentifier": file_sha1,
-                    "fileIdentifierType": None,
+                    "relatedFileInfo": {
+                        "fileIdentifier": file_sha1,
+                        "fileIdentifierType": None,
                     },
-                    "commands": None
+                    "commands": None,
                 }
                 context_output = get_machine_action_data(machine_action_response)
                 completed_results.append(context_output)
 
-
             finally:
                 all_context_outputs.append(context_output)
                 all_api_raw_responses.append(machine_action_response)
-                
+
         human_readable = tableToMarkdown(
-            name=f"Stopping and quarantine",
+            name="Stopping and quarantine",
             t=all_context_outputs,
             headers=headers,
             removeNull=True,
         )
 
         command_results = CommandResults(
-                outputs_prefix="MicrosoftATP.MachineAction",
-                outputs_key_field="ID",
-                readable_output=human_readable,
-                outputs=all_context_outputs,
-                raw_response=all_api_raw_responses,
-            )
-            
+            outputs_prefix="MicrosoftATP.MachineAction",
+            outputs_key_field="ID",
+            readable_output=human_readable,
+            outputs=all_context_outputs,
+            raw_response=all_api_raw_responses,
+        )
 
         demisto.debug(f"Initiated {len(action_ids_to_poll)} quarantine actions. Polling for status...")
         demisto.debug(f"args: {args}")
@@ -3639,11 +3636,10 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
         # Return poll result with args for next poll and also return the results in case polling is disabled
         demisto.debug(f"Returning poll results with response: {command_results}")
         return PollResult(
-            partial_result = command_results,
-            continue_to_poll = continue_to_poll,
-            args_for_next_run = {"action_ids": action_ids_to_poll,
-                                 "polling": argToBoolean(args.get("polling", False)), **args},
-            response = command_results
+            partial_result=command_results,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={"action_ids": action_ids_to_poll, "polling": argToBoolean(args.get("polling", False)), **args},
+            response=command_results,
         )
 
     def _polling_call():
@@ -3654,30 +3650,30 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
         demisto.debug(f"Polling for status of {len(argToList(args.get('action_ids')))}.")
         action_ids = argToList(args.get("action_ids"))
 
-
         for action_id in action_ids:
             demisto.debug(f"Polling for status of action {action_id}.")
-            _, context , _ = get_machine_action_by_id_command(client, {"id": action_id})
+            _, context, _ = get_machine_action_by_id_command(client, {"id": action_id})
             all_api_raw_responses.append(context)
             context_output = context.get("MicrosoftATP.MachineAction(val.ID === obj.ID)")
             all_context_outputs.append(context_output)
             if context_output.get("Status") in ["Succeeded", "Failed", "Cancelled", "TimeOut"]:
                 demisto.debug(f"Successfully polled for status of action {action_id}. The context output is: {context_output}")
-                completed_count +=1
+                completed_count += 1
 
         human_readable = tableToMarkdown(
-                name=f"Completed Quarantine",
-                t=all_context_outputs,
-                headers=headers,
-                removeNull=True,
-            )
+            name="Completed Quarantine",
+            t=all_context_outputs,
+            headers=headers,
+            removeNull=True,
+        )
 
         command_results = CommandResults(
-                outputs_prefix="MicrosoftATP.MachineAction",
-                outputs_key_field="ID",
-                readable_output=human_readable,
-                outputs=all_context_outputs,
-                raw_response=all_api_raw_responses,)
+            outputs_prefix="MicrosoftATP.MachineAction",
+            outputs_key_field="ID",
+            readable_output=human_readable,
+            outputs=all_context_outputs,
+            raw_response=all_api_raw_responses,
+        )
 
         if completed_count == len(action_ids):
             demisto.debug("All quarantine actions have completed. Polling is disabled.")
@@ -3686,21 +3682,16 @@ def stop_and_quarantine_file_command_polling(args: dict,client: MsClient):
             demisto.debug("All quarantine actions have not yet completed. Polling will continue.")
             command_results.readable_output = "Quarantine operations are still in progress..."
             continue_to_poll = True
-            
 
         # Return poll result with args for next poll and also return the results in case polling is disabled
         return PollResult(
-            partial_result = command_results,
-            continue_to_poll = continue_to_poll,
-            args_for_next_run = args,
-            response = command_results
+            partial_result=command_results, continue_to_poll=continue_to_poll, args_for_next_run=args, response=command_results
         )
 
     if not args.get("action_ids"):
         return _initial_call()
     else:
         return _polling_call()
-
 
 
 def get_investigations_by_id_command(client: MsClient, args: dict):
