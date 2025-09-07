@@ -72,7 +72,7 @@ script:
       required: true
     - description: The maximum number of alerts to return.
       name: limit
-      defaultValue: 10000
+      defaultValue: 10
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
   dockerimage: demisto/auth-utils:1.0.0.3639076
