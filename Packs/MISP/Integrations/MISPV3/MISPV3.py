@@ -1485,7 +1485,7 @@ def add_sighting(demisto_args: dict):
     }
     sigh_obj = MISPSighting()
     sigh_obj.from_dict(**sighting_args)
-    
+
     if attribute_value:
         response = PYMISP.add_sighting(sigh_obj)
     else:
