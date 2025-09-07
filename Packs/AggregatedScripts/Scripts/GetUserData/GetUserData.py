@@ -542,7 +542,7 @@ def run_list_users_command(
     outputs_key_field: str,
     email_list: List[str],
     users: list[dict[str, Any]],
-    readable_outputs_list: list[CommandResults]
+    readable_outputs_list: list[CommandResults],
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     """
     Handles all the logic for the core/xdr list-users command.
@@ -618,6 +618,7 @@ def run_list_users_command(
             users.append(user)
     return readable_outputs_list, users
 
+
 def xdr_and_core_list_all_users(
     list_risky_users_commands: list[Command],
     list_users_command: Command,
@@ -629,11 +630,7 @@ def xdr_and_core_list_all_users(
     readable_outputs_list, users = run_list_risky_users_command(list_risky_users_commands, additional_fields, outputs_key_field)
     if list_non_risky_users:
         readable_outputs_list, users = run_list_users_command(
-            list_users_command,
-            additional_fields,
-            outputs_key_field,
-            email_list, users,
-            readable_outputs_list
+            list_users_command, additional_fields, outputs_key_field, email_list, users, readable_outputs_list
         )
 
     return readable_outputs_list, users
