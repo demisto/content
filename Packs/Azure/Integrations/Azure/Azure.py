@@ -1253,7 +1253,7 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def list_network_security_groups(self, subscription_id: str, resource_group_name: str) -> dict:  # type: ignore[return-value]
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str):
         """
         List all network security groups in a specific resource group.
 
@@ -1284,8 +1284,7 @@ class AzureClient:
             )
 
     def delete_rule(
-        self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str
-    ) -> requests.Response:  # type: ignore[return]
+        self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str):
         """
         Delete a specific security rule from a network security group.
 
@@ -1323,8 +1322,7 @@ class AzureClient:
                     resource_group_name=resource_group_name,
                 )
 
-    def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str
-                                     ) -> dict:  # type: ignore[return-value]
+    def list_resource_groups_request(self, subscription_id: str, filter_by_tag: str, limit: str):
         """
         List resource groups in a subscription, optionally filtered by tag and limited in number.
 
@@ -1352,8 +1350,7 @@ class AzureClient:
                 resource_group_name=None,
             )
 
-    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str
-                                         ) -> dict:  # type: ignore[return-value]
+    def list_networks_interfaces_request(self, subscription_id: str, resource_group_name: str):
         """
         List all network interfaces in a specific resource group.
 
@@ -1383,8 +1380,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str
-                                         ) -> dict:  # type: ignore[return-value]
+    def list_public_ip_addresses_request(self, subscription_id: str, resource_group_name: str):
         """
         List all public IP addresses in a specific resource group.
 
