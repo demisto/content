@@ -1253,7 +1253,7 @@ class AzureClient:
             method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text"
         )
 
-    def list_network_security_groups(self, subscription_id: str, resource_group_name: str) -> dict:  # type: ignore
+    def list_network_security_groups(self, subscription_id: str, resource_group_name: str) -> dict:  # type: ignore[return]
         """
         List all network security groups in a specific resource group.
 
@@ -1283,8 +1283,9 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def delete_rule(self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str) \
-        -> requests.Response:  # type: ignore
+    def delete_rule(
+        self, security_group_name: str, security_rule_name: str, subscription_id: str, resource_group_name: str
+    ) -> requests.Response:  # type: ignore
         """
         Delete a specific security rule from a network security group.
 
