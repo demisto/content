@@ -13,7 +13,7 @@ class TestSetIndicatorIfExist:
         When:
         - Executing set_indicator_if_exist function
         Then:
-        - Should call findIndicators, setIndicator, core-get-issues, and associateIndicatorsToIssue
+        - Should call findIndicators, setIndicator, core-get-issues, and associateIndicatorsToAlert
         - Should return success message
         """
         args = {
@@ -34,8 +34,8 @@ class TestSetIndicatorIfExist:
         mock_execute_command.side_effect = [
             None,  # setIndicator response
             {"result_count": 2},  # core-get-issues response
-            None,  # associateIndicatorsToIssue response,
-            None,  # associateIndicatorsToIssue response for the second issue
+            None,  # associateIndicatorsToAlert response,
+            None,  # associateIndicatorsToAlert response for the second issue
         ]
 
         # Mock argToList
@@ -50,8 +50,8 @@ class TestSetIndicatorIfExist:
         expected_execute_calls = [
             mocker.call("setIndicator", args),
             mocker.call("core-get-issues", {"issue_id": ["issue1", "issue2"]}),
-            mocker.call("associateIndicatorsToIssue", {"issueId": "issue1", "indicatorsValues": "test-indicator"}),
-            mocker.call("associateIndicatorsToIssue", {"issueId": "issue2", "indicatorsValues": "test-indicator"}),
+            mocker.call("associateIndicatorsToAlert", {"issueId": "issue1", "indicatorsValues": "test-indicator"}),
+            mocker.call("associateIndicatorsToAlert", {"issueId": "issue2", "indicatorsValues": "test-indicator"}),
         ]
         mock_execute_command.assert_has_calls(expected_execute_calls)
 
@@ -103,7 +103,7 @@ class TestSetIndicatorIfExist:
         mock_execute_command = mocker.patch("SetIndicator.execute_command")
         mock_execute_command.side_effect = [
             {"result_count": 1},  # core-get-issues response
-            None,  # associateIndicatorsToIssue response
+            None,  # associateIndicatorsToAlert response
         ]
 
         mocker.patch("SetIndicator.argToList", return_value=["issue1"])
@@ -117,7 +117,7 @@ class TestSetIndicatorIfExist:
         # Verify issue-related calls were made
         mock_execute_command.assert_any_call("core-get-issues", {"issue_id": ["issue1"]})
         mock_execute_command.assert_any_call(
-            "associateIndicatorsToIssue", {"issueId": "issue1", "indicatorsValues": "test-indicator"}
+            "associateIndicatorsToAlert", {"issueId": "issue1", "indicatorsValues": "test-indicator"}
         )
 
         assert result.readable_output == "Successfully set indicator."
@@ -300,7 +300,7 @@ class TestSetIndicatorIfExist:
         mock_execute_command.side_effect = [
             None,  # setIndicator
             {"result_count": 1},  # core-get-issues
-            None,  # associateIndicatorsToIssue
+            None,  # associateIndicatorsToAlert
         ]
 
         mocker.patch("SetIndicator.argToList", return_value=["issue1"])
@@ -316,4 +316,4 @@ class TestSetIndicatorIfExist:
         assert any("Checking if test-indicator exists" in msg for msg in debug_messages)
         assert any("running setIndicator command" in msg for msg in debug_messages)
         assert any("Number issues found: 1" in msg for msg in debug_messages)
-        assert any("running associateIndicatorsToIssue command with issue id issue1" in msg for msg in debug_messages)
+        assert any("running associateIndicatorsToAlert command with issue id issue1" in msg for msg in debug_messages)
