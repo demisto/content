@@ -15,6 +15,7 @@ from GetUserData import (
     okta_get_user,
     prepare_human_readable,
     run_execute_command,
+    run_list_risky_users_command,
     get_data,
     prisma_cloud_get_user,
     azure_get_risky_user,
@@ -1385,41 +1386,285 @@ def test_get_data_without_found_user(mocker: MockerFixture):
 
     assert result[1][0].get("Status") == "User not found - userId: test_value."
 
-    # def test_xdr_list_risky_users(self, mocker: MockerFixture):
-    #     """
-    #     Given:
-    #         A Command object for xdr_list_risky_users.
-    #     When:
-    #         The function is called with the Command object.
-    #     Then:
-    #         It returns the expected tuple of readable outputs and account output.
-    #     """
-    #     user_name = "xdr_user"
-    #     outputs_key_field = "PaloAltoNetworksXDR"
-    #     command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
-    #     mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
-    #     expected_account = [
-    #         {
-    #             "ID": "xdr_user",
-    #             "RiskLevel": "HIGH",
-    #             "Source": "Cortex XDR - IR",
-    #             "Brand": "Cortex XDR - IR",
-    #             "Username": "xdr_user",
-    #             "Instance": None,
-    #         }
-    #     ]
 
-    #     mocker.patch(
-    #         "GetUserData.run_execute_command",
-    #         return_value=([mock_outputs], "Human readable output", []),
-    #     )
-    #     mocker.patch("GetUserData.get_output_key", return_value="PaloAltoNetworksXDR.RiskyUser")
-    #     mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
-    #     mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+def test_run_list_risky_users_command_single_command_success(mocker: MockerFixture):
+    """
+    Given:
+        A single Command object for listing risky users with valid response.
+    When:
+        run_list_risky_users_command is called with the command.
+    Then:
+        It should return readable outputs and user data with 'found' status.
+    """
+    # Arrange
+    command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "test_user"})
+    commands = [command]
+    additional_fields = True
+    outputs_key_field = "PaloAltoNetworksXDR"
+    
+    mock_entry_context = [{
+        "PaloAltoNetworksXDR.RiskyUser": {
+            "id": "test_user",
+            "risk_level": "HIGH",
+            "email": "test@example.com",
+            "department": "IT"
+        },
+        "instance": "xdr_instance"
+    }]
+    
+    mock_run_execute_command = mocker.patch(
+        "GetUserData.run_execute_command",
+        return_value=(mock_entry_context, "Human readable output", [])
+    )
+    mock_prepare_human_readable = mocker.patch(
+        "GetUserData.prepare_human_readable",
+        return_value=[mocker.Mock(spec=CommandResults)]
+    )
+    
+    # Act
+    readable_outputs, users = run_list_risky_users_command(commands, additional_fields, outputs_key_field)
+    
+    # Assert
+    assert len(readable_outputs) == 1
+    assert len(users) == 1
+    
+    user = users[0]
+    assert user["ID"] == "test_user"
+    assert user["Username"] == "test_user"
+    assert user["RiskLevel"] == "HIGH"
+    assert user["Email"] == "test@example.com"
+    assert user["Source"] == "Cortex XDR - IR"
+    assert user["Brand"] == "Cortex XDR - IR"
+    assert user["Instance"] == "xdr_instance"
+    assert user["Status"] == "found"
+    assert "AdditionalFields" in user
+    assert user["AdditionalFields"]["department"] == "IT"
+    
+    mock_run_execute_command.assert_called_once_with("xdr-list-risky-users", {"user_id": "test_user"})
+    mock_prepare_human_readable.assert_called_once()
 
-    #     result = xdr_list_risky_users(command, outputs_key_field, additional_fields=True)
+def test_run_list_risky_users_command_multiple_commands_success(mocker: MockerFixture):
+    """
+    Given:
+        Multiple Command objects for listing risky users.
+    When:
+        run_list_risky_users_command is called with the commands.
+    Then:
+        It should return readable outputs and user data for all commands.
+    """
+    # Arrange
+    command1 = Command("Cortex Core - IR", "xdr-list-risky-users", {"user_id": "user1"})
+    command2 = Command("Cortex Core - IR", "core-list-risky-users", {"user_id": "user2"})
+    commands = [command1, command2]
+    additional_fields = False
+    outputs_key_field = "Core"
+    
+    mock_entry_contexts = [
+        [{
+            "Core.RiskyUser": {
+                "id": "user1",
+                "risk_level": "HIGH",
+                "email": "user1@example.com"
+            },
+            "instance": "xdr_instance"
+        }],
+        [{
+            "Core.RiskyUser": {
+                "id": "user2",
+                "risk_level": "MEDIUM",
+                "email": "user2@example.com"
+            },
+            "instance": "core_instance"
+        }]
+    ]
+    
+    mock_run_execute_command = mocker.patch(
+        "GetUserData.run_execute_command",
+        side_effect=[
+            (mock_entry_contexts[0], "Output 1", []),
+            (mock_entry_contexts[1], "Output 2", [])
+        ]
+    )
+    
+    # Act
+    readable_outputs, users = run_list_risky_users_command(commands, additional_fields, outputs_key_field)
+    
+    # Assert
+    assert len(readable_outputs) == 2
+    assert len(users) == 2
+    
+    # Check first user
+    user1 = users[0]
+    assert user1["ID"] == "user1"
+    assert user1["Username"] == "user1"
+    assert user1["RiskLevel"] == "HIGH"
+    assert user1["Email"] == "user1@example.com"
+    assert user1["Source"] == "Cortex Core - IR"
+    assert user1["Instance"] == "xdr_instance"
+    assert user1["Status"] == "found"
+    assert "AdditionalFields" not in user1  # additional_fields=False
+    
+    # Check second user
+    user2 = users[1]
+    assert user2["ID"] == "user2"
+    assert user2["Username"] == "user2"
+    assert user2["RiskLevel"] == "MEDIUM"
+    assert user2["Email"] == "user2@example.com"
+    assert user2["Source"] == "Cortex Core - IR"
+    assert user2["Instance"] == "core_instance"
+    assert user2["Status"] == "found"
+    
+    assert mock_run_execute_command.call_count == 2
 
-    #     assert isinstance(result, tuple)
-    #     assert len(result) == 2
-    #     assert isinstance(result[0], list)
-    #     assert result[1] == expected_account
+def test_run_list_risky_users_command_user_not_found(mocker: MockerFixture):
+    """
+    Given:
+        A Command object that returns empty user data (user not found).
+    When:
+        run_list_risky_users_command is called with the command.
+    Then:
+        It should return user data with 'User not found' status.
+    """
+    # Arrange
+    command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "nonexistent_user"})
+    commands = [command]
+    additional_fields = True
+    outputs_key_field = "PaloAltoNetworksXDR"
+    
+    mock_entry_context = [{
+        "PaloAltoNetworksXDR.RiskyUser": {},
+        "instance": "xdr_instance"
+    }]
+    
+    mocker.patch(
+        "GetUserData.run_execute_command",
+        return_value=(mock_entry_context, "No user found", [])
+    )
+    
+    # Act
+    _, users = run_list_risky_users_command(commands, additional_fields, outputs_key_field)
+    
+    # Assert
+    assert len(users) == 1
+    user = users[0]
+    
+    # User should only have Source, Brand, and Instance keys when not found
+    expected_keys = {"Source", "Brand", "Instance"}
+    actual_keys = set(user.keys()) - {"Status"}  # Exclude Status key for comparison
+    assert actual_keys == expected_keys
+    
+    assert user["Source"] == "Cortex XDR - IR"
+    assert user["Brand"] == "Cortex XDR - IR"
+    assert user["Instance"] == "xdr_instance"
+    assert user["Status"] == "User not found - userId: nonexistent_user."
+
+def test_run_list_risky_users_command_with_errors(mocker: MockerFixture):
+    """
+    Given:
+        A Command object that returns errors during execution.
+    When:
+        run_list_risky_users_command is called with the command.
+    Then:
+        It should return readable outputs including error messages.
+    """
+    # Arrange
+    command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "test_user"})
+    commands = [command]
+    additional_fields = True
+    outputs_key_field = "PaloAltoNetworksXDR"
+    
+    mock_entry_context = [{
+        "PaloAltoNetworksXDR.RiskyUser": {
+            "id": "test_user",
+            "risk_level": "LOW"
+        },
+        "instance": "xdr_instance"
+    }]
+    
+    error_result = mocker.Mock(spec=CommandResults)
+    
+    mocker.patch(
+        "GetUserData.run_execute_command",
+        return_value=(mock_entry_context, "Human readable output", [error_result])
+    )
+    
+    # Act
+    readable_outputs, users = run_list_risky_users_command(commands, additional_fields, outputs_key_field)
+    
+    # Assert
+    assert len(readable_outputs) == 2  # 1 error + 1 human readable
+    assert error_result in readable_outputs
+    
+    assert len(users) == 1
+    user = users[0]
+    assert user["Status"] == "found"
+    assert user["RiskLevel"] == "LOW"
+
+def test_run_list_risky_users_command_empty_commands_list():
+    """
+    Given:
+        An empty list of commands.
+    When:
+        run_list_risky_users_command is called with the empty list.
+    Then:
+        It should return empty readable outputs and users lists.
+    """
+    # Arrange
+    commands = []
+    additional_fields = True
+    outputs_key_field = "PaloAltoNetworksXDR"
+    
+    # Act
+    readable_outputs, users = run_list_risky_users_command(commands, additional_fields, outputs_key_field)
+    
+    # Assert
+    assert readable_outputs == []
+    assert users == []
+
+def test_run_list_risky_users_command_additional_fields_true(mocker: MockerFixture):
+    """
+    Given:
+        A Command object with additional_fields set to True.
+    When:
+        run_list_risky_users_command is called.
+    Then:
+        It should include AdditionalFields in the user data.
+    """
+    # Arrange
+    command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": "test_user"})
+    commands = [command]
+    additional_fields = True
+    outputs_key_field = "PaloAltoNetworksXDR"
+    
+    mock_entry_context = [{
+        "PaloAltoNetworksXDR.RiskyUser": {
+            "id": "test_user",
+            "risk_level": "HIGH",
+            "email": "test@example.com",
+            "department": "IT",
+            "extra_field": "extra_value"
+        },
+        "instance": "xdr_instance"
+    }]
+    
+    mocker.patch(
+        "GetUserData.run_execute_command",
+        return_value=(mock_entry_context, "Human readable output", [])
+    )
+    
+    # Act
+    _, users = run_list_risky_users_command(commands, additional_fields, outputs_key_field)
+    
+    # Assert
+    assert len(users) == 1
+    user = users[0]
+    
+    # Should have AdditionalFields when additional_fields=True
+    assert "AdditionalFields" in user
+    assert user["AdditionalFields"]["department"] == "IT"
+    assert user["AdditionalFields"]["extra_field"] == "extra_value"
+    assert user["ID"] == "test_user"
+    assert user["Username"] == "test_user"
+    assert user["RiskLevel"] == "HIGH"
+    assert user["Email"] == "test@example.com"
+    assert user["Status"] == "found"

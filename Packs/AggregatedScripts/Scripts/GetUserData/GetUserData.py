@@ -544,6 +544,20 @@ def run_list_users_command(
     users: list[dict[str, Any]],
     readable_outputs_list: list[CommandResults]
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
+    """
+    Handles all the logic for the core/xdr list-users command.
+
+    Args:
+        list_users_command (Command): The command to run.
+        additional_fields (bool): whether to add additional fields to the output.
+        outputs_key_field (str): the key field to use for the output.
+        email_list (List[str]): the list of emails to search for.
+        users (list[dict[str, Any]]): the list of users obtained from previous command.
+        readable_outputs_list (list[CommandResults]): the list of readable outputs to append to.
+
+    Returns:
+        tuple[list[CommandResults], list[dict[str, Any]]]: the list of readable outputs and the list of users.
+    """
     email_set = set(email_list)
     risky_users_email_set = set()
     for user in users:
@@ -591,7 +605,9 @@ def run_list_users_command(
                 if not email_set:
                     demisto.debug("all given users were found, breaking")
                     break
+    # Update the list of non found users.
     for mail in email_set:
+        if mail not in risky_users_email_set:
             user = create_user(
                 source=list_users_command.brand,
                 instance=output.get("instance"),
@@ -612,7 +628,7 @@ def xdr_and_core_list_all_users(
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     readable_outputs_list, users = run_list_risky_users_command(list_risky_users_commands, additional_fields, outputs_key_field)
     if list_non_risky_users:
-        readable_outputs_list, users = run_list_risky_users_command(
+        readable_outputs_list, users = run_list_users_command(
             list_users_command,
             additional_fields,
             outputs_key_field,
