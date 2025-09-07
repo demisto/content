@@ -10,13 +10,27 @@ INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
 
 
-def issue_to_alert(args) -> dict:
-    for key in list(args.keys()):
-        if "issue" in key:
-            alert_key = key.replace("issue", "alert")
-            args[alert_key] = args.pop(key)
+def replace_keys(dic: dict, original: str, new: str):
+    """
+    Replace all occurrences of a substring in the keys of a dictionary with a new substring.
 
-    return args
+    Args:
+        dic (dict): The dictionary to replace keys in.
+        original (str): The substring to be replaced.
+        new (str): The substring to replace with.
+
+    Returns:
+        dict: The dictionary with all occurrences of `original` replaced by `new` in its keys.
+    """
+    for key in list(dic.keys()):
+        if original in key:
+            new_key = key.replace(original, new)
+            dic[new_key] = dic.pop(key)
+    return dic
+
+
+def issue_to_alert(args) -> dict:
+    return replace_keys(args, "issue", "alert")
 
 
 def alert_to_issue(outputs):
@@ -29,10 +43,35 @@ def alert_to_issue(outputs):
     Returns:
         dict: Dictionary with keys converted to issue format
     """
-    for key in list(outputs.keys()):
-        if "alert" in key:
-            issue_key = key.replace("alert", "issue")
-            outputs[issue_key] = outputs.pop(key)
+    return replace_keys(outputs, "alert", "issue")
+
+
+def incident_to_case(outputs):
+    """
+    Convert incident dictionary keys to case keys by replacing 'incident' with 'case'
+
+    Args:
+        outputs (dict): Dictionary containing incident keys
+
+    Returns:
+        dict: Dictionary with keys converted to case format
+    """
+    return replace_keys(outputs, "incident", "case")
+
+
+def case_to_incident(args):
+    return replace_keys(args, "case", "incident")
+
+
+def preprocess_get_cases_args(args):
+    args = case_to_incident(args)
+    args = issue_to_alert(args)
+    return args
+
+
+def preprocess_get_cases_outputs(outputs):
+    outputs = incident_to_case(outputs)
+    outputs = alert_to_issue(outputs)
     return outputs
 
 
@@ -136,10 +175,10 @@ def get_cases_command(client, args):
     Retrieve a list of Cases from XDR, filtered by some filters.
     """
     demisto.debug(f"get_cases_command original args: {args}")
-    args = recursive_replace_response_names(args, old_to_new=False)
+    args = preprocess_get_cases_args(args)
     demisto.debug(f"get_cases_command after recursive_replace_response_names args: {args}")
     _, _, raw_incidents = get_incidents_command(client, args)
-    mapped_raw_cases = recursive_replace_response_names(raw_incidents)
+    mapped_raw_cases = preprocess_get_cases_outputs(raw_incidents)
     return CommandResults(
         readable_output=tableToMarkdown("Cases", mapped_raw_cases, headerTransform=string_to_table_header),
         outputs_prefix="Core.Case",
@@ -167,7 +206,7 @@ def get_extra_data_for_case_id_command(client, args):
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_extra_data(case_id, issues_limit)
-    mapped_response = recursive_replace_response_names(response)
+    mapped_response = preprocess_get_cases_outputs(response)
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
@@ -221,11 +260,13 @@ def main():  # pragma: no cover
             issues_command_results: CommandResults = get_alerts_by_filter_command(client, args)
             # Convert alert keys to issue keys
             if issues_command_results.outputs:
-                issues_command_results.outputs = [alert_to_issue(output) for output in issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = [alert_to_issue(output) for output in
+                                                  issues_command_results.outputs]  # type: ignore[attr-defined,arg-type]
 
             # Apply output_keys filtering if specified
             if output_keys and issues_command_results.outputs:
-                issues_command_results.outputs = filter_context_fields(output_keys, issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
+                issues_command_results.outputs = filter_context_fields(output_keys,
+                                                                       issues_command_results.outputs)  # type: ignore[attr-defined,arg-type]
 
             return_results(issues_command_results)
 
