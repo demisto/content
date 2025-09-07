@@ -1,6 +1,5 @@
 import demistomock as demisto
 import urllib3
-import sys
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
@@ -76,89 +75,49 @@ PERMISSIONS_TO_COMMANDS = {
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
-    "acr_update": [
-        "Microsoft.ContainerRegistry/registries/read",
-        "Microsoft.ContainerRegistry/registries/write"
-    ],
-    "cosmos_db_update": [
-        "Microsoft.DocumentDB/databaseAccounts/read",
-        "Microsoft.DocumentDB/databaseAccounts/write"
-    ],
-    "disk-update": [
-        "Microsoft.Compute/disks/read",
-        "Microsoft.Compute/disks/write"
-    ],
-    "update_key_vault_request": [
-        "Microsoft.KeyVault/vaults/read",
-        "Microsoft.KeyVault/vaults/write"
-    ],
-    "monitor_log_profile_update": [
-        "Microsoft.Insights/logprofiles/read",
-        "Microsoft.Insights/logprofiles/write"
-    ],
+    "acr_update": ["Microsoft.ContainerRegistry/registries/read", "Microsoft.ContainerRegistry/registries/write"],
+    "cosmos_db_update": ["Microsoft.DocumentDB/databaseAccounts/read", "Microsoft.DocumentDB/databaseAccounts/write"],
+    "disk-update": ["Microsoft.Compute/disks/read", "Microsoft.Compute/disks/write"],
+    "update_key_vault_request": ["Microsoft.KeyVault/vaults/read", "Microsoft.KeyVault/vaults/write"],
+    "monitor_log_profile_update": ["Microsoft.Insights/logprofiles/read", "Microsoft.Insights/logprofiles/write"],
     "flexible_server_param_set": [
         "Microsoft.DBforMySQL/flexibleServers/configurations/read",
-        "Microsoft.DBforMySQL/flexibleServers/configurations/write"
+        "Microsoft.DBforMySQL/flexibleServers/configurations/write",
     ],
-    "list_networks_interfaces_request": [
-        "Microsoft.Network/networkInterfaces/read"
-    ],
-    "list_public_ip_addresses_request": [
-        "Microsoft.Network/publicIPAddresses/read"
-    ],
-    "list_resource_groups_request": [
-        "Microsoft.Resources/subscriptions/resourceGroups/read"
-    ],
-    "list_network_security_groups": [
-        "Microsoft.Network/networkSecurityGroups/read"
-    ],
+    "list_networks_interfaces_request": ["Microsoft.Network/networkInterfaces/read"],
+    "list_public_ip_addresses_request": ["Microsoft.Network/publicIPAddresses/read"],
+    "list_resource_groups_request": ["Microsoft.Resources/subscriptions/resourceGroups/read"],
+    "list_network_security_groups": ["Microsoft.Network/networkSecurityGroups/read"],
     "create_or_update_rule": [
         "Microsoft.Network/networkSecurityGroups/securityRules/read",
-        "Microsoft.Network/networkSecurityGroups/securityRules/write"
+        "Microsoft.Network/networkSecurityGroups/securityRules/write",
     ],
-    "delete_rule": [
-        "Microsoft.Network/networkSecurityGroups/securityRules/delete"
-    ],
+    "delete_rule": ["Microsoft.Network/networkSecurityGroups/securityRules/delete"],
     "create_policy_assignment": [
         "Microsoft.Authorization/policyAssignments/read",
-        "Microsoft.Authorization/policyAssignments/write"
+        "Microsoft.Authorization/policyAssignments/write",
     ],
     "set_postgres_config": [
         "Microsoft.DBforPostgreSQL/servers/configurations/read",
-        "Microsoft.DBforPostgreSQL/servers/configurations/write"
+        "Microsoft.DBforPostgreSQL/servers/configurations/write",
     ],
-    "postgres_server_update": [
-        "Microsoft.DBforPostgreSQL/servers/read",
-        "Microsoft.DBforPostgreSQL/servers/write"
-    ],
+    "postgres_server_update": ["Microsoft.DBforPostgreSQL/servers/read", "Microsoft.DBforPostgreSQL/servers/write"],
     "sql_db_threat_policy_update": [
         "Microsoft.Sql/servers/databases/securityAlertPolicies/read",
-        "Microsoft.Sql/servers/databases/securityAlertPolicies/write"
+        "Microsoft.Sql/servers/databases/securityAlertPolicies/write",
     ],
     "sql_db_tde_set": [
         "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
-        "Microsoft.Sql/servers/databases/transparentDataEncryption/write"
+        "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     ],
-    "storage_account_update_request": [
-        "Microsoft.Storage/storageAccounts/read",
-        "Microsoft.Storage/storageAccounts/write"
-    ],
+    "storage_account_update_request": ["Microsoft.Storage/storageAccounts/read", "Microsoft.Storage/storageAccounts/write"],
     "storage_blob_service_properties_set_request": [
         "Microsoft.Storage/storageAccounts/blobServices/read",
-        "Microsoft.Storage/storageAccounts/blobServices/write"
+        "Microsoft.Storage/storageAccounts/blobServices/write",
     ],
-    "update_webapp_auth": [
-        "Microsoft.Web/sites/config/read",
-        "Microsoft.Web/sites/config/write"
-    ],
-    "set_webapp_config": [
-        "Microsoft.Web/sites/config/read",
-        "Microsoft.Web/sites/config/write"
-    ],
-    "webapp_update": [
-        "Microsoft.Web/sites/read",
-        "Microsoft.Web/sites/write"
-    ]
+    "update_webapp_auth": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
+    "set_webapp_config": ["Microsoft.Web/sites/config/read", "Microsoft.Web/sites/config/write"],
+    "webapp_update": ["Microsoft.Web/sites/read", "Microsoft.Web/sites/write"],
 }
 
 REQUIRED_ROLE_PERMISSIONS = [
@@ -293,7 +252,13 @@ class AzureClient:
         )
 
     def handle_azure_error(
-        self, e: Exception, resource_name: str, resource_type: str, api_function_name: str, subscription_id: str = None, resource_group_name: str = None
+        self,
+        e: Exception,
+        resource_name: str,
+        resource_type: str,
+        api_function_name: str,
+        subscription_id: str = None,
+        resource_group_name: str = None,
     ) -> None:
         """
         Standardized error handling for Azure API calls
@@ -2299,7 +2264,7 @@ def nsg_security_groups_list_command(client: AzureClient, params: dict[str, Any]
         name="Network Security Groups",
         t=network_groups,
         headers=["name", "id", "type", "etag", "location"],
-        headerTransform=string_to_table_header
+        headerTransform=string_to_table_header,
     )
     return CommandResults(
         raw_response=response,
@@ -2345,12 +2310,7 @@ def nsg_security_rule_get_command(client: AzureClient, params: dict[str, Any], a
         headerTransform=pascalToSpace,
     )
 
-    return CommandResults(
-        outputs_prefix="Azure.NSGRule",
-        outputs_key_field="id",
-        outputs=rule,
-        readable_output=hr
-    )
+    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
 
 
 def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -2424,19 +2384,9 @@ def nsg_security_rule_create_command(client: AzureClient, params: dict[str, Any]
 
     rule["etag"] = rule.get("etag", "")[3:-1]
 
-    hr = tableToMarkdown(
-        name=f"Rules {security_rule_name}",
-        t=rule,
-        removeNull=True,
-        headerTransform=pascalToSpace
-    )
+    hr = tableToMarkdown(name=f"Rules {security_rule_name}", t=rule, removeNull=True, headerTransform=pascalToSpace)
 
-    return CommandResults(
-        outputs_prefix="Azure.NSGRule",
-        outputs_key_field="id",
-        outputs=rule,
-        readable_output=hr
-    )
+    return CommandResults(outputs_prefix="Azure.NSGRule", outputs_key_field="id", outputs=rule, readable_output=hr)
 
 
 def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:

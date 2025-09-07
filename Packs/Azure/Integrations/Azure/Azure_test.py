@@ -1140,7 +1140,7 @@ def test_azure_client_handle_azure_error_404(mocker, client):
             resource_type=resource_type,
             api_function_name="test",
             subscription_id=subscription_id,
-            resource_group_name=resource_group_name
+            resource_group_name=resource_group_name,
         )
 
     assert 'Storage Account "test-resource"' in str(excinfo.value)
@@ -1197,9 +1197,9 @@ def test_azure_client_handle_azure_error_using_return_multiple_permissions_error
     """
     from Azure import AzureClient
 
-    mock_get_permissions_from_api = mocker.patch('Azure.get_permissions_from_api_function_name')
-    mock_get_permissions_from_required = mocker.patch('Azure.get_permissions_from_required_role_permissions_list')
-    mock_return_multiple_permissions_error = mocker.patch('Azure.return_multiple_permissions_error')
+    mock_get_permissions_from_api = mocker.patch("Azure.get_permissions_from_api_function_name")
+    mock_get_permissions_from_required = mocker.patch("Azure.get_permissions_from_required_role_permissions_list")
+    mock_return_multiple_permissions_error = mocker.patch("Azure.return_multiple_permissions_error")
     client = AzureClient("tenant_id", "client_id", "client_secret")
 
     # Test case 1: Permission found via API function mapping
@@ -1212,17 +1212,15 @@ def test_azure_client_handle_azure_error_using_return_multiple_permissions_error
         resource_name="test-nic",
         resource_type="Network Interface",
         api_function_name="list_networks_interfaces_request",
-        subscription_id="sub123"
+        subscription_id="sub123",
     )
 
     mock_get_permissions_from_api.assert_called_with("list_networks_interfaces_request", "403 forbidden: access denied")
     mock_get_permissions_from_required.assert_not_called()
 
-    expected_error_entries = [{
-        "account_id": "sub123",
-        "message": "403 forbidden: access denied",
-        "name": "Microsoft.Network/networkInterfaces/read"
-    }]
+    expected_error_entries = [
+        {"account_id": "sub123", "message": "403 forbidden: access denied", "name": "Microsoft.Network/networkInterfaces/read"}
+    ]
     mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
 
     mock_get_permissions_from_api.reset_mock()
@@ -1239,16 +1237,14 @@ def test_azure_client_handle_azure_error_using_return_multiple_permissions_error
         resource_name="test-storage",
         resource_type="Storage Account",
         api_function_name="storage_account_update_request",
-        subscription_id="sub456"
+        subscription_id="sub456",
     )
 
     mock_get_permissions_from_api.assert_called_with("storage_account_update_request", "401 unauthorized")
     mock_get_permissions_from_required.assert_called_with("401 unauthorized")
-    expected_error_entries = [{
-        "account_id": "sub456",
-        "message": "401 unauthorized",
-        "name": "Microsoft.Storage/storageAccounts/write"
-    }]
+    expected_error_entries = [
+        {"account_id": "sub456", "message": "401 unauthorized", "name": "Microsoft.Storage/storageAccounts/write"}
+    ]
     mock_return_multiple_permissions_error.assert_called_once_with(expected_error_entries)
 
 
@@ -2179,9 +2175,11 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert isinstance(result_all, CommandResults)
     assert len(result_all.outputs) == len(mock_response["value"])  # Should be 3 items
 
-    fqdn_values = [out.get("properties", {}).get("dnsSettings", {}).get("fqdn")
-                   for out in result_all.outputs
-                   if out.get("properties", {}).get("dnsSettings", {}).get("fqdn")]
+    fqdn_values = [
+        out.get("properties", {}).get("dnsSettings", {}).get("fqdn")
+        for out in result_all.outputs
+        if out.get("properties", {}).get("dnsSettings", {}).get("fqdn")
+    ]
 
     assert len(fqdn_values) == 2
     assert "testlbl.westus.cloudapp.azure.com" in fqdn_values
@@ -2270,11 +2268,7 @@ def test_nsg_resource_group_list_command(mocker):
     result: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
 
     # Check that client method was called with correct parameters including limit
-    mock_client.list_resource_groups_request.assert_called_with(
-        subscription_id="subscription1",
-        filter_by_tag="",
-        limit="1"
-    )
+    mock_client.list_resource_groups_request.assert_called_with(subscription_id="subscription1", filter_by_tag="", limit="1")
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.NSGResourceGroup"
@@ -2434,10 +2428,7 @@ def test_nsg_security_groups_list_command(mocker):
 
     result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
 
-    mock_client.list_network_security_groups.assert_called_once_with(
-        subscription_id="subid",
-        resource_group_name="rg1"
-    )
+    mock_client.list_network_security_groups.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "Azure.NSGSecurityGroup"
