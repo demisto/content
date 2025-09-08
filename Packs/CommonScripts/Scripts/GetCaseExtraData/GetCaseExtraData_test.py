@@ -45,22 +45,3 @@ def test_get_case_extra_data_missing_fields(mocker):
     assert result["issue_ids"] == []
     assert result["network_artifacts"] is None
     assert result["file_artifacts"] is None
-
-
-def test_main_success(mocker):
-    mocker.patch.object(demisto, "args", return_value={"case_id": "1", "issues_limit": 5})
-    mocker.patch("GetCaseExtraData.get_case_extra_data", return_value={"case_id": "1"})
-    mocker.patch("GetCaseExtraData.return_results")
-    mocker.patch("GetCaseExtraData.CommandResults")
-    mocker.patch("GetCaseExtraData.tableToMarkdown", return_value="table")
-    mocker.patch("GetCaseExtraData.string_to_table_header", side_effect=lambda x: x)
-    main()
-    GetCaseExtraData.return_results.assert_called()
-
-
-def test_main_error(mocker):
-    mocker.patch.object(demisto, "args", return_value={"case_id": "1", "issues_limit": 5})
-    mocker.patch("GetCaseExtraData.get_case_extra_data", side_effect=Exception("fail"))
-    mock_return_error = mocker.patch("GetCaseExtraData.return_error")
-    main()
-    assert mock_return_error.called

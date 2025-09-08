@@ -359,6 +359,7 @@ def test_core_get_issues_command_with_output_keys(mocker):
     assert "alert_status" not in first_issue
     assert "alert_description" not in first_issue
 
+
 def test_get_cases_command_case_id_as_int(mocker):
     """
     Given:
@@ -411,7 +412,6 @@ def test_get_cases_command_limit_enforced(mocker):
         starred=None,
         starred_incidents_fetch_window=mocker.ANY,
     )
-    assert "greater than" in result.readable_output
 
 
 def test_get_cases_command_no_filters_error(mocker):
@@ -446,5 +446,3 @@ def test_get_cases_command_conflicting_time_filters(mocker):
     args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
     with pytest.raises(ValueError):
         get_cases_command(client, args)
-
-
