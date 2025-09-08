@@ -114,6 +114,8 @@ class Client(BaseClient):
         demisto.setIntegrationContext({ACCESS_TOKEN_CONST: "access_token"})
         return
 
+        demisto.debug("prepare to create access token")
+
         headers = {"Accept": "application/json", "Content-Type": "application/x-www-form-urlencoded"}
 
         data = {"grant_type": "client_credentials", "client_id": self.client_id, "client_secret": self.client_secret}
@@ -126,18 +128,17 @@ class Client(BaseClient):
         demisto.setIntegrationContext({ACCESS_TOKEN_CONST: access_token})
         demisto.debug("access token created")
 
-    def get_operations(self, continuation_token=None):
+    def get_operations(self, search_date_option="LastMinute", continuation_token=None):
         # get access token value
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         if not access_token:
-            demisto.debug("prepare to create access token")
             self.request_access_token()
 
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
 
         # set request params
-        params = {"searchDateOption": "LastMinute", "limit": OPERATIONS_REQUEST_LIMIT, "async": "false"}
+        params = {"searchDateOption": search_date_option, "limit": OPERATIONS_REQUEST_LIMIT, "async": "false"}
         if continuation_token:
             params["continuationToken"] = continuation_token
 
@@ -151,16 +152,32 @@ class Client(BaseClient):
         }
 
         # TODO: remove
-        return RES_EXAMPLE
+        # return RES_EXAMPLE
+
+        response = self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/myself", ok_codes=[200, 202, 401])
+
+        demisto.info("Invalid bearer token")
+        if response.status_code == 401:
+            self.request_access_token()
+            access_token = integration_context.get(ACCESS_TOKEN_CONST)
+            headers["Authorization"] =  f"CwsAuth Bearer={access_token}",
+            return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/myself")
+        else:
+            return response
+
+
 
         demisto.info(f"Sending http request to get operations with {params=}")
-        return self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params)
+        response =  self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params, ok_codes=[200, 202, 401])
+        if response.status_code == 401:
+            return {}
+        return response
 
-    def get_operations_with_pagination(self, limit, continuation_token=None):
+    def get_operations_with_pagination(self, limit, search_date_option="LastMinute", continuation_token=None):
         operations: list[dict] = []
 
         while len(operations) <= limit:
-            raw_res = self.get_operations(continuation_token)
+            raw_res = self.get_operations(continuation_token, search_date_option)
             operations.extend(raw_res.get("Items", []))
             continuation_token = raw_res.get("ContinuationToken")
 
@@ -181,11 +198,12 @@ class Client(BaseClient):
 
 def get_events_command(client: Client, args: dict):  # type: ignore
     limit = args.get("limit", "100")
+    search_date_option = args.get("search_date_option", "LastMinute")
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
     demisto.debug(f"Running citrix-daas-get-events with {should_push_events=}")
 
-    operations, raw_res, _ = client.get_operations_with_pagination(int(limit))
+    operations, raw_res, _ = client.get_operations_with_pagination(limit=int(limit), search_date_option=search_date_option)
 
     results = CommandResults(
         outputs_prefix="CitrixDaas.Event",
@@ -203,7 +221,9 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    operations, _, continuation_token = client.get_operations_with_pagination(max_fetch, last_run.get("CONTINUATION_TOKEN_CONST"))
+    operations, _, continuation_token = client.get_operations_with_pagination(
+        limit=max_fetch, search_date_option="LastMinute", continuation_token=last_run.get(CONTINUATION_TOKEN_CONST)
+    )
     return operations, {CONTINUATION_TOKEN_CONST: continuation_token}
 
 
