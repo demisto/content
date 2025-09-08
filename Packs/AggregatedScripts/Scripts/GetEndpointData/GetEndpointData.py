@@ -644,7 +644,11 @@ def run_list_args_commands(
     """
     multiple_endpoint_outputs = []
     multiple_endpoint_readable_outputs: list[CommandResults] = []
-    command_args = {"endpoint_id": ",".join(endpoint_id), "endpoint_ip": ",".join(endpoint_ips), "endpoint_hostname": ",".join(endpoint_hostnames)}
+    command_args = {
+        "endpoint_id": ",".join(endpoint_id),
+        "endpoint_ip": ",".join(endpoint_ips),
+        "endpoint_hostname": ",".join(endpoint_hostnames),
+    }
 
     for command in list_args_commands:
         for arg_type, arg in command_args.items():
@@ -1157,10 +1161,10 @@ def main():  # pragma: no cover
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
             zipped_args, single_args_commands, command_runner, verbose, ir_mapping
         )
-        
+
         demisto.debug("preparing to convert endpoint mapping to list.")
         endpoint_outputs_single_commands.extend(list(ir_mapping.values()))
-        
+
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
 
