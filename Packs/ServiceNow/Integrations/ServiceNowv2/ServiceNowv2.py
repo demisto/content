@@ -3324,21 +3324,30 @@ def handle_missing_custom_state(client: Client, fields: dict, ticket_id: str, ti
     return result
 
 
-def set_default_fields(parsed_args: UpdateRemoteSystemArgs) -> UpdateRemoteSystemArgs:
+def set_default_fields(
+    parsed_args: UpdateRemoteSystemArgs, ticket_type: str, close_custom_state: Optional[str]
+) -> UpdateRemoteSystemArgs:
     """
     Set default closure fields of an incident if missing.
 
-    If the incident state is 7 (closed) or 6 (resolved), add default values for the close_code and close_notes fields
+    If the incident state is 7 (closed) or 6 (resolved), or the custom state is given and the ticket type is incident,
+    add default values for the close_code and close_notes fields
     if they are missing in the delta dictionary.
 
     Args:
         parsed_args (UpdateRemoteSystemArgs): The parsed arguments, containing the delta and other information.
+        ticket_type(str): The type of the ticket to update.
+        close_custom_state (Optional[str]): The custom state to use when closing the ticket.
 
     Returns:
         UpdateRemoteSystemArgs: The parsed arguments with default closure fields if they were missing.
     """
-    if parsed_args.delta.get("state") in {"7", "6"}:
-        demisto.debug("State is 7 or 6 - Setting default closure fields if missing")
+    state = parsed_args.delta.get("state")
+    if (state in {"7", "6"}) or (state == close_custom_state and ticket_type == "incident"):
+        demisto.debug(
+            f"State {state} is 7 or 6 or custom {close_custom_state} and ticket type is incident - Setting default "
+            f"closure fields if missing"
+        )
         parsed_args.delta = add_default_closure_fields_to_delta(parsed_args.delta)
     return parsed_args
 
@@ -3365,7 +3374,7 @@ def update_remote_system_on_incident_change(
     is_custom_close: bool = bool((parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state)
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
     parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
-    parsed_args = set_default_fields(parsed_args)
+    parsed_args = set_default_fields(parsed_args, ticket_type, close_custom_state)
     fields = get_ticket_fields(parsed_args.delta, ticket_type=ticket_type)
     demisto.debug(f"all fields= {fields}")
     if closure_case:
