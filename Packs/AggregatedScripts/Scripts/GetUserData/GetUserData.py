@@ -565,46 +565,49 @@ def run_list_users_command(
             risky_users_email_set.add(mail)
     if additional_fields:
         email_set.update(risky_users_email_set)
-    entry_context, _, readable_errors = run_execute_command(list_users_command.name, list_users_command.args)
-    readable_outputs_list.extend(readable_errors)
-    for output in entry_context:
-        output_key = get_output_key(f"{outputs_key_field}.User", output)
-        if isinstance(output, dict):
-            outputs = output.get(output_key, [])
-        else:
-            outputs = []
-        demisto.debug(f"found {len(outputs)} users")
-        for output in outputs:  # type: ignore[assignment]
-            if (mail := output.get("user_email", "")) and mail in email_set:
-                demisto.debug(f"found user with email: {mail}")
-                email_set.remove(mail)
-                found = False
-                for user in users:
-                    if (mail := user.get("Email")) and mail == output.get("user_email"):
-                        demisto.debug(f"found user with email in results from risky-users: {mail}")
-                        found = True
-                        if additional_fields:
-                            demisto.debug(f"adding additional fields to user with email: {mail}")
-                            output.pop("user_email")
-                            user["AdditionalFields"].update(output)
+    if email_set:
+        entry_context, _, readable_errors = run_execute_command(list_users_command.name, list_users_command.args)
+        readable_outputs_list.extend(readable_errors)
+        for output in entry_context:
+            output_key = get_output_key(f"{outputs_key_field}.User", output)
+            if isinstance(output, dict):
+                outputs = output.get(output_key, [])
+            else:
+                outputs = []
+            demisto.debug(f"found {len(outputs)} users")
+            for output in outputs:  # type: ignore[assignment]
+                if (mail := output.get("user_email", "")) and mail in email_set:
+                    demisto.debug(f"found user with email: {mail}")
+                    email_set.remove(mail)
+                    found = False
+                    for user in users:
+                        if (mail := user.get("Email")) and mail == output.get("user_email"):
+                            demisto.debug(f"found user with email in results from risky-users: {mail}")
+                            found = True
+                            if additional_fields:
+                                demisto.debug(f"adding additional fields to user with email: {mail}")
+                                output.pop("user_email")
+                                user["AdditionalFields"].update(output)
+                            break
+                    if not found:
+                        demisto.debug(f"User with {mail} was not found in previous results, creating new user.")
+                        user = create_user(
+                            source=list_users_command.brand,
+                            id=output.get("id"),
+                            risk_level=output.pop("risk_level", None),
+                            username=output.pop("id", None),
+                            instance=output.get("instance"),
+                            email_address=output.pop("user_email", None),
+                            **output,
+                            additional_fields=additional_fields,
+                        )
+                        user["Status"] = "found"
+                        users.append(user)
+                    if not email_set:
+                        demisto.debug("all given users were found, breaking")
                         break
-                if not found:
-                    demisto.debug(f"User with {mail} was not found in previous results, creating new user.")
-                    user = create_user(
-                        source=list_users_command.brand,
-                        id=output.get("id"),
-                        risk_level=output.pop("risk_level", None),
-                        username=output.pop("id", None),
-                        instance=output.get("instance"),
-                        email_address=output.pop("user_email", None),
-                        **output,
-                        additional_fields=additional_fields,
-                    )
-                    user["Status"] = "found"
-                    users.append(user)
-                if not email_set:
-                    demisto.debug("all given users were found, breaking")
-                    break
+    else:
+        demisto.debug("Did not recieve any email to search for, skipping list users command.")
     # Update the list of non found users.
     for mail in email_set:
         if mail not in risky_users_email_set:

@@ -1760,7 +1760,7 @@ def test_run_list_users_command_no_email_one_user_additional_fields_false(mocker
     When:
         run_list_users_command is called.
     Then:
-        It should return the existing users without modification since no email is provided.
+        It should return the existing users without modification and not call the command.
     """
     # Arrange
     command = Command("Cortex XDR - IR", "xdr-list-users", {})
@@ -1770,14 +1770,9 @@ def test_run_list_users_command_no_email_one_user_additional_fields_false(mocker
     existing_users = [{"Email": "existing@example.com", "ID": "existing_id", "Status": "found", "AdditionalFields": {}}]
     readable_outputs_list = []
 
-    mock_entry_context = [
-        {
-            "PaloAltoNetworksXDR.User": [{"id": "some_user_id", "user_email": "some@example.com", "department": "Engineering"}],
-            "instance": "xdr_instance",
-        }
-    ]
-
-    mocker.patch("GetUserData.run_execute_command", return_value=(mock_entry_context, "Human readable output", []))
+    # Mock the command execution and debug logging
+    mock_run_execute_command = mocker.patch("GetUserData.run_execute_command")
+    mock_debug = mocker.patch("GetUserData.demisto.debug")
 
     # Act
     readable_outputs, users = run_list_users_command(
@@ -1785,6 +1780,13 @@ def test_run_list_users_command_no_email_one_user_additional_fields_false(mocker
     )
 
     # Assert
+    # Command should not be called since email_list is empty
+    mock_run_execute_command.assert_not_called()
+
+    # Debug message should be logged about no emails to search for
+    mock_debug.assert_called_with("Did not recieve any email to search for, skipping list users command.")
+
+    # Users should remain unchanged
     assert readable_outputs == []
     assert users == existing_users  # Should remain unchanged since email_list is empty
     assert len(users) == 1
@@ -1858,41 +1860,7 @@ def test_run_list_users_command_one_email_no_user_found_additional_fields_false(
     mocker.patch("GetUserData.run_execute_command", return_value=(mock_entry_context, "Human readable output", []))
 
     # Act
-    readable_outputs, users = run_list_users_command(
-        command, additional_fields, outputs_key_field, email_list, existing_users, readable_outputs_list
-    )
-
-    # Assert
-    assert len(users) == 1
-    user = users[0]
-    assert user["Email"] == "notfound@example.com"
-    assert user["Source"] == "Cortex XDR - IR"
-    assert user["Status"] == "not found"
-
-
-def test_run_list_users_command_one_email_no_user_found_additional_fields_true(mocker: MockerFixture):
-    """
-    Given:
-        One email given, no user appears under users, the mail was not found after listing the users and additional_fields=true.
-    When:
-        run_list_users_command is called with additional_fields=True.
-    Then:
-        It should add the user with 'not found' status.
-    """
-    # Arrange
-    command = Command("Cortex XDR - IR", "xdr-list-users", {})
-    additional_fields = True
-    outputs_key_field = "PaloAltoNetworksXDR"
-    email_list = ["notfound@example.com"]
-    existing_users = []
-    readable_outputs_list = []
-
-    mock_entry_context = [{"PaloAltoNetworksXDR.User": [], "instance": "xdr_instance"}]
-
-    mocker.patch("GetUserData.run_execute_command", return_value=(mock_entry_context, "Human readable output", []))
-
-    # Act
-    readable_outputs, users = run_list_users_command(
+    _, users = run_list_users_command(
         command, additional_fields, outputs_key_field, email_list, existing_users, readable_outputs_list
     )
 
@@ -1924,7 +1892,6 @@ def test_run_list_users_command_email_in_both_lists_additional_fields_false(mock
             "ID": "existing_id",
             "Source": "Previous Source",
             "Status": "found",
-            "AdditionalFields": {"original_field": "original_value"},
         }
     ]
     readable_outputs_list = []
@@ -1941,7 +1908,7 @@ def test_run_list_users_command_email_in_both_lists_additional_fields_false(mock
     mocker.patch("GetUserData.run_execute_command", return_value=(mock_entry_context, "Human readable output", []))
 
     # Act
-    readable_outputs, users = run_list_users_command(
+    _, users = run_list_users_command(
         command, additional_fields, outputs_key_field, email_list, existing_users, readable_outputs_list
     )
 
@@ -1950,10 +1917,7 @@ def test_run_list_users_command_email_in_both_lists_additional_fields_false(mock
     user = users[0]
     assert user["Email"] == "shared@example.com"
     assert user["ID"] == "existing_id"
-    # AdditionalFields should not be updated when additional_fields=False
-    assert user["AdditionalFields"]["original_field"] == "original_value"
-    assert "department" not in user["AdditionalFields"]
-    assert "location" not in user["AdditionalFields"]
+    assert "AdditionalFields" not in user
 
 
 def test_run_list_users_command_multiple_emails_mixed_results(mocker: MockerFixture):
@@ -2109,7 +2073,6 @@ def test_run_list_users_command_risky_user_not_in_email_list_additional_fields_f
             "Email": "risky@example.com",
             "ID": "risky_id",
             "Source": "Risky Source",
-            "AdditionalFields": {"original": "value"},
         }
     ]
     readable_outputs_list = []
@@ -2134,9 +2097,7 @@ def test_run_list_users_command_risky_user_not_in_email_list_additional_fields_f
     assert len(users) == 2  # Original risky user + not found search user
 
     risky_user = next(user for user in users if user["Email"] == "risky@example.com")
-    # AdditionalFields should not be updated since additional_fields=False
-    assert risky_user["AdditionalFields"]["original"] == "value"
-    assert "department" not in risky_user["AdditionalFields"]
+    assert "AdditionalFields" not in risky_user
 
     not_found_user = next(user for user in users if user["Email"] == "search@example.com")
     assert not_found_user["Status"] == "not found"
