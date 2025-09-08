@@ -1,4 +1,5 @@
-from GetCaseExtraData import extract_ids, get_case_extra_data
+from GetCaseExtraData import extract_ids, get_case_extra_data, main
+import demistomock as demisto
 
 
 def test_extract_ids_dict():
@@ -70,3 +71,19 @@ def test_get_case_extra_data_missing_fields(mocker):
     assert result["issue_ids"] == []
     assert result["network_artifacts"] is None
     assert result["file_artifacts"] is None
+
+
+def test_main_success(mocker):
+    mocker.patch("demistomock.args", return_value={"case_id": "1", "issues_limit": "10"})
+    mocker.patch("GetCaseExtraData.get_case_extra_data", return_value={"case_id": "1"})
+    mocker.patch("GetCaseExtraData.return_results")
+    main()
+    GetCaseExtraData.return_results.assert_called()
+
+
+def test_main_error(mocker):
+    mocker.patch("demistomock.args", return_value={"case_id": "1", "issues_limit": "10"})
+    mocker.patch("GetCaseExtraData.get_case_extra_data", side_effect=Exception("fail"))
+    mocker.patch("GetCaseExtraData.return_error")
+    main()
+    GetCaseExtraData.return_error.assert_called()
