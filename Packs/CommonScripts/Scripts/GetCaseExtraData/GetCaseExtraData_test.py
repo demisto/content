@@ -125,9 +125,9 @@ def test_main_success(mocker):
     """
     mocker.patch("demistomock.args", return_value={"case_id": "1", "issues_limit": "10"})
     mocker.patch("GetCaseExtraData.get_case_extra_data", return_value={"case_id": "1"})
-    mocker.patch("GetCaseExtraData.return_results")
+    mocked_return_results = mocker.patch("GetCaseExtraData.return_results")
     main()
-    GetCaseExtraData.return_results.assert_called()
+    mocked_return_results.assert_called()
 
 
 def test_main_error(mocker):
@@ -138,6 +138,6 @@ def test_main_error(mocker):
     """
     mocker.patch("demistomock.args", return_value={"case_id": "1", "issues_limit": "10"})
     mocker.patch("GetCaseExtraData.get_case_extra_data", side_effect=Exception("fail"))
-    mocker.patch("GetCaseExtraData.return_error")
+    mocked_return_error = mocker.patch("GetCaseExtraData.return_error")
     main()
-    GetCaseExtraData.return_error.assert_called()
+    mocked_return_error.assert_called()

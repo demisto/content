@@ -97,11 +97,20 @@ def test_main_success(mocker):
     """
     mock_args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00", "page_size": 5}
     mocker.patch("demistomock.args", return_value=mock_args.copy())
-    mocker.patch("demistomock.executeCommand", return_value=[{"EntryContext": {"Core.Case": [{"case_id": "1"}]}, "HumanReadable": "ok"}])
+    mocker.patch(
+        "demistomock.executeCommand",
+        return_value=[
+            {
+                "EntryContext": {"Core.Case": [{"case_id": "1"}]},
+                "HumanReadable": "ok",
+                "Type": 1,
+            }
+        ],
+    )
     mocker.patch("SearchCases.prepare_start_end_time")
-    mocker.patch("SearchCases.return_results")
+    mocked_return_results = mocker.patch("SearchCases.return_results")
     main()
-    SearchCases.return_results.assert_called()
+    mocked_return_results.assert_called()
 
 
 def test_main_error(mocker):
@@ -112,10 +121,25 @@ def test_main_error(mocker):
     """
     mock_args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00", "page_size": 5}
     mocker.patch("demistomock.args", return_value=mock_args.copy())
-    mocker.patch("demistomock.executeCommand", return_value=[{"Type": 4, "ContentsFormat": "text", "Contents": "error", "HumanReadable": "fail", "EntryContext": {}, "ModuleName": "", "Brand": "", "ID": "", "FileID": ""}])
+    mocker.patch(
+        "demistomock.executeCommand",
+        return_value=[
+            {
+                "Type": 4,
+                "ContentsFormat": "text",
+                "Contents": "error",
+                "HumanReadable": "fail",
+                "EntryContext": {},
+                "ModuleName": "",
+                "Brand": "",
+                "ID": "",
+                "FileID": "",
+            }
+        ],
+    )
     mocker.patch("SearchCases.prepare_start_end_time")
-    mocker.patch("SearchCases.return_error")
+    mocked_return_error = mocker.patch("SearchCases.return_error")
     mocker.patch("SearchCases.is_error", return_value=True)
     mocker.patch("SearchCases.get_error", return_value="fail")
     main()
-    SearchCases.return_error.assert_called()
+    mocked_return_error.assert_called()
