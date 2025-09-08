@@ -24,13 +24,13 @@ configuration:
   - Custom
   advanced: true
   required: false
-- display: ID
+- displaypassword: ID
   name: _auth_id
   type: 9
   hiddenusername: true
   section: Connect
   required: false
-- display: Token
+- displaypassword: Token
   name: _tenant_id
   type: 9
   hiddenusername: true
