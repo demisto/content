@@ -1447,7 +1447,7 @@ script:
       name: lastUpdate
     description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
     name: get-modified-remote-data
-  - name: qradar-debug-snapshot
+  - name: qradar-print-context
     description: Returns a redacted snapshot of integration context metrics (queued, in-progress, finished, meta sizes, concurrent active, samples count). This command is intended for debugging purposes and may return sensitive data.
     outputs:
     - contextPath: QRadar.Debug.snapshot.queried_count

@@ -2366,14 +2366,14 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
-### qradar-debug-snapshot
+### qradar-print-context
 
 ***
 Returns a redacted snapshot of integration context metrics (queued, in-progress, finished, meta sizes, concurrent active, samples count). This command is intended for debugging purposes and may return sensitive data.
 
 #### Base Command
 
-`qradar-debug-snapshot`
+`qradar-print-context`
 
 #### Input
 

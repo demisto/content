@@ -5388,7 +5388,7 @@ def migrate_integration_ctx(ctx: dict) -> dict:
     }
 
 
-def qradar_debug_snapshot_command() -> CommandResults:
+def qradar_print_context_command() -> CommandResults:
     """Returns a redacted snapshot of integration context metrics for debugging.
 
     Returns:
@@ -5684,8 +5684,8 @@ def main() -> None:  # pragma: no cover
         elif command == "qradar-log-source-update":
             return_results(qradar_log_source_update_command(client, args))
 
-        elif command == "qradar-debug-snapshot":
-            return_results(qradar_debug_snapshot_command())
+        elif command == "qradar-print-context":
+            return_results(qradar_print_context_command())
 
         else:
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
