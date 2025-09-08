@@ -152,26 +152,21 @@ class Client(BaseClient):
         }
 
         # TODO: remove
-        # return RES_EXAMPLE
+        return RES_EXAMPLE
 
-        response = self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/myself", ok_codes=[200, 202, 401])
+        demisto.info(f"Sending http request to get operations with {params=}")
+        response = self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params, ok_codes=[200, 202, 401])
 
-        demisto.info("Invalid bearer token")
         if response.status_code == 401:
+            demisto.info("Invalid bearer token")
             self.request_access_token()
             access_token = integration_context.get(ACCESS_TOKEN_CONST)
             headers["Authorization"] =  f"CwsAuth Bearer={access_token}",
-            return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/myself")
+            demisto.info(f"Sending http request to get operations with {params=}")
+            return self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params)
         else:
             return response
 
-
-
-        demisto.info(f"Sending http request to get operations with {params=}")
-        response =  self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params, ok_codes=[200, 202, 401])
-        if response.status_code == 401:
-            return {}
-        return response
 
     def get_operations_with_pagination(self, limit, search_date_option="LastMinute", continuation_token=None):
         operations: list[dict] = []
