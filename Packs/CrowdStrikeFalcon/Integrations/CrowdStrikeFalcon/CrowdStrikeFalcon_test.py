@@ -6379,6 +6379,15 @@ class TestCSFalconResolveIdentityDetectionCommand:
         assert "Mobile Detection(s) 1, 2 were successfully updated" in command_results.readable_output
 
     def test_handle_resolve_detections(self, mocker: MockerFixture):
+        """
+        Given:
+            - Arguments for the handle_resolve_detections function.
+        When:
+            - Calling the handle_resolve_detections function.
+        Then:
+            - Verify that the http_request function is called once with the correct arguments.
+            - Validate the error message when assigning both assign_to_name and assign_to_user_id.
+        """
         from CrowdStrikeFalcon import handle_resolve_detections
 
         http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
