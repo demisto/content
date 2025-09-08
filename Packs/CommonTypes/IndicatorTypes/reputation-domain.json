@@ -1,5 +1,5 @@
-[{
-    "id": "domainRepUnified_copy",
+{
+    "id": "domainRepUnified",
     "version": -1,
     "fromVersion": "5.5.0",
     "modified": "2021-02-28T15:07:20.215835509Z",
@@ -565,4 +565,4 @@
   "fileHashesPriority": null,
   "expiration": 20160,
   "layout": "domainRepUnified"
-}]
+}
