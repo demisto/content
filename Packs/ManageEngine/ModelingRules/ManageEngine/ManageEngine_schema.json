@@ -36,6 +36,10 @@
         "type": "string",
         "is_array": false
       },
+      "userName": {
+        "type": "string",
+        "is_array": false
+      },
       "remarks": {
         "type": "string",
         "is_array": false
