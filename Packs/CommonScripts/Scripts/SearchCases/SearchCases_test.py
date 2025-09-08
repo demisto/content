@@ -2,8 +2,7 @@ import pytest
 from datetime import datetime
 from CommonServerPython import DemistoException
 from SearchCases import prepare_start_end_time, main
-import demistomock as demisto
-from CommonServerPython import CommandResults
+
 
 def test_prepare_start_end_time_normal(monkeypatch):
     args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00"}
@@ -59,7 +58,9 @@ def test_prepare_start_end_time_relative(monkeypatch):
 def test_main_success(mocker):
     mock_args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00", "page_size": 5}
     mocker.patch("demistomock.args", return_value=mock_args.copy())
-    mocker.patch("demistomock.executeCommand", return_value=[{"EntryContext": {"Core.Case": [{"case_id": "1"}]}, "HumanReadable": "ok"}])
+    mocker.patch(
+        "demistomock.executeCommand", return_value=[{"EntryContext": {"Core.Case": [{"case_id": "1"}]}, "HumanReadable": "ok"}]
+    )
     mocker.patch("SearchCases.prepare_start_end_time")
     mocker.patch("SearchCases.return_results")
     main()
@@ -69,7 +70,22 @@ def test_main_success(mocker):
 def test_main_error(mocker):
     mock_args = {"start_time": "2025-09-01T12:00:00", "end_time": "2025-09-02T13:00:00", "page_size": 5}
     mocker.patch("demistomock.args", return_value=mock_args.copy())
-    mocker.patch("demistomock.executeCommand", return_value=[{"Type": 4, "ContentsFormat": "text", "Contents": "error", "HumanReadable": "fail", "EntryContext": {}, "ModuleName": "", "Brand": "", "ID": "", "FileID": ""}])
+    mocker.patch(
+        "demistomock.executeCommand",
+        return_value=[
+            {
+                "Type": 4,
+                "ContentsFormat": "text",
+                "Contents": "error",
+                "HumanReadable": "fail",
+                "EntryContext": {},
+                "ModuleName": "",
+                "Brand": "",
+                "ID": "",
+                "FileID": "",
+            }
+        ],
+    )
     mocker.patch("SearchCases.prepare_start_end_time")
     mocker.patch("SearchCases.return_error")
     mocker.patch("SearchCases.is_error", return_value=True)
