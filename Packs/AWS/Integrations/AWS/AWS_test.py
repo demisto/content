@@ -825,7 +825,7 @@ def test_ec2_modify_snapshot_permission_command_success(mocker):
 
     result = EC2.modify_snapshot_permission_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert "permissions was successfully updated" in result.readable_output
+    assert "permissions were successfully updated" in result.readable_output
     mock_client.modify_snapshot_attribute.assert_called_once_with(
         Attribute="createVolumePermission",
         SnapshotId="snap-1234567890abcdef0",

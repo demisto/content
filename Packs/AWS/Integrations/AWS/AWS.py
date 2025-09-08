@@ -1007,8 +1007,6 @@ class EC2:
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
 
-        return CommandResults(readable_output="Failed to create snapshot")
-
     @staticmethod
     def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         group_names = argToList(args.get("group_names"))
@@ -1028,12 +1026,10 @@ class EC2:
             )
             if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
                 AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions was successfully updated.")
+            return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
 
         except ClientError as err:
             AWSErrorHandler.handle_client_error(err, args.get("account_id"))
-
-        return CommandResults(readable_output="Failed to modify snapshot permissions")
 
 
 class EKS:
