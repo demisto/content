@@ -23,3 +23,33 @@ def test_prepare_start_end_time_only_start(monkeypatch):
     prepare_start_end_time(args)
     assert "gte_creation_time" in args
     assert "lte_creation_time" in args
+
+
+def test_prepare_start_end_time_both_empty():
+    args = {}
+    prepare_start_end_time(args)
+    assert "gte_creation_time" not in args
+    assert "lte_creation_time" not in args
+
+
+def test_prepare_start_end_time_unparseable():
+    args = {"start_time": "not-a-date", "end_time": "also-not-a-date"}
+    prepare_start_end_time(args)
+    assert "gte_creation_time" not in args
+    assert "lte_creation_time" not in args
+
+
+def test_prepare_start_end_time_only_end():
+    args = {"end_time": "2025-09-02T13:00:00"}
+    try:
+        prepare_start_end_time(args)
+    except DemistoException as e:
+        assert "start_time must be provided" in str(e)
+
+
+def test_prepare_start_end_time_relative(monkeypatch):
+    # Simulate relative time with dateparser
+    args = {"start_time": "1 day ago", "end_time": "now"}
+    prepare_start_end_time(args)
+    assert "gte_creation_time" in args
+    assert "lte_creation_time" in args
