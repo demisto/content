@@ -1,6 +1,6 @@
 id: FireEye ETP - Indicators Hunting
 version: -1
-name: Trellix Email Security - Cloud - Indicators Hunting
+name: Trellix Email Security Cloud - Indicators Hunting
 description: |-
   This playbook queries Trellix Email Security - Cloud for indicators such as domains, IP addresses, sender and recipient email addresses.
   Separate searches are conducted for each type of indicator in the playbook.
