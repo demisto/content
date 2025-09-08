@@ -1,4 +1,4 @@
-Retrieves cases based on the provided filters.
+Retrieves extra data fields of a specific case including issues and key artifacts.
 
 ## Script Data
 
@@ -16,7 +16,6 @@ This script uses the following commands and scripts.
 
 * Cortex Core - Platform
 * core-get-case-extra-data
-* core-get-cases
 
 ## Inputs
 
@@ -24,19 +23,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved. |
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved. |
-| lte_modification_time | Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. |
-| gte_modification_time | Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. |
-| case_id_list | An array or CSV string of case IDs. |
-| since_creation_time | Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. |
-| since_modification_time | Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. |
-| sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified \("asc" - ascending, "desc" - descending\). |
-| sort_by_creation_time | Sorts returned cases by the date/time that the case was created \("asc" - ascending, "desc" - descending\). |
-| page | Page number \(for pagination\). The default is 0 \(the first page\). |
-| limit | Maximum number of cases to return per page. The default is 45 and maximum is 100. To avoid rate limits, use a lower limit or increase the script.timeout value https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.9/Cortex-XSOAR-Administrator-Guide/Automation-Server-Configurations. |
-| status | Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. |
-| starred | Whether the case is starred \(Boolean value: true or false\). |
+| case_id | An array or CSV string of case IDs. |
 | issues_limit | Maximum number of issues to return per case. The default and maximum is 1000. |
 
 ## Outputs
@@ -45,26 +32,55 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Core.Case.case_id | Unique ID assigned to each returned case. | String |
-| Core.Case.manual_severity | Case severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high". | String |
-| Core.Case.manual_description | Case description provided by the user. | String |
-| Core.Case.assigned_user_mail | Email address of the assigned user. | String |
-| Core.Case.high_severity_issue_count | Number of issues with the severity HIGH. | String |
-| Core.Case.host_count | Number of hosts involved in the case. | number |
-| Core.Case.xdr_url | A link to the case view on Cortex XDR. | String |
-| Core.Case.assigned_user_pretty_name | Full name of the user assigned to the case. | String |
-| Core.Case.issue_count | Total number of issues in the case. | number |
-| Core.Case.med_severity_issue_count | Number of issues with the severity MEDIUM. | number |
-| Core.Case.user_count | Number of users involved in the case. | number |
-| Core.Case.severity | Calculated severity of the case. Valid values are:<br/>"low","medium","high". | String |
-| Core.Case.low_severity_issue_count | Number of issues with the severity LOW. | String |
-| Core.Case.status | Current status of the case. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".<br/> | String |
-| Core.Case.description | Dynamic calculated description of the case. | String |
-| Core.Case.resolve_comment | Comments entered by the user when the case was resolved. | String |
-| Core.Case.notes | Comments entered by the user regarding the case. | String |
-| Core.Case.creation_time | Date and time the case was created on Cortex XDR. | date |
-| Core.Case.detection_time | Date and time that the first issue occurred in the case. | date |
-| Core.Case.modification_time | Date and time that the case was last modified. | date |
-| Core.Case.issue_ids | List of unique issue identifiers associated with the case. | date |
-| Core.Case.network_artifacts | Network-related artifacts associated with the case. | date |
-| Core.Case.file_artifacts | File-related artifacts associated with the case. | date |
+| Core.CaseExtraData.case_id | The unique identifier for the case. | String |
+| Core.CaseExtraData.case_name | The name assigned to the case. | String |
+| Core.CaseExtraData.creation_time | The timestamp \(in epoch format\) when the case was created. | Number |
+| Core.CaseExtraData.modification_time | The timestamp \(in epoch format\) when the case was last modified. | Number |
+| Core.CaseExtraData.detection_time | The timestamp when the activity related to the case was first detected. | String |
+| Core.CaseExtraData.status | The current status of the case \(e.g., 'new', 'under_investigation', 'closed'\). | String |
+| Core.CaseExtraData.severity | The severity level of the case \(e.g., 'low', 'medium', 'high', 'critical'\). | String |
+| Core.CaseExtraData.description | A detailed textual description of the case. | String |
+| Core.CaseExtraData.assigned_user_mail | The email address of the user assigned to the case. | String |
+| Core.CaseExtraData.assigned_user_pretty_name | The display name of the user assigned to the case. | String |
+| Core.CaseExtraData.issue_count | The total number of issues associated with the case. | Number |
+| Core.CaseExtraData.low_severity_issue_count | The total number of low-severity issues within the case. | Number |
+| Core.CaseExtraData.med_severity_issue_count | The total number of medium-severity issues within the case. | Number |
+| Core.CaseExtraData.high_severity_issue_count | The total number of high-severity issues within the case. | Number |
+| Core.CaseExtraData.critical_severity_issue_count | The total number of critical-severity issues within the case. | Number |
+| Core.CaseExtraData.user_count | The number of unique users involved in the case. | Number |
+| Core.CaseExtraData.host_count | The number of unique hosts involved in the case. | Number |
+| Core.CaseExtraData.notes | A collection of notes or comments added to the case by analysts. | Array |
+| Core.CaseExtraData.resolve_comment | The comment entered by a user when resolving the case. | String |
+| Core.CaseExtraData.manual_severity | The severity level manually set by a user, which may override the calculated severity for the case. | String |
+| Core.CaseExtraData.manual_description | A description of the case that was manually entered by a user. | String |
+| Core.CaseExtraData.xdr_url | The direct URL to view the case in the XDR platform. | String |
+| Core.CaseExtraData.starred | A flag indicating whether the case has been starred or marked as a favorite. | Boolean |
+| Core.CaseExtraData.hosts | A comma-separated list of hostnames involved in the case. | Array |
+| Core.CaseExtraData.case_sources | The products or sources that contributed issues to this case \(e.g., 'XDR Agent', 'Firewall'\). | String |
+| Core.CaseExtraData.rule_based_score | The case's risk score as calculated by automated detection rules. | Number |
+| Core.CaseExtraData.manual_score | A risk score manually assigned to the case by a user. | Number |
+| Core.CaseExtraData.wildfire_hits | The number of times a file associated with this case was identified as malicious by WildFire. | Number |
+| Core.CaseExtraData.issues_grouping_status | The current status of the issue grouping or clustering process for this case. | String |
+| Core.CaseExtraData.mitre_techniques_ids_and_names | A list of MITRE ATT&amp;CK technique IDs and names observed in the case. | Array |
+| Core.CaseExtraData.mitre_tactics_ids_and_names | A list of MITRE ATT&amp;CK tactic IDs and names observed in the case. | Array |
+| Core.CaseExtraData.issue_categories | A comma-separated list of categories for the issues included in the case. | String |
+| Core.CaseExtraData.issue_ids | Ids of related issues. | Array |
+| Core.CaseExtraData.network_artifacts.total_count | The total number of network artifacts associated with the case. | Number |
+| Core.CaseExtraData.network_artifacts.data.type | The type of network artifact \(e.g., 'IP Address', 'Domain'\). | String |
+| Core.CaseExtraData.network_artifacts.data.issue_count | The number of issues in the case that involve this network artifact. | Number |
+| Core.CaseExtraData.network_artifacts.data.is_manual | A flag indicating if the network artifact was added manually by a user. | Boolean |
+| Core.CaseExtraData.network_artifacts.data.network_domain | The domain name of the network artifact. | String |
+| Core.CaseExtraData.network_artifacts.data.network_remote_ip | The remote IP address of the network artifact. | String |
+| Core.CaseExtraData.network_artifacts.data.network_remote_port | The remote port number of the network artifact. | String |
+| Core.CaseExtraData.network_artifacts.data.network_country | The country associated with the network artifact's IP address. | String |
+| Core.CaseExtraData.file_artifacts.total_count | The total number of file artifacts associated with the case. | Number |
+| Core.CaseExtraData.file_artifacts.data.issue_count | The number of issues in the case that involve this file artifact. | Number |
+| Core.CaseExtraData.file_artifacts.data.file_name | The name of the file artifact. | String |
+| Core.CaseExtraData.file_artifacts.data.File_sha256 | The SHA256 hash of the file artifact. | String |
+| Core.CaseExtraData.file_artifacts.data.file_signature_status | The digital signature status of the file artifact. | String |
+| Core.CaseExtraData.file_artifacts.data.file_wildfire_verdict | The verdict from WildFire for this file \(e.g., 'malicious', 'benign'\). | String |
+| Core.CaseExtraData.file_artifacts.data.is_malicous | A flag indicating whether the file artifact is considered malicious. | Boolean |
+| Core.CaseExtraData.file_artifacts.data.is_manual | A flag indicating if the file artifact was added manually by a user. | Boolean |
+| Core.CaseExtraData.file_artifacts.data.is_process | A flag indicating if the file artifact is a process executable. | Boolean |
+| Core.CaseExtraData.file_artifacts.data.low_confidence | A flag indicating if the verdict on the file artifact has low confidence. | Boolean |
+| Core.CaseExtraData.file_artifacts.data.type | The type of the file artifact. | String |
