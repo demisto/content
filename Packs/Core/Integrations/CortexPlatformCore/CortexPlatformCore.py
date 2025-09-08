@@ -97,7 +97,7 @@ class Client(CoreClient):
         Performs basic get request to get item samples
         """
         try:
-            self._http_request(method="POST", headers=self._headers, url_suffix="/unified-asset-inventory/get_asset_counts/")
+            self.get_endpoints(limit=1)
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
