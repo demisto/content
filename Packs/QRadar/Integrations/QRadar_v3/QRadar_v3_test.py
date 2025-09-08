@@ -2360,3 +2360,102 @@ def test_is_incident_size_acceptable_false():
         result = QRadar_v3.is_incident_size_acceptable(large_incident)
         assert result is False
         assert any("exceeds maximum sample size" in call.args[0] for call in mock_debug.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "current_samples, new_samples, expected_samples",
+    [
+        pytest.param(
+            ["sample1", "sample2"],
+            ["sample3", "sample4"],
+            ["sample1", "sample2"],
+            id="Two new samples with two existing samples",
+        ),
+        pytest.param(
+            [],
+            ["sample3", "sample4", "sample5"],
+            ["sample3", "sample4"],
+            id="No new samples with existing samples list",
+        ),
+        pytest.param(
+            '["sample1"]',
+            ["sample2", "sample3", "sample4"],
+            ["sample2", "sample3"],
+            id="Handling legacy string format",
+        ),
+        pytest.param(
+            ["sample1"],
+            ["sample2"],
+            ["sample1", "sample2"],
+            id="One new sample with one existing sample",
+        ),
+        pytest.param(
+            [],
+            [],
+            [],
+            id="No samples",
+        ),
+    ],
+)
+def test_merge_samples(current_samples: list, new_samples: list, expected_samples: list):
+    """
+    Given samples in the existing integration contex and new samples in the changes to be merged
+    When calling merge_samples
+    Then ensure merged samples do not exceed `SAMPLE_SIZE`
+    """
+    from QRadar_v3 import merge_samples
+
+    initial_ctx = copy.deepcopy({SAMPLE_INCIDENTS_KEY: current_samples})
+    changes = copy.deepcopy({SAMPLE_INCIDENTS_KEY: new_samples})
+
+    merge_samples(initial_ctx, changes)
+
+    assert initial_ctx == {SAMPLE_INCIDENTS_KEY: expected_samples}
+
+
+@pytest.mark.parametrize(
+    "current_ctx, changes, override_keys, expected_ctx",
+    [
+        pytest.param(
+            {"a": 1, "b": 2, "c": 3},
+            {"b": 99, "d": 4},
+            ["a", "b", "c"],
+            {"a": 1, "c": 3},
+            id="Key 'b' in current_ctx and changes removed",
+        ),
+        pytest.param(
+            {"a": 1, "b": 2, "c": 3},
+            {"d": 4, "e": 5},
+            ["a", "b", "c"],
+            {"a": 1, "b": 2, "c": 3},
+            id="No common keys in current_ctx and changes",
+        ),
+        pytest.param(
+            {"a": 1, "b": 2},
+            {"a": 99},
+            [],
+            {"a": 1, "b": 2},
+            id="No override keys",
+        ),
+        pytest.param(
+            {"k1": 1, "k2": 2, "k3": 3},
+            {"k2": "val", "k3": "another_val"},
+            ["k1", "k2", "k3"],
+            {"k1": 1},
+            id="Keys 'k1' and 'k3' in current_ctx and changes removed",
+        ),
+    ],
+)
+def test_remove_context_keys(current_ctx, changes, override_keys, expected_ctx):
+    """
+    Given current_ctx and changes to be merged
+    When calling remove_context_keys with override_keys
+    Then ensure common keys in the override_keys list are removed from current_ctx
+    """
+    from QRadar_v3 import remove_context_keys
+
+    initial_ctx = copy.deepcopy(current_ctx)
+
+    remove_context_keys(initial_ctx, changes, override_keys)
+
+    assert initial_ctx == expected_ctx

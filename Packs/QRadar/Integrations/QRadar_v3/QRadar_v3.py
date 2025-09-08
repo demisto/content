@@ -1245,10 +1245,33 @@ def merge_samples(current_ctx: dict, changes: dict) -> None:
     current_samples = current_ctx.get(SAMPLE_INCIDENTS_KEY, [])
     if isinstance(current_samples, list):
         # Ensure samples do not grow unbounded due to the list appending behavior of always_merger
+        demisto.debug("Appending new samples to existing ones in context.")
         current_ctx[SAMPLE_INCIDENTS_KEY] = (current_samples + new_samples)[:SAMPLE_SIZE]
     else:
         # If samples is a JSON string (legacy context schema), then override
+        demisto.debug("Setting new samples in context.")
         current_ctx[SAMPLE_INCIDENTS_KEY] = new_samples[:SAMPLE_SIZE]
+
+
+def remove_context_keys(
+    current_ctx: dict,
+    changes: dict,
+    override_keys: list[str],
+):
+    """Removes the values in the `current_ctx` if they exist in `changes` before merging.
+
+    Args:
+        current_ctx (dict): The current integration context.
+        changes (dict): The changes to be merged into the integration context.
+        override_keys (list[str]): The list of current_ctx keys to override, if value exists.
+    """
+    demisto.debug(f"Overriding keys in current context: {', '.join(override_keys)}.")
+    removed_keys = set()
+    for key in override_keys:
+        if key in current_ctx and key in changes:
+            current_ctx.pop(key, None)
+            removed_keys.add(key)
+    demisto.debug(f"Removed {len(removed_keys)} from current integration context: {', '.join(removed_keys)}.")
 
 
 def deep_merge_context_changes(
@@ -1262,16 +1285,9 @@ def deep_merge_context_changes(
         current_ctx (dict): The current integration context.
         changes (dict): The changes to be merged into the integration context.
     """
-    demisto.debug(f"Overriding keys in current context: {', '.join(override_keys)}.")
-    removed_keys = set()
-    for key in override_keys:
-        if key in current_ctx and key in changes:
-            current_ctx.pop(key, None)
-            removed_keys.add(key)
-    demisto.debug(f"Removed {len(removed_keys)} from current integration context: {', '.join(removed_keys)}.")
-
+    if override_keys:  # remove values in the `current_ctx` if they exist in `changes` before merging
+        remove_context_keys(current_ctx, changes, override_keys)
     merge_samples(current_ctx, changes)
-
     always_merger.merge(current_ctx, changes)  # updates `current_ctx` in place with `changes`
 
 
