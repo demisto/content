@@ -6008,7 +6008,7 @@ Perform actions on identity detection alerts.
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the alerts to update. | Required | 
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
-| assign_to_user_id | Assign the specified detections to a user based on their user id (Email). | Optional | 
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional | 
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
 | add_tag | Add a tag to the specified detections. | Optional | 
@@ -6043,7 +6043,7 @@ Perform actions on mobile detection alerts.
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the alerts to update. | Required | 
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
-| assign_to_user_id | Assign the specified detections to a user based on their user id (Email). | Optional | 
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional | 
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
 | add_tag | Add a tag to the specified detections. | Optional | 
