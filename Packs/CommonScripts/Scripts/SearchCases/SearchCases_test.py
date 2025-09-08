@@ -25,6 +25,7 @@ def test_prepare_start_end_time_only_start(monkeypatch):
     assert "gte_creation_time" in args
     assert "lte_creation_time" in args
 
+
 def test_main_success(mocker):
     args = {"page_size": 50}
     mocker.patch.object(demisto, "args", return_value=args)

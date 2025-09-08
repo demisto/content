@@ -21,6 +21,7 @@ def extract_ids(command_res, field_name):
             ids = [c.get(field_name) for c in command_res if isinstance(c, dict) and field_name in c]
     return ids
 
+
 def get_case_extra_data(args):
     """
     Calls the core-get-case-extra-data command and parses the output to a standard structure.

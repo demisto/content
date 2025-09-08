@@ -1,4 +1,7 @@
 import json
+
+import pytest
+
 import demistomock as demisto
 
 MAX_GET_INCIDENTS_LIMIT = 100
@@ -356,85 +359,6 @@ def test_core_get_issues_command_with_output_keys(mocker):
     assert "alert_status" not in first_issue
     assert "alert_description" not in first_issue
 
-
-def test_recursive_replace_response_names_string():
-    """
-    Given:
-        - A string containing the words 'incident' and 'alert'.
-        - A string with no matching words.
-    When:
-        - Calling recursive_replace_response_names on the string.
-    Then:
-        - 'incident' is replaced with 'case', 'alert' with 'issue'.
-        - Unmatched strings remain unchanged.
-    """
-    from CortexPlatformCore import recursive_replace_response_names
-
-    assert recursive_replace_response_names("incident and alert") == "case and issue"
-    assert recursive_replace_response_names("no match here") == "no match here"
-
-
-def test_recursive_replace_response_names_list():
-    """
-    Given:
-        - A list of strings containing 'incident', 'alert', and an unrelated string.
-    When:
-        - Calling recursive_replace_response_names on the list.
-    Then:
-        - Each relevant string is replaced, unrelated strings remain unchanged.
-    """
-    from CortexPlatformCore import recursive_replace_response_names
-
-    data = ["incident", "alert", "foo"]
-    assert recursive_replace_response_names(data) == ["case", "issue", "foo"]
-
-
-def test_recursive_replace_response_names_dict():
-    """
-    Given:
-        - A dictionary with keys and values containing 'incident' and 'alert'.
-    When:
-        - Calling recursive_replace_response_names on the dictionary.
-    Then:
-        - Both keys and values are replaced accordingly.
-    """
-    from CortexPlatformCore import recursive_replace_response_names
-
-    data = {"incident": "alert", "foo": "bar"}
-    assert recursive_replace_response_names(data) == {"case": "issue", "foo": "bar"}
-
-
-def test_recursive_replace_response_names_nested():
-    """
-    Given:
-        - A nested structure (dict containing a list and another dict) with 'incident' and 'alert'.
-    When:
-        - Calling recursive_replace_response_names on the nested structure.
-    Then:
-        - All occurrences, at any depth, are replaced accordingly.
-    """
-    from CortexPlatformCore import recursive_replace_response_names
-
-    data = {"incident": ["alert", {"incident": "alert"}]}
-    expected = {"case": ["issue", {"case": "issue"}]}
-    assert recursive_replace_response_names(data) == expected
-
-
-def test_recursive_replace_response_names_noop():
-    """
-    Given:
-        - Non-string, non-list, non-dict objects (e.g., int, None).
-    When:
-        - Calling recursive_replace_response_names on these objects.
-    Then:
-        - The object is returned unchanged.
-    """
-    from CortexPlatformCore import recursive_replace_response_names
-
-    assert recursive_replace_response_names(123) == 123
-    assert recursive_replace_response_names(None) is None
-
-
 def test_get_cases_command_case_id_as_int(mocker):
     """
     Given:
@@ -448,7 +372,6 @@ def test_get_cases_command_case_id_as_int(mocker):
 
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": "1"}]
-    mocker.patch("CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: x)
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
     args = {"case_id_list": 1}
     result = get_cases_command(client, args)
@@ -472,11 +395,9 @@ def test_get_cases_command_status_filter(mocker):
     client = mocker.Mock()
     # simulate two calls for two statuses
     client.get_incidents.side_effect = [[{"case_id": "1"}], [{"case_id": "2"}]]
-    mocker.patch("CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
     args = {"status": ["new", "closed"], "limit": 1}
     result = get_cases_command(client, args)
-    # Output is truncated by limit
     assert result.outputs == [{"case_id": "mapped"}]
     assert client.get_incidents.call_count == 2
 
@@ -495,7 +416,6 @@ def test_get_cases_command_limit_enforced(mocker):
 
     client = mocker.Mock()
     client.get_incidents.return_value = [{"case_id": str(i)} for i in range(MAX_GET_INCIDENTS_LIMIT + 1)]
-    mocker.patch("CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}])
     mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
     args = {"limit": MAX_GET_INCIDENTS_LIMIT + 10, "case_id_list": "1"}
     result = get_cases_command(client, args)
@@ -550,25 +470,3 @@ def test_get_cases_command_conflicting_time_filters(mocker):
         get_cases_command(client, args)
 
 
-def test_get_cases_command_mapping_and_markdown(mocker):
-    """
-    Given:
-        - Valid filter and mock data
-    When:
-        - Calling get_cases_command
-    Then:
-        - recursive_replace_response_names and tableToMarkdown are called
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    client.get_incidents.return_value = [{"case_id": "1"}]
-    mock_replace = mocker.patch(
-        "CortexPlatformCore.recursive_replace_response_names", side_effect=lambda x: [{"case_id": "mapped"}]
-    )
-    mock_table = mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    args = {"case_id_list": "1"}
-    result = get_cases_command(client, args)
-    assert result.outputs == [{"case_id": "mapped"}]
-    mock_replace.assert_called_once()
-    mock_table.assert_called_once()
