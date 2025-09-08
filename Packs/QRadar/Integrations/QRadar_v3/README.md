@@ -2366,6 +2366,31 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### qradar-debug-snapshot
+
+***
+Returns a redacted snapshot of integration context metrics (queued, in-progress, finished, meta sizes, concurrent active, samples count). This command is intended for debugging purposes and may return sensitive data.
+
+#### Base Command
+
+`qradar-debug-snapshot`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| QRadar.Debug.snapshot.queried_count | number | The number of queried mirrored offenses. |
+| QRadar.Debug.snapshot.finished_count | number | The number of finished mirrored offenses. |
+| QRadar.Debug.snapshot.fetched_count | number | The number of fetched mirrored offenses. |
+| QRadar.Debug.snapshot.in_progress_count | number | The number of currently in progress mirrored offenses. |
+| QRadar.Debug.snapshot.waiting_markers_count | number | The number of currently waiting mirrored offenses. |
+| QRadar.Debug.snapshot.concurrent_active | number | The number of currently active queries for offenses. |
+| QRadar.Debug.snapshot.samples_count | number | The number of sample incidents. |
+
 ### get-mapping-fields
 
 ***

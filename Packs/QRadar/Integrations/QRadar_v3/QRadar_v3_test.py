@@ -35,6 +35,7 @@ from QRadar_v3 import (
     OFFENSE_OLD_NEW_NAMES_MAP,
     REFERENCE_SETS_RAW_FORMATTED,
     USECS_ENTRIES,
+    SAMPLE_SIZE,
     Client,
     EntryFormat,
     EntryType,
@@ -1355,6 +1356,7 @@ def test_get_modified_with_events(mocker):
         LAST_MIRROR_KEY: 3444,
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_MIRROR_CLOSED_KEY: 3444,
+        "samples": [],
     }
     set_integration_context(context_data)
     status = {"123": {"status": "COMPLETED"}, "456": {"status": "WAIT"}, "555": {"status": "PENDING"}}
@@ -1611,19 +1613,19 @@ def test_integration_context_during_run(test_case_data, mocker):
         enrich_mock = mocker.patch.object(QRadar_v3, "enrich_offense_with_events")
         enrich_mock.side_effect = second_loop_offenses_with_events
         expected_ctx_second_loop = ctx_test_data["context_data_second_loop_default"].copy()
-        # The samples from the first loop are preserved and second loop samples are appended
+        # The samples from the first loop are preserved and second loop samples are appended and sliced by SAMPLE_SIZE
         if is_offenses_first_loop:
-            expected_ctx_second_loop["samples"] = expected_ctx_first_loop.get("samples", []) + expected_ctx_second_loop.get(
-                "samples", []
-            )
+            expected_ctx_second_loop["samples"] = (
+                expected_ctx_first_loop.get("samples", []) + expected_ctx_second_loop.get("samples", [])
+            )[:SAMPLE_SIZE]
     else:
         mocker.patch.object(client, "offenses_list", return_value=[])
         expected_ctx_second_loop = expected_ctx_first_loop.copy()
-        # When no new offenses in second loop, the existing samples are re-added due to deepmerge append behavior
+        # When no new offenses in second loop, the existing samples are appended and sliced by SAMPLE_SIZE
         if expected_ctx_first_loop.get("samples"):
-            expected_ctx_second_loop["samples"] = expected_ctx_first_loop.get("samples", []) + expected_ctx_first_loop.get(
-                "samples", []
-            )
+            expected_ctx_second_loop["samples"] = (
+                expected_ctx_first_loop.get("samples", []) + expected_ctx_first_loop.get("samples", [])
+            )[:SAMPLE_SIZE]
     perform_long_running_loop(
         client=client,
         offenses_per_fetch=2,
