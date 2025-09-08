@@ -1400,7 +1400,7 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) ->
     # the api overrides the md5 malware hashes, therefore it is necessary to add those who exist to the 'PUT' request.
     # send updated list with removed md5 to Prisma
     client.add_custom_md5_malware(feeds=current_md5_feeds)
-    return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
+    return CommandResults(readable_output="Successfully removed the md5 hash value " + md5 + "from custom md5 malware feed.")
 
 
 def get_cves(client: PrismaCloudComputeClient, args: dict, reliability: str = "B - Usually reliable") -> List[CommandResults]:
