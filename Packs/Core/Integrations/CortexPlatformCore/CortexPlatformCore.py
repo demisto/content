@@ -182,7 +182,7 @@ def get_extra_data_for_case_id_command(client, args):
     """
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
-    response = client.get_incident_extra_data(case_id, issues_limit)
+    response = client.get_incident_data(case_id, issues_limit)
     mapped_response = preprocess_get_cases_outputs(response)
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),

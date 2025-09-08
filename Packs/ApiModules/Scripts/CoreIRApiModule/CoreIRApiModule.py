@@ -408,7 +408,7 @@ class CoreClient(BaseClient):
 
         return incidents
 
-    def get_incident_extra_data(
+    def get_incident_data(
         self, incident_id: str, alerts_limit: int, full_alert_fields: bool = False, remove_nulls_from_alerts: bool = True
     ) -> dict:
         """
