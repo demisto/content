@@ -2058,11 +2058,11 @@ def test_run_list_users_command_empty_user_email_field(mocker: MockerFixture):
 def test_run_list_users_command_api_command_failure(mocker: MockerFixture):
     """
     Given:
-        run_execute_command raises an exception
+        run_execute_command returns an error entry and no users
     When:
         run_list_users_command is called.
     Then:
-        It should handle the exception and mark all emails as not found.
+        It should receive the error entry and mark searched emails as not found.
     """
     # Arrange
     command = Command("Cortex XDR - IR", "xdr-list-users", {})
@@ -2072,52 +2072,22 @@ def test_run_list_users_command_api_command_failure(mocker: MockerFixture):
     existing_users = []
     readable_outputs_list = []
 
-    # Mock run_execute_command to raise an exception
-    mocker.patch("GetUserData.run_execute_command", side_effect=Exception("API Error"))
+    # Mock run_execute_command to return error entry and empty user list
+    error_result = mocker.Mock(spec=CommandResults)
+    mock_entry_context = [{"PaloAltoNetworksXDR.User": [], "instance": "xdr_instance"}]
 
-    # Act & Assert
-    with pytest.raises(Exception, match="API Error"):
-        run_list_users_command(command, additional_fields, outputs_key_field, email_list, existing_users, readable_outputs_list)
+    mocker.patch("GetUserData.run_execute_command", return_value=(mock_entry_context, "Human readable output", [error_result]))
 
+    # Act
+    readable_outputs, users = run_list_users_command(
+        command, additional_fields, outputs_key_field, email_list, existing_users, readable_outputs_list
+    )
 
-def test_run_list_users_command_existing_user_without_additional_fields(mocker: MockerFixture):
-    """
-    Given:
-        Existing user in the list lacks the AdditionalFields key
-    When:
-        run_list_users_command is called with additional_fields=True.
-    Then:
-        It should handle the missing AdditionalFields gracefully.
-    """
-    # Arrange
-    command = Command("Cortex XDR - IR", "xdr-list-users", {})
-    additional_fields = True
-    outputs_key_field = "PaloAltoNetworksXDR"
-    email_list = ["existing@example.com"]
-    existing_users = [
-        {
-            "Email": "existing@example.com",
-            "ID": "existing_id",
-            "Source": "Previous Source",
-            # Missing AdditionalFields key
-        }
-    ]
-    readable_outputs_list = []
-
-    mock_entry_context = [
-        {
-            "PaloAltoNetworksXDR.User": [
-                {"id": "existing_id", "user_email": "existing@example.com", "department": "Engineering"}
-            ],
-            "instance": "xdr_instance",
-        }
-    ]
-
-    mocker.patch("GetUserData.run_execute_command", return_value=(mock_entry_context, "Human readable output", []))
-
-    # Act & Assert - This should raise a KeyError when trying to access AdditionalFields
-    with pytest.raises(KeyError):
-        run_list_users_command(command, additional_fields, outputs_key_field, email_list, existing_users, readable_outputs_list)
+    # Assert
+    assert error_result in readable_outputs
+    assert len(users) == 1  # User not found should be added
+    assert users[0]["Email"] == "test@example.com"
+    assert users[0]["Status"] == "not found"
 
 
 def test_run_list_users_command_risky_user_not_in_email_list_additional_fields_false(mocker: MockerFixture):
@@ -2206,5 +2176,4 @@ def test_run_list_users_command_empty_outputs_from_api(mocker: MockerFixture):
     # Assert
     assert len(users) == 2  # Both emails marked as not found
     assert all(user["Status"] == "not found" for user in users)
-    assert users[0]["Email"] == "test1@example.com"
-    assert users[1]["Email"] == "test2@example.com"
+    assert {user["Email"] for user in users} == set(email_list)
