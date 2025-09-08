@@ -707,8 +707,7 @@ def get_core_and_xdr_data(
     brand_name: str,
     first_command: str,
     second_command: str,
-    first_arg_name: str,
-    first_arg_values: List[str],
+    user_names: List[str],
     additional_fields: bool,
     list_non_risky_users: bool = False,
     email_list: List[str] = [],
@@ -716,12 +715,12 @@ def get_core_and_xdr_data(
 ) -> tuple[list[CommandResults], list[dict[str, Any]]]:
     # prepare both commands
     first_commands = []
-    for user_name in first_arg_values:
+    for user_name in user_names:
         first_commands.append(
             Command(
                 brand=brand_name,
                 name=first_command,
-                args={first_arg_name: user_name, "using-brand": brand_name},
+                args={"user_id": user_name, "using-brand": brand_name},
             )
         )
         if auto_detect_indicator_type(user_name) == FeedIndicatorType.Email:
@@ -770,7 +769,6 @@ def main():
             raise ValueError("At least one of the following arguments must be specified: user_id, user_name or user_email.")
 
         command_results_list: list[CommandResults] = []
-        user_outputs_list: list[dict[str, Any]] = []
         users_outputs: list[dict] = []
         users_readables: list = []
 
@@ -1113,14 +1111,14 @@ def main():
             brand_name="Cortex XDR - IR",
             first_command="xdr-list-risky-users",
             second_command="xdr-list-users",
-            first_arg_name="user_id",
-            first_arg_values=users_names,
+            user_names=users_names,
             additional_fields=additional_fields,
             list_non_risky_users=list_non_risky_users,
             email_list=users_emails,
             outputs_key_field="PaloAltoNetworksXDR",
         )
-        if readable_output and outputs:
+        # we don't expect xdr-list-users to return readable outputs.
+        if readable_output or outputs:
             users_outputs.extend(outputs)
             users_readables.extend(readable_output)
 
@@ -1132,18 +1130,17 @@ def main():
             brand_name="Cortex Core - IR",
             first_command="core-list-risky-users",
             second_command="core-list-users",
-            first_arg_name="user_id",
-            first_arg_values=users_names,
+            user_names=users_names,
             additional_fields=additional_fields,
             list_non_risky_users=list_non_risky_users,
             email_list=users_emails,
             outputs_key_field="Core",
         )
+        # we don't expect core-list-users to return readable outputs.
         if readable_output or outputs:
             users_outputs.extend(outputs)
             users_readables.extend(readable_output)
 
-        demisto.debug(f"users list: {user_outputs_list}")
         command_results_list.append(
             CommandResults(
                 outputs_prefix="UserData",
