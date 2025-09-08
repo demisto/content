@@ -1284,6 +1284,7 @@ def deep_merge_context_changes(
     Args:
         current_ctx (dict): The current integration context.
         changes (dict): The changes to be merged into the integration context.
+        override_keys (list[str]): The list of current_ctx keys to override, if value exists.
     """
     if override_keys:  # remove values in the `current_ctx` if they exist in `changes` before merging
         remove_context_keys(current_ctx, changes, override_keys)
