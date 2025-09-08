@@ -4307,6 +4307,9 @@ def test_get_remote_detection_data_for_multiple_types__idp(mocker):
         "incident_type": "IDP detection",
         "status": "closed",
         "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+        "assigned_to_uid": "1",
+        "comments": [{"falcon_user_id": "1", "timestamp": "2025-06-10T10:39:02.408980782Z", "value": "1"}],
+        "tags": ["tag"],
     }
 
 
@@ -4356,10 +4359,17 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
     assert updated_object == {"incident_type": "detection", "status": "new", "severity": 90}
 
 
-def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
+@pytest.mark.parametrize(
+    "detection_type, incident_type, entity_modifications",
+    [
+        ("ngsiem", "ngsiem_detection", {}),
+        ("ofp", "OFP detection", {"type": "ofp", "product": "epp"}),
+    ],
+)
+def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
     """
     Given
-        - an endpoint ngsiem detection ID on the remote system
+        - an endpoint detection ID on the remote system
     When
         - running get_remote_data_command with changes to make on a detection
     Then
@@ -4368,16 +4378,19 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
     from CrowdStrikeFalcon import get_remote_detection_data_for_multiple_types
 
     detection_entity = input_data.response_ngsiem_detection.copy()
+    detection_entity.update(entity_modifications)
+
     mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": [detection_entity.copy()]})
     mocker.patch.object(demisto, "debug", return_value=None)
-    mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(
+
+    mirrored_data, updated_object, returned_detection_type = get_remote_detection_data_for_multiple_types(
         input_data.remote_ngsiem_detection_id
     )
 
     assert mirrored_data == detection_entity
-    assert detection_type == "ngsiem"
+    assert returned_detection_type == detection_type
     assert updated_object == {
-        "incident_type": "ngsiem_detection",
+        "incident_type": incident_type,
         "status": mirrored_data["status"],
         "severity": mirrored_data["severity"],
         "tactic": mirrored_data["tactic"],
@@ -4385,6 +4398,8 @@ def test_get_remote_detection_data_for_multiple_types__ngsiem_detection(mocker):
         "composite_id": mirrored_data["composite_id"],
         "display_name": mirrored_data["display_name"],
         "tags": mirrored_data["tags"],
+        "comments": mirrored_data["comments"],
+        "assigned_to_uid": mirrored_data["assigned_to_uid"],
     }
 
 
@@ -7484,17 +7499,114 @@ def test_resolve_detection(mocker, Legacy_version, tag, url_suffix, data):
         - Running resolve_detection
     Then:
         - Validate that the correct url_suffix is used
-            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v2
-            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v1
+            case 1: Legacy_version is False, the url_suffix should be alerts/entities/alerts/v3
+            case 2: Legacy_version is True, the url_suffix should be /detects/entities/detects/v2
     """
     from CrowdStrikeFalcon import resolve_detection
 
     mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", Legacy_version)
     http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
 
-    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment", tag=tag)
+    resolve_detection(
+        ids=["123"], status="resolved", assigned_to_uuid="123", username=None, show_in_ui="True", comment="comment", tag=tag
+    )
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
+
+
+def test_resolve_detection_username_not_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign detection to
+    When:
+        - Running resolve_detection not in legacy mode
+    Then:
+        - The username to uuid function should not be called and data containing the username should be sent
+    """
+    from CrowdStrikeFalcon import resolve_detection_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
+
+    expected_data = json.dumps(
+        {"action_parameters": [{"name": "assign_to_user_id", "value": "username"}], "composite_ids": ["123"]}
+    )
+
+    resolve_detection_command()
+    assert not translate_username_mocker.called
+    assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
+
+
+def test_resolve_detection_username_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign detection to
+    When:
+        - Running resolve_detection in legacy mode
+    Then:
+        - The username to uuid function should called and data containing the provided_uuid should be sent
+    """
+    from CrowdStrikeFalcon import resolve_detection_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid", return_value="user_123")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "username": "username"})
+
+    expected_data = json.dumps({"ids": ["123"], "assigned_to_uuid": "user_123"})
+
+    resolve_detection_command()
+    assert translate_username_mocker.calledwith("username")
+    assert http_request_mocker.call_args_list[0][1]["data"] == expected_data
+
+
+def test_resolve_incident_username_not_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign incident to
+    When:
+        - Running resolve_incident_command not in legacy mode
+    Then:
+        - The username to uuid function should not be called and data containing the username should be sent
+    """
+    from CrowdStrikeFalcon import resolve_incident_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "user_name": "username"})
+
+    expected_action_parameters = {"action_parameters": [{"name": "update_assigned_to_v2", "value": "username"}], "ids": ["123"]}
+
+    resolve_incident_command(ids=["123"], user_name="username")
+    assert not translate_username_mocker.called
+    assert http_request_mocker.call_args_list[0][1]["json"] == expected_action_parameters
+
+
+def test_resolve_incident_username_legacy(mocker):
+    """
+    Given:
+        - A username is provided to assign incident to
+    When:
+        - Running resolve_incident_command in legacy mode
+    Then:
+        - The username to uuid function should be called and data containing the provided_uuid should be sent
+    """
+    from CrowdStrikeFalcon import resolve_incident_command
+
+    mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", True)
+    translate_username_mocker = mocker.patch("CrowdStrikeFalcon.get_username_uuid", return_value="user_123")
+    http_request_mocker = mocker.patch("CrowdStrikeFalcon.http_request")
+    mocker.patch("CrowdStrikeFalcon.demisto.args", return_value={"ids": ["123"], "user_name": "username"})
+
+    expected_action_parameters = {"action_parameters": [{"name": "update_assigned_to_v2", "value": "user_123"}], "ids": ["123"]}
+
+    resolve_incident_command(ids=["123"], user_name="username")
+    assert translate_username_mocker.called
+    translate_username_mocker.assert_called_with(username="username")
+    assert http_request_mocker.call_args_list[0][1]["json"] == expected_action_parameters
 
 
 @pytest.mark.parametrize(
