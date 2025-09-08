@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 09c9caf6-dfe1-401a-82c2-47bc7f531230
+    taskid: d0dcb500-d703-41df-81df-538ebad1ba0c
     type: start
     task:
-      id: 09c9caf6-dfe1-401a-82c2-47bc7f531230
+      id: d0dcb500-d703-41df-81df-538ebad1ba0c
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1825d805-8f32-4923-bbd0-2885b030b209
+    taskid: 058eeda6-b8b3-4350-8724-3f0ad32dc336
     type: regular
     task:
-      id: 1825d805-8f32-4923-bbd0-2885b030b209
+      id: 058eeda6-b8b3-4350-8724-3f0ad32dc336
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -53,7 +53,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "52"
     scriptarguments:
       all:
         simple: "yes"
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7cd7fc8f-1871-4c5f-9e8a-9866a99eedf5
+    taskid: 8ce4fb1b-ee8d-473d-8a36-906ddaeac579
     type: regular
     task:
-      id: 7cd7fc8f-1871-4c5f-9e8a-9866a99eedf5
+      id: 8ce4fb1b-ee8d-473d-8a36-906ddaeac579
       version: -1
       name: Create SHA256
       description: |
@@ -92,7 +92,7 @@ tasks:
       - "9"
     scriptarguments:
       text:
-        simple: FileEnrichmentTest
+        simple: ${RandomString}
       type:
         simple: sha256
     separatecontext: false
@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 540
+          "y": 710
         }
       }
     note: false
@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d1d94c8b-783c-4030-ab6c-483f0058c940
+    taskid: ca6c64f1-935d-4418-8b73-81b1ca01f52d
     type: regular
     task:
-      id: d1d94c8b-783c-4030-ab6c-483f0058c940
+      id: ca6c64f1-935d-4418-8b73-81b1ca01f52d
       version: -1
       name: File Enrichment Internal
       description: This script gathers file reputation data from multiple integrations
@@ -130,8 +130,8 @@ tasks:
       '#none#':
       - "4"
       - "12"
-      - "13"
       - "25"
+      - "51"
     scriptarguments:
       file_hash:
         simple: ${CreateHash}
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 880
+          "y": 1050
         }
       }
     note: false
@@ -153,10 +153,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e9356548-99c8-424c-b7d7-291e3c5ed777
+    taskid: 19cf1724-a6a1-4265-80dc-0ec53e628a21
     type: condition
     task:
-      id: e9356548-99c8-424c-b7d7-291e3c5ed777
+      id: 19cf1724-a6a1-4265-80dc-0ec53e628a21
       version: -1
       name: |
         Validate Brand
@@ -192,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1050
+          "y": 1220
         }
       }
     note: false
@@ -204,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4a4585d2-dfec-4eb0-a177-d6e4391fbb47
+    taskid: 7c31acee-a806-48ae-81cd-ca99fcb50f7f
     type: regular
     task:
-      id: 4a4585d2-dfec-4eb0-a177-d6e4391fbb47
+      id: 7c31acee-a806-48ae-81cd-ca99fcb50f7f
       version: -1
       name: File Enrichment External
       description: This script gathers file reputation data from multiple integrations
@@ -234,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1550
+          "y": 1720
         }
       }
     note: false
@@ -246,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d5b99091-5146-47d9-9e76-d74cdab47c37
+    taskid: 1dfff76c-0a2e-43e1-819c-481c71ade35a
     type: regular
     task:
-      id: d5b99091-5146-47d9-9e76-d74cdab47c37
+      id: 1dfff76c-0a2e-43e1-819c-481c71ade35a
       version: -1
       name: Create File Indicator SHA256
       description: commands.local.cmd.new.indicator
@@ -261,6 +261,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      tags:
+        simple: FileEnrichmentTest
       type:
         simple: File
       value:
@@ -271,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 710
+          "y": 880
         }
       }
     note: false
@@ -283,10 +285,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b7ab8950-52ef-4a7d-852b-6106e0df884d
+    taskid: 5a2c4c88-ac67-434a-8baf-9d67da59ab10
     type: title
     task:
-      id: b7ab8950-52ef-4a7d-852b-6106e0df884d
+      id: 5a2c4c88-ac67-434a-8baf-9d67da59ab10
       version: -1
       name: External Enrichment
       type: title
@@ -301,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -313,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 83fc969c-0a3c-41d5-a4d1-1c0bd2231ec2
+    taskid: 4e0e79d8-37b5-4a68-8ba8-0d47a8e454cb
     type: title
     task:
-      id: 83fc969c-0a3c-41d5-a4d1-1c0bd2231ec2
+      id: 4e0e79d8-37b5-4a68-8ba8-0d47a8e454cb
       version: -1
       name: 'Internal Enrichment '
       type: title
@@ -343,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: df9a77f1-e3d5-4934-8896-a8ad8f89e79e
+    taskid: 631cfe4c-767b-497c-a58f-0733a499dac2
     type: condition
     task:
-      id: df9a77f1-e3d5-4934-8896-a8ad8f89e79e
+      id: 631cfe4c-767b-497c-a58f-0733a499dac2
       version: -1
       name: Validate Indicator
       type: condition
@@ -362,43 +364,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: FileEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: FileEnrichment.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: TIM
-                accessor: SHA256
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: CreateHash
-                transformers:
-                - operator: toLowerCase
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: FileEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: FileEnrichment.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: WildFire-v2
-                accessor: SHA256
+              simple: FileEnrichment.SHA256
             iscontext: true
           right:
             value:
@@ -409,78 +375,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 130caf7a-3dc8-4307-a7fa-bb18dfabb331
-    type: condition
-    task:
-      id: 130caf7a-3dc8-4307-a7fa-bb18dfabb331
-      version: -1
-      name: Validate Score
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: FileEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: FileEnrichment.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: TIM
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: FileEnrichment
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: FileEnrichment.Brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: WildFire-v2
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1050
+          "y": 1220
         }
       }
     note: false
@@ -492,10 +387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e3393ca5-7963-4fa8-8fb5-87c4e5280904
+    taskid: 3ba4a398-c45c-4c91-b9f4-c063e2881ab7
     type: regular
     task:
-      id: e3393ca5-7963-4fa8-8fb5-87c4e5280904
+      id: 3ba4a398-c45c-4c91-b9f4-c063e2881ab7
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -515,14 +410,14 @@ tasks:
       all:
         simple: "yes"
       keysToKeep:
-        simple: CreateHash
+        simple: CreateHash, RandomString
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 1380
+          "y": 1550
         }
       }
     note: false
@@ -534,10 +429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 0ea1b75f-73ab-460b-8966-6c88af730a64
+    taskid: 9e055155-1b2a-4080-849d-e69f8756c808
     type: condition
     task:
-      id: 0ea1b75f-73ab-460b-8966-6c88af730a64
+      id: 9e055155-1b2a-4080-849d-e69f8756c808
       version: -1
       name: |
         Validate Brand
@@ -573,7 +468,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1720
+          "y": 1890
         }
       }
     note: false
@@ -585,10 +480,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8b59fca0-fe6b-4a01-8773-18700b485fee
+    taskid: 048e6c9d-c88f-4e8a-8c8b-1bda22983e48
     type: condition
     task:
-      id: 8b59fca0-fe6b-4a01-8773-18700b485fee
+      id: 048e6c9d-c88f-4e8a-8c8b-1bda22983e48
       version: -1
       name: Validate Indicator
       type: condition
@@ -615,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1720
+          "y": 1890
         }
       }
     note: false
@@ -627,10 +522,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 1acf9e1c-2234-4caf-8274-f52df13ec137
+    taskid: 6aaf819f-5655-4f85-821b-16208e1af097
     type: condition
     task:
-      id: 1acf9e1c-2234-4caf-8274-f52df13ec137
+      id: 6aaf819f-5655-4f85-821b-16208e1af097
       version: -1
       name: Validate Score
       type: condition
@@ -656,7 +551,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 1720
+          "y": 1890
         }
       }
     note: false
@@ -668,10 +563,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 9d5451d4-90b6-4dc6-b284-3693dc0e8c07
+    taskid: 3f82c133-4c26-47e4-833d-6c23aee46fb0
     type: title
     task:
-      id: 9d5451d4-90b6-4dc6-b284-3693dc0e8c07
+      id: 3f82c133-4c26-47e4-833d-6c23aee46fb0
       version: -1
       name: Internal and External Enrichment
       type: title
@@ -686,7 +581,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1890
+          "y": 2060
         }
       }
     note: false
@@ -698,10 +593,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e407d35c-3e7e-4f89-9c89-909bf60bcd35
+    taskid: 24d1d2e1-087c-45e9-801a-94253cac061f
     type: regular
     task:
-      id: e407d35c-3e7e-4f89-9c89-909bf60bcd35
+      id: 24d1d2e1-087c-45e9-801a-94253cac061f
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -720,44 +615,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 66c841e2-5fc8-400d-8529-3dc2441e28e5
-    type: regular
-    task:
-      id: 66c841e2-5fc8-400d-8529-3dc2441e28e5
-      version: -1
-      name: Create Hash MD5
-      description: |
-        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
-      scriptName: CreateHash
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      text:
-        simple: FileEnrichmentTest
-      type:
-        simple: md5
+      keysToKeep:
+        simple: RandomString
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -774,27 +633,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 11839c27-5ac4-452d-937a-04065ca32035
+  "20":
+    id: "20"
+    taskid: 8243ce1d-e45f-4ba8-b962-082ef384e83f
     type: regular
     task:
-      id: 11839c27-5ac4-452d-937a-04065ca32035
+      id: 8243ce1d-e45f-4ba8-b962-082ef384e83f
       version: -1
-      name: Create File Indicator MD5
-      description: commands.local.cmd.new.indicator
-      script: Builtin|||createNewIndicator
+      name: Create Hash MD5
+      description: |
+        Creating a hash of a given input, support sha1, sha256, sha512, md5 and blake. Wrapper for https://docs.python.org/3/library/hashlib.html.
+      scriptName: CreateHash
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "21"
     scriptarguments:
+      text:
+        simple: ${RandomString}
       type:
-        simple: File
-      value:
-        simple: ${CreateHash}
+        simple: md5
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -811,12 +671,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 82e73b9d-c20b-40fd-a5a7-8d2a29ba4774
+  "21":
+    id: "21"
+    taskid: 736980a1-2358-47cd-b621-a70e49f38145
     type: regular
     task:
-      id: 82e73b9d-c20b-40fd-a5a7-8d2a29ba4774
+      id: 736980a1-2358-47cd-b621-a70e49f38145
+      version: -1
+      name: Create File Indicator MD5
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      tags:
+        simple: FileEnrichmentTest
+      type:
+        simple: File
+      value:
+        simple: ${CreateHash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e8a72579-51c2-4a24-8486-c933c5e6f915
+    type: regular
+    task:
+      id: e8a72579-51c2-4a24-8486-c933c5e6f915
       version: -1
       name: File Enrichment Internal and External
       description: This script gathers file reputation data from multiple integrations
@@ -843,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2560
+          "y": 2730
         }
       }
     note: false
@@ -855,10 +754,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: bd1529c0-8309-4ea7-aa93-12e62a43cd07
+    taskid: 7f951085-52e5-4fe0-8b9a-443082e62467
     type: title
     task:
-      id: bd1529c0-8309-4ea7-aa93-12e62a43cd07
+      id: 7f951085-52e5-4fe0-8b9a-443082e62467
       version: -1
       name: Case 4 - Some Hash Malformed
       type: title
@@ -873,7 +772,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2900
+          "y": 3070
         }
       }
     note: false
@@ -885,10 +784,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 7f15f82a-9b81-407a-861a-e6e495c43c03
+    taskid: bb00d571-9985-4c1f-8521-87ac1ee4ee09
     type: condition
     task:
-      id: 7f15f82a-9b81-407a-861a-e6e495c43c03
+      id: bb00d571-9985-4c1f-8521-87ac1ee4ee09
       version: -1
       name: Validate DBotScore
       type: condition
@@ -913,8 +812,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1050
+          "x": 910,
+          "y": 1220
         }
       }
     note: false
@@ -926,10 +825,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 28d42d53-1830-4e54-b1ba-0ac17bd57142
+    taskid: d306be45-d560-494f-80c1-45f279df3499
     type: condition
     task:
-      id: 28d42d53-1830-4e54-b1ba-0ac17bd57142
+      id: d306be45-d560-494f-80c1-45f279df3499
       version: -1
       name: Validate DBotScore
       type: condition
@@ -964,7 +863,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 1720
+          "y": 1890
         }
       }
     note: false
@@ -976,10 +875,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: f6a157b3-87a8-47af-8763-f4e10d6bd507
+    taskid: b4388142-5f26-4ba8-b260-9b0ab6ecaf47
     type: condition
     task:
-      id: f6a157b3-87a8-47af-8763-f4e10d6bd507
+      id: b4388142-5f26-4ba8-b260-9b0ab6ecaf47
       version: -1
       name: |
         Validate Brand
@@ -1023,7 +922,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 2900
         }
       }
     note: false
@@ -1035,10 +934,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 4fecdefa-3e83-410e-8834-85158d53415c
+    taskid: fd9db349-55df-4378-8968-ab738650b038
     type: condition
     task:
-      id: 4fecdefa-3e83-410e-8834-85158d53415c
+      id: fd9db349-55df-4378-8968-ab738650b038
       version: -1
       name: Validate Indicator
       type: condition
@@ -1065,7 +964,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2730
+          "y": 2900
         }
       }
     note: false
@@ -1077,10 +976,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 860ed167-79ed-4b0a-8b88-04e824fc9f26
+    taskid: 583c8fb7-be60-4bbf-ac73-f60d59e1c232
     type: condition
     task:
-      id: 860ed167-79ed-4b0a-8b88-04e824fc9f26
+      id: 583c8fb7-be60-4bbf-ac73-f60d59e1c232
       version: -1
       name: Validate Score
       type: condition
@@ -1106,7 +1005,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2730
+          "y": 2900
         }
       }
     note: false
@@ -1118,10 +1017,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: d6c022dc-4446-4638-8320-1a45e79d80be
+    taskid: ad94a8fb-e0f9-4e07-a76c-9499bd444167
     type: condition
     task:
-      id: d6c022dc-4446-4638-8320-1a45e79d80be
+      id: ad94a8fb-e0f9-4e07-a76c-9499bd444167
       version: -1
       name: Validate DBotScore
       type: condition
@@ -1164,7 +1063,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 2730
+          "y": 2900
         }
       }
     note: false
@@ -1176,10 +1075,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: d06ed782-a6a8-4191-93df-19f0f30607c5
+    taskid: 02eba1d0-f878-4d8a-8f2e-dd44e52889e9
     type: regular
     task:
-      id: d06ed782-a6a8-4191-93df-19f0f30607c5
+      id: 02eba1d0-f878-4d8a-8f2e-dd44e52889e9
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
@@ -1208,7 +1107,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 4550
+          "y": 4720
         }
       }
     note: false
@@ -1220,10 +1119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 43a06817-2a25-4ce2-b525-fb7e2459077e
+    taskid: 872c502b-5611-4ea2-89d2-343ed90e35c8
     type: title
     task:
-      id: 43a06817-2a25-4ce2-b525-fb7e2459077e
+      id: 872c502b-5611-4ea2-89d2-343ed90e35c8
       version: -1
       name: A Brand Does Not Exist
       type: title
@@ -1238,7 +1137,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 4390
+          "y": 4560
         }
       }
     note: false
@@ -1250,10 +1149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 8db0667d-c285-4192-8e73-d0c70e1ec4b0
+    taskid: 92dd8b63-ef05-4dcf-886a-0063594bee88
     type: title
     task:
-      id: 8db0667d-c285-4192-8e73-d0c70e1ec4b0
+      id: 92dd8b63-ef05-4dcf-886a-0063594bee88
       version: -1
       name: No Arguments
       type: title
@@ -1268,7 +1167,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3730
+          "y": 3900
         }
       }
     note: false
@@ -1280,10 +1179,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 3d946b04-570e-4ff4-bbdb-55bbdd0f4077
+    taskid: f65e4943-98ee-4438-8f0f-283fd610dae4
     type: regular
     task:
-      id: 3d946b04-570e-4ff4-bbdb-55bbdd0f4077
+      id: f65e4943-98ee-4438-8f0f-283fd610dae4
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
@@ -1308,7 +1207,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3890
+          "y": 4060
         }
       }
     note: false
@@ -1320,10 +1219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: bf457348-a69d-44b7-9bfa-5dfe12dadf6b
+    taskid: e4d8f52f-46a0-4032-8e9a-dec5af8b3e3e
     type: condition
     task:
-      id: bf457348-a69d-44b7-9bfa-5dfe12dadf6b
+      id: e4d8f52f-46a0-4032-8e9a-dec5af8b3e3e
       version: -1
       name: Failure
       type: condition
@@ -1346,7 +1245,7 @@ tasks:
       {
         "position": {
           "x": 797.5,
-          "y": 4720
+          "y": 4890
         }
       }
     note: false
@@ -1358,10 +1257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 1d180845-361f-450d-bffb-f70300d712a3
+    taskid: 3041f980-bdcf-46ab-8bb0-7428ceb257ad
     type: title
     task:
-      id: 1d180845-361f-450d-bffb-f70300d712a3
+      id: 3041f980-bdcf-46ab-8bb0-7428ceb257ad
       version: -1
       name: Finish
       type: title
@@ -1373,7 +1272,7 @@ tasks:
       {
         "position": {
           "x": 367.5,
-          "y": 4725
+          "y": 4895
         }
       }
     note: false
@@ -1385,10 +1284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 3f15f5fc-739c-46b4-8a9d-999a5b19f3b3
+    taskid: 9e960836-4880-4666-8431-70e452b71645
     type: title
     task:
-      id: 3f15f5fc-739c-46b4-8a9d-999a5b19f3b3
+      id: 9e960836-4880-4666-8431-70e452b71645
       version: -1
       name: Malformed Hash
       type: title
@@ -1403,7 +1302,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 4060
+          "y": 4230
         }
       }
     note: false
@@ -1415,10 +1314,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 8cacfae0-301f-4c4b-9734-3090073c5bff
+    taskid: 02df73cc-459f-44f6-8a3b-5a4e00e1df23
     type: regular
     task:
-      id: 8cacfae0-301f-4c4b-9734-3090073c5bff
+      id: 02df73cc-459f-44f6-8a3b-5a4e00e1df23
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
@@ -1445,7 +1344,7 @@ tasks:
       {
         "position": {
           "x": 582.5,
-          "y": 4220
+          "y": 4390
         }
       }
     note: false
@@ -1457,10 +1356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 7a5b490a-9c4a-44c4-9e2c-fe31925f4078
+    taskid: 0f4ad71a-c11c-4017-8bc9-ba21e9c65743
     type: title
     task:
-      id: 7a5b490a-9c4a-44c4-9e2c-fe31925f4078
+      id: 0f4ad71a-c11c-4017-8bc9-ba21e9c65743
       version: -1
       name: Sad Flows
       type: title
@@ -1475,7 +1374,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3570
+          "y": 3740
         }
       }
     note: false
@@ -1487,10 +1386,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: fb3732da-7778-4263-85ba-e18d6ee2fb58
+    taskid: acb120d6-e0b3-4472-87f3-9a8057bcc231
     type: regular
     task:
-      id: fb3732da-7778-4263-85ba-e18d6ee2fb58
+      id: acb120d6-e0b3-4472-87f3-9a8057bcc231
       version: -1
       name: Delete Context
       description: "Delete field from context.\n\nThis automation runs using the default
@@ -1517,7 +1416,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3060
+          "y": 3230
         }
       }
     note: false
@@ -1529,10 +1428,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 719d077d-f797-46cc-9436-22798a787016
+    taskid: c692a586-64e2-4850-8dee-7dbe493abd39
     type: regular
     task:
-      id: 719d077d-f797-46cc-9436-22798a787016
+      id: c692a586-64e2-4850-8dee-7dbe493abd39
       version: -1
       name: File Enrichment Hash Malformed
       description: This script gathers file reputation data from multiple integrations
@@ -1559,7 +1458,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3230
+          "y": 3400
         }
       }
     note: false
@@ -1571,10 +1470,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: f368335c-3d40-48b2-8c74-b48615ff2c82
+    taskid: 5f4c7103-3b6a-4bb1-bd78-5c87cafc68f6
     type: condition
     task:
-      id: f368335c-3d40-48b2-8c74-b48615ff2c82
+      id: 5f4c7103-3b6a-4bb1-bd78-5c87cafc68f6
       version: -1
       name: |
         Validate Brand
@@ -1618,7 +1517,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 3570
         }
       }
     note: false
@@ -1630,10 +1529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 25ac5264-d213-4c76-8e9d-7d8cf6f3d4a4
+    taskid: 9ccf01a5-7543-4e36-8dca-93db7d087a33
     type: condition
     task:
-      id: 25ac5264-d213-4c76-8e9d-7d8cf6f3d4a4
+      id: 9ccf01a5-7543-4e36-8dca-93db7d087a33
       version: -1
       name: Validate Indicator
       type: condition
@@ -1660,7 +1559,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3400
+          "y": 3570
         }
       }
     note: false
@@ -1672,10 +1571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 12bca415-b3e2-4ca6-8c50-93e0c3f7f533
+    taskid: bf60235f-9eed-4588-af18-a143fb2c381d
     type: condition
     task:
-      id: 12bca415-b3e2-4ca6-8c50-93e0c3f7f533
+      id: bf60235f-9eed-4588-af18-a143fb2c381d
       version: -1
       name: Validate Score
       type: condition
@@ -1701,7 +1600,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3400
+          "y": 3570
         }
       }
     note: false
@@ -1713,10 +1612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 861be53c-51ac-47f2-888d-feb9fe8c0e1e
+    taskid: 99bd2444-89ab-426d-bb00-29bb56941128
     type: condition
     task:
-      id: 861be53c-51ac-47f2-888d-feb9fe8c0e1e
+      id: 99bd2444-89ab-426d-bb00-29bb56941128
       version: -1
       name: Validate DBotScore
       type: condition
@@ -1759,7 +1658,91 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 3400
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6c955236-bdeb-4028-8a8a-82640f182cc6
+    type: condition
+    task:
+      id: 6c955236-bdeb-4028-8a8a-82640f182cc6
+      version: -1
+      name: Validate Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileEnrichment.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 91954582-d29c-4960-b2e1-06dc182fa0ad
+    type: regular
+    task:
+      id: 91954582-d29c-4960-b2e1-06dc182fa0ad
+      version: -1
+      name: Generate Random String
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 540
         }
       }
     note: false
@@ -1776,7 +1759,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4740,
+        "height": 4910,
         "width": 1670,
         "x": 50,
         "y": 50
@@ -1786,3 +1769,4 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+dirtyInputs: true
