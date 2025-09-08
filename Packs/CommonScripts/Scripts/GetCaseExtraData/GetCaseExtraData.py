@@ -47,7 +47,7 @@ def get_case_extra_data(args):
     return case
 
 
-def main():
+def main():  # pragma: nocover
     """
     This function will retrieve the extra data for the given case ID/s.
 

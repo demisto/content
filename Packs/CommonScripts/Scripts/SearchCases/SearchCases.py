@@ -45,7 +45,7 @@ def prepare_start_end_time(args: dict):
         args["lte_creation_time"] = end_time
 
 
-def main():
+def main():  # pragma: nocover
     """
     Gets cases using the core-get-cases command with the given arguments.
     """
