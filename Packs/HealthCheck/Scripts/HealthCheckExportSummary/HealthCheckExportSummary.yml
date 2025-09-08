@@ -12,5 +12,6 @@ subtype: python3
 tags: []
 type: python
 fromversion: 6.0.0
+toversion: 7.99.99
 tests:
 - No tests (auto formatted)

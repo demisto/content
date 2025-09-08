@@ -1467,7 +1467,7 @@ view: |-
       }
     }
   }
-fromversion: 6.9.0
+fromversion: 6.0.0
 toversion: 7.99.99
 marketplaces:
 - xsoar
