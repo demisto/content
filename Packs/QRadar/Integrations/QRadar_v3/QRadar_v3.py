@@ -34,6 +34,8 @@ MAX_RETRIES_CONTEXT = 5  # max number of retries to update the context
 MAX_SEARCHES_QUEUE = 10  # maximum number of concurrent searches in mirroring
 
 SAMPLE_SIZE = 2  # number of samples to store in integration context
+MAX_SAMPLE_SIZE_MB = 3  # maximum size in MB for incidents to be stored as samples
+MAX_SAMPLE_SIZE_BYTES = MAX_SAMPLE_SIZE_MB * 1024 * 1024  # convert MB to bytes
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 
@@ -1205,7 +1207,7 @@ def insert_to_updated_context(
     if should_update_last_fetch:
         # Last fetch is updated with the samples that were fetched
         new_context_data.update(
-            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])}
+            {LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)), "samples": context_data.get("samples", [])[:SAMPLE_SIZE]}
         )
 
     if should_update_last_mirror:
@@ -1420,6 +1422,7 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     """
     Receives list of outputs, and performs API call to QRadar service to retrieve the domain names
     matching the domain IDs of the outputs.
+    Includes retry logic and enhanced logging for better reliability.
     Args:
         client (Client): Client to perform the API request to QRadar.
         outputs (List[Dict]): List of all of the offenses.
@@ -1427,15 +1430,56 @@ def get_domain_names(client: Client, outputs: List[dict]) -> dict:
     Returns:
         (Dict): Dictionary of {domain_id: domain_name}
     """
-    try:
-        domain_ids = {offense.get("domain_id") for offense in outputs if offense.get("domain_id") is not None}
-        if not domain_ids:
-            return {}
-        domains_info = client.domains_list(filter_=f"""id in ({','.join(map(str, domain_ids))})""", fields="id,name")
-        return {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
-    except Exception as e:
-        demisto.error(f"Encountered an issue while getting offense domain names: {e}")
+    domain_ids = {offense.get("domain_id") for offense in outputs if offense.get("domain_id") is not None}
+    if not domain_ids:
+        demisto.debug("No domain IDs found in outputs for domain name enrichment")
         return {}
+
+    domain_ids_str = ",".join(map(str, domain_ids))
+    demisto.debug(f"Attempting to resolve domain names for domain IDs: {domain_ids_str}")
+
+    # Retry logic with exponential backoff
+    max_retries = CONNECTION_ERRORS_RETRIES  # Use existing constant (5)
+    base_delay = CONNECTION_ERRORS_INTERVAL  # Use existing constant (1)
+
+    last_exception = None
+    # NOTE: Retry logic is essential here to prevent silent failures in domain name resolution.
+    # Without retries, API call failures result in empty dict return, causing domain IDs (e.g., "6")
+    # to be displayed instead of domain names (e.g., "ABC") in the "Domain - Offense" field.
+    for attempt in range(max_retries):
+        try:
+            demisto.debug(f"Domain name resolution attempt {attempt + 1}/{max_retries}")
+            domains_info = client.domains_list(filter_=f"""id in ({domain_ids_str})""", fields="id,name")
+
+            if domains_info:
+                domain_mapping = {domain_info.get("id"): domain_info.get("name") for domain_info in domains_info}
+                demisto.debug(f"Successfully resolved {len(domain_mapping)} domain names: {domain_mapping}")
+                return domain_mapping
+            else:
+                demisto.debug(f"Domain list API returned empty response for domain IDs: {domain_ids_str}")
+                return {}
+
+        except Exception as e:
+            last_exception = e
+            attempt_msg = f"Domain name resolution attempt {attempt + 1}/{max_retries} failed"
+
+            if attempt < max_retries - 1:
+                # Calculate delay with exponential backoff
+                delay = base_delay * (2**attempt)
+                demisto.debug(f"{attempt_msg}: {str(e)}. Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                demisto.error(f"{attempt_msg}: {str(e)}. All retry attempts exhausted.")
+
+    # If we reach here, all retries failed
+    error_msg = f"Failed to resolve domain names after {max_retries} attempts for domain IDs: {domain_ids_str}"
+    if last_exception:
+        error_msg += f". Last error: {str(last_exception)}"
+
+    demisto.error(error_msg)
+    demisto.info("Falling back to using domain IDs instead of domain names for affected offenses")
+
+    return {}
 
 
 def get_rules_names(client: Client, offenses: List[dict]) -> dict:
@@ -2041,7 +2085,8 @@ def is_reset_triggered(ctx: dict | None = None, version: Any = None) -> bool:
         ctx["samples"] = []
 
         partial_changes = {
-            # We do NOT set RESET_KEY, effectively removing it from context
+            # Explicitly remove RESET_KEY by setting it to None (will be handled by merge logic)
+            RESET_KEY: None,
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY],
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: ctx[MIRRORED_OFFENSES_FINISHED_CTX_KEY],
             "samples": ctx["samples"],
@@ -2172,16 +2217,71 @@ def test_module_command(client: Client, params: dict) -> str:
     return message
 
 
+def calculate_incident_size(incident: dict) -> int:
+    """
+    Calculate the approximate size of an incident in bytes for context storage.
+
+    This function uses a multi-step process with granular error handling:
+    1. It first attempts to create a string using JSON serialization, which is precise.
+    2. If JSON serialization fails (e.g., due to non-serializable types), it
+       falls back to using the basic `str()` representation.
+    3. It then attempts to encode the resulting string to UTF-8 to get the byte size.
+    4. If encoding fails (a rare case), it performs the encoding again but
+       replaces any problematic characters to guarantee a result.
+
+    Args:
+        incident (dict): The incident dictionary.
+
+    Returns:
+        int: The calculated or estimated size of the incident in bytes.
+    """
+    try:
+        string_to_encode = json.dumps(incident, default=str)
+    except TypeError as e:
+        print_debug_msg(f"Could not serialize incident to JSON: {e}. Using fallback string representation.")
+        string_to_encode = str(incident)
+
+    try:
+        encoded_bytes = string_to_encode.encode("utf-8")
+        return len(encoded_bytes)
+    except UnicodeEncodeError as e:
+        print_debug_msg(f"Could not encode string to UTF-8: {e}. Forcing encoding by replacing errors.")
+        encoded_bytes_safe = string_to_encode.encode("utf-8", errors="replace")
+        return len(encoded_bytes_safe)
+
+
+def is_incident_size_acceptable(incident: dict) -> bool:
+    """
+    Check if an incident is small enough to be stored as a sample in the integration context.
+
+    Args:
+        incident (dict): The incident dictionary
+
+    Returns:
+        bool: True if incident size is acceptable, False otherwise
+    """
+    size_bytes = calculate_incident_size(incident)
+    if size_bytes > MAX_SAMPLE_SIZE_BYTES:
+        print_debug_msg(
+            f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
+            f"exceeds maximum sample size ({MAX_SAMPLE_SIZE_MB} MB). Skipping from samples."
+        )
+        return False
+    return True
+
+
 def fetch_incidents_command() -> List[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
 
     Returns:
-        (List[Dict]): List of incidents samples.
+        (List[Dict]): List of incidents samples, limited to SAMPLE_SIZE.
     """
     ctx = get_integration_context()
-    return ctx.get("samples", [])
+    samples = ctx.get("samples", [])
+    # Enforce the sample size limit to prevent returning too many incidents
+    return samples[:SAMPLE_SIZE]
 
 
 def create_search_with_retry(
@@ -2651,7 +2751,15 @@ def perform_long_running_loop(
     context_data, ctx_version = get_integration_context_with_version()
 
     if incidents and new_highest_id:
-        incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get("samples", [])
+        # Filter incidents that are small enough to store as samples
+        filtered_incidents = [incident for incident in incidents if is_incident_size_acceptable(incident)]
+        incident_batch_for_sample = (
+            filtered_incidents[:SAMPLE_SIZE] if filtered_incidents else context_data.get("samples", [])[:SAMPLE_SIZE]
+        )
+
+        if len(filtered_incidents) < len(incidents):
+            skipped_count = len(incidents) - len(filtered_incidents)
+            print_debug_msg(f"Skipped {skipped_count} incident(s) from samples due to size constraints.")
         # Actually create the incidents in XSOAR
         demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         partial_changes = {}
@@ -2692,7 +2800,7 @@ def recover_from_last_run(ctx: dict | None = None, version: Any = None):
             f"ID from context: {last_highest_id_context}"
         )
 
-        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])}
+        partial_changes = {LAST_FETCH_KEY: last_highest_id_last_run, "samples": ctx.get("samples", [])[:SAMPLE_SIZE]}
 
         safely_update_context_data_partial(partial_changes)
 

@@ -1,0 +1,10 @@
+[
+    {
+      "id": 555,
+      "hostname": "comp-asset-page",
+      "status": "ok",
+      "compliance_rules_failed_count": 0,
+      "compliance_rules_succeed_count": 5
+    }
+  ]
+  

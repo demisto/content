@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+from collections import defaultdict
 
 from typing import Any
 
@@ -58,9 +59,7 @@ def prepare_human_readable(
         command = f'{command_name} {" ".join([f"{arg}={value}" for arg, value in args.items() if value])}'
         if not is_error:
             result_message = f"#### Result for {command}\n{human_readable}"
-            result.append(
-                CommandResults(readable_output=result_message, mark_as_note=True)
-            )
+            result.append(CommandResults(readable_output=result_message, mark_as_note=True))
         else:
             result_message = f"#### Error for {command}\n{human_readable}"
             result.append(
@@ -89,7 +88,7 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
 
     Example:
         raw_context = {
-            "Account(val.ID == obj.ID)": [
+            "UserData(val.ID == obj.ID)": [
                 {
                     "Username": "john.doe",
                     "Email": "john.doe@example.com",
@@ -97,9 +96,9 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
                 }
             ]
         }
-        output_key = "Account"
+        output_key = "UserData"
         result = get_outputs(output_key, raw_context)
-        # result will be: "Account(val.Username == obj.Username)"
+        # result will be: "UserData(val.Username == obj.Username)"
     """
     full_output_key = ""
     if raw_context:
@@ -111,15 +110,11 @@ def get_output_key(output_key: str, raw_context: dict[str, Any]) -> str:
                     full_output_key = key
                     break
         if not full_output_key:
-            demisto.debug(
-                f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}"
-            )
+            demisto.debug(f"Output key {output_key} not found in entry context keys: {list(raw_context.keys())}")
     return full_output_key
 
 
-def run_execute_command(
-    command_name: str, args: dict[str, Any]
-) -> tuple[list[dict], str, list[CommandResults]]:
+def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[dict], str, list[CommandResults]]:
     """
     Executes a command and processes its results.
 
@@ -144,11 +139,7 @@ def run_execute_command(
     for entry in res:
         entry_context_list.append(entry.get("EntryContext", {}))
         if is_error(entry):
-            errors_command_results.extend(
-                prepare_human_readable(
-                    command_name, args, get_error(entry), is_error=True
-                )
-            )
+            errors_command_results.extend(prepare_human_readable(command_name, args, get_error(entry), is_error=True))
         else:
             human_readable_list.append(entry.get("HumanReadable") or "")
     human_readable = "\n".join(human_readable_list)
@@ -176,12 +167,14 @@ def remove_system_user(users_names: list[str], brands: list[str]) -> tuple[list,
         if user in SYSTEM_USERS:
             demisto.debug(f"Skipping user: '{user}' is a system user.")
             for brand in brands:
-                outputs.append({
-                    "Message": "Skipping session clearing: User is a system user.",
-                    "Result": "Failed",
-                    "Brand": brand,
-                    "UserName": user,
-                })
+                outputs.append(
+                    {
+                        "Message": "Skipping session clearing: User is a system user.",
+                        "Result": "Failed",
+                        "Brand": brand,
+                        "UserName": user,
+                    }
+                )
         else:
             filtered_users.append(user)
 
@@ -207,20 +200,14 @@ def extract_usernames_with_ids(context: dict, output_key: str) -> dict:
                   "user2@example.com": [{"Source": "Microsoft Graph User", "Value": "5678"}]
               }
     """
-    user_id_mapping: dict[str, list] = {}
+    user_id_mapping = defaultdict(list)
     users = context.get(output_key, [])
-
     for user in users:
-        usernames = user.get("Username", [])
-        for username in usernames:
-            username = username.get("Value", "")
-            id_info = user.get("ID", {})
-
-            if username and id_info:
-                if username not in user_id_mapping:
-                    user_id_mapping[username] = []
-                user_id_mapping[username].extend(id_info)
-
+        if user.get("Status") == "found":
+            username = user.get("Username", "")
+            id_info = user.get("ID", "")
+            source = user.get("Source", "")
+            user_id_mapping[username].append({"Source": source, "Value": id_info})
     return user_id_mapping
 
 
@@ -238,18 +225,14 @@ def get_user_data(command: Command) -> tuple[list[CommandResults], dict]:
     """
     readable_outputs_list = []
 
-    entry_context, human_readable, readable_errors = run_execute_command(
-        command.name, command.args
-    )
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     id_info = {}
 
     for entry in entry_context:
         if entry:
-            output_key = get_output_key("Account", entry)
+            output_key = get_output_key("UserData", entry)
             id_info.update(extract_usernames_with_ids(entry, output_key))
 
     return readable_outputs_list, id_info
@@ -271,9 +254,7 @@ def get_user_id(users_ids: dict, brand_name: str, user_name: str) -> str:
         if brand_name == item.get("Source", ""):
             return item.get("Value", "")
 
-    demisto.debug(
-        f"Skipping user session clearance for user '{user_name}' and brand '{brand_name}' - user name not found."
-    )
+    demisto.debug(f"Skipping user session clearance for user '{user_name}' and brand '{brand_name}' - user name not found.")
     return ""
 
 
@@ -294,9 +275,7 @@ def clear_user_sessions(command: Command) -> tuple[list[CommandResults], str, Op
 
     _, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(
-        prepare_human_readable(command.name, command.args, human_readable)
-    )
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     error_message = readable_errors[0].readable_output if readable_errors else ""
 
     return readable_outputs_list, human_readable, error_message
@@ -328,7 +307,6 @@ def create_readable_output(outputs: list):
             "Message": details["Message"],
             "Result": details["Result"],
             "Brand": details["Brand"],
-
         }
         for details in outputs
     ]
@@ -394,8 +372,10 @@ def main():
                         clear_session_results.append((OKTA_BRAND, "Success", f"User session was cleared for {user_name}"))
                     else:
                         failed_message = f"Okta v2: {error_message.lstrip('#').strip()}"
-                        demisto.debug(f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
-                                      f"Error message: {error_message}. Response details: {readable_outputs}.")
+                        demisto.debug(
+                            f"Failed to clear sessions for Okta user with ID {okta_v2_id}. "
+                            f"Error message: {error_message}. Response details: {readable_outputs}."
+                        )
                         clear_session_results.append((OKTA_BRAND, "Failed", failed_message))
             elif OKTA_BRAND in brands:
                 clear_session_results.append((OKTA_BRAND, "Failed", "Username not found or no integration configured."))
@@ -414,13 +394,15 @@ def main():
                         clear_session_results.append((MS_GRAPH_BRAND, "Success", f"User session was cleared for {user_name}"))
                     else:
                         failed_message = f"\nMG User: {human_readable.lstrip('#').strip()}"
-                        demisto.debug(f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
-                                      f"Response details: {readable_outputs}")
+                        demisto.debug(
+                            f"Failed to clear sessions for Microsoft Graph user with ID {microsoft_graph_id}. "
+                            f"Response details: {readable_outputs}"
+                        )
                         clear_session_results.append((MS_GRAPH_BRAND, "Failed", failed_message))
             elif MS_GRAPH_BRAND in brands:
                 clear_session_results.append((MS_GRAPH_BRAND, "Failed", "Username not found or no integration configured."))
 
-            for (brand, result, message) in clear_session_results:
+            for brand, result, message in clear_session_results:
                 user_output = {
                     "Message": message,
                     "Result": result,
