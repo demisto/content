@@ -63,7 +63,7 @@ def main():
             final_results.append(case_data)
         return_results(
             CommandResults(
-                readable_output=tableToMarkdown("Cases Extra Data", mapped_cases, headerTransform=string_to_table_header),
+                readable_output=tableToMarkdown("Cases Extra Data", final_results, headerTransform=string_to_table_header),
                 outputs_prefix="Core.CaseExtraData",
                 outputs_key_field="case_id",
                 outputs=final_results,
