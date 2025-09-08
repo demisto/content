@@ -1609,6 +1609,20 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
+    - description: Whether to use polling.
+      auto: PREDEFINED
+      defaultValue: 'false'
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - name: timeout_in_seconds
+      description: Timeout for polling. Default is 300 seconds.
+    - name: interval_in_seconds
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
+    - description: action IDs to use in polling commands. (automatically filled by polling).
+      name: action_ids
+      deprecated: true
     description: Stop the execution of a file on a machine and delete it.
     name: microsoft-atp-stop-and-quarantine-file
     outputs:
@@ -5815,7 +5829,7 @@ script:
     - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   isfetch: true
   runonce: false
   script: '-'

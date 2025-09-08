@@ -2093,6 +2093,9 @@ Machine.StopAndQuarantine
 | machine_id | The ID of the machine. When providing multiple values, each value is checked for the same hash.                                           | Required |
 | file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each value is checked for the same machine_id.  | Required |
 | comment | The comment to associate with the action.                                                                                                | Required |
+| polling | Whether to poll for the action status.                                                                                                  | Optional |
+| timeout_in_seconds | The timeout in seconds for the polling.                                                                                                  | Optional |
+| interval_in_seconds | The interval in seconds between polling.                                                                                                  | Optional |
 
 ##### Context Output
 
