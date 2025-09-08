@@ -265,6 +265,16 @@ class EndpointBrandMapper:
         endpoint_data = self._fetch_endpoint_data()
         if not endpoint_data:
             demisto.debug("[EndpointBrandMapper] No endpoint data found, will not quarantine.")
+            for endpoint_id in self.endpoint_ids_to_map:
+                self.initial_results.append(
+                    QuarantineResult.create(
+                        endpoint_id=endpoint_id,
+                        status=QuarantineResult.Statuses.FAILED,
+                        message=QuarantineResult.Messages.ENDPOINT_NOT_FOUND,
+                        brand="Unknown",
+                        script_args=self.script_args,
+                    )
+                )
             raise QuarantineException("Could not retrieve endpoint data.")
 
         online_endpoints = self._filter_endpoint_data(endpoint_data)
@@ -698,7 +708,7 @@ class MDEHandler(BrandHandler):
 
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
-
+        demisto.debug(f"Raw response received from MDE quaratnine: {raw_response}")
         metadata = raw_response[0].get("Metadata", {})
 
         job = {
@@ -706,6 +716,10 @@ class MDEHandler(BrandHandler):
             "poll_command": metadata.get("pollingCommand", MDEHandler.QUARANTINE_COMMAND),
             "poll_args": metadata.get("pollingArgs", {}),
         }
+
+        if not job.get("poll_command") or not job.get("poll_args"):
+            raise QuarantineException("Failed to initiate quarantine.")
+
         demisto.debug(f"[{self.brand} Handler] Created new polling job object: {job}")
         return job
 
@@ -1025,12 +1039,14 @@ class QuarantineOrchestrator:
         `_execute_quarantine_for_brand` for each discovered brand.
         """
         demisto.debug("[Orchestrator] Initiating jobs.")
+        mapper = EndpointBrandMapper(self.args, self)
+
         try:
-            mapper = EndpointBrandMapper(self.args, self)
             grouped_endpoints_by_brand = mapper.group_by_brand()
             self.completed_results.extend(mapper.initial_results)
         except Exception as e:
             demisto.error(f"[Orchestrator] Critical error during endpoint mapping, skipping quarantine operations {e}")
+            self.completed_results.extend(mapper.initial_results)
             return
 
         demisto.debug(f"[Orchestrator] Executing quarantine for endpoints: {grouped_endpoints_by_brand.keys()}")
