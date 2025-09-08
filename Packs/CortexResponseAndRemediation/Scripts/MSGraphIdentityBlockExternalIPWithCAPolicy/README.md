@@ -1,4 +1,4 @@
-Blocks an external IP via Azure Conditional Access using a named IP location and policy JSON.
+Blocks an external IP via Azure Conditional Access using a named IP location and a policy JSON.
 
 ## Script Data
 
