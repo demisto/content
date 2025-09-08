@@ -2077,7 +2077,7 @@ script:
     - contextPath: ConfluenceCloud.Content.body.storage.embeddedContent
       description: A list of embedded content objects in the body.
       type: Unknown
-    - contextPath: ConfluenceCloud.Content.body.storage._expandable.content
+    - contextPath: ConfluenceCloud.Content.body.storage._expandable
       description: Link to the content resource for the body.
       type: String
     - contextPath: ConfluenceCloud.Content.extensions.position
