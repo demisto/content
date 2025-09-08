@@ -760,12 +760,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.11"
+version = "1.38.10"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 files = []
 develop = false
+
 [package.dependencies]
 autopep8 = "^2.0.4"
 bandit = "^1.7.4"
@@ -841,8 +842,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "quickActions"
-resolved_reference = "1261cb6f1ad2632d64174e490c019c0f4d7d1d74"
+reference = "quickActions2"
+resolved_reference = "668de1601cafdc0e3fb2686c2131dd80a3616c79"
 
 [[package]]
 name = "dictdiffer"
@@ -4698,4 +4699,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "61a2039e7d5091fab3976fd7efc6e390da18f4d8347b5de1460f4084d7328073"
+content-hash = "c8f7b431fcf229600275130a79759315a6b0d4408afe7c5d08f8d0b348a5fb82"
