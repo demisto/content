@@ -5896,6 +5896,14 @@
             "fromversion": "6.10.0"
         },
         {
+            "playbookID": "BlockExternalIP - Test",
+            "integrations": ["F5Silverline", "Cisco ASA", "Panorama"],
+            "instance_names": [
+                "palo_alto_panorama_11_fw_test"
+            ],
+            "timeout": 600
+        },
+        {
             "playbookID": "FileEnrichment - Test",
             "integrations": [
                 "VirusTotal (API v3)",
