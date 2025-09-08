@@ -733,10 +733,11 @@ def get_user_command(client: Client, args: dict):
         try:
             raw_response = client.get_user(user_term)
         except Exception as e:
-            if not "404" in str(e):
-              raise e
+            if "404" not in str(e):
+                raise e
+
     if not raw_response:
-      return (f"User {user_term!r} was not found.", {}, {})
+        return (f"User {user_term!r} was not found.", {}, {})
 
     verbose = args.get("verbose")
 
