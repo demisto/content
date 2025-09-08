@@ -155,18 +155,19 @@ class Client(BaseClient):
         return RES_EXAMPLE
 
         demisto.info(f"Sending http request to get operations with {params=}")
-        response = self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params, ok_codes=[200, 202, 401])
+        response = self._http_request(
+            "get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params, ok_codes=[200, 202, 401]
+        )
 
         if response.status_code == 401:
             demisto.info("Invalid bearer token")
             self.request_access_token()
             access_token = integration_context.get(ACCESS_TOKEN_CONST)
-            headers["Authorization"] =  f"CwsAuth Bearer={access_token}",
+            headers["Authorization"] = (f"CwsAuth Bearer={access_token}",)
             demisto.info(f"Sending http request to get operations with {params=}")
             return self._http_request("get", url_suffix="cvad/manage/ConfigLog/Operations", headers=headers, params=params)
         else:
             return response
-
 
     def get_operations_with_pagination(self, limit, search_date_option="LastMinute", continuation_token=None):
         operations: list[dict] = []
