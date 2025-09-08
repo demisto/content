@@ -4940,7 +4940,7 @@ script:
     - description: The maximum number of records to return.
       name: limit
       defaultValue: 50
-    description: List users.
+    description: Lists users.
     name: cs-falcon-list-users
     outputs:
     - contextPath: CrowdStrike.Users.uuid
