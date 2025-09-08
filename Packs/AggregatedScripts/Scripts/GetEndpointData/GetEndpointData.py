@@ -617,7 +617,7 @@ def run_single_args_commands(
 
 
 def run_list_args_commands(
-    list_args_commands,
+    list_args_commands: list[Command],
     command_runner: EndpointCommandRunner,
     endpoint_id,
     endpoint_ips,
@@ -649,15 +649,13 @@ def run_list_args_commands(
     for command in list_args_commands:
         for arg_type, arg in command_args.items():
             readable_outputs, endpoint_output = command_runner.run_command(command, {arg_type: arg})
-
-        if endpoint_output:
-            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
-                add_endpoint_to_mapping(endpoint_output, ir_mapping)
-            else:
-                multiple_endpoint_outputs.extend(endpoint_output)
-
-        if verbose:
-            multiple_endpoint_readable_outputs.extend(readable_outputs)
+            if endpoint_output:
+                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+                    add_endpoint_to_mapping(endpoint_output, ir_mapping)
+                else:
+                    multiple_endpoint_outputs.extend(endpoint_output)
+            if verbose:
+                multiple_endpoint_readable_outputs.extend(readable_outputs)
 
     return multiple_endpoint_outputs, multiple_endpoint_readable_outputs
 
@@ -964,18 +962,18 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[st
         ir_mapping[endpoint["ID"]] = endpoint
 
 
-def get_extended_hostnames_set(Ir_endpoints: dict[str, Any]) -> set[str]:
+def get_extended_hostnames_set(ir_endpoints: dict[str, Any]) -> set[str]:
     """
     Retrieves a set of extended hostnames from the endpoint mappings.
 
     Args:
-        Ir_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
+        ir_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
 
     Returns:
         set[str]: Set of extended hostnames.
     """
     hostnames = set()
-    for endpoint in Ir_endpoints.values():
+    for endpoint in ir_endpoints.values():
         hostnames.add(endpoint["Hostname"])
     return hostnames
 
@@ -1159,10 +1157,10 @@ def main():  # pragma: no cover
         endpoint_outputs_single_commands, command_results_single_commands = run_single_args_commands(
             zipped_args, single_args_commands, command_runner, verbose, ir_mapping
         )
-
+        
         demisto.debug("preparing to convert endpoint mapping to list.")
         endpoint_outputs_single_commands.extend(list(ir_mapping.values()))
-
+        
         endpoint_outputs_list.extend(endpoint_outputs_single_commands)
         command_results_list.extend(command_results_single_commands)
 
