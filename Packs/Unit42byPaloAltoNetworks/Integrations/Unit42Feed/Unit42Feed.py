@@ -41,51 +41,51 @@ THREAT_OBJECT_CLASS_MAP = {
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify=False, proxy=False):
+    def __init__(self, base_url, headers, verify=False, proxy=False):
         """Implements class for Unit 42 feed.
 
         Args:
             base_url: feed URL.
+            headers: headers for the request.
             verify: boolean, if *false*, feed HTTPS server certificate is verified. Default: *false*
             proxy: boolean, if *false* feed HTTPS server certificate will not use proxies. Default: *false*
         """
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        # Add authorization headers
-        self._headers = {"Authorization": f'Bearer {demisto.params().get("api_key")}'}
+        super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def get_indicators(
-        self, indicator_type: str | None = None, limit: int = 10, next_page_token: str | None = None, test: bool = False
+        self, indicator_types: str | None = None, limit: int = 100, start_time: str | None = None, next_page_token: str | None = None
     ) -> dict:
         """Get indicators from the Unit 42 feed.
 
         Args:
-            indicator_type: Type of indicators to fetch (ip, filehash_sha256, domain, url, or None for all)
+            indicator_types: Comma separated list of indicator types to fetch (ip, filehash_sha256, domain, url, or None for all)
             limit: Maximum number of indicators to return
+            start_time: Start time for fetching indicators
             next_page_token: Token for pagination
-            test: Whether it was called during clicking the test button or not
 
         Returns:
             Dict containing indicators and pagination info
         """
         params = {}
-        if indicator_type and indicator_type != "All":
-            params["indicator_type"] = indicator_type.lower()
+        if indicator_types and indicator_types != "All":
+            params["indicator_types"] = indicator_types.lower()
         if limit:
-            params["limit"] = str(limit)  # Convert int to str for API parameters
+            params["limit"] = limit
+        if start_time:
+            params["start_time"] = start_time
         if next_page_token:
             params["next_page_token"] = next_page_token
 
-        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/indicators", params=params, headers=self._headers)
+        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/indicators", params=params)
 
         return response
 
-    def get_threat_objects(self, limit: int = 10, next_page_token: str | None = None, test: bool = False) -> dict:
+    def get_threat_objects(self, limit: int = 100, next_page_token: str | None = None) -> dict:
         """Get threat objects from the Unit 42 feed.
 
         Args:
             limit: Maximum number of threat objects to return
             next_page_token: Token for pagination
-            test: Whether it was called during clicking the test button or not
 
         Returns:
             Dict containing threat objects and pagination info
@@ -96,9 +96,7 @@ class Client(BaseClient):
         if next_page_token:
             params["next_page_token"] = next_page_token
 
-        response = self._http_request(
-            method="GET", url_suffix="/api/v1/feeds/threat_objects", params=params, headers=self._headers
-        )
+        response = self._http_request(method="GET", url_suffix="/api/v1/feeds/threat_objects", params=params)
 
         return response
 
@@ -334,77 +332,74 @@ def test_module(client: Client) -> str:
         Outputs.
     """
     # Test connection by getting a small number of indicators
-    response = client.get_indicators(limit=1, test=True)
+    response = client.get_indicators(limit=1)
     if response and response.get("data"):
         return "ok"
     return "Failed to connect to Unit 42 API. Check your Server URL and License."
 
 
-def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: str | None = None) -> list:
+def fetch_indicators(client: Client, params: dict, feed_tags: list = [], tlp_color: str | None = None) -> list:
     """Retrieves indicators from the feed
 
     Args:
         client: Client object with request
+        params: demisto.params()
         feed_tags: feed tags.
         tlp_color: Traffic Light Protocol color.
     Returns:
         List. Processed indicators from feed.
     """
-    # Get indicator type from params
-    indicator_type = demisto.params().get("indicator_type", "All")
-
-    # Get the limit from params or use default
-    limit = int(demisto.params().get("limit", 100))
+    # Get indicator types from params
+    indicator_types = params.get("indicator_types")
+    start_time = demisto.getLastRun().get("last_successful_run")
 
     # Get indicators from the API
-    response = client.get_indicators(indicator_type=indicator_type, limit=limit)
+    response = client.get_indicators(indicator_types=indicator_types, start_time=start_time)
 
     # Parse indicators
     indicators = []
     if response and isinstance(response, dict) and response.get("data"):
         data = response.get("data", [])
         if isinstance(data, list):
-            indicators = parse_indicators(data, feed_tags, tlp_color)
+            indicators.extend(parse_indicators(data, feed_tags, tlp_color))
 
             # Handle pagination if needed
-            pagination = response.get("pagination", {})
-            next_page_token = pagination.get("next_page_token") if isinstance(pagination, dict) else None
+            metadata = response.get("metadata", {})
+            next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
             while next_page_token:
                 # Get next page of indicators
-                response = client.get_indicators(indicator_type=indicator_type, limit=limit, next_page_token=next_page_token)
+                response = client.get_indicators(indicator_types=indicator_types, next_page_token=next_page_token)
                 if response and isinstance(response, dict) and response.get("data"):
                     data = response.get("data", [])
                     if isinstance(data, list):
                         indicators.extend(parse_indicators(data, feed_tags, tlp_color))
-                    pagination = response.get("pagination", {})
-                    next_page_token = pagination.get("next_page_token") if isinstance(pagination, dict) else None
+                    metadata = response.get("metadata", {})
+                    next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
                 else:
                     break
 
-    # Get threat objects if configured
-    if demisto.params().get("fetch_threat_objects", False):
+    # Get threat objects twice a day (every 12 hours)
+    if start_time and (datetime.now(timezone.utc) - datetime.strptime(start_time, DATE_FORMAT)).total_seconds() >= 6 * 3600:
         response = client.get_threat_objects(limit=limit)
 
         # Parse threat objects
         if response and isinstance(response, dict) and response.get("data"):
             data = response.get("data", [])
             if isinstance(data, list):
-                threat_objects = parse_threat_objects(data, feed_tags, tlp_color)
-                indicators.extend(threat_objects)
+                indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
 
                 # Handle pagination if needed
-                pagination = response.get("pagination", {})
-                next_page_token = pagination.get("next_page_token") if isinstance(pagination, dict) else None
+                metadata = response.get("metadata", {})
+                next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
                 while next_page_token:
                     # Get next page of threat objects
                     response = client.get_threat_objects(limit=limit, next_page_token=next_page_token)
                     if response and isinstance(response, dict) and response.get("data"):
                         data = response.get("data", [])
                         if isinstance(data, list):
-                            threat_objects = parse_threat_objects(data, feed_tags, tlp_color)
-                            indicators.extend(threat_objects)
-                        pagination = response.get("pagination", {})
-                        next_page_token = pagination.get("next_page_token") if isinstance(pagination, dict) else None
+                            indicators.extend(parse_threat_objects(data, feed_tags, tlp_color))
+                        metadata = response.get("metadata", {})
+                        next_page_token = metadata.get("next_page_token") if isinstance(metadata, dict) else None
                     else:
                         break
 
@@ -437,10 +432,10 @@ def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp
 
     # Create pagination context
     pagination_context = {}
-    if response and isinstance(response, dict) and response.get("pagination"):
-        pagination = response.get("pagination", {})
-        if isinstance(pagination, dict) and pagination.get("next_page_token"):
-            pagination_context["next_page_token"] = pagination.get("next_page_token")
+    if response and isinstance(response, dict) and response.get("metadata"):
+        metadata = response.get("metadata", {})
+        if isinstance(metadata, dict) and metadata.get("next_page_token"):
+            pagination_context["next_page_token"] = metadata.get("next_page_token")
 
     # Create human readable output
     headers = ["value", "type", "score"]
@@ -484,10 +479,10 @@ def get_threat_objects_command(client: Client, args: dict, feed_tags: list = [],
 
     # Create pagination context
     pagination_context = {}
-    if response and isinstance(response, dict) and response.get("pagination"):
-        pagination = response.get("pagination", {})
-        if isinstance(pagination, dict) and pagination.get("next_page_token"):
-            pagination_context["next_page_token"] = pagination.get("next_page_token")
+    if response and isinstance(response, dict) and response.get("metadata"):
+        metadata = response.get("metadata", {})
+        if isinstance(metadata, dict) and metadata.get("next_page_token"):
+            pagination_context["next_page_token"] = metadata.get("next_page_token")
 
     # Create human readable output
     headers = ["value", "type", "description"]
@@ -521,17 +516,22 @@ def main():
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
+    
+    headers = {"Authorization": f'Bearer {demisto.getLicenseID()}'}
 
     try:
-        client = Client(base_url=url, verify=verify_certificate, proxy=proxy)
+        client = Client(base_url=url, headers=headers, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
             return_results(test_module(client))
 
         elif command == "fetch-indicators":
-            indicators = fetch_indicators(client, feed_tags, tlp_color)
+            now = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # save the time we started fetching indicators.
+            indicators = fetch_indicators(client, params, feed_tags, tlp_color)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
+            demisto.setLastRun({"last_successful_run": now})
+            demisto.info(f"Fetch-indicators completed. Next run will fetch from: {now.strftime(DATE_FORMAT)}")
 
         elif command == "unit42-get-indicators":
             return_results(get_indicators_command(client, demisto.args(), feed_tags, tlp_color))

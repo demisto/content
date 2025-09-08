@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Unit42 Feed
+  id: Unit42 Feed TDP
   version: -1
 sectionOrder:
 - Connect
@@ -17,7 +17,8 @@ configuration:
   required: false
   section: Collect
 - display: Indicator Type
-  name: indicator_type
+  additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain, or All for all). Default is All
+  name: indicator_types
   type: 16
   options:
   - File
@@ -111,10 +112,16 @@ configuration:
   advanced: true
 - display: Bypass exclusion list
   name: feedBypassExclusionList
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: ""
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  section: Collect
+  advanced: true
+- display: Fetch threat objects
+  name: fetch_threat_objects
+  type: 8
+  required: false
   section: Collect
   advanced: true
 - display: Use system proxy settings
@@ -132,11 +139,12 @@ configuration:
   advanced: true
 description: Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Unit 42 research team.
 display: Unit 42 Feed
-name: Unit42 Feed
+name: Unit42 Feed TDP
 script:
   commands:
   - arguments:
-    - name: indicator_type
+    - name: indicator_types
+      description: Comma-separated list of indicator types to fetch (File, IP, URL, Domain, or All for all). Default is All
       auto: PREDEFINED
       predefined:
       - File
@@ -144,13 +152,19 @@ script:
       - URL
       - Domain
       - All
-      defaultvalue: All
+      defaultValue: 'All'
       required: false
     - defaultValue: '10'
       description: The maximum number of indicators to return. The default is 10.
       name: limit
     description: Gets indicators from the feed.
     name: unit42-get-indicators
+  - arguments:
+    - defaultValue: '10'
+      description: The maximum number of threat objects to return. The default is 10.
+      name: limit
+    description: Gets threat objects from the feed.
+    name: unit42-get-threat-objects
   dockerimage: demisto/python3:3.12.8.1983910
   feed: true
   runonce: false
