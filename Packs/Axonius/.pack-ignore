@@ -2,11 +2,7 @@
 ignore=RM104
 
 [file:Axonius_image.png]
-ignore=IM111
+ignore=IM111,IM112
 
 [known_words]
 axonius
-
-
-[fooooooo]
-
