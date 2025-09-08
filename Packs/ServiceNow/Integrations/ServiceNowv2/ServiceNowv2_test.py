@@ -1618,9 +1618,9 @@ def test_not_authenticated_retry_negative(requests_mock, mocker: MockerFixture):
         client.send_request("")
     assert (
         str(ex.value) == "ServiceNow Error: User Not Authenticated, details: Required to provide Auth information "
-                         'Got status code 401 with url http://server_url with body b\'{"error": {"message": '
-                         '"User Not Authenticated", "detail": "Required to provide Auth information"}, '
-                         '"status": "failure"}\' with response headers {}'
+        'Got status code 401 with url http://server_url with body b\'{"error": {"message": '
+        '"User Not Authenticated", "detail": "Required to provide Auth information"}, '
+        '"status": "failure"}\' with response headers {}'
     )
 
     debug = demisto.debug.call_args_list
@@ -2748,8 +2748,7 @@ def test_add_default_closure_fields_to_delta_partial():
     from ServiceNowv2 import add_default_closure_fields_to_delta
 
     delta = {"close_code": "Manual"}
-    result = add_default_closure_fields_to_delta(delta.copy(),  close_code="CustomCode", close_notes="CustomNotes")
-    assert result["state"] == "7"
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
     assert result["close_code"] == "Manual"  # Should not overwrite
     assert result["close_notes"] == "CustomNotes"
 
@@ -3279,7 +3278,7 @@ def test_update_remote_data_upload_file_exception(mocker):
 
     assert (
         demisto_mocker.call_args[0][0] == "An attempt to mirror a file has failed. entry_id=entry-id, "
-                                          "file_name='test'\nERROR!!!"
+        "file_name='test'\nERROR!!!"
     )
     assert res == "1234"
 

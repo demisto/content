@@ -3246,17 +3246,17 @@ def set_state_according_to_closure_case_and_ticket_type(
     parsed_args: UpdateRemoteSystemArgs, closure_case: str, ticket_type: str, close_custom_state: Optional[str]
 ) -> UpdateRemoteSystemArgs:
     """
-       Pre-process the parsed arguments to close an incident.
+    Pre-process the parsed arguments to close an incident.
 
-       Args:
-           parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
-           closure_case (str): The case to close the incident. Can be "closed" or "resolved".
-           ticket_type (str): The type of the ticket.
-           close_custom_state (str): The custom state to use if given.
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed arguments.
+        closure_case (str): The case to close the incident. Can be "closed" or "resolved".
+        ticket_type (str): The type of the ticket.
+        close_custom_state (str): The custom state to use if given.
 
-       Returns:
-           UpdateRemoteSystemArgs: The pre-processed parsed arguments.
-       """
+    Returns:
+        UpdateRemoteSystemArgs: The pre-processed parsed arguments.
+    """
     if parsed_args.inc_status == IncidentStatus.DONE:
         demisto.debug("Modifying incident status by closure case")
         if closure_case and ticket_type in {"sc_task", "sc_req_item", SIR_INCIDENT}:
@@ -3362,7 +3362,7 @@ def update_remote_system_on_incident_change(
         close_custom_state: The custom state to use when closing the ticket.
         ticket_id: The ID of the ticket to update.
     """
-    is_custom_close: bool | str | None = (parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state
+    is_custom_close: bool = bool((parsed_args.inc_status == IncidentStatus.DONE) and close_custom_state)
     demisto.debug(f"Incident changed: {parsed_args.incident_changed}")
     parsed_args = set_state_according_to_closure_case_and_ticket_type(parsed_args, closure_case, ticket_type, close_custom_state)
     parsed_args = set_default_fields(parsed_args)
