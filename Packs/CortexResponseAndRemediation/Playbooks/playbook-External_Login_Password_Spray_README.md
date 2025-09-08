@@ -1,6 +1,5 @@
 This playbook is designed to handle the following alerts:
 
-- External Login Password Spray
 - Successful External Login Password Spray
 - External Login Password Spray on a Domain Controller
 - External Login Password Spray Involving a Honey User
@@ -25,11 +24,7 @@ Containment:
 
 Requirements:
 
-For response actions, the following integrations are required:
-
-- Active Directory (AD)
-- PAN-OS
-- Core - IR
+- For response actions, the following integrations are required: Active Directory (AD), PAN-OS, Core - IR.
 
 ## Dependencies
 
@@ -37,27 +32,34 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* PAN-OS - Block IP
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CortexCoreXQLQueryEngine
-* CoreIOCs
-* CortexCoreIR
+This playbook does not use any integrations.
 
 ### Scripts
 
 * AnalyzeTimestampIntervals
+* CommandLineAnalysis
+* IncreaseAlertSeverity
+* IsIntegrationAvailable
+* SearchAlertsV2
+* Set
 * SetAndHandleEmpty
+* block-external-ip
+* disable-user
+* get-user-data
+* ip-enrichment
 
 ### Commands
 
-* core-run-script-execute-commands
-* core-get-cloud-original-alerts
-* ip
 * ad-expire-password
 * closeInvestigation
-* core-list-risky-users
+* core-execute-command
+* core-get-cloud-original-alerts
+* slack-get-user-details
+* xdr-xql-generic-query
 
 ## Playbook Inputs
 
