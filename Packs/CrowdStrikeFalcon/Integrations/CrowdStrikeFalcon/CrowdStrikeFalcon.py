@@ -13,12 +13,9 @@ from typing import Any
 
 import requests
 
-# Disable insecure warnings
-import urllib3
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 
-urllib3.disable_warnings()
 """ GLOBALS/PARAMS """
 VENDOR = "CrowdStrike"
 PRODUCT = "Falcon_Event"
