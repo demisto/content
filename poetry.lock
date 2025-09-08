@@ -760,13 +760,12 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.10"
+version = "1.38.11"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
 files = []
 develop = false
-
 [package.dependencies]
 autopep8 = "^2.0.4"
 bandit = "^1.7.4"
