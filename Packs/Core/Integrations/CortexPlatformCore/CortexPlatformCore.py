@@ -8,6 +8,7 @@ urllib3.disable_warnings()
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = "Core"
 INTEGRATION_NAME = "Cortex Platform Core"
+MAX_GET_INCIDENTS_LIMIT = 100
 
 
 def replace_keys(dic: dict, original: str, new: str):
@@ -67,6 +68,7 @@ def preprocess_get_cases_args(args):
     demisto.debug(f"original args: {args}")
     args = case_to_incident(args)
     args = issue_to_alert(args)
+    args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
     demisto.debug(f"after preprocess_get_cases_args args: {args}")
     return args
 

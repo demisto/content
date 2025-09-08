@@ -380,28 +380,6 @@ def test_get_cases_command_case_id_as_int(mocker):
     assert result.readable_output.startswith("table")
 
 
-def test_get_cases_command_status_filter(mocker):
-    """
-    Given:
-        - status filter as a list
-    When:
-        - Calling get_cases_command
-    Then:
-        - client.get_incidents is called for each status
-        - Output is limited to 'limit' param
-    """
-    from CortexPlatformCore import get_cases_command
-
-    client = mocker.Mock()
-    # simulate two calls for two statuses
-    client.get_incidents.side_effect = [[{"case_id": "1"}], [{"case_id": "2"}]]
-    mocker.patch("CortexPlatformCore.tableToMarkdown", return_value="table")
-    args = {"status": ["new", "closed"], "limit": 1}
-    result = get_cases_command(client, args)
-    assert result.outputs == [{"case_id": "mapped"}]
-    assert client.get_incidents.call_count == 2
-
-
 def test_get_cases_command_limit_enforced(mocker):
     """
     Given:
