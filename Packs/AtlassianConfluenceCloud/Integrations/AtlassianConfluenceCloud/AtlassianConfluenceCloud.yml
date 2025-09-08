@@ -2107,7 +2107,7 @@ script:
     - contextPath: ConfluenceCloud.Content._links.base
       description: Base URL of the Confluence site.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4508456
   isfetchevents: true
   isfetchevents:xsoar: false
   runonce: false
