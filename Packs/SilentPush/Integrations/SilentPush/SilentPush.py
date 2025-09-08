@@ -4157,15 +4157,12 @@ def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | d
     result = client.add_feed(args)
     feed_name = result.get("name")
     feed_type = result.get("type")
-    readable_output = (
-        f"SilentPush feed: {feed_name} of type: {feed_type} was added successfully.\n"
-    )
 
     return CommandResults(
         outputs_prefix="SilentPush.Feed",
         outputs_key_field="name",
         outputs=result,
-        readable_output=tableToMarkdown(readable_output,result),
+        readable_output=f"SilentPush feed: {feed_name} of type: {feed_type} was added successfully.",
         raw_response=result,
     )
 
@@ -4212,7 +4209,7 @@ def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResult
         outputs_prefix="SilentPush.AddFeedTags",
         outputs_key_field="feed_uuid",
         outputs=result,
-        readable_output=tableToMarkdown(f"feed with uuid: {uuid} was updated with tags: {tags}", result),
+        readable_output=f"feed with uuid: {uuid} was updated with tags: {tags}",
         raw_response=result,
     )
 
@@ -4243,7 +4240,7 @@ def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
         outputs_prefix="SilentPush.AddIndicators",
         outputs_key_field="feed_uuid",
         outputs=result,
-        readable_output=tableToMarkdown(f"Indicators: '{indicators}' were added successfully to SilentPush feed: '{feed_uuid}'.", result),
+        readable_output=f"Indicators: '{indicators}' were added successfully to SilentPush feed: '{feed_uuid}'.",
         raw_response=result,
     )
 
@@ -4274,7 +4271,7 @@ def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> Command
         outputs_prefix="SilentPush.AddIndicatorTags",
         outputs_key_field="feed_uuid",
         outputs=result,
-        readable_output=tableToMarkdown(f"Indicator Tags: '{tags}' added to indicator '{indicator_name}' successfully", result),
+        readable_output=f"Indicator Tags: '{tags}' added to indicator '{indicator_name}' successfully",
         raw_response=result,
     )
 
@@ -4304,7 +4301,7 @@ def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_prefix="SilentPush.RunThreatCheck",
         outputs_key_field="query",
         outputs=result,
-        readable_output=tableToMarkdown(f"Threat check for query '{ip}' completed successfully", result),
+        readable_output=f"Threat check for query '{ip}' completed successfully",
         raw_response=result,
     )
 

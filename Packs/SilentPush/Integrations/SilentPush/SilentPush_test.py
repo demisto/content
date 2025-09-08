@@ -1371,7 +1371,7 @@ def test_add_feed_command_success(mock_client):
 
     # Mock arguments passed to the command
     args = {"name": unique_name, "type": "domain", "tags": "Test,Demo"}
-    expected_output = f"### SilentPush feed: {unique_name} of type: domain was added successfully.\n"
+    expected_output = f"SilentPush feed: {unique_name} of type: domain was added successfully."
 
     # Simulated API response
     mock_response = {
@@ -1401,7 +1401,7 @@ def test_add_feed_command_success(mock_client):
 def test_add_indicators_command_success(mock_client):
     # Generate unique UUID for test feed
     test_uuid = str(uuid.uuid4())
-    expected_output = f"### Indicators: '['example.com', 'malicious.net']' were added successfully to SilentPush feed: '{test_uuid}'."
+    expected_output = f"Indicators: '['example.com', 'malicious.net']' were added successfully to SilentPush feed: '{test_uuid}'."
 
     # Mock arguments
     args = {"feed_uuid": test_uuid, "indicators": ["example.com", "malicious.net"]}
@@ -1427,7 +1427,7 @@ def test_add_indicators_tags_command_success(mock_client):
     test_uuid = str(uuid.uuid4())
     test_indicator = "example.com"
     test_tags = ["test", "phishing"]
-    expected_output = f"### Indicator Tags: '['test', 'phishing']' added to indicator 'example.com"
+    expected_output = f"Indicator Tags: '['test', 'phishing']' added to indicator 'example.com"
 
     args = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags": test_tags}
 
@@ -1448,7 +1448,7 @@ def test_add_indicators_tags_command_success(mock_client):
 
 def test_run_threat_check_command_success(mock_client):
     args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user", "query": "test_query"}
-    expected_output = "### Threat check for query 'test_query' completed successfully"
+    expected_output = "Threat check for query 'test_query' completed successfully"
 
     mock_response = {
         "type": "domain",
@@ -1502,7 +1502,7 @@ def test_get_data_exports_command_success(mock_client):
 def test_add_feed_tags_command_success(mocker):
     # Mock args
     args = {"feed_uuid": "abc123", "tags": "malware"}
-    expected_output = f"### feed with uuid: abc123 was updated with tags: malware"
+    expected_output = f"feed with uuid: abc123 was updated with tags: malware"
 
     # Mocked result returned by client.add_feed_tags
     mock_response = {"created_or_updated": [{"uuid": "8eb9c1b8-edbb-4081-9978-590f5c5a0319", "tag": "phishing"}]}
