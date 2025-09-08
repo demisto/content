@@ -31,20 +31,20 @@ def test_validate_input_success(mocker):
     # demisto.args() is read into the aggregated command (kept for completeness)
     mocker.patch.object(demisto, "args", return_value={"url_list": ",".join(url_list)})
 
-    # Patch extractIndicators (via AggregatedCommandApiModule.execute_command)
-    mocker.patch(
-        "AggregatedCommandApiModule.execute_command",
-        return_value=[{"EntryContext": {"ExtractedIndicators": {"URL": url_list}}}],
-    )
+    # Patch execute_command with per-command behavior:
+    # - extractIndicators → list with EntryContext (as validate_input expects)
+    # - findIndicators    → (True, []) tuple (as search_indicators_in_tim expects)
+    def _exec_side_effect(cmd, args=None, extract_contents=False, fail_on_error=True):
+        if cmd == "extractIndicators":
+            return [{"EntryContext": {"ExtractedIndicators": {"URL": url_list}}}]
+        if cmd == "findIndicators":
+            return (True, [])  # success, no hits
+        return []
 
-    # Make the aggregated pipeline do nothing else (no-op batches and no TIM results)
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=_exec_side_effect)
+
+    # Make the aggregated pipeline do nothing else (no-op batches)
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", return_value=[])
-
-    class _EmptySearcher:
-        def __iter__(self):
-            return iter([])
-
-    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_EmptySearcher())
 
     # Enabled modules (not used in this test but the code queries them)
     mocker.patch.object(demisto, "getModules", return_value={})
@@ -94,50 +94,49 @@ def test_validate_input_invalid_url(mocker):
 # --------------------------------------------------------------------------------------
 # 2) End-to-end test with TIM + batches (WildFire + enrichIndicators side effect)
 # --------------------------------------------------------------------------------------
-
-
-def test_url_enrichment_script_end_to_end(mocker, tmp_path):
+def test_url_enrichment_script_end_to_end_with_files(mocker):
     """
     Given:
         - Two URLs.
-        - TIM search returns:
-            * example.com with TIM score 3, brand2 score 3, brand1 score 2 (brand1 has no DBotScore in TIM)
-            * example2.com with TIM score 1, brand3 score 1
-        - Batches:
-            * createNewIndicator for each URL (no-op)
-            * wildfire-get-verdict returns verdicts for both URLs (mapped)
-            * enrichIndicators returns a DBotScore only for example.com (brand1)
+        - TIM results from test_data/mock_tim_results.json
+        - Batch results from test_data/mock_bathc_results.json
     When:
         - url_enrichment_script runs end-to-end.
     Then:
-        - URLEnrichment contains both URLs with 3 entries for example.com (TIM, brand1, brand2).
-        - MaxScore=3, MaxVerdict=Malicious, TIMScore=3 for example.com.
-        - WildFire verdicts mapped under the correct context key as a nested list (because of [] mapping).
-        - DBotScore contains exactly 3 vendors: brand1, brand2, brand3.
+        - URLEnrichment contains both URLs.
+        - For https://example.com:
+            * Results has 2 entries (brand1, brand2) — TIM is summarized via TIMScore/Status, not inside Results.
+            * MaxScore=3, MaxVerdict=Malicious, TIMScore=3.
+        - WildFire verdicts mapped under the correct context key as a nested list ([] mapping).
+        - (No DBotScore assertions; current code does not surface DBotScore from enrichIndicators or TIM.)
     """
-    # Load mock TIM pages from file
+    # ---------- Load fixtures ----------
     tim_pages = util_load_json("test_data/mock_tim_results.json")["pages"]
+    batch_blob = util_load_json("test_data/mock_batch_results.json")
+
+    # Flatten TIM iocs from pages
+    tim_iocs = []
+    for page in tim_pages:
+        tim_iocs.extend(page.get("iocs", []))
 
     url_list = ["https://example.com", "https://example2.com"]
+
+    # demisto.args() passthrough (used by ctor)
     mocker.patch.object(demisto, "args", return_value={"url_list": ",".join(url_list)})
 
-    # --- Validation: extractIndicators returns both URLs
-    mocker.patch(
-        "AggregatedCommandApiModule.execute_command",
-        return_value=[{"EntryContext": {"ExtractedIndicators": {"URL": url_list}}}],
-    )
+    # ---------- Mock execute_command for both extractIndicators and findIndicators ----------
+    def _exec_side_effect(cmd, args=None, extract_contents=False, fail_on_error=True):
+        if cmd == "extractIndicators":
+            # validate_input expects list with EntryContext
+            return [{"EntryContext": {"ExtractedIndicators": {"URL": url_list}}}]
+        if cmd == "findIndicators":
+            # search_indicators_in_tim expects (is_success, results)
+            return (True, tim_iocs)
+        return []
 
-    # --- Mock IndicatorsSearcher to yield our pages
-    class _MockSearcher:
-        def __init__(self, pages):
-            self.pages = pages
+    mocker.patch("AggregatedCommandApiModule.execute_command", side_effect=_exec_side_effect)
 
-        def __iter__(self):
-            return iter(self.pages)
-
-    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=_MockSearcher(tim_pages))
-
-    # --- Enabled modules/brands
+    # ---------- Enabled modules/brands (BrandManager) ----------
     mocker.patch.object(
         demisto,
         "getModules",
@@ -148,54 +147,42 @@ def test_url_enrichment_script_end_to_end(mocker, tmp_path):
         },
     )
 
-    # --- Mock batch executor (returns *processed* tuples like BatchExecutor.process_results would)
+    # ---------- Mock BatchExecutor.execute_list_of_batches using your JSON ----------
+    # JSON has:
+    #   - "wildfire":       [ { EntryContext: { WildFire.Verdicts[...] } } ]
+    #   - "enrichIndicators":[ {...brand1 dbot...}, { empty } ]  # one per URL
+    #   - "createNewIndicator":[{},{}}]  # you use a single CreateNewIndicatorsOnly command
     def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
         out = []
 
-        # Batch 1: createNewIndicator per URL -> no EntryContext (non-fatal)
-        batch1_cmds = list_of_batches[0]
-        batch1_results = []
-        for _cmd in batch1_cmds:
-            entry = {"Type": 1, "EntryContext": {}}
-            batch1_results.append([(entry, "", "")])  # [(result_dict, hr, error)]
-        out.append(batch1_results)
+        # Batch 0: CreateNewIndicatorsOnly -> one command in your code; turn first JSON item into a processed tuple
+        create_items = list(batch_blob.get("createNewIndicator", []))
+        batch0_cmds = list_of_batches[0]
+        batch0_results = []
+        for _ in batch0_cmds:
+            item = create_items[0] if create_items else {"Type": 1, "EntryContext": {}}
+            batch0_results.append([(item, "", "")])
+        out.append(batch0_results)
 
-        # Batch 2: wildfire + enrichIndicators(url per URL)
-        batch2_cmds = list_of_batches[1]
-        batch2_results = []
-        for cmd in batch2_cmds:
+        # Batch 1: wildfire + enrichIndicators per URL
+        wf_items = list(batch_blob.get("wildfire", []))
+        enrich_items = list(batch_blob.get("enrichIndicators", []))
+        batch1_cmds = list_of_batches[1]
+        batch1_results = []
+        for cmd in batch1_cmds:
             if cmd.name == "wildfire-get-verdict":
-                entry = {
-                    "Type": 1,
-                    "EntryContext": {
-                        "WildFire.Verdicts(val.url && val.url == obj.url)": [
-                            {"url": "https://example.com", "verdict": 1},
-                            {"url": "https://example2.com", "verdict": 2},
-                        ]
-                    },
-                }
-                batch2_results.append([(entry, "wf-hr", "")])
+                item = wf_items[0] if wf_items else {"Type": 1, "EntryContext": {}}
+                batch1_results.append([(item, "wf-hr", "")])
             else:  # enrichIndicators per URL
-                url = cmd.args.get("indicatorsValues")
-                if url == "https://example.com":
-                    # Provide only a brand1 DBotScore here; the brand2/brand3 DBotScores come from TIM
-                    entry = {
-                        "Type": 1,
-                        "Metadata": {"brand": "brand1"},
-                        "EntryContext": {
-                            "DBotScore(val.Indicator && val.Vendor)": [{"Indicator": url, "Vendor": "brand1", "Score": 2}]
-                        },
-                    }
-                else:
-                    entry = {"Type": 1, "EntryContext": {}}
-                batch2_results.append([(entry, "", "")])
-        out.append(batch2_results)
+                item = enrich_items.pop(0) if enrich_items else {"Type": 1, "EntryContext": {}}
+                batch1_results.append([(item, "", "")])
+        out.append(batch1_results)
 
         return out
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)
 
-    # --- Act
+    # ---------- Act ----------
     command_results = url_enrichment_script(
         url_list=url_list,
         external_enrichment=True,
@@ -205,33 +192,41 @@ def test_url_enrichment_script_end_to_end(mocker, tmp_path):
     )
     outputs = command_results.outputs
 
-    # --- Assert: URLEnrichment indicators
-    enrichment_list = outputs.get("URLEnrichment(val.Value && val.Value == obj.Value)", [])
+    # ---------- Assert: URLEnrichment indicators ----------
+    enrichment_key = "URLEnrichment(val.Value && val.Value == obj.Value)"
+    enrichment_list = outputs.get(enrichment_key, [])
     enrichment_map = {item["Value"]: item for item in enrichment_list}
     assert set(enrichment_map.keys()) == set(url_list)
 
-    # example.com should have TIM + brand1 + brand2
+    # https://example.com should have brand1 + brand2 (TIM is summarized via TIMScore)
     ex1 = enrichment_map["https://example.com"]
-    assert len(ex1["Results"]) == 3
+    assert len(ex1["Results"]) == 2
 
-    # brand1 result (from TIM's insightCache context data)
+    # brand1 result
     b1 = next(r for r in ex1["Results"] if r["Brand"] == "brand1")
     assert b1["Score"] == 2
     assert b1["PositiveDetections"] == 5
 
-    # Max fields
+    # brand2 result present and scored 3
+    b2 = next(r for r in ex1["Results"] if r["Brand"] == "brand2")
+    assert b2["Score"] == 3
+
+    # Max fields + TIMScore
     assert ex1["MaxScore"] == 3
     assert ex1["MaxVerdict"] == "Malicious"
     assert ex1["TIMScore"] == 3
 
-    # WildFire mapping (note nested list due to [] in mapping)
-    wildfire_verdicts = outputs.get("WildFire.Verdicts(val.url && val.url == obj.url)", [])
-    assert len(wildfire_verdicts) == 1
-    assert isinstance(wildfire_verdicts[0], list)
-    assert len(wildfire_verdicts[0]) == 2
-    assert wildfire_verdicts[0][0]["verdict"] == 1
+    # ---------- Assert: WildFire mapping (nested due to [] in mapping) ----------
+    wf_key = "WildFire.Verdicts(val.url && val.url == obj.url)"
+    wf_out = outputs.get(wf_key, [])
+    assert len(wf_out) == 1
+    assert isinstance(wf_out[0], list)
+    assert len(wf_out[0]) == 2
+    assert wf_out[0][0]["verdict"] == 1
 
-    # DBotScore vendors exactly brand1, brand2, brand3
-    dbot_scores = outputs.get(Common.DBotScore.CONTEXT_PATH, [])
-    vendors = {s.get("Vendor") for s in dbot_scores}
-    assert vendors == {"brand1", "brand2", "brand3"}
+    # Optional: ensure DBotScore not surfaced by current implementation
+    # from CommonServerPython import Common
+    # assert Common.DBotScore.CONTEXT_PATH not in outputs or not outputs[Common.DBotScore.CONTEXT_PATH]
+
+
+

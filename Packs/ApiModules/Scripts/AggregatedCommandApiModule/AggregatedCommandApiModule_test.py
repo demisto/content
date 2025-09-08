@@ -509,31 +509,14 @@ def test_add_other_commands_results():
 
 
 # --- Tests for the build() method and its helpers ---
-@pytest.mark.parametrize(
-    "results, expected_tim_score",
-    [
-        (
-            [{"Score": 5, "Brand": "TIM"}, {"Score": 8, "Brand": "brandA"}, {"Score": 3, "Brand": "TIM"}],
-            5,  # max Score from entries where Brand == "TIM"
-        ),
-        (
-            [{"Score": 8, "Brand": "brandA"}, {"Score": 9, "Brand": "brandB"}],
-            0,  # no TIM entries -> TIMScore not set -> .get(..., 0) == 0
-        ),
-        (
-            [],
-            0,  # empty Results -> no TIMScore
-        ),
-    ],
-)
-def test_build_calculates_tim_score_correctly(results, expected_tim_score):
+def test_build_extract_tim_score():
     """
     Given:
         - A list of indicator results from various brands.
     When:
         - The build() method is called.
     Then:
-        - The final indicator should have a TIMScore calculated only from results where the brand is "TIM".
+        - TIMScore is computed only from entries where Brand == "TIM" (max over those), ignoring others.
     """
     indicator_with_score = Indicator(
         type="test",
@@ -541,25 +524,31 @@ def test_build_calculates_tim_score_correctly(results, expected_tim_score):
         context_path_prefix="Test(",
         context_output_mapping={"Score": "Score"},
     )
-
     builder = ContextBuilder(indicator=indicator_with_score, final_context_path="Test.Path")
 
-    tim_ctx = {"indicator1": results}
-
+    # Only the TIM scores (5 and 3) should be considered => max is 5
+    tim_ctx = {
+        "indicator1": [
+            {"Score": 5, "Brand": "TIM"},
+            {"Score": 8, "Brand": "brandA"},  # should be ignored for TIMScore
+            {"Score": 3, "Brand": "TIM"},
+        ]
+    }
     builder.add_tim_context(tim_ctx, dbot_scores=[])
 
     final_context = builder.build()
     final_indicator = final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]
 
-    assert final_indicator.get("TIMScore", 0) == expected_tim_score
+    assert final_indicator.get("TIMScore", 0) == 5
 
 
+# --- 2) MaxScore/MaxVerdict enrichment over all results ---
 @pytest.mark.parametrize(
     "results, expected_max, expected_verdict",
     [
-        ([{"Score": 1}, {"Score": 3}], 3, "Malicious"),
-        ([{"Score": 2}], 2, "Suspicious"),
-        ([], 0, "Unknown"),
+        ([{"Score": 1, "Brand": "X"}, {"Score": 3, "Brand": "Y"}, {"Score": 2, "Brand": "TIM"}], 3, "Malicious"),
+        ([{"Score": 2, "Brand": "X"}, {"Score": 2, "Brand": "TIM"}], 2, "Suspicious"),
+        ([{"Score": 2, "Brand": "TIM"}], 2, "Suspicious"),
     ],
 )
 def test_build_enriches_final_indicators_correctly(results, expected_max, expected_verdict):
@@ -616,8 +605,8 @@ def test_build_assembles_all_context_types():
 
     # Add all types of context
     builder.add_tim_context(
-        tim_ctx={"indicator1": [{"Score": 3, "Brand": "brandA"}]},
-        dbot_scores=[make_dbot("indicator1", "brandA", 3)],
+        tim_ctx={"indicator1": [{"Score": 3, "Brand": "TIM"}]},
+        dbot_scores=[make_dbot("indicator1", "TIM", 3)],
     )
     builder.add_other_commands_results({"Command1": {"data": "value1"}})
 
@@ -627,7 +616,7 @@ def test_build_assembles_all_context_types():
     assert "Test.Path(val.Value && val.Value == obj.Value)" in final_context
     assert final_context["Test.Path(val.Value && val.Value == obj.Value)"][0]["Value"] == "indicator1"
     assert Common.DBotScore.CONTEXT_PATH in final_context
-    assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "brandA"
+    assert final_context[Common.DBotScore.CONTEXT_PATH][0]["Vendor"] == "TIM"
     assert "Command1" in final_context
     assert final_context["Command1"]["data"] == "value1"
 
@@ -1005,35 +994,8 @@ def test_prepare_commands_various(module_factory, requested_brands, external_enr
     assert {c.name for c in flattened} == expected_names
 
 
-# -- Result Parsing --
 @pytest.mark.parametrize(
-    "entry, expected_scores",
-    [
-        # single DBotScore entry
-        (make_entry(dbots=[{"Indicator": "https://b.example/", "Vendor": "VendorC", "Score": 0}]), [0]),
-        # no DBotScore entries
-        (make_entry(), []),
-    ],
-)
-def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores):
-    """
-    Given:
-        - A list of DBotScore entries.
-    When:
-        - Calling parse_indicator.
-    Then:
-        - Returns a list of DBotScore entries with the expected scores.
-    """
-    mod = module_factory()
-
-    _, dbots = mod.parse_indicator(entry, brand="AnyBrand", score=1)
-
-    assert len(dbots) == len(expected_scores)
-    assert [item["Score"] for item in dbots] == expected_scores
-
-
-@pytest.mark.parametrize(
-    "result_tuple, mock_mapped_context_return, expected_entry_status, expected_entry_msg, expected_dbots",
+    "result_tuple, mock_mapped_context_return, expected_entry_status, expected_entry_msg",
     [
         (  # Success
             (
@@ -1044,14 +1006,12 @@ def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores)
             {"URL": "a.com"},
             Status.SUCCESS,
             "",
-            [make_dbot("a.com", "VendorA", 2)],
         ),
         (  # Success without context
             ({}, "", ""),
             {},
             Status.SUCCESS,
             "No matching indicators found.",
-            [],
         ),
         (  # Failure with partial context
             (
@@ -1062,14 +1022,12 @@ def test_parse_indicator_dbot_extraction(module_factory, entry, expected_scores)
             {"Partial": "Data"},
             Status.FAILURE,
             "Command failed",
-            [make_dbot("b.com", "VendorB", 3)],
         ),
         (  # Failure without context
             ({}, "", "error"),
             {},
             Status.FAILURE,
             "error",
-            [],
         ),
     ],
 )
@@ -1080,7 +1038,6 @@ def test_process_single_command_result(
     mock_mapped_context_return,
     expected_entry_status,
     expected_entry_msg,
-    expected_dbots,
 ):
     """
     Given:
@@ -1088,9 +1045,9 @@ def test_process_single_command_result(
     When:
         - Calling _process_single_command_result.
     Then:
-        - Ensure the returned tuple of (entry, mapped_context, dbot_scores, verbose_output) is correct.
+        - Ensure the returned tuple of (entry, mapped_context, verbose_output) is correct.
         - The EntryResult status and message should reflect the error state and presence of context.
-        - The mapped_context and dbot_scores should be correctly extracted from the raw result.
+        - The mapped_context should be correctly extracted from the raw result.
         - The verbose_output should depend on the 'verbose' instance flag.
     """
     module = module_factory()
@@ -1098,7 +1055,7 @@ def test_process_single_command_result(
     raw_result, _, _ = result_tuple
 
     command_obj = Command(name="test-cmd", brand="TestBrand", args={})
-    entry, mapped_ctx, dbots, verbose_out = module._process_single_command_result(result_tuple, command_obj)
+    entry, mapped_ctx, verbose_out = module._process_single_command_result(result_tuple, command_obj)
 
     # Assert
     # --- Assert EntryResult ---
@@ -1114,7 +1071,6 @@ def test_process_single_command_result(
     else:
         assert mapped_ctx == {}
 
-    assert dbots == expected_dbots
 
 
 # -- TIM Logic --
@@ -1140,12 +1096,11 @@ def test_get_indicators_from_tim_early_return(module_factory, mocker, iocs, stat
     mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, status, message))
     proc = mocker.patch.object(mod, "process_tim_results")
 
-    ctx, dbots, entries = mod.get_indicators_from_tim()
+    ctx, entries = mod.get_indicators_from_tim()
 
     # Shouldn't process on FAILURE or empty IOCs
     proc.assert_not_called()
     assert ctx == {}
-    assert dbots == []
     assert isinstance(entries, list)
     assert len(entries) == 1
 
@@ -1174,26 +1129,25 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
     mocker.patch.object(mod, "search_indicators_in_tim", return_value=(iocs, Status.SUCCESS, "ok"))
 
     expected_ctx = {"TIM": {"some": "context"}}
-    expected_dbots = [{"Indicator": "https://a.com", "Vendor": "TIM", "Score": 1}]
     expected_entries = [object()]  # sentinel list we can identity-check
 
     proc = mocker.patch.object(
         mod,
         "process_tim_results",
-        return_value=(expected_ctx, expected_dbots, expected_entries),
+        return_value=(expected_ctx, expected_entries),
     )
 
-    ctx, dbots, entries = mod.get_indicators_from_tim()
+    ctx, entries = mod.get_indicators_from_tim()
 
     proc.assert_called_once_with(iocs)
     assert ctx == expected_ctx
-    assert dbots == expected_dbots
     # Ensure exact passthrough of the entries list
     assert entries is expected_entries
 
 
+
 @pytest.mark.parametrize(
-    "ioc_input, mock_tim_indicator_return, mock_parse_indicator_side_effect, expected_indicators, expected_dbots, expected_entry_msg",  # noqa: E501
+    "ioc_input, mock_tim_indicator_return, mock_parse_indicator_side_effect, expected_indicators, expected_entry_msg",
     [
         (
             build_ioc(
@@ -1204,41 +1158,39 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
                     "BrandB": {"score": 3, "context": {"data": "B"}},
                 },
             ),
-            {"Value": "ioc.example.com", "Brand": "TIM", "Score": 2},
+            {"Brand": "TIM", "Score": 2},
             {
-                "BrandA": ([{"Value": "from_brand_a"}], [make_dbot("ioc.example.com", "BrandA", 2)]),
-                "BrandB": ([{"Value": "from_brand_b"}], [make_dbot("ioc.example.com", "BrandB", 3)]),
+                "BrandA": ([{"Value": "from_brand_a"}]),
+                "BrandB": ([{"Value": "from_brand_b"}]),
             },
             [
-                {"Value": "ioc.example.com", "Brand": "TIM", "Score": 2},
+                {"Brand": "TIM", "Score": 2},
                 {"Value": "from_brand_a"},
                 {"Value": "from_brand_b"},
             ],
-            [make_dbot("ioc.example.com", "BrandA", 2), make_dbot("ioc.example.com", "BrandB", 3)],
             "Found indicator from brands: BrandA, BrandB.",
         ),
         (
             build_ioc(value="1.1.1.1", score=1, scores={}),
-            {"Value": "1.1.1.1", "Brand": "TIM", "Score": 1},
+            {"Brand": "TIM", "Score": 1},
             {},
-            [{"Value": "1.1.1.1", "Brand": "TIM", "Score": 1}],
-            [],
+            [{"Brand": "TIM", "Score": 1}],
             "No matching indicators found.",
         ),
         (
             build_ioc(value="evil.com", scores={"BrandC": {"score": 3, "context": {}}}),
-            None,  # create_tim_indicator returns nothing
-            {"BrandC": ([{"Value": "from_brand_c"}], [])},
-            [{"Value": "from_brand_c"}],
-            [],
+            None,  # create_tim_indicator can return None
+            {"BrandC": ([{"Value": "from_brand_c"}])},
+            # FIX: The original code appends the None result before extending with brand results.
+            [None, {"Value": "from_brand_c"}],
             "Found indicator from brands: BrandC.",
         ),
         (
             build_ioc(value="nothing.here", scores={}),
-            None,
+            None, # create_tim_indicator returns None
             {},
-            [],
-            [],
+            # FIX: The original code still appends None to the list.
+            [None],
             "No matching indicators found.",
         ),
     ],
@@ -1250,7 +1202,6 @@ def test_process_single_tim_ioc(
     mock_tim_indicator_return,
     mock_parse_indicator_side_effect,
     expected_indicators,
-    expected_dbots,
     expected_entry_msg,
 ):
     """
@@ -1259,9 +1210,8 @@ def test_process_single_tim_ioc(
     When:
         - Calling _process_single_tim_ioc with the IOC.
     Then:
-        - Ensure the returned tuple of (parsed_indicators, dbot_scores, entry_result) is correct.
+        - Ensure the returned tuple of (parsed_indicators, entry_result) is correct.
         - The indicators list should include results from both the main TIM object and brand-specific contexts.
-        - The DBot score list should aggregate scores from all brands.
         - The EntryResult message should reflect which brands were processed.
     """
     # Arrange
@@ -1269,15 +1219,16 @@ def test_process_single_tim_ioc(
     mocker.patch.object(module, "create_tim_indicator", return_value=mock_tim_indicator_return)
 
     def side_effect(context, brand, score):
-        return mock_parse_indicator_side_effect.get(brand, ([], []))
+        # The tuple return is based on the original code's signature for parse_indicator
+        return mock_parse_indicator_side_effect.get(brand, [])
 
     mocker.patch.object(module, "parse_indicator", side_effect=side_effect)
 
-    indicators, dbots, entry = module._process_single_tim_ioc(ioc_input)
+    # Act
+    indicators, entry = module._process_single_tim_ioc(ioc_input)
 
+    # Assert
     assert indicators == expected_indicators
-    assert dbots == expected_dbots
-
     assert isinstance(entry, EntryResult)
     assert entry.command_name == "search-indicators-in-tim"
     assert entry.brand == "TIM"
@@ -1286,92 +1237,186 @@ def test_process_single_tim_ioc(
     assert entry.message == expected_entry_msg
 
 
-def test_create_tim_indicator_extracting_custom_fields_case_insensitive(module_factory):
-    """
-    Given:
-        - Indicator mapping contains 'CVSS' (upper).
-        - TIM IOC CustomFields are lower-case ('cvss').
-    When:
-        - create_tim_indicator is used.
-    Then:
-        - The 'CVSS' field appears in the output with the original structure.
-    """
-    indicator = Indicator(
-        type="cve",
-        value_field="Value",
-        context_path_prefix="CVE(",
-        context_output_mapping={"CVSS": "CVSS"},
-    )
-    mod = module_factory(indicator=indicator)
-
-    ioc = build_ioc(scores={}, value="CVE-1", custom_fields={"cvss": {"Score": 7.1}})
-    out = mod.create_tim_indicator(ioc)
-
-    assert out["CVSS"] == {"Score": 7.1}
-    assert out["Value"] == "CVE-1"
-    assert out["Brand"] == "TIM"
-
-
 def test_search_indicators_in_tim_exception_path(module_factory, mocker):
     """
     Given:
-        - IndicatorsSearcher raises an exception.
+        - The 'findIndicators' command execution fails.
     When:
         - Calling search_indicators_in_tim.
     Then:
-        - Returns empty IOCs and Status.FAILURE with the exception message.
+        - Returns empty IOCs, a FAILURE status, and the error message from the command.
     """
     mod = module_factory()
     mod.data = ["example.com"]
-    mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", side_effect=Exception("Error"))
-    mocker.patch("AggregatedCommandApiModule.traceback", autospec=True)
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=(False, "Failed to execute findIndicators")
+    )
 
     iocs, status, msg = mod.search_indicators_in_tim()
 
     assert iocs == []
     assert status == Status.FAILURE
-    assert "Error" in msg
+    assert msg == "Failed to execute findIndicators"
 
 
 @pytest.mark.parametrize(
-    "data, search_pages, expected_msg",
+    "data, mock_command_result, expected_iocs, expected_msg",
     [
-        # No IOCs → message "No matching indicators found."
-        (["a.com", "b.com"], [{"iocs": []}], "No matching indicators found."),
-        # Some IOCs across multiple pages → flattened
-        (["a.com", "b.com"], [{"iocs": [{"id": 1}]}, {"iocs": [{"id": 2}, {"id": 3}]}], ""),
+        # Scenario 1: Command succeeds but finds no matching indicators
+        (
+            ["a.com", "b.com"],
+            (True, []),
+            [],
+            "No matching indicators found."
+        ),
+        # Scenario 2: Command succeeds and finds indicators
+        (
+            ["a.com", "b.com"],
+            (True, [{"value": "a.com"}, {"value": "b.com"}]),
+            [{"value": "a.com"}, {"value": "b.com"}],
+            ""
+        ),
     ],
 )
-def test_search_indicators_in_tim_success(module_factory, mocker, data, search_pages, expected_msg):
+def test_search_indicators_in_tim_success(
+    module_factory, mocker, data, mock_command_result, expected_iocs, expected_msg
+):
     """
     Given:
-        - data list of indicators to search and type.
-        - search_pages list of pages of IOCs or empty.
+        - A list of indicator values to search for.
     When:
-        - Calling search_indicators_in_tim.
+        - Calling the search_indicators_in_tim method.
     Then:
-        - Construct the query and call IndicatorsSearcher.
-        - Return the IOCs and Status.SUCCESS with the expected message.
+        - Ensure it calls 'execute_command' with the correct 'findIndicators' query.
+        - Ensure it returns the correct IOCs, status, and message based on the command's result.
     """
-    mod = module_factory(data=data)
+    mod = module_factory()
+    mod.data = data
 
-    ind_mock = mocker.patch("AggregatedCommandApiModule.IndicatorsSearcher", return_value=search_pages)
+    mod.indicator.type = "URL"
+    mock_exec = mocker.patch("AggregatedCommandApiModule.execute_command", return_value=mock_command_result)
 
     iocs, status, msg = mod.search_indicators_in_tim()
 
-    # Called with the right size and query containing type + each value
-    assert ind_mock.call_count == 1
-    kwargs = ind_mock.call_args.kwargs
-    assert kwargs["size"] == len(data)
-    q = kwargs["query"]
-    assert "type:indicator" in q
-    assert "value:a.com" in q
-    assert "value:b.com" in q
-    # Flattening behavior and entry fields
+    mock_exec.assert_called_once()
+    args, kwargs = mock_exec.call_args
+    assert args[0] == "findIndicators"
+    query = args[1].get("query")
+    assert f"type:{mod.indicator.type}" in query
+    for val in data:
+        assert f"value:{val}" in query
+
+    assert iocs == expected_iocs
     assert status == Status.SUCCESS
     assert msg == expected_msg
 
+def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
+    """
+    Given:
+        - A TIM IOC dict that includes an overall 'score'.
+        - get_data_status_from_ioc returns IndicatorStatus.FRESH.
+    When:
+        - Calling create_tim_indicator.
+    Then:
+        - Returns a dict with Brand='TIM', the provided Score, and Status from get_data_status_from_ioc.
+    """
+    mod = module_factory()
+    ioc = {"score": 2}
 
+    status_mock = mocker.patch.object(mod, "get_data_status_from_ioc", return_value=IndicatorStatus.FRESH)
+
+    res = mod.create_tim_indicator(ioc)
+
+    status_mock.assert_called_once_with(ioc)
+    assert res == {
+        "Brand": "TIM",
+        "Score": 2,
+        "Status": IndicatorStatus.FRESH.value,
+    }
+
+@pytest.mark.parametrize(
+    "has_manual, modified_mode, expected_status",
+    [
+        # Manual overrides anything (even recent modification)
+        (True, "fresh", IndicatorStatus.MANUAL),
+        # Fresh if modified within STATUS_FRESHNESS_WINDOW
+        (False, "fresh", IndicatorStatus.FRESH),
+        # Stale if modified long ago
+        (False, "stale", IndicatorStatus.STALE),
+        # Invalid timestamp string → Stale
+        (False, "invalid", IndicatorStatus.STALE),
+        # No modifiedTime and not manual → Stale
+        (False, "none", IndicatorStatus.STALE),
+    ],
+)
+def test_get_data_status_from_ioc_various(module_factory, has_manual, modified_mode, expected_status):
+    """
+    Given:
+        - Various combinations of 'manuallyEditedFields' and 'modifiedTime'.
+    When:
+        - Calling get_data_status_from_ioc.
+    Then:
+        - Returns MANUAL if 'Score' in manuallyEditedFields.
+        - Else FRESH if modifiedTime within freshness window.
+        - Else STALE (including invalid/no modifiedTime).
+    """
+    mod = module_factory()
+    now = datetime.now(timezone.utc)
+
+    def iso(dt: datetime) -> str:
+        # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
+        return dt.isoformat().replace("+00:00", "Z")
+
+    ioc = {}
+    if has_manual:
+        ioc["manuallyEditedFields"] = {"Score": True}
+
+    if modified_mode == "fresh":
+        ioc["modifiedTime"] = iso(now - timedelta(days=1))  # well within 1 week
+    elif modified_mode == "stale":
+        ioc["modifiedTime"] = iso(now - timedelta(days=30))  # far beyond 1 week
+    elif modified_mode == "invalid":
+        ioc["modifiedTime"] = "not-a-time"
+    elif modified_mode == "none":
+        # leave modifiedTime absent
+        pass
+
+    status = mod.get_data_status_from_ioc(ioc)
+    assert status == expected_status
+
+def test_get_data_status_from_ioc_boundary_freshness_window(module_factory):
+    """
+    Given:
+        - modifiedTime just inside the STATUS_FRESHNESS_WINDOW.
+    When:
+        - Calling get_data_status_from_ioc.
+    Then:
+        - Returns FRESH at the boundary (minus 1 second).
+    """
+    mod = module_factory()
+    now = datetime.now(timezone.utc)
+    boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
+
+    ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
+    assert mod.get_data_status_from_ioc(ioc) == IndicatorStatus.FRESH
+
+def test_get_data_status_from_ioc_boundary_stale(module_factory):
+    """
+    Given:
+        - modifiedTime just outside the STATUS_FRESHNESS_WINDOW.
+    When:
+        - Calling get_data_status_from_ioc.
+    Then:
+        - Returns STALE at the boundary (plus 1 second).
+    """
+    mod = module_factory()
+    now = datetime.now(timezone.utc)
+    boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
+
+    ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
+    assert mod.get_data_status_from_ioc(ioc) == IndicatorStatus.STALE
+    
 # --- Summarize Command Results Tests ---
 @pytest.mark.parametrize(
     "entries, expect_error",

@@ -5,6 +5,7 @@ from enum import Enum
 from functools import cached_property
 import traceback
 from typing import Any
+from datetime import datetime, timedelta
 
 from CommonServerPython import *
 import demistomock as demisto
@@ -13,6 +14,8 @@ import demistomock as demisto
 ContextResult = dict[str, Any]
 DBotScoreList = list[ContextResult]
 
+# Calculating time interval for indicators freshness
+STATUS_FRESHNESS_WINDOW = timedelta(weeks=1)
 
 DBOT_SCORE_TO_VERDICT = {
     0: "Unknown",
@@ -37,7 +40,12 @@ class Status(Enum):
     SUCCESS = "Success"
     FAILURE = "Failure"
 
-
+class IndicatorStatus(Enum):
+    """Enum for indicator status."""
+    FRESH = "Fresh"
+    STALE = "Stale"
+    MANUAL = "Manual"
+    
 # --- Core Enumerations and Data Classes ---
 class EntryResult:
     """
@@ -289,7 +297,7 @@ class ContextBuilder:
         self.dbot_context: DBotScoreList = []
         self.other_context: ContextResult = {}
 
-    def add_tim_context(self, tim_ctx: ContextResult, dbot_scores: DBotScoreList):
+    def add_tim_context(self, tim_ctx: ContextResult = None, dbot_scores: DBotScoreList = None):
         """
         Adds TIM context to the final context.
         TIM context expected format:
@@ -324,6 +332,7 @@ class ContextBuilder:
             "MaxCVSS":1, //Optional
             "MaxSeverity":"Malicious", //Optional
             "TIMScore":1, //Optional
+            "Status": "Stale"/"Fresh"/"Manual",
             "Results": [{
                         "Brand": "Brand1",
                         "Score": 1,
@@ -375,10 +384,18 @@ class ContextBuilder:
         Returns:
             list[dict]: The final list structure.
         """
-        return [
-            {"Value": indicator_value, "Results": tim_context_result}
-            for indicator_value, tim_context_result in self.tim_context.items()
-        ]
+        results = []
+        for indicator_value, tim_context_result in self.tim_context.items():
+            current_indicator = {"Value": indicator_value}
+            if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
+                current_indicator.update({
+                                    "TIMScore": tim_indicator[0].get("Score"),
+                                    "Status": tim_indicator[0].get("Status")})
+            indicators = [indicator for indicator in tim_context_result if indicator.get("Brand") != "TIM"]
+            
+            current_indicator["Results"] = indicators
+            results.append(current_indicator)
+        return results
 
     def enrich_final_indicator(self, indicator_list: list[dict]):
         """
@@ -387,13 +404,11 @@ class ContextBuilder:
             indicator_list (list[dict]): The list of indicators to enrich.
         """
         for indicator in indicator_list:
-            all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])]
+            all_scores = [res.get("Score", 0) for res in indicator.get("Results", [])] + [indicator.get("TIMScore", 0)]
             max_score = max(all_scores or [0])
             if "Score" in self.indicator.context_output_mapping:
                 indicator["MaxScore"] = max_score
                 indicator["MaxVerdict"] = DBOT_SCORE_TO_VERDICT.get(max_score, "Unknown")
-                if max_tim_score := [r.get("Score", 0) for r in indicator.get("Results", []) if r.get("Brand") == "TIM"]:
-                    indicator["TIMScore"] = max(max_tim_score)
             if "CVSS" in self.indicator.context_output_mapping:
                 self.compute_cvss_fields(indicator)
 
@@ -580,7 +595,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         demisto.debug("Aggregated reputation run: start")
         batch_results: list[list[list[tuple[ContextResult, str, str]]]] = []
-        dbot_scores: DBotScoreList = []
         context_result: ContextResult = {}
         entry_results: list[EntryResult] = []
         verbose_outputs: list[str] = []
@@ -597,19 +611,19 @@ class ReputationAggregatedCommand(AggregatedCommand):
             batch_executor = BatchExecutor()
             batch_results = batch_executor.execute_list_of_batches(commands_to_execute, self.brand_manager.to_run, self.verbose)
             if batch_results:
-                context_result, dbot_scores, verbose_outputs, entry_results = self.process_batch_results(
+                context_result, verbose_outputs, entry_results = self.process_batch_results(
                     batch_results, commands_to_execute
                 )
             else:
                 demisto.debug("No batch results.")
 
         demisto.debug("Step 3: Finding indicators.")
-        tim_context, tim_dbot, tim_entry = self.get_indicators_from_tim()
+        tim_context, tim_entry = self.get_indicators_from_tim()
 
         demisto.debug("Step 4: Building final context.")
         context_builder = ContextBuilder(self.indicator, self.final_context_path)
         context_builder.add_other_commands_results(context_result)
-        context_builder.add_tim_context(tim_context, tim_dbot + dbot_scores)
+        context_builder.add_tim_context(tim_context)
         final_context = context_builder.build()
 
         demisto.debug("Step 5: Summarizing command results.")
@@ -688,12 +702,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
             prepared_commands.append(current_command_list)
         return prepared_commands
 
-    def get_indicators_from_tim(self) -> tuple[ContextResult, DBotScoreList, list[EntryResult]]:
+    def get_indicators_from_tim(self) -> tuple[ContextResult, list[EntryResult]]:
         """
         Searches TIM for indicators and processes the results.
         Returns:
             tuple[ContextResult: TIM Context Output,
-            DBotScoreList: DBot Scores List,
             list[EntryResult]: Result Entries].
         """
 
@@ -704,11 +717,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         )
         if status == Status.FAILURE or not iocs:
             demisto.debug("Failed to search TIM.")
-            return {}, [], [entry_result]
+            return {}, [entry_result]
 
         demisto.debug(f"Found {len(iocs)} IOCs in TIM. Processing results.")
-        tim_context, tim_dbot, result_entries = self.process_tim_results(iocs)
-        return tim_context, tim_dbot, result_entries
+        tim_context, result_entries = self.process_tim_results(iocs)
+        return tim_context, result_entries
 
     def search_indicators_in_tim(self) -> tuple[list[ContextResult], Status, str]:
         """
@@ -727,12 +740,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
         demisto.debug("Found indicators in TIM.")
         return results, Status.SUCCESS, "No matching indicators found." if not results else ""
 
-    def process_tim_results(self, iocs: list[dict[str, Any]]) -> tuple[ContextResult, DBotScoreList, list[EntryResult]]:
+    def process_tim_results(self, iocs: list[dict[str, Any]]) -> tuple[ContextResult, list[EntryResult]]:
         """Processes raw IOCs from a TIM search into structured context.
         Args:
             iocs (list[dict[str, Any]]): The IOC objects from the TIM search.
         Returns:
-            tuple[ContextResult, DBotScoreList, list[EntryResult]]: The TIM context output and DBot scores list.
+            tuple[ContextResult, list[EntryResult]]: The TIM context output and DBot scores list.
             ContextResult: TIM Context Output.
                 Example:
                 {
@@ -746,87 +759,87 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         demisto.debug(f"Processing {len(iocs)} IOCs from TIM.")
         final_tim_context: ContextResult = defaultdict(list)
-        final_dbot_scores: DBotScoreList = []
         final_result_entries: list[EntryResult] = []
 
         for ioc in iocs:
             demisto.debug(f"Processing TIM results for indicator: {ioc.get('value')}")
-            demisto.debug(f"IOC: {json.dumps(ioc,indent=2)}")
-            parsed_indicators, dbot_scores, entry = self._process_single_tim_ioc(ioc)
+            parsed_indicators, entry = self._process_single_tim_ioc(ioc)
 
             if value := ioc.get("value"):
                 final_tim_context[value].extend(parsed_indicators)
-
-            final_dbot_scores.extend(dbot_scores)
             final_result_entries.append(entry)
 
-        return dict(final_tim_context), final_dbot_scores, final_result_entries
+        return dict(final_tim_context), final_result_entries
 
-    def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], DBotScoreList, EntryResult]:
+    def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], EntryResult]:
         """
         Processes a single IOC object returned from a TIM search.
         Extract Score and brand and add them to parsed indicators.
         Args:
             ioc (dict[str, Any]): The IOC object to process.
         Returns:
-            tuple[list[dict], DBotScoreList, EntryResult]: The parsed indicators, DBot scores and entry result.
+            tuple[list[dict], EntryResult]: The parsed indicators and entry result.
         """
         value = ioc.get("value")
         demisto.debug(f"Processing TIM results for indicator: {value}")
         all_parsed_indicators = []
-        all_dbot_scores = []
 
-        if tim_indicator := self.create_tim_indicator(ioc):
-            demisto.debug("Created TIM indicator.")
-            all_parsed_indicators.append(tim_indicator)
+        all_parsed_indicators.append(self.create_tim_indicator(ioc))
 
         found_brands = []
         for brand, brand_data in ioc.get("insightCache", {}).get("scores", {}).items():
             demisto.debug(f"Processing TIM indicators from brand: {brand}")
             score = brand_data.get("score", 0)
             context = brand_data.get("context", {})
-            parsed_indicators, parsed_dbot = self.parse_indicator(context, brand, score)
+            parsed_indicators = self.parse_indicator(context, brand, score)
             if parsed_indicators:
                 found_brands.append(brand)
             all_parsed_indicators.extend(parsed_indicators)
-            all_dbot_scores.extend(parsed_dbot)
 
         message = f"Found indicator from brands: {', '.join(found_brands)}." if found_brands else "No matching indicators found."
         entry = EntryResult(
             command_name="search-indicators-in-tim", args=value, brand="TIM", status=Status.SUCCESS, message=message
         )
 
-        return all_parsed_indicators, all_dbot_scores, entry
+        return all_parsed_indicators, entry
 
-    def create_tim_indicator(self, ioc: ContextResult) -> dict[str, Any]:
+    def create_tim_indicator(self, indicator: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "Brand": "TIM",
+            "Score": indicator.get("score", Common.DBotScore.NONE),
+            "Status": self.get_data_status_from_ioc(indicator).value
+        }
+    
+    
+    def get_data_status_from_ioc(self, ioc: dict) -> IndicatorStatus:
         """
-        Creates a TIM indicator from the given IOC.
-        Takes the finalize score from tim result and CustomFields and creates a final indicator object.
-        Note: CustomFields keys are all lower case.
-        Args:
-            ioc (ContextResult): The IOC object from the TIM search.
-        Returns:
-            dict[str, Any]: The TIM indicator.
+        Determine the status of a dict based on manual edits and modification time.
+
+        Rules:
+        - If "Score" is in manuallyEditedFields → "manual"
+        - Else if modifiedTime is less than STATUS_FRESHNESS_WINDOW ago → "fresh"
+        - Else → "stale"
         """
-        demisto.debug("Creating TIM indicator from ioc")
-        lowercase_mapping = {key.lower(): value for key, value in self.indicator.context_output_mapping.items()}
-        tim_indicator = self.map_command_context(ioc.get("CustomFields", {}).copy(), lowercase_mapping, is_indicator=True)
+        if "Score" in ioc.get("manuallyEditedFields", {}):
+            return IndicatorStatus.MANUAL
 
-        if "Score" in self.indicator.context_output_mapping:
-            score = ioc.get("score", Common.DBotScore.NONE)
-            tim_indicator["Score"] = score
-            tim_indicator["Verdict"] = DBOT_SCORE_TO_VERDICT.get(score)
+        modified_time_str = ioc.get("modifiedTime")
+        if modified_time_str:
+            try:
+                modified_time = datetime.fromisoformat(modified_time_str.replace("Z", "+00:00"))
+            except ValueError:
+                return IndicatorStatus.STALE
 
-        tim_indicator[self.indicator.value_field] = ioc.get("value")
-        tim_indicator["Brand"] = "TIM"
-        demisto.debug("TIM indicator created.")
-        return tim_indicator
+            if modified_time >= datetime.now(modified_time.tzinfo) - STATUS_FRESHNESS_WINDOW:
+                return IndicatorStatus.FRESH
+
+        return IndicatorStatus.STALE
 
     def process_batch_results(
         self,
         all_results: list[list[list[tuple[ContextResult, str, str]]]],
         commands_to_execute: list[list[Command]],
-    ) -> tuple[ContextResult, DBotScoreList, list[str], list[EntryResult]]:
+    ) -> tuple[ContextResult, list[str], list[EntryResult]]:
         """
         Processes the results from the batch executor.
         runs through the execution results and processes each result according to the command parameters.
@@ -838,7 +851,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             tuple[
                 ContextResult, The non-reputation context output.
-                DBotScoreList, The dbot scores context.
                 list[str], The verbose command results.
                 list[EntryResult], The entry results.
             ]
@@ -846,7 +858,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         verbose_outputs: list[str] = []
         entry_results: list[EntryResult] = []
         context_result: ContextResult = defaultdict(lambda: defaultdict(list))
-        dbot_scores: DBotScoreList = []
 
         demisto.debug(f"Processing {len(all_results)} batches.")
         for j, (command_batch, results_batch) in enumerate(zip(commands_to_execute, all_results)):
@@ -854,32 +865,30 @@ class ReputationAggregatedCommand(AggregatedCommand):
             for command, processed_results_list in zip(command_batch, results_batch):
                 demisto.debug(f"Processing result for command: {command} len: {len(processed_results_list)}")
                 for i, result_tuple in enumerate(processed_results_list):
-                    entry, mapped_ctx, dbots, verbose = self._process_single_command_result(result_tuple, command)
+                    entry, mapped_ctx, verbose = self._process_single_command_result(result_tuple, command)
                     if not command.is_aggregated_output and command.is_multi_input and i < len(self.data):
                         # Only if the command input is list and the command return many Command results.
                         entry.args = self.data[i]
 
                     entry_results.append(entry)
                     deep_merge_in_place(context_result, mapped_ctx)
-                    dbot_scores.extend(dbots)
                     if verbose:
                         verbose_outputs.append(verbose)
 
                 demisto.debug(f"Command {command} processed.")
 
-        return context_result, dbot_scores, verbose_outputs, entry_results
+        return context_result, verbose_outputs, entry_results
 
     def _process_single_command_result(
         self, result: tuple[ContextResult, str, str], command: Command
-    ) -> tuple[EntryResult, ContextResult, DBotScoreList, str | None]:
+    ) -> tuple[EntryResult, ContextResult, str | None]:
         """
         Processes a single result from a batch command execution.
         Args:
             result (tuple[ContextResult, str, str]): The result from the batch command execution.
             command (Command): The command to execute.
         Returns:
-            tuple[EntryResult, ContextResult, DBotScoreList, str | None]: The entry result, context result, DBot scores,
-            and verbose output.
+            tuple[EntryResult, ContextResult, str | None]: The entry result, context result, and verbose output.
         """
         raw_result, hr_output, error = result
 
@@ -892,15 +901,13 @@ class ReputationAggregatedCommand(AggregatedCommand):
         )
 
         mapped_context: ContextResult = {}
-        dbot_scores: DBotScoreList = []
         if cmd_context := raw_result.get("EntryContext", {}):
             entry.message = error if error else ""
             demisto.debug(f"EntryContext found for command {command.name}")
             mapped_context = self.map_command_context(cmd_context.copy(), command.context_output_mapping)
-            dbot_scores.extend(flatten_list([v for k, v in cmd_context.items() if k.startswith("DBotScore")]))
 
         verbose_output = hr_output if self.verbose else None
-        return entry, mapped_context, dbot_scores, verbose_output
+        return entry, mapped_context, verbose_output
 
     def map_command_context(
         self, entry_context: dict[str, Any], context_output_mapping: dict[str, str] | None, is_indicator: bool = False
@@ -951,7 +958,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         entry_context: ContextResult,
         brand: str,
         score: int = Common.DBotScore.NONE,
-    ) -> tuple[list[ContextResult], DBotScoreList]:
+    ) -> tuple[list[ContextResult]]:
         """
         Parse the indicator context and complete missing fields such as brand, score, verdict if needed.
         indicator_object is used to map the indicator context to the final context.
@@ -974,12 +981,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         """
         demisto.debug(f"Starting parsing indicators from brand '{brand}'.")
         indicators_context: list[ContextResult] = []
-        dbot_list = flatten_list([v for k, v in entry_context.items() if k.startswith("DBotScore")])
         indicator_entries = flatten_list(
             [v for k, v in entry_context.items() if k.startswith(self.indicator.context_path_prefix)]
         )
         demisto.debug(
-            f"Extracted {len(indicator_entries)} indicators and {len(dbot_list)} DBot scores from {brand} entry context."
+            f"Extracted {len(indicator_entries)} indicators from {brand} entry context."
         )
 
         for indicator_data in indicator_entries:
@@ -994,7 +1000,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             indicators_context.append(mapped_indicator)
             demisto.debug(f"Parsed indicator '{indicator_value}' from brand '{brand}'")
 
-        return indicators_context, dbot_list
+        return indicators_context
 
     def summarize_command_results(
         self, entries: list[EntryResult], verbose_outputs: list[str], final_context: dict[str, Any]
