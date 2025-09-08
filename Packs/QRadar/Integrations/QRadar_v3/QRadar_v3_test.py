@@ -32,6 +32,7 @@ from QRadar_v3 import (
     MIRRORED_OFFENSES_FETCHED_CTX_KEY,
     MIRRORED_OFFENSES_FINISHED_CTX_KEY,
     MIRRORED_OFFENSES_QUERIED_CTX_KEY,
+    SAMPLE_INCIDENTS_KEY,
     OFFENSE_OLD_NEW_NAMES_MAP,
     REFERENCE_SETS_RAW_FORMATTED,
     USECS_ENTRIES,
@@ -1356,7 +1357,7 @@ def test_get_modified_with_events(mocker):
         LAST_MIRROR_KEY: 3444,
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_MIRROR_CLOSED_KEY: 3444,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
     set_integration_context(context_data)
     status = {"123": {"status": "COMPLETED"}, "456": {"status": "WAIT"}, "555": {"status": "PENDING"}}
@@ -1539,12 +1540,12 @@ def test_integration_context_during_run(test_case_data, mocker):
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
             MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
             LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
-            "samples": init_context.get("samples", []),
+            SAMPLE_INCIDENTS_KEY: init_context.get(SAMPLE_INCIDENTS_KEY, []),
         }
     else:
         init_context |= {
             LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
-            "samples": init_context.get("samples", []),
+            SAMPLE_INCIDENTS_KEY: init_context.get(SAMPLE_INCIDENTS_KEY, []),
         }
 
     set_integration_context(init_context)
@@ -1594,8 +1595,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         )
         if LAST_FETCH_KEY not in expected_ctx_first_loop:
             expected_ctx_first_loop[LAST_FETCH_KEY] = 0
-        if "samples" not in expected_ctx_first_loop:
-            expected_ctx_first_loop["samples"] = []
+        if SAMPLE_INCIDENTS_KEY not in expected_ctx_first_loop:
+            expected_ctx_first_loop[SAMPLE_INCIDENTS_KEY] = []
 
     current_context = get_integration_context()
 
@@ -1615,16 +1616,16 @@ def test_integration_context_during_run(test_case_data, mocker):
         expected_ctx_second_loop = ctx_test_data["context_data_second_loop_default"].copy()
         # The samples from the first loop are preserved and second loop samples are appended and sliced by SAMPLE_SIZE
         if is_offenses_first_loop:
-            expected_ctx_second_loop["samples"] = (
-                expected_ctx_first_loop.get("samples", []) + expected_ctx_second_loop.get("samples", [])
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
+                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_second_loop.get(SAMPLE_INCIDENTS_KEY, [])
             )[:SAMPLE_SIZE]
     else:
         mocker.patch.object(client, "offenses_list", return_value=[])
         expected_ctx_second_loop = expected_ctx_first_loop.copy()
         # When no new offenses in second loop, the existing samples are appended and sliced by SAMPLE_SIZE
-        if expected_ctx_first_loop.get("samples"):
-            expected_ctx_second_loop["samples"] = (
-                expected_ctx_first_loop.get("samples", []) + expected_ctx_first_loop.get("samples", [])
+        if expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY):
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = (
+                expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, []) + expected_ctx_first_loop.get(SAMPLE_INCIDENTS_KEY, [])
             )[:SAMPLE_SIZE]
     perform_long_running_loop(
         client=client,
@@ -1656,8 +1657,8 @@ def test_integration_context_during_run(test_case_data, mocker):
         )
         if LAST_FETCH_KEY not in expected_ctx_second_loop:
             expected_ctx_second_loop[LAST_FETCH_KEY] = 0
-        if "samples" not in expected_ctx_second_loop:
-            expected_ctx_second_loop["samples"] = []
+        if SAMPLE_INCIDENTS_KEY not in expected_ctx_second_loop:
+            expected_ctx_second_loop[SAMPLE_INCIDENTS_KEY] = []
 
     current_context = get_integration_context()
 
@@ -1680,13 +1681,13 @@ def test_convert_ctx():
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_FETCH_KEY: 15,
         LAST_MIRROR_KEY: 0,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
     assert new_context == expected
 
 
 def test_convert_ctx_to_new_structure():
-    context = {LAST_FETCH_KEY: "15", LAST_MIRROR_KEY: "0", "samples": "[]"}
+    context = {LAST_FETCH_KEY: "15", LAST_MIRROR_KEY: "0", SAMPLE_INCIDENTS_KEY: "[]"}
     set_integration_context(context)
     validate_integration_context()
     assert get_integration_context() == {
@@ -1695,7 +1696,7 @@ def test_convert_ctx_to_new_structure():
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
         LAST_FETCH_KEY: 15,
         LAST_MIRROR_KEY: 0,
-        "samples": [],
+        SAMPLE_INCIDENTS_KEY: [],
     }
 
 
