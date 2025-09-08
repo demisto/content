@@ -8,7 +8,7 @@ type: python
 comment: Retrieves extra data fields of a specific case including issues and key artifacts.
 enabled: true
 args:
-- description: An array or CSV string of case IDs.
+- description: A comma seperated list of case IDs.
   isArray: true
   name: case_id
   required: true

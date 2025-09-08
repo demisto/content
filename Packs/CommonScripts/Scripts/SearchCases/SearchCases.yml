@@ -5,10 +5,10 @@ name: SearchCases
 script: '-'
 isInternal: true
 type: python
-comment: Retrieves extra data fields of a specific case including issues and key artifacts.
+comment: Retrieves cases based on the provided filters.
 enabled: true
 args:
-  - description: An array or CSV string of case IDs.
+  - description: A comma seperated list of case IDs.
     isArray: true
     name: case_id_list
   - description: "The start time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."

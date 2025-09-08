@@ -23,7 +23,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| case_id | An array or CSV string of case IDs. |
+| case_id | A comma seperated list of case IDs. |
 | issues_limit | Maximum number of issues to return per case. The default and maximum is 1000. |
 
 ## Outputs

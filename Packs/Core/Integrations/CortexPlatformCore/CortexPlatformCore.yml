@@ -382,7 +382,7 @@ script:
           name: lte_modification_time
         - description: Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
           name: gte_modification_time
-        - description: An array or CSV string of case IDs.
+        - description: A comma seperated list of case IDs.
           isArray: true
           name: case_id_list
         - description: Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
@@ -536,7 +536,7 @@ script:
           description: Custom fields for the case with standardized lowercase, whitespace-free names.
           type: Unknown
     - arguments:
-      - description: An array or CSV string of case IDs.
+      - description: A comma seperated list of case IDs.
         isArray: true
         name: case_id
         required: true

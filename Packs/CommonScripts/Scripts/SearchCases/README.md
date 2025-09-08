@@ -24,20 +24,14 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved. |
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved. |
-| lte_modification_time | Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. |
-| gte_modification_time | Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. |
-| case_id_list | An array or CSV string of case IDs. |
-| since_creation_time | Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. |
-| since_modification_time | Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. |
-| sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified \("asc" - ascending, "desc" - descending\). |
+| case_id_list | A comma seperated list of case IDs. |
+| start_time | The start time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. |
+| end_time | The end time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025. |
 | sort_by_creation_time | Sorts returned cases by the date/time that the case was created \("asc" - ascending, "desc" - descending\). |
-| page | Page number \(for pagination\). The default is 0 \(the first page\). |
-| limit | Maximum number of cases to return per page. The default is 45 and maximum is 100. To avoid rate limits, use a lower limit or increase the script.timeout value https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.9/Cortex-XSOAR-Administrator-Guide/Automation-Server-Configurations. |
 | status | Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. |
 | starred | Whether the case is starred \(Boolean value: true or false\). |
-| issues_limit | Maximum number of issues to return per case. The default and maximum is 1000. |
+| page | Page number \(for pagination\). The default is 0 \(the first page\). |
+| page_size | Maximum number of cases to return per page. The default and maximum is 100. |
 
 ## Outputs
 
@@ -46,25 +40,41 @@ This script uses the following commands and scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Core.Case.case_id | Unique ID assigned to each returned case. | String |
-| Core.Case.manual_severity | Case severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high". | String |
-| Core.Case.manual_description | Case description provided by the user. | String |
-| Core.Case.assigned_user_mail | Email address of the assigned user. | String |
-| Core.Case.high_severity_issue_count | Number of issues with the severity HIGH. | String |
-| Core.Case.host_count | Number of hosts involved in the case. | number |
-| Core.Case.xdr_url | A link to the case view on Cortex XDR. | String |
-| Core.Case.assigned_user_pretty_name | Full name of the user assigned to the case. | String |
-| Core.Case.issue_count | Total number of issues in the case. | number |
-| Core.Case.med_severity_issue_count | Number of issues with the severity MEDIUM. | number |
-| Core.Case.user_count | Number of users involved in the case. | number |
-| Core.Case.severity | Calculated severity of the case. Valid values are:<br/>"low","medium","high". | String |
-| Core.Case.low_severity_issue_count | Number of issues with the severity LOW. | String |
-| Core.Case.status | Current status of the case. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".<br/> | String |
-| Core.Case.description | Dynamic calculated description of the case. | String |
-| Core.Case.resolve_comment | Comments entered by the user when the case was resolved. | String |
-| Core.Case.notes | Comments entered by the user regarding the case. | String |
-| Core.Case.creation_time | Date and time the case was created on Cortex XDR. | date |
-| Core.Case.detection_time | Date and time that the first issue occurred in the case. | date |
-| Core.Case.modification_time | Date and time that the case was last modified. | date |
-| Core.Case.issue_ids | List of unique issue identifiers associated with the case. | date |
-| Core.Case.network_artifacts | Network-related artifacts associated with the case. | date |
-| Core.Case.file_artifacts | File-related artifacts associated with the case. | date |
+| Core.Case.case_name | Name of the case. | String |
+| Core.Case.creation_time | Timestamp when the case was created. | Number |
+| Core.Case.modification_time | Timestamp when the case was last modified. | Number |
+| Core.Case.detection_time | Timestamp when the first issue was detected in the case. May be null. | Date |
+| Core.Case.status | Current status of the case. | String |
+| Core.Case.severity | Severity level of the case. | String |
+| Core.Case.description | Description of the case. | String |
+| Core.Case.assigned_user_mail | Email address of the assigned user. May be null. | String |
+| Core.Case.assigned_user_pretty_name | Full name of the assigned user. May be null. | String |
+| Core.Case.issue_count | Total number of issues in the case. | Number |
+| Core.Case.low_severity_issue_count | Number of issues with low severity. | Number |
+| Core.Case.med_severity_issue_count | Number of issues with medium severity. | Number |
+| Core.Case.high_severity_issue_count | Number of issues with high severity. | Number |
+| Core.Case.critical_severity_issue_count | Number of issues with critical severity. | Number |
+| Core.Case.user_count | Number of users involved in the case. | Number |
+| Core.Case.host_count | Number of hosts involved in the case. | Number |
+| Core.Case.notes | Notes related to the case. May be null. | String |
+| Core.Case.resolve_comment | Comments added when resolving the case. May be null. | String |
+| Core.Case.resolved_timestamp | Timestamp when the case was resolved. | Number |
+| Core.Case.manual_severity | Severity manually assigned by the user. May be null. | Number |
+| Core.Case.manual_description | Description manually provided by the user. | String |
+| Core.Case.xdr_url | URL to view the case in Cortex XDR. | String |
+| Core.Case.starred | Indicates whether the case is starred. | Boolean |
+| Core.Case.starred_manually | True if the case was starred manually; false if starred by rules. | Boolean |
+| Core.Case.hosts | List of hosts involved in the case. | Array |
+| Core.Case.users | List of users involved in the case. | Array |
+| Core.Case.case_sources | Sources of the case. | Array |
+| Core.Case.rule_based_score | Score based on rules. | Number |
+| Core.Case.manual_score | Manually assigned score. May be null. | Number |
+| Core.Case.wildfire_hits | Number of WildFire hits. | Number |
+| Core.Case.issues_grouping_status | Status of issue grouping. | String |
+| Core.Case.mitre_tactics_ids_and_names | List of MITRE ATT&amp;CK tactic IDs and names associated with the case. | Array |
+| Core.Case.mitre_techniques_ids_and_names | List of MITRE ATT&amp;CK technique IDs and names associated with the case. | Array |
+| Core.Case.issue_categories | Categories of issues associated with the case. | Array |
+| Core.Case.original_tags | Original tags assigned to the case. | Array |
+| Core.Case.tags | Current tags assigned to the case. | Array |
+| Core.Case.case_domain | Domain associated with the case. | String |
+| Core.Case.custom_fields | Custom fields for the case with standardized lowercase, whitespace-free names. | Unknown |

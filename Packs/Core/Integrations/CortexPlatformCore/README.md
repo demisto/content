@@ -177,7 +177,7 @@ Get extra data fields of a specific case including issues and key artifacts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | An array or CSV string of case IDs. | Required | 
+| case_id | A comma seperated list of case IDs. | Required | 
 | issues_limit | Maximum number of issues to return per case. The default and maximum is 1000. Default is 1000. | Optional | 
 
 #### Context Output
@@ -386,7 +386,7 @@ Get cases information based on the specified filters.
 | gte_creation_time | A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved. | Optional | 
 | lte_modification_time | Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
 | gte_modification_time | Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| case_id_list | An array or CSV string of case IDs. | Optional | 
+| case_id_list | A comma seperated list of case IDs. | Optional | 
 | since_creation_time | Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
 | since_modification_time | Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
 | sort_by_modification_time | Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
