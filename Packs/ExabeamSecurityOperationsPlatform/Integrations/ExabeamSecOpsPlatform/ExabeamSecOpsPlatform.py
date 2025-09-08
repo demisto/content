@@ -232,19 +232,6 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def disable_if_product(product_condition: bool):
-    """Validates if command is not running on an unsupported Cortex product.
-
-    Args:
-        product_condition (bool): Boolean flag condition relating to a Cortex product. For example: `is_xsoar()`.
-
-    Raises:
-        DemistoException: If command is being run on unsupported product.
-    """
-    if product_condition:
-        raise DemistoException("This command is not supported on this Cortex product.")
-
-
 def get_date(time: str, arg_name: str):
     """
     Get the date from a given time string.
@@ -499,7 +486,7 @@ def get_cases_in_batches(
         tuple[list[dict], str, list[str]]: Unique fetched cases, new start time, and last fetched case IDs.
     """
     all_cases: list[dict] = []
-    all_fetched_ids = set(last_fetched_ids.copy())
+    all_fetched_ids = set(last_fetched_ids)
     iteration = 1
 
     while len(all_cases) < max_fetch:
@@ -1075,8 +1062,10 @@ def test_module(client: Client, params: dict[str, Any]) -> str:  # pragma: no co
 
     """
     if client.access_token and generic_search_command(client, {}, "case"):
-        if params.get("isFetchEvents", False):
+        if params.get("isFetchEvents") and (is_xsiam() or is_platform()):
             fetch_events(client, max_fetch=1, last_run={})
+        if params.get("isFetch") and is_xsoar():
+            fetch_incidents(client, params, last_run={})
         return "ok"
     else:
         raise DemistoException("Access Token Generation Failure.")
@@ -1105,14 +1094,12 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client, params))
-        elif command == "fetch-incidents":
-            disable_if_product(is_xsiam() or is_platform())
+        elif (command == "fetch-incidents") and (is_xsiam() or is_platform()):
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == "fetch-events":
-            disable_if_product(is_xsoar())
+        elif (command == "fetch-events") and is_xsoar():
             max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, max_fetch, last_run)
