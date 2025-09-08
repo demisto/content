@@ -2037,7 +2037,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
         logging.log(logging.DEBUG, f"{demisto.command()}Status {response.status_code}: warninglists/edit/{warninglist_id}")
         response = response.json()
         warninglist_output = {}
-        if entity := response.get("Warninglist", {}):
+        if entity := response.get("Warninglist", {}):  # type: ignore[attr-defined]
             warninglist_output = {
                 "ID": entity["id"],
                 "Name": entity["name"],
@@ -2048,7 +2048,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                 "Default": entity["default"],
                 "Category": entity["category"],
             }
-            warninglist_output["Attributes"] = [f"{t['type']}" for t in (response.get("WarninglistType"))]
+            warninglist_output["Attributes"] = [f"{t['type']}" for t in (response.get("WarninglistType"))]  # type: ignore[attr-defined]
             warninglist_output["Entries"] = [
                 {
                     "ID": entry.get("id"),
@@ -2056,7 +2056,7 @@ def change_warninglist_command(demisto_args: dict) -> CommandResults:
                     "WarninglistID": entry.get("warninglist_id"),
                     "Comment": entry.get("comment"),
                 }
-                for entry in (response["WarninglistEntry"])
+                for entry in (response["WarninglistEntry"])  # type: ignore[index]
             ]
 
         human_readable = tableToMarkdown("MISP Warninglist", warninglist_output, headers=WARNINGLIST_HEADERS, removeNull=True)
