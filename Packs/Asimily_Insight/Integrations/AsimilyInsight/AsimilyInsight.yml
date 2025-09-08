@@ -497,7 +497,5 @@ script:
   subtype: python3
   type: python
 fromversion: '6.10.0'
-marketplaces:
-- xsoar
 tests:
 - No tests (auto formatted)
