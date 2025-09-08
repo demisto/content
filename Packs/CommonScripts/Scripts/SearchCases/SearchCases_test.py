@@ -1,8 +1,7 @@
 import pytest
 from datetime import datetime
-import demistomock as demisto
 from CommonServerPython import DemistoException
-from SearchCases import prepare_start_end_time, main
+from SearchCases import prepare_start_end_time
 
 
 def test_prepare_start_end_time_normal(monkeypatch):
