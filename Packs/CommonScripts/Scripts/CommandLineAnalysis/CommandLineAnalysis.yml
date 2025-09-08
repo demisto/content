@@ -12,7 +12,7 @@ args:
   required: true
   description: The command line input to analyze.
 - name: custom_patterns
-  description:  A list of custom regex patterns to search for within the command line. Each pattern should be a valid regular expression string.
+  description:  A list of custom regex patterns to search for within the command line. Each pattern should be a valid regular expression string. When using multiple patterns they must be dvided by a space, comma, space - i.e. <CP> , <CP>.
 outputs:
 - contextPath: CommandLineAnalysis.original_command
   description: The original command line string analyzed for potential risks.
@@ -87,7 +87,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.11.4417419
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

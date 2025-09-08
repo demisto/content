@@ -366,6 +366,9 @@ class PychromeEventHandler:
         request_url = kwargs.get("request", {}).get("url", "")
 
         if any(value in request_url for value in BLOCKED_URLS):
+            demisto.info(
+                f"The following URL is blocked. Consider updating the 'List of domains to block' parameter:{request_url}"
+            )
             self.tab.Fetch.enable()
             demisto.debug(f"Fetch events enabled. {self.tab.id=}, {self.path=}")
 
@@ -803,7 +806,12 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
             tab.Page.navigate(url=path)
 
         demisto.debug(f"Waiting for tab_ready_event on {tab.id=}, {path=}")
-        tab_ready_event.wait(navigation_timeout)
+
+        if not tab_ready_event.wait(navigation_timeout):
+            return_error(
+                f"Rasterize failed to navigate to the specified path due to a timeout of {navigation_timeout} seconds.\n{path=}"
+            )
+
         demisto.debug(f"After waiting for tab_ready_event on {tab.id=}, {path=}")
 
         if wait_time > 0:
@@ -1298,6 +1306,38 @@ def perform_rasterize(
             return rasterization_results
 
     else:
+        chrome_instances_contents = read_json_file(CHROME_INSTANCES_FILE_PATH)
+        chrome_options_dict = {
+            options[CHROME_INSTANCE_OPTIONS]: {"chrome_port": port} for port, options in chrome_instances_contents.items()
+        }
+        chrome_options = demisto.params().get("chrome_options", "None")
+        chrome_port = chrome_options_dict.get(chrome_options, {}).get("chrome_port", "")
+
+        ps_aux_output = "\n".join(
+            subprocess.check_output(  # noqa: S602
+                "ps aux | grep chrom | grep port= | grep -- --headless",
+                shell=True,
+                text=True,
+                stderr=subprocess.STDOUT,
+            ).splitlines()
+        )
+        chrome_headless_content = "\n".join(
+            subprocess.check_output(["cat", CHROME_LOG_FILE_PATH], stderr=subprocess.STDOUT, text=True).splitlines()
+        )
+        df_output = "\n".join(subprocess.check_output(["df", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        free_output = "\n".join(subprocess.check_output(["free", "-h"], stderr=subprocess.STDOUT, text=True).splitlines())
+        chromedriver = subprocess.check_output(["chromedriver", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+        chrome_version = subprocess.check_output(["google-chrome", "--version"], stderr=subprocess.STDOUT, text=True).splitlines()
+
+        count_running_chromes(chrome_port)
+        demisto.debug(f"{chrome_instances_contents=}")
+        demisto.debug(f"ps aux command result:\n{ps_aux_output}")
+        demisto.debug(f"chrome_headless.log:\n{chrome_headless_content}")
+        demisto.debug(f"df command result:\n{df_output}")
+        demisto.debug(f"free command result:\n{free_output}")
+        demisto.debug(f"chrome driver: {chromedriver}")
+        demisto.debug(f"chrome version: {chrome_version}")
+
         message = "Could not use local Chrome for rasterize command"
         demisto.error(message)
         return_error(message)

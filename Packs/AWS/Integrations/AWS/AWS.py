@@ -25,6 +25,155 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
+class AWSErrorHandler:
+    """
+    Centralized error handling for AWS boto3 client errors.
+    Provides specialized handling for permission errors and general AWS API errors.
+    """
+
+    # Permission-related error codes that should be handled specially
+    PERMISSION_ERROR_CODES = [
+        "AccessDenied",
+        "UnauthorizedOperation",
+        "Forbidden",
+        "AccessDeniedException",
+        "UnauthorizedOperationException",
+        "InsufficientPrivilegesException",
+        "NotAuthorized",
+    ]
+
+    @classmethod
+    def handle_response_error(cls, response: dict, account_id: str | None = None) -> None:
+        """
+        Handle boto3 response errors.
+        For permission errors, returns a structured error entry using return_error.
+        For other errors, raises DemistoException with informative error message.
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
+        """
+        # Create informative error message
+        detailed_error = (
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"Request Id: {response.get('ResponseMetadata',{}).get('RequestId', 'N/A')}\n"
+            f"HTTP Status Code: {response.get('ResponseMetadata',{}).get('HTTPStatusCode', 'N/A')}"
+        )
+
+        return_error(detailed_error)
+
+    @classmethod
+    def handle_client_error(cls, err: ClientError, account_id: str | None = None) -> None:
+        """
+        Handle boto3 client errors with special handling for permission issues.
+        For permission errors, returns a structured error entry using return_error.
+        For other errors, raises DemistoException with informative error message.
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
+        """
+        error_code = err.response.get("Error", {}).get("Code", "")
+        error_message = err.response.get("Error", {}).get("Message", "")
+        http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
+        # Check if this is a permission-related error
+        if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
+            cls._handle_permission_error(err, error_code, error_message, account_id)
+        else:
+            cls._handle_general_error(err, error_code, error_message)
+
+    @classmethod
+    def _handle_permission_error(
+        cls, err: ClientError, error_code: str, error_message: str, account_id: str | None = None
+    ) -> None:
+        """
+        Handle permission-related errors by returning structured error entry.
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            error_code (str): The AWS error code
+            error_message (str): The AWS error message
+            account_id (str, optional): AWS account ID
+        """
+        # Get account_id from args if not provided
+        if not account_id:
+            account_id = demisto.args().get("account_id", "unknown")
+
+        action = cls._extract_action_from_message(error_message)
+        # When encountering an unauthorized error, an encoded authorization message may be returned with different
+        # encoding each time. This will create different error entries for each unauthorized error and will confuse the user.
+        # Therefore we will omit the actual encoded message.
+        demisto.info(f"Original error message: {error_message}")
+        error_entry = {
+            "account_id": account_id,
+            "message": cls.remove_encoded_authorization_message(error_message),
+            "name": action,
+        }
+        demisto.debug(f"Permission error detected: {error_entry}")
+        return_multiple_permissions_error([error_entry])
+
+    @classmethod
+    def remove_encoded_authorization_message(cls, message: str) -> str:
+        """
+        Remove encoded authorization messages from AWS error responses.
+        Args:
+            message (str): Original error message
+        Returns:
+            str: Cleaned error message without encoded authorization details
+        """
+        index = message.lower().find("encoded authorization failure message:")
+        if index != -1:  # substring found
+            return message[:index]
+        else:
+            return message
+
+    @classmethod
+    def _handle_general_error(cls, err: ClientError, error_code: str, error_message: str) -> None:
+        """
+        Handle general (non-permission) errors with informative error messages.
+        Args:
+            err (ClientError): The boto3 ClientError exception
+            error_code (str): The AWS error code
+            error_message (str): The AWS error message
+        """
+        # Get additional error details
+        request_id = err.response.get("ResponseMetadata", {}).get("RequestId", "N/A")
+        http_status = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode", "N/A")
+
+        # Create informative error message
+        detailed_error = (
+            f"AWS API Error occurred while executing: {demisto.command()} with arguments: {demisto.args()}\n"
+            f"Error Code: {error_code}\n"
+            f"Error Message: {error_message}\n"
+            f"HTTP Status Code: {http_status}\n"
+            f"Request ID: {request_id}"
+        )
+
+        demisto.error(f"AWS API Error: {detailed_error}")
+        return_error(detailed_error)
+
+    @classmethod
+    def _extract_action_from_message(cls, error_message: str) -> str:
+        """
+        Extract AWS permission name from error message using regex patterns.
+        Args:
+            error_message (str): The AWS error message
+        Returns:
+            str: The extracted permission name or 'unknown' if not found
+        """
+        # Sanitize input to prevent regex injection
+        if not error_message or not isinstance(error_message, str):
+            return "unknown"
+
+        for action in REQUIRED_ACTIONS:
+            try:
+                match = re.search(action, error_message, re.IGNORECASE)
+                if match and match.group(0) == action:
+                    return action
+            except re.error:
+                pass
+
+        return "unknown"
+
+
 class AWSServices(str, Enum):
     S3 = "s3"
     IAM = "iam"
@@ -1196,6 +1345,17 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
 ]
+
+
+def print_debug_logs(client: BotoClient, message: str):
+    """
+    Print debug logs with service prefix and command context.
+    Args:
+        client (BotoClient): The AWS client object
+        message (str): The debug message to log
+    """
+    service_name = client.meta.service_model.service_name
+    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
 
 def test_module(params):
