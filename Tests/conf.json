@@ -5904,6 +5904,13 @@
             "instance_names": [
                 "virus_total_v3"
             ]
+        },
+            "playbookID": "BlockExternalIP - Test",
+            "integrations": ["F5Silverline", "Cisco ASA", "Panorama"],
+            "instance_names": [
+                "palo_alto_panorama_11_fw_test"
+            ],
+            "timeout": 600
         }
     ],
     "skipped_tests": {
