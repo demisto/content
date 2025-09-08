@@ -1,5 +1,4 @@
-import demistomock as demisto
-from GetCaseExtraData import extract_ids, get_case_extra_data, main
+from GetCaseExtraData import extract_ids, get_case_extra_data
 
 
 def test_extract_ids_dict():
