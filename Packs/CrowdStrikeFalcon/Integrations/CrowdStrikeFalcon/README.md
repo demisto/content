@@ -6006,20 +6006,21 @@ Perform actions on identity detection alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of IDs of the alerts to update. | Required | 
-| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
-| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional | 
-| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
-| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
-| add_tag | Add a tag to the specified detections. | Optional | 
-| remove_tag | Remove a tag from the specified detections. | Optional | 
-| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
-| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
-| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
+| ids | A comma-separated list of IDs of the alerts to update. | Required |
+| assign_to_name | Assign the specified detections to a user based on their username. | Optional |
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional |
+| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional |
+| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional |
+| add_tag | Add a tag to the specified detections. | Optional |
+| remove_tag | Remove a tag from the specified detections. | Optional |
+| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional |
+| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional |
+| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cs-falcon-resolve-mobile-detection
 
 ***
@@ -6028,6 +6029,7 @@ Perform actions on mobile detection alerts.
 #### Base Command
 
 `cs-falcon-resolve-mobile-detection`
+
 ### cs-falcon-resolve-mobile-detection
 
 ***
@@ -6041,16 +6043,16 @@ Perform actions on mobile detection alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of IDs of the alerts to update. | Required | 
-| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
-| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional | 
-| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
-| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
-| add_tag | Add a tag to the specified detections. | Optional | 
-| remove_tag | Remove a tag from the specified detections. | Optional | 
-| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
-| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
-| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
+| ids | A comma-separated list of IDs of the alerts to update. | Required |
+| assign_to_name | Assign the specified detections to a user based on their username. | Optional |
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional |
+| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional |
+| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional |
+| add_tag | Add a tag to the specified detections. | Optional |
+| remove_tag | Remove a tag from the specified detections. | Optional |
+| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional |
+| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional |
+| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional |
 
 #### Context Output
 
