@@ -19,7 +19,7 @@ urllib3.disable_warnings()
 APP_NAME = "ms-defender-atp"
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-""" HELPER FUNCTIONS """
+""" HELPER  FUNCTIONS """
 
 SEVERITY_TO_NUMBER = {"Informational": 0, "Low": 1, "MediumLow": 2, "MediumHigh": 3, "High": 4}
 
