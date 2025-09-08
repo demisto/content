@@ -1618,6 +1618,8 @@ script:
         - 'false'
     - name: timeout_in_seconds
       description: Timeout for polling. Default is 300 seconds.
+    - name: interval_in_seconds
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
     - description: action IDs to use in polling commands. (automatically filled by polling).
       name: action_ids
       deprecated: true

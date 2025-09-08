@@ -3529,7 +3529,7 @@ def remove_app_restriction_command(client: MsClient, args: dict):
 
 @polling_function(
     name="microsoft-atp-stop-and-quarantine-file",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 50)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)),
     timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 600)),
     requires_polling_arg=True,  # If user provides polling arg as false, dont poll
 )
