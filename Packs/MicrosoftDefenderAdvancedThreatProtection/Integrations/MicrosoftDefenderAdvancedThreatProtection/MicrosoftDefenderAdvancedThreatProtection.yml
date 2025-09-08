@@ -26,12 +26,14 @@ configuration:
   required: false
 - display: ID
   name: _auth_id
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
   required: false
 - display: Token
   name: _tenant_id
-  type: 4
+  type: 9
+  hiddenusername: true
   section: Connect
   required: false
 - displaypassword: Key
@@ -5815,7 +5817,7 @@ script:
     - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   isfetch: true
   runonce: false
   script: '-'
