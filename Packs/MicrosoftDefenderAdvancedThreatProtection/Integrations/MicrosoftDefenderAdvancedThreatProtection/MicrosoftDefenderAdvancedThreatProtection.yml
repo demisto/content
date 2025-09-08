@@ -26,12 +26,12 @@ configuration:
   required: false
 - display: ID
   name: _auth_id
-  type: 0
+  type: 4
   section: Connect
   required: false
 - display: Token
   name: _tenant_id
-  type: 0
+  type: 4
   section: Connect
   required: false
 - displaypassword: Key
