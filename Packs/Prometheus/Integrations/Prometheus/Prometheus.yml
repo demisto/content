@@ -1,4 +1,7 @@
 category: Database
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Prometheus
   version: -1
@@ -19,25 +22,30 @@ configuration:
   name: url
   type: 0
   required: true
+  section: Connect
 - display: Username / Token label (set to "Bearer" to send a Bearer token)
   name: credentials
   type: 9
   required: false
   additionalinfo: >
     If you set the username to "Bearer", the password will be used as a Bearer token in the Authorization header.
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Request timeout (seconds)
   name: timeout
   type: 0
   required: false
   defaultvalue: "30"
+  section: Connect
 - display: Default fields (pipe-separated)
   name: default_fields
   type: 0
@@ -45,17 +53,13 @@ configuration:
   additionalinfo: >
     Optional default metric list, e.g.
     co2|solar|load|battery|temperature|ambient_temperature|ambient_humidity|humidity|NH3|oxidising|reducing|PM10|pressure|proximity
+  section: Collect
 
 script:
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.12.11.4508456
   commands:
-  - name: test-module
-    description: Test connectivity (runs vector(1) against /api/v1/query).
-    arguments: []
-    outputs: []
-
   - name: prometheus-query
     description: >
       Query Prometheus instant vectors by metric name using a pipe-separated "fields" list.
