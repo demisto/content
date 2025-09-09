@@ -617,7 +617,7 @@ def run_single_args_commands(
 
 
 def run_list_args_commands(
-    list_args_commands: list[Command],
+    list_args_commands,
     command_runner: EndpointCommandRunner,
     endpoint_id,
     endpoint_ips,
@@ -644,22 +644,25 @@ def run_list_args_commands(
     """
     multiple_endpoint_outputs = []
     multiple_endpoint_readable_outputs: list[CommandResults] = []
-    command_args = {
-        "endpoint_id": ",".join(endpoint_id),
-        "endpoint_ip": ",".join(endpoint_ips),
-        "endpoint_hostname": ",".join(endpoint_hostnames),
-    }
 
     for command in list_args_commands:
-        for arg_type, arg in command_args.items():
-            readable_outputs, endpoint_output = command_runner.run_command(command, {arg_type: arg})
-            if endpoint_output:
-                if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
-                    add_endpoint_to_mapping(endpoint_output, ir_mapping)
-                else:
-                    multiple_endpoint_outputs.extend(endpoint_output)
-            if verbose:
-                multiple_endpoint_readable_outputs.extend(readable_outputs)
+        readable_outputs, endpoint_output = command_runner.run_command(
+            command,
+            {
+                "endpoint_id": ",".join(endpoint_id),
+                "endpoint_ip": ",".join(endpoint_ips),
+                "endpoint_hostname": ",".join(endpoint_hostnames),
+            },
+        )
+
+        if endpoint_output:
+            if command.brand in [Brands.CORTEX_XDR_IR, Brands.CORTEX_CORE_IR]:
+                add_endpoint_to_mapping(endpoint_output, ir_mapping)
+            else:
+                multiple_endpoint_outputs.extend(endpoint_output)
+
+        if verbose:
+            multiple_endpoint_readable_outputs.extend(readable_outputs)
 
     return multiple_endpoint_outputs, multiple_endpoint_readable_outputs
 
@@ -1138,13 +1141,7 @@ def main():  # pragma: no cover
         generic_command = get_generic_command(single_args_commands)
         create_using_brand_argument_to_generic_command(brands_to_run, generic_command, module_manager)
 
-        # Create a list of tuples for each identifier type, keeping other fields empty
-        id_tuples = [(eid, "", "") for eid in endpoint_ids if eid]
-        ip_tuples = [("", eip, "") for eip in endpoint_ips if eip]
-        hostname_tuples = [("", "", ehn) for ehn in endpoint_hostnames if ehn]
-
-        # Combine the lists into the final zipped_args list
-        zipped_args = id_tuples + ip_tuples + hostname_tuples
+        zipped_args: list[tuple] = list(zip_longest(endpoint_ids, endpoint_ips, endpoint_hostnames, fillvalue=""))
 
         endpoint_outputs_list_commands, command_results_list_commands = run_list_args_commands(
             list_args_commands, command_runner, endpoint_ids, endpoint_ips, endpoint_hostnames, verbose, ir_mapping

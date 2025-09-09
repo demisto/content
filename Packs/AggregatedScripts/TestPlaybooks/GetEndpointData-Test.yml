@@ -1,5 +1,5 @@
 id: GetEndpointData-Test
-version: 9
+version: 10
 vcShouldKeepItemLegacyProdMachine: false
 name: GetEndpointData-Test
 starttaskid: "0"
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 710
         }
       }
@@ -96,7 +96,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 880
         }
       }
@@ -153,7 +153,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 1050
         }
       }
@@ -177,7 +177,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "75"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -244,7 +244,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "75"
     scriptarguments:
       all:
         simple: "yes"
@@ -253,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 540
+          "x": 152.5,
+          "y": 370
         }
       }
     note: false
@@ -626,221 +626,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 35669496-8ceb-426a-8c13-029ca84c3e59
-    type: regular
-    task:
-      id: 35669496-8ceb-426a-8c13-029ca84c3e59
-      version: -1
-      name: Delete Context
-      description: "Delete field from context.\n\nThis automation runs using the default
-        Limited User role, unless you explicitly change the permissions.\nFor more
-        information, see the section about permissions here:\n- For Cortex XSOAR 6
-        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
-        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
-        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-      - "30"
-      - "76"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 4410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 7572310e-51f9-471e-8bfa-68ecdc95fab2
-    type: regular
-    task:
-      id: 7572310e-51f9-471e-8bfa-68ecdc95fab2
-      version: -1
-      name: Get Endpoint from Active Directory
-      description: Retrieves detailed information about a computer account. The computer
-        can be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filters are provided, all computers are returned.
-      script: '|||ad-get-computer'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1257.5,
-          "y": 4750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 6abbda92-2e2b-46e1-81ac-8014f157495b
-    type: regular
-    task:
-      id: 6abbda92-2e2b-46e1-81ac-8014f157495b
-      version: -1
-      name: Get Endpoint from Crowdstrike Falcon
-      description: Gets the list of host group members.
-      script: '|||cs-falcon-list-host-group-members'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 377.5,
-          "y": 4750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: b12dab7c-3379-4332-8601-d24e515ec276
-    type: regular
-    task:
-      id: b12dab7c-3379-4332-8601-d24e515ec276
-      version: -1
-      name: Get Endpoint Data by Hostname
-      description: This script gathers endpoint data from multiple integrations and
-        returns an endpoint entity with consolidated information to the context.
-      scriptName: get-endpoint-data
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-      - "36"
-      - "77"
-    scriptarguments:
-      endpoint_hostname:
-        complex:
-          root: ActiveDirectory.Computers
-          accessor: name
-          transformers:
-          - operator: FirstArrayElement
-      endpoint_id:
-        complex:
-          root: FireEyeHX.Hosts
-          accessor: Agent ID
-          transformers:
-          - operator: FirstArrayElement
-      endpoint_ip:
-        complex:
-          root: CrowdStrike.Device
-          accessor: LocalIP
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 4920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: dc22714c-ec60-4f2e-836d-195e7e46e06a
-    type: condition
-    task:
-      id: dc22714c-ec60-4f2e-836d-195e7e46e06a
-      version: -1
-      name: Verify Results - FireEye
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: EndpointData
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: EndpointData.ID
-                      iscontext: true
-                    right:
-                      value:
-                        simple: FireEyeHX.Hosts.[0].Agent ID
-                      iscontext: true
-                accessor: Message
-            iscontext: true
-          right:
-            value:
-              simple: Command successful
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 5260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: b69d70f4-df28-4ab0-82a7-60f14d4c47e1
@@ -924,7 +709,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "29"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -994,76 +779,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: c1231cbe-96ce-4e35-802c-5b848be2ad67
-    type: title
-    task:
-      id: c1231cbe-96ce-4e35-802c-5b848be2ad67
-      version: -1
-      name: Case 5 - all ways
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 4250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: a14f0d24-0d47-4e71-8f0c-954efd666518
-    type: regular
-    task:
-      id: a14f0d24-0d47-4e71-8f0c-954efd666518
-      version: -1
-      name: Get Endpoint From FireEye
-      description: Returns information on all hosts.
-      script: '|||fireeye-hx-get-all-hosts-information'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 807.5,
-          "y": 4750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d4061def-f6ae-4710-8439-0a1d2b884712
+    taskid: afa5fd13-6c51-4fbf-9a68-a28e54521b85
     type: title
     task:
-      id: d4061def-f6ae-4710-8439-0a1d2b884712
+      id: afa5fd13-6c51-4fbf-9a68-a28e54521b85
       version: -1
-      name: Case 6 - Same Endpoint ID and IP
+      name: Case 5 - Same Endpoint ID and IP
       type: title
       iscommand: false
       brand: ""
@@ -1077,119 +800,6 @@ tasks:
         "position": {
           "x": 930,
           "y": 5430
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
-    taskid: d7b46f5f-af51-4e53-8117-684d6b16a193
-    type: condition
-    task:
-      id: d7b46f5f-af51-4e53-8117-684d6b16a193
-      version: -1
-      name: Verify Results - Active Directory
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              simple: EndpointData.AdditionalFields
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: EndpointData
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: EndpointData.Hostname
-                      iscontext: true
-                    right:
-                      value:
-                        simple: ActiveDirectory.Computers.[0].name.[0]
-                      iscontext: true
-                accessor: Message
-            iscontext: true
-          right:
-            value:
-              simple: Command successful
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 5260
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: b4fd0fe3-55db-4098-8b22-2f26b0438492
-    type: condition
-    task:
-      id: b4fd0fe3-55db-4098-8b22-2f26b0438492
-      version: -1
-      name: Verify Results - Crowd Strike
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: EndpointData
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: EndpointData.ID
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CrowdStrike.Device.[0].ID
-                      iscontext: true
-                accessor: Message
-            iscontext: true
-          right:
-            value:
-              simple: Command successful
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 5260
         }
       }
     note: false
@@ -1392,12 +1002,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 947323c3-c5cd-40ce-8906-15f47224b7cb
+    taskid: a39453e0-6f34-43c3-aa97-9f2656df8c40
     type: title
     task:
-      id: 947323c3-c5cd-40ce-8906-15f47224b7cb
+      id: a39453e0-6f34-43c3-aa97-9f2656df8c40
       version: -1
-      name: Case 7 - List of ID
+      name: Case 6 - List of ID
       type: title
       iscommand: false
       brand: ""
@@ -2706,9 +2316,9 @@ tasks:
       brand: ""
     nexttasks:
       "no":
-      - "6"
+      - "78"
       "yes":
-      - "7"
+      - "2"
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
@@ -2718,7 +2328,7 @@ tasks:
       {
         "position": {
           "x": 152.5,
-          "y": 370
+          "y": 540
         }
       }
     note: false
@@ -2728,35 +2338,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "76":
-    id: "76"
-    taskid: 3d41177c-07b2-4842-863c-f5f7cb8bbfd4
-    type: condition
+  "78":
+    id: "78"
+    taskid: 6df31ddd-50ad-421a-8693-566a1a130a66
+    type: regular
     task:
-      id: 3d41177c-07b2-4842-863c-f5f7cb8bbfd4
+      id: 6df31ddd-50ad-421a-8693-566a1a130a66
       version: -1
-      name: Is Active Directory Enabled? (XSIAM)
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
+      name: Get Endpoint From FireEye
+      description: Returns information on all hosts.
+      script: '|||fireeye-hx-get-all-hosts-information'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "no":
-      - "22"
-      "yes":
-      - "20"
-    scriptarguments:
-      brandname:
-        simple: Active Directory Query v2
+      '#none#':
+      - "79"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 4580
+          "x": 480,
+          "y": 710
         }
       }
     note: false
@@ -2766,35 +2370,90 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "77":
-    id: "77"
-    taskid: 5072cebd-2996-4144-8771-a1a307199458
-    type: condition
+  "79":
+    id: "79"
+    taskid: 27b40447-95f6-4d3a-96ae-c54d922e7900
+    type: regular
     task:
-      id: 5072cebd-2996-4144-8771-a1a307199458
+      id: 27b40447-95f6-4d3a-96ae-c54d922e7900
       version: -1
-      name: Is Active Directory Enabled? (XSIAM)
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
-      scriptName: IsIntegrationAvailable
-      type: condition
+      name: Get Endpoint Data by Hostname
+      description: This script gathers endpoint data from multiple integrations and
+        returns an endpoint entity with consolidated information to the context.
+      scriptName: get-endpoint-data
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
-      - "31"
-      "yes":
-      - "35"
+      '#none#':
+      - "80"
     scriptarguments:
-      brandname:
-        simple: Active Directory Query v2
+      endpoint_hostname:
+        complex:
+          root: FireEyeHX.Hosts
+          accessor: Host Name
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1042.5,
-          "y": 5090
+          "x": 480,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: bb26fc87-53a2-4b55-b0ca-f8f834fd18ab
+    type: condition
+    task:
+      id: bb26fc87-53a2-4b55-b0ca-f8f834fd18ab
+      version: -1
+      name: Verify Results - FireEye
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: EndpointData
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: EndpointData.ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FireEyeHX.Hosts.[0].Agent ID
+                      iscontext: true
+                accessor: Message
+            iscontext: true
+          right:
+            value:
+              simple: Command successful
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1050
         }
       }
     note: false
@@ -2810,7 +2469,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 10140,
-        "width": 1587.5,
+        "width": 1362.5,
         "x": 50,
         "y": 50
       }
