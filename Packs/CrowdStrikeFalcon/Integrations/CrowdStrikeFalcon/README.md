@@ -3944,7 +3944,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 #### Command Example
 
-``` cve cve_id=CVE-2021-2222 ```
+``` cve cve=CVE-2021-2222 ```
 
 #### Human Readable Output
 
@@ -6008,6 +6008,7 @@ Perform actions on identity detection alerts.
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the alerts to update. | Required |
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional |
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional |
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional |
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional |
 | add_tag | Add a tag to the specified detections. | Optional |
@@ -6019,14 +6020,6 @@ Perform actions on identity detection alerts.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-
-```!cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
-
-#### Human Readable Output
-
->IDP Detection(s) id_1, id_2 were successfully updated
 
 ### cs-falcon-resolve-mobile-detection
 
@@ -6043,6 +6036,7 @@ Perform actions on mobile detection alerts.
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the alerts to update. | Required |
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional |
+| assign_to_user_id | Assign the specified detections to a user based on their user ID (Email). | Optional |
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional |
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional |
 | add_tag | Add a tag to the specified detections. | Optional |
@@ -6055,14 +6049,6 @@ Perform actions on mobile detection alerts.
 
 There is no context output for this command.
 
-#### Command Example
-
-```!cs-falcon-resolve-mobile-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
-
-#### Human Readable Output
-
->Mobile Detection(s) id_1, id_2 were successfully updated
->
 ### cs-falcon-list-users
 
 ***

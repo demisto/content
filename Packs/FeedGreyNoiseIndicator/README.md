@@ -6,11 +6,10 @@ more time to uncover and investigate true threats.
 
 This pack provides the ability to ingest GreyNoise indicators as a feed of know internet scanners.
 
-This pack requires a GreyNoise subscription that includes a FEED license.  Ensure that your licensed feed is selected in the pack configuration.
+This pack requires a GreyNoise subscription that includes a FEED license or an Advanced/Elite Platform license.  Ensure that your licensed feed is selected in the pack configuration.
 
 _For more information, visit our [GreyNoise Documentation](https://docs.greynoise.io)_
 
-_For pricing information, visit our [GreyNoise Pricing](https://greynoise.io/pricing) or contact
-[GreyNoise Sales](mailto:sales@greynoise.io)_
+_For pricing information, contact [GreyNoise Sales](mailto:sales@greynoise.io)_
 
 _For GreyNoise support, contact [GreyNoise Support](mailto:support@greynoise.io)_

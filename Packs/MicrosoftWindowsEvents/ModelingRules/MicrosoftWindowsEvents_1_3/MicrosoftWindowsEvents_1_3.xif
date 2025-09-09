@@ -1,6 +1,6 @@
 [MODEL: dataset = microsoft_windows_raw]
 // supported channels/providers 
-filter channel in ("System", "Application") or provider_name in("Microsoft-Windows-PowerShell", "Microsoft-Windows-TaskScheduler", "Microsoft-Windows-Windows Firewall With Advanced Security", "Microsoft-Windows-Windows Defender") or provider_name contains "Microsoft-Windows-Security-"
+filter channel in ("System", "Application","Directory Service") or provider_name in("Microsoft-Windows-PowerShell", "Microsoft-Windows-TaskScheduler", "Microsoft-Windows-Windows Firewall With Advanced Security", "Microsoft-Windows-Windows Defender","Microsoft-Windows-ActiveDirectory_DomainService") or provider_name contains "Microsoft-Windows-Security-"
 | alter event_id_num = to_integer(event_id), // used for filtering by event id ranges
         event_id_string = to_string(event_id)
 | alter // Extract fields 
@@ -53,7 +53,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         Script_Name = arrayindex(regextract(arrayindex(regextract(message, "Script Name = (.*?)\s{2, }"), 0), "\\([^\\]+)$"), 0),
         Script_Path = coalesce(event_data -> Path, arrayindex(regextract(message, "Script Name = (.*?)\s{2, }"), 0)),
         target_username = event_data -> TargetUserName,
-        source_threat_combined = concat("[", detection_source, "]", " ", threat_category), 
+       // source_threat_combined = concat("[", detection_source, "]", " ", threat_category), 
         target_user_sid = event_data -> TargetUserSid,
         target_domain_name = event_data -> TargetDomainName,
         threat_id = if(provider_name = "Microsoft-Windows-Windows Defender" and ((event_id_num >= 1006 and event_id_num <= 1012) or event_id_num = 1015 or (event_id_num >= 1116 and event_id_num <= 1119)), arrayindex(regextract(message, "ID:\s*(\w+)\s+\w+:"), 0)),

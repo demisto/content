@@ -8,14 +8,14 @@ Triage:
 
 - Collect initial alert data regarding the event.
 - Check the user type of the source user.
-- Host enrichment. 
+- Host enrichment.
 
 Investigation:
 
-- Check if an admin user initiated the operation and whether the deleted users are disabled. 
+- Check if an admin user initiated the operation and whether the deleted users are disabled.
 - Correlate recent user activity with related security alerts.
 - Assess user's and host's risk level in Cortex XDR.
-- Check the type of the user target. 
+- Check the type of the user target.
 
 Remediation:
 

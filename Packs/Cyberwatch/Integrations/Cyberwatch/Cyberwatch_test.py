@@ -4,6 +4,7 @@ import requests_mock
 from Cyberwatch import Client, fetch_incidents
 import demistomock as demisto
 import datetime as _dt
+import pytest
 
 
 def util_load_json(path):
@@ -696,3 +697,197 @@ def test_fetch_incidents_filter_min_scores(mocker):
     )
 
     assert [i["name"] for i in pushed] == ["CVE-2025-HIGH on srv1"]
+
+
+# ---------------------------------------------------------------------------
+# Declarative Data commands
+# ---------------------------------------------------------------------------
+
+
+def test_send_declarative_data_asset_command_success(mocker):
+    from Cyberwatch import send_declarative_data_asset_command
+
+    # Host exists
+    mocker.patch.object(Client, "get_assets", return_value=[{"id": 123, "hostname": "myHost"}])
+
+    # Validate payload sent to upload
+    def _fake_upload(blob, timeout=90):
+        assert "HOSTNAME:myHost" in blob
+        assert "METADATA:metavalue" in blob
+        return {"server_id": 123, "status": "ok"}
+
+    mocker.patch.object(Client, "upload_declarative_data", side_effect=_fake_upload)
+
+    res = send_declarative_data_asset_command(client, {"hostname": "myHost", "data": '{"metadata": "metavalue"}'})
+
+    assert res.outputs_prefix == "Cyberwatch.DeclarativeDataUpload"
+    assert res.outputs.get("server_id") == 123
+
+
+def test_send_declarative_data_asset_command_host_not_found(mocker):
+    from Cyberwatch import send_declarative_data_asset_command, DemistoException
+
+    mocker.patch.object(Client, "get_assets", return_value=[])
+    with pytest.raises(DemistoException, match="Hostname 'nohost' not found"):
+        send_declarative_data_asset_command(client, {"hostname": "nohost", "data": "{}"})
+
+
+def test_send_declarative_data_asset_command_bad_json(mocker):
+    from Cyberwatch import send_declarative_data_asset_command
+
+    mocker.patch.object(Client, "_http_request")  # should not be called
+
+    try:
+        send_declarative_data_asset_command(client, {"hostname": "h1", "data": "{NOTJSON"})
+    except Exception as e:
+        assert "Invalid JSON" in str(e)
+
+
+def test_get_declarative_data_asset_command_success(mocker):
+    """
+    /api/v3/servers/{id}/info returns TEXT, so client.get_declarative_data returns a string.
+    Command should wrap it under Cyberwatch.DeclarativeData.raw
+    """
+    from Cyberwatch import get_declarative_data_asset_command
+
+    text_blob = "HOSTNAME:SrvA\nCATEGORY:Server\n"
+    # Client.get_declarative_data already wraps _http_request with resp_type="text"
+    mocker.patch.object(Client, "_http_request", return_value=text_blob)
+
+    res = get_declarative_data_asset_command(client, {"id": "42"})
+    assert res.outputs_prefix == "Cyberwatch.DeclarativeData"
+    assert res.outputs == {"id": 42, "raw": text_blob}
+    assert "SrvA" in res.readable_output
+
+
+def test_list_sysadmin_assets_command_one_page(mocker):
+    from Cyberwatch import list_sysadmin_assets_command
+
+    mock_response = util_load_json("test_data/test_list_sysadmin_servers.json")
+    with requests_mock.Mocker() as m:
+        m.get(
+            BASE_URL + "/api/v3/assets/servers?page=1",
+            headers={"x-per-page": "2", "x-total": "2"},
+            json=mock_response,
+            status_code=200,
+        )
+        res = list_sysadmin_assets_command(client, {"page": "1"})
+        assert len(res.raw_response) == 2
+        # ensure readable fields are present
+        assert "Cyberwatch Sysadmin Assets" in res.readable_output
+
+
+def test_list_sysadmin_assets_command_all_pages(mocker):
+    from Cyberwatch import list_sysadmin_assets_command
+
+    # Two pages of one element each
+    mock_page = util_load_json("test_data/test_list_sysadmin_servers_page.json")
+    with requests_mock.Mocker() as m:
+        m.get(
+            BASE_URL + "/api/v3/assets/servers?page=1",
+            headers={"x-per-page": "1", "x-total": "2"},
+            json=mock_page,
+            status_code=200,
+        )
+        m.get(
+            BASE_URL + "/api/v3/assets/servers?page=2",
+            headers={"x-per-page": "1", "x-total": "2"},
+            json=mock_page,
+            status_code=200,
+        )
+        res = list_sysadmin_assets_command(client, {})
+        assert len(res.raw_response) == 2
+
+
+def test_list_sysadmin_assets_command_empty(mocker):
+    from Cyberwatch import list_sysadmin_assets_command
+
+    with requests_mock.Mocker() as m:
+        m.get(
+            BASE_URL + "/api/v3/assets/servers",
+            headers={"x-per-page": "50", "x-total": "0"},
+            json={},
+            status_code=200,
+        )
+        try:
+            list_sysadmin_assets_command(client, {})
+        except Exception as e:
+            assert str(e) == "No Sysadmin assets found"
+
+
+def test_fetch_sysadmin_asset_command_found(mocker):
+    from Cyberwatch import fetch_sysadmin_asset_command
+
+    mock_asset = util_load_json("test_data/test_fetch_sysadmin_server.json")
+    with requests_mock.Mocker() as m:
+        m.get(BASE_URL + "/api/v3/assets/servers/10", json=mock_asset, status_code=200)
+        res = fetch_sysadmin_asset_command(client, {"id": "10"})
+        assert res.raw_response == mock_asset
+        assert res.outputs_prefix == "Cyberwatch.SysadminAsset"
+
+
+# ---------------- Compliance ---------------- #
+
+
+def test_list_compliance_assets_command_one_page(mocker):
+    from Cyberwatch import list_compliance_assets_command
+
+    mock_response = util_load_json("test_data/test_list_compliance_assets.json")
+    with requests_mock.Mocker() as m:
+        m.get(
+            BASE_URL + "/api/v3/compliance/assets?page=1",
+            headers={"x-per-page": "2", "x-total": "2"},
+            json=mock_response,
+            status_code=200,
+        )
+        res = list_compliance_assets_command(client, {"page": "1"})
+        assert len(res.raw_response) == 2
+        assert "Cyberwatch Compliance Assets" in res.readable_output
+
+
+def test_list_compliance_assets_command_all_pages(mocker):
+    from Cyberwatch import list_compliance_assets_command
+
+    mock_page = util_load_json("test_data/test_list_compliance_assets_page.json")
+    with requests_mock.Mocker() as m:
+        m.get(
+            BASE_URL + "/api/v3/compliance/assets?page=1",
+            headers={"x-per-page": "1", "x-total": "2"},
+            json=mock_page,
+            status_code=200,
+        )
+        m.get(
+            BASE_URL + "/api/v3/compliance/assets?page=2",
+            headers={"x-per-page": "1", "x-total": "2"},
+            json=mock_page,
+            status_code=200,
+        )
+        res = list_compliance_assets_command(client, {})
+        assert len(res.raw_response) == 2
+
+
+def test_list_compliance_assets_command_empty(mocker):
+    from Cyberwatch import list_compliance_assets_command
+
+    with requests_mock.Mocker() as m:
+        m.get(
+            BASE_URL + "/api/v3/compliance/assets",
+            headers={"x-per-page": "50", "x-total": "0"},
+            json={},
+            status_code=200,
+        )
+        try:
+            list_compliance_assets_command(client, {})
+        except Exception as e:
+            assert str(e) == "No Compliance assets found"
+
+
+def test_fetch_compliance_asset_command_found(mocker):
+    from Cyberwatch import fetch_compliance_asset_command
+
+    mock_asset = util_load_json("test_data/test_fetch_compliance_asset.json")
+    with requests_mock.Mocker() as m:
+        m.get(BASE_URL + "/api/v3/compliance/servers/77", json=mock_asset, status_code=200)
+        res = fetch_compliance_asset_command(client, {"id": "77"})
+        assert res.raw_response == mock_asset
+        assert res.outputs_prefix == "Cyberwatch.ComplianceAsset"
