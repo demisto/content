@@ -1850,10 +1850,7 @@ script:
     - contextPath: AWS.S3-Buckets.BucketName
       description: Name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.Bucket
-      description: Name of the S3 bucket.
-      type: string
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcl s
       description: Whether Amazon S3 blocks public access control lists (ACLs) for this bucket and objects in this bucket.
       type: boolean
     - contextPath: AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls
@@ -1916,9 +1913,6 @@ script:
     outputs:
     - contextPath: AWS.S3-Buckets.BucketName
       description: Name of the S3 bucket.
-      type: string
-    - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration
-      description: Specifies the default server-side-encryption configuration.
       type: string
     - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules
       description: Container for information about a particular server-side encryption configuration rule.

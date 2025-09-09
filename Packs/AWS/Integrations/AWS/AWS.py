@@ -458,16 +458,17 @@ class S3:
         response = client.get_bucket_encryption(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            outputs = {
+                "BucketName": bucket_name,
+                "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
+            }
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets",
                 outputs_key_field="BucketName",
-                outputs={
-                    "BucketName": bucket_name,
-                    "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
-                },
+                outputs=outputs,
                 readable_output=tableToMarkdown(
                     "Server Side Encryption Configuration",
-                    t=response.get("ServerSideEncryptionConfiguration", {}),
+                    t=outputs,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 ),
@@ -1695,6 +1696,11 @@ def main():  # pragma: no cover
             return_results(execute_aws_command(command, args, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
+
+    except ClientError as client_err:
+        # Catch ClientError at the main level and try to handle it
+        account_id = args.get("account_id", "")
+        AWSErrorHandler.handle_client_error(client_err, account_id)
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
