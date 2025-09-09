@@ -5,7 +5,7 @@
   "description": "This trigger is responsible for running the command quickActions Phishing - Generic v3 playbook on Phishing alerts.",
   "trigger_name": "Phishing Playbook command Trigger",
   "automation_type": "command",
-  "automation_id": "Phishing - Generic v3",
+  "automation_id": "core-retrieve-files-quick-action",
   "alerts_filter": {
     "filter": {
       "AND": [
