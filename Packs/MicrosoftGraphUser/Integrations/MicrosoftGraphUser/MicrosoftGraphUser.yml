@@ -628,6 +628,24 @@ script:
     name: msgraph-user-change-password
     compliantpolicies:
     - User Soft Remediation
+  - name: msgraph-user-change-password-on-premise
+    description: |-
+      Changes the password of an on-premise user. Requires the UserAuthenticationMethod.Read.All permission. 
+      Providing a password is required (password auto-generation is not supported).
+    execution: true
+    arguments:
+    - description: User ID or userPrincipalName to update password for.
+      name: user
+      required: true
+      secret: false
+    - description: The new password.
+      name: password
+      required: false
+      secret: true
+    - description: The new password. This argument can eb used in playbooks, but note its value will NOT be hidden in logs.
+      name: nonsensitive_password
+      required: false
+      secret: false
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
