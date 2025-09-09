@@ -141,10 +141,10 @@ class OktaASAClient(BaseClient):
                 break
             
             # Process each event with its related objects
-            processed_events = []
-            for event in events:
-                processed_event = process_and_enrich_event(event, related_objects, add_time=add_time_mapping)
-                processed_events.append(processed_event)
+            processed_events = [
+                process_and_enrich_event(event, related_objects, add_time=add_time_mapping)
+                for event in events
+            ]
             
             event_offset = processed_events[0] if descending else processed_events[len(processed_events) - 1]
             offset = event_offset.get("id")
@@ -179,6 +179,7 @@ def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool 
     """
     Transforms an individual event by adding a _time field and dynamically merging
     all related objects, preserving the original link ID.
+    See the unit tests for examples of how this function works.
 
     Args:
         event: Individual event object.
@@ -188,14 +189,6 @@ def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool 
     Returns:
         A single dictionary representing the fully enriched event.
     """
-    if not isinstance(event, dict):
-        demisto.debug(f"{INTEGRATION_NAME}: Invalid event type: {type(event)}. Full event: {event}")
-        return {}
-
-    if not isinstance(related_objects, dict):
-        demisto.debug(f"{INTEGRATION_NAME}: Invalid related_objects type: {type(related_objects)}. Full event: {event}")
-        return {}
-    
     processed_event = event.copy()
 
     # 1. Add the _time field if requested
@@ -205,42 +198,26 @@ def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool 
         else:
             demisto.debug(f"{INTEGRATION_NAME}: Failed to parse timestamp '{timestamp}'. Full event: {event}")
 
-    # 2. Dynamically merge only referenced related objects
+    # 2. Dynamically merge related objects that are referenced in the event details
     event_details = processed_event.get("details", {})
-    if event_details and isinstance(related_objects, dict):
-        for _, referenced_id in event_details.items():
-            # Skip non-string values (like "type" field which is not an ID)
-            if not isinstance(referenced_id, str) or referenced_id not in related_objects:
-                continue
+    
+    for _, referenced_id in event_details.items():
+        # Skip if not a valid string ID or not found in related_objects
+        if not isinstance(referenced_id, str) or referenced_id not in related_objects:
+            continue
                 
-            related_data = related_objects[referenced_id]
-            if not isinstance(related_data, dict):
-                demisto.debug(
-                    f"{INTEGRATION_NAME}: Skipping malformed related_data for ID '{referenced_id}': {related_data}. "
-                    f"Full event: {event}"
-                )
-                continue
-                
-            new_key_name = related_data.get("type")
-            object_data = related_data.get("object")
+        related_data = related_objects[referenced_id]
+        new_key_name = related_data.get("type")
+        object_data = related_data.get("object")
 
-            if not new_key_name:
-                demisto.debug(
-                    f"{INTEGRATION_NAME}: Missing 'type' field for related object ID '{referenced_id}': {related_data}. "
-                    f"Full event: {event}"
-                )
-                continue
-                
-            if not isinstance(object_data, dict):
-                demisto.debug(
-                    f"{INTEGRATION_NAME}: Invalid or missing 'object' data for ID '{referenced_id}' (type: {new_key_name}): "
-                    f"{object_data}. Full event: {event}"
-                )
-                continue
+        # Skip if missing required fields
+        if not new_key_name or not object_data:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid related object for ID '{referenced_id}'")
+            continue
 
-            enriched_object = object_data.copy()
-            enriched_object['original_link_id'] = referenced_id
-            processed_event[new_key_name] = enriched_object
+        enriched_object = object_data.copy()
+        enriched_object['original_link_id'] = referenced_id
+        processed_event[new_key_name] = enriched_object
 
     return processed_event
 
