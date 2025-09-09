@@ -1,0 +1,20 @@
+{
+  "trigger_id": "quickActionCommand",
+  "playbook_id": " ",
+  "suggestion_reason": "Provides a comprehensive response to command quickActions.",
+  "description": "This trigger is responsible for running the command quickActions Phishing - Generic v3 playbook on Phishing alerts.",
+  "trigger_name": "Phishing Playbook command Trigger",
+  "automation_type": "command",
+  "automation_id": "Phishing - Generic v3",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Phishing"
+        }
+      ]
+    }
+  }
+}

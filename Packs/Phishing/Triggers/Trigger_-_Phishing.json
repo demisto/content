@@ -4,8 +4,6 @@
   "suggestion_reason": "Provides a comprehensive response to phishing alerts.",
   "description": "This trigger is responsible for running the Phishing - Generic v3 playbook on Phishing alerts.",
   "trigger_name": "Phishing Playbook Trigger",
-  "automation_type": "playbook",
-  "automation_id": "Phishing - Generic v3",
   "alerts_filter": {
     "filter": {
       "AND": [
