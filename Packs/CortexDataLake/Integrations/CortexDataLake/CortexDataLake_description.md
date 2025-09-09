@@ -24,6 +24,7 @@ to get the __Authentication Token__  __Registration ID__ __Encryption Key__
     * __Name__: a textual name for the integration instance.
     * __Authentication Token__: From the authentication process
     * __Registration ID__: From the authentication process
+       * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the __Registration ID__ parameter in the format `REGISTRATION_ID@URL`.
     * __Encryption Key__: From the authentication process
     * __proxy__: Use system proxy settings
     * __insecure__: Trust any certificate (not secure)
