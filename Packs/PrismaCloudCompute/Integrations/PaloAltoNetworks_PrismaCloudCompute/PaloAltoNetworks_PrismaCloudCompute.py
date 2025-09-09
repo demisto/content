@@ -1387,7 +1387,7 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args) -> Comma
     Returns:
         CommandResults: command-results object.
     """
-    # get existing md5 values from the Prisma feed
+    # Cast to sets for faster operations and to remove duplicates
     current_md5_feeds = (client.get_custom_md5_malware() or {}).get("feed") or []
 
     # populate variable for md5 input
@@ -1395,7 +1395,7 @@ def remove_custom_malware_feeds(client: PrismaCloudComputeClient, args) -> Comma
 
     # if md5 input is in current feed, remove it
     for i in range(len(current_md5_feeds) - 1, -1, -1):
-        if current_md5_feeds[i].get("md5") == md5:
+        if current_md5_feeds[i].get('md5') == md5:
             current_md5_feeds.pop(i)
             # send updated list with removed md5 to Prisma
             client.add_custom_md5_malware(feeds=current_md5_feeds)
@@ -2769,7 +2769,7 @@ def get_container_policy_list_command(client: PrismaCloudComputeClient, args: di
     if runtime_container_policy_events := client.get_runtime_container_policy():
         runtime_rules = runtime_container_policy_events.get("rules") or []
         if len(runtime_rules) > limit and not all_results:
-            runtime_rules = runtime_rules[offset * limit : offset * limit + limit]
+            runtime_rules = runtime_rules[offset * limit: offset * limit + limit]
 
         table = tableToMarkdown(
             name="Runtime Container Policy Events Information",
