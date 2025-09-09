@@ -10,12 +10,12 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 VENDOR = "Citrix"
 PRODUCT = "Cloud"
-# TODO: need to check the max limit value
-RECORDS_REQUEST_LIMIT = "1000"
+RECORDS_REQUEST_LIMIT = "200"
 ACCESS_TOKEN_CONST = "access_token"
 CONTINUATION_TOKEN_CONST = "continuation_token"
 SOURCE_LOG_TYPE = "systemlog"
 RECORDS_DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
+EVENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 RES_EXAMPLE = {
     "Items": [
@@ -173,19 +173,17 @@ class Client(BaseClient):
 
     def add_fields_to_events(self, events: list[dict]):
         for event in events:
-            event["source_log_type"] = SOURCE_LOG_TYPE
-            # TODO: change the time format
-            event["_time"] = event.get("CreatedDate")
-
-            # add _ENTRY_STATUS field
             created_date = event.get("AfterChanges", {}).get("CreatedDate")
             updated_date = event.get("AfterChanges", {}).get("UpdatedDate")
-
             if created_date:
-                created_date = datetime.strptime(event.get("AfterChanges", {}).get("CreatedDate"), RECORDS_DATE_FORMAT)
+                created_date = datetime.strptime(created_date, RECORDS_DATE_FORMAT)
             if updated_date:
-                updated_date = datetime.strptime(event.get("AfterChanges", {}).get("UpdatedDate"), RECORDS_DATE_FORMAT)
+                updated_date = datetime.strptime(updated_date, RECORDS_DATE_FORMAT)
 
+            event["source_log_type"] = SOURCE_LOG_TYPE
+            event["_time"] = created_date.strftime(EVENT_DATE_FORMAT)
+
+            # add _ENTRY_STATUS field
             if updated_date == created_date or not updated_date:
                 event["_ENTRY_STATUS"] = "new"
             elif updated_date > created_date:
