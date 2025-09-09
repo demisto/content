@@ -1,6 +1,6 @@
 {
   "trigger_id": "quickActionPlaybook",
-  "playbook_id": " ",
+  "playbook_id": "",
   "suggestion_reason": "Provides a comprehensive response to playbook quickActions.",
   "description": "This trigger is responsible for running the playbook quickActions Phishing - Generic v3 playbook on Phishing alerts.",
   "trigger_name": "Phishing Playbook Trigger",
