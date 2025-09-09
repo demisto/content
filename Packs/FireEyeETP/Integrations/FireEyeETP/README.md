@@ -358,7 +358,7 @@ Returns detailed information for any specified alert. Alerts that are more than 
 |FireEyeETP.Alerts.email.source_ip|Email source IP address|
 |FireEyeETP.Alerts.email.smtp.rcpt_to|Recipient SMTP|
 |FireEyeETP.Alerts.email.smtp.mail_from|Sender SMTP|
-|FireEyeETP.Alerts.email.etp_message_id|FireEye ETP unique message ID|
+|FireEyeETP.Alerts.email.etp_message_id|Trellix Email Security - Cloud unique message ID|
 |FireEyeETP.Alerts.email.headers.cc|Email cc recipients|
 |FireEyeETP.Alerts.email.headers.to|Email recipients|
 |FireEyeETP.Alerts.email.headers.from|Email sender|

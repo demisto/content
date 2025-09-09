@@ -44,7 +44,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| FireEyeETP.HuntingResults | Email message objects and fields that were retrieved from FireEye ETP. | string |
+| FireEyeETP.HuntingResults | Email message objects and fields that were retrieved from Trellix Email Security - Cloud. | string |
 | FireEyeETP.HuntingResults.acceptedDateTime | Message accepted date. | string |
 | FireEyeETP.HuntingResults.lastModifiedDateTime | Message last modified date. | string |
 | FireEyeETP.HuntingResults.countryCode | Sender country code. | string |
