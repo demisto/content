@@ -68,6 +68,15 @@ class TestBuiltInService:
                 ],
                 load_test_data("built-in", "limited_unshorten_expected_output"),
             ),
+            (  # Test for URL without https:// prefix
+                {"url": "short.url/a", "redirect_limit": 0},
+                [
+                    get_response_mock(url="short.url/a", redirect_url="https://short.url/b"),
+                    get_response_mock(url="https://short.url/b", redirect_url="https://xsoar.pan.dev/"),
+                    get_response_mock(url="https://xsoar.pan.dev/"),
+                ],
+                load_test_data("built-in", "no_https_unshorten_expected_output"),
+            ),
         ],
     )
     def test_nested_shortened_url(self, mocker, args: dict, responses: list[Response], expected_output: dict):

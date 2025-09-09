@@ -51,6 +51,7 @@ class URLUnshorteningData(NamedTuple):
         data = {
             "OriginalURL": self.original_url,
             "ResolvedURL": self.resolved_url,
+            "ServiceName": self.service_name,
             "RedirectCount": len(self.redirect_history) - 1,
             "RedirectHistory": self.redirect_history,
             "EncounteredError": self.encountered_error,
