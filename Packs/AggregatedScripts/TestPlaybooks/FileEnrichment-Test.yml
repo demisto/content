@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 50
         }
       }
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 370
         }
       }
@@ -100,7 +100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 710
         }
       }
@@ -140,7 +140,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 1050
         }
       }
@@ -233,7 +233,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 1720
         }
       }
@@ -246,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1dfff76c-0a2e-43e1-819c-481c71ade35a
+    taskid: 7e432d7e-f126-44b3-b1ab-b40426204811
     type: regular
     task:
-      id: 1dfff76c-0a2e-43e1-819c-481c71ade35a
+      id: 7e432d7e-f126-44b3-b1ab-b40426204811
       version: -1
       name: Create File Indicator SHA256
       description: commands.local.cmd.new.indicator
@@ -272,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 880
         }
       }
@@ -302,7 +302,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 1390
         }
       }
@@ -332,7 +332,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 210
         }
       }
@@ -416,7 +416,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 1550
         }
       }
@@ -580,7 +580,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 2060
         }
       }
@@ -622,7 +622,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 2220
         }
       }
@@ -660,7 +660,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 2390
         }
       }
@@ -699,7 +699,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 2560
         }
       }
@@ -741,7 +741,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 2730
         }
       }
@@ -921,7 +921,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2900
         }
       }
@@ -963,7 +963,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 2900
         }
       }
@@ -1004,7 +1004,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 2900
         }
       }
@@ -1062,7 +1062,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 2900
         }
       }
@@ -1075,10 +1075,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 02eba1d0-f878-4d8a-8f2e-dd44e52889e9
+    taskid: 30b98f10-d224-448d-9640-3bb9ab899c09
     type: regular
     task:
-      id: 02eba1d0-f878-4d8a-8f2e-dd44e52889e9
+      id: 30b98f10-d224-448d-9640-3bb9ab899c09
       version: -1
       name: File Enrichment
       description: This script gathers file reputation data from multiple integrations
@@ -1090,7 +1090,7 @@ tasks:
       brand: ""
     nexttasks:
       '#error#':
-      - "40"
+      - "53"
       '#none#':
       - "39"
     scriptarguments:
@@ -1106,7 +1106,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 480,
           "y": 4720
         }
       }
@@ -1136,7 +1136,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 480,
           "y": 4560
         }
       }
@@ -1244,7 +1244,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 797.5,
+          "x": 807.5,
           "y": 4890
         }
       }
@@ -1271,8 +1271,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
-          "y": 4895
+          "x": 377.5,
+          "y": 5060
         }
       }
     note: false
@@ -1516,7 +1516,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 3570
         }
       }
@@ -1558,7 +1558,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 695,
           "y": 3570
         }
       }
@@ -1599,7 +1599,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1125,
           "y": 3570
         }
       }
@@ -1657,7 +1657,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 3570
         }
       }
@@ -1741,8 +1741,43 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 910,
           "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: bd90e289-94ac-4161-b3fa-ff4af34153e9
+    type: regular
+    task:
+      id: bd90e289-94ac-4161-b3fa-ff4af34153e9
+      version: -1
+      name: 'Success '
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      value:
+        simple: '"Done"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 4890
         }
       }
     note: false
@@ -1754,13 +1789,11 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "32_40_#error#": 0.65
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4910,
-        "width": 1670,
+        "height": 5070,
+        "width": 1885,
         "x": 50,
         "y": 50
       }
