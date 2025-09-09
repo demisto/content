@@ -1,6 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+def do_nothing():
+    a = 5
+    b = a + 5
+    
 
 def main():
     indicator = demisto.args().get("indicator")
