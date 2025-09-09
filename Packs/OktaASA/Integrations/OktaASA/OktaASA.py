@@ -65,7 +65,7 @@ class OktaASAClient(BaseClient):
 
     def execute_audit_events_request(
         self, offset: Optional[str], count: Optional[int], descending: Optional[bool], prev: Optional[bool]
-    ) -> tuple[list,dict]:
+    ) -> tuple[list, dict]:
         """Gets audit events request.
 
         Args:
@@ -82,7 +82,7 @@ class OktaASAClient(BaseClient):
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.generate_token_if_required()
         response = self.get_audit_events_request(params)
-        return response.get("list",[]),response.get("related_objects",{})
+        return response.get("list", []), response.get("related_objects", {})
 
     def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
@@ -139,13 +139,10 @@ class OktaASAClient(BaseClient):
             )
             if not events:
                 break
-            
+
             # Process each event with its related objects
-            processed_events = [
-                process_and_enrich_event(event, related_objects, add_time=add_time_mapping)
-                for event in events
-            ]
-            
+            processed_events = [process_and_enrich_event(event, related_objects, add_time=add_time_mapping) for event in events]
+
             event_offset = processed_events[0] if descending else processed_events[len(processed_events) - 1]
             offset = event_offset.get("id")
             returned_timestamp = event_offset.get("timestamp")
@@ -200,12 +197,12 @@ def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool 
 
     # 2. Dynamically merge related objects that are referenced in the event details
     event_details = processed_event.get("details", {})
-    
+
     for _, referenced_id in event_details.items():
         # Skip if not a valid string ID or not found in related_objects
         if not isinstance(referenced_id, str) or referenced_id not in related_objects:
             continue
-                
+
         related_data = related_objects[referenced_id]
         new_key_name = related_data.get("type")
         object_data = related_data.get("object")
@@ -216,10 +213,11 @@ def process_and_enrich_event(event: dict, related_objects: dict, add_time: bool 
             continue
 
         enriched_object = object_data.copy()
-        enriched_object['original_link_id'] = referenced_id
+        enriched_object["original_link_id"] = referenced_id
         processed_event[new_key_name] = enriched_object
 
     return processed_event
+
 
 """COMMAND FUNCTIONS"""
 
@@ -275,7 +273,7 @@ def fetch_events_command(
     last_run: dict[str, str],
     team_name: str,
     max_audit_events_per_fetch: Optional[int],
-    add_time_mapping: bool
+    add_time_mapping: bool,
 ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
@@ -293,7 +291,7 @@ def fetch_events_command(
     events, offset, timestamp = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
-        add_time_mapping=add_time_mapping
+        add_time_mapping=add_time_mapping,
     )
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
@@ -342,8 +340,11 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events_command(
-                client=client, last_run=last_run, max_audit_events_per_fetch=max_audit_events_per_fetch, team_name=team_name,
-                add_time_mapping = True
+                client=client,
+                last_run=last_run,
+                max_audit_events_per_fetch=max_audit_events_per_fetch,
+                team_name=team_name,
+                add_time_mapping=True,
             )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
