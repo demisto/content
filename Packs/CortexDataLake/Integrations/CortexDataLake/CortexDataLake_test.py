@@ -463,31 +463,31 @@ class TestBackoffStrategy:
         pytest.param(
             "test_id_custom@https://custom.test.com/api",
             "https://tenant.paloaltonetworks.com",
-            ("https://custom.test.com/api", "test_id_custom", False),
+            ("https://custom.test.com/api", "test_id_custom"),
             id="Custom URL in params. License field URL NOT used for token URL",
         ),
         pytest.param(
             "test_id_fr",
             "https://fr-tenant.federal.paloaltonetworks.com",
-            (FEDRAMP_TOKEN_URL, "test_id_fr", True),
+            (FEDRAMP_TOKEN_URL, "test_id_fr"),
             id="No custom URL, FedRAMP tenant URL with a 'http(s)' scheme",
         ),
         pytest.param(
             "test_id_std",
             "https://std-tenant.paloaltonetworks.com",
-            (STANDARD_TOKEN_URL, "test_id_std", False),
+            (STANDARD_TOKEN_URL, "test_id_std"),
             id="No custom URL, a standard tenant URL with a scheme",
         ),
         pytest.param(
             "test_id_fr_nohost",
             "fr-tenant.federal.paloaltonetworks.com",
-            (FEDRAMP_TOKEN_URL, "test_id_fr_nohost", True),
+            (FEDRAMP_TOKEN_URL, "test_id_fr_nohost"),
             id="No custom URL, FedRAMP tenant URL WITHOUT 'http(s)' scheme",
         ),
         pytest.param(
             "test_id_std_nohost",
             "std-tenant.paloaltonetworks.com",
-            (STANDARD_TOKEN_URL, "test_id_std_nohost", False),
+            (STANDARD_TOKEN_URL, "test_id_std_nohost"),
             id="No custom URL, standard tenant URL WITHOUT 'http(s)' scheme",
         ),
     ],
@@ -499,7 +499,7 @@ def test_extract_client_args(mocker: MockerFixture, configured_reg_id_url: str, 
     When:
         - Calling `extract_client_args`.
     Then:
-        - Assert returned token retrieval URL, the registration ID, and FedRAMP status are as expected.
+        - Assert returned token retrieval URL and registration ID are as expected.
     """
     from CortexDataLake import demisto, extract_client_args
 
