@@ -15,6 +15,7 @@ RECORDS_REQUEST_LIMIT = "1000"
 ACCESS_TOKEN_CONST = "access_token"
 CONTINUATION_TOKEN_CONST = "continuation_token"
 SOURCE_LOG_TYPE = "systemlog"
+RECORDS_DATE_FORMAT = "%m/%d/%Y %H:%M:%S"
 
 RES_EXAMPLE = {
     "Items": [
@@ -38,11 +39,53 @@ RES_EXAMPLE = {
                 "DisplayName": "Rafa Doe",
                 "Pending": "False",
             },
-        }
+        },
+        {
+            "recordId": "2",
+            "UtcTimestamp": "2020-07-20T14:26:59.6103585Z",
+            "CustomerId": "hulk",
+            "EventType": "delegatedadministration:administrator/create",
+            "TargetId": "123",
+            "TargetDisplayName": "[test@gmail.com](mailto:test@gmail.com)",
+            "TargetEmail": "[test@gmail.com](mailto:test@gmail.com)",
+            "TargetUserId": "123",
+            "TargetType": "administrator",
+            "AfterChanges": {
+                "CustomerId": "h",
+                "Principal": "[test@gmail.com](mailto:test@gmail.com)",
+                "UserId": "657",
+                "AccessType": "Full",
+                "CreatedDate": "07/20/2020 14:26:53",
+                "UpdatedDate": "",
+                "DisplayName": "Rafa Doe",
+                "Pending": "False",
+            },
+        },
+        {
+            "recordId": "2",
+            "UtcTimestamp": "2020-07-20T14:26:59.6103585Z",
+            "CustomerId": "hulk",
+            "EventType": "delegatedadministration:administrator/create",
+            "TargetId": "123",
+            "TargetDisplayName": "[test@gmail.com](mailto:test@gmail.com)",
+            "TargetEmail": "[test@gmail.com](mailto:test@gmail.com)",
+            "TargetUserId": "123",
+            "TargetType": "administrator",
+            "AfterChanges": {
+                "CustomerId": "h",
+                "Principal": "[test@gmail.com](mailto:test@gmail.com)",
+                "UserId": "657",
+                "AccessType": "Full",
+                "CreatedDate": "07/20/2020 14:26:53",
+                "UpdatedDate": "07/21/2020 14:26:53",
+                "DisplayName": "Rafa Doe",
+                "Pending": "False",
+            },
+        },
     ],
     "Count": 74,
     "EstimatedTotalItems": 250,
-    "ContinuationToken": "",
+    "ContinuationToken": "aaaa",
 }
 
 """ CLIENT CLASS """
@@ -133,6 +176,20 @@ class Client(BaseClient):
             event["source_log_type"] = SOURCE_LOG_TYPE
             # TODO: change the time format
             event["_time"] = event.get("CreatedDate")
+
+            # add _ENTRY_STATUS field
+            created_date = event.get("AfterChanges", {}).get("CreatedDate")
+            updated_date = event.get("AfterChanges", {}).get("UpdatedDate")
+
+            if created_date:
+                created_date = datetime.strptime(event.get("AfterChanges", {}).get("CreatedDate"), RECORDS_DATE_FORMAT)
+            if updated_date:
+                updated_date = datetime.strptime(event.get("AfterChanges", {}).get("UpdatedDate"), RECORDS_DATE_FORMAT)
+
+            if updated_date == created_date or not updated_date:
+                event["_ENTRY_STATUS"] = "new"
+            elif updated_date > created_date:
+                event["_ENTRY_STATUS"] = "updated"
 
 
 """ HELPER FUNCTIONS """
