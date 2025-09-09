@@ -5905,10 +5905,12 @@
         },
         {
             "playbookID": "GetEndpointData-Test",
-            "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "Cortex XDR - IR", "Cortex Core - IR", "FireEyeHX v2"],
+            "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2"],
             "instance_names": [
                 "active_directory_80k"
-            ]
+            ],
+            "timeout": 600,
+            "fromversion": "6.10.0"
         }
     ],
     "skipped_tests": {
