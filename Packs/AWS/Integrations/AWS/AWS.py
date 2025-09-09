@@ -498,7 +498,7 @@ class S3:
         response = client.get_bucket_policy(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
-            json_response = json.loads(response.get("Policy", {}))
+            json_response = json.loads(response.get("Policy", "{}"))
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets",
                 outputs_key_field="BucketName",
