@@ -36,6 +36,7 @@ def domain_enrichment_script(
         Command(
             name="CreateNewIndicatorsOnly",
             args={"indicator_values": domain_list, "type": "Domain"},
+            command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
         )
@@ -53,10 +54,9 @@ def domain_enrichment_script(
     enrich_indicator_commands = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": domain},
+            args={"indicatorsValues": domain_list},
             command_type=CommandType.EXTERNAL,
         )
-        for domain in domain_list
     ]
 
     # Important: commands are a list of *batches* (each batch is a list[Command])

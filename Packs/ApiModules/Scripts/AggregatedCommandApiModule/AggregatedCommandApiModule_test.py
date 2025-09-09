@@ -117,7 +117,83 @@ def module_factory():
 # -------------------------------------------------------------------------------------------------
 # -- Level 1: Standalone Helper Functions
 # -------------------------------------------------------------------------------------------------
+# --- Validation Tests ---
+@pytest.mark.parametrize(
+    "data, indicator_type, extracted, expected_set",
+    [
+        # Exact match
+        (["https://a.com"], "URL", {"URL": ["https://a.com"]}, {"https://a.com"}),
+        # Case-insensitive type
+        (["https://a.com"], "url", {"URL": ["https://a.com"]}, {"https://a.com"}),
+        # Duplicates in input are OK → output is the deduped extracted set
+        (["https://a.com", "https://b.com", "https://b.com"], "URL",
+         {"URL": ["https://a.com", "https://b.com"]}, {"https://a.com", "https://b.com"}),
+        # Irrelevant types can be present; we only take the requested type
+        (["https://a.com"], "URL",
+         {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}, {"https://a.com"}),
+    ],
+)
+def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted, expected_set):
+    """
+    Given:
+        - Different input lists and extractIndicators outputs.
+    When:
+        - Calling extract_input.
+    Then:
+        - self.data is replaced with the deduped extracted set for the requested type.
+        - No exception is raised.
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
+    )
+    data = extract_indicators(data, indicator_type)
+    assert set(data) == expected_set
 
+
+@pytest.mark.parametrize(
+    "data, indicator_type, extracted",
+    [
+        # No key for the requested type at all
+        (["https://a.com"], "URL", {"Domain": ["a.com"]}),
+        # Requested key present but empty
+        (["https://a.com", "https://b.com"], "URL", {"URL": []}),
+        # Completely empty extraction
+        (["https://a.com", "https://b.com"], "URL", {}),
+    ],
+)
+def test_extract_input_raises_when_no_valid_indicators(mocker, data, indicator_type, extracted):
+    """
+    Given:
+        - extractIndicators returns no items for the requested indicator type.
+    When:
+        - Calling extract_input.
+    Then:
+        - Raises ValueError("No valid indicators found in the input data.").
+    """
+    mocker.patch(
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
+    )
+
+    with pytest.raises(ValueError, match="No valid indicators found in the input data"):
+        data = extract_indicators(data, indicator_type)
+
+
+def test_extract_input_raises_on_empty_execute_command_result(mocker):
+    """
+    Given:
+        - execute_command('extractIndicators', ...) returns a falsy/empty result.
+    When:
+        - Calling extract_input.
+    Then:
+        - Raises DemistoException with a validation failure message.
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[])
+
+
+    with pytest.raises(DemistoException, match="Failed to Validate input using extract indicator"):
+        data = extract_indicators(["https://a.com"], "url")
 
 @pytest.mark.parametrize(
     "dict1, dict2, expected",
@@ -875,107 +951,6 @@ def test_unsupported_enrichment_brands_various(
 # -------------------------------------------------------------------------------------------------
 # -- Level 6: ReputationAggregatedCommand
 # -------------------------------------------------------------------------------------------------
-
-
-# --- Validation Tests ---
-@pytest.mark.parametrize(
-    "data, indicator_type, extracted, expected_set",
-    [
-        # Exact match
-        (["https://a.com"], "URL", {"URL": ["https://a.com"]}, {"https://a.com"}),
-        # Case-insensitive type
-        (["https://a.com"], "url", {"URL": ["https://a.com"]}, {"https://a.com"}),
-        # Duplicates in input are OK → output is the deduped extracted set
-        (["https://a.com", "https://b.com", "https://b.com"], "URL",
-         {"URL": ["https://a.com", "https://b.com"]}, {"https://a.com", "https://b.com"}),
-        # Irrelevant types can be present; we only take the requested type
-        (["https://a.com"], "URL",
-         {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}, {"https://a.com"}),
-    ],
-)
-def test_extract_input_success_sets_data(module_factory, mocker, data, indicator_type, extracted, expected_set):
-    """
-    Given:
-        - Different input lists and extractIndicators outputs.
-    When:
-        - Calling extract_input.
-    Then:
-        - self.data is replaced with the deduped extracted set for the requested type.
-        - No exception is raised.
-    """
-    mocker.patch(
-        "AggregatedCommandApiModule.execute_command",
-        return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
-    )
-
-    inst = module_factory(
-        data=data,
-        indicator=Indicator(
-            type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}
-        ),
-    )
-
-    inst.extract_input()
-    assert set(inst.data) == expected_set
-
-
-@pytest.mark.parametrize(
-    "data, indicator_type, extracted",
-    [
-        # No key for the requested type at all
-        (["https://a.com"], "URL", {"Domain": ["a.com"]}),
-        # Requested key present but empty
-        (["https://a.com", "https://b.com"], "URL", {"URL": []}),
-        # Completely empty extraction
-        (["https://a.com", "https://b.com"], "URL", {}),
-    ],
-)
-def test_extract_input_raises_when_no_valid_indicators(module_factory, mocker, data, indicator_type, extracted):
-    """
-    Given:
-        - extractIndicators returns no items for the requested indicator type.
-    When:
-        - Calling extract_input.
-    Then:
-        - Raises ValueError("No valid indicators found in the input data.").
-    """
-    mocker.patch(
-        "AggregatedCommandApiModule.execute_command",
-        return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
-    )
-
-    inst = module_factory(
-        data=data,
-        indicator=Indicator(
-            type=indicator_type, value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}
-        ),
-    )
-
-    with pytest.raises(ValueError, match="No valid indicators found in the input data"):
-        inst.extract_input()
-
-
-def test_extract_input_raises_on_empty_execute_command_result(module_factory, mocker):
-    """
-    Given:
-        - execute_command('extractIndicators', ...) returns a falsy/empty result.
-    When:
-        - Calling extract_input.
-    Then:
-        - Raises DemistoException with a validation failure message.
-    """
-    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[])
-
-    inst = module_factory(
-        data=["https://a.com"],
-        indicator=Indicator(
-            type="URL", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}
-        ),
-    )
-
-    with pytest.raises(DemistoException, match="Failed to Validate input using extract indicator"):
-        inst.extract_input()
-
 
 # --- Prepare Commands Tests ---
 @pytest.mark.parametrize(

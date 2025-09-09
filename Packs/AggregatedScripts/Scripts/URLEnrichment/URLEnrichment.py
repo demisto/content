@@ -39,6 +39,7 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
         Command(
             name="CreateNewIndicatorsOnly",
             args={"indicator_values": url_list, "type": "URL"},
+            command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
         )

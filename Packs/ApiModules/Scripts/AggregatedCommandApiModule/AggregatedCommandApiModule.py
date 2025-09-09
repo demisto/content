@@ -118,7 +118,7 @@ class Command:
     Args:
         name (str): The command name (e.g., 'ip', 'url').
         args (dict[str, Any]): Arguments for the command.
-        brand (str): The specific integration brand to use.
+        brand (str): The specific integration brand to use. leave empty to exclude the command from the human readable entries.
         command_type (CommandType): The type of the command.
         ignore_using_brand (bool): Whether to add the using-brand parameter to the args.
         is_multi_input (bool): Whether the command accepts multiple inputs. Relevant for HumanReadable output.
