@@ -99,6 +99,16 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> list:
+    """Searches for endpoints by name and IP address.
+
+    Args:
+        endpoint_name (str): The name of the endpoint to search for.
+        external_ip (str): The external IP address of the endpoint.
+        client (Client): The CyberArk EPM client.
+
+    Returns:
+        list: A list of endpoint IDs that match the search criteria.
+    """
     data = {
         "filter": f"name EQ {endpoint_name} and ip EQ {external_ip}"
     }
@@ -119,6 +129,15 @@ def search_endpoints(endpoint_name: str, external_ip: str, client: Client) -> li
     return []
 
 def search_endpoint_group_id(group_name: str, client: Client) -> str:
+    """Searches for an endpoint group ID by its name.
+
+    Args:
+        group_name (str): The name of the endpoint group.
+        client (Client): The CyberArk EPM client.
+
+    Returns:
+        str: The ID of the endpoint group, or None if not found.
+    """
     data = {
         "filter": f"name EQ {group_name}"
     }
@@ -133,6 +152,13 @@ def search_endpoint_group_id(group_name: str, client: Client) -> str:
 
 
 def add_endpoint_to_group(endpoint_id: str, endpoint_group_id: str, client: Client) -> None:
+    """Adds an endpoint to a specified group.
+
+    Args:
+        endpoint_id (str): The ID of the endpoint to add.
+        endpoint_group_id (str): The ID of the group to add the endpoint to.
+        client (Client): The CyberArk EPM client.
+    """
     data = {
         "membersIds": [endpoint_id]
     }
@@ -143,6 +169,13 @@ def add_endpoint_to_group(endpoint_id: str, endpoint_group_id: str, client: Clie
 
 
 def remove_endpoint_from_group(endpoint_id: str, endpoint_group_id: str, client: Client) -> None:
+    """Removes an endpoint from a specified group.
+
+    Args:
+        endpoint_id (str): The ID of the endpoint to remove.
+        endpoint_group_id (str): The ID of the group to remove the endpoint from.
+        client (Client): The CyberArk EPM client.
+    """
     data = {
         "membersIds": [endpoint_id]
     }
