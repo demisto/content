@@ -859,8 +859,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "quickActions3"
-resolved_reference = "01e71e9ef86e5c81601b37bc5f2f73d09938a7bd"
+reference = "quickActions4"
+resolved_reference = "041485fd9d3702506da265cbe3add0c70692b02d"
 
 [[package]]
 name = "dictdiffer"
@@ -4716,4 +4716,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "00caaf09ded2f78608991744e8effb0a204bdf89eb96fa61b768756355fe4588"
+content-hash = "5fe74606ba6fa39f7b9015660b28505258dfa7da412403d21de4f1ac249eea41"
