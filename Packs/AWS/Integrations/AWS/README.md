@@ -703,51 +703,6 @@ Adds or removes permission settings for the specified snapshot. Note: snapshots 
 
 There is no context output for this command.
 
-### aws-s3-file-download
-
-***
-Downloads a file from an Amazon S3 bucket to local storage. Supports versioned objects, byte range downloads, and provides download progress tracking.
-
-#### Base Command
-
-`aws-s3-file-download`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
-| key | Key (path) of the file to download from the S3 bucket. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-s3-file-upload
-
-***
-Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
-
-#### Base Command
-
-`aws-s3-file-upload`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. | Required |
-| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
-| bucket | Name of the target S3 bucket. Must follow S3 naming conventions. | Required |
-| key | Key (path) where the file will be stored in the S3 bucket. | Required |
-| entry_id | Entry ID of the file to upload. | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
 ### aws-s3-bucket-policy-delete
 
 ***
