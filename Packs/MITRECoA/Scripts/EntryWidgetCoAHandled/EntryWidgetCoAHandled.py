@@ -7,6 +7,7 @@ handled = incident.get("CustomFields", {}).get("handledtechniques", [])
 stats = len([h for h in handled if h])
 
 data = {
+    
     "Type": 17,
     "ContentsFormat": "number",
     "Contents": {
