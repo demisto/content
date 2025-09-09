@@ -1,4 +1,4 @@
-Use the Azure Active Directory Identity And Access integration to manage roles and members.
+Use the Entra ID (formerly Azure Active Directory Identity And Access) integration to manage roles and members.
 
 ## Configure Azure Active Directory Identity and Access in Cortex
 

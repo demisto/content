@@ -123,8 +123,8 @@ configuration:
   type: 0
   advanced: true
   required: false
-description: Use the Azure Active Directory Identity And Access integration to manage roles and members.
-display: Azure Active Directory Identity And Access
+description: Use the Entra ID integration to manage roles and members (formerly Azure Active Directory Identity And Access).
+display: Entra ID 
 name: MicrosoftGraphIdentityandAccess
 script:
   commands:
