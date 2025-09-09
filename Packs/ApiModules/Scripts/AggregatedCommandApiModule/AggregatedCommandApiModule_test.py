@@ -2,6 +2,8 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
+from datetime import datetime, timedelta, timezone
+
 
 
 # =================================================================================================
@@ -193,7 +195,7 @@ def test_extract_input_raises_on_empty_execute_command_result(mocker):
 
 
     with pytest.raises(DemistoException, match="Failed to Validate input using extract indicator"):
-        data = extract_indicators(["https://a.com"], "url")
+        extract_indicators(["https://a.com"], "url")
 
 @pytest.mark.parametrize(
     "dict1, dict2, expected",
@@ -989,7 +991,21 @@ def test_prepare_commands_various(module_factory, requested_brands, external_enr
 
     assert {c.name for c in flattened} == expected_names
 
-
+def test_prepare_commands_includes_builtin(module_factory):
+    """
+    Given:
+        - A builtin command.
+    When:
+        - Calling `prepare_commands_batches`.
+    Then:
+        - The builtin command is included in the first batch.
+    """
+    cmd_bi = Command(name="createNewIndicator", command_type=CommandType.BUILTIN)
+    module = module_factory(commands=[[cmd_bi]], brands=["Whatever"], indicator=Indicator("url","Data","URL(",{}) )
+    batches = module.prepare_commands_batches(external_enrichment=False)
+    assert any(c.name == "createNewIndicator" for c in batches[0])
+    
+    
 @pytest.mark.parametrize(
     "result_tuple, mock_mapped_context_return, expected_entry_status, expected_entry_msg",
     [
@@ -1295,7 +1311,6 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
 
     def _searcher_ctor(*args, **kwargs):
         captured["query"] = kwargs.get("query")
-        captured["size"] = kwargs.get("size")
         class _Searcher:
             def __iter__(self_inner):
                 return iter(pages)
@@ -1308,8 +1323,6 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
     iocs, status, msg = mod.search_indicators_in_tim()
 
     assert searcher_mock.call_count == 1
-    assert isinstance(captured.get("size"), int)
-    assert captured["size"] == len(data)
 
     q = captured.get("query", "")
     assert f"type:{mod.indicator.type}" in q
@@ -1324,16 +1337,16 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
     """
     Given:
         - A TIM IOC dict that includes an overall 'score'.
-        - get_data_status_from_ioc returns IndicatorStatus.FRESH.
+        - get_indicator_status_from_ioc returns IndicatorStatus.FRESH.
     When:
         - Calling create_tim_indicator.
     Then:
-        - Returns a dict with Brand='TIM', the provided Score, and Status from get_data_status_from_ioc.
+        - Returns a dict with Brand='TIM', the provided Score, and Status from get_indicator_status_from_ioc.
     """
     mod = module_factory()
     ioc = {"score": 2}
 
-    status_mock = mocker.patch.object(mod, "get_data_status_from_ioc", return_value=IndicatorStatus.FRESH)
+    status_mock = mocker.patch.object(mod, "get_indicator_status_from_ioc", return_value=IndicatorStatus.FRESH)
 
     res = mod.create_tim_indicator(ioc)
 
@@ -1359,12 +1372,12 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
         (False, "none", IndicatorStatus.STALE),
     ],
 )
-def test_get_data_status_from_ioc_various(module_factory, has_manual, modified_mode, expected_status):
+def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modified_mode, expected_status):
     """
     Given:
         - Various combinations of 'manuallyEditedFields' and 'modifiedTime'.
     When:
-        - Calling get_data_status_from_ioc.
+        - Calling get_indicator_status_from_ioc.
     Then:
         - Returns MANUAL if 'Score' in manuallyEditedFields.
         - Else FRESH if modifiedTime within freshness window.
@@ -1391,15 +1404,15 @@ def test_get_data_status_from_ioc_various(module_factory, has_manual, modified_m
         # leave modifiedTime absent
         pass
 
-    status = mod.get_data_status_from_ioc(ioc)
+    status = mod.get_indicator_status_from_ioc(ioc)
     assert status == expected_status
 
-def test_get_data_status_from_ioc_boundary_freshness_window(module_factory):
+def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory):
     """
     Given:
         - modifiedTime just inside the STATUS_FRESHNESS_WINDOW.
     When:
-        - Calling get_data_status_from_ioc.
+        - Calling get_indicator_status_from_ioc.
     Then:
         - Returns FRESH at the boundary (minus 1 second).
     """
@@ -1408,14 +1421,14 @@ def test_get_data_status_from_ioc_boundary_freshness_window(module_factory):
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
-    assert mod.get_data_status_from_ioc(ioc) == IndicatorStatus.FRESH
+    assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.FRESH
 
-def test_get_data_status_from_ioc_boundary_stale(module_factory):
+def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
     """
     Given:
         - modifiedTime just outside the STATUS_FRESHNESS_WINDOW.
     When:
-        - Calling get_data_status_from_ioc.
+        - Calling get_indicator_status_from_ioc.
     Then:
         - Returns STALE at the boundary (plus 1 second).
     """
@@ -1424,7 +1437,7 @@ def test_get_data_status_from_ioc_boundary_stale(module_factory):
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
-    assert mod.get_data_status_from_ioc(ioc) == IndicatorStatus.STALE
+    assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.STALE
     
 # --- Summarize Command Results Tests ---
 @pytest.mark.parametrize(
@@ -1517,8 +1530,8 @@ def test_raise_non_enabled_brands_error_raises_when_all_unsupported(module_facto
     """
     module = module_factory()
     entries = [
-        make_entry_result("cmd1", "BrandA", "Failure", "Unsupported Command : ..."),
-        make_entry_result("cmd2", "BrandB", "Failure", "Unsupported Command : ..."),
+        make_entry_result("cmd1", "BrandA", Status.FAILURE, "Unsupported Command : ..."),
+        make_entry_result("cmd2", "BrandB", Status.FAILURE, "Unsupported Command : ..."),
     ]
 
     with pytest.raises(DemistoException, match="None of the commands correspond to an enabled integration instance"):
@@ -1536,8 +1549,8 @@ def test_raise_non_enabled_brands_error_does_not_raise_on_other_failures(module_
     """
     module = module_factory()
     entries = [
-        make_entry_result("cmd1", "BrandA", "Failure", "Unsupported Command : ..."),
-        make_entry_result("cmd2", "BrandB", "Failure", "A different API error"),  # A different error
+        make_entry_result("cmd1", "BrandA", Status.FAILURE, "Unsupported Command : ..."),
+        make_entry_result("cmd2", "BrandB", Status.FAILURE, "A different API error"),  # A different error
     ]
 
     try:

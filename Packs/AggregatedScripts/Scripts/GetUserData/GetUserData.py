@@ -308,7 +308,7 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         output_key = get_output_key("ActiveDirectory.Users", output)
         outputs = get_outputs(output_key, output)
 
-        username = outputs.pop("name", None)
+        username = outputs.pop("sAMAccountName", None)
         if isinstance(username, list) and len(username) == 1:
             username = username[0]
         mail = outputs.pop("mail", None)
