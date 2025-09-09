@@ -1020,7 +1020,7 @@ class TestTableToMarkdown:
         Then:
             Validate that the script ran successfully.
         """
-        data = {'key': 'value', 'listtest': [1, 2, 3, 4]} 
+        data = {'key': 'value', 'listtest': [1, 2, 3, 4]}
         table = tableToMarkdown("tableToMarkdown test", data, sort_headers=False, is_auto_json_transform=True)
         assert table
 
@@ -3787,7 +3787,7 @@ class TestReturnOutputs:
         pytest.param('on', True, id='string_on_lowercase'),
         pytest.param('ON', True, id='string_on_uppercase'),
         pytest.param('1', True, id='string_one'),
-        
+
         # False values
         pytest.param('false', False, id='string_false_lowercase'),
         pytest.param('no', False, id='string_no_lowercase'),
@@ -8694,6 +8694,23 @@ class TestFetchWithLookBack:
         assert calculate_new_offset(1, 2, 3) == 0
         assert calculate_new_offset(1, 2, None) == 3
 
+    def test_remove_old_incidents_ids(self):
+        """
+        Test that the remove_old_incidents_ids function removes old incident IDs from the last run object.
+        Given:
+            A last run object with incident IDs and their addition times.
+        When:
+            Calling remove_old_incidents_ids with the last run object and a look back period.
+        Then:
+            Make sure that the old incident IDs are removed from the last run object and the latest incident IDs is returned.
+        """
+        from CommonServerPython import remove_old_incidents_ids
+
+        assert remove_old_incidents_ids(
+            {"inc1": "2020-01-01T00:00:00Z", "inc2": "2020-01-02T00:00:00Z", "inc3": "2020-01-03T00:00:00Z"}, 1800000000, 1) == {"inc3": "2020-01-03T00:00:00Z"}
+        assert remove_old_incidents_ids(
+            {"inc1": "2020-01-01T00:00:00Z", "inc2": "2020-01-02T00:00:00Z", "inc3": "2020-01-02T00:00:00Z"}, 1800000000, 2) == {"inc2": "2020-01-02T00:00:00Z", "inc3": "2020-01-02T00:00:00Z"}
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
@@ -9773,12 +9790,12 @@ def test_censor_request_logs(request_log, expected_output):
         case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
         case 5: A request log with no sensitive data.
-        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases 
+        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases
                 like HMAC signature authentication).
     When:
         Running censor_request_logs function.
     Then:
-        Assert the function returns the exactly same log with the sensitive data masked. 
+        Assert the function returns the exactly same log with the sensitive data masked.
     """
     assert censor_request_logs(request_log) == expected_output
 
@@ -9953,18 +9970,18 @@ def test_get_server_config_fail(mocker):
                               "Test-instanec-without-xsoar-engine-configures"
                          ])
 def test_is_integration_instance_running_on_engine(mocker, instance_name, expected_result):
-    """ Tests the 'is_integration_instance_running_on_engine' function's logic. 
+    """ Tests the 'is_integration_instance_running_on_engine' function's logic.
 
-        Given:  
+        Given:
                 1. A name of an instance that has an engine configured (and relevant mocked responses).
                 2. A name of an instance that doesn't have an engine configured (and relevant mocked responses).
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
-            - Verify that: 
-                1. The result is the engine's id. 
+            - Verify that:
+                1. The result is the engine's id.
                 2. The result is an empty string.
     """
     mock_response = {
@@ -9980,14 +9997,14 @@ def test_is_integration_instance_running_on_engine(mocker, instance_name, expect
 
 
 def test_get_engine_base_url(mocker):
-    """ Tests the 'get_engine_base_url' function's logic. 
+    """ Tests the 'get_engine_base_url' function's logic.
 
-        Given:  
+        Given:
             - Mocked response of the internalHttpRequest call for the '/engines' endpoint, including 2 engines.
-            - An id of an engine. 
+            - An id of an engine.
 
-        When:  
-            - Running the 'is_integration_instance_running_on_engine' funcution. 
+        When:
+            - Running the 'is_integration_instance_running_on_engine' funcution.
 
         Then:
             - Verify that base url of the given engine id was returened.
@@ -10659,5 +10676,5 @@ def test_execution_timeout_decorator(sleep_time, expected_return_value):
     def do_logic():
         time.sleep(sleep_time)
         return "I AM DONE"
-    
+
     assert do_logic() == expected_return_value
