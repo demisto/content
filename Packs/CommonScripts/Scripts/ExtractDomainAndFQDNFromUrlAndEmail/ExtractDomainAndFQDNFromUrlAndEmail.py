@@ -99,7 +99,8 @@ def extract_fqdn(the_input):
     if the_input.endswith("@") or the_input.startswith("_"):
         return ""
     # Check if the TLD contains a digit - if so, don't extract as domain (e.g., file.ps1)
-    if any(char.isdigit() for char in the_input.split(".")[-1]):
+    last_part = the_input.split(".")[-1]
+    if last_part and any(char.isdigit() for char in last_part) and "/" not in last_part:
         return ""
     if not the_input[0].isalnum():
         the_input = the_input[1:]
