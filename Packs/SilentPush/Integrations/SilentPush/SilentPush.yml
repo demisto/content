@@ -41,12 +41,15 @@ script:
       required: true
       secret: false
       default: false
-    - name: type
-      isArray: false
-      description: Feed Type.
-      required: true
-      secret: false
+    - auto: PREDEFINED
       default: false
+      description: Feed Type.
+      name: type
+      required: true
+      predefined:
+      - domain
+      - ip
+      - URL
     - name: category
       isArray: false
       description: Feed Category.
