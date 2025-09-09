@@ -46,8 +46,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: CitrixCloudEventCollector
-display: CitrixCloudEventCollector
+description: Citrix Cloud Event Collector integration
+display: Citrix Cloud Event Collector
 name: CitrixCloudEventCollector
 script:
   commands:
