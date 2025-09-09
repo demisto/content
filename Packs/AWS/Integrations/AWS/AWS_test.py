@@ -556,7 +556,7 @@ def test_ec2_modify_snapshot_attribute_command_success(mocker):
         "snapshot_id": "snap-1234567890abcdef0",
         "attribute": "createVolumePermission",
         "operation_type": "add",
-        "user_ids": "123456789012, 987654321098",
+        "user_ids": "accountID, accountID",
     }
 
     result = EC2.modify_snapshot_attribute_command(mock_client, args)
@@ -596,7 +596,7 @@ def test_ec2_modify_image_attribute_command_success(mocker):
         "image_id": "ami-1234567890abcdef0",
         "attribute": "launchPermission",
         "operation_type": "add",
-        "launch_permission_add_user_id": "123456789012",
+        "launch_permission_add_user_id": "accountID",
     }
 
     result = EC2.modify_image_attribute_command(mock_client, args)
@@ -843,7 +843,7 @@ def test_rds_modify_db_cluster_snapshot_attribute_command_success(mocker):
         "DBClusterSnapshotAttributesResult": {"DBClusterSnapshotIdentifier": "test-snapshot", "DBClusterSnapshotAttributes": []},
     }
 
-    args = {"db_cluster_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_add": ["123456789012"]}
+    args = {"db_cluster_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_add": ["accountID"]}
 
     result = RDS.modify_db_cluster_snapshot_attribute_command(mock_client, args)
     assert isinstance(result, CommandResults)
@@ -921,7 +921,7 @@ def test_rds_modify_db_snapshot_attribute_command_success(mocker):
     args = {
         "db_snapshot_identifier": "test-snapshot",
         "attribute_name": "restore",
-        "values_to_add": ["123456789012", "987654321098"],
+        "values_to_add": ["accountID", "accountID"],
     }
 
     result = RDS.modify_db_snapshot_attribute_command(mock_client, args)
@@ -940,7 +940,7 @@ def test_rds_modify_db_snapshot_attribute_command_failure(mocker):
     mock_client = mocker.Mock()
     mock_client.modify_db_snapshot_attribute.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
 
-    args = {"db_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_remove": ["123456789012"]}
+    args = {"db_snapshot_identifier": "test-snapshot", "attribute_name": "restore", "values_to_remove": ["accountID"]}
 
     with pytest.raises(DemistoException, match="Couldn't modify DB snapshot attribute for"):
         RDS.modify_db_snapshot_attribute_command(mock_client, args)
@@ -995,7 +995,7 @@ def test_cloudtrail_update_trail_command_success(mocker):
         "Trail": {
             "Name": "test-trail",
             "S3BucketName": "test-bucket",
-            "TrailARN": "arn:aws:cloudtrail:us-east-1:123456789012:trail/test-trail",
+            "TrailARN": "arn:aws:cloudtrail:us-east-1:accountID:trail/test-trail",
         },
     }
 
@@ -1069,3 +1069,335 @@ def test_register_proxydome_header_adds_correct_header(mocker):
     header_function(mock_request)
 
     assert mock_request.headers["x-caller-id"] == "test-token-123"
+
+
+def test_aws_error_handler_handle_response_error_with_request_id(mocker):
+    """
+    Given: A response dict with ResponseMetadata including RequestId and HTTPStatusCode.
+    When: handle_response_error is called with the response.
+    Then: It should raise DemistoException with detailed error information including RequestId.
+    """
+    from AWS import AWSErrorHandler
+
+    mocker.patch("AWS.demisto.command", return_value="test-command")
+    mocker.patch("AWS.demisto.args", return_value={"arg1": "value1"})
+    demisto_results = mocker.patch("AWS.demisto.results")
+
+    response = {"ResponseMetadata": {"RequestId": "RequestId", "HTTPStatusCode": 400}}
+
+    with pytest.raises(SystemExit):
+        AWSErrorHandler.handle_response_error(response, "accountID")
+
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing:"
+            " test-command with arguments: {'arg1': 'value1'}\nRequest Id: RequestId\nHTTP Status Code: 400",
+            "EntryContext": None,
+        }
+    )
+
+
+def test_aws_error_handler_handle_response_error_missing_metadata(mocker):
+    """
+    Given: A response dict without ResponseMetadata.
+    When: handle_response_error is called with the response.
+    Then: It should raise DemistoException with N/A values for missing metadata.
+    """
+    from AWS import AWSErrorHandler
+
+    mocker.patch("AWS.demisto.command", return_value="test-command")
+    mocker.patch("AWS.demisto.args", return_value={})
+    demisto_results = mocker.patch("AWS.demisto.results")
+
+    response = {}
+
+    with pytest.raises(SystemExit):
+        AWSErrorHandler.handle_response_error(response)
+
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing: test-command with arguments: {}"
+            "\nRequest Id: N/A\nHTTP Status Code: N/A",
+            "EntryContext": None,
+        }
+    )
+
+
+def test_aws_error_handler_handle_client_error_access_denied(mocker):
+    """
+    Given: A ClientError with AccessDenied error code.
+    When: handle_client_error is called with the error.
+    Then: It should call _handle_permission_error and return_multiple_permissions_error.
+    """
+    from AWS import AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mocker.patch("AWS.demisto.args", return_value={"account_id": "accountID"})
+    mocker.patch("AWS.demisto.info")
+    mocker.patch("AWS.demisto.debug")
+
+    error_response = {
+        "Error": {"Code": "AccessDenied", "Message": "User is not authorized to perform action"},
+        "ResponseMetadata": {"HTTPStatusCode": 403},
+    }
+    client_error = ClientError(error_response, "test-operation")
+
+    AWSErrorHandler.handle_client_error(client_error, "accountID")
+
+    mock_return_multiple_permissions_error.assert_called_once()
+    call_args = mock_return_multiple_permissions_error.call_args[0][0]
+    assert len(call_args) == 1
+    assert call_args[0]["account_id"] == "accountID"
+
+
+def test_aws_error_handler_handle_client_error_unauthorized_operation(mocker):
+    """
+    Given: A ClientError with UnauthorizedOperation error code.
+    When: handle_client_error is called with the error.
+    Then: It should handle it as a permission error.
+    """
+    from AWS import AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mocker.patch("AWS.demisto.args", return_value={"account_id": "accountID"})
+    mocker.patch("AWS.demisto.info")
+    mocker.patch("AWS.demisto.debug")
+
+    error_response = {
+        "Error": {"Code": "UnauthorizedOperation", "Message": "You are not authorized to perform this operation"},
+        "ResponseMetadata": {"HTTPStatusCode": 401},
+    }
+    client_error = ClientError(error_response, "test-operation")
+
+    AWSErrorHandler.handle_client_error(client_error)
+
+    mock_return_multiple_permissions_error.assert_called_once()
+
+
+def test_aws_error_handler_handle_client_error_http_401(mocker):
+    """
+    Given: A ClientError with HTTP status code 401 but different error code.
+    When: handle_client_error is called with the error.
+    Then: It should handle it as a permission error based on HTTP status.
+    """
+    from AWS import AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mocker.patch("AWS.demisto.args", return_value={})
+    mocker.patch("AWS.demisto.info")
+    mocker.patch("AWS.demisto.debug")
+
+    error_response = {
+        "Error": {"Code": "CustomError", "Message": "Authentication failed"},
+        "ResponseMetadata": {"HTTPStatusCode": 401},
+    }
+    client_error = ClientError(error_response, "test-operation")
+
+    AWSErrorHandler.handle_client_error(client_error, "accountID")
+
+    mock_return_multiple_permissions_error.assert_called_once()
+
+
+def test_aws_error_handler_handle_client_error_general_error(mocker):
+    """
+    Given: A ClientError with non-permission error code.
+    When: handle_client_error is called with the error.
+    Then: It should raise DemistoException with detailed error information.
+    """
+    from AWS import AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mocker.patch("AWS.demisto.command", return_value="test-command")
+    mocker.patch("AWS.demisto.args", return_value={"param": "value"})
+    mocker.patch("AWS.demisto.error")
+    demisto_results = mocker.patch("AWS.demisto.results")
+
+    error_response = {
+        "Error": {"Code": "InvalidParameterValue", "Message": "The parameter value is invalid"},
+        "ResponseMetadata": {"HTTPStatusCode": 400, "RequestId": "RequestId"},
+    }
+    client_error = ClientError(error_response, "test-operation")
+
+    with pytest.raises(SystemExit):
+        AWSErrorHandler.handle_client_error(client_error, "accountID")
+
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing:"
+            " test-command with arguments: {'param': 'value'}\n"
+            "Error Code: InvalidParameterValue\nError Message: "
+            "The parameter value is invalid\nHTTP Status Code: 400\n"
+            "Request ID: RequestId",
+            "EntryContext": None,
+        }
+    )
+
+
+def test_aws_error_handler_handle_permission_error_no_account_id(mocker):
+    """
+    Given: A permission error without account_id provided.
+    When: _handle_permission_error is called.
+    Then: It should get account_id from demisto.args() and use "unknown" if not found.
+    """
+    from AWS import AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mock_return_multiple_permissions_error = mocker.patch("AWS.return_multiple_permissions_error")
+    mocker.patch("AWS.demisto.args", return_value={})
+    mocker.patch("AWS.demisto.info")
+    mocker.patch("AWS.demisto.debug")
+
+    error_response = {"Error": {"Code": "AccessDenied", "Message": "Access denied for operation"}}
+    client_error = ClientError(error_response, "test-operation")
+
+    AWSErrorHandler._handle_permission_error(client_error, "AccessDenied", "Access denied for operation", None)
+
+    mock_return_multiple_permissions_error.assert_called_once()
+    call_args = mock_return_multiple_permissions_error.call_args[0][0]
+    assert call_args[0]["account_id"] == "unknown"
+
+
+def test_aws_error_handler_remove_encoded_authorization_message_with_encoding(mocker):
+    """
+    Given: An error message containing encoded authorization failure message.
+    When: remove_encoded_authorization_message is called.
+    Then: It should return the message truncated before the encoded part.
+    """
+    from AWS import AWSErrorHandler
+
+    message = "Access denied. User is not authorized. Encoded authorization failure message: <message>"
+    result = AWSErrorHandler.remove_encoded_authorization_message(message)
+
+    assert result == "Access denied. User is not authorized. "
+    assert "Encoded authorization failure message:" not in result
+
+
+def test_aws_error_handler_remove_encoded_authorization_message_case_insensitive(mocker):
+    """
+    Given: An error message with mixed case encoded authorization failure message.
+    When: remove_encoded_authorization_message is called.
+    Then: It should find and remove the encoded part case-insensitively.
+    """
+    from AWS import AWSErrorHandler
+
+    message = "Access denied. ENCODED AUTHORIZATION FAILURE MESSAGE: <message>"
+    result = AWSErrorHandler.remove_encoded_authorization_message(message)
+
+    assert result == "Access denied. "
+
+
+def test_aws_error_handler_remove_encoded_authorization_message_no_encoding():
+    """
+    Given: An error message without encoded authorization failure message.
+    When: remove_encoded_authorization_message is called.
+    Then: It should return the original message unchanged.
+    """
+    from AWS import AWSErrorHandler
+
+    message = "Simple access denied error"
+    result = AWSErrorHandler.remove_encoded_authorization_message(message)
+
+    assert result == message
+
+
+def test_aws_error_handler_handle_general_error_missing_metadata(mocker):
+    """
+    Given: A ClientError with missing ResponseMetadata fields.
+    When: _handle_general_error is called.
+    Then: It should handle missing fields gracefully with N/A values.
+    """
+    from AWS import AWSErrorHandler
+    from botocore.exceptions import ClientError
+
+    mocker.patch("AWS.demisto.command", return_value="test-command")
+    mocker.patch("AWS.demisto.args", return_value={})
+    demisto_results = mocker.patch("AWS.demisto.results")
+    mocker.patch("AWS.demisto.error")
+
+    error_response = {"Error": {"Code": "TestError", "Message": "Test message"}, "ResponseMetadata": {}}
+    client_error = ClientError(error_response, "test-operation")
+
+    with pytest.raises(SystemExit):
+        AWSErrorHandler._handle_general_error(client_error, "TestError", "Test message")
+
+    demisto_results.assert_called_once_with(
+        {
+            "Type": 4,
+            "ContentsFormat": "text",
+            "Contents": "AWS API Error occurred while executing:"
+            " test-command with arguments: {}\n"
+            "Error Code: TestError\n"
+            "Error Message: Test message\nHTTP Status Code: N/A\nRequest ID: N/A",
+            "EntryContext": None,
+        }
+    )
+
+
+def test_aws_error_handler_extract_action_from_message_valid_action(mocker):
+    """
+    Given: An error message containing a valid AWS action from REQUIRED_ACTIONS.
+    When: _extract_action_from_message is called.
+    Then: It should return the matched action name.
+    """
+    from AWS import AWSErrorHandler
+
+    mocker.patch("AWS.REQUIRED_ACTIONS", ["action_1", "action_2"])
+
+    message = "User is not authorized to perform action_1 on resource"
+    result = AWSErrorHandler._extract_action_from_message(message)
+
+    assert result == "action_1"
+
+
+def test_aws_error_handler_extract_action_from_message_case_insensitive(mocker):
+    """
+    Given: An error message with action in different case.
+    When: _extract_action_from_message is called.
+    Then: It should match case-insensitively and return the action.
+    """
+    from AWS import AWSErrorHandler
+
+    mocker.patch("AWS.REQUIRED_ACTIONS", ["action_2"])
+
+    message = "Permission denied for action_2"
+    result = AWSErrorHandler._extract_action_from_message(message)
+
+    assert result == "action_2"
+
+
+def test_aws_error_handler_extract_action_from_message_no_match(mocker):
+    """
+    Given: An error message without any known AWS actions.
+    When: _extract_action_from_message is called.
+    Then: It should return "unknown".
+    """
+    from AWS import AWSErrorHandler
+
+    mocker.patch("AWS.REQUIRED_ACTIONS", ["action_1"])
+
+    message = "Generic access denied error"
+    result = AWSErrorHandler._extract_action_from_message(message)
+
+    assert result == "unknown"
+
+
+def test_aws_error_handler_extract_action_from_message_empty_input():
+    """
+    Given: An empty or None error message.
+    When: _extract_action_from_message is called.
+    Then: It should return "unknown" safely.
+    """
+    from AWS import AWSErrorHandler
+
+    assert AWSErrorHandler._extract_action_from_message(None) == "unknown"
+    assert AWSErrorHandler._extract_action_from_message("") == "unknown"
+    assert AWSErrorHandler._extract_action_from_message(123) == "unknown"
