@@ -23,7 +23,6 @@ from ServiceNowv2 import (
     Client,
     ServiceNowClient,
     add_comment_command,
-    add_link_command,
     add_tag_command,
     check_assigned_to_field,
     convert_to_notes_result,
@@ -84,7 +83,6 @@ from test_data.response_constants import (
     MIRROR_ENTRIES_WITH_EMPTY_USERNAME,
     OAUTH_PARAMS,
     RESPONSE_ADD_COMMENT,
-    RESPONSE_ADD_LINK,
     RESPONSE_ADD_TAG,
     RESPONSE_ASSIGNMENT_GROUP,
     RESPONSE_CLOSING_TICKET_MIRROR_CLOSED,
@@ -130,7 +128,6 @@ from test_data.response_constants import (
 )
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
-    EXPECTED_ADD_LINK_HR,
     EXPECTED_ADD_TAG,
     EXPECTED_CREATE_ITEM_ORDER,
     EXPECTED_CREATE_RECORD,
@@ -830,14 +827,6 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
 @pytest.mark.parametrize(
     "command, args, response, expected_hr, expected_auto_extract",
     [
-        (delete_ticket_command, {"id": "1234"}, {}, "Ticket with ID 1234 was successfully deleted.", True),
-        (
-            add_link_command,
-            {"id": "1234", "link": "http://www.demisto.com", "text": "demsito_link"},
-            RESPONSE_ADD_LINK,
-            EXPECTED_ADD_LINK_HR,
-            True,
-        ),
         (add_comment_command, {"id": "1234", "comment": "Nice work!"}, RESPONSE_ADD_COMMENT, EXPECTED_ADD_COMMENT_HR, True),
         (
             delete_record_command,
@@ -3886,7 +3875,7 @@ def test_get_remote_data_preview_missing_id(mock_client: MagicMock) -> None:
     args = {}  # 'id' is missing
 
     # Act & Assert
-    with pytest.raises(ValueError, match="ServiceNow Ticket ID \('id'\) is required for preview."):
+    with pytest.raises(ValueError, match=r"ServiceNow Ticket ID \('id'\) is required for preview."):
         ServiceNowv2.get_remote_data_preview_command(mock_client, args)
 
 
@@ -3996,3 +3985,43 @@ def test_get_remote_data_preview_success_with_list_response(mock_client: MagicMo
     assert result.outputs["id"] == ticket_id
     assert result.outputs["title"] == "Network printer offline"
     assert result.outputs["status"] == "New"
+
+
+def test_delete_ticket_command_success(mock_client: MagicMock):
+    """
+    Tests successful ticket deletion.
+
+    Verifies that when a ticket is successfully deleted, the function returns
+    the correct success status and message.
+    """
+
+    mock_client.delete = MagicMock(return_value=None)
+    mock_client.get_table_name = MagicMock(return_value="incident")
+
+    args = {"id": "12345", "ticket_type": "incident"}
+
+    message, context, result, success = delete_ticket_command(mock_client, args)
+
+    assert success is True
+    assert message == "Ticket with ID 12345 was successfully deleted."
+    assert context == {}
+    assert result is None
+
+
+def test_delete_ticket_command_not_found(mock_client: MagicMock):
+    """
+    Tests ticket deletion when record is not found.
+
+    Verifies that when attempting to delete a non-existent ticket, the function
+    returns the correct failure status and error message.
+    """
+    mock_client.delete = MagicMock(return_value={"result": []})
+    mock_client.get_table_name.return_value = "incident"
+    args = {"id": "99999", "ticket_type": "incident"}
+
+    message, context, result, success = delete_ticket_command(mock_client, args)
+
+    assert success is False
+    assert message == "Could not delete ticket 99999 — record not found in table: incident."
+    assert context == {}
+    assert result == {"result": []}

@@ -1576,8 +1576,11 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
+    demisto.debug(f"Ticket deletion result: {result}")
+    if result is None:
+        return f"Ticket with ID {ticket_id} was successfully deleted.", {}, result, True
 
-    return f"Ticket with ID {ticket_id} was successfully deleted.", {}, result, True
+    return f"Could not delete ticket {ticket_id} — record not found in table: {ticket_type}.", {}, result, False
 
 
 def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
