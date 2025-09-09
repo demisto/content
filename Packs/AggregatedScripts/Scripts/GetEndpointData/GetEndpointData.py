@@ -197,9 +197,9 @@ def get_endpoint_not_found(
     """
     zipped_args = list(
         zip_longest(
-            endpoint_args.get("endpoint_id", "").split(","),
-            endpoint_args.get("endpoint_ip", "").split(","),
-            endpoint_args.get("endpoint_hostname", "").split(","),
+            endpoint_args["endpoint_id"].split(","),
+            endpoint_args["endpoint_ip"].split(","),
+            endpoint_args["endpoint_hostname"].split(","),
             fillvalue="",
         )
     )
@@ -966,18 +966,18 @@ def add_endpoint_to_mapping(endpoints: list[dict[str, Any]], ir_mapping: dict[st
         ir_mapping[endpoint["ID"]] = endpoint
 
 
-def get_extended_hostnames_set(ir_endpoints: dict[str, Any]) -> set[str]:
+def get_extended_hostnames_set(Ir_endpoints: dict[str, Any]) -> set[str]:
     """
     Retrieves a set of extended hostnames from the endpoint mappings.
 
     Args:
-        ir_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
+        Ir_endpoints (dict[str, Any]): A dictionary of endpoint mappings.
 
     Returns:
         set[str]: Set of extended hostnames.
     """
     hostnames = set()
-    for endpoint in ir_endpoints.values():
+    for endpoint in Ir_endpoints.values():
         hostnames.add(endpoint["Hostname"])
     return hostnames
 
