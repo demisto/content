@@ -542,10 +542,6 @@ class AggregatedCommand(ABC):
         self.commands = commands
         self.brand_manager = BrandManager(brands)
 
-    @abstractmethod
-    def validate_input(self):
-        """Validate the input arguments."""
-
     @cached_property
     def unsupported_enrichment_brands(self) -> list[str]:
         """Returns a list of brands that are not enabled but are required for external enrichment."""
@@ -600,7 +596,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         verbose_outputs: list[str] = []
 
         demisto.debug("Step 1: Validating input.")
-        self.validate_input()
+        self.extract_input()
 
         demisto.debug("Step 2: Executing batch commands.")
         commands_to_execute = self.prepare_commands_batches(self.external_enrichment)
@@ -628,43 +624,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
         demisto.debug("Step 5: Summarizing command results.")
         return self.summarize_command_results(tim_entry + entry_results, verbose_outputs, final_context)
-
-    def validate_input(self) -> None:
-        """
-        Validate the provided `self.data` list to ensure all items are valid indicators
-        of the configured `self.indicator.type`.
-        Use `extractIndicators` command to validate the input.
-        Raises:
-            DemistoException | ValueError
-        """
-        if not self.data:
-            raise ValueError("No data provided to enrich")
-
-        demisto.debug("Validating input using extract indicator")
-        results = execute_command("extractIndicators", {"text": ",".join(self.data)}, extract_contents=False)
-
-        if not results:
-            raise DemistoException("Failed to Validate input using extract indicator.")
-
-        result_context = results[0].get("EntryContext", {}).get("ExtractedIndicators", {})
-        demisto.debug(f"Result context: {result_context}")
-        extracted_indictaors = set(
-            next(
-                (
-                    indicators
-                    for indicator_type, indicators in result_context.items()
-                    if indicator_type.lower() == self.indicator.type.lower()
-                ),
-                [],
-            )
-        )
-
-        demisto.debug(f"Extracted indicators: {extracted_indictaors}")
-        if set(self.data) != extracted_indictaors:
-            invalid_indicators = set(self.data) - extracted_indictaors
-            raise ValueError(f"{invalid_indicators} are not valid {self.indicator.type}")
-
-        demisto.debug("Input is valid")
 
     def prepare_commands_batches(self, external_enrichment: bool = False) -> list[list[Command]]:
         """
@@ -700,6 +659,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 else:
                     demisto.debug(f"Command {command} didn't satisfy execution policy. Skipping.")
             prepared_commands.append(current_command_list)
+        
         return prepared_commands
 
     def get_indicators_from_tim(self) -> tuple[ContextResult, list[EntryResult]]:
@@ -723,7 +683,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         tim_context, result_entries = self.process_tim_results(iocs)
         return tim_context, result_entries
 
-    def search_indicators_in_tim(self) -> tuple[list[ContextResult], Status, str]:
+    def search_indicators_in_tim_v2(self) -> tuple[list[ContextResult], Status, str]:
         """
         Performs the actual search against TIM using the IndicatorsSearcher class.
         Returns:
@@ -739,6 +699,28 @@ class ReputationAggregatedCommand(AggregatedCommand):
             return [], Status.FAILURE, results
         demisto.debug("Found indicators in TIM.")
         return results, Status.SUCCESS, "No matching indicators found." if not results else ""
+    
+    def search_indicators_in_tim(self) -> tuple[list[ContextResult], Status, str]:
+        """
+        Performs the actual search against TIM using the IndicatorsSearcher class.
+        Returns:
+            tuple[list[ContextResult], Status, str]: The search results, status and message.
+        """
+        demisto.debug(f"Searching TIM for {self.indicator.type} indicators: {self.data}")
+        indicators = " or ".join({f"value:{indicator}" for indicator in self.data})
+        query = f"type:{self.indicator.type} and ({indicators})"
+        try:
+            demisto.debug(f"Executing TIM search with query: {query}")
+            searcher = IndicatorsSearcher(query=query, size=len(self.data))
+            iocs = flatten_list([res.get("iocs", []) for res in searcher])
+            demisto.debug(f"TIM search returned {len(iocs)} raw IOCs.")
+
+            if not iocs:
+                return iocs, Status.SUCCESS, "No matching indicators found."
+            return iocs, Status.SUCCESS, ""
+        except Exception as e:
+            demisto.debug(f"Error searching TIM: {e}\n{traceback.format_exc()}")
+            return [], Status.FAILURE, str(e)
 
     def process_tim_results(self, iocs: list[dict[str, Any]]) -> tuple[ContextResult, list[EntryResult]]:
         """Processes raw IOCs from a TIM search into structured context.
@@ -1148,7 +1130,39 @@ def set_dict_value(d: dict[str, Any], path: str, value: Any) -> None:
     else:
         current[last_part] = value
 
+def extract_indicators(data:list[str], type:str) -> list[str]:
+    """
+    Validate the provided `self.data` list to ensure all items are valid indicators
+    of the configured `self.indicator.type`.
+    Use `extractIndicators` command to validate the input.
+    Raises:
+        DemistoException | ValueError
+    """
+    if not data:
+        raise ValueError("No data provided to enrich")
 
+    demisto.debug("Validating input using extract indicator")
+    results = execute_command("extractIndicators", {"text": ",".join(data)}, extract_contents=False)
+
+    if not results:
+        raise DemistoException("Failed to Validate input using extract indicator.")
+
+    result_context = results[0].get("EntryContext", {}).get("ExtractedIndicators", {})
+    demisto.debug(f"Result context: {result_context}")
+    extracted_indicators = set(
+        next(
+            (
+                indicators
+                for indicator_type, indicators in result_context.items()
+                if indicator_type.lower() == type.lower()
+            ),
+            [],
+        )
+    )
+    if not extracted_indicators:
+        raise ValueError("No valid indicators found in the input data.")
+    return list(extracted_indicators)
+        
 def pop_dict_value(d: dict[str, Any], path: str) -> Any:
     """
     Retrieves a value from a nested dictionary given a ".." separated path.

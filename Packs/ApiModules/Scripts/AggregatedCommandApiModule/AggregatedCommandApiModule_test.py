@@ -879,30 +879,35 @@ def test_unsupported_enrichment_brands_various(
 
 # --- Validation Tests ---
 @pytest.mark.parametrize(
-    "data, indicator_type, extracted",
+    "data, indicator_type, extracted, expected_set",
     [
         # Exact match
-        (["https://a.com"], "URL", {"URL": ["https://a.com"]}),
+        (["https://a.com"], "URL", {"URL": ["https://a.com"]}, {"https://a.com"}),
         # Case-insensitive type
-        (["https://a.com"], "url", {"URL": ["https://a.com"]}),
-        # Duplicates in input are OK (compare as sets)
-        (["https://a.com", "https://b.com", "https://b.com"], "URL", {"URL": ["https://a.com", "https://b.com"]}),
-        # Irrelevant types can be present; we only compare the requested type
-        (["https://a.com"], "URL", {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}),
+        (["https://a.com"], "url", {"URL": ["https://a.com"]}, {"https://a.com"}),
+        # Duplicates in input are OK → output is the deduped extracted set
+        (["https://a.com", "https://b.com", "https://b.com"], "URL",
+         {"URL": ["https://a.com", "https://b.com"]}, {"https://a.com", "https://b.com"}),
+        # Irrelevant types can be present; we only take the requested type
+        (["https://a.com"], "URL",
+         {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}, {"https://a.com"}),
     ],
 )
-def test_validate_input_success(module_factory, mocker, data, indicator_type, extracted):
+def test_extract_input_success_sets_data(module_factory, mocker, data, indicator_type, extracted, expected_set):
     """
     Given:
-        - Different data and result from extract_indicators.
+        - Different input lists and extractIndicators outputs.
     When:
-        - Calling `validate_input`.
+        - Calling extract_input.
     Then:
-        - Should not raise.
+        - self.data is replaced with the deduped extracted set for the requested type.
+        - No exception is raised.
     """
     mocker.patch(
-        "AggregatedCommandApiModule.execute_command", return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}]
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
     )
+
     inst = module_factory(
         data=data,
         indicator=Indicator(
@@ -910,35 +915,35 @@ def test_validate_input_success(module_factory, mocker, data, indicator_type, ex
         ),
     )
 
-    # Should not raise
-    inst.validate_input()
+    inst.extract_input()
+    assert set(inst.data) == expected_set
 
 
 @pytest.mark.parametrize(
-    "data, indicator_type, extracted, missing",
+    "data, indicator_type, extracted",
     [
-        # Partial extraction: one of the inputs wasn't extracted
-        (["https://a.com", "https://b.com"], "URL", {"URL": ["https://a.com"]}, {"https://b.com"}),
         # No key for the requested type at all
-        (["https://a.com"], "URL", {"Domain": ["a.com"]}, {"https://a.com"}),
-        # Extracted different type entirely
-        (["https://a.com"], "url", {"IP": ["1.2.3.4"]}, {"https://a.com"}),
-        # Empty extracted set
-        (["https://a.com", "https://b.com"], "URL", {}, {"https://a.com", "https://b.com"}),
+        (["https://a.com"], "URL", {"Domain": ["a.com"]}),
+        # Requested key present but empty
+        (["https://a.com", "https://b.com"], "URL", {"URL": []}),
+        # Completely empty extraction
+        (["https://a.com", "https://b.com"], "URL", {}),
     ],
 )
-def test_validate_input_raises_on_mismatch(module_factory, mocker, data, indicator_type, extracted, missing):
+def test_extract_input_raises_when_no_valid_indicators(module_factory, mocker, data, indicator_type, extracted):
     """
     Given:
-        - Different data and result from extract_indicators.
+        - extractIndicators returns no items for the requested indicator type.
     When:
-        - Calling `validate_input`.
+        - Calling extract_input.
     Then:
-        - Should raise ValueError.
+        - Raises ValueError("No valid indicators found in the input data.").
     """
     mocker.patch(
-        "AggregatedCommandApiModule.execute_command", return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}]
+        "AggregatedCommandApiModule.execute_command",
+        return_value=[{"EntryContext": {"ExtractedIndicators": extracted}}],
     )
+
     inst = module_factory(
         data=data,
         indicator=Indicator(
@@ -946,14 +951,30 @@ def test_validate_input_raises_on_mismatch(module_factory, mocker, data, indicat
         ),
     )
 
-    with pytest.raises(ValueError) as excinfo:
-        inst.validate_input()
+    with pytest.raises(ValueError, match="No valid indicators found in the input data"):
+        inst.extract_input()
 
-    msg = str(excinfo.value)
-    # Error mentions each missing item and the type
-    for item in missing:
-        assert item in msg
-    assert indicator_type.lower() in msg.lower()
+
+def test_extract_input_raises_on_empty_execute_command_result(module_factory, mocker):
+    """
+    Given:
+        - execute_command('extractIndicators', ...) returns a falsy/empty result.
+    When:
+        - Calling extract_input.
+    Then:
+        - Raises DemistoException with a validation failure message.
+    """
+    mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[])
+
+    inst = module_factory(
+        data=["https://a.com"],
+        indicator=Indicator(
+            type="URL", value_field="Value", context_path_prefix="Indicator(", context_output_mapping={}
+        ),
+    )
+
+    with pytest.raises(DemistoException, match="Failed to Validate input using extract indicator"):
+        inst.extract_input()
 
 
 # --- Prepare Commands Tests ---
@@ -1240,72 +1261,85 @@ def test_process_single_tim_ioc(
 def test_search_indicators_in_tim_exception_path(module_factory, mocker):
     """
     Given:
-        - The 'findIndicators' command execution fails.
+        - IndicatorsSearcher raises an exception during construction/iteration.
     When:
         - Calling search_indicators_in_tim.
     Then:
-        - Returns empty IOCs, a FAILURE status, and the error message from the command.
+        - Returns empty IOCs, a FAILURE status, and the exception message.
     """
     mod = module_factory()
     mod.data = ["example.com"]
+
+    # Make IndicatorsSearcher blow up
     mocker.patch(
-        "AggregatedCommandApiModule.execute_command",
-        return_value=(False, "Failed to execute findIndicators")
+        "AggregatedCommandApiModule.IndicatorsSearcher",
+        side_effect=Exception("Failed to search TIM"),
     )
 
     iocs, status, msg = mod.search_indicators_in_tim()
 
     assert iocs == []
     assert status == Status.FAILURE
-    assert msg == "Failed to execute findIndicators"
+    assert msg == "Failed to search TIM"
 
 
 @pytest.mark.parametrize(
-    "data, mock_command_result, expected_iocs, expected_msg",
+    "data, pages, expected_iocs, expected_msg",
     [
-        # Scenario 1: Command succeeds but finds no matching indicators
+        # Scenario 1: Search succeeds but finds no matching indicators
         (
             ["a.com", "b.com"],
-            (True, []),
+            [{"iocs": []}],  # iterable yields one page with no iocs
             [],
-            "No matching indicators found."
+            "No matching indicators found.",
         ),
-        # Scenario 2: Command succeeds and finds indicators
+        # Scenario 2: Search succeeds and finds indicators (across multiple pages)
         (
             ["a.com", "b.com"],
-            (True, [{"value": "a.com"}, {"value": "b.com"}]),
+            [{"iocs": [{"value": "a.com"}]}, {"iocs": [{"value": "b.com"}]}],
             [{"value": "a.com"}, {"value": "b.com"}],
-            ""
+            "",
         ),
     ],
 )
-def test_search_indicators_in_tim_success(
-    module_factory, mocker, data, mock_command_result, expected_iocs, expected_msg
-):
+def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, expected_iocs, expected_msg):
     """
     Given:
         - A list of indicator values to search for.
     When:
         - Calling the search_indicators_in_tim method.
     Then:
-        - Ensure it calls 'execute_command' with the correct 'findIndicators' query.
-        - Ensure it returns the correct IOCs, status, and message based on the command's result.
+        - It constructs IndicatorsSearcher with the correct query/size.
+        - It flattens 'iocs' from pages and returns expected results/message.
     """
     mod = module_factory()
     mod.data = data
-
     mod.indicator.type = "URL"
-    mock_exec = mocker.patch("AggregatedCommandApiModule.execute_command", return_value=mock_command_result)
 
+    captured = {}
+
+    def _searcher_ctor(*args, **kwargs):
+        captured["query"] = kwargs.get("query")
+        captured["size"] = kwargs.get("size")
+        class _Searcher:
+            def __iter__(self_inner):
+                return iter(pages)
+        return _Searcher()
+
+    searcher_mock = mocker.patch(
+        "AggregatedCommandApiModule.IndicatorsSearcher",
+        side_effect=_searcher_ctor,
+    )
     iocs, status, msg = mod.search_indicators_in_tim()
 
-    mock_exec.assert_called_once()
-    args, kwargs = mock_exec.call_args
-    assert args[0] == "findIndicators"
-    query = args[1].get("query")
-    assert f"type:{mod.indicator.type}" in query
+    assert searcher_mock.call_count == 1
+    assert isinstance(captured.get("size"), int)
+    assert captured["size"] == len(data)
+
+    q = captured.get("query", "")
+    assert f"type:{mod.indicator.type}" in q
     for val in data:
-        assert f"value:{val}" in query
+        assert f"value:{val}" in q
 
     assert iocs == expected_iocs
     assert status == Status.SUCCESS
