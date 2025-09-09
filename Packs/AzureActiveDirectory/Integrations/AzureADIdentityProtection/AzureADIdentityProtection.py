@@ -8,6 +8,8 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
+INTEGRATION_NAME = 'Azure Active Directory Identity and Access'
+
 OUTPUTS_PREFIX = "AADIdentityProtection"
 BASE_URL = 'https://graph.microsoft.com/beta'
 REQUIRED_PERMISSIONS = (
