@@ -34,6 +34,8 @@ def ip_enrichment_script(
           - DBotScore: [...]
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
+    ip_list = extract_indicators(ip_list,"ip")
+    
     indicator_mapping = {
         "Address": "Address",
         "Source": "Source",
@@ -52,22 +54,21 @@ def ip_enrichment_script(
 
     create_new_indicator_commands = [
         Command(
-            name="createNewIndicator",
-            args={"value": ip, "type": "IP"},
+            name="CreateNewIndicatorsOnly",
+            args={"indicator_values": ip_list, "type": "IP"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
         )
-        for ip in ip_list
     ]
 
+    # External Enrichment
     enrich_indicator_commands = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": ip},
+            args={"indicatorsValues": ip_list},
             command_type=CommandType.EXTERNAL,
         )
-        for ip in ip_list
     ]
 
     # Internal Commands
@@ -88,9 +89,6 @@ def ip_enrichment_script(
         ),
     ]
 
-    # Run in two batches:
-    #   1) createNewIndicator
-    #   2) internal core lookups + external enrichment
     commands: list[list[Command]] = [
         create_new_indicator_commands,
         internal_core_commands + enrich_indicator_commands,

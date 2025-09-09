@@ -14,6 +14,8 @@ def cve_enrichment_script(
     """
     Enriches CVE data with information from various integrations.
     """
+    cve_list = extract_indicators(cve_list,"cve")
+    
     indicator_mapping = {
         "ID": "ID",
         "Brand": "Brand",
@@ -32,23 +34,21 @@ def cve_enrichment_script(
     # --- Batch 1: create indicators (BUILTIN) ---
     create_new_indicator_commands = [
         Command(
-            name="createNewIndicator",
-            args={"value": cve, "type": "CVE"},
+            name="CreateNewIndicatorsOnly",
+            args={"indicator_values": cve_list, "type": "CVE"},
             command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,  # never inject using-brand for server builtins
         )
-        for cve in cve_list
     ]
 
     # --- Batch 2: external enrichment per CVE ---
     enrich_indicator_commands = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": cve},
+            args={"indicatorsValues": cve_list},
             command_type=CommandType.EXTERNAL,
         )
-        for cve in cve_list
     ]
 
     # commands is a list of *batches* (each batch is list[Command])

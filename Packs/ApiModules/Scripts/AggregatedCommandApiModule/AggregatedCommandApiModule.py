@@ -595,9 +595,6 @@ class ReputationAggregatedCommand(AggregatedCommand):
         entry_results: list[EntryResult] = []
         verbose_outputs: list[str] = []
 
-        demisto.debug("Step 1: Validating input.")
-        self.extract_input()
-
         demisto.debug("Step 2: Executing batch commands.")
         commands_to_execute = self.prepare_commands_batches(self.external_enrichment)
         if commands_to_execute:

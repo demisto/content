@@ -14,7 +14,7 @@ def domain_enrichment_script(
     """
     Enriches Domain data with information from various integrations.
     """
-
+    domain_list = extract_indicators(domain_list,"domain")
     # Mapping for the final indicator objects (what you want to surface on each result)
     indicator_mapping = {
         "Name": "Name",
@@ -34,13 +34,11 @@ def domain_enrichment_script(
     # --- Batch 1: create indicators (BUILTIN) ---
     create_new_indicator_commands = [
         Command(
-            name="createNewIndicator",
-            args={"value": domain, "type": "Domain"},
-            command_type=CommandType.BUILTIN,
+            name="CreateNewIndicatorsOnly",
+            args={"indicator_values": domain_list, "type": "Domain"},
             context_output_mapping=None,
-            ignore_using_brand=True,  # never inject using-brand for server builtins
+            ignore_using_brand=True,
         )
-        for domain in domain_list
     ]
 
     # --- Batch 2: internal analytics + external enrichment ---

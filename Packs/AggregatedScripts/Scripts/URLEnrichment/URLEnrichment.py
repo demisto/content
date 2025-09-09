@@ -39,8 +39,6 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
         Command(
             name="CreateNewIndicatorsOnly",
             args={"indicator_values": url_list, "type": "URL"},
-            brand="Builtin",
-            command_type=CommandType.BUILTIN,
             context_output_mapping=None,
             ignore_using_brand=True,
         )
@@ -48,10 +46,9 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
     enrich_indicator_commands = [
         Command(
             name="enrichIndicators",
-            args={"indicatorsValues": url},
+            args={"indicatorsValues": url_list},
             command_type=CommandType.EXTERNAL,
         )
-        for url in url_list
     ]
 
     commands = [create_new_indicator_commands, enrich_indicator_commands]
