@@ -4,6 +4,8 @@ from CommonServerPython import *
 
 a = 5
 demisto.debug(a)
+
+
 def main():
     # check if we have any users on call to assign to
     users_on_call = demisto.executeCommand("getUsers", {"onCall": "true"})
