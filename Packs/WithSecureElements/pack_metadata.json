@@ -1,0 +1,21 @@
+{
+    "name": "WithSecure Elements",
+    "description": "This integration has been developed by Thibault Renard and Franck Verstraete. This contribution does not intend to replace partner contribution (coming soon), only here for testing purposes.\n\n⚠️ Unofficial Community Integration\n\nDisclaimer\nIMPORTANT NOTICE: This integration is a personal development project and is NOT an official product developed, maintained, or endorsed by WithSecure Corporation or its subsidiaries. This integration is provided \"as-is\" without any warranties, express or implied.\n\nLegal Disclaimer\nNo Warranty: This software is provided without warranty of any kind, either express or implied, including but not limited to the implied warranties of merchantability, fitness for a particular purpose, or non-infringement.\n\nNo Liability: In no event shall the authors, contributors, or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.\n\nNo Official Support: This integration does not come with official support from WithSecure Corporation. Users implement this integration at their own risk and responsibility.\n\nIndependent Development: This integration was developed independently and is not affiliated with, sponsored by, or endorsed by WithSecure Corporation.\n\nUser Responsibility: Users are solely responsible for testing, validating, and ensuring the integration meets their security and operational requirements before deployment in production environments.\n\nAPI Terms: Use of this integration is subject to WithSecure Elements API terms of service and usage policies. Users must ensure compliance with all applicable terms and conditions.\n\nRecommendations\nThoroughly test the integration in a non-production environment before deployment\n\nRegularly review and update the integration to ensure compatibility with API changes\n\nImplement appropriate monitoring and error handling in your XSOAR environment\n\nMaintain backups and rollback procedures\n\nBy using this integration, you acknowledge that you have read, understood, and agreed to these terms and conditions.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Thibault Renard, Franck Verstraete",
+    "url": "",
+    "email": "",
+    "created": "2025-09-09T12:32:50Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Riderphoenix974"
+    ]
+}
