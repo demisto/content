@@ -1,22 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-from typing import Any, Dict, Optional
-
-import demistomock as demisto
 import urllib3
 from bs4 import BeautifulSoup
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -29,19 +10,13 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 CONTEXT_KEY = "CyberArkEPMARR_Context"
+RISK_PLAN_ACTION_ADD = "add"
+RISK_PLAN_ACTION_REMOVE = "remove"
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
 
     def __init__(
         self,
@@ -78,9 +53,8 @@ class Client(BaseClient):
         }
         result = self._http_request("POST", url_suffix="/EPM/API/Auth/EPM/Logon", json_data=data)
 
-        # TODO: reinstate after local testing
-        # if result.get("IsPasswordExpired"):
-        #     return_error("CyberArk is reporting that the user password is expired. Terminating script.")
+        if result.get("IsPasswordExpired"):
+            return_error("CyberArk is reporting that the user password is expired. Terminating script.")
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
@@ -167,15 +141,26 @@ def add_endpoint_to_group(endpoint_id: str, endpoint_group_id: str, client: Clie
     url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids"
     client._http_request("POST", url_suffix=url_suffix, json_data=data)
 
+
+def remove_endpoint_from_group(endpoint_id: str, endpoint_group_id: str, client: Client) -> None:
+    data = {
+        "membersIds": [endpoint_id]
+    }
+    context = get_integration_context().get(CONTEXT_KEY, {})
+    set_id = context.get("set_id")
+    url_suffix = f"Sets/{set_id}/Endpoints/Groups/{endpoint_group_id}/Members/ids/remove"
+    client._http_request("post", url_suffix=url_suffix, json_data=data)
+
 """ COMMAND FUNCTIONS """
 
 
-def activate_risk_plan_command(
+def change_risk_plan_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
     risk_plan = args.get("risk_plan")
     endpoint_name = args.get("endpoint_name")
     external_ip = args.get("external_ip")
+    action = args.get("action", RISK_PLAN_ACTION_ADD)
 
     if not risk_plan:
         return_error("Risk plan is required")
@@ -196,11 +181,16 @@ def activate_risk_plan_command(
         return_error(f"No Endpoint Group not found matching the name: {risk_plan}")
 
     for endpoint_id in endpoint_ids:
-        add_endpoint_to_group(endpoint_id, endpoint_group_id, client)
+        if action == RISK_PLAN_ACTION_ADD:
+            add_endpoint_to_group(endpoint_id, endpoint_group_id, client)
+        elif action == RISK_PLAN_ACTION_REMOVE:
+            remove_endpoint_from_group(endpoint_id, endpoint_group_id, client)
+        else:
+            return_error(f"Invalid action: {action}")
 
-    human_readable = tableToMarkdown(name="Endpoints Added to Risk Plan",
-                                     t={"Endpoint IDs": endpoint_ids, "Risk Plan": risk_plan},
-                                     headers=["Endpoint ID", "Risk Plan"])
+    human_readable = tableToMarkdown(name="Risk Plan changed successfully",
+                                     t={"Endpoint IDs": ",".join(endpoint_ids), "Risk Plan": risk_plan, "Action": action},
+                                     headers=["Endpoint IDs", "Risk Plan", "Action"])
     return CommandResults(
         readable_output=human_readable,
         raw_response=endpoint_ids,
@@ -239,10 +229,13 @@ def main():
         )
         args = demisto.args()
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
         elif command == "cyberarkepm-activate-risk-plan":
-            result = activate_risk_plan_command(client, args)
+            args["action"] = RISK_PLAN_ACTION_ADD
+            result = change_risk_plan_command(client, args)
+        elif command == "cyberarkepm-deactivate-risk-plan":
+            args["action"] = RISK_PLAN_ACTION_REMOVE
+            result = change_risk_plan_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
         return_results(
