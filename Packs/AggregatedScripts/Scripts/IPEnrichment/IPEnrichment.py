@@ -34,8 +34,8 @@ def ip_enrichment_script(
           - DBotScore: [...]
           - passthrough results (e.g., Core endpoint data, prevalence)
     """
-    ip_list = extract_indicators(ip_list,"ip")
-    
+    ip_list = extract_indicators(ip_list, "ip")
+
     indicator_mapping = {
         "Address": "Address",
         "Source": "Source",

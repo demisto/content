@@ -14,7 +14,7 @@ def domain_enrichment_script(
     """
     Enriches Domain data with information from various integrations.
     """
-    domain_list = extract_indicators(domain_list,"domain")
+    domain_list = extract_indicators(domain_list, "domain")
     # Mapping for the final indicator objects (what you want to surface on each result)
     indicator_mapping = {
         "Name": "Name",

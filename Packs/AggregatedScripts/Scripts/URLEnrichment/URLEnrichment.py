@@ -8,8 +8,8 @@ def url_enrichment_script(url_list, external_enrichment=False, verbose=False, en
     """
     Enriches URL data with information from various integrations
     """
-    url_list = extract_indicators(url_list,"url")
-    
+    url_list = extract_indicators(url_list, "url")
+
     indicator_mapping = {
         "Data": "Data",
         "DetectionEngines": "DetectionEngines",

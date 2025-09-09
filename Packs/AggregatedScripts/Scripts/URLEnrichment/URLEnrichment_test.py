@@ -1,14 +1,11 @@
 import json
-import pytest
 import demistomock as demisto
-from CommonServerPython import Common
 from URLEnrichment import url_enrichment_script
 
 
 def util_load_json(path: str):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
-
 
 
 # End-to-end test with TIM + batches (WildFire + enrichIndicators side effect)
@@ -134,4 +131,3 @@ def test_url_enrichment_script_end_to_end_with_files(mocker):
     assert ex1["MaxScore"] == 3
     assert ex1["MaxVerdict"] == "Malicious"
     assert ex1["TIMScore"] == 3
-

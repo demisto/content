@@ -14,8 +14,8 @@ def cve_enrichment_script(
     """
     Enriches CVE data with information from various integrations.
     """
-    cve_list = extract_indicators(cve_list,"cve")
-    
+    cve_list = extract_indicators(cve_list, "cve")
+
     indicator_mapping = {
         "ID": "ID",
         "Brand": "Brand",

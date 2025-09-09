@@ -1,7 +1,5 @@
 import json
-import pytest
 import demistomock as demisto
-from CommonServerPython import Common
 from DomainEnrichment import domain_enrichment_script  # <-- adjust if your file name differs
 
 

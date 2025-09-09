@@ -2,8 +2,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException, entryTypes, Common
 from AggregatedCommandApiModule import *
-from datetime import datetime, timedelta, timezone
-
+from datetime import datetime, timedelta, UTC
 
 
 # =================================================================================================
@@ -116,6 +115,7 @@ def module_factory():
 # == Unit Tests
 # =================================================================================================
 
+
 # -------------------------------------------------------------------------------------------------
 # -- Level 1: Standalone Helper Functions
 # -------------------------------------------------------------------------------------------------
@@ -128,11 +128,14 @@ def module_factory():
         # Case-insensitive type
         (["https://a.com"], "url", {"URL": ["https://a.com"]}, {"https://a.com"}),
         # Duplicates in input are OK → output is the deduped extracted set
-        (["https://a.com", "https://b.com", "https://b.com"], "URL",
-         {"URL": ["https://a.com", "https://b.com"]}, {"https://a.com", "https://b.com"}),
+        (
+            ["https://a.com", "https://b.com", "https://b.com"],
+            "URL",
+            {"URL": ["https://a.com", "https://b.com"]},
+            {"https://a.com", "https://b.com"},
+        ),
         # Irrelevant types can be present; we only take the requested type
-        (["https://a.com"], "URL",
-         {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}, {"https://a.com"}),
+        (["https://a.com"], "URL", {"URL": ["https://a.com"], "Domain": ["irrelevant.com"]}, {"https://a.com"}),
     ],
 )
 def test_extract_input_success_sets_data(mocker, data, indicator_type, extracted, expected_set):
@@ -193,9 +196,9 @@ def test_extract_input_raises_on_empty_execute_command_result(mocker):
     """
     mocker.patch("AggregatedCommandApiModule.execute_command", return_value=[])
 
-
     with pytest.raises(DemistoException, match="Failed to Validate input using extract indicator"):
         extract_indicators(["https://a.com"], "url")
+
 
 @pytest.mark.parametrize(
     "dict1, dict2, expected",
@@ -954,6 +957,7 @@ def test_unsupported_enrichment_brands_various(
 # -- Level 6: ReputationAggregatedCommand
 # -------------------------------------------------------------------------------------------------
 
+
 # --- Prepare Commands Tests ---
 @pytest.mark.parametrize(
     "requested_brands, external_enrichment, expected_names",
@@ -991,6 +995,7 @@ def test_prepare_commands_various(module_factory, requested_brands, external_enr
 
     assert {c.name for c in flattened} == expected_names
 
+
 def test_prepare_commands_includes_builtin(module_factory):
     """
     Given:
@@ -1001,11 +1006,11 @@ def test_prepare_commands_includes_builtin(module_factory):
         - The builtin command is included in the first batch.
     """
     cmd_bi = Command(name="createNewIndicator", command_type=CommandType.BUILTIN)
-    module = module_factory(commands=[[cmd_bi]], brands=["Whatever"], indicator=Indicator("url","Data","URL(",{}) )
+    module = module_factory(commands=[[cmd_bi]], brands=["Whatever"], indicator=Indicator("url", "Data", "URL(", {}))
     batches = module.prepare_commands_batches(external_enrichment=False)
     assert any(c.name == "createNewIndicator" for c in batches[0])
-    
-    
+
+
 @pytest.mark.parametrize(
     "result_tuple, mock_mapped_context_return, expected_entry_status, expected_entry_msg",
     [
@@ -1084,7 +1089,6 @@ def test_process_single_command_result(
         assert mapped_ctx == {}
 
 
-
 # -- TIM Logic --
 @pytest.mark.parametrize(
     "iocs,status,message",
@@ -1157,7 +1161,6 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
     assert entries is expected_entries
 
 
-
 @pytest.mark.parametrize(
     "ioc_input, mock_tim_indicator_return, mock_parse_indicator_side_effect, expected_indicators, expected_entry_msg",
     [
@@ -1199,7 +1202,7 @@ def test_get_indicators_from_tim_success_passthrough(module_factory, mocker):
         ),
         (
             build_ioc(value="nothing.here", scores={}),
-            None, # create_tim_indicator returns None
+            None,  # create_tim_indicator returns None
             {},
             # FIX: The original code still appends None to the list.
             [None],
@@ -1311,9 +1314,11 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
 
     def _searcher_ctor(*args, **kwargs):
         captured["query"] = kwargs.get("query")
+
         class _Searcher:
             def __iter__(self_inner):
                 return iter(pages)
+
         return _Searcher()
 
     searcher_mock = mocker.patch(
@@ -1332,6 +1337,7 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
     assert iocs == expected_iocs
     assert status == Status.SUCCESS
     assert msg == expected_msg
+
 
 def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
     """
@@ -1356,6 +1362,7 @@ def test_create_tim_indicator_uses_score_and_status(module_factory, mocker):
         "Score": 2,
         "Status": IndicatorStatus.FRESH.value,
     }
+
 
 @pytest.mark.parametrize(
     "has_manual, modified_mode, expected_status",
@@ -1384,7 +1391,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
         - Else STALE (including invalid/no modifiedTime).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     def iso(dt: datetime) -> str:
         # Code under test accepts 'Z' or '+00:00'; it replaces Z → +00:00, so we emit 'Z' here.
@@ -1407,6 +1414,7 @@ def test_get_indicator_status_from_ioc_various(module_factory, has_manual, modif
     status = mod.get_indicator_status_from_ioc(ioc)
     assert status == expected_status
 
+
 def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory):
     """
     Given:
@@ -1417,11 +1425,12 @@ def test_get_indicator_status_from_ioc_boundary_freshness_window(module_factory)
         - Returns FRESH at the boundary (minus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW + timedelta(hours=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
     assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.FRESH
+
 
 def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
     """
@@ -1433,12 +1442,13 @@ def test_get_indicator_status_from_ioc_boundary_stale(module_factory):
         - Returns STALE at the boundary (plus 1 second).
     """
     mod = module_factory()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     boundary_time = now - STATUS_FRESHNESS_WINDOW - timedelta(seconds=1)
 
     ioc = {"modifiedTime": boundary_time.isoformat().replace("+00:00", "Z")}
     assert mod.get_indicator_status_from_ioc(ioc) == IndicatorStatus.STALE
-    
+
+
 # --- Summarize Command Results Tests ---
 @pytest.mark.parametrize(
     "entries, expect_error",

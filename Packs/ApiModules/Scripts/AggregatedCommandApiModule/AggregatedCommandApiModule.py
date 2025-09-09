@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
@@ -36,15 +36,19 @@ SEVERITY_ORDER = ["None", "Low", "Medium", "High", "Critical"]
 
 class Status(Enum):
     """Enum for command status."""
+
     SUCCESS = "Success"
     FAILURE = "Failure"
 
+
 class IndicatorStatus(Enum):
     """Enum for indicator status."""
+
     FRESH = "Fresh"
     STALE = "Stale"
     MANUAL = "Manual"
-    
+
+
 # --- Core Enumerations and Data Classes ---
 class EntryResult:
     """
@@ -297,7 +301,7 @@ class ContextBuilder:
     def __init__(self, indicator: Indicator, final_context_path: str):
         self.indicator = indicator
         self.final_context_path = final_context_path
-        
+
         self.tim_context: ContextResult = {}
         self.dbot_context: DBotScoreList = []
         self.other_context: ContextResult = {}
@@ -392,11 +396,9 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update({
-                                    "TIMScore": tim_indicator[0].get("Score"),
-                                    "Status": tim_indicator[0].get("Status")})
+                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), "Status": tim_indicator[0].get("Status")})
             indicators = [indicator for indicator in tim_context_result if indicator.get("Brand") != "TIM"]
-            
+
             current_indicator["Results"] = indicators
             results.append(current_indicator)
         return results
@@ -608,9 +610,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             batch_executor = BatchExecutor()
             batch_results = batch_executor.execute_list_of_batches(commands_to_execute, self.brand_manager.to_run, self.verbose)
             if batch_results:
-                context_result, verbose_outputs, entry_results = self.process_batch_results(
-                    batch_results, commands_to_execute
-                )
+                context_result, verbose_outputs, entry_results = self.process_batch_results(batch_results, commands_to_execute)
             else:
                 demisto.debug("No batch results.")
 
@@ -660,7 +660,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
                 else:
                     demisto.debug(f"Skipping command {command} | {command.command_type} | {self.brands}")
             prepared_commands.append(current_command_list)
-        
+
         return prepared_commands
 
     def get_indicators_from_tim(self) -> tuple[ContextResult, list[EntryResult]]:
@@ -683,7 +683,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         demisto.debug(f"Found {len(iocs)} IOCs in TIM. Processing results.")
         tim_context, result_entries = self.process_tim_results(iocs)
         return tim_context, result_entries
-    
+
     def search_indicators_in_tim(self) -> tuple[list[ContextResult], Status, str]:
         """
         Performs the actual search against TIM using the IndicatorsSearcher class.
@@ -782,10 +782,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
         return {
             "Brand": "TIM",
             "Score": ioc.get("score", Common.DBotScore.NONE),
-            "Status": self.get_indicator_status_from_ioc(ioc).value
+            "Status": self.get_indicator_status_from_ioc(ioc).value,
         }
-    
-    
+
     def get_indicator_status_from_ioc(self, ioc: dict) -> IndicatorStatus:
         """
         Determine the status of a dict based on manual edits and modification time.
@@ -959,9 +958,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
         indicator_entries = flatten_list(
             [v for k, v in entry_context.items() if k.startswith(self.indicator.context_path_prefix)]
         )
-        demisto.debug(
-            f"Extracted {len(indicator_entries)} indicators from {brand} entry context."
-        )
+        demisto.debug(f"Extracted {len(indicator_entries)} indicators from {brand} entry context.")
 
         for indicator_data in indicator_entries:
             indicator_value = indicator_data.get(self.indicator.value_field)
@@ -1053,7 +1050,9 @@ class ReputationAggregatedCommand(AggregatedCommand):
 
 
 """HELPER FUNCTIONS"""
-def extract_indicators(data:list[str], type:str) -> list[str]:
+
+
+def extract_indicators(data: list[str], type: str) -> list[str]:
     """
     Validate the provided `self.data` list to ensure all items are valid indicators
     of the configured `self.indicator.type`.
@@ -1074,11 +1073,7 @@ def extract_indicators(data:list[str], type:str) -> list[str]:
     demisto.debug(f"Result context: {result_context}")
     extracted_indicators = set(
         next(
-            (
-                indicators
-                for indicator_type, indicators in result_context.items()
-                if indicator_type.lower() == type.lower()
-            ),
+            (indicators for indicator_type, indicators in result_context.items() if indicator_type.lower() == type.lower()),
             [],
         )
     )
@@ -1155,7 +1150,7 @@ def set_dict_value(d: dict[str, Any], path: str, value: Any) -> None:
     else:
         current[last_part] = value
 
-        
+
 def pop_dict_value(d: dict[str, Any], path: str) -> Any:
     """
     Retrieves a value from a nested dictionary given a ".." separated path.
