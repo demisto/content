@@ -7,8 +7,9 @@ import CommonServerPython
 import pytest
 
 TEST_DATA = "test_data"
+BASE_URL = "http://example.com"
 DESTINATION_ENDPOINT = CommonServerPython.urljoin(
-    CiscoUmbrellaCloudSecurityv2.BASE_URL,
+    BASE_URL,
     CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT,
 )
 
@@ -36,14 +37,14 @@ def mock_client(requests_mock) -> CiscoUmbrellaCloudSecurityv2.Client:
         Client: Mock connection to client.
     """
     requests_mock.post(
-        url=f"{CiscoUmbrellaCloudSecurityv2.BASE_URL}/auth/v2/token",
+        url=f"{BASE_URL}/auth/v2/token",
         json={
             "access_token": "Pichu",
         },
     )
 
     return CiscoUmbrellaCloudSecurityv2.Client(
-        base_url=CiscoUmbrellaCloudSecurityv2.BASE_URL,
+        base_url=BASE_URL,
         api_key="Pikachu",
         api_secret="Riachu",
     )
@@ -423,7 +424,7 @@ def test_get_access_token(requests_mock, mock_client):
     """
 
     response = {"token_type": "bearer", "access_token": "Pichu", "expires_in": 3600}
-    requests_mock.post(url=f"{CiscoUmbrellaCloudSecurityv2.BASE_URL}/auth/v2/token", json=response)
+    requests_mock.post(url=f"{BASE_URL}/auth/v2/token", json=response)
 
     access_token = CiscoUmbrellaCloudSecurityv2.Client.get_access_token(mock_client)
 
