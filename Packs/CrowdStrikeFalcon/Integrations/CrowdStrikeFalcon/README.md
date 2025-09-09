@@ -6030,15 +6030,6 @@ Perform actions on mobile detection alerts.
 
 `cs-falcon-resolve-mobile-detection`
 
-### cs-falcon-resolve-mobile-detection
-
-***
-Perform actions on mobile detection alerts.
-
-#### Base Command
-
-`cs-falcon-resolve-mobile-detection`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -6057,6 +6048,15 @@ Perform actions on mobile detection alerts.
 #### Context Output
 
 There is no context output for this command.
+
+### cs-falcon-list-users
+
+***
+List users.
+
+#### Base Command
+
+`cs-falcon-list-users`
 
 #### Input
 
