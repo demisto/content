@@ -4383,7 +4383,7 @@ Retrieves a piece of content (e.g., page, blogpost) from Confluence Cloud by its
 | ConfluenceCloud.Content.body.storage.value | String | The raw storage-format value of the content body (may contain HTML/XML). |
 | ConfluenceCloud.Content.body.storage.representation | String | The representation format of the body (e.g., storage, view). |
 | ConfluenceCloud.Content.body.storage.embeddedContent | Unknown | A list of embedded content objects in the body. |
-| ConfluenceCloud.Content.body.storage._expandable.content | String | Link to the content resource for the body. |
+| ConfluenceCloud.Content.body.storage._expandable | String | Link to the content resource for the body. |
 | ConfluenceCloud.Content.extensions.position | Number | Position of the content in the page tree or order. |
 | ConfluenceCloud.Content._links.editui | String | Link to edit the content in the UI. |
 | ConfluenceCloud.Content._links.webui | String | Web UI link to the content. |
