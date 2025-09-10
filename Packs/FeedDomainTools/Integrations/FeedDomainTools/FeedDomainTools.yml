@@ -47,6 +47,8 @@ configuration:
   - noh
   - domainrdap
   - domaindiscovery
+  - domainrisk
+  - domainhotlist
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
@@ -195,7 +197,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.3242986
+  dockerimage: demisto/vendors-sdk:1.0.0.4577311
   feed: true
   isfetch: false
   longRunning: false
