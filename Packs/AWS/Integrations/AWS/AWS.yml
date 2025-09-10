@@ -1011,11 +1011,11 @@ script:
     - name: namespaces
       description: 'A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.'
       required: false
-
       isArray: false
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the configured region will be used.
       name: region
+      required: true
       predefined:
       - us-east-1
       - us-east-2

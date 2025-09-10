@@ -786,25 +786,6 @@ def test_ec2_create_snapshot_command_success(mocker):
     mock_client.create_snapshot.assert_called_once()
 
 
-def test_ec2_create_snapshot_command_failure(mocker, capfd):
-    """
-    Given: A mocked boto3 EC2 client that raises an exception during snapshot creation.
-    When: create_snapshot_command is called and encounters an error.
-    Then: It should raise the appropriate exception from the boto3 client.
-    """
-    from AWS import EC2
-    from botocore.exceptions import ClientError
-
-    mock_client = mocker.Mock()
-    error_response = {"Error": {"Code": "InvalidVolume.NotFound", "Message": "The volume vol-1234567890abcdef0 does not exist."}}
-    mock_client.create_snapshot.side_effect = ClientError(error_response, "CreateSnapshot")
-
-    args = {"volume_id": "vol-1234567890abcdef0", "description": "Test snapshot", "region": "us-east-1"}
-
-    with capfd.disabled(), pytest.raises(SystemExit):
-        EC2.create_snapshot_command(mock_client, args)
-
-
 def test_ec2_modify_snapshot_permission_command_success(mocker):
     """
     Given: A mocked boto3 EC2 client and valid snapshot permission arguments with user_ids.
@@ -937,7 +918,7 @@ def test_eks_describe_cluster_command_success(mocker):
 
     result = EKS.describe_cluster_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.EKS.DescribeCluster"
+    assert result.outputs_prefix == "AWS.EKS.Cluster"
     assert result.outputs_key_field == "name"
     assert "test-cluster" in str(result.outputs)
     assert "Describe Cluster Information" in result.readable_output

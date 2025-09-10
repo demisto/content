@@ -966,46 +966,43 @@ class EC2:
         if args.get("tags") is not None:
             kwargs.update({"TagSpecifications": [{"ResourceType": "snapshot", "Tags": parse_tag_field(args.get("tags", ""))}]})
 
+        response = client.create_snapshot(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
         try:
-            response = client.create_snapshot(**kwargs)
-            if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            start_time = datetime.strftime(response["StartTime"], "%Y-%m-%dT%H:%M:%SZ")
+        except ValueError as e:
+            raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
 
-            try:
-                start_time = datetime.strftime(response["StartTime"], "%Y-%m-%dT%H:%M:%SZ")
-            except ValueError as e:
-                raise DemistoException(f"Date could not be parsed. Please check the date again.\n{e}")
+        data = {
+            "Description": response["Description"],
+            "Encrypted": response["Encrypted"],
+            "Progress": response["Progress"],
+            "SnapshotId": response["SnapshotId"],
+            "State": response["State"],
+            "VolumeId": response["VolumeId"],
+            "VolumeSize": response["VolumeSize"],
+            "StartTime": start_time,
+            "Region": args.get("region"),
+        }
 
-            data = {
-                "Description": response["Description"],
-                "Encrypted": response["Encrypted"],
-                "Progress": response["Progress"],
-                "SnapshotId": response["SnapshotId"],
-                "State": response["State"],
-                "VolumeId": response["VolumeId"],
-                "VolumeSize": response["VolumeSize"],
-                "StartTime": start_time,
-                "Region": args.get("region"),
-            }
+        if "Tags" in response:
+            for tag in response["Tags"]:
+                data.update({tag["Key"]: tag["Value"]})
 
-            if "Tags" in response:
-                for tag in response["Tags"]:
-                    data.update({tag["Key"]: tag["Value"]})
-
-            try:
-                output = json.dumps(response, cls=DatetimeEncoder)
-                raw = json.loads(output)
-                raw.update({"Region": args.get("region")})
-            except ValueError as err_msg:
-                raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
-            return CommandResults(
-                outputs=raw,
-                outputs_prefix="AWS.EC2.Snapshots",
-                readable_output=tableToMarkdown("AWS EC2 Snapshots", data),
-                raw_response=raw,
-            )
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        try:
+            output = json.dumps(response, cls=DatetimeEncoder)
+            raw = json.loads(output)
+            raw.update({"Region": args.get("region")})
+        except ValueError as err_msg:
+            raise DemistoException(f"Could not decode/encode the raw response - {err_msg}")
+        return CommandResults(
+            outputs=raw,
+            outputs_prefix="AWS.EC2.Snapshots",
+            readable_output=tableToMarkdown("AWS EC2 Snapshots", data),
+            raw_response=raw,
+        )
 
     @staticmethod
     def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -1016,20 +1013,16 @@ class EC2:
 
         accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
         operation_type = args.get("operation_type")
-        try:
-            response = client.modify_snapshot_attribute(
-                Attribute="createVolumePermission",
-                SnapshotId=args.get("snapshot_id"),
-                OperationType=operation_type,
-                DryRun=argToBoolean(args.get("dry_run", False)),
-                **accounts,
-            )
-            if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
-            return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
-
-        except ClientError as err:
-            AWSErrorHandler.handle_client_error(err, args.get("account_id"))
+        response = client.modify_snapshot_attribute(
+            Attribute="createVolumePermission",
+            SnapshotId=args.get("snapshot_id"),
+            OperationType=operation_type,
+            DryRun=argToBoolean(args.get("dry_run", False)),
+            **accounts,
+        )
+        if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
 
 
 class EKS:
@@ -1147,7 +1140,7 @@ class EKS:
         )
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix="AWS.EKS.DescribeCluster",
+            outputs_prefix="AWS.EKS.Cluster",
             outputs=response_data,
             raw_response=response_data,
             outputs_key_field="name",
