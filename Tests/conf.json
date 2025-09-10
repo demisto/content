@@ -5909,8 +5909,7 @@
             "instance_names": [
                 "active_directory_80k"
             ],
-            "timeout": 600,
-            "fromversion": "6.10.0"
+            "timeout": 600
         }
     ],
     "skipped_tests": {
