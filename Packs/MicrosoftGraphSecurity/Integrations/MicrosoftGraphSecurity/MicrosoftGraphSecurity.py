@@ -617,7 +617,6 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
     Returns:
         str: filter query to use
     """
-    demisto.debug("In create filter query function")
     filter_query = ""
     if filter_param:
         filter_query = filter_param
@@ -1018,7 +1017,6 @@ def search_alerts_command(client: MsGraphClient, args):
     Returns:
         str, Dict, Dict: table of returned alerts, parsed outputs and request's response.
     """
-    demisto.debug(f"Search alerts command: {args}")
     params = create_search_alerts_filters(args, is_fetch=False)
     alerts = client.search_alerts(params)["value"]
     limit = int(args.get("limit"))
@@ -2090,7 +2088,6 @@ def main():
     }
     command = demisto.command()
     LOG(f"Command being called is {command}")
-    demisto.debug("This is a Joey log")
     try:
         auth_code = params.get("auth_code", {}).get("password")
         redirect_uri = params.get("redirect_uri")
