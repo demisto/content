@@ -458,6 +458,7 @@ class S3:
         response = client.get_bucket_encryption(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            server_side_encryption_rules = response.get("ServerSideEncryptionConfiguration", {}).get("Rules", [])
             outputs = {
                 "BucketName": bucket_name,
                 "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
@@ -467,8 +468,8 @@ class S3:
                 outputs_key_field="BucketName",
                 outputs=outputs,
                 readable_output=tableToMarkdown(
-                    "Server Side Encryption Configuration",
-                    t=outputs,
+                    f"Server Side Encryption Configuration for Bucket '{bucket_name}'",
+                    t=server_side_encryption_rules,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 ),
@@ -499,6 +500,7 @@ class S3:
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             json_response = json.loads(response.get("Policy", "{}"))
+            json_stetment = json_response.get("Statement", [])
             return CommandResults(
                 outputs_prefix="AWS.S3-Buckets",
                 outputs_key_field="BucketName",
@@ -507,8 +509,8 @@ class S3:
                     "Policy": json_response,
                 },
                 readable_output=tableToMarkdown(
-                    "Bucket Policy",
-                    t=json_response,
+                    f"Bucket Policy ID: {json_response.get('Id','N/A')} Version: {json_response.get('Version','N/A')}",
+                    t=json_stetment,
                     removeNull=True,
                     headerTransform=pascalToSpace,
                 ),
