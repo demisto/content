@@ -2,7 +2,7 @@ commonfields:
   id: OPSWAT-Metadefender V2
   version: -1
   sortvalues: []
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 name: OPSWAT-Metadefender V2
