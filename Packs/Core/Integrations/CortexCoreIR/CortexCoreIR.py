@@ -1,8 +1,10 @@
+from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from copy import deepcopy
 
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
@@ -27,15 +29,7 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
-COMMAND_DATA_KEYS = [
-    "failed_files",
-    "retention_date",
-    "retrieved_files",
-    "standard_output",
-    "command",
-    "command_output",
-    "execution_status",
-]
+COMMAND_DATA_KEYS = ["failed_files", "retention_date", "retrieved_files", "standard_output", "command_output", "execution_status"]
 EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
     "endpoint_id",
     "command",
@@ -439,8 +433,7 @@ def core_execute_command_reformat_readable_output(script_res: list) -> str:
             for key in EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS:
                 reformatted_result[key] = res.get(key)
             # remove the underscore prefix from the command name
-            if isinstance(reformatted_result["command"], str):
-                reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
+            reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
             reformatted_results.append(reformatted_result)
     return tableToMarkdown(
         f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
@@ -461,12 +454,9 @@ def core_execute_command_reformat_command_data(result: dict) -> dict:
     Returns:
         dict: all relevant command data from the result
     """
-    reformatted_command = {}
+    reformatted_command = {"command": result["command"].removeprefix("_")}  # remove the underscore prefix from the command name
     for key in COMMAND_DATA_KEYS:
         reformatted_command[key] = result.get(key)
-    reformatted_command["command"] = (
-        result["command"].removeprefix("_") if isinstance(result.get("command"), str) else None
-    )  # remove the underscore prefix from the command name
     return reformatted_command
 
 
@@ -490,21 +480,22 @@ def core_execute_command_reformat_outputs(script_res: list) -> list:
                 new_results[endpoint_id]["executed_command"].append(core_execute_command_reformat_command_data(res))
                 # the context output include for each result a field with the name of each command, we want to remove it
                 command_name = res.get("command")
-                new_results[endpoint_id].pop(command_name, None)
+                new_results[endpoint_id].pop(command_name)
             else:
                 # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
                 # relocate all the data related to the command to be under executed_command
                 reformatted_res = deepcopy(res)
                 reformatted_res["executed_command"] = [core_execute_command_reformat_command_data(res)]
                 # remove from reformatted_res all the data we put under executed_command
-                command_name = reformatted_res.pop("command", None)
-                reformatted_res.pop(command_name, None)
+                command_name = reformatted_res.pop("command")
+                reformatted_res.pop(command_name)
                 for key in COMMAND_DATA_KEYS:
-                    reformatted_res.pop(key, None)
+                    reformatted_res.pop(key)
                 new_results[endpoint_id] = reformatted_res
     # reformat new_results from {"endpoint_id_1": {values_1}, "endpoint_id_2": {values_2}}
     # to [{values_1}, {values_2}] (values include the endpoint_id)
-    return list(new_results.values())
+    reformatted_results = [new_results[i] for i in new_results]
+    return reformatted_results
 
 
 def core_execute_command_reformat_args(args: dict) -> dict:
@@ -1087,7 +1078,7 @@ def main():  # pragma: no cover
                     cmd="core-run-script-file-exists",
                     command_function=run_script_file_exists_command,
                     command_decision_field="action_id",
-                    results_function=action_status_get_command,
+                    results_function=polling_get_script_execution_results_command,
                     polling_field="status",
                     polling_value=["PENDING", "IN_PROGRESS", "PENDING_ABORT"],
                 )

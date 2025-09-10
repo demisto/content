@@ -3967,7 +3967,6 @@ script:
       name: asset_id
       required: true
     name: core-get-asset-details
-    deprecated:marketplacev2: false
     deprecated: true
     description: Get asset information.
     outputs:
