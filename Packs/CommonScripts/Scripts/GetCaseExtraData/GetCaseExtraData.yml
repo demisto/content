@@ -5,10 +5,10 @@ name: GetCaseExtraData
 isInternal: true  
 script: '-'
 type: python
-comment: Retrieves extra data fields of a specific case including issues and key artifacts.
+comment: Retrieves extra data fields of a specific case, including issues and key artifacts.
 enabled: true
 args:
-- description: A comma seperated list of case IDs.
+- description: A comma separated list of case IDs.
   isArray: true
   name: case_id
   required: true
@@ -80,7 +80,7 @@ outputs:
     description: A description of the case that was manually entered by a user.
     type: String
   - contextPath: Core.CaseExtraData.xdr_url
-    description: The direct URL to view the case in the XDR platform.
+    description: The direct URL to view the case in the Cortex XDR platform.
     type: String
   - contextPath: Core.CaseExtraData.starred
     description: A flag indicating whether the case has been starred or marked as a favorite.
@@ -113,7 +113,7 @@ outputs:
     description: A comma-separated list of categories for the issues included in the case.
     type: String
   - contextPath: Core.CaseExtraData.issue_ids
-    description: Ids of related issues.
+    description: IDs of related issues.
     type: Array
   - contextPath: Core.CaseExtraData.network_artifacts.total_count
     description: The total number of network artifacts associated with the case.
@@ -125,7 +125,7 @@ outputs:
     description: The number of issues in the case that involve this network artifact.
     type: Number
   - contextPath: Core.CaseExtraData.network_artifacts.data.is_manual
-    description: A flag indicating if the network artifact was added manually by a user.
+    description: A flag indicating whether the network artifact was added manually by a user.
     type: Boolean
   - contextPath: Core.CaseExtraData.network_artifacts.data.network_domain
     description: The domain name of the network artifact.
@@ -161,13 +161,13 @@ outputs:
     description: A flag indicating whether the file artifact is considered malicious.
     type: Boolean
   - contextPath: Core.CaseExtraData.file_artifacts.data.is_manual
-    description: A flag indicating if the file artifact was added manually by a user.
+    description: A flag indicating whether the file artifact was added manually by a user.
     type: Boolean
   - contextPath: Core.CaseExtraData.file_artifacts.data.is_process
-    description: A flag indicating if the file artifact is a process executable.
+    description: A flag indicating whether the file artifact is a process executable.
     type: Boolean
   - contextPath: Core.CaseExtraData.file_artifacts.data.low_confidence
-    description: A flag indicating if the verdict on the file artifact has low confidence.
+    description: A flag indicating whether the verdict on the file artifact has low confidence.
     type: Boolean
   - contextPath: Core.CaseExtraData.file_artifacts.data.type
     description: The type of the file artifact.

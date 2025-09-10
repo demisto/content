@@ -8,7 +8,7 @@ type: python
 comment: Retrieves cases based on the provided filters.
 enabled: true
 args:
-  - description: A comma seperated list of case IDs.
+  - description: A comma separated list of case IDs.
     isArray: true
     name: case_id_list
   - description: "The start time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
@@ -21,10 +21,10 @@ args:
     predefined:
       - asc
       - desc
-  - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
+  - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
     name: status
   - auto: PREDEFINED
-    description: 'Whether the case is starred (Boolean value: true or false).'
+    description: 'Whether the case is starred.'
     name: starred
     predefined:
       - 'true'
