@@ -761,7 +761,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.3539024
+  dockerimage: demisto/crypto:1.0.0.4578119
   runonce: false
   script: '-'
   subtype: python3

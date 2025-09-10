@@ -173,7 +173,6 @@ class MsGraphClient:
         }
         self.ms_client.http_request(method="PATCH", url_suffix=f"users/{quote(user)}", json_data=body, resp_type="text")
 
-
     def fetch_password_id(self, user: str) -> str:
         """
         fetches the password ID, to be used later. See API docs for reference.
@@ -181,22 +180,22 @@ class MsGraphClient:
         password_id_response = None
         try:
             password_id_response = self.ms_client.http_request(
-                method='GET',
-                url_suffix=f'users/{quote(user)}/authentication/passwordMethods'
+                method="GET", url_suffix=f"users/{quote(user)}/authentication/passwordMethods"
             )
-            password_id = password_id_response.get('value', [])[0]['id']
+            password_id = password_id_response.get("value", [])[0]["id"]
         except (IndexError, KeyError) as e:
             raise DemistoException("Failed getting passwordMethod id", exception=e, res=password_id_response)
         return password_id
-    
+
     def password_change_user_on_premise(self, user: str, password: str, password_id: str) -> None:
         """
         changes the password of a user on premise.
         """
         self.ms_client.http_request(
-            method='POST',
-            url_suffix=f'users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword',
-            ok_codes=(202,), json_data={"newPassword": password},
+            method="POST",
+            url_suffix=f"users/{quote(user)}/authentication/passwordMethods/{password_id}/resetPassword",
+            ok_codes=(202,),
+            json_data={"newPassword": password},
             return_empty_response=True,
             resp_type=None,
         )
@@ -453,6 +452,7 @@ def change_password_user_saas_command(client: MsGraphClient, args: dict):
 
     return CommandResults(readable_output=human_readable)
 
+
 def validate_input_password(args: dict[str, Any]):
     """
     Get the file's password argument inserted by the user. The password can be inserted either in the sensitive
@@ -464,11 +464,10 @@ def validate_input_password(args: dict[str, Any]):
     Returns:
         the password given for the file.
     """
-    sensitive_password = args.get('password')
-    nonsensitive_password = args.get('nonsensitive_password')
+    sensitive_password = args.get("password")
+    nonsensitive_password = args.get("nonsensitive_password")
     if sensitive_password and nonsensitive_password and sensitive_password != nonsensitive_password:
-        raise ValueError('Please use either the password argument or the non_sensitive_password argument, '
-                         'but not both.')
+        raise ValueError("Please use either the password argument or the non_sensitive_password argument, " "but not both.")
     return sensitive_password or nonsensitive_password
 
 
@@ -476,14 +475,14 @@ def change_password_user_on_premise_command(client: MsGraphClient, args: dict[st
     """
     changes password for on-premise accounts. See change_password_user_saas_command for the SAAS equivalent.
     """
-    user = str(args.get('user', ''))
-    password = validate_input_password(args) or '' # either password or nonsensitive_password may be used
+    user = str(args.get("user", ""))
+    password = validate_input_password(args) or ""  # either password or nonsensitive_password may be used
 
     if not all((user, password)):
-        raise DemistoException('Username and (one of [password, nonsensitive_password]) cannot be empty.')
+        raise DemistoException("Username and (one of [password, nonsensitive_password]) cannot be empty.")
 
     password_id = client.fetch_password_id(user)
-    
+
     client.password_change_user_on_premise(user, password, password_id)
 
     return CommandResults(readable_output=f"The password of user {user} has been changed successfully.")
