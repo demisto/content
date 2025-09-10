@@ -117,6 +117,33 @@ The command returns a list of audit log events. The context data can be found at
 }
 ```
 
+#### 2. ibm-storage-scale-debug-connection
+
+Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration.
+
+```
+!ibm-storage-scale-debug-connection
+```
+
+##### Arguments
+
+This command has no arguments.
+
+##### Context Output
+
+| Path | Type | Description |
+| --- | --- | --- |
+| IBMStorageScale.Debug.connection_status | String | Status of the connection to IBM Storage Scale API (success/failed). |
+| IBMStorageScale.Debug.server_url | String | The configured server URL. |
+| IBMStorageScale.Debug.api_endpoint | String | The API endpoint being used. |
+| IBMStorageScale.Debug.current_time | String | Current timestamp when debug info was collected. |
+| IBMStorageScale.Debug.last_run_info | Unknown | Information from the last run object including fetch times and stored hashes. |
+| IBMStorageScale.Debug.time_filter_info | Unknown | Time filtering information including constructed query parameters. |
+| IBMStorageScale.Debug.deduplication_info | Unknown | Event deduplication statistics and configuration. |
+| IBMStorageScale.Debug.configuration | Unknown | Integration configuration details (without sensitive data). |
+| IBMStorageScale.Debug.sample_api_response | Unknown | Sample API response data for validation. |
+| IBMStorageScale.Debug.error_details | String | Error details if connection failed. |
+
 ---
 
 ## Troubleshooting
