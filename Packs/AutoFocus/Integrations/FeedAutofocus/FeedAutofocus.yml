@@ -118,7 +118,7 @@ configuration:
   type: 0
   required: false
 deprecated: true
-description: Deprecated. Use ????? integration instead. AutoFocus Feeds integration to fetch indicators from AutoFocus.
+description: Deprecated. Use Unit 42 Feed integration instead. AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed (Deprecated)
 name: AutoFocus Feed
 script:
