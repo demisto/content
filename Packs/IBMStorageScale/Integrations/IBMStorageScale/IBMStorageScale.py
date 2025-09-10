@@ -3,7 +3,8 @@ import hashlib
 import time
 from asyncio import Queue
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlencode, quote_plus
+from datetime import datetime, timedelta, UTC
 
 import httpx
 
@@ -14,10 +15,53 @@ from CommonServerPython import *  # noqa: F401
 API_ENDPOINT = "/scalemgmt/v2/cliauditlog"
 PRODUCT = "StorageScale"
 VENDOR = "IBM"
+
 DEDUPLICATION_WINDOW_MINUTES = 1
-MAX_STORED_HASHES = 10000
+MAX_STORED_HASHES = 10000  # Cap dedup cache to 10k: handles short high-EPS bursts (1-min window) while bounding memory
+
 DEFAULT_PAGE_SIZE = 1000  # Default page size for IBM Storage Scale API
-DEFAULT_FIRST_FETCH_MINUTES = 1  # Default days to look back on first fetch
+DEFAULT_FIRST_FETCH_MINUTES = 1  # Default minutes to look back on first fetch (corrected: minutes, not days)
+
+# Hash substring length to show in logs for readability while minimizing noise
+HASH_LOG_PREVIEW_LEN = 12
+
+# Time/regex formatting
+ISO_MINUTE_FORMAT = "%Y-%m-%dT%H:%M"  # Minute bucket (chosen to keep filter length bounded; see UT below)
+SECOND_WILDCARD_REGEX = "[0-5][0-9]"  # Seconds 00-59 as a compact class
+TIME_BUCKET_MINUTES = 1  # Step across minutes when constructing time-window regex
+
+
+# --- TIMEZONE HELPERS ---
+def ensure_utc(dt: datetime) -> datetime:
+    """
+    Return a timezone-aware UTC datetime for any naive or tz-aware input.
+    """
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
+
+
+def to_iso_z(dt: datetime, *, timespec: str = "seconds") -> str:
+    """
+    Convert datetime to ISO-8601 with 'Z' suffix (UTC).
+    """
+    dt_utc = ensure_utc(dt)
+    return dt_utc.isoformat(timespec=timespec).replace("+00:00", "Z")
+
+
+def parse_iso_to_utc(s: str) -> datetime:
+    """
+    Parse an ISO-8601 string which may end with 'Z' or include an offset,
+    returning a timezone-aware UTC datetime. If parsing fails, fall back to now(UTC).
+    """
+    try:
+        if s.endswith("Z"):
+            s = s.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(s)
+        return ensure_utc(dt)
+    except Exception as e:
+        demisto.debug(f"parse_iso_to_utc: failed to parse '{s}': {e}; falling back to now(UTC)")
+        return ensure_utc(datetime.utcnow())
 
 
 # --- UTILITY FUNCTIONS ---
@@ -56,19 +100,24 @@ def get_stored_event_hashes() -> dict[str, str]:
 def store_event_hashes(event_hashes: dict[str, str]) -> None:
     """
     Store event hashes in last run object with timestamp cleanup.
+    Keeps only recent hashes within DEDUPLICATION_WINDOW_MINUTES and caps total to MAX_STORED_HASHES.
+
+    Sorting rationale: we sort by timestamp descending to retain the *most recent* hashes when trimming
+    the cache to MAX_STORED_HASHES, maximizing dedup effectiveness for the next fetch window.
     """
     # Clean up old hashes outside the deduplication window
-    current_time = datetime.now(timezone.utc)  # Use timezone-aware datetime
-    cutoff_time = (current_time - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)).isoformat().replace("+00:00", "Z")
+    current_time = ensure_utc(datetime.utcnow())
+    cutoff_time = to_iso_z(current_time - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES))
 
-    cleaned_hashes = {}
+    cleaned_hashes: dict[str, str] = {}
     for hash_val, timestamp in event_hashes.items():
+        # timestamps stored as ISO Z strings; lexicographic compare works for ISO-8601
         if timestamp >= cutoff_time:
             cleaned_hashes[hash_val] = timestamp
 
     # Limit the number of stored hashes to prevent memory issues
     if len(cleaned_hashes) > MAX_STORED_HASHES:
-        # Keep only the most recent hashes
+        # Keep only the most recent hashes (see rationale above)
         sorted_hashes = sorted(cleaned_hashes.items(), key=lambda x: x[1], reverse=True)
         cleaned_hashes = dict(sorted_hashes[:MAX_STORED_HASHES])
 
@@ -90,18 +139,18 @@ def deduplicate_events(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any
         return events, {"total_events": 0, "duplicates_found": 0, "unique_events": 0}
 
     stored_hashes = get_stored_event_hashes()
-    new_hashes = {}
-    deduplicated_events = []
+    new_hashes: dict[str, str] = {}
+    deduplicated_events: list[dict[str, Any]] = []
     duplicates_found = 0
 
     for event in events:
         event_hash = generate_event_hash(event)
-        event_time = event.get("entryTime", datetime.utcnow().isoformat() + "Z")
+        event_time = event.get("entryTime", to_iso_z(datetime.utcnow()))
 
         # Check if this event hash already exists
         if event_hash in stored_hashes:
             duplicates_found += 1
-            demisto.debug(f"Duplicate event found with hash {event_hash[:12]}...")
+            demisto.debug(f"Duplicate event found with hash {event_hash[:HASH_LOG_PREVIEW_LEN]}...")
             continue
 
         # Add to deduplicated events and track new hash
@@ -126,32 +175,27 @@ def deduplicate_events(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any
 def get_fetch_start_time() -> datetime:
     """
     Get the start time for the fetch window from the last run object.
-    Returns a datetime object.
+    Returns a timezone-aware UTC datetime.
     """
     last_run = demisto.getLastRun()
     last_fetch_time_str = last_run.get("last_fetch_time")
 
     if last_fetch_time_str:
         demisto.debug(f"Using last fetch time from last run: {last_fetch_time_str}")
-        # Parse ISO 8601 format, handling 'Z' for UTC
-        return datetime.fromisoformat(last_fetch_time_str.replace("Z", "+00:00"))
+        return parse_iso_to_utc(last_fetch_time_str)
     else:
-        # First run - use default lookback period based on DEFAULT_FIRST_FETCH_MINUTES (in days)
-        start_time = datetime.utcnow() - timedelta(days=DEFAULT_FIRST_FETCH_MINUTES)
-        demisto.debug(f"First run - using default lookback time: {start_time.isoformat()}Z")
+        # First run - use default lookback period (minutes)
+        start_time = ensure_utc(datetime.utcnow() - timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES))
+        demisto.debug(f"First run - using default lookback time: {to_iso_z(start_time)}")
         return start_time
 
 
 def update_last_run_time(new_fetch_time: datetime) -> None:
     """
-    Update the last run object with the given timestamp.
+    Update the last run object with the given timestamp (stored as ISO-8601 with 'Z').
     """
     last_run = demisto.getLastRun()
-    # Store in UTC ISO format with 'Z', handling timezone-aware datetime
-    time_str = new_fetch_time.isoformat()
-    if not time_str.endswith("Z"):
-        time_str += "Z"
-    last_run["last_fetch_time"] = time_str
+    last_run["last_fetch_time"] = to_iso_z(new_fetch_time)
     demisto.setLastRun(last_run)
     demisto.debug(f"Updated last run with fetch time: {last_run['last_fetch_time']}")
 
@@ -159,25 +203,32 @@ def update_last_run_time(new_fetch_time: datetime) -> None:
 def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
     """
     Generates a regex for the 'entryTime' field to cover the given time window.
-    The regex will cover full minutes, relying on deduplication to handle overlaps.
-    """
-    # Floor the start time to the beginning of the minute
-    current_minute = start_time.replace(second=0, microsecond=0)
+    The regex covers full minutes (seconds wildcard), relying on deduplication to handle overlaps.
 
-    regex_parts = []
+    Example:
+        >>> s = parse_iso_to_utc("2025-08-07T14:30:00Z")
+        >>> e = parse_iso_to_utc("2025-08-07T14:32:15Z")
+        >>> generate_time_filter_regex(s, e)
+        '2025-08-07T14:30:[0-5][0-9]|2025-08-07T14:31:[0-5][0-9]|2025-08-07T14:32:[0-5][0-9]'
+    """
+    # Normalize to UTC and floor the start time to the beginning of the minute
+    start_time = ensure_utc(start_time)
+    end_time = ensure_utc(end_time)
+
+    current_minute = start_time.replace(second=0, microsecond=0)
+    regex_parts: list[str] = []
 
     # Iterate minute by minute through the time window
     while current_minute <= end_time:
-        # Format the minute prefix, e.g., "2025-08-07T14:30"
-        minute_prefix = current_minute.strftime("%Y-%m-%dT%H:%M")
+        minute_prefix = current_minute.strftime(ISO_MINUTE_FORMAT)
         # Create a regex for all 60 seconds within that minute
-        regex_parts.append(f"{minute_prefix}:[0-5][0-9]")
+        regex_parts.append(f"{minute_prefix}:{SECOND_WILDCARD_REGEX}")
         # Move to the next minute
-        current_minute += timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES)
+        current_minute += timedelta(minutes=TIME_BUCKET_MINUTES)
 
     if not regex_parts:
-        minute_prefix = start_time.strftime("%Y-%m-%dT%H:%M")
-        return f"{minute_prefix}:[0-5][0-9]"
+        minute_prefix = start_time.strftime(ISO_MINUTE_FORMAT)
+        return f"{minute_prefix}:{SECOND_WILDCARD_REGEX}"
 
     # Join all minute-regexes with an OR operator
     return "|".join(regex_parts)
@@ -186,12 +237,15 @@ def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
 def build_fetch_query(limit: int, start_time: datetime, end_time: datetime) -> str:
     """
     Build API query string with regex filtering for time.
+    Uses urllib.parse.urlencode to avoid manual concatenation and stray ampersands.
     """
     regex_filter = generate_time_filter_regex(start_time, end_time)
-    query_parts = ["fields=:all:", f"limit={limit}"]
+    params: dict[str, str | int] = {"fields": ":all:", "limit": limit}
     if regex_filter:
-        query_parts.append(f"filter=entryTime='''{regex_filter}'''")
-    return "&".join(query_parts)
+        # The API expects triple-quoted regex value: entryTime='''<regex>'''
+        params["filter"] = f"entryTime='''{regex_filter}'''"
+    # Preserve characters we intend to send verbatim (quotes, brackets, colon, pipe)
+    return urlencode(params, safe=":'|[]", quote_via=quote_plus)
 
 
 class Client:
@@ -242,15 +296,12 @@ class Client:
         Orchestrates the high-performance, concurrent fetching of events for ingestion.
         """
         demisto.info("Starting fetch-events cycle.")
-        start_time = time.monotonic()
+        start_time_mono = time.monotonic()
 
-        # Define the fetch window using the new regex method
-        fetch_window_end_time = datetime.utcnow()
+        # Define the fetch window using the regex method
+        fetch_window_end_time = ensure_utc(datetime.utcnow())
         fetch_window_start_time = get_fetch_start_time()
-        demisto.info(
-            f"Fetching events from {fetch_window_start_time.isoformat().replace('+00:00', 'Z')} "
-            f"to {fetch_window_end_time.isoformat().replace('+00:00', 'Z')}"
-        )
+        demisto.info(f"Fetching events from {to_iso_z(fetch_window_start_time)} to {to_iso_z(fetch_window_end_time)}")
 
         query = build_fetch_query(max_events or DEFAULT_PAGE_SIZE, fetch_window_start_time, fetch_window_end_time)
 
@@ -267,8 +318,8 @@ class Client:
         # Update last run time to the end of the window we just fetched
         update_last_run_time(fetch_window_end_time)
 
-        end_time = time.monotonic()
-        duration = end_time - start_time
+        end_time_mono = time.monotonic()
+        duration = end_time_mono - start_time_mono
         total_events = len(deduplicated_events)
         eps = total_events / duration if duration > 0 else 0
 
@@ -301,7 +352,7 @@ class Client:
             "server_url": self.base_url,
             "api_endpoint": API_ENDPOINT,
             "last_run_info": {},
-            "current_time": datetime.utcnow().isoformat() + "Z",
+            "current_time": to_iso_z(datetime.utcnow()),
             "configuration": {},
             "sample_api_response": {},
             "time_filter_info": {},
@@ -337,26 +388,26 @@ class Client:
                 "last_run_raw": last_run,
             }
         except Exception as e:
-            debug_info["last_run_info"]["error"] = str(e)
+            debug_info["last_run_info"] = {"error": str(e)}
 
         # Time filter information
         try:
             start_time = get_fetch_start_time()
-            end_time = datetime.utcnow()
+            end_time = ensure_utc(datetime.utcnow())
             query = build_fetch_query(10, start_time, end_time)
             debug_info["time_filter_info"] = {
-                "fetch_window_start": start_time.isoformat() + "Z",
-                "fetch_window_end": end_time.isoformat() + "Z",
+                "fetch_window_start": to_iso_z(start_time),
+                "fetch_window_end": to_iso_z(end_time),
                 "constructed_query": query,
                 "full_url": f"{self.base_url}{API_ENDPOINT}?{query}",
             }
         except Exception as e:
-            debug_info["time_filter_info"]["error"] = str(e)
+            debug_info["time_filter_info"] = {"error": str(e)}
 
         # Deduplication information
         try:
             stored_hashes = get_stored_event_hashes()
-            cutoff_time = (datetime.utcnow() - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES)).isoformat() + "Z"
+            cutoff_time = to_iso_z(ensure_utc(datetime.utcnow()) - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES))
             debug_info["deduplication_info"] = {
                 "stored_hashes_count": len(stored_hashes),
                 "deduplication_window_minutes": DEDUPLICATION_WINDOW_MINUTES,
@@ -365,7 +416,7 @@ class Client:
                 "sample_hash_timestamps": list(stored_hashes.values())[:5] if stored_hashes else [],
             }
         except Exception as e:
-            debug_info["deduplication_info"]["error"] = str(e)
+            debug_info["deduplication_info"] = {"error": str(e)}
 
         # Configuration info (without sensitive data)
         debug_info["configuration"] = {
@@ -430,7 +481,8 @@ class _ConcurrentEventFetcher:
                 paging_info = data.get("paging", {})
                 next_full_url = paging_info.get("next")
                 if next_full_url and len(self.collected_events) < self.max_events:
-                    next_url_suffix = f"{urlparse(next_full_url).path}?{urlparse(next_full_url).query}"
+                    parsed = urlparse(next_full_url)
+                    next_url_suffix = f"{parsed.path}?{parsed.query}"
                     demisto.debug(f"[{name}] queuing next URL: {next_url_suffix}")
                     await self.queue.put(next_url_suffix)
 
@@ -445,7 +497,12 @@ class _ConcurrentEventFetcher:
     async def run(self) -> tuple[list[dict[str, Any]], bool]:
         """Orchestrates the workers to fetch all events."""
         # Seed the queue with the first page
-        initial_url = f"{API_ENDPOINT}?{self.query}" if self.query else f"{API_ENDPOINT}?fields=:all:&limit={self.max_events}"
+        if self.query:
+            initial_url = f"{API_ENDPOINT}?{self.query}"
+        else:
+            params = {"fields": ":all:", "limit": self.max_events}
+            initial_url = f"{API_ENDPOINT}?{urlencode(params, safe=':', quote_via=quote_plus)}"
+
         self.queue.put_nowait(initial_url)
 
         async with httpx.AsyncClient(
@@ -494,9 +551,7 @@ async def main() -> None:
             return_results("ok")
         elif command == "fetch-events":
             max_fetch = arg_to_number(params.get("max_fetch", "10000"))
-            await client.fetch_events(
-                max_fetch,
-            )
+            await client.fetch_events(max_fetch)
         elif command == "ibm-storage-scale-get-events":
             limit = arg_to_number(demisto.args().get("limit", 50))
             should_push_events = argToBoolean(demisto.args().get("should_push_events", False))
@@ -540,7 +595,3 @@ async def main() -> None:
 
     except Exception as e:
         return_error(f"Failed to execute {command}. Error: {e}")
-
-
-if __name__ in ("__main__", "__builtin__", "builtins"):
-    asyncio.run(main())

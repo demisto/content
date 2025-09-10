@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 from datetime import datetime, timedelta, UTC
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock
@@ -17,6 +18,7 @@ from IBMStorageScale import (
     _ConcurrentEventFetcher,
     build_fetch_query,
     deduplicate_events,
+    generate_event_hash,
     generate_time_filter_regex,
     get_fetch_start_time,
     main,
@@ -24,6 +26,8 @@ from IBMStorageScale import (
 )
 
 pytestmark = pytest.mark.asyncio
+
+UTC = UTC
 
 
 def mock_client(mocker: MockerFixture, params: dict[str, Any]) -> Client:
@@ -458,6 +462,41 @@ class TestUtilityFunctions:
         assert stats["total_events"] == 3
         assert stats["duplicates_found"] == 1
         assert stats["unique_events"] == 2
+
+
+class TestGenerateEventHash:
+    def test_generate_event_hash_deterministic(self):
+        """Ensures the hash matches the expected SHA256 of the joined key fields."""
+        event = {
+            "oid": "123",
+            "entryTime": "2025-09-10T08:21:00Z",
+            "user": "alice",
+            "command": "ls",
+            "node": "node1",
+            "originator": "cli",
+            "returnCode": 0,
+        }
+
+        expected_string = "123|2025-09-10T08:21:00Z|alice|ls|node1|cli|0"
+        expected_hash = hashlib.sha256(expected_string.encode("utf-8")).hexdigest()
+
+        assert generate_event_hash(event) == expected_hash
+
+    def test_generate_event_hash_changes_when_field_changes(self):
+        """Changing a key field should produce a different hash."""
+        base_event = {
+            "oid": "123",
+            "entryTime": "2025-09-10T08:21:00Z",
+            "user": "alice",
+            "command": "ls",
+            "node": "node1",
+            "originator": "cli",
+            "returnCode": 0,
+        }
+        modified_event = dict(base_event)
+        modified_event["command"] = "cat"
+
+        assert generate_event_hash(base_event) != generate_event_hash(modified_event)
 
 
 class TestDebugCommand:
