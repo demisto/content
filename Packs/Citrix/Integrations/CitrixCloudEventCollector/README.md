@@ -2,7 +2,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Citrix Cloud Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -31,8 +30,8 @@ Returns system log events extracted from Citrix.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
-| limit | The maximum number of logs to return. Default is 100.                                                                                                        | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required |
+| limit | The maximum number of logs to return. Default is 100.                                                                                                        | Optional |
 
 #### Context Output
 

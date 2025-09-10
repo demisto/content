@@ -2,7 +2,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Citrix Daas Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -32,9 +31,9 @@ Returns operation events extracted from Citrix.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
-| limit | The maximum number of operations to return. Default is 100. | Optional | 
-| search_date_option | Specific time filters for searching operations. Possible values are: LastMinute, Last5Minutes, Last30Minutes, LastHour, Last12Hours, Last24Hours, Today, Yesterday, Last7Days, Last28Days, LastMonth, LastThreeMonths, LastSixMonths. Default is LastMinute. | Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required |
+| limit | The maximum number of operations to return. Default is 100. | Optional |
+| search_date_option | Specific time filters for searching operations. Possible values are: LastMinute, Last5Minutes, Last30Minutes, LastHour, Last12Hours, Last24Hours, Today, Yesterday, Last7Days, Last28Days, LastMonth, LastThreeMonths, LastSixMonths. Default is LastMinute. | Required |
 
 #### Context Output
 

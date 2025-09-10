@@ -36,6 +36,3 @@ If these options do not appear, you might not have sufficient permissions to man
 ![LoginScreen](doc_files/LoginScreen.png)
 
 3. Once you sign in, the Tenant's Citrix Cloud ID is also presented in the top right corner of the screen as shown in an example here (ctxtsnaxa)
-
-
-

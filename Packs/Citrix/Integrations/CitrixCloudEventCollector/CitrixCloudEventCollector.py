@@ -45,9 +45,7 @@ RES_EXAMPLE = {
             "ActorId": None,
             "ActorDisplayName": "CwcSystem",
             "ActorType": "system",
-            "Message": {
-                "en-US": "Created new administrator user '6233644161364977157'."
-            },
+            "Message": {"en-US": "Created new administrator user '6233644161364977157'."},
         },
         {
             "RecordId": "2",
@@ -75,10 +73,8 @@ RES_EXAMPLE = {
             "ActorId": None,
             "ActorDisplayName": "CwcSystem",
             "ActorType": "system",
-            "Message": {
-                "en-US": "Created new administrator user '6233644161364977157'."
-            },
-        }
+            "Message": {"en-US": "Created new administrator user '6233644161364977157'."},
+        },
     ],
     "Count": 74,
     "EstimatedTotalItems": 250,
