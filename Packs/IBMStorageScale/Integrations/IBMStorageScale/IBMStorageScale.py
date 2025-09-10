@@ -35,7 +35,7 @@ TIME_BUCKET_MINUTES = 1  # Step across minutes when constructing time-window reg
 
 
 # --- TIMEZONE HELPERS ---
-def ensure_utc(dt: datetime) -> datetime:
+def set_dt_to_utc(dt: datetime) -> datetime:
     """
     Return a timezone-aware UTC datetime for any naive or tz-aware input.
     """
@@ -48,7 +48,7 @@ def to_iso_z(dt: datetime, *, timespec: str = "seconds") -> str:
     """
     Convert datetime to ISO-8601 with 'Z' suffix (UTC).
     """
-    dt_utc = ensure_utc(dt)
+    dt_utc = set_dt_to_utc(dt)
     return dt_utc.isoformat(timespec=timespec).replace("+00:00", "Z")
 
 
@@ -61,10 +61,10 @@ def parse_iso_to_utc(s: str) -> datetime:
         if s.endswith("Z"):
             s = s.replace("Z", "+00:00")
         dt = datetime.fromisoformat(s)
-        return ensure_utc(dt)
+        return set_dt_to_utc(dt)
     except Exception as e:
         demisto.debug(f"parse_iso_to_utc: failed to parse '{s}': {e}; falling back to now(UTC)")
-        return ensure_utc(datetime.utcnow())
+        return set_dt_to_utc(datetime.utcnow())
 
 
 # --- UTILITY FUNCTIONS ---
@@ -109,7 +109,7 @@ def store_event_hashes(event_hashes: dict[str, str]) -> None:
     the cache to MAX_STORED_HASHES, maximizing dedup effectiveness for the next fetch window.
     """
     # Clean up old hashes outside the deduplication window
-    current_time = ensure_utc(datetime.utcnow())
+    current_time = set_dt_to_utc(datetime.utcnow())
     cutoff_time = to_iso_z(current_time - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES))
 
     cleaned_hashes: dict[str, str] = {}
@@ -188,7 +188,7 @@ def get_fetch_start_time() -> datetime:
         return parse_iso_to_utc(last_fetch_time_str)
     else:
         # First run - use default lookback period (minutes)
-        start_time = ensure_utc(datetime.utcnow() - timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES))
+        start_time = set_dt_to_utc(datetime.utcnow() - timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES))
         demisto.debug(f"First run - using default lookback time: {to_iso_z(start_time)}")
         return start_time
 
@@ -215,8 +215,8 @@ def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
         '2025-08-07T14:30:[0-5][0-9]|2025-08-07T14:31:[0-5][0-9]|2025-08-07T14:32:[0-5][0-9]'
     """
     # Normalize to UTC and floor the start time to the beginning of the minute
-    start_time = ensure_utc(start_time)
-    end_time = ensure_utc(end_time)
+    start_time = set_dt_to_utc(start_time)
+    end_time = set_dt_to_utc(end_time)
 
     current_minute = start_time.replace(second=0, microsecond=0)
     regex_parts: list[str] = []
@@ -302,7 +302,7 @@ class Client:
         start_time_mono = time.monotonic()
 
         # Define the fetch window using the regex method
-        fetch_window_end_time = ensure_utc(datetime.utcnow())
+        fetch_window_end_time = set_dt_to_utc(datetime.utcnow())
         fetch_window_start_time = get_fetch_start_time()
         demisto.info(f"Fetching events from {to_iso_z(fetch_window_start_time)} to {to_iso_z(fetch_window_end_time)}")
 
@@ -396,7 +396,7 @@ class Client:
         # Time filter information
         try:
             start_time = get_fetch_start_time()
-            end_time = ensure_utc(datetime.utcnow())
+            end_time = set_dt_to_utc(datetime.utcnow())
             query = build_fetch_query(10, start_time, end_time)
             debug_info["time_filter_info"] = {
                 "fetch_window_start": to_iso_z(start_time),
@@ -410,7 +410,7 @@ class Client:
         # Deduplication information
         try:
             stored_hashes = get_stored_event_hashes()
-            cutoff_time = to_iso_z(ensure_utc(datetime.utcnow()) - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES))
+            cutoff_time = to_iso_z(set_dt_to_utc(datetime.utcnow()) - timedelta(minutes=DEDUPLICATION_WINDOW_MINUTES))
             debug_info["deduplication_info"] = {
                 "stored_hashes_count": len(stored_hashes),
                 "deduplication_window_minutes": DEDUPLICATION_WINDOW_MINUTES,
