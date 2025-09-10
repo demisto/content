@@ -13,7 +13,7 @@ args:
   name: case_id
   required: true
 - defaultValue: '1000'
-  description: Maximum number of issues to return per case. The default and maximum is 1000.
+  description: Maximum number of issues to return per case. The maximum is 1000.
   name: issues_limit
 outputs:
   - contextPath: Core.CaseExtraData.case_id
