@@ -1015,6 +1015,11 @@ def main() -> None:  # pragma: no cover
     timeout = params.get("timeout") or 1
     retries = params.get("retries") or 5
 
+    if type(aws_access_key_id) is dict:
+        aws_access_key_id = None
+    if type(aws_secret_access_key) is dict:
+        aws_secret_access_key = None
+
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
 
