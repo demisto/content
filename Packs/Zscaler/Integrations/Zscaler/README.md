@@ -8,18 +8,79 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 
 ## Configure Zscaler Internet Access in Cortex
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| Cloud Name (i.e. <https://zsapi.zscalertwo.net>) | See <https://help.zscaler.com/zia/getting-started-zia-api#RetrieveBaseURL> on how to retrieve your cloud name. | True |
-| Username |  | True |
-| Password |  | True |
-| API Key |  | True |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Auto Logout | If enabled, the integration will log out after executing each command. | False |
-| Auto Activate Changes | If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes. | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Timeout (in seconds) for HTTP requests to Zscaler |  | False |
+### Authentication Methods
+
+Zscaler Internet Access integration supports two authentication methods:
+
+1. **OAuth 2.0 (Recommended)** - Uses client credentials for secure API access
+2. **Basic Authentication** - Traditional username/password authentication
+
+### OAuth 2.0 Prerequisites
+
+Your organization must meet the following requirements to use OAuth 2.0 authentication:
+
+#### Prerequisite 1: API Subscription
+You must have an API subscription. If you do not have a subscription, submit a Zscaler Support ticket.
+
+#### Prerequisite 2: API Roles Configuration
+You must have the API Roles configured in the ZIA Admin Portal.
+1. Navigate to **Administration > API Roles**
+2. Click **Add** to create a new API role
+3. Configure:
+   - **Name**: Enter a descriptive name for your API role
+   - **Functional Scope**: Select the ZIA modules this role can access
+4. **Save** the role and note the exact role name
+
+#### Prerequisite 3: OAuth Authorization Server Registration
+You must have your client applications registered on your authorization server (i.e., PingFederate, Okta, or Azure AD) with the required scope and configured appropriately.
+
+#### Prerequisite 4: OAuth Authorization Server in ZIA Admin Portal
+You must have your OAuth 2.0 authorization server added to the ZIA Admin Portal.
+
+### Configuration Steps
+
+#### Step 1: Create API Client
+1. Navigate to **Administration > API Client Management**
+2. Click **Add** to create a new API client
+3. Configure the client (exact fields may vary based on your Zscaler version)
+4. **Save** the client
+5. **Important**: Copy and store the **Client ID** and **Client Secret** (secret shown only once)
+
+#### Step 2: Gather Required Information
+For the integration configuration, you'll need:
+- **Cloud Name**: Your Zscaler cloud instance URL
+- **Client ID**: From API Client Management
+- **Client Secret**: From API Client Management (save when created)
+- **Organization ID**: Found in **Administration > Company Profile**
+- **API Role**: Exact name from Step 1
+
+For detailed setup instructions and field-specific guidance, refer to the official Zscaler documentation:
+- <https://help.zscaler.com/zia/getting-started-zia-api>
+- <https://help.zscaler.com/zia/adding-api-roles>
+- <https://help.zscaler.com/zia/managing-oauth-2.0-authorization-servers>
+
+### Configuration Parameters
+
+| **Parameter** | **Description** | **Required** | **Authentication Method** |
+| --- | --- | --- | --- |
+| Cloud Name | Your Zscaler cloud instance URL (e.g., zsapi.zscalerone.net). | True | Both |
+| Client ID (OAuth 2.0) | OAuth 2.0 client identifier from API Client Management. | False* | OAuth 2.0 |
+| Client Secret (OAuth 2.0) | OAuth 2.0 client secret from API Client Management (save when created). | False* | OAuth 2.0 |
+| Organization ID (OAuth 2.0) | Your organization ID found in Administration > Company Profile. | False* | OAuth 2.0 |
+| API Role (OAuth 2.0) | Exact API role name created/assigned for your client. | False* | OAuth 2.0 |
+| Username (Basic Auth) | Zscaler admin username. | False* | Basic Auth |
+| Password (Basic Auth) | Zscaler admin password. | False* | Basic Auth |
+| API Key (Basic Auth) | API key for Basic Auth. | False* | Basic Auth |
+| Source Reliability | Reliability of the source providing the intelligence data. | False | Both |
+| Auto Logout | If enabled, the integration will log out after executing each command. | False | Both |
+| Auto Activate Changes | If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes. | False | Both |
+| Trust any certificate (not secure) | Whether to ignore SSL certificate validation. | False | Both |
+| Use system proxy settings | Whether to use system proxy configuration. | False | Both |
+| Timeout (in seconds) for HTTP requests to Zscaler | HTTP request timeout duration. | False | Both |
+
+**Note**: Either populate OAuth 2.0 fields OR Basic Auth fields. OAuth 2.0 is recommended for enhanced security.
+
+**OAuth 2.0 Field Requirements**: All OAuth 2.0 fields (Client ID, Client Secret, Organization ID, API Role) must be populated to use OAuth 2.0 authentication.
 
 ## Commands
 
