@@ -16,6 +16,7 @@ If the suspicious process reputation is malicious, or if a related alert is foun
 
 - Disable the scheduled task responsible for executing the process.
 - Terminate the malicious process.
+- Quarantine the malicious process.
 - Automatically Close the alert.
 
 ## Dependencies
@@ -34,11 +35,13 @@ This playbook does not use any integrations.
 
 * SearchIncidentsV2
 * file-enrichment
+* quarantine-file
 
 ### Commands
 
 * closeInvestigation
 * core-execute-command
+* core-get-cloud-original-alerts
 * core-terminate-causality
 
 ## Playbook Inputs
