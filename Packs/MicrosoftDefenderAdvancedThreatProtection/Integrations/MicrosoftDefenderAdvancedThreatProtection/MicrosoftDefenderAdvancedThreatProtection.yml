@@ -25,17 +25,29 @@ configuration:
   advanced: true
   required: false
 - displaypassword: ID
-  name: _auth_id
+  name: _auth_id_encrypted
   type: 9
   hiddenusername: true
   section: Connect
   required: false
 - displaypassword: Token
-  name: _tenant_id
+  name: _tenant_id_encrypted
   type: 9
   hiddenusername: true
   section: Connect
   required: false
+- display: ID
+  name: _auth_id
+  type: 0
+  section: Connect
+  required: false
+  hidden: true
+- display: Token
+  name: _tenant_id
+  type: 0
+  section: Connect
+  required: false
+  hidden: true
 - displaypassword: Key
   section: Connect
   name: credentials
