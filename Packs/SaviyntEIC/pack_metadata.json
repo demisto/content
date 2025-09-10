@@ -1,0 +1,47 @@
+{
+  "name": "SaviyntEIC",
+  "description": "Collect audit logs from Saviynt Enterprise Identity Cloud (EIC) via Analytics Runtime Control V2.",
+  "support": "partner",
+  "currentVersion": "1.0.0",
+  "author": "Saviynt",
+  "url": "https://www.saviynt.com/",
+  "email": "",
+  "created": "2025-09-10T00:00:00Z",
+  "certification": "",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [
+    "Saviynt",
+    "EIC",
+    "SIEM"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Saviynt",
+    "EIC",
+    "Audit Logs"
+  ],
+  "dependencies": {
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
+    },
+    "CommonPlaybooks": {
+      "mandatory": true,
+      "display_name": "Common Playbooks"
+    }
+  },
+  "marketplaces": [
+    "marketplacev2",
+    "platform"
+  ],
+  "defaultDataSource": "SaviyntEICEventCollector",
+  "supportedModules": [
+    "X1",
+    "X3",
+    "X5",
+    "ENT_PLUS",
+    "agentix"
+  ]
+}

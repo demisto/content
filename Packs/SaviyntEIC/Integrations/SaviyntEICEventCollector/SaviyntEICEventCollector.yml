@@ -1,0 +1,94 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: SaviyntEICEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Analytics Name
+  name: analytics_name
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: '10000'
+  section: Collect
+  display: Max number of events per fetch (cap 10000)
+  name: max_events_per_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  section: Collect
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Collector for Saviynt Enterprise Identity Cloud (EIC) audit logs using Analytics Runtime Control V2.
+display: SaviyntEIC Event Collector
+name: SaviyntEICEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - default: false
+      description: Maximum number of results to return (max 10000).
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      description: Time frame in minutes back from now to query.
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: Offset for paging.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets audit log events from Saviynt EIC.
+    execution: false
+    name: get-events
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)

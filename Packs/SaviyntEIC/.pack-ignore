@@ -1,0 +1,4 @@
+# Add files or patterns to exclude from validation here
+# Example:
+# Ignore all image files in the pack:
+# **/*.png
