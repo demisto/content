@@ -123,3 +123,39 @@ class TestBuiltInService:
 
         result = unshorten_url(service_name="Built-In", url=args["url"], redirect_limit=args["redirect_limit"])
         assert result.outputs == expected_output
+
+    def test_exception_during_redirect(self, mocker):
+        """
+        Given: A URL that redirects successfully once, then throws an exception on the second redirect.
+        When: Calling the `unshorten_url` function with redirect_limit=0 (unlimited).
+        Then: Ensure that when an exception occurs during redirect and redirect limit hasn't been hit,
+              encountered_error is set to True and the function breaks out of the redirect loop.
+        """
+        first_response = self.get_response_mock(
+            url="https://short.url/redirect-exception",
+            redirect_url="https://intermediate.url/step1"
+        )
+        
+        # Mock the _http_request to return first response, then raise exception on second call
+        def side_effect_with_exception(*args, **kwargs):
+            if side_effect_with_exception.call_count == 0:
+                side_effect_with_exception.call_count += 1
+                return first_response
+            else:
+                raise requests.exceptions.ConnectionError("Connection failed during redirect")
+        
+        side_effect_with_exception.call_count = 0
+        mocker.patch.object(BaseClient, "_http_request", side_effect=side_effect_with_exception)
+        
+        result = unshorten_url(
+            service_name="Built-In",
+            url="https://short.url/redirect-exception",
+            redirect_limit=0  # Unlimited redirects, so hit_redirect_limit should return False
+        )
+        
+        expected_output = load_test_data("built-in", "redirect_exception_expected_output")
+        
+        assert result.outputs == expected_output
+        assert result.outputs["EncounteredError"] is True
+        assert result.outputs["RedirectCount"] == 1  # Should have one redirect before exception
+        assert result.outputs["ResolvedURL"] == "https://intermediate.url/step1"  # Should stop at last successful URL
