@@ -4201,9 +4201,9 @@ def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResult
     Returns:
         CommandResults: JSON response of added tags.
     """
-    result = client.add_feed_tags(args).get('created_or_updated')
-    uuid = args.get('feed_uuid')
-    tags = args.get('tags')
+    result = client.add_feed_tags(args).get("created_or_updated")
+    uuid = args.get("feed_uuid")
+    tags = args.get("tags")
 
     return CommandResults(
         outputs_prefix="SilentPush.AddFeedTags",
@@ -4232,9 +4232,9 @@ def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     Returns:
         CommandResults: JSON response of added indicators.
     """
-    result = client.add_indicators(args).get('created_or_updated')
-    indicators = args.get('indicators')
-    feed_uuid = args.get('feed_uuid')
+    result = client.add_indicators(args).get("created_or_updated")
+    indicators = args.get("indicators")
+    feed_uuid = args.get("feed_uuid")
 
     return CommandResults(
         outputs_prefix="SilentPush.AddIndicators",
@@ -4264,8 +4264,8 @@ def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: JSON response of added indicator tags.
     """
     result = client.add_indicators_tags(args)
-    tags = args.get('tags')
-    indicator_name = args.get('indicator_name')
+    tags = args.get("tags")
+    indicator_name = args.get("indicator_name")
 
     return CommandResults(
         outputs_prefix="SilentPush.AddIndicatorTags",
@@ -4339,7 +4339,6 @@ def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, 
     # Return fileResult
     file_entry = fileResult(filename, response.content, file_type=EntryType.ENTRY_INFO_FILE)
     return file_entry
-    
 
 
 """ MAIN FUNCTION """

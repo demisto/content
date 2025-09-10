@@ -45,7 +45,7 @@ from SilentPush import (
     validate_ip,
     extract_and_sort_asn_reputation,
     generate_no_reputation_response,
-    prepare_asn_reputation_table
+    prepare_asn_reputation_table,
 )
 from CommonServerPython import DemistoException, EntryType
 
@@ -1427,7 +1427,7 @@ def test_add_indicators_tags_command_success(mock_client):
     test_uuid = str(uuid.uuid4())
     test_indicator = "example.com"
     test_tags = ["test", "phishing"]
-    expected_output = f"Indicator Tags: '['test', 'phishing']' added to indicator 'example.com"
+    expected_output = "Indicator Tags: '['test', 'phishing']' added to indicator 'example.com"
 
     args = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags": test_tags}
 
@@ -1502,7 +1502,7 @@ def test_get_data_exports_command_success(mock_client):
 def test_add_feed_tags_command_success(mocker):
     # Mock args
     args = {"feed_uuid": "abc123", "tags": "malware"}
-    expected_output = f"feed with uuid: abc123 was updated with tags: malware"
+    expected_output = "feed with uuid: abc123 was updated with tags: malware"
 
     # Mocked result returned by client.add_feed_tags
     mock_response = {"created_or_updated": [{"uuid": "8eb9c1b8-edbb-4081-9978-590f5c5a0319", "tag": "phishing"}]}
@@ -1523,13 +1523,10 @@ def test_add_feed_tags_command_success(mocker):
     assert result.raw_response == expected_res
     assert expected_output in result.readable_output
 
+
 def test_parse_arguments_valid():
     """Test parsing with all valid arguments"""
-    args = {
-        "domains": "example.com, test.com",
-        "fetch_risk_score": "true",
-        "fetch_whois_info": "false"
-    }
+    args = {"domains": "example.com, test.com", "fetch_risk_score": "true", "fetch_whois_info": "false"}
 
     # Run the function
     domains, fetch_risk_score, fetch_whois_info = parse_arguments(args)
@@ -1538,11 +1535,13 @@ def test_parse_arguments_valid():
     assert fetch_risk_score is True
     assert fetch_whois_info is False
 
+
 def test_parse_arguments_no_domains():
     """Test when no domains are provided"""
     args = {"fetch_risk_score": "true"}
     with pytest.raises(DemistoException, match="No domains provided"):
         parse_arguments(args)
+
 
 def test_format_domain_with_risk_and_whois():
     """Test formatting with risk score and WHOIS info"""
@@ -1552,10 +1551,7 @@ def test_format_domain_with_risk_and_whois():
                 "domain": "example.com",
                 "risk_score": 85,
                 "risk_score_explanation": "High reputation risk",
-                "whois_info": {
-                    "registrant": "John Doe",
-                    "country": "US"
-                },
+                "whois_info": {"registrant": "John Doe", "country": "US"},
             }
         ]
     }
@@ -1569,6 +1565,7 @@ def test_format_domain_with_risk_and_whois():
     assert "John Doe" in result
     assert "High reputation risk" in result
 
+
 def test_format_certificate_info_success():
     cert = {
         "issuer": "Let's Encrypt",
@@ -1577,7 +1574,7 @@ def test_format_certificate_info_success():
         "subject": str({"CN": "example.com"}),
         "domains": ["example.com", "www.example.com"],
         "serial_number": "1234567890",
-        "fingerprint_sha256": "abcdef1234567890"
+        "fingerprint_sha256": "abcdef1234567890",
     }
 
     result = format_certificate_info(cert)
@@ -1590,6 +1587,7 @@ def test_format_certificate_info_success():
     assert result["Serial Number"] == "1234567890"
     assert result["Fingerprint SHA256"] == "abcdef1234567890"
 
+
 def test_validate_ip_invalid_ipv4(mock_client):
     """Test validate_ip raises DemistoException for an invalid IPv4 address"""
     resource = "ipv4"
@@ -1598,6 +1596,7 @@ def test_validate_ip_invalid_ipv4(mock_client):
 
     with pytest.raises(DemistoException, match=f"Invalid {resource.upper()} address: {value}"):
         validate_ip(mock_client, resource, value)
+
 
 def test_extract_and_sort_asn_reputation():
     """Test ASN reputation extraction and sorting by date"""
@@ -1621,6 +1620,7 @@ def test_extract_and_sort_asn_reputation():
 
     assert result == expected
 
+
 def test_generate_no_reputation_response():
     asn = "AS12345"
     raw_response = {"status": "success", "message": "No data available"}
@@ -1632,6 +1632,7 @@ def test_generate_no_reputation_response():
 
     # Validate readable_output
     assert result.readable_output == f"No reputation data found for ASN {asn}."
+
 
 def test_prepare_asn_reputation_table_with_explain():
     asn_reputation = [
