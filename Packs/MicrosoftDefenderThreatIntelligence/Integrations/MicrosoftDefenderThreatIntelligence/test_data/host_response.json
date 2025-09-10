@@ -1,0 +1,8 @@
+{
+    "@odata.type": "#microsoft.graph.security.hostname",
+    "id": "contoso.com",
+    "firstSeenDateTime": "2009-09-02T03:29:10.000Z",
+    "lastSeenDateTime": "2009-09-02T03:29:10.000Z",
+    "registrar": "MarkMonitor Inc.",
+    "registrant": "Microsoft Corporation"
+}
