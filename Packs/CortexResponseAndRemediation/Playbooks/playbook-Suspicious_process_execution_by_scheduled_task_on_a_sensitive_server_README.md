@@ -8,7 +8,7 @@ Analysis:
 
 Investigation:
 
-- Searches for related XSIAM agent alerts to identify any malicious activity on the server.
+- Searches for related alerts to identify any malicious activity on the server.
 
 Remediation:
 
