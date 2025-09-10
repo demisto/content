@@ -1,4 +1,4 @@
-Trellix Email Security - Cloud allows you to fetch events of type Alert, Email Trace ad Activity Log from your system.
+Trellix Email Security - Cloud enables you to fetch events of type Alert, Email Trace, and Activity Log from your system.
 
 # Configuring API keys
 Follow these steps to configure API keys:

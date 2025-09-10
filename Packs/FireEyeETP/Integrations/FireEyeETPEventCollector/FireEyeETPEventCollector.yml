@@ -60,7 +60,7 @@ configuration:
   advanced: true
   defaultvalue: 'true'
   additionalinfo: Hide subject and attachments details from emails.
-description: Use this integration to fetch email security incidents from Trellix Email Security - Cloud as XSIAM events.
+description: Use this integration to fetch email security incidents from Trellix Email Security - Cloud as Cortex XSIAM events.
 display: Trellix Email Security - Cloud Event Collector
 name: FireEye ETP Event Collector
 script:
