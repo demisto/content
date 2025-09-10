@@ -36,6 +36,7 @@ configuration:
     name: first_fetch
     required: false
     type: 0
+    section: Collect
   - display: Use system proxy settings
     name: proxy
     type: 8

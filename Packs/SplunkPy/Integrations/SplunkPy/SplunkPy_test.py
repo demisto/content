@@ -227,6 +227,7 @@ SAMPLE_RESPONSE = [
         "tag::eventtype": "modaction_result",
         "timestamp": "none",
         "urgency": "informational",
+        "last_modified_timestamp": "1737547610.488234",
     },
 ]
 
@@ -2188,7 +2189,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Closed", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Closed",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.49",
+                },
             ],
             {
                 "close_incident": True,
@@ -2209,7 +2216,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "New", "event_id": "id", "rule_id": "id", "status_end": "false"},
+                {
+                    "status_label": "New",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "false",
+                    "last_modified_timestamp": "1737547610.50",
+                },
             ],
             {
                 "close_incident": True,
@@ -2222,7 +2235,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "false"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "false",
+                    "last_modified_timestamp": "1737547610.51",
+                },
             ],
             {
                 "close_incident": True,
@@ -2243,7 +2262,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "false"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "false",
+                    "last_modified_timestamp": "1737547610.52",
+                },
             ],
             {
                 "close_incident": True,
@@ -2256,7 +2281,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.53",
+                },
             ],
             {
                 "close_incident": True,
@@ -2277,7 +2308,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.54",
+                },
             ],
             {
                 "close_incident": True,
@@ -2291,7 +2328,13 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
         (
             [
                 results.Message("INFO-TEST", "test message"),
-                {"status_label": "Custom", "event_id": "id", "rule_id": "id", "status_end": "true"},
+                {
+                    "status_label": "Custom",
+                    "event_id": "id",
+                    "rule_id": "id",
+                    "status_end": "true",
+                    "last_modified_timestamp": "1737547610.55",
+                },
             ],
             {
                 "close_incident": True,
@@ -2419,6 +2462,7 @@ def test_get_modified_remote_data_command_add_comment(mocker):
         "status_end": "false",
         "comment": "new comment from splunk",
         "reviewer": "admin",
+        "last_modified_timestamp": "1737547610.56",
         "review_time": "1612881691.589575",
     }
     entry_tempale = {"EntryContext": {"mirrorRemoteId": test_id}, "Type": 1}
@@ -2454,7 +2498,11 @@ def test_get_modified_remote_data_command_add_comment(mocker):
 
 
 def test_get_modified_remote_data_command(mocker):
-    updated_incidet_review = {"rule_id": "id", "event_id": "id"}
+    updated_incidet_review = {
+        "rule_id": "id",
+        "event_id": "id",
+        "last_modified_timestamp": "1737547610.56",
+    }
     service = mocker.patch.object(client, "Service")
     func_call_kwargs = {
         "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
@@ -3721,28 +3769,38 @@ class ServiceIndex:
 
 
 @pytest.mark.parametrize(
-    "given_indexes, service_indexes, expected",
+    "indexes_to_validate, existing_indexes, expected_invalid",
     [
-        # Test case: All indexes exist in the service
-        (["index1", "index2"], ["index1", "index2", "index3"], True),
-        # Test case: Some indexes do not exist in the service
-        (["index1", "index4"], ["index1", "index2", "index3"], False),
-        # Test case: Empty input indexes list
-        ([], ["index1", "index2", "index3"], True),
+        (["main", "history"], ["main", "history", "summary"], set()),
+        (["main", "invalid"], ["main", "history"], {"invalid"}),
+        ([], ["main", "history"], set()),
+        (["main"], [], {"main"}),
     ],
 )
-def test_validate_indexes(given_indexes, service_indexes, expected):
-    """
-    Given: A list of indexes' names.
-    When: Calling validate_indexes function.
-    Then: The function returns `True` if all the given index names exist within the Splunk service instance;
-          otherwise, it returns `False`.
-    """
-    from SplunkPy import validate_indexes
+def test_get_invalid_indexes(mocker, indexes_to_validate, existing_indexes, expected_invalid):
+    """Tests the get_invalid_indexes function for various scenarios."""
+    from SplunkPy import get_invalid_indexes, client
 
-    service = ServiceIndex(service_indexes)
-    # Assert that the function returns the expected result
-    assert validate_indexes(given_indexes, service) == expected
+    service_mock = MagicMock(spec=client.Service, create=True)
+    service_mock.indexes = []
+    for index_name in existing_indexes:
+        mock_index = MagicMock(spec=client.Index)
+        mock_index.name = index_name
+        service_mock.indexes.append(mock_index)
+
+    result = get_invalid_indexes(indexes_to_validate, service_mock)
+    assert result == expected_invalid
+
+
+def test_get_invalid_indexes_api_error(mocker):
+    """Tests that get_invalid_indexes returns None when the Splunk API call fails."""
+    from SplunkPy import get_invalid_indexes, client
+
+    service_mock = MagicMock(spec=client.Service, create=True)
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
+    result = get_invalid_indexes(["main"], service_mock)
+    assert result is None
 
 
 @pytest.mark.parametrize(
@@ -3804,11 +3862,11 @@ def test_parse_fields(fields, expected):
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")
 @patch("SplunkPy.extract_indexes")
-@patch("SplunkPy.validate_indexes")
+@patch("SplunkPy.get_invalid_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
-    mock_validate_indexes,
+    mock_get_invalid_indexes,
     mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
@@ -3832,7 +3890,7 @@ def test_splunk_submit_event_hec(
 
     # Mocks
     mock_parse_fields.return_value = parsed_fields
-    mock_validate_indexes.return_value = True
+    mock_get_invalid_indexes.return_value = set()
 
     if event:
         # Single event
@@ -3936,6 +3994,7 @@ def test_get_modified_remote_data_command_with_user_mapping(mocker, should_map_u
     mocker.patch.object(splunk.UserMappingObject, "get_xsoar_user_by_splunk", return_value=mapped_user)
     mocker.patch("SplunkPy.results.JSONResultsReader", side_effect=lambda res: res)
     mocked_service = mocker.patch("SplunkPy.client.Service")
+    mocker.patch("SplunkPy.get_integration_context")
     mocked_service.jobs.oneshot = (
         lambda query, **kwargs: [SAMPLE_INCIDENT_REVIEW_RESPONSE[0]] if "`incident_review`" in query else [notable_without_owner]
     )
@@ -4200,3 +4259,140 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
     res = splunk.parse_batch_of_results(mock_result_batch, 10, "")
 
     assert res == expected_res
+
+
+def test_splunk_submit_event_hec_command_index_validation_api_error(mocker):
+    """
+    Given:
+        - An event to submit to Splunk via HEC.
+        - The Splunk API call to retrieve indexes fails.
+    When:
+        - Calling splunk_submit_event_hec_command.
+    Then:
+        - A warning should be returned to the user.
+        - The event submission should still be attempted.
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    from splunklib.client import Service
+
+    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "test_index"}])
+    mocker.patch("SplunkPy.demisto.error")
+    mocker.patch("sys.exit")
+    post_mock = mocker.patch("requests.post")
+    # Mock a successful response to prevent downstream errors
+    response_mock = MagicMock()
+    response_mock.text = '{"text":"Success","code":0,"ackId":123}'
+    post_mock.return_value = response_mock
+    warning_mock = mocker.patch("SplunkPy.return_warning")
+
+    service_mock = MagicMock(spec=Service, create=True)
+    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
+
+    splunk_submit_event_hec_command(
+        params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args={"entry_id": "entry_id"}
+    )
+
+    warning_mock.assert_called_once_with(
+        "Could not verify the existence of Splunk indexes due to an API error. "
+        "Proceeding with event submission. Check the logs for more details. "
+        "If submission fails, contact Splunk support."
+    )
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"entry_id": "entry_id"},
+        {"index": "invalid_index", "event": {"event_data": "event_data"}},
+    ],
+)
+def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, args):
+    """
+    Given:
+        - An event to submit to Splunk via HEC with an invalid index.
+    When:
+        - Calling splunk_submit_event_hec_command.
+    Then:
+        - A DemistoException should be raised with the invalid index name.
+    """
+    from SplunkPy import splunk_submit_event_hec_command
+    from splunklib.client import Service
+
+    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "invalid_index"}])
+    mocker.patch(RETURN_ERROR_TARGET)
+    requests_mock.post("https://splunk.test.com/services/collector/event")
+
+    service_mock = MagicMock(spec=Service)
+    index_mock = MagicMock()
+    index_mock.name = "valid_index"
+    service_mock.indexes = [index_mock]
+
+    with pytest.raises(DemistoException) as e:
+        splunk_submit_event_hec_command(
+            params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
+        )
+    assert "The following Splunk indexes do not exist: invalid_index." in str(e.value)
+
+
+def test_get_modified_remote_data_skips_cached_events(mocker):
+    """
+    Given:
+        - An initial run of get_modified_remote_data_command processes an event.
+    When:
+        - get_modified_remote_data_command is called a second time, and the same event is mirrored again.
+    Then:
+        - Ensure the event from the second run is skipped because its key (event_id:timestamp) is already in the cache.
+    """
+    from SplunkPy import get_modified_remote_data_command
+
+    test_id = "event_123"
+    timestamp = "1737547610.49"
+    event_key = f"{test_id}:{timestamp}"
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": False,
+        "close_end_statuses": False,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(MagicMock(), False),
+        "comment_tag_from_splunk": "from_splunk",
+    }
+
+    # Mock Splunk API responses
+    incident_review_response = [
+        {
+            "rule_id": test_id,
+            "last_modified_timestamp": timestamp,
+            "event_id": test_id,
+        }
+    ]
+
+    # === First Run: Process and cache the event ===
+    mocker.patch("splunklib.results.JSONResultsReader", return_value=incident_review_response)
+    mocker.patch("SplunkPy.get_integration_context", return_value={})
+    mocker.patch("SplunkPy.demisto.results")
+    mocker.patch("SplunkPy.demisto.params", return_value={"timezone": "0"})
+    set_context_mock = mocker.patch("SplunkPy.set_integration_context")
+    extensive_log_mock = mocker.patch("SplunkPy.extensive_log")
+
+    get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
+    results = demisto.results.call_args[0][0][0]["Contents"]
+
+    assert results["event_id"] == test_id
+
+    # Assert the event was cached
+    set_context_mock.assert_called_once()
+    cached_context = set_context_mock.call_args[0][0]
+    assert cached_context.get("processed_mirror_in_events_cache") == [event_key]
+
+    # === Second Run: Should skip the cached event ===
+    mocker.patch("SplunkPy.get_integration_context", return_value=cached_context)
+    set_context_mock.reset_mock()
+    demisto.results.reset_mock()
+    extensive_log_mock.reset_mock()
+
+    get_modified_remote_data_command(MagicMock(), **func_call_kwargs)
+
+    # Assert no new events were processed
+    results = demisto.results.call_args[0][0]
+    assert len(results) == 0
+    assert extensive_log_mock.call_args_list[0].contains("mirror-in: no notables was changed since")

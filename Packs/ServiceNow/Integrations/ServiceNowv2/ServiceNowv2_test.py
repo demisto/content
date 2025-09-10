@@ -9,7 +9,6 @@ import demistomock as demisto
 import pytest
 import requests
 
-
 import ServiceNowv2
 import jwt
 
@@ -2693,6 +2692,65 @@ def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
     else:
         res = get_ticket_fields(args)
         assert res == expected_ticket_fields
+
+
+def test_add_default_closure_fields_to_delta_sets_defaults():
+    """
+    Given a delta dict missing all closure fields,
+    When add_default_closure_fields_to_delta is called,
+    Then it sets all defaults.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {}
+    result = add_default_closure_fields_to_delta(delta.copy())
+    assert result["close_code"] == "Resolved by caller"
+    assert (
+        result["close_notes"] == "This is the resolution note required by ServiceNow to move the incident to the Resolved state."
+    )
+
+
+def test_add_default_closure_fields_to_delta_preserves_existing():
+    """
+    Given a delta dict with some closure fields set,
+    When add_default_closure_fields_to_delta is called,
+    Then it does not overwrite existing fields.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {"state": "6", "close_code": "Already closed"}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="Resolved", close_notes="Closed.")
+    assert result["state"] == "6"  # Should not overwrite
+    assert result["close_code"] == "Already closed"  # Should not overwrite
+    assert result["close_notes"] == "Closed."  # Should set default if missing
+
+
+def test_add_default_closure_fields_to_delta_custom_values():
+    """
+    Given custom close_code and close_notes,
+    When add_default_closure_fields_to_delta is called,
+    Then it sets the custom values if missing in delta.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
+    assert result["close_code"] == "CustomCode"
+    assert result["close_notes"] == "CustomNotes"
+
+
+def test_add_default_closure_fields_to_delta_partial():
+    """
+    Given a delta dict missing some closure fields,
+    When add_default_closure_fields_to_delta is called,
+    Then it only sets missing fields.
+    """
+    from ServiceNowv2 import add_default_closure_fields_to_delta
+
+    delta = {"close_code": "Manual"}
+    result = add_default_closure_fields_to_delta(delta.copy(), close_code="CustomCode", close_notes="CustomNotes")
+    assert result["close_code"] == "Manual"  # Should not overwrite
+    assert result["close_notes"] == "CustomNotes"
 
 
 def test_clear_fields_for_update_remote_system():

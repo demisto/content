@@ -4,6 +4,8 @@ alter
 | alter
     _time = parse_timestamp("%Y-%m-%d %k:%M:%S", tmp_unite_date_time)
 | fields -tmp_unite_date_time;
+
+
 [RULE: Log_Sample_v2]
 alter 
     tmp_date = arrayindex(regextract(_raw_log, "date\=(\d{4}\-\d{2}\-\d{2})"),0),
@@ -15,7 +17,7 @@ alter
 | alter 
     _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3S", tmp_time_date)
 | alter 
-    tmp_keys = if(_raw_log ~= "subtype\=",arrayconcat(arraycreate("date","time","device_id","log_id","type","subtype","priority"),regextract(_raw_log, "(\S+)\=\".*?\"")),arrayconcat(arraycreate("date","time","device_id","log_id","type","priority"),regextract(_raw_log, "(\S+)\=\".*?\""))),
+    tmp_keys = if(_raw_log ~= "subtype\=",arrayconcat(arraycreate("date","time","device_id","log_id","type","subtype","priority"),regextract(_raw_log, "([A-Za-z_]+?)=\"")),arrayconcat(arraycreate("date","time","device_id","log_id","type","priority"),regextract(_raw_log, "([A-Za-z_]+?)=\""))),
     tmp_values = if(_raw_log ~= "subtype\=",arraystring(arrayconcat(regextract(_raw_log, "date\=(\d{4}\-\d{2}\-\d{2})"),regextract(_raw_log, "time\=(\d{2}\:\d{2}\:\d{2}\.\d+)"), regextract(_raw_log, "device\_id\=([^\s]+)"),regextract(_raw_log , "log\_id\=(\d+)"),regextract(_raw_log,"\stype\=([^\s]+)"),regextract(_raw_log,"\ssubtype\=([^\s]+)"),regextract(_raw_log,"pri\=([^\s]+)"),regextract(_raw_log, "[a-z_]+\=\"(.*?\")")), "|"),arraystring(arrayconcat(regextract(_raw_log, "date\=(\d{4}\-\d{2}\-\d{2})"),regextract(_raw_log, "time\=(\d{2}\:\d{2}\:\d{2}\.\d+)"), regextract(_raw_log, "device\_id\=([^\s]+)"),regextract(_raw_log , "log\_id\=(\d+)"),regextract(_raw_log,"\stype\=([^\s]+)"),regextract(_raw_log,"pri\=([^\s]+)"),regextract(_raw_log, "[a-z_]+\=\"(.*?\")")), "|"))
 | alter
     tmp_values = replex(tmp_values ,"\|\"","|null")
@@ -28,8 +30,14 @@ alter
 | alter
     parsed_fields = regexcapture(tmp_values, tmp_obj_struct)
 | fields -tmp*;
-[INGEST:vendor="fortinet", product="fortimail", target_dataset="fortinet_fortimail_raw", no_hit=keep]
+
+
+[INGEST:vendor="fortinet", product="fortimail", target_dataset="fortinet_fortimail_raw", no_hit=drop]
 filter len(Message) > 0
 | call Log_Sample_v1;
+
 filter _raw_log ~= "\w+\=\d{4}\-\d{2}\-\d{2}\s\w+\=\d{2}\:\d{2}\:\d{2}\.\d+\s\w+\=[A-Za-z0-9]+"
 | call Log_Sample_v2;
+
+filter _raw_log !~= "\w+\=\d{4}\-\d{2}\-\d{2}\s\w+\=\d{2}\:\d{2}\:\d{2}\.\d+\s\w+\=[A-Za-z0-9]+" and (len(Message) = 0 or Message = null)
+| alter _time = _insert_time; 

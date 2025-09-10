@@ -1,0 +1,516 @@
+id: ANYRUN Detonate Url Windows
+version: -1
+name: ANYRUN Detonate Url Windows
+fromversion: 6.0.0
+description: This playbook submits a URL extracted from an indicator to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It automates the analysis of potentially malicious URLs on Windows OS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0eb04656-15f7-49ca-83d1-6b2d0c319b66
+    type: start
+    task:
+      id: 0eb04656-15f7-49ca-83d1-6b2d0c319b66
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -154,
+          "y": -316
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ba727b14-8224-4cc4-a7a5-07eb0088482f
+    type: regular
+    task:
+      id: ba727b14-8224-4cc4-a7a5-07eb0088482f
+      version: -1
+      name: '[ANY.RUN] Detonate URL Windows'
+      description: Perform URL analysis using Windows VM.
+      script: '|||anyrun-detonate-url-windows'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      env_bitness:
+        simple: ${inputs.env_bitness}
+      env_locale:
+        simple: ${inputs.env_locale}
+      env_type:
+        simple: ${inputs.env_type}
+      env_version:
+        simple: ${inputs.env_version}
+      obj_ext_browser:
+        simple: ${inputs.obj_ext_browser}
+      obj_ext_extension:
+        simple: ${inputs.obj_ext_extension}
+      obj_url:
+        simple: ${inputs.obj_url}
+      opt_network_connect:
+        simple: ${inputs.opt_network_connect}
+      opt_network_fakenet:
+        simple: ${inputs.opt_network_fakenet}
+      opt_network_geo:
+        simple: ${inputs.opt_network_geo}
+      opt_network_mitm:
+        simple: ${inputs.opt_network_mitm}
+      opt_network_residential_proxy:
+        simple: ${inputs.opt_network_residential_proxy}
+      opt_network_residential_proxy_geo:
+        simple: ${inputs.opt_network_residential_proxy_geo}
+      opt_network_tor:
+        simple: ${inputs.opt_network_tor}
+      opt_privacy_type:
+        simple: ${inputs.opt_privacy_type}
+      opt_timeout:
+        simple: ${inputs.opt_timeout}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 227,
+          "y": 411
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 06fba4d0-2f3f-47e4-b7f2-c55edc19c029
+    type: regular
+    task:
+      id: 06fba4d0-2f3f-47e4-b7f2-c55edc19c029
+      version: -1
+      name: '[ANY.RUN] Get analysis summary'
+      description: Returns the analysis report summary.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      incident_info:
+        simple: ${incident}
+      report_format:
+        simple: html
+      task_uuid:
+        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 998
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 112fe74f-1801-42e0-bd7d-e6f1146bf06c
+    type: title
+    task:
+      id: 112fe74f-1801-42e0-bd7d-e6f1146bf06c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -154,
+          "y": 1488
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 953830ac-79b0-42f2-83c9-509386fcfe8e
+    type: condition
+    task:
+      id: 953830ac-79b0-42f2-83c9-509386fcfe8e
+      version: -1
+      name: Is there any URL to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.obj_url
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 66,
+          "y": 143
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6bda10d8-8658-450e-9c09-071864fe4814
+    type: condition
+    task:
+      id: 6bda10d8-8658-450e-9c09-071864fe4814
+      version: -1
+      name: Is there an active ANY.RUN instance?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: ANY.RUN Cloud Sandbox
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -154,
+          "y": -98
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ef81e54c-6bc4-4b82-b668-f9c1801aee6a
+    type: condition
+    task:
+      id: ef81e54c-6bc4-4b82-b668-f9c1801aee6a
+      version: -1
+      name: Was a malicious or suspicious verdict received?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: ANYRUN.SandboxAnalysisReportVerdict
+            iscontext: true
+          right:
+            value:
+              simple: No threats detected
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 227,
+          "y": 806
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
+    type: regular
+    task:
+      id: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
+      version: -1
+      name: '[ANY.RUN] Get analysis verdict'
+      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
+      script: '|||anyrun-get-analysis-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      task_uuid:
+        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 227,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f12c2188-8e8f-4cc2-9316-53932fef1fcb
+    type: regular
+    task:
+      id: f12c2188-8e8f-4cc2-9316-53932fef1fcb
+      version: -1
+      name: '[ANY.RUN] Load IOCs to Threat Intel'
+      description: Returns the analysis report summary.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incident_info:
+        simple: ${incident}
+      report_format:
+        simple: ioc
+      task_uuid:
+        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 447,
+          "y": 1179
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_5_#default#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1864,
+        "width": 982,
+        "x": -154,
+        "y": -316
+      }
+    }
+  }
+inputs:
+- key: obj_url
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link)'
+  playbookInputQuery:
+- key: env_locale
+  value:
+    simple: en-US
+  required: false
+  description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery:
+- key: env_bitness
+  value:
+    simple: "64"
+  required: false
+  description: Bitness of Operation System. Supports 32, 64
+  playbookInputQuery:
+- key: env_version
+  value:
+    simple: "10"
+  required: false
+  description: 'Version of OS. Supports: 7, 10, 11'
+  playbookInputQuery:
+- key: env_type
+  value:
+    simple: complete
+  required: false
+  description: Environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required
+  playbookInputQuery:
+- key: opt_network_connect
+  value:
+    simple: "True"
+  required: false
+  description: Network connection state.
+  playbookInputQuery:
+- key: opt_network_fakenet
+  value:
+    simple: "False"
+  required: false
+  description: FakeNet feature status.
+  playbookInputQuery:
+- key: opt_network_tor
+  value:
+    simple: "False"
+  required: false
+  description: TOR using.
+  playbookInputQuery:
+- key: opt_network_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Tor geo location option. Example: US, AU.'
+  playbookInputQuery:
+- key: opt_network_mitm
+  value:
+    simple: "False"
+  required: false
+  description: HTTPS MITM proxy option.
+  playbookInputQuery:
+- key: opt_network_residential_proxy
+  value:
+    simple: "False"
+  required: false
+  description: Residential proxy using.
+  playbookInputQuery:
+- key: opt_network_residential_proxy_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Residential proxy geo location option. Example: US, AU.'
+  playbookInputQuery:
+- key: opt_privacy_type
+  value:
+    simple: bylink
+  required: false
+  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  playbookInputQuery:
+- key: opt_timeout
+  value:
+    simple: "60"
+  required: false
+  description: 'Timeout option. Size range: 10-660.'
+  playbookInputQuery:
+- key: obj_ext_browser
+  value:
+    simple: Google Chrome
+  required: false
+  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge'
+  playbookInputQuery:
+- key: obj_ext_extension
+  value:
+    simple: "True"
+  required: false
+  description: Change extension to valid
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - obj_url
+  name: General (Inputs group)
+  description: Generic group for inputs
+- inputs:
+  - env_locale
+  - env_bitness
+  - env_version
+  - env_type
+  name: Environment
+  description: ""
+- inputs:
+  - opt_network_connect
+  - opt_network_fakenet
+  - opt_network_tor
+  - opt_network_geo
+  - opt_network_mitm
+  - opt_network_residential_proxy
+  - opt_network_residential_proxy_geo
+  - opt_privacy_type
+  - opt_timeout
+  name: Options
+  description: ""
+- inputs:
+  - obj_ext_browser
+  - obj_ext_extension
+  name: Object
+  description: ""
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)

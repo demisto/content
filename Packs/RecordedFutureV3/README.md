@@ -9,7 +9,7 @@ ever leaving the SOC console.
 > **Heads-up:** This pack replaces the alert-centric capabilities that previously lived in the *Recorded Future
 Intelligence* pack - namely the *Recorded Future v2* and *Recorded Future - Playbook Alerts* integrations.
 >
-> See [Guide: Migrating from Recorded Future Intelligence pack](doc_files/migrate_from_recorded_future_intelligence_pack.md) for more details.
+> See [Guide: Migrating from Recorded Future Intelligence pack](https://github.com/demisto/content/blob/master/Packs/RecordedFutureV3/doc_files/migrate_from_recorded_future_intelligence_pack.md) for more details.
 
 ---
 
@@ -51,7 +51,7 @@ Fetch & triage Recorded Future Classic and Playbook alerts.
 | **rf-alert-images** | Retrieve the latest screenshots for an alert and attach them to the incident. |
 
 Full parameter, example, and context details are available in
-the [integration README](./Integrations/RecordedFutureAlerts/README.md).
+the [integration README](https://xsoar.pan.dev/docs/reference/integrations/recorded-future-alerts).
 
 ---
 
@@ -100,9 +100,9 @@ Future workspace.
 ## Additional resources
 
 * Integration command reference and examples - see
-  the [Recorded Future Alerts integration README](Integrations/RecordedFutureAlerts/README.md).
+  the [Recorded Future Alerts integration README](https://xsoar.pan.dev/docs/reference/integrations/recorded-future-alerts).
 * Recorded Future product documentation - <https://support.recordedfuture.com/hc/en-us>
-* [Guide: migrating from Recorded Future Intelligence pack](doc_files/migrate_from_recorded_future_intelligence_pack.md)
+* [Guide: migrating from Recorded Future Intelligence pack](https://github.com/demisto/content/blob/master/Packs/RecordedFutureV3/doc_files/migrate_from_recorded_future_intelligence_pack.md)
 
 ---
 

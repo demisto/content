@@ -53,7 +53,7 @@ class Client(BaseClient):
         risk_score_threshold: int = 0,
         tags: list | None = None,
         tlp_color: str | None = None,
-        performance: bool = False,
+        performance: bool = True,
     ):
         """
         Attributes:
@@ -69,7 +69,8 @@ class Client(BaseClient):
              suspicious_threshold: The minimum score from the feed in order to to determine whether the indicator is suspicious. Ranges up to the malicious_threshold.
              risk_score_threshold: The minimum score to filter out the ingested indicators.
              tags: A list of tags to add to indicators
-             :param tlp_color: Traffic Light Protocol color
+             tlp_color: Traffic Light Protocol color
+             performance: Bool. Whether to improve the feed performance by removing the rawJSON from the indicators. Note: A loss of data may occur when this is set to true.
         """  # noqa: E501
         if tags is None:
             tags = []
@@ -520,7 +521,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                         "recordedfutureevidencedetails": lower_case_evidence_details_keys,
                         "tags": client.tags,
                         "recordedfutureriskscore": risk,
-                        "recordedfutureriskrulecount": raw_json.get("RiskString", ""),
+                        "fieldrecordedfutureriskrules": raw_json.get("RiskString", ""),
                         "recordedfuturefeedthreatassessment": raw_json.get("Criticality Label", ""),
                     },
                     "score": score,
@@ -627,7 +628,7 @@ def main():  # pragma: no cover
         params.get("risk_score_threshold"),
         argToList(params.get("feedTags")),
         params.get("tlp_color"),
-        argToBoolean(params.get("performance") or True),
+        argToBoolean(params.get("performance", True)),
     )
     demisto.debug("RF: Finished initializing client")
     command = demisto.command()
