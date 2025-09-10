@@ -1,14 +1,14 @@
 args:
-- description: 'Hello command - prints hello to anyone.'
-  name: name
+- description: ''
+  name: alertID
+- name: UserName
 comment: Hello World Script.
 commonfields:
   id: HelloWorldScript
   version: -1
 name: HelloWorldScript
 outputs:
-- contextPath: HelloWorld.hello
-  description: Should be Hello **something** here.
+- contextPath: hello.world.result
   type: String
 script: '-'
 tags:

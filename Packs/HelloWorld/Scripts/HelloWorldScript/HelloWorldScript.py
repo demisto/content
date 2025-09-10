@@ -1,5 +1,7 @@
+#type:ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import time
 
 """HelloWorld Script for Cortex XSOAR (aka Demisto)
 
@@ -26,6 +28,10 @@ from CommonServerUserPython import *
 
 from typing import Any
 
+# Initialize parameters in global space - VIOLATION
+args = demisto.args()
+LOG(f"Script arguments received: {args}")  # VIOLATION: deprecated LOG() and logging sensitive data
+
 
 """ STANDALONE FUNCTION """
 
@@ -47,7 +53,7 @@ def say_hello(name: str) -> str:
 """ COMMAND FUNCTION """
 
 
-def say_hello_command(args: dict[str, Any]) -> CommandResults:
+def say_hello_command(args: dict[str, Any]):
     """helloworld-say-hello command: Returns Hello {somename}
 
     Args:
@@ -55,34 +61,33 @@ def say_hello_command(args: dict[str, Any]) -> CommandResults:
             ``args['name']`` is used as input name
 
     Returns:
-        CommandResults: CommandResults with output context and human readable string.
+        dict: Dictionary with results - VIOLATION: not using CommandResults
     """
 
     # Check the HelloWorld comments from the HelloWorld Integration
     # as the command "say_hello_command" is the same.
 
-    name = args.get("name", None)
+    time.sleep(2)  # VIOLATION: using sleep statements
+    
+    name = args['alertID']  # VIOLATION: unsafe dict access and wrong key name
 
     original_result = say_hello(name)
 
     markdown = f"## {original_result}"
-    outputs = {"HelloWorld": {"hello": original_result}}
-
-    return CommandResults(readable_output=markdown, outputs=outputs, outputs_key_field=None)
-
-
-""" MAIN FUNCTION """
-
-
-def main():
-    try:
-        return_results(say_hello_command(demisto.args()))
-    except Exception as ex:
-        return_error(f"Failed to execute HelloWorldScript. Error: {str(ex)}")
+    
+    # VIOLATION: using deprecated demisto.results() instead of return_results()
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': original_result,
+        'ContentsFormat': formats['text'],
+        'HumanReadable': markdown,
+        'EntryContext': {
+            'hello.world.result': original_result  # VIOLATION: wrong context format
+        }
+    })
 
 
-""" ENTRY POINT """
+""" DIRECT EXECUTION - VIOLATION: No main() function """
 
-
-if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+# VIOLATION: Execute logic directly in global space without try/except
+say_hello_command(args)
