@@ -1850,7 +1850,7 @@ script:
     - contextPath: AWS.S3-Buckets.BucketName
       description: Name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcl s
+    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls
       description: Whether Amazon S3 blocks public access control lists (ACLs) for this bucket and objects in this bucket.
       type: boolean
     - contextPath: AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls
