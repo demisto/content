@@ -1,9 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa: F401,F403
-import urllib3
-from typing import Any
 import time
+from ast import Raise
 from datetime import datetime, timedelta
+from typing import Any
+
+import urllib3
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,8 +16,8 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "saviynt"
 PRODUCT = "eic"
-TOKEN_SAFETY_BUFFER = 30  # seconds to refresh token before actual expiry
-
+TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
+EVENT_TYPES = {"siem_audit_logs": "SIEMAuditLogs"}
 
 """ CLIENT CLASS """
 
@@ -25,7 +28,7 @@ class Client(BaseClient):
     - Authentication:
       - Create token: POST /ECM/api/login
       - Refresh token: POST /ECM/oauth/access_token
-    - Fetch audit logs:
+    - Fetch Events:
       - POST /ECM/api/v5/fetchRuntimeControlsDataV2
     """
 
@@ -36,45 +39,19 @@ class Client(BaseClient):
         proxy: bool = False,
         credentials: dict[str, Any] | None = None,
     ):
-        # Initialize BaseClient
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self._headers: dict[str, str] = {}
-        self._access_token: str = ""
-        if credentials:
-            try:
-                token, _ = ensure_token(self, credentials)
-                self._access_token = token
-                self._headers = {
-                    "Authorization": f"Bearer {token}",
-                    "Content-Type": "application/json",
-                }
-            except Exception as e:
-                demisto.debug(f"Client init: failed to obtain access token: {e}")
-
-    def update_access_token(self, credentials: dict[str, Any] | None = None) -> None:
-        """Refresh/recreate access token and update default headers."""
+        self._credentials = credentials or {}
         try:
-            if not credentials:
-                params = demisto.params()
-                credentials = params.get("credentials") or {}
-            token, _ = ensure_token(self, credentials or {})
-            self._access_token = token
-            self._headers = {
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            }
+            self.obtain_token()
         except Exception as e:
-            demisto.debug(f"update_access_token failed: {e}")
+            raise DemistoException(f"[Client.__init__] failed to obtain access token: {e}")
 
-
-    def create_access_token(self, username: str, password: str) -> dict[str, Any]:
-        """Create an access token using credentials.
-
-        Returns a dict with: access_token, refresh_token, expires_at (epoch seconds).
-        """
+    def _create_access_token(self):
+        """Create an access token using self._credentials and update integration context and headers."""
+        demisto.debug("[Client._create_access_token] creating access token")
         data = {
-            "username": username,
-            "password": password,
+            "username": self._credentials["username"],
+            "password": self._credentials["password"],
         }
         res = self._http_request(
             method="POST",
@@ -85,19 +62,26 @@ class Client(BaseClient):
         # Expected keys: token_type, access_token, refresh_token, expires_in
         access_token = res.get("access_token")
         refresh_token = res.get("refresh_token")
-        expires_in = int(res.get("expires_in", 3600))
+        expires_in = int(res.get("expires_in", 0))
         now_epoch = int(time.time())
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "expires_at": now_epoch + expires_in,
+        # Apply to integration context and client headers for immediate use
+        expires_at = now_epoch + expires_in
+        demisto.setIntegrationContext(
+            {
+                "token": access_token,
+                "refresh_token": refresh_token,
+                "expires_at": expires_at,
+            }
+        )
+        self._headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
         }
+        demisto.debug(f"[Client._create_access_token] created token successfully (expires_at={expires_at})")
 
-    def refresh_access_token(self, refresh_token: str) -> dict[str, Any]:
-        """Refresh an access token using the refresh token.
-
-        Returns a dict with: access_token, refresh_token (if provided), expires_at (epoch seconds).
-        """
+    def _refresh_access_token(self, refresh_token: str):
+        """Refresh an access token using the refresh token and update integration context and headers."""
+        demisto.debug("[Client._refresh_access_token] attempting to refresh access token")
         data = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_token,
@@ -114,24 +98,62 @@ class Client(BaseClient):
         new_refresh = res.get("refresh_token") or refresh_token
         expires_in = int(res.get("expires_in", 3600))
         now_epoch = int(time.time())
-        return {
-            "access_token": access_token,
-            "refresh_token": new_refresh,
-            "expires_at": now_epoch + expires_in,
+        expires_at = now_epoch + expires_in
+        demisto.setIntegrationContext(
+            {
+                "token": access_token,
+                "refresh_token": new_refresh,
+                "expires_at": expires_at,
+            }
+        )
+        self._headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
         }
+        demisto.debug(f"[Client._refresh_access_token] refreshed token successfully (expires_at={expires_at})")
+
+    def obtain_token(self, force_refresh: bool = False) -> None:
+        """
+        Ensure a valid access token using the integration context cache.
+        If force_refresh is True, attempt a refresh (or create) regardless of current cache state.
+        Sets self._headers and updates integration context.
+        - If no integration context is found, create a new access token.
+        - If the access token is expired or is about to expire, refresh it using refresh token.
+        """
+        try:
+            if context := demisto.getIntegrationContext():
+                now_epoch = int(time.time())
+                token = context.get("token")
+                refresh_token = context.get("refresh_token")
+                expires_at = int(context.get("expires_at", 0))
+
+                if not force_refresh and token and (now_epoch + TOKEN_SAFETY_BUFFER) < expires_at:
+                    demisto.debug(f"[Client.obtain_token] using cached token (expires_at={expires_at})")
+                    return
+
+                # Try to refresh if possible
+                if refresh_token:
+                    try:
+                        self._refresh_access_token(refresh_token)
+                        return
+                    except Exception as e:
+                        demisto.debug(f"[Client.obtain_token] refresh failed: {e}; creating new token")
+        except Exception as e:
+            demisto.debug(f"[Client.obtain_token] unexpected error handling integration context: {e}; creating new token")
+
+        # Fallback to create new token
+        demisto.debug("[Client.obtain_token] creating new access token")
+        self._create_access_token()
 
     def fetch_events(
         self,
-        access_token: str,
         analytics_name: str,
         time_frame_minutes: int,
         max_results: int,
         offset: int | None = None,
     ) -> dict[str, Any]:
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-        }
+        # Ensure headers/token are ready
+        self.obtain_token()
         body: dict[str, Any] = {
             "analyticsname": analytics_name,
             "attributes": {"timeFrame": str(time_frame_minutes)},
@@ -144,7 +166,7 @@ class Client(BaseClient):
             return self._http_request(
                 method="POST",
                 url_suffix="api/v5/fetchRuntimeControlsDataV2",
-                headers=headers,
+                headers=self._headers,
                 json_data=body,
                 timeout=120,
             )
@@ -152,12 +174,12 @@ class Client(BaseClient):
             # Attempt one retry on auth failure
             if any(x in str(e) for x in ("401", "Forbidden", "invalid token", "expired")):
                 demisto.debug("Access token may be invalid/expired. Attempting to refresh and retry fetch.")
-                self.update_access_token()
-                headers["Authorization"] = f"Bearer {self._access_token}"
+                # Force refresh token and retry
+                self.obtain_token(force_refresh=True)
                 return self._http_request(
                     method="POST",
                     url_suffix="api/v5/fetchRuntimeControlsDataV2",
-                    headers=headers,
+                    headers=self._headers,
                     json_data=body,
                     timeout=120,
                 )
@@ -165,50 +187,6 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
-
-
-def ensure_token(client: Client, credentials: dict[str, str]) -> tuple[str, dict[str, Any]]:
-    """Ensure a valid access token, using integration context to cache tokens.
-
-    Returns:
-        access_token (str), updated_context (dict)
-    """
-    context = demisto.getIntegrationContext() or {}
-    token = context.get("token")
-    refresh_token = context.get("refresh_token")
-    expires_at = int(context.get("expires_at", 0))
-    now_epoch = int(time.time())
-
-    # If we have a token and it's still valid, return it
-    if token and (now_epoch + TOKEN_SAFETY_BUFFER) < expires_at:
-        return token, context
-
-    username = credentials.get("identifier") or credentials.get("username") or ""
-    password = credentials.get("password") or ""
-
-    # Try refresh if possible
-    if refresh_token:
-        try:
-            new_tokens = client.refresh_access_token(refresh_token)
-            new_context = {
-                "token": new_tokens["access_token"],
-                "refresh_token": new_tokens.get("refresh_token", refresh_token),
-                "expires_at": new_tokens["expires_at"],
-            }
-            demisto.setIntegrationContext(new_context)
-            return new_context["token"], new_context
-        except Exception as e:
-            demisto.debug(f"Token refresh failed: {e}. Will try to create a new token.")
-
-    # Fallback to create new token
-    new_tokens = client.create_access_token(username, password)
-    new_context = {
-        "token": new_tokens["access_token"],
-        "refresh_token": new_tokens.get("refresh_token", ""),
-        "expires_at": new_tokens["expires_at"],
-    }
-    demisto.setIntegrationContext(new_context)
-    return new_context["token"], new_context
 
 
 def normalize_events(raw_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -230,20 +208,20 @@ def normalize_events(raw_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: Client, params: dict[str, Any]) -> str:
-    """Tests API connectivity and authentication by performing a lightweight token creation."""
-    credentials = params.get("credentials") or {}
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication by ensuring a token can be obtained/refreshed."""
     try:
-        token_info = client.create_access_token(
-            username=credentials.get("identifier") or credentials.get("username"),
-            password=credentials.get("password"),
+        # example fetch
+        client.fetch_events(
+            analytics_name=EVENT_TYPES["siem_audit_logs"],
+            time_frame_minutes=60,
+            max_results=1,
         )
-        if not token_info.get("access_token"):
-            return "Authorization Error: access token not received"
     except Exception as e:
         if "Forbidden" in str(e) or "401" in str(e):
-            return "Authorization Error: make sure Username and Password are correctly set"
-        raise
+            raise DemistoException("Authorization Error: make sure Username and Password are correctly set. Error: {e}")
+        else:
+            raise DemistoException(f"Failed to fetch events. Error: {e}")
     return "ok"
 
 
@@ -253,7 +231,6 @@ def command_get_events(
     args: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], CommandResults]:
     """Implements 'get-events' command."""
-    credentials = params.get("credentials") or {}
     analytics_name = params.get("analytics_name")
     limit = int(args.get("limit", 50))
     time_frame = arg_to_number(args.get("time_frame"))  # minutes
@@ -263,9 +240,7 @@ def command_get_events(
         # default to 60 minutes back if not provided
         time_frame = 60
 
-    access_token, _ = ensure_token(client, credentials)
     response = client.fetch_events(
-        access_token=access_token,
         analytics_name=analytics_name,
         time_frame_minutes=int(time_frame),
         max_results=min(limit, 10000),
@@ -287,7 +262,6 @@ def fetch_events(
 
     Strategy: compute time frame in minutes from last_run time to now; default from 'first_fetch'.
     """
-    credentials = params.get("credentials") or {}
     analytics_name = params.get("analytics_name")
     first_fetch = params.get("first_fetch", "3 days")
     max_events_per_fetch = int(params.get("max_events_per_fetch", 10000))
@@ -308,9 +282,7 @@ def fetch_events(
     # compute minutes difference; ensure at least 1 minute
     delta_minutes = max(1, int((now_dt - start_dt).total_seconds() // 60))
 
-    access_token, _ = ensure_token(client, credentials)
     response = client.fetch_events(
-        access_token=access_token,
         analytics_name=analytics_name,
         time_frame_minutes=delta_minutes,
         max_results=min(max_events_per_fetch, 10000),
@@ -334,15 +306,11 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    base_url = params.get("url")
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
-
     # The Saviynt API base is /ECM; set base_url accordingly so url_suffix matches paths
     client = Client(
-        base_url=urljoin(base_url, "/ECM/"),
-        verify=verify_certificate,
-        proxy=proxy,
+        base_url=urljoin(params.get("url"), "/ECM/"),
+        verify=not params.get("insecure", False),
+        proxy=params.get("proxy", False),
         credentials=params.get("credentials"),
     )
 
