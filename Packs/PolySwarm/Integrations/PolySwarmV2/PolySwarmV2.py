@@ -65,12 +65,15 @@ class PolyswarmConnector:
         return True
 
     def get_score(self, polyscore) -> int:
-        if float(polyscore) < 0.2:
-            return Common.DBotScore.GOOD
-        elif 0.2 <= float(polyscore) < 0.7:
-            return Common.DBotScore.SUSPICIOUS
-        else:  # polyscore is >= 0.7
-            return Common.DBotScore.BAD
+        try:
+            if float(polyscore) < 0.2:
+                return Common.DBotScore.GOOD
+            elif 0.2 <= float(polyscore) < 0.7:
+                return Common.DBotScore.SUSPICIOUS
+            else:  # polyscore is >= 0.7
+                return Common.DBotScore.BAD
+        except TypeError:
+            return Common.DBotScore.NONE
 
     def return_hash_results(self, results: list, title: str, error_msg: str) -> object:
         # default values
@@ -94,9 +97,7 @@ class PolyswarmConnector:
                     positives += 1
                 total_scans += 1
 
-            demisto.debug(
-                f"Positives: {positives} - Total Scans: {total_scans}"
-            )
+            demisto.debug(f"Positives: {positives} - Total Scans: {total_scans}")
 
             md5 = result.md5
             sha256 = result.sha256

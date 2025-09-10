@@ -3257,3 +3257,15 @@ def test_rubrik_radar_anomaly_status_update_command_with_invalid_args(client, ar
     with pytest.raises(ValueError) as e:
         rubrik_radar_anomaly_status_update_command(client, args=args)
     assert str(e.value) == error
+
+
+def test_test_module_when_fetch_is_false(client, requests_mock):
+    """Tests failure for rubrik-threat-monitoring-matched-object-list command."""
+    from RubrikPolaris import test_module
+
+    response = {"data": {"deploymentVersion": "v000001-01"}}
+    requests_mock.post(BASE_URL_GRAPHQL, [{"json": response}])
+
+    response = test_module(client, {"isFetch": False})
+
+    assert response == "ok"

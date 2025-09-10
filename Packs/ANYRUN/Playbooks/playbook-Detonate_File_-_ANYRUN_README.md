@@ -3,22 +3,28 @@ Returns relevant reports to the War Room and file reputations to the context dat
 All file types are supported.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Sub-playbooks
+
 * GenericPolling
 
 ## Integrations
+
 * ANYRUN
 
 ## Scripts
+
 This playbook does not use any scripts.
 
 ## Commands
+
 * anyrun-get-report
 * anyrun-run-analysis
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
@@ -28,6 +34,7 @@ This playbook does not use any scripts.
 | Timeout | The duration after which to stop pooling and to resume the playbook (in minutes). | 15 | - | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -103,5 +110,6 @@ This playbook does not use any scripts.
 | ANYRUN.Task.Status | The task analysis status. | String |
 
 ## Playbook Image
+
 ---
 ![Detonate_File_ANYRUN](../doc_files/Detonate_File_-_ANYRUN.png)

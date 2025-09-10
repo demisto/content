@@ -351,6 +351,7 @@ tests:
 - O365-SecurityAndCompliance-Test
 - O365-SecurityAndCompliance-ContextResults-Test
 supportedModules:
+- X0
 - X1
 - X3
 - X5
