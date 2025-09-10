@@ -458,41 +458,40 @@ class TestBackoffStrategy:
 
 
 @pytest.mark.parametrize(
-    "configured_reg_id_url, license_field_url, expected_result",
+    "configured_reg_id_url, mock_is_fedramp_return_value, expected_result",
     [
         pytest.param(
             "test_id_custom@https://custom.test.com/api",
-            "https://tenant.paloaltonetworks.com",
+            False,
             ("https://custom.test.com/api", "test_id_custom"),
-            id="Custom URL in params. License field URL NOT used for token URL",
+            id="FedRAMP tenant with URL in registration ID",
         ),
         pytest.param(
             "test_id_fr",
-            "https://fr-tenant.federal.paloaltonetworks.com",
+            True,
             (FEDRAMP_TOKEN_URL, "test_id_fr"),
-            id="No custom URL, FedRAMP tenant URL with a 'http(s)' scheme",
+            id="FedRAMP tenant without URL in registration ID",
         ),
         pytest.param(
-            "test_id_std",
-            "https://std-tenant.paloaltonetworks.com",
-            (STANDARD_TOKEN_URL, "test_id_std"),
-            id="No custom URL, a standard tenant URL with a scheme",
-        ),
-        pytest.param(
-            "test_id_fr_nohost",
-            "fr-tenant.federal.paloaltonetworks.com",
-            (FEDRAMP_TOKEN_URL, "test_id_fr_nohost"),
-            id="No custom URL, FedRAMP tenant URL WITHOUT 'http(s)' scheme",
+            "test_id_std@https://custom.test.com/api",
+            False,
+            ("https://custom.test.com/api", "test_id_std"),
+            id="Standard tenant with URL in registration ID",
         ),
         pytest.param(
             "test_id_std_nohost",
-            "std-tenant.paloaltonetworks.com",
+            False,
             (STANDARD_TOKEN_URL, "test_id_std_nohost"),
-            id="No custom URL, standard tenant URL WITHOUT 'http(s)' scheme",
+            id="Standard tenant without URL in registration ID",
         ),
     ],
 )
-def test_extract_client_args(mocker: MockerFixture, configured_reg_id_url: str, license_field_url: str, expected_result: tuple):
+def test_extract_client_args(
+    mocker: MockerFixture,
+    configured_reg_id_url: str,
+    mock_is_fedramp_return_value: bool,
+    expected_result: tuple,
+):
     """
     Given:
         - Configured "Registration ID" param value.
@@ -501,8 +500,49 @@ def test_extract_client_args(mocker: MockerFixture, configured_reg_id_url: str, 
     Then:
         - Assert returned token retrieval URL and registration ID are as expected.
     """
-    from CortexDataLake import demisto, extract_client_args
+    from CortexDataLake import extract_client_args
 
-    mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=mock_is_fedramp_return_value)
     result = extract_client_args(configured_reg_id_url)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "license_field_url, expected_is_fedramp",
+    [
+        pytest.param(
+            "https://tenant1.paloaltonetworks.com",
+            False,
+            id="Standard tenant with 'https' scheme",
+        ),
+        pytest.param(
+            "tenant2.paloaltonetworks.com",
+            False,
+            id="Standard tenant without 'https' scheme",
+        ),
+        pytest.param(
+            "https://fr-tenant1.federal.paloaltonetworks.com",
+            True,
+            id="FedRAMP tenant with 'https' scheme",
+        ),
+        pytest.param(
+            "fr-tenant2.federal.paloaltonetworks.com",
+            True,
+            id="FedRAMP tenant without 'https' scheme",
+        ),
+    ],
+)
+def test_is_fedramp_tenant(mocker: MockerFixture, license_field_url: str, expected_is_fedramp: bool):
+    """
+    Given:
+        - The domain name from `demisto.getLicenseCustomField`.
+    When:
+        - Calling `is_fedramp_tenant`.
+    Then:
+        - Assert returned FedRAMP status is as expected.
+    """
+    from CortexDataLake import demisto, is_fedramp_tenant
+
+    mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    is_fedramp = is_fedramp_tenant()
+    assert is_fedramp == expected_is_fedramp

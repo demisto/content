@@ -1038,7 +1038,7 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
 
 def is_fedramp_tenant() -> bool:
     """
-    Retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant,
+    Retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant.
 
     Returns:
         bool: True if FedRAMP tenant, False otherwise.
