@@ -716,7 +716,7 @@ Retrieves actual cost and usage data for a given time range and optional service
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | AWS account to run the command on. | Required |
+| account_id | The AWS account on which to run the command. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | metrics | Metrics to retrieve. Default - UsageQuantity. Valid values [AmortizedCost, BlendedCost, NetAmortizedCost, NetUnblendedCost, NormalizedUsageAmount, UnblendedCost, UsageQuantity]. | Optional |
 | start_date | Start date for the report (YYYY-MM-DD). Default - 7 days ago. | Optional |
@@ -774,7 +774,7 @@ Forecasts AWS spending over a given future time period using historical trends.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | AWS account to run the command on. | Required |
+| account_id | The AWS account on which to run the command. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | metric | Metric to forecast. Valid values [AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST]. Possible values are: AMORTIZED_COST, BLENDED_COST, NET_AMORTIZED_COST, NET_UNBLENDED_COST, UNBLENDED_COST. Default is AMORTIZED_COST. | Optional |
 | start_date | Start date for the forecast (YYYY-MM-DD). Default - current day. | Optional |
@@ -818,7 +818,7 @@ Lists configured budgets for a given AWS account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | AWS account to run the command on. | Required |
+| account_id | The AWS account on which to run the command. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
 | max_result | Maximum results to return. Default - 50, Max - 1000. | Optional |
 | show_filter_expression | Whether to show filter expression. Default - False. | Optional |

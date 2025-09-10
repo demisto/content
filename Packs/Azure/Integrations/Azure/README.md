@@ -831,7 +831,7 @@ Returns actual usage and cost details for a given time period, optionally filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | Azure sub to run the command on - will be sent as scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
 | expand_result | Whether to expand the result. Default - false. | Optional |
 | filter | Optional filter for the API. API argument - $filter. | Optional |
 | metric | Metric to retrieve. Actual API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
@@ -913,7 +913,7 @@ Returns cost forecast for a subscription over a given time range.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | Azure sub to run the command on. | Required |
+| subscription_id | The Azure subscription ID on which to run the command. | Required |
 | filter | Optional filter for the API. API argument - $filter. | Optional |
 
 #### Context Output
@@ -945,7 +945,7 @@ Lists configured budgets at the subscription or resource group scope.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | Azure sub to run the command on - will be sent as scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
 | budget_name | Name of the budget. Optional; if provided, returns a specific budget. | Optional |
 
 #### Context Output

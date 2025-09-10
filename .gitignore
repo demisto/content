@@ -109,3 +109,9 @@ pipeline_jobs_folder/
 
 # Ignore windsurf config
 .windsurf
+
+
+
+
+# DELETE BEFORE MARGE
+aws_proxydome_test.py

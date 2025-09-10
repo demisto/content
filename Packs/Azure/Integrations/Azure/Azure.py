@@ -61,7 +61,11 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.DocumentDB/databaseAccounts/write": ["azure-cosmos-db-update"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read": ["azure-sql-db-transparent-data-encryption-set"],
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write": ["azure-sql-db-transparent-data-encryption-set"],
+    "Microsoft.Consumption/usageDetails/read": ["azure-billing-usage-list"],
+    "Microsoft.Consumption/forecasts/read": ["azure-billing-forecast-list"],
+    "Microsoft.Consumption/budgets/read": ["azure-billing-budgets-list"],
 }
+    # "Microsoft.CostManagement/forecast/read": ["azure-billing-forecast-list"],
 
 REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Network/networkSecurityGroups/securityRules/read",
@@ -97,8 +101,9 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.Sql/servers/databases/transparentDataEncryption/read",
     "Microsoft.Sql/servers/databases/transparentDataEncryption/write",
     "Microsoft.Consumption/usageDetails/read",
-    "Microsoft.Consumption/forecast/read",
+    "Microsoft.Consumption/forecasts/read",
     "Microsoft.Consumption/budgets/read",
+    "Microsoft.CostManagement/forecast/read",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
@@ -2047,15 +2052,19 @@ def azure_billing_forecast_list_command(client: AzureClient, params: dict, args:
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     filter_ = args.get("filter")
+    # url = f"{subscription_id}/providers/Microsoft.Consumption/forecasts"
     scope = f"/{subscription_id}"
-    url = f"{scope}/providers/Microsoft.Consumption/forecasts"
-    api_version = "2025-04-01"
+    url = f"{scope}/providers/Microsoft.CostManagement/forecast"
+    # url = "https://management.azure.com/providers/Microsoft.Consumption/operations"
+    api_version = "2025-03-01"
     params_ = {"api-version": api_version}
     if filter_:
         params_["$filter"] = filter_
     demisto.debug(f"Azure billing forecast request: {url}, params: {params_}")
+    demisto.debug(f"Azure billing forecast request: {client.base_client._base_url}{url}, params: {params_}")
 
     res = client.http_request("GET", url_suffix=url, params=params_)
+    demisto.debug(f"Azure response:\n {res}\n")
     response_data = res.json() if hasattr(res, "json") else res
     items = response_data.get("value", [])
     demisto.debug(f"Azure billing forecast response - results count: {len(items)}")

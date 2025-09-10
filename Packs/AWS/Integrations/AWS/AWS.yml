@@ -1754,7 +1754,7 @@ script:
     description: Retrieves actual cost and usage data for a given time range and optional service filter.
     arguments:
     - name: account_id
-      description: AWS account to run the command on.
+      description: The AWS account on which to run the command.
       required: true
     - name: region
       description: The AWS region.

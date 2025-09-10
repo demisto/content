@@ -1742,7 +1742,7 @@ script:
     description: Returns actual usage and cost details for a given time period, optionally filtered by service name.
     arguments:
       - name: subscription_id
-        description: Azure sub to run the command on - will be sent as scope parameter - /subscriptions/{subscriptionId}/.
+        description: The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
         required: true
       - name: expand_result
         description: Whether to expand the result. Default - false.
@@ -1752,7 +1752,7 @@ script:
         description: Optional filter for the API. API argument - $filter.
         required: false
       - name: metric
-        description: Metric to retrieve. Actual API values [actualcost, amortizedcost, usage].
+        description: The metric to retrieve. API values [actualcost, amortizedcost, usage].
         required: false
         auto: PREDEFINED
         predefined:
@@ -1938,7 +1938,7 @@ script:
         type: String
 
   - name: azure-billing-forecast-list
-    description: Returns cost forecast for a subscription over a given time range.
+    description: Returns the cost forecast for a subscription over a given time range.
     arguments:
       - name: subscription_id
         description: Azure sub to run the command on.
@@ -1984,7 +1984,7 @@ script:
     description: Lists configured budgets at the subscription or resource group scope.
     arguments:
       - name: subscription_id
-        description: Azure sub to run the command on - will be sent as scope parameter - /subscriptions/{subscriptionId}/.
+        description: The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/.
         required: true
       - name: budget_name
         description: Name of the budget. Optional; if provided, returns a specific budget.
