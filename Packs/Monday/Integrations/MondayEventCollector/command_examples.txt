@@ -1,0 +1,2 @@
+!monday-generate-login-url
+!monday-auth-test
