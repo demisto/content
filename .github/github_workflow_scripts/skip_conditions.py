@@ -498,7 +498,7 @@ class MajorChangeCondition(MetadataCondition):
 
 
 class MaxVersionCondition(MetadataCondition):
-    MAX_ALLOWED_VERSION = "99"
+    MAX_ALLOWED_VERSION = "100"
 
     def generate_skip_reason(       # type: ignore[override]
         self, origin_version: str, branch_version: str, **kwargs

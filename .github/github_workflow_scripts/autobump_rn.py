@@ -194,9 +194,12 @@ class AutoBumperManager:
         If the pack meets all conditions to autobump pack version, it bumps the version.
         """
         for pr in self.github_repo_obj.get_pulls(state="open", sort="created", base=BASE):
-            if pr.draft:
-                # The bot does not go through a PR that is in draft
+            # Only operate on PR 41240
+            if pr.number != 41240:
                 continue
+            # if pr.draft:
+            # The bot does not go through a PR that is in draft
+            # continue
 
             print(f"{t.yellow}Looking on pr number [{pr.number}]: last updated: " f"{str(pr.updated_at)}, branch={pr.head.ref}")
 
