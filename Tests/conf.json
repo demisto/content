@@ -1879,7 +1879,6 @@
         },
         {
             "integrations": "Okta IAM",
-            "instance_names": "Okta_v2",
             "playbookID": "Okta IAM - Test Playbook",
             "fromversion": "6.0.0"
         },
