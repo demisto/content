@@ -1,6 +1,46 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
+# TEMP: here to replace the function remove_old_incidents_ids from CommonServerPython
+def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
+    """
+    Removes old incident ids from the last run object to avoid overloading.
+
+    :type found_incidents_ids: ``dict``
+    :param found_incidents_ids: Dict of incidents ids
+
+    :type current_time: ``int``
+    :param current_time: The current epoch time to compare with the existing IDs added time
+
+    :type look_back: ``int``
+    :param look_back: The look back time in minutes
+
+    :return: The new incidents ids
+    :rtype: ``dict``
+    """
+    demisto.debug('lb: Remove old incidents ids, current time is {}'.format(current_time))
+    look_back_in_seconds = look_back * 60
+    deletion_threshold_in_seconds = look_back_in_seconds * 2
+
+    new_found_incidents_ids = {}
+    latest_incident_time = max(found_incidents_ids.values() or [current_time])
+    demisto.debug('lb: latest_incident_time is {}'.format(latest_incident_time))
+    
+    for inc_id, addition_time in found_incidents_ids.items():
+
+        if current_time - addition_time <= deletion_threshold_in_seconds or addition_time == latest_incident_time:
+            new_found_incidents_ids[inc_id] = addition_time
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
+        else:
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
+    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
+        len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+
+    return new_found_incidents_ids
+
+
 """ IMPORTS """
 import base64
 import email
