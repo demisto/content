@@ -1169,7 +1169,10 @@ def get_remote_events(
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched,
     }
 
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=list(partial_changes.keys()),  # need to override (not merge!) since offense may have been deleted
+    )
 
     return events, status
 
@@ -1303,16 +1306,19 @@ def safely_update_context_data_partial(
     Retries up to `attempts` times if there's a version conflict.
     """
     override_keys = override_keys or []
+    changes_size_bytes = {key: calculate_object_size(value) for key, value in changes.items()}
+    print_debug_msg(f"Updating context with changes with {override_keys=}, {changes_size_bytes=}.")
     for _ in range(attempts):
         ctx, version = get_integration_context_with_version()
         merged = copy.deepcopy(ctx)
         deep_merge_context_changes(merged, changes, override_keys=override_keys)
+        merged_size_bytes = {key: calculate_object_size(value) for key, value in merged.items()}
         try:
-            demisto.debug(f"Merging partial data to context {merged}")
+            print_debug_msg(f"Saving merged context: {merged_size_bytes=}.")
             set_integration_context(merged, version=version)
             return  # success
         except Exception as e:
-            demisto.debug(f"Version conflict or error setting context: {e}. Retrying...")
+            print_debug_msg(f"Version conflict or error setting context: {e}. Retrying...")
 
     raise DemistoException(f"Failed updating context after {attempts} attempts.")
 
@@ -1562,15 +1568,54 @@ def get_rules_names(client: Client, offenses: List[dict]) -> dict:
     Returns:
         (Dict): Dictionary of {rule_id: rule_name}
     """
-    try:
-        rules_ids = {rule.get("id") for offense in offenses for rule in offense.get("rules", [])}
-        if not rules_ids:
-            return {}
-        rules = client.rules_list(None, None, f"""id in ({','.join(map(str, rules_ids))})""", "id,name")
-        return {rule.get("id"): rule.get("name") for rule in rules}
-    except Exception as e:
-        demisto.error(f"Encountered an issue while getting offenses rules: {e}")
+    # Collect unique rule IDs
+    rules_ids = {rule.get("id") for offense in offenses for rule in offense.get("rules", []) if rule.get("id") is not None}
+    if not rules_ids:
+        demisto.debug("No rule IDs found in offenses for rule name enrichment")
         return {}
+
+    rules_ids_str = ",".join(map(str, rules_ids))
+    demisto.debug(f"Attempting to resolve rule names for rule IDs: {rules_ids_str}")
+
+    # Retry logic with exponential backoff (mirrors domain name resolution approach)
+    max_retries = CONNECTION_ERRORS_RETRIES
+    base_delay = CONNECTION_ERRORS_INTERVAL
+
+    last_exception = None
+    for attempt in range(max_retries):
+        try:
+            demisto.debug(f"Rule name resolution attempt {attempt + 1}/{max_retries}")
+            rules = client.rules_list(None, None, f"id in ({rules_ids_str})", "id,name")
+
+            if rules:
+                mapping = {rule.get("id"): rule.get("name") for rule in rules}
+                demisto.debug(f"Successfully resolved {len(mapping)} rule names")
+                return mapping
+            else:
+                demisto.debug(f"Rules API returned empty response for rule IDs: {rules_ids_str}")
+                return {}
+
+        except Exception as e:
+            last_exception = e
+            if attempt < max_retries - 1:
+                delay = base_delay * (2**attempt)
+                demisto.debug(
+                    f"Rule name resolution attempt {attempt + 1}/{max_retries} failed: {str(e)}. Retrying in {delay} seconds..."
+                )
+                time.sleep(delay)
+            else:
+                demisto.error(
+                    f"Rule name resolution attempt {attempt + 1}/{max_retries} failed: {str(e)}. All retry attempts exhausted."
+                )
+
+    # If we reach here, all retries failed
+    error_msg = f"Failed to resolve rule names after {max_retries} attempts for rule IDs: {rules_ids_str}"
+    if last_exception:
+        error_msg += f". Last error: {str(last_exception)}"
+    demisto.error(error_msg)
+    demisto.info("Falling back to using rule IDs as names for affected offenses")
+
+    return {}
 
 
 def get_offense_addresses(client: Client, offenses: List[dict], is_destination_addresses: bool) -> dict:
@@ -1607,6 +1652,38 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
         for addresses_batch in addresses_batches
         for address_data in addresses_batch
     }
+
+
+def get_rule_name_from_sources(rule: dict, rules_id_name_dict: dict) -> tuple[str, bool]:
+    """
+    Decide the best rule name to use for an offense rule item, preferring an existing valid string name,
+    then a mapping lookup, and finally falling back to the numeric ID. Returns the chosen name and a flag
+    indicating whether we had to fall back to the ID.
+
+    A "valid" name is any non-empty string that is not numerically equal to the rule id (to avoid cases where
+    the API or enrichment sets name to the same numeric id).
+    """
+
+    def _is_same_numeric(val: Any, rule_id_val: Any) -> bool:
+        try:
+            return int(val) == int(rule_id_val)
+        except Exception:
+            return False
+
+    rule_id = rule.get("id")
+    original_name = rule.get("name")
+
+    # Prefer existing original name if it looks valid
+    if isinstance(original_name, str) and original_name.strip() and not _is_same_numeric(original_name, rule_id):
+        return original_name, False
+
+    # Try mapping from API lookup
+    mapped_name = rules_id_name_dict.get(rule_id)
+    if isinstance(mapped_name, str) and mapped_name.strip() and not _is_same_numeric(mapped_name, rule_id):
+        return mapped_name, False
+
+    # Fallback to the id as string (last resort)
+    return (str(rule_id) if rule_id is not None else ""), True
 
 
 def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
@@ -1720,14 +1797,19 @@ def enrich_offenses_result(
             else {}
         )
 
-        rules_enrich = {
-            "rules": [
-                {"id": rule.get("id"), "type": rule.get("type"), "name": rules_id_name_dict.get(rule.get("id"), rule.get("id"))}
-                for rule in offense.get("rules", [])
-            ]
-            if RULES_ENRCH_FLG.lower() == "true"
-            else {}
-        }
+        if RULES_ENRCH_FLG.lower() == "true":
+            rules_list: list[dict] = []
+            for rule in offense.get("rules", []):
+                resolved_name, used_fallback = get_rule_name_from_sources(rule, rules_id_name_dict)
+                if used_fallback:
+                    print_debug_msg(
+                        f"Rule name could not be resolved for offense_id {offense.get('id')}, rule_id {rule.get('id')}. "
+                        f"Using rule id as name."
+                    )
+                rules_list.append({"id": rule.get("id"), "type": rule.get("type"), "name": resolved_name})
+            rules_enrich = {"rules": rules_list}
+        else:
+            rules_enrich = {}
 
         source_addresses_enrich = (
             {
@@ -2289,9 +2371,9 @@ def test_module_command(client: Client, params: dict) -> str:
     return message
 
 
-def calculate_incident_size(incident: dict) -> int:
+def calculate_object_size(item: dict) -> int:
     """
-    Calculate the approximate size of an incident in bytes for context storage.
+    Calculate the approximate size of an JSON serializable object in bytes for context storage.
 
     This function uses a multi-step process with granular error handling:
     1. It first attempts to create a string using JSON serialization, which is precise.
@@ -2302,16 +2384,16 @@ def calculate_incident_size(incident: dict) -> int:
        replaces any problematic characters to guarantee a result.
 
     Args:
-        incident (dict): The incident dictionary.
+        incident (dict): The JSON serializable object.
 
     Returns:
-        int: The calculated or estimated size of the incident in bytes.
+        int: The calculated or estimated size of the object in bytes.
     """
     try:
-        string_to_encode = json.dumps(incident, default=str)
+        string_to_encode = json.dumps(item, default=str)
     except TypeError as e:
-        print_debug_msg(f"Could not serialize incident to JSON: {e}. Using fallback string representation.")
-        string_to_encode = str(incident)
+        print_debug_msg(f"Could not serialize object to JSON: {e}. Using fallback string representation.")
+        string_to_encode = str(item)
 
     try:
         encoded_bytes = string_to_encode.encode("utf-8")
@@ -2332,7 +2414,7 @@ def is_incident_size_acceptable(incident: dict) -> bool:
     Returns:
         bool: True if incident size is acceptable, False otherwise
     """
-    size_bytes = calculate_incident_size(incident)
+    size_bytes = calculate_object_size(incident)
     if size_bytes > MAX_SAMPLE_SIZE_BYTES:
         print_debug_msg(
             f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
@@ -2570,7 +2652,10 @@ def delete_offense_from_context(offense_id: str):
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished,
     }
 
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=list(partial_changes.keys()),  # need to override (not merge!) since offense was deleted
+    )
 
 
 def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str, events_limit: int, events: list[dict]) -> bool:
