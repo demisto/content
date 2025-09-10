@@ -17,7 +17,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "saviynt"
 PRODUCT = "eic"
 TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
-EVENT_TYPES = {"siem_audit_logs": "SIEMAuditLogs"}
+MAX_EVENTS_PER_FETCH = 50000
 
 """ CLIENT CLASS """
 
@@ -159,7 +159,7 @@ class Client(BaseClient):
             "attributes": {"timeFrame": str(time_frame_minutes)},
             "max": max_results,
         }
-        if offset is not None:
+        if offset:
             body["offset"] = str(offset)
 
         try:
@@ -189,20 +189,17 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def normalize_events(raw_results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Optionally normalize/flatten event fields and add _time from 'Event Time'."""
-    events: list[dict[str, Any]] = []
-    for r in raw_results:
-        ev = dict(r)  # shallow copy
-        # Add _time from 'Event Time'
-        event_time = ev.get("Event Time") or ev.get("event_time")
-        dt = arg_to_datetime(event_time) if event_time else None
-        ev["_time"] = dt.strftime(DATE_FORMAT) if dt else None
-        # keep original keys; optionally derive common ones
-        ev.setdefault("vendor", VENDOR)
-        ev.setdefault("product", PRODUCT)
-        events.append(ev)
-    return events
+def add_time_to_events(events: list[dict[str, Any]] | None) -> list[dict[str, Any]] | None:
+    """
+    Adds the '_time' key to events based on their creation or occurrence timestamp.
+
+    Args:
+        events (list[dict[str, Any]] | None): A list of events.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(arg=event.get("Event Time"))
+            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 """ COMMAND FUNCTIONS """
@@ -213,7 +210,7 @@ def test_module(client: Client) -> str:
     try:
         # example fetch
         client.fetch_events(
-            analytics_name=EVENT_TYPES["siem_audit_logs"],
+            analytics_name="SIEMAuditLogs",
             time_frame_minutes=60,
             max_results=1,
         )
@@ -231,87 +228,90 @@ def command_get_events(
     args: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], CommandResults]:
     """Implements 'get-events' command."""
-    analytics_name = params.get("analytics_name")
-    limit = int(args.get("limit", 50))
-    time_frame = arg_to_number(args.get("time_frame"))  # minutes
-    offset = arg_to_number(args.get("offset"))
+    # analytics_name = params.get("analytics_name")
+    # limit = int(args.get("limit", 50))
+    # time_frame = arg_to_number(args.get("time_frame"))  # minutes
+    # offset = arg_to_number(args.get("offset"))
 
-    if time_frame is None:
-        # default to 60 minutes back if not provided
-        time_frame = 60
+    # if time_frame is None:
+    #     # default to 60 minutes back if not provided
+    #     time_frame = 60
 
-    response = client.fetch_events(
-        analytics_name=analytics_name,
-        time_frame_minutes=int(time_frame),
-        max_results=min(limit, 10000),
-        offset=int(offset) if offset is not None else None,
-    )
+    # response = client.fetch_events(
+    #     analytics_name=analytics_name,
+    #     time_frame_minutes=int(time_frame),
+    #     max_results=min(limit, 10000),
+    #     offset=int(offset) if offset is not None else None,
+    # )
 
-    raw_results = response.get("results", []) if isinstance(response, dict) else []
-    events = normalize_events(raw_results)
-    hr = tableToMarkdown(name="Saviynt EIC Events", t=events[:50])
-    return events, CommandResults(readable_output=hr, raw_response=response)
+    # raw_results = response.get("results", []) if isinstance(response, dict) else []
+    # # events = normalize_events(raw_results)
+
+    # hr = tableToMarkdown(name="Saviynt EIC Events", t=events[:50])
+    # return events, CommandResults(readable_output=hr, raw_response=response)
 
 
 def fetch_events(
     client: Client,
-    params: dict[str, Any],
     last_run: dict[str, Any],
+    analytics_name_list: list[str],
+    max_events: int,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Fetch events for XSIAM ingest.
+    """Fetch events for XSIAM ingest."""
+    events = []
 
-    Strategy: compute time frame in minutes from last_run time to now; default from 'first_fetch'.
-    """
-    analytics_name = params.get("analytics_name")
-    first_fetch = params.get("first_fetch", "3 days")
-    max_events_per_fetch = int(params.get("max_events_per_fetch", 10000))
+    for analytics_name in analytics_name_list:
+        events_per_analytics_name = []
 
-    # Determine the starting point
-    last_event_time_str = last_run.get("last_event_time")
-    if last_event_time_str:
-        start_dt = arg_to_datetime(last_event_time_str)
-    else:
-        # parse relative time to datetime
-        start_dt, _ = parse_date_range(first_fetch, to_time_zone="UTC", utc=True)
+        response = client.fetch_events(
+            analytics_name=analytics_name,
+            time_frame_minutes=1,
+            max_results=min(max_events, 10000),
+            offset=None,
+        )
 
-    now_dt = datetime.utcnow()
-    if not start_dt:
-        # fallback to 60 minutes
-        start_dt = now_dt - timedelta(minutes=60)
+        raw_results = response.get("results", [])
+        total_count = response.get("totalcount", 0)
+        events_per_analytics_name.extend(raw_results)
 
-    # compute minutes difference; ensure at least 1 minute
-    delta_minutes = max(1, int((now_dt - start_dt).total_seconds() // 60))
+        while len(events_per_analytics_name) < total_count and len(events_per_analytics_name) < max_events:
+            offset = len(events_per_analytics_name)
+            response = client.fetch_events(
+                analytics_name=analytics_name,
+                time_frame_minutes=1,
+                max_results=min(max_events, 10000),
+                offset=offset,
+            )
+            raw_results = response.get("results", [])
+            events_per_analytics_name.extend(raw_results)
 
-    response = client.fetch_events(
-        analytics_name=analytics_name,
-        time_frame_minutes=delta_minutes,
-        max_results=min(max_events_per_fetch, 10000),
-        offset=None,
-    )
+        events.extend(events_per_analytics_name)
 
-    raw_results = response.get("results", []) if isinstance(response, dict) else []
-    events = normalize_events(raw_results)
+    # TODO: ADD last_run logic
 
-    # Set next run slightly overlapping by 1 minute to avoid misses
-    next_time = (now_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
-    next_run = {"last_event_time": next_time}
+    add_time_to_events(events)
     return next_run, events
 
 
 """ MAIN FUNCTION """
 
 
-def main() -> None:  # pragma: no cover
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    base_url = urljoin(params.get("url"), "/ECM/")
+    verify = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    credentials = params.get("credentials")
+    analytics_name_list = argToList(params.get("analytics_name", []))
+    max_events = int(params.get("max_events", MAX_EVENTS_PER_FETCH))
 
-    # The Saviynt API base is /ECM; set base_url accordingly so url_suffix matches paths
     client = Client(
-        base_url=urljoin(params.get("url"), "/ECM/"),
-        verify=not params.get("insecure", False),
-        proxy=params.get("proxy", False),
-        credentials=params.get("credentials"),
+        base_url=base_url,
+        verify=verify,
+        proxy=proxy,
+        credentials=credentials,
     )
 
     demisto.debug(f"Command being called is {command}")
@@ -320,23 +320,25 @@ def main() -> None:  # pragma: no cover
             result = test_module(client, params)
             return_results(result)
 
-        elif command == "get-events":
-            should_push_events = argToBoolean(args.pop("should_push_events"))
-            events, results = command_get_events(client, params, args)
-            return_results(results)
-            if should_push_events:
-                # Add _time to events and send
-                for ev in events:
-                    if "_time" not in ev or not ev["_time"]:
-                        ev["_time"] = datetime.utcnow().strftime(DATE_FORMAT)
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+        elif command == "saviynt-eic-get-events":
+            # should_push_events = argToBoolean(args.pop("should_push_events"))
+            # events, results = command_get_events(client, params, args)
+            # return_results(results)
+            # if should_push_events:
+            #     # Ensure _time is set on events using helper
+            #     add_time_to_events(events)
+            #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            ...
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
-            next_run, events = fetch_events(client=client, params=params, last_run=last_run)
-            for ev in events:
-                if "_time" not in ev or not ev["_time"]:
-                    ev["_time"] = datetime.utcnow().strftime(DATE_FORMAT)
+            next_run, events = fetch_events(
+                client=client,
+                params=params,
+                last_run=last_run,
+                analytics_name=analytics_name_list,
+                max_events=max_events,
+            )
             demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)

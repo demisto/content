@@ -15,22 +15,19 @@ configuration:
   name: credentials
   required: true
   type: 9
-  section: Connect
+  section: Collect
 - display: Analytics Name
   name: analytics_name
   required: true
-  type: 0
-  section: Connect
+  type: 16
+  defaultvalue: SIEMAuditLogs
+  options:
+  - SIEMAuditLogs
+  section: Collect
 - defaultvalue: '10000'
   section: Collect
-  display: Max number of events per fetch (cap 10000)
-  name: max_events_per_fetch
-  required: false
-  type: 0
-- defaultvalue: 3 days
-  section: Collect
-  display: First fetch time
-  name: first_fetch
+  display: Maximum number of events per fetch.
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -38,6 +35,13 @@ configuration:
   required: false
   type: 8
   section: Connect
+- name: eventFetchInterval
+  section: Collect
+  display: Events Fetch Interval
+  advanced: true
+  defaultvalue: "1"
+  type: 19
+  required: false
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -77,9 +81,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets audit log events from Saviynt EIC.
+    description: Gets events from Saviynt EIC.
     execution: false
-    name: get-events
+    name: saviynt-eic-get-events
   dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
