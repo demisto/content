@@ -6,7 +6,9 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+import uuid
 import json
+from requests import Response
 import pytest
 from SilentPush import (
     Client,
@@ -31,8 +33,21 @@ from SilentPush import (
     forward_padns_lookup_command,
     search_domains_command,
     density_lookup_command,
+    add_feed_command,
+    add_indicators_command,
+    add_indicators_tags_command,
+    get_data_exports_command,
+    run_threat_check_command,
+    add_feed_tags_command,
+    parse_arguments,
+    format_domain_information,
+    format_certificate_info,
+    validate_ip,
+    extract_and_sort_asn_reputation,
+    generate_no_reputation_response,
+    prepare_asn_reputation_table
 )
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, EntryType
 
 
 def util_load_json(path):
@@ -1348,3 +1363,297 @@ def test_density_lookup_command_api_error(mock_client):
     # Call the function and expect DemistoException
     with pytest.raises(DemistoException, match="API Error: Invalid query"):
         density_lookup_command(mock_client, args)
+
+
+def test_add_feed_command_success(mock_client):
+    # Generate a unique name to avoid duplicates
+    unique_name = f"TestFeed_{uuid.uuid4().hex[:6]}"
+
+    # Mock arguments passed to the command
+    args = {"name": unique_name, "type": "domain", "tags": "Test,Demo"}
+    expected_output = f"SilentPush feed: {unique_name} of type: domain was added successfully."
+
+    # Simulated API response
+    mock_response = {
+        "name": unique_name,
+        "type": "domain",
+        "vendor": "SilentPush",
+        "feed_description": "Test feed for unit testing",
+        "category": "default",
+        "tags": "Test,Demo",
+    }
+
+    # Patch the client's method to return the mocked response
+    mock_client.add_feed.return_value = mock_response
+
+    # Call your command
+    result = add_feed_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.Feed"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == unique_name
+    assert result.outputs["vendor"] == "SilentPush"
+    assert expected_output in result.readable_output
+
+
+def test_add_indicators_command_success(mock_client):
+    # Generate unique UUID for test feed
+    test_uuid = str(uuid.uuid4())
+    expected_output = f"Indicators: '['example.com', 'malicious.net']' were added successfully to SilentPush feed: '{test_uuid}'."
+
+    # Mock arguments
+    args = {"feed_uuid": test_uuid, "indicators": ["example.com", "malicious.net"]}
+
+    # Mock response returned by the API client
+    mock_response = {"feed_uuid": test_uuid, "added": 2, "indicators": ["example.com", "malicious.net"]}
+
+    mock_client.add_indicators.return_value = {"created_or_updated": mock_response}
+
+    # Execute command
+    result = add_indicators_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddIndicators"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs["feed_uuid"] == test_uuid
+    assert result.outputs["added"] == 2
+    assert expected_output in result.readable_output
+
+
+def test_add_indicators_tags_command_success(mock_client):
+    test_uuid = str(uuid.uuid4())
+    test_indicator = "example.com"
+    test_tags = ["test", "phishing"]
+    expected_output = f"Indicator Tags: '['test', 'phishing']' added to indicator 'example.com"
+
+    args = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags": test_tags}
+
+    mock_response = {"feed_uuid": test_uuid, "indicator_name": test_indicator, "tags_added": test_tags}
+
+    mock_client.add_indicators_tags.return_value = mock_response
+
+    result = add_indicators_tags_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddIndicatorTags"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs["feed_uuid"] == test_uuid
+    assert result.outputs["indicator_name"] == test_indicator
+    assert result.outputs["tags_added"] == test_tags
+    assert expected_output in result.readable_output
+
+
+def test_run_threat_check_command_success(mock_client):
+    args = {"type": "domain", "data": ["example.com"], "user_identifier": "test_user", "query": "test_query"}
+    expected_output = "Threat check for query 'test_query' completed successfully"
+
+    mock_response = {
+        "type": "domain",
+        "data": ["example.com"],
+        "user_identifier": "test_user",
+        "query": "test_query",
+        "result": "benign",
+    }
+
+    mock_client.run_threat_check.return_value = mock_response
+
+    result = run_threat_check_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.RunThreatCheck"
+    assert result.outputs_key_field == "query"
+    assert result.outputs["query"] == "test_query"
+    assert result.outputs["result"] == "benign"
+    assert expected_output in result.readable_output
+
+
+def mock_file_response(content: bytes, status_code=200, headers=None) -> Response:
+    response = Response()
+    response.status_code = status_code
+    response._content = content
+    response.headers = headers or {
+        "Content-Disposition": 'attachment; filename="export.csv"',
+        "Content-Type": "application/octet-stream",
+    }
+    return response
+
+
+def test_get_data_exports_command_success(mock_client):
+    feed_url = "https://api.silentpush.com/feeds/export.csv"
+    args = {"feed_url": feed_url}
+    content = b"test,data\n1,2"
+
+    # Mock the response from the client (returns a real Response object)
+    mock_response = mock_file_response(content)
+    mock_client.get_data_exports.return_value = mock_response
+
+    # Run the actual command function
+    result = get_data_exports_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, dict)
+    assert result["File"] == "export.csv"
+    assert result["Type"] == EntryType.ENTRY_INFO_FILE
+
+
+def test_add_feed_tags_command_success(mocker):
+    # Mock args
+    args = {"feed_uuid": "abc123", "tags": "malware"}
+    expected_output = f"feed with uuid: abc123 was updated with tags: malware"
+
+    # Mocked result returned by client.add_feed_tags
+    mock_response = {"created_or_updated": [{"uuid": "8eb9c1b8-edbb-4081-9978-590f5c5a0319", "tag": "phishing"}]}
+    expected_res = mock_response.get("created_or_updated")
+
+    # Mock the Client and its method
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.add_feed_tags.return_value = mock_response
+
+    # Run the command
+    result = add_feed_tags_command(mock_client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "SilentPush.AddFeedTags"
+    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs == expected_res
+    assert result.raw_response == expected_res
+    assert expected_output in result.readable_output
+
+def test_parse_arguments_valid():
+    """Test parsing with all valid arguments"""
+    args = {
+        "domains": "example.com, test.com",
+        "fetch_risk_score": "true",
+        "fetch_whois_info": "false"
+    }
+
+    # Run the function
+    domains, fetch_risk_score, fetch_whois_info = parse_arguments(args)
+
+    assert domains == ["example.com", "test.com"]
+    assert fetch_risk_score is True
+    assert fetch_whois_info is False
+
+def test_parse_arguments_no_domains():
+    """Test when no domains are provided"""
+    args = {"fetch_risk_score": "true"}
+    with pytest.raises(DemistoException, match="No domains provided"):
+        parse_arguments(args)
+
+def test_format_domain_with_risk_and_whois():
+    """Test formatting with risk score and WHOIS info"""
+    response = {
+        "domains": [
+            {
+                "domain": "example.com",
+                "risk_score": 85,
+                "risk_score_explanation": "High reputation risk",
+                "whois_info": {
+                    "registrant": "John Doe",
+                    "country": "US"
+                },
+            }
+        ]
+    }
+
+    result = format_domain_information(response, fetch_risk_score=True, fetch_whois_info=True)
+
+    # Assertions: check that key info is present in the markdown output
+    assert "# Domain Information Results" in result
+    assert "## Domain: example.com" in result
+    assert "Risk Assessment" in result
+    assert "John Doe" in result
+    assert "High reputation risk" in result
+
+def test_format_certificate_info_success():
+    cert = {
+        "issuer": "Let's Encrypt",
+        "not_before": "2024-01-01",
+        "not_after": "2025-01-01",
+        "subject": str({"CN": "example.com"}),
+        "domains": ["example.com", "www.example.com"],
+        "serial_number": "1234567890",
+        "fingerprint_sha256": "abcdef1234567890"
+    }
+
+    result = format_certificate_info(cert)
+
+    assert result["Issuer"] == "Let's Encrypt"
+    assert result["Issued On"] == "2024-01-01"
+    assert result["Expires On"] == "2025-01-01"
+    assert result["Common Name"] == "example.com"
+    assert result["Subject Alternative Names"] == "example.com, www.example.com"
+    assert result["Serial Number"] == "1234567890"
+    assert result["Fingerprint SHA256"] == "abcdef1234567890"
+
+def test_validate_ip_invalid_ipv4(mock_client):
+    """Test validate_ip raises DemistoException for an invalid IPv4 address"""
+    resource = "ipv4"
+    value = "999.999.999.999"  # invalid IPv4
+    mock_client.validate_ip_address.return_value = False
+
+    with pytest.raises(DemistoException, match=f"Invalid {resource.upper()} address: {value}"):
+        validate_ip(mock_client, resource, value)
+
+def test_extract_and_sort_asn_reputation():
+    """Test ASN reputation extraction and sorting by date"""
+    raw_response = {
+        "response": {
+            "asn_reputation": [
+                {"asn": "12345", "date": "2023-01-01", "score": 50},
+                {"asn": "54321", "date": "2023-02-01", "score": 70},
+                {"asn": "67890", "date": "2022-12-15", "score": 40},
+            ]
+        }
+    }
+
+    result = extract_and_sort_asn_reputation(raw_response)
+
+    expected = [
+        {"asn": "54321", "date": "2023-02-01", "score": 70},  # newest first
+        {"asn": "12345", "date": "2023-01-01", "score": 50},
+        {"asn": "67890", "date": "2022-12-15", "score": 40},  # oldest last
+    ]
+
+    assert result == expected
+
+def test_generate_no_reputation_response():
+    asn = "AS12345"
+    raw_response = {"status": "success", "message": "No data available"}
+
+    result = generate_no_reputation_response(asn, raw_response)
+
+    # Validate type
+    assert isinstance(result, CommandResults)
+
+    # Validate readable_output
+    assert result.readable_output == f"No reputation data found for ASN {asn}."
+
+def test_prepare_asn_reputation_table_with_explain():
+    asn_reputation = [
+        {
+            "asn": "AS12345",
+            "asn_reputation": "Good",
+            "asname": "Test ASN",
+            "date": "2025-09-01",
+            "asn_reputation_explain": "This ASN has a good reputation.",
+        }
+    ]
+
+    result = prepare_asn_reputation_table(asn_reputation, explain=True)
+
+    expected = [
+        {
+            "ASN": "AS12345",
+            "Reputation": "Good",
+            "ASName": "Test ASN",
+            "Date": "2025-09-01",
+            "Explanation": "This ASN has a good reputation.",
+        }
+    ]
+
+    assert result == expected

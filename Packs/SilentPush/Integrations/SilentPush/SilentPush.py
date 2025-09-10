@@ -44,6 +44,9 @@ SEARCH_SCAN = "explore/scandata/search/raw"
 LIVE_SCAN_URL = "explore/tools/scanondemand"
 FUTURE_ATTACK_INDICATOR = "/api/v2/iocs/threat-ranking"
 SCREENSHOT_URL = "explore/tools/screenshotondemand"
+ADD_FEED = "api/v1/feeds/"
+THREAT_CHECK = "https://api.threatcheck.silentpush.com/v1/"
+EXPORT_DATA = "app/v1/export/organization-exports/"
 
 """ COMMANDS INPUTS """
 
@@ -65,9 +68,9 @@ JOB_STATUS_INPUTS = [  # pragma: no cover
     ),
 ]
 NAMESERVER_REPUTATION_INPUTS = [
-    InputArgument(name="nameserver", description="Nameserver name for which information needs to be retrieved", required=True),
-    InputArgument(name="explain", description="Show the information used to calculate the reputation score"),
-    InputArgument(name="limit", description="The maximum number of reputation history to retrieve"),
+    InputArgument(name="nameserver", description="Nameserver name for which information needs to be retrieved.", required=True),
+    InputArgument(name="explain", description="Show the information used to calculate the reputation score."),
+    InputArgument(name="limit", description="The maximum number of reputation history to retrieve."),
 ]
 SUBNET_REPUTATION_INPUTS = [
     InputArgument(
@@ -116,7 +119,7 @@ DOMAIN_INFRATAGS_INPUTS = [
         description="Build infratags from padns data where the as_of timestamp equivalent is between the first_seen "
         "and the last_seen timestamp - automatically sets mode to padns. Example :- date: yyyy-mm-dd (2021-07-09) - "
         "fixed date, epoch: number (1625834953) - fixed time in epoch format, sec: negative number (-172800) - "
-        "relative time <sec> seconds ago",
+        "relative time <sec> seconds ago.",
         default="self",
     ),
 ]
@@ -176,15 +179,15 @@ ASN_TAKEDOWN_REPUTATION_INPUTS = [
 IPV4_REPUTATION_INPUTS = [
     InputArgument(
         name="ipv4",  # option 1
-        description="IPv4 address for which information needs to be retrieved",
+        description="IPv4 address for which information needs to be retrieved.",
         required=True,
     ),
-    InputArgument(name="explain", description="Show the information used to calculate the reputation score"),
-    InputArgument(name="limit", description="The maximum number of reputation history to retrieve"),
+    InputArgument(name="explain", description="Show the information used to calculate the reputation score."),
+    InputArgument(name="limit", description="The maximum number of reputation history to retrieve."),
 ]
 FORWARD_PADNS_INPUTS = [
-    InputArgument(name="qtype", description="DNS record type", required=True),
-    InputArgument(name="qname", description="The DNS record name to lookup", required=True),
+    InputArgument(name="qtype", description="DNS record type.", required=True),
+    InputArgument(name="qname", description="The DNS record name to lookup.", required=True),
     InputArgument(name="netmask", description="The netmask to filter the lookup results."),
     InputArgument(name="subdomains", description="Flag to include subdomains in the lookup results."),
     InputArgument(name="regex", description="Regular expression to filter the DNS records."),
@@ -248,6 +251,38 @@ SCREENSHOT_URL_INPUTS = [
         required=True,
     )
 ]
+
+ADD_FEED_INPUTS = [
+    InputArgument(name="name", description="Name of the feed.", required=True),
+    InputArgument(name="type", description="Feed Type.", required=True),
+    InputArgument(name="category", description="Feed Category.", required=False),
+    InputArgument(name="vendor", description="Vendor.", required=False),
+    InputArgument(name="feed_description", description="URL for the screenshot.", required=False),
+    InputArgument(name="tags", description="Tags that should be attached with the feed.", required=False),
+]
+
+ADD_INDICATORS_INPUTS = [
+    InputArgument(name="feed_uuid", description="UUID of the feed.", required=True),
+    InputArgument(name="indicators", description="Indicators for the feed.", required=True),
+]
+
+ADD_INDICATOR_TAGS_INPUTS = [
+    InputArgument(name="feed_uuid", description="UUID of the feed.", required=True),
+    InputArgument(name="indicator_name", description="The name of the indicator to tag.", required=True),
+    InputArgument(name="tags", description="Tags to be added to the indicator.", required=True),
+]
+
+RUN_THREAT_CHECK_INPUTS = [
+    InputArgument(name="data", description="The name of the data source to query.", required=True),
+    InputArgument(name="query", description="The value to check for threats (e.g., IP or domain).", required=True),
+    InputArgument(name="type", description="The type of the value being queried (e.g., ip, domain).", required=True),
+    InputArgument(name="user_identifier", description="A unique identifier for the user making the request.", required=True),
+]
+
+GET_DATA_EXPORTS_INPUTS = [
+    InputArgument(name="feed_url", description="The URL from which to export the feed data.", required=True)
+]
+
 
 """ COMMANDS OUTPUTS """
 
@@ -414,7 +449,7 @@ LIST_DOMAIN_OUTPUTS = [
 ]
 DOMAIN_CERTIFICATE_OUTPUTS = [
     OutputArgument(name="domain", output_type=str, description="Queried domain."),
-    OutputArgument(name="metadata", output_type=str, description="Metadata of the response"),
+    OutputArgument(name="metadata", output_type=str, description="Metadata of the response."),
     OutputArgument(name="certificates.cert_index", output_type=int, description="Index of the certificate."),
     OutputArgument(name="certificates.chain", output_type=list, description="Certificate chain."),
     OutputArgument(name="certificates.date", output_type=int, description="Certificate issue date."),
@@ -448,7 +483,7 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
     OutputArgument(name="job_details.status", output_type=str, description="Status of the job."),
 ]
 ENRICHMENT_OUTPUTS = [
-    OutputArgument(name="value", output_type=str, description="Queried value"),
+    OutputArgument(name="value", output_type=str, description="Queried value."),
     OutputArgument(
         name="domain_string_frequency_probability.avg_probability",
         output_type=float,
@@ -475,7 +510,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="domain_urls.results_summary.alexa_top10k_score",
         output_type=int,
-        description={repr("Score indicating domain's Alexa top 10k ranking.")},
+        description="Score indicating domain's Alexa top 10k ranking.",
     ),
     OutputArgument(
         name="domain_urls.results_summary.dynamic_domain_score",
@@ -498,7 +533,7 @@ ENRICHMENT_OUTPUTS = [
         description="Number of results found for the domain.",
     ),
     OutputArgument(
-        name="domain_urls.results_summary.url_shortner_score", output_type=int, description="Score of the shortned URL"
+        name="domain_urls.results_summary.url_shortner_score", output_type=int, description="Score of the shortned URL."
     ),
     OutputArgument(name="domaininfo.domain", output_type=str, description="Domain name analyzed."),
     OutputArgument(name="domaininfo.error", output_type=str, description="Error message if no data is available for the domain."),
@@ -573,7 +608,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="ns_reputation.ns_srv_reputation.ns_server_domain_density",
         output_type=int,
-        description="Number of domains sharing this NS",
+        description="Number of domains sharing this NS.",
     ),
     OutputArgument(
         name="ns_reputation.ns_srv_reputation.ns_server_domains_listed",
@@ -583,7 +618,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(
         name="ns_reputation.ns_srv_reputation.ns_server_reputation",
         output_type=int,
-        description="Reputation score for this NS",
+        description="Reputation score for this NS.",
     ),
     OutputArgument(
         name="scan_data.certificates.domain",
@@ -638,7 +673,7 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="scan_data.headers.hostname", output_type=str, description="The hostname that sent this response."),
     OutputArgument(name="scan_data.headers.ip", output_type=str, description="The IP address responding to the request."),
     OutputArgument(name="scan_data.headers.scan_date", output_type=str, description="The date when the headers were scanned."),
-    OutputArgument(name="scan_data.headers.headers.cache-control", output_type=str, description="HTTP cache-control"),
+    OutputArgument(name="scan_data.headers.headers.cache-control", output_type=str, description="HTTP cache-control."),
     OutputArgument(
         name='scan_data.headers.headers.content-length"',
         output_type=str,
@@ -654,7 +689,7 @@ ENRICHMENT_OUTPUTS = [
         description="The web server handling the request (Cloudflare proxy).",
     ),
     OutputArgument(name="scan_data.html.hostname", output_type=str, description="HTTP response code for the domain scan."),
-    OutputArgument(name="scan_data.html.html_body_murmur3", output_type=str, description="hash of the page content"),
+    OutputArgument(name="scan_data.html.html_body_murmur3", output_type=str, description="hash of the page content."),
     OutputArgument(
         name="scan_data.html.html_body_ssdeep",
         output_type=str,
@@ -747,7 +782,7 @@ ENRICHMENT_OUTPUTS = [
         name="ip2asn.benign_info.known_benign",
         output_type=bool,
         description="Indicates whether this IP/ASN is explicitly known to be safe "
-        "(e.g., a reputable cloud provider or public service)",
+        "(e.g., a reputable cloud provider or public service).",
     ),
     OutputArgument(
         name="ip2asn.benign_info.tags",
@@ -1737,6 +1772,41 @@ SCREENSHOT_URL_OUTPUTS = [
     OutputArgument(name="url", output_type=str, description="The URL that was used to generate the screenshot."),
 ]
 
+ADD_FEED_OUTPUTS = [
+    OutputArgument(name="name", output_type=str, description="The name of the feed."),
+    OutputArgument(name="type", output_type=str, description="The type of the feed."),
+    OutputArgument(name="vendor", output_type=str, description="The vendor of the feed."),
+    OutputArgument(name="feed_description", output_type=str, description="A description of the feed."),
+    OutputArgument(name="category", output_type=str, description="The category of the feed."),
+    OutputArgument(name="tags", output_type=list, description="Tags associated with the feed."),
+]
+
+
+ADD_INDICATORS_OUTPUTS = [
+    OutputArgument(
+        name="created_or_updated",
+        output_type=list,
+        description="List of indicator names that were created or updated in the feed.",
+    ),
+    OutputArgument(
+        name="invalid_indicators",
+        output_type=list,
+        description="List of indicators that were considered invalid and not added to the feed.",
+    ),
+]
+
+ADD_INDICATOR_TAGS_OUTPUTS = [
+    OutputArgument(name="uuid", output_type=str, description="The UUID of the indicator."),
+    OutputArgument(name="name", output_type=str, description="The name of the indicator."),
+    OutputArgument(name="tags", output_type=str, description="The tags assigned to the indicator."),
+]
+
+RUN_THREAT_CHECK_OUTPUTS = [
+    OutputArgument(name="is_listed", output_type=bool, description="Indicates whether the queried value is listed as a threat."),
+    OutputArgument(name="listed_txt", output_type=str, description="Textual description of the listing status."),
+    OutputArgument(name="query", output_type=str, description="The original value that was checked."),
+]
+
 
 metadata_collector = YMLMetadataCollector(
     integration_name="SilentPush",
@@ -1832,17 +1902,25 @@ class Client(BaseClient):
         try:
             response = requests.request(
                 method=method,
-                url=full_url,  # <<< this must be full_url, not something else
+                url=full_url,
                 headers=self._headers,
                 verify=self.verify,
                 params=params,
                 json=data,
                 proxies=self.proxies,
             )
-            response.raise_for_status()
-            return response.json()
         except requests.exceptions.RequestException as e:
-            raise DemistoException(f"Request error: {str(e)}")
+            raise DemistoException(f"Connection error: {str(e)}")
+
+        # Check for non-2xx HTTP responses
+        if not response.ok:
+            raise DemistoException(f"HTTP {response.status_code} Error: {response.text}", res=response)
+
+        # Try parsing JSON
+        try:
+            return response.json()
+        except ValueError:
+            raise DemistoException("Failed to parse JSON response.", res=response)
 
     def get_job_status(self, job_id: str, params: dict) -> dict[str, Any]:
         """
@@ -2467,6 +2545,152 @@ class Client(BaseClient):
 
         return {"status_code": screenshot_data.get("response", 200), "screenshot_url": screenshot_url}
 
+    def add_feed(self, args: dict) -> dict[str, Any]:
+        """
+        Add new feed on SilentPush.
+
+        Args:
+            args: Payload for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Response containing feed information.
+        """
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"{ADD_FEED}"
+
+        payload = {
+            "name": args.get("name"),
+            "type": args.get("type"),
+            "vendor": args.get("vendor"),
+            "feed_description": args.get("feed_description"),
+            "category": args.get("category"),
+            "tags": argToList(args.get("tags")),
+        }
+        remove_nulls_from_dictionary(payload)
+
+        response = self._http_request(method="POST", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add new feed: {response['errors']}"}
+
+        return response
+
+    def add_feed_tags(self, args: dict) -> dict[str, Any]:
+        """
+        Add new feed on SilentPush.
+
+        Args:
+            args: Payload for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Response containing feed tags information.
+        """
+        feed_uuid = args.get("feed_uuid")
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"{ADD_FEED}" + f"{feed_uuid}" + "/tags/"
+        tags = argToList(args.get("tags"))
+        payload = {"tags": tags}
+        remove_nulls_from_dictionary(payload)
+        response = self._http_request(method="POST", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add feed tags: {response['errors']}"}
+
+        return response
+
+    def add_indicators(self, args: dict) -> dict[str, Any]:
+        """
+        Add new indicator on SilentPush.
+
+        Args:
+            args: Payload for filtering and pagination.
+
+        Returns:
+            Dict[str, Any]: Response containing indicators information.
+        """
+        feed_uuid = args.get("feed_uuid")
+        url = self._base_url.replace("/api/v1/merge-api", "") + f"{ADD_FEED}" + f"{feed_uuid}" + "/indicators/"
+        indicators = argToList(args.get("indicators"))
+        payload = {"indicators": indicators}
+        remove_nulls_from_dictionary(payload)
+        response = self._http_request(method="POST", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add new indicators: {response['errors']}"}
+
+        return response
+
+    def add_indicators_tags(self, args: dict) -> dict[str, Any]:
+        """
+        Add new indicator tags on SilentPush.
+
+        Args:
+            args: Payload for tags.
+
+        Returns:
+            Dict[str, Any]: Response containing indicator tags information.
+        """
+        feed_uuid = args.get("feed_uuid")
+        indicator_name = args.get("indicator_name")
+        url = (
+            self._base_url.replace("/api/v1/merge-api", "")
+            + f"{ADD_FEED}"
+            + f"{feed_uuid}"
+            + "/indicators/"
+            + f"{indicator_name}"
+            + "/update-tags/"
+        )
+        tags = argToList(args.get("tags"))
+        payload = {"tags": tags}
+        remove_nulls_from_dictionary(payload)
+        response = self._http_request(method="PUT", url=url, data=payload)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to add indicator tags: {response['errors']}"}
+
+        return response
+
+    def run_threat_check(self, args: dict) -> dict[str, Any]:
+        """
+        Fetch threat checks on SilentPush.
+
+        Args:
+            args: Params for threat checks.
+
+        Returns:
+            Dict[str, Any]: Response containing threat check information.
+        """
+        url = f"{THREAT_CHECK}"
+        params = {"t": args.get("type"), "d": args.get("data"), "u": args.get("user_identifier"), "q": args.get("query")}
+        remove_nulls_from_dictionary(params)
+        response = self._http_request(method="GET", url=url, params=params)
+
+        if isinstance(response, dict) and response.get("errors"):
+            return {"error": f"Failed to run threat check: {response['errors']}"}
+
+        return response
+
+    def get_data_exports(self, feed_url: str) -> requests.Response:
+        """
+        Exports data on SilentPush.
+
+        Args:
+            feed_url: Feed url for exporting data.
+
+        Returns:
+            Dict[str, Any]: Response containing feed information.
+        """
+        server_url = self._base_url.replace("/api/v1/merge-api", "")
+        url = f"{server_url}{EXPORT_DATA}{feed_url}"
+
+        response = requests.request(
+            method="GET",
+            url=url,  # <<< this must be full_url, not something else
+            headers=self._headers,
+            verify=self.verify,
+            proxies=self.proxies,
+        )
+
+        return response
+
 
 """ COMMAND FUNCTIONS """
 
@@ -2619,7 +2843,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
 @metadata_collector.command(
     command_name="silentpush-get-subnet-reputation",
     inputs_list=SUBNET_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.NameserverReputation",
+    outputs_prefix="SilentPush.SubnetReputation",
     outputs_list=SUBNET_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation history for a specific subnet.",
 )
@@ -3912,6 +4136,212 @@ def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResul
     )
 
 
+@metadata_collector.command(
+    command_name="silentpush-add-feed",
+    inputs_list=ADD_FEED_INPUTS,
+    outputs_prefix="SilentPush.Feed",
+    outputs_list=ADD_FEED_OUTPUTS,
+    description="This command add the new feed",
+)
+def add_feed_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for adding new feeds.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'name' and 'type' key.
+
+    Returns:
+        CommandResults: JSON response of added feed.
+    """
+    result = client.add_feed(args)
+    feed_name = result.get("name")
+    feed_type = result.get("type")
+
+    return CommandResults(
+        outputs_prefix="SilentPush.Feed",
+        outputs_key_field="name",
+        outputs=result,
+        readable_output=f"SilentPush feed: {feed_name} of type: {feed_type} was added successfully.",
+        raw_response=result,
+    )
+
+
+ADD_FEED_TAGS_INPUTS = [
+    InputArgument(
+        name="feed_uuid",
+        description="Never return query metadata, even if original request did include metadata.",
+    ),
+    InputArgument(
+        name="tags",
+        description="Comma separated tags to be updated to the feed.",
+    ),
+]
+
+ADD_FEED_TAGS_OUTPUTS = [
+    OutputArgument(name="created_or_updated", description="List of tags that have been created or updated to the feed.")
+]
+
+
+@metadata_collector.command(
+    command_name="silentpush-add-feed-tags",
+    inputs_list=ADD_FEED_TAGS_INPUTS,
+    outputs_prefix="SilentPush.AddFeedTags",
+    outputs_list=ADD_INDICATORS_OUTPUTS,
+    description="This command add indicators to the feed",
+)
+def add_feed_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for adding new feed tags.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' key.
+
+    Returns:
+        CommandResults: JSON response of added tags.
+    """
+    result = client.add_feed_tags(args).get('created_or_updated')
+    uuid = args.get('feed_uuid')
+    tags = args.get('tags')
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddFeedTags",
+        outputs_key_field="feed_uuid",
+        outputs=result,
+        readable_output=f"feed with uuid: {uuid} was updated with tags: {tags}",
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-add-indicators",
+    inputs_list=ADD_INDICATORS_INPUTS,
+    outputs_prefix="SilentPush.AddIndicators",
+    outputs_list=ADD_INDICATORS_OUTPUTS,
+    description="This command add indicators to the feed",
+)
+def add_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for add new indicators.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' and 'indicators key.
+
+    Returns:
+        CommandResults: JSON response of added indicators.
+    """
+    result = client.add_indicators(args).get('created_or_updated')
+    indicators = args.get('indicators')
+    feed_uuid = args.get('feed_uuid')
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddIndicators",
+        outputs_key_field="feed_uuid",
+        outputs=result,
+        readable_output=f"Indicators: '{indicators}' were added successfully to SilentPush feed: '{feed_uuid}'.",
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-add-indicator-tags",
+    inputs_list=ADD_INDICATOR_TAGS_INPUTS,
+    outputs_prefix="SilentPush.AddIndicatorTags",
+    outputs_list=ADD_INDICATOR_TAGS_OUTPUTS,
+    description="This command updates tags to the indicators",
+)
+def add_indicators_tags_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler for add new indicator tags.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' and 'indicator_name key.
+
+    Returns:
+        CommandResults: JSON response of added indicator tags.
+    """
+    result = client.add_indicators_tags(args)
+    tags = args.get('tags')
+    indicator_name = args.get('indicator_name')
+
+    return CommandResults(
+        outputs_prefix="SilentPush.AddIndicatorTags",
+        outputs_key_field="feed_uuid",
+        outputs=result,
+        readable_output=f"Indicator Tags: '{tags}' added to indicator '{indicator_name}' successfully",
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-run-threat-check",
+    inputs_list=RUN_THREAT_CHECK_INPUTS,
+    outputs_prefix="SilentPush.RunThreatCheck",
+    outputs_list=RUN_THREAT_CHECK_OUTPUTS,
+    description="This command runs the threat check on the specified ",
+)
+def run_threat_check_command(client: Client, args: dict[str, Any]) -> CommandResults | dict:
+    """
+    Command handler to fetch threat checks.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, Any]): Command arguments, must include 'feed_uuid' key.
+
+    Returns:
+        CommandResults: JSON response of threat check.
+    """
+    result = client.run_threat_check(args)
+    ip = result.get("query")
+
+    return CommandResults(
+        outputs_prefix="SilentPush.RunThreatCheck",
+        outputs_key_field="query",
+        outputs=result,
+        readable_output=f"Threat check for query '{ip}' completed successfully",
+        raw_response=result,
+    )
+
+
+@metadata_collector.command(
+    command_name="silentpush-get-data-exports",
+    inputs_list=GET_DATA_EXPORTS_INPUTS,
+    outputs_prefix="SilentPush.GetDataExports",
+    outputs_list=[],
+    file_output=True,
+    description="This command runs the threat check on the specified ",
+)
+def get_data_exports_command(client: Client, args: dict[str, str]) -> dict[str, Any]:
+    """
+    Command handler to export data.
+
+    Args:
+        client (Client): SilentPush API client instance.
+        args (Dict[str, str]): Command arguments, must include 'feed_uuid' key.
+
+    Returns:
+        CommandResults: JSON response of threat check.
+    """
+
+    feed_url = args["feed_url"]
+    response = client.get_data_exports(feed_url)
+
+    # Check for errors
+    if response.status_code != 200:
+        raise Exception(f"Failed to download file: {response.status_code} {response.text}")
+
+    # Choose a filename (you can extract from headers or use feed_url)
+    filename = feed_url.split("/")[-1] or "exported_data"
+
+    # Return fileResult
+    file_entry = fileResult(filename, response.content, file_type=EntryType.ENTRY_INFO_FILE)
+    return file_entry
+    
+
+
 """ MAIN FUNCTION """
 
 
@@ -3990,6 +4420,24 @@ def main() -> None:
 
         elif demisto.command() == "silentpush-screenshot-url":
             return_results(screenshot_url_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-feed":
+            return_results(add_feed_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-feed-tags":
+            return_results(add_feed_tags_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-indicators":
+            return_results(add_indicators_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-add-indicator-tags":
+            return_results(add_indicators_tags_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-run-threat-check":
+            return_results(run_threat_check_command(client, demisto.args()))
+
+        elif demisto.command() == "silentpush-get-data-exports":
+            return_results(get_data_exports_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
