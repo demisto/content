@@ -20,13 +20,16 @@ DEDUPLICATION_WINDOW_MINUTES = 1
 MAX_STORED_HASHES = 10000  # Cap dedup cache to 10k: handles short high-EPS bursts (1-min window) while bounding memory
 
 DEFAULT_PAGE_SIZE = 1000  # Default page size for IBM Storage Scale API
-DEFAULT_FIRST_FETCH_MINUTES = 1  # Default minutes to look back on first fetch (corrected: minutes, not days)
+DEFAULT_FIRST_FETCH_MINUTES = 1  # Default minutes to look back on first fetch
 
 # Hash substring length to show in logs for readability while minimizing noise
 HASH_LOG_PREVIEW_LEN = 12
 
+# Maximum number of sample hash timestamps to include in debug info
+MAX_SAMPLE_SIZE = 5
+
 # Time/regex formatting
-ISO_MINUTE_FORMAT = "%Y-%m-%dT%H:%M"  # Minute bucket (chosen to keep filter length bounded; see UT below)
+ISO_MINUTE_FORMAT = "%Y-%m-%dT%H:%M"  # Minute bucket (chosen to keep filter length bounded)
 SECOND_WILDCARD_REGEX = "[0-5][0-9]"  # Seconds 00-59 as a compact class
 TIME_BUCKET_MINUTES = 1  # Step across minutes when constructing time-window regex
 
@@ -411,9 +414,8 @@ class Client:
             debug_info["deduplication_info"] = {
                 "stored_hashes_count": len(stored_hashes),
                 "deduplication_window_minutes": DEDUPLICATION_WINDOW_MINUTES,
-                "max_stored_hashes": MAX_STORED_HASHES,
                 "cutoff_time": cutoff_time,
-                "sample_hash_timestamps": list(stored_hashes.values())[:5] if stored_hashes else [],
+                "sample_hash_timestamps": list(stored_hashes.values())[:MAX_SAMPLE_SIZE] if stored_hashes else [],
             }
         except Exception as e:
             debug_info["deduplication_info"] = {"error": str(e)}

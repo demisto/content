@@ -25,9 +25,9 @@ from IBMStorageScale import (
     update_last_run_time,
 )
 
-pytestmark = pytest.mark.asyncio
-
 UTC = UTC
+
+pytestmark = pytest.mark.asyncio
 
 
 def mock_client(mocker: MockerFixture, params: dict[str, Any]) -> Client:
@@ -375,7 +375,7 @@ class TestUtilityFunctions:
         result = get_fetch_start_time()
 
         assert isinstance(result, datetime)
-        expected_dt = datetime.fromisoformat(expected_time_str.replace("Z", "+00:00"))
+        expected_dt = datetime.fromisoformat(expected_time_str)
         assert result == expected_dt
 
     def test_get_fetch_start_time_first_run(self, mocker: MockerFixture):
@@ -387,7 +387,7 @@ class TestUtilityFunctions:
 
         result = get_fetch_start_time()
 
-        expected_dt = mock_now - timedelta(days=DEFAULT_FIRST_FETCH_MINUTES)
+        expected_dt = mock_now - timedelta(minutes=DEFAULT_FIRST_FETCH_MINUTES)
         assert result == expected_dt
 
     def test_update_last_run_time(self, mocker: MockerFixture):
@@ -399,7 +399,7 @@ class TestUtilityFunctions:
         new_time = datetime(2025, 8, 10, 12, 30, 0, tzinfo=UTC)
         update_last_run_time(new_time)
 
-        expected_last_run = {"last_fetch_time": "2025-08-10T12:30:00+00:00Z"}
+        expected_last_run = {"last_fetch_time": "2025-08-10T12:30:00Z"}
         mock_set_last_run.assert_called_once_with(expected_last_run)
 
     def test_generate_time_filter_regex(self):
@@ -429,7 +429,7 @@ class TestUtilityFunctions:
 
         assert "fields=:all:" in result
         assert "limit=500" in result
-        assert "filter=entryTime='''2025-08-10T10:15:[0-5][0-9]'''" in result
+        assert "filter=entryTime%3D'''2025-08-10T10:15:[0-5][0-9]'''" in result
 
     def test_deduplicate_events_with_duplicates(self, mocker: MockerFixture):
         """
