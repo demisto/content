@@ -132,10 +132,9 @@ class TestBuiltInService:
               encountered_error is set to True and the function breaks out of the redirect loop.
         """
         first_response = self.get_response_mock(
-            url="https://short.url/redirect-exception",
-            redirect_url="https://intermediate.url/step1"
+            url="https://short.url/redirect-exception", redirect_url="https://intermediate.url/step1"
         )
-        
+
         # Mock the _http_request to return first response, then raise exception on second call
         def side_effect_with_exception(*args, **kwargs):
             if side_effect_with_exception.call_count == 0:
@@ -143,19 +142,83 @@ class TestBuiltInService:
                 return first_response
             else:
                 raise requests.exceptions.ConnectionError("Connection failed during redirect")
-        
+
         side_effect_with_exception.call_count = 0
         mocker.patch.object(BaseClient, "_http_request", side_effect=side_effect_with_exception)
-        
+
         result = unshorten_url(
             service_name="Built-In",
             url="https://short.url/redirect-exception",
-            redirect_limit=0  # Unlimited redirects, so hit_redirect_limit should return False
+            redirect_limit=0,  # Unlimited redirects, so hit_redirect_limit should return False
         )
-        
+
         expected_output = load_test_data("built-in", "redirect_exception_expected_output")
-        
+
         assert result.outputs == expected_output
         assert result.outputs["EncounteredError"] is True
         assert result.outputs["RedirectCount"] == 1  # Should have one redirect before exception
         assert result.outputs["ResolvedURL"] == "https://intermediate.url/step1"  # Should stop at last successful URL
+
+
+class TestURLUnshortingService:
+    """Test the base URLUnshortingService class methods."""
+
+    def test_hit_redirect_limit_unlimited(self):
+        """
+        Given: A BuiltInShortener instance with unlimited redirects (redirect_limit=0).
+        When: Checking if the redirect limit has been hit with various redirect histories.
+        Then: Ensure that hit_redirect_limit always returns False (unlimited redirects).
+        """
+        service = BuiltInShortener(redirect_limit=0)
+
+        assert service.hit_redirect_limit([]) is False
+        assert service.hit_redirect_limit(["url1"]) is False
+        assert service.hit_redirect_limit(["url1", "url2", "url3"]) is False
+
+    def test_hit_redirect_limit_with_limit(self):
+        """
+        Given: A BuiltInShortener instance with specific redirect limits.
+        When: Checking if the redirect limit has been hit with different redirect histories.
+        Then: Ensure that hit_redirect_limit returns True when the limit is reached or exceeded,
+              and False otherwise.
+        """
+
+        service = BuiltInShortener(redirect_limit=2)
+        assert service.hit_redirect_limit([]) is False  # 0 < 2
+        assert service.hit_redirect_limit(["url1"]) is False  # 1 < 2
+        assert service.hit_redirect_limit(["url1", "url2"]) is True  # 2 >= 2
+        assert service.hit_redirect_limit(["url1", "url2", "url3"]) is True  # 3 >= 2
+
+        service_limit_1 = BuiltInShortener(redirect_limit=1)
+        assert service_limit_1.hit_redirect_limit([]) is False  # 0 < 1
+        assert service_limit_1.hit_redirect_limit(["url1"]) is True  # 1 >= 1
+
+
+class TestEdgeCases:
+    """Test edge cases and additional scenarios."""
+
+    def test_url_without_http_prefix(self, mocker):
+        """
+        Given: A URL without an http/https prefix.
+        When: Calling the `unshorten_url` function with the URL missing the prefix.
+        Then: Ensure the function adds 'https://' prefix and resolves the URL correctly without errors.
+        """
+        response_mock = TestBuiltInService.get_response_mock(url="https://example.com")
+        mocker.patch.object(BaseClient, "_http_request", return_value=response_mock)
+
+        result = unshorten_url(service_name="Built-In", url="example.com", redirect_limit=0)
+
+        assert result.outputs["OriginalURL"] == "example.com"
+        assert result.outputs["ResolvedURL"] == "https://example.com"
+        assert result.outputs["EncounteredError"] is False
+
+    def test_constructor_with_none_redirect_limit(self):
+        """
+        Given: A BuiltInShortener instance is created with `redirect_limit=None`.
+        When: Initializing the service.
+        Then: Ensure that the redirect_limit defaults to 0 and behaves like unlimited redirects.
+        """
+        service = BuiltInShortener(redirect_limit=None)
+        assert service.redirect_limit == 0
+
+        assert service.hit_redirect_limit(["url1", "url2"]) is False
