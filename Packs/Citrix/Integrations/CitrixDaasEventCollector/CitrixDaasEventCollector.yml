@@ -51,8 +51,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: CitrixDaasEventCollector
-display: CitrixDaasEventCollector
+description: Citrix Daas Event Collector integration
+display: Citrix Daas Event Collector
 name: CitrixDaasEventCollector
 script:
   commands:

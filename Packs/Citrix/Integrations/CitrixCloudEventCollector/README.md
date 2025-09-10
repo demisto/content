@@ -1,5 +1,4 @@
-Citrix Cloud Event Collector integration
-This integration was integrated and tested with version xx of CitrixCloudEventCollector.
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure Citrix Cloud Event Collector in Cortex
 
@@ -22,7 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### citrix-cloud-get-events
 
 ***
-Returns operation events extracted from Citrix.
+Returns system log events extracted from Citrix.
 
 #### Base Command
 
@@ -33,7 +32,7 @@ Returns operation events extracted from Citrix.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
-| limit | The maximum number of operations to return. Default is 100. | Optional | 
+| limit | The maximum number of logs to return. Default is 100.                                                                                                        | Optional | 
 
 #### Context Output
 

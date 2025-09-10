@@ -1,38 +1,133 @@
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Step by step configuration
+## Configure Citrix Daas Event Collector in Cortex
 
-### Prerequisites
 
-**Get Access to Citrix Cloud**
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Client Id |  | True |
+| Client Secret |  | True |
+| Customer ID |  | True |
+| Cloud Instance (Site) ID |  | True |
+| Max events per fetch | The maximum amount of events to retrieve. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-Sign up for a free Citrix Cloud account, or log in to Citrix Cloud.
+## Commands
 
-Citrix Cloud API Access with Service Principals
-A service principal acts as an API client to Citrix Cloud APIs and has the following characteristics:
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-**1. Create a Service Principal**
+### citrix-daas-get-events
 
-In the Citrix Cloud console, click the menu in the upper left corner.
+***
+Returns operation events extracted from Citrix.
 
-**2. Select Identity and Access Management > API Access > Service principals > Create service principal and follow the steps to completion.**
+#### Base Command
 
-If these options do not appear, you might not have sufficient permissions to manage service principals. Contact your administrator to get the required full access permission.
+`citrix-daas-get-events`
 
-![ServicePrincipals](../../doc_files/ServicePrincipals.png)
+#### Input
 
-**3. Add the credentials to your secret management tool as the secret will only appear once**
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required | 
+| limit | The maximum number of operations to return. Default is 100. | Optional | 
+| search_date_option | Specific time filters for searching operations. Possible values are: LastMinute, Last5Minutes, Last30Minutes, LastHour, Last12Hours, Last24Hours, Today, Yesterday, Last7Days, Last28Days, LastMonth, LastThreeMonths, LastSixMonths. Default is LastMinute. | Required | 
 
-**4. Customer ID is a mandatory parameter that must be passed in the Citrix-CustomerId header. To get the customer ID:**
+#### Context Output
 
-1. Log in to the [Citrix Cloud](https://onboarding.cloud.com).
-2. Select the Identity and Access Management option from the menu.
-3. Click the API Access tab. You can see the customer ID in the description above the Create Client button.
+There is no context output for this command.
 
-### Steps to identify your tenant's Citrix Cloud ID
+#### Command example
 
-1. Log in to https://citrix.cloud.com
-2. If you have access to more than one tenant, their names and Citrix Cloud IDs will be presented to you in a list format for you to select which one you want to sign in to.  Example below:
+```!citrix-daas-get-events limit=2```
 
-![LoginScreen](../../doc_files/LoginScreen.png)
+#### Context Example
 
-3. Once you sign in, the Tenant's Citrix Cloud ID is also presented in the top right corner of the screen as shown in an example here (ctxtsnaxa)
+```json
+{
+    "CitrixDaas": {
+        "Event": [
+            {
+                "Id": "0",
+                "Text": "string",
+                "User": "string",
+                "UserIdentity": "string",
+                "Source": "string",
+                "AdminMachineIP": "string",
+                "EndTime": "2024-01-02T13:22:36.848+00:00",
+                "FormattedEndTime": "2024-01-02T13:22:36Z",
+                "StartTime": "2024-01-02T13:22:36.614+00:00",
+                "FormattedStartTime": "2025-09-03T13:22:36Z",
+                "IsSuccessful": true,
+                "TargetTypes": [
+                    "string"
+                ],
+                "OperationType": "Unknown",
+                "Labels": [
+                    "string"
+                ],
+                "Metadata": [
+                    {
+                        "Name": "Name",
+                        "Value": "Value"
+                    }
+                ],
+                "Parameters": [
+                    {
+                        "Name": "Name",
+                        "Value": "Value"
+                    }
+                ],
+                "source_log_type": "configlog",
+                "_time": "2025-09-03T13:22:36Z"
+            },
+            {
+                "Id": "1",
+                "Text": "string",
+                "User": "string",
+                "UserIdentity": "string",
+                "Source": "string",
+                "AdminMachineIP": "string",
+                "EndTime": "2024-01-02T13:22:36.848+00:00",
+                "FormattedEndTime": "2024-01-02T13:22:36Z",
+                "StartTime": "2024-01-02T13:22:36.614+00:00",
+                "FormattedStartTime": "2025-09-03T13:22:36Z",
+                "IsSuccessful": true,
+                "TargetTypes": [
+                    "string"
+                ],
+                "OperationType": "Unknown",
+                "Labels": [
+                    "string"
+                ],
+                "Metadata": [
+                    {
+                        "Name": "Name",
+                        "Value": "Value"
+                    }
+                ],
+                "Parameters": [
+                    {
+                        "Name": "Name",
+                        "Value": "Value"
+                    }
+                ],
+                "source_log_type": "configlog",
+                "_time": "2025-09-03T13:22:36Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Events List
+
+> |AdminMachineIP|EndTime|FormattedEndTime|FormattedStartTime|Id|IsSuccessful|Labels|Metadata|OperationType|Parameters|Source|StartTime|TargetTypes|Text|User|UserIdentity|_time|source_log_type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| string | 2024-01-02T13:22:36.848+00:00 | 2024-01-02T13:22:36Z | 2025-09-03T13:22:36Z | 0 | true | string | {'Name': 'Name', 'Value': 'Value'} | Unknown | {'Name': 'Name', 'Value': 'Value'} | string | 2024-01-02T13:22:36.614+00:00 | string | string | string | string | 2025-09-03T13:22:36Z | configlog |
+>| string | 2024-01-02T13:22:36.848+00:00 | 2024-01-02T13:22:36Z | 2025-09-03T13:22:36Z | 1 | true | string | {'Name': 'Name', 'Value': 'Value'} | Unknown | {'Name': 'Name', 'Value': 'Value'} | string | 2024-01-02T13:22:36.614+00:00 | string | string | string | string | 2025-09-03T13:22:36Z | configlog |

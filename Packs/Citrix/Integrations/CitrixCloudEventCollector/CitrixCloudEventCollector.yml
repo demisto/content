@@ -60,10 +60,10 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The maximum number of operations to return.
+    - description: The maximum number of logs to return.
       name: limit
       defaultValue: 100
-    description: Returns operation events extracted from Citrix.
+    description: Returns system log events extracted from Citrix.
     name: citrix-cloud-get-events
   dockerimage: demisto/python3:3.12.11.4508456
   runonce: false
