@@ -1,5 +1,9 @@
 Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
 
+<img src="https://external-site.com/absolute/path/screenshot.png" width=800 height=600>
+<br>
+<div>This content has <unclosed tags and raw < > characters that aren't properly encoded</div>
+
 ## Script Data
 
 ---
@@ -16,12 +20,12 @@ Searches for a specific indicator in the tenant's event and log data, and extrac
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicator | The indicator value \(e.g., IP address, domain, hash\) to search for in the selected dataset logs. |
-| time_frame | The search timeframe in days \(e.g., "7 days" means searching the past 7 days of data\). |
-| data_set | The dataset for the search. By default, this is "xdr_data". |
-| query_name | The name to use for the query results. Find the query results under this name in the War Room context. |
-| interval_in_seconds | The interval in seconds for checking query completion. |
-| timeout_in_seconds | The maximum time to wait for the query to finish \(in seconds\). The command fails if the query takes longer. |
+| Indicator | |
+| timeFrame | |
+| dataSet | |  
+| QueryName | |
+| intervalInSeconds | |
+| timeoutInSeconds | |
 
 ## Outputs
 
@@ -29,4 +33,28 @@ Searches for a specific indicator in the tenant's event and log data, and extrac
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| PaloAltoNetworksXQL | A list of event records \(constructed as dictionaries\) where the specified indicator was found. | List |
+| search.indicator.results | | List |
+
+## Script Example
+
+```!SearchIndicatorInEvents Indicator=malicious.com timeFrame="5 days" QueryName=search_results```
+
+## Context Example
+
+```
+{
+    "search": {
+        "indicator": {
+            "results": [
+                {"event_id": "123", "timestamp": "2024-01-01T10:00:00Z"}
+            ]
+        }
+    }
+}
+```
+
+## Human Readable Output
+
+<p>Results found for indicator: malicious.com<br>
+Total events: 5<br>
+Time range: 5 days<p>
