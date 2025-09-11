@@ -5196,7 +5196,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.LicenseInformation.license_information | String | Tenant license information |
+| CiscoAMP.LicenseInformation.license_information | String | Tenant license information. |
 
 #### Command example
 
