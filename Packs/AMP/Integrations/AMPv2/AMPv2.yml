@@ -1769,7 +1769,14 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.12.8.3296088
+  - description: Get license information about the tenant such as number of connectors
+      registered, tier level, licensed seats count etc.
+    name: cisco-amp-license-get
+    outputs:
+    - type: String
+      contextPath: CiscoAMP.LicenseInformation.license_information
+      description: Tenant license information
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetch: true
   runonce: false
   script: '-'

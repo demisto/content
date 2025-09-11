@@ -5178,3 +5178,61 @@ Runs reputation on files.
 >|Hashes|Hostname|Name|SHA256|
 >|---|---|---|---|
 >| {'type': 'SHA256', 'value': '4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F'} | Demo_AMP_Exploit_Prevention | firefox.exe | 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F |
+
+### cisco-amp-version-get
+
+***
+Get API version.
+
+#### Base Command
+
+`cisco-amp-license-get`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoAMP.LicenseInformation.license_information | String | Tenant license information |
+
+#### Command example
+
+```!cisco-amp-license-get```
+
+#### Context Example
+
+```json
+{
+    "CiscoAMP": {
+    "LicenseInformation": {
+      "license_summaries": [
+        {
+          "end_date": "2026-06-15T00:00:00Z",
+          "licensed_seats_count": 1729,
+          "start_date": "2023-06-15T00:00:00Z",
+          "tier": "Essentials"
+        }
+      ],
+      "number_of_connectors_registered": 2075,
+      "number_of_connectors_seen_in_the_last_30_days": 1930
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Connector Information
+>
+>|Number of connectors registered|Number of connectors seen in the last 30 days|
+>|---|---|
+>| 2075 | 1930 |
+>
+>### License Summary
+>
+>|Licensed seats count|Start date|End date|Tier|
+>|---|---|---|---|
+>| 1729 | 2023-06-15T00:00:00Z | 2026-06-15T00:00:00Z | Essentials |
