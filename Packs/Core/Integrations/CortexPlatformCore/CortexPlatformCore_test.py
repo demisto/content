@@ -505,7 +505,7 @@ def test_preprocess_get_case_extra_data_outputs_basic():
     # Only incident
     data = {"incident": {"incident_id": 1}}
     out = preprocess_get_case_extra_data_outputs(data.copy())
-    assert out["case_id"] == 1
+    assert out["case"]["case_id"] == 1
     # With alerts
     data = {"incident": {"incident_id": 1}, "alerts": {"data": [{"incident_id": 2}, {"incident_id": 3}]}}
     out = preprocess_get_case_extra_data_outputs(data.copy())
