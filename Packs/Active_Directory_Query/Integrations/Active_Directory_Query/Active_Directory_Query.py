@@ -1328,7 +1328,6 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     Returns:
         flags (int): The UserAccountControl flags.
     """
-    demisto.debug("Active Directory restore_user")
     args = demisto.args()
 
     # default query - list all users
