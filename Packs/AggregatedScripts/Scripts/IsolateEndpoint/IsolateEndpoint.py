@@ -102,7 +102,7 @@ def is_endpoint_already_isolated(endpoint_data: dict, endpoint_args: dict, endpo
 
     message = "The endpoint is already isolated."
     create_message_to_context_and_hr(
-        is_isolated=True, endpoint_args=endpoint_args, result="Fail", message=message, endpoint_output=endpoint_output
+        is_isolated=True, endpoint_args=endpoint_args, result="Success", message=message, endpoint_output=endpoint_output
     )
     return True
 
