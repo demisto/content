@@ -1750,6 +1750,104 @@ script:
       description: 'The name or the CloudTrail ARN of the trail for which CloudTrail logs Amazon Web Services API calls. e.g. arn:aws:cloudtrail:us-east-2:123456789012:trail/MyTrail.'
       required: true
 
+  - name: aws-cloudtrail-trails-describe
+    description: Retrieves settings for the specified trail or returns information about all trails in the current AWS account.
+    arguments:
+    - description: A comma-separated list of trail names or trail ARNs. If the list is empty, it returns information for the trail in the current region.
+      name: trail_names
+    - auto: PREDEFINED
+      description: Include shadow trails in the response. A shadow trail is a replication in a region of a trail created in another region.
+      name: include_shadow_trails
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    outputs:
+    - contextPath: AWS.CloudTrail.Trails.Name
+      description: The name of the trail, as set in CreateTrail.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.S3BucketName
+      description: The name of the Amazon S3 bucket where CloudTrail delivers trail files.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.S3KeyPrefix
+      description: The Amazon S3 key prefix appended to the bucket name designated for log file delivery. 
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.SnsTopicARN
+      description: The ARN of the Amazon SNS topic that CloudTrail uses to send notifications when log files are delivered.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.IncludeGlobalServiceEvents
+      description: Whether to include AWS API calls from AWS global services such as IAM.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.IsMultiRegionTrail
+      description: Specifies whether the trail belongs only to one region or exists in all regions.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.HomeRegion
+      description: The region where the trail was created.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.TrailARN
+      description: The ARN of the trail.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.LogFileValidationEnabled
+      description: Whether log file validation is enabled.
+      type: boolean
+    - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn
+      description: The ARN of the CloudWatch log group to which CloudTrail logs are delivered.
+      type: string
+    - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
+      description: The role assumed by CloudTrail to write logs to the CloudWatch log group.
+      type: string
+    - contextPath: AWS.CloudTrail.KmsKeyId
+      description: The KMS key ID that encrypts logs delivered by CloudTrail.
+      type: string
+    - contextPath: AWS.CloudTrail.HasCustomEventSelectors
+      description: Specifies if the trail has custom event selectors.
+      type: boolean
+    - contextPath: AWS.CloudTrail.HasInsightSelectors
+      description: Specifies whether a trail has insight types specified in an InsightSelector list.
+      type: boolean
+    - contextPath: AWS.CloudTrail.IsOrganizationTrail
+      description: Specifies whether the trail is an organization trail.
+      type: boolean
   - name: aws-s3-bucket-policy-delete
     description: Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions.
     execution: true
