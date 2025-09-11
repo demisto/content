@@ -374,49 +374,49 @@ script:
         - contextPath: Core.CoreAsset.all_sources
           description: A list of all sources providing information about the asset.
     - arguments:
-        - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or before the specified date/time will be retrieved.
+        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or before the specified datetime will be retrieved.
           name: lte_creation_time
-        - description: A date in the format 2019-12-31T23:59:00. Only cases that were created on or after the specified date/time will be retrieved.
+        - description: A datetime with the format 2019-12-31T23:59:00. Only cases that were created on or after the specified datetime will be retrieved.
           name: gte_creation_time
-        - description: Filters returned cases that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
+        - description: Filters for returned cases that were created on or before the specified datetime with the format 2019-12-31T23:59:00.
           name: lte_modification_time
-        - description: Filters returned cases that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
+        - description: Filters for returned cases that were modified on or after the specified datetime with the format 2019-12-31T23:59:00.
           name: gte_modification_time
-        - description: A comma seperated list of case IDs.
+        - description: A comma separated list of case IDs.
           isArray: true
           name: case_id_list
-        - description: Filters returned cases that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+        - description: Filters for returned cases that were created on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
           name: since_creation_time
-        - description: Filters returned cases that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+        - description: Filters for returned cases that were modified on or after the specified date range, for example, 1 month, 2 days, 1 hour, and so on.
           name: since_modification_time
         - auto: PREDEFINED
-          description: Sorts returned cases by the date/time that the case was last modified ("asc" - ascending, "desc" - descending).
+          description: Sorts returned cases by the datetime that the case was last modified ("asc" - ascending, "desc" - descending).
           name: sort_by_modification_time
           predefined:
             - asc
             - desc
         - auto: PREDEFINED
-          description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
+          description: Sorts returned cases by the datetime that the case was created ("asc" - ascending, "desc" - descending).
           name: sort_by_creation_time
           predefined:
             - asc
             - desc
         - defaultValue: '0'
-          description: Page number (for pagination). The default is 0 (the first page).
+          description: Page number (for pagination).
           name: page
         - defaultValue: '100'
-          description: Maximum number of cases to return per page. The default and maximum is 100.
+          description: Maximum number of cases to return per page. The maximum is 100.
           name: limit
-        - description: 'Filters only cases in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
+        - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
           name: status
         - auto: PREDEFINED
-          description: 'Whether the case is starred (Boolean value: true or false).'
+          description: 'Whether the case is starred.'
           name: starred
           predefined:
             - 'true'
             - 'false'
       name: core-get-cases
-      description: Get cases information based on the specified filters.
+      description: Get case information based on the specified filters.
       outputs:
         - contextPath: Core.Case.case_id
           description: Unique ID assigned to each returned case.
@@ -536,15 +536,15 @@ script:
           description: Custom fields for the case with standardized lowercase, whitespace-free names.
           type: Unknown
     - arguments:
-      - description: A comma seperated list of case IDs.
+      - description: A comma separated list of case IDs.
         isArray: true
         name: case_id
         required: true
       - defaultValue: '1000'
-        description: Maximum number of issues to return per case. The default and maximum is 1000.
+        description: Maximum number of issues to return per case. The maximum is 1000.
         name: issues_limit
       name: core-get-case-extra-data
-      description: Get extra data fields of a specific case including issues and key artifacts.
+      description: Get extra data fields of a specific case, including issues and key artifacts.
       outputs:
         - contextPath: Core.CaseExtraData.case.case_id
           description: The unique identifier for the case.
@@ -610,7 +610,7 @@ script:
           description: A description of the case that was manually entered by a user.
           type: String
         - contextPath: Core.CaseExtraData.case.xdr_url
-          description: The direct URL to view the case in the XDR platform.
+          description: The direct URL to view the case in the Cortex XDR platform.
           type: String
         - contextPath: Core.CaseExtraData.case.starred
           description: A flag indicating whether the case has been starred or marked as a favorite.
