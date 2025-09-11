@@ -1,6 +1,8 @@
 import asyncio
 import hashlib
 import time
+import os
+import traceback
 from asyncio import Queue
 from typing import Any
 from urllib.parse import urlparse, urlencode, quote_plus
@@ -341,7 +343,6 @@ class Client:
         push_events_end_time = time.monotonic()
         push_events_duration = push_events_end_time - push_events_start_time
         demisto.info(f"Pushed events to XSIAM. Completed push process in {push_events_duration} seconds.")
-        demisto.info(f"Fetched {total_events} events in {duration:.2f} seconds.")
 
         if has_more:
             demisto.info("Fetch cycle reached the event limit. More events may be available on the server.")
@@ -534,6 +535,11 @@ async def main() -> None:
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
+    # Handle whether integration is in debug mode. If so, set the environment variable
+    # to enable asyncio debugging
+    if is_debug_mode():
+        os.environ["PYTHONASYNCIODEBUG"] = "1"
+
     # Get proxy settings as a dictionary
     proxies = handle_proxy()
 
@@ -561,6 +567,8 @@ async def main() -> None:
             if should_push_events:
                 push_events_start_time = time.monotonic()
                 demisto.debug("Pushing events to XSIAM.")
+                for event in events:
+                    event["_time"] = event.get("entryTime")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 push_events_end_time = time.monotonic()
                 push_events_duration = push_events_end_time - push_events_start_time
@@ -597,3 +605,24 @@ async def main() -> None:
 
     except Exception as e:
         return_error(f"Failed to execute {command}. Error: {e}")
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        # Fallback error handling: pretty error with stack trace for easier troubleshooting
+        try:
+            cmd = demisto.command()
+        except Exception:
+            cmd = "unknown"
+        exc_type = type(e).__name__
+        tb = traceback.format_exc()
+        demisto.error(f"Unhandled exception in entrypoint for command '{cmd}': {exc_type}: {e}\n{tb}")
+        pretty_message = (
+            f"IBM Storage Scale: failed to execute command '{cmd}'.\n"
+            f"Exception: {exc_type}\n"
+            f"Message: {e}\n\n"
+            f"Traceback:\n{tb}"
+        )
+        return_error(pretty_message)

@@ -119,7 +119,7 @@ The command returns a list of audit log events. The context data can be found at
 
 #### 2. ibm-storage-scale-debug-connection
 
-Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration.
+Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration. Please use this command only when instructed by support.
 
 ```
 !ibm-storage-scale-debug-connection

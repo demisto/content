@@ -89,7 +89,7 @@ script:
       description: The origin of the command (e.g., GUI, CLI).
       type: String
   - name: ibm-storage-scale-debug-connection
-    description: Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration.
+    description: Provides comprehensive debugging information for troubleshooting the IBM Storage Scale integration. Please use this command only when instructed by support.
     outputs:
     - contextPath: IBMStorageScale.Debug.connection_status
       description: Status of the connection to IBM Storage Scale API (success/failed).
