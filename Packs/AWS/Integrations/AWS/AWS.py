@@ -94,7 +94,7 @@ def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
     # Parse and validate limit
     try:
         if limit_arg is not None:
-            limit = arg_to_number(limit_arg) if isinstance((arg_to_number(limit_arg)), int) else DEFAULT_LIMIT_VALUE
+            limit = arg_to_number(limit_arg)
         else:
             limit = DEFAULT_LIMIT_VALUE  # Default limit
     except (ValueError, TypeError) as e:
