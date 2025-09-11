@@ -3,18 +3,18 @@ commonfields:
   id: Tidy
   version: -1
 configuration:
-- additionalinfo: Endpoint IP/URL to be installed. (Can overide in command)
+- additionalinfo: Endpoint IP/URL to be installed. (Can override in command)
   display: Hostname
   name: hostname
   required: true
   type: 0
-- additionalinfo: Endpoint user to be installed. (Can overide in command)
+- additionalinfo: Endpoint user to be installed. (Can override in command)
   display: User
   name: user
   type: 0
   hidden: true
   required: false
-- additionalinfo: User login password. (Can overide in command)
+- additionalinfo: User login password. (Can override in command)
   display: Password
   name: password
   type: 4
@@ -31,7 +31,7 @@ configuration:
   type: 14
 
   required: false
-description: Tidy integration handle endpoints enviorment installation.
+description: Tidy integration handle endpoints environment installation.
 display: Tidy
 name: Tidy
 script:
@@ -50,7 +50,7 @@ script:
       name: versions
       required: true
     - defaultValue: 3.8.5
-      description: Python versions to define as globals in enviorment.
+      description: Python versions to define as globals in environment.
       isArray: true
       name: globals
       required: true
@@ -73,13 +73,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -95,7 +95,7 @@ script:
       name: versions
       required: true
     - defaultValue: 1.16.0
-      description: GoLang versions to define as globals in enviorment.
+      description: GoLang versions to define as globals in environment.
       isArray: true
       name: globals
       required: true
@@ -118,13 +118,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -140,7 +140,7 @@ script:
       name: versions
       required: true
     - defaultValue: 12.20.1
-      description: Node.js versions to define as globals in enviorment.
+      description: Node.js versions to define as globals in environment.
       isArray: true
       name: globals
       required: true
@@ -163,13 +163,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -179,13 +179,13 @@ script:
     - description: User login password.
       name: password
       secret: true
-    - description: Comma seprated list of homebrew packages (https://formulae.brew.sh/).
+    - description: Comma separated list of homebrew packages (https://formulae.brew.sh/).
       isArray: true
       name: apps
-    - description: Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/).
+    - description: Comma separated list of homebrew cask packages (https://formulae.brew.sh/cask/).
       isArray: true
       name: cask_apps
-    - description: Hombrew taps packages to install.
+    - description: Homebrew taps packages to install.
       name: homebrew_taps
     description: Install and configure homebrew, Install additional homebrew/-cask packages.
     name: tidy-homebrew
@@ -206,13 +206,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -245,13 +245,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -301,13 +301,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -356,13 +356,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -391,13 +391,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -444,13 +444,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -486,13 +486,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -521,13 +521,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -556,13 +556,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments:
     - description: Endpoint IP/URL to be installed.
@@ -572,7 +572,7 @@ script:
     - description: User login password.
       name: password
       secret: true
-    description: Set demisto developement web-client.
+    description: Set demisto development web-client.
     name: tidy-demisto-web-client
     outputs:
     - contextPath: Tidy.Install.Status
@@ -591,13 +591,13 @@ script:
       description: Whether the execution has timed out.
       type: Boolean
     - contextPath: Tidy.Install.Stats
-      description: Aditional stats about the ansible execution.
+      description: Additional stats about the ansible execution.
       type: String
     - contextPath: Tidy.Install.InstalledSoftware
       description: The name of the installed software.
       type: String
     - contextPath: Tidy.Install.AdditionalInfo
-      description: Additinal information about the installed software.
+      description: Additional information about the installed software.
       type: String
   - arguments: []
     description: Install python environment.
