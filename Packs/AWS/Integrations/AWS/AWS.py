@@ -1470,7 +1470,7 @@ class EC2:
                 if arg_key in args:
                     base_params[param_name] = argToBoolean(args.get(arg_key, False))
 
-        remove_empty_elements(base_params)
+        base_params = remove_empty_elements(base_params)
 
         # Define action configuration
         action_config = {
@@ -1951,7 +1951,6 @@ class CloudTrail:
         )
 
 
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
