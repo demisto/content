@@ -5609,7 +5609,6 @@ def build_file_output(raw_response, file_hash):
         integration_name=INTEGRATION_NAME,
         score=get_dbot_score(raw_response.get("DeterminationType")),
     )
-    dbot_score.integration_name = INTEGRATION_NAME
 
     file_object = Common.File(
         md5=raw_response.get("Md5"),
@@ -5641,16 +5640,12 @@ def file_command(client: MsClient, args: dict) -> list[CommandResults]:
         try:
             file_info_response = client.get_file_data(file_hash)
             results.append(build_file_output(get_file_data(file_info_response), file_hash))
-        except DemistoException as f:
-            if f.res.json().get("error", {}).get("code") == "ResourceNotFound":
-                result = create_indicator_result_with_dbotscore_unknown(
-                    indicator=file_hash,
-                    indicator_type=DBotScoreType.FILE,
-                )
-                result.indicator.dbot_score.integration_name = INTEGRATION_NAME
-                results.append(result)
-            else:
-                demisto.error(f)
+        except DemistoException:
+            result = create_indicator_result_with_dbotscore_unknown(
+                indicator=file_hash,
+                indicator_type=DBotScoreType.FILE,
+            )
+            results.append(result)
     return results
 
 
