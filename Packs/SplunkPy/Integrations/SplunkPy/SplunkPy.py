@@ -3250,33 +3250,6 @@ def splunk_submit_event_command(service: client.Service, args: dict):
         return_results(f"Event was created in Splunk index: {r.name}")
 
 
-def get_invalid_indexes(indexes_to_validate: list[str], service: client.Service) -> set[str] | None:
-    """
-    Finds which of the provided Splunk indexes do not exist in the Splunk service instance.
-
-    Args:
-        indexes_to_validate: A list of index names to validate.
-        service: The Splunk service object.
-
-    Returns:
-        A set of index names that do not exist in the Splunk instance.
-        Returns an empty set if all indexes are valid.
-        In case of an error retrieving indexes from Splunk, it will log the error and return an empty set,
-        as we cannot be sure which indexes are invalid.
-    """
-    try:
-        existing_indexes = {index.name for index in service.indexes}
-    except Exception as e:
-        demisto.error(
-            f"{INTEGRATION_LOG}Could not retrieve the list of indexes from Splunk. Error: {e}. "
-            f"Proceeding without index validation. If you encounter issues, "
-            f"please ensure all target indexes exist and are accessible, or contact Splunk support."
-        )
-        return None
-
-    return {index for index in indexes_to_validate if index not in existing_indexes}
-
-
 def get_events_from_file(entry_id):
     """
     Retrieves event data from a file in Demisto based on a specified entry ID as a string.
