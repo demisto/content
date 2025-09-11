@@ -2479,10 +2479,8 @@ def test_get_rules_names(mocker):
     offenses = [{"id": 1, "rules": [{"id": 101}, {"id": 102}]}, {"id": 2, "rules": [{"id": 102}, {"id": 103}]}]
     rule_id_rule_name_mapping = get_rules_names(client, offenses)
 
-    # Assert that the rules_list method was called exactly twice
+    # Assert `client.rules_list` method was called exactly twice (first time failed due to 'API Timeout' exception)
     assert mock_client_rules_list.call_count == 2
-
-    # Assert the returned dictionary is correct
     assert rule_id_rule_name_mapping == {
         101: "Suspicious Activity",
         102: "Unauthorized Login",
