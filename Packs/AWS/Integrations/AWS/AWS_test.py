@@ -1646,3 +1646,196 @@ def test_aws_error_handler_extract_action_from_message_empty_input():
     assert AWSErrorHandler._extract_action_from_message(None) == "unknown"
     assert AWSErrorHandler._extract_action_from_message("") == "unknown"
     assert AWSErrorHandler._extract_action_from_message(123) == "unknown"
+
+
+def test_cloudtrail_describe_trails_command_success(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client and valid trail name arguments.
+    When: describe_trails_command is called successfully.
+    Then: It should return CommandResults with trail list data and proper outputs.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {
+        "trailList": [
+            {
+                "Name": "test-trail",
+                "S3BucketName": "test-bucket",
+                "IncludeGlobalServiceEvents": True,
+                "IsMultiRegionTrail": True,
+                "TrailARN": "TrailARN",
+                "LogFileValidationEnabled": True,
+                "HomeRegion": "us-east-1",
+            }
+        ]
+    }
+
+    args = {"trail_names": ["test-trail"], "include_shadow_trails": "true"}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.CloudTrail.Trails"
+    assert result.outputs_key_field == "TrailARN"
+    assert "Trail List" in result.readable_output
+
+
+def test_cloudtrail_describe_trails_command_with_multiple_trails(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client and multiple trail names.
+    When: describe_trails_command is called with multiple trail names.
+    Then: It should return CommandResults with data for all specified trails.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {
+        "trailList": [
+            {"Name": "trail-1", "S3BucketName": "bucket-1", "TrailARN": "TrailARN-1", "HomeRegion": "us-east-1"},
+            {"Name": "trail-2", "S3BucketName": "bucket-2", "TrailARN": "TrailARN-2", "HomeRegion": "us-west-2"},
+        ]
+    }
+
+    args = {"trail_names": ["trail-1", "trail-2"]}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs) == 2
+
+
+def test_cloudtrail_describe_trails_command_no_trail_names(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client without specific trail names.
+    When: describe_trails_command is called without trail_names argument.
+    Then: It should return CommandResults with all trails in the account.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {
+        "trailList": [
+            {"Name": "default-trail", "S3BucketName": "default-bucket", "TrailARN": "TrailARN", "HomeRegion": "us-east-1"}
+        ]
+    }
+
+    args = {}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_trails.assert_called_once()
+    call_kwargs = mock_client.describe_trails.call_args[1]
+    assert "trailNameList" not in call_kwargs
+
+
+def test_cloudtrail_describe_trails_command_include_shadow_trails_false(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client with include_shadow_trails set to false.
+    When: describe_trails_command is called with include_shadow_trails as false.
+    Then: It should pass includeShadowTrails as False to the API call.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {"trailList": []}
+
+    args = {"include_shadow_trails": "false"}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_trails.assert_called_once_with(includeShadowTrails=False)
+
+
+def test_cloudtrail_describe_trails_command_empty_trail_list(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client returning empty trail list.
+    When: describe_trails_command is called and no trails are found.
+    Then: It should return CommandResults with empty trail list and proper structure.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {"trailList": []}
+
+    args = {"trail_names": ["non-existent-trail"]}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert "Trail List" in result.readable_output
+
+
+def test_cloudtrail_describe_trails_command_missing_trail_list_key(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client returning response without trailList key.
+    When: describe_trails_command processes response missing trailList.
+    Then: It should handle missing key gracefully and return empty list.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {}
+
+    args = {}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+
+
+def test_cloudtrail_describe_trails_command_with_all_trail_properties(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client returning trail with all possible properties.
+    When: describe_trails_command is called and receives comprehensive trail data.
+    Then: It should return CommandResults with all trail properties properly displayed.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {
+        "trailList": [
+            {
+                "Name": "trail",
+                "S3BucketName": "S3BucketName",
+                "S3KeyPrefix": "logs/",
+                "SnsTopicName": "SnsTopicName",
+                "IncludeGlobalServiceEvents": True,
+                "IsMultiRegionTrail": True,
+                "TrailARN": "TrailARN",
+                "LogFileValidationEnabled": True,
+                "CloudWatchLogsLogGroupArn": "CloudWatchLogsLogGroupArn",
+                "CloudWatchLogsRoleArn": "CloudWatchLogsRoleArn",
+                "KMSKeyId": "KMSKeyId",
+                "HomeRegion": "us-east-1",
+                "HasCustomEventSelectors": True,
+                "HasInsightSelectors": False,
+                "IsOrganizationTrail": False,
+            }
+        ]
+    }
+
+    args = {"trail_names": ["trail"]}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "trail" in result.readable_output
+    assert result.outputs[0]["Name"] == "trail"
+
+
+def test_cloudtrail_describe_trails_command_default_include_shadow_trails(mocker):
+    """
+    Given: A mocked boto3 CloudTrail client without include_shadow_trails argument.
+    When: describe_trails_command is called with default include_shadow_trails behavior.
+    Then: It should use the default value of True for includeShadowTrails.
+    """
+    from AWS import CloudTrail
+
+    mock_client = mocker.Mock()
+    mock_client.describe_trails.return_value = {"trailList": []}
+
+    args = {"trail_names": ["test-trail"]}
+
+    result = CloudTrail.describe_trails_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.describe_trails.assert_called_once()
+    call_kwargs = mock_client.describe_trails.call_args[1]
+    assert call_kwargs["includeShadowTrails"] is True
