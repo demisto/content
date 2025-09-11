@@ -837,7 +837,6 @@ script:
       description: "A JSON representation of the VPC configuration used by the cluster control plane. For example \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
-
   - name: aws-eks-describe-cluster
     description: Describes an Amazon EKS cluster.
     arguments:
@@ -847,7 +846,6 @@ script:
     - name: cluster_name
       description: The name of the cluster to describe.
       required: true
-      isArray: false
     - name: region
       description: 'The AWS Region.'
       auto: PREDEFINED
@@ -857,18 +855,34 @@ script:
       - us-east-2
       - us-west-1
       - us-west-2
-      - ca-central-1
-      - eu-west-1
-      - eu-central-1
-      - eu-west-2
-      - ap-northeast-1
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
       - ap-northeast-2
       - ap-southeast-1
       - ap-southeast-2
-      - ap-south-1
-      - sa-east-1
-      - eu-north-1
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
       - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     outputs:
     - contextPath: AWS.EKS.Cluster.name
       description: The name of your cluster.
@@ -991,19 +1005,15 @@ script:
     - name: cluster_name
       description: The name of the cluster for which to create an access entry.
       required: true
-      isArray: false
     - name: principal_arn
       description: 'The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to.'
       required: true
-      isArray: false
     - name: policy_arn
       description: 'The ARN of the AccessPolicy that you’re associating.'
       required: true
-      isArray: false
     - name: type
       description: 'The scope type of an access policy.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - cluster
@@ -1011,9 +1021,8 @@ script:
     - name: namespaces
       description: 'A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.'
       required: false
-      isArray: false
     - auto: PREDEFINED
-      description: The AWS Region. If not specified, the configured region will be used.
+      description: The AWS Region.
       name: region
       required: true
       predefined:
@@ -1021,18 +1030,34 @@ script:
       - us-east-2
       - us-west-1
       - us-west-2
-      - ca-central-1
-      - eu-west-1
-      - eu-central-1
-      - eu-west-2
-      - ap-northeast-1
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
       - ap-northeast-2
       - ap-southeast-1
       - ap-southeast-2
-      - ap-south-1
-      - sa-east-1
-      - eu-north-1
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
       - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
     outputs:
     - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
       description: The name of your cluster.
@@ -1783,7 +1808,6 @@ script:
       - 'disabled'
       - 'enabled'
 
-
   - name: aws-ec2-create-snapshot
     arguments:
     - name: account_id
@@ -1834,7 +1858,6 @@ script:
       - me-central-1
       - sa-east-1
     description: Creates a snapshot of an EBS volume and stores it in Amazon S3. You can use snapshots for backups, to make copies of EBS volumes, and to save data before shutting down an instance.
-    execution: true
     outputs:
     - contextPath: AWS.EC2.Snapshots.DataEncryptionKeyId
       description: The data encryption key identifier for the snapshot.
