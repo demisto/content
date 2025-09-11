@@ -71,15 +71,21 @@ class AWSErrorHandler:
             err (ClientError): The boto3 ClientError exception
             account_id (str, optional): AWS account ID. If not provided, will try to get from demisto.args()
         """
-        error_code = err.response.get("Error", {}).get("Code", "")
-        error_message = err.response.get("Error", {}).get("Message", "")
-        http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-        demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
-        # Check if this is a permission-related error
-        if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
-            cls._handle_permission_error(err, error_code, error_message, account_id)
-        else:
-            cls._handle_general_error(err, error_code, error_message)
+        try:
+            error_code = err.response.get("Error", {}).get("Code")
+            error_message = err.response.get("Error", {}).get("Message")
+            http_status_code = err.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
+            demisto.debug(f"[AWSErrorHandler] Got an client error: {error_message}")
+            if not error_code or not error_message or not http_status_code:
+                return_error(err)
+            # Check if this is a permission-related error
+            if (error_code in cls.PERMISSION_ERROR_CODES) or (http_status_code in [401, 403]):
+                cls._handle_permission_error(err, error_code, error_message, account_id)
+            else:
+                cls._handle_general_error(err, error_code, error_message)
+        except Exception as e:
+            demisto.debug(f"[AWSErrorHandler] Unhandled error: {str(e)}")
+            return_error(err)
 
     @classmethod
     def _handle_permission_error(
@@ -1280,6 +1286,48 @@ class CloudTrail:
         except Exception as e:
             raise DemistoException(f"Error updating CloudTrail {args.get('name')}: {str(e)}")
 
+    @staticmethod
+    def describe_trails_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves descriptions of the specified trail or all trails in the account.
+
+        Args:
+            client (BotoClient): The boto3 client for CloudTrail service
+            args (Dict[str, Any]): Command arguments including trail names (optional)
+
+        Returns:
+            CommandResults: Detailed information about CloudTrail trails
+        """
+        trail_names = argToList(args.get("trail_names", []))
+        include_shadow_trails = arg_to_bool_or_none(args.get("include_shadow_trails", True))
+        kwargs = {"trailNameList": trail_names, "includeShadowTrails": include_shadow_trails}
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_trails(**kwargs)
+        trail_data = response.get("trailList", [])
+        headers = [
+            "Name",
+            "S3BucketName",
+            "IncludeGlobalServiceEvents",
+            "IsMultiRegionTrail",
+            "TrailARN",
+            "LogFileValidationEnabled",
+            "HomeRegion",
+        ]
+        readable_output = tableToMarkdown(
+            name="Trail List",
+            t=trail_data,
+            removeNull=True,
+            headers=headers,
+            headerTransform=pascalToSpace,
+        )
+        return CommandResults(
+            outputs_prefix="AWS.CloudTrail.Trails",
+            outputs_key_field="TrailARN",
+            raw_response=response,
+            outputs=trail_data,
+            readable_output=readable_output,
+        )
+
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
@@ -1308,6 +1356,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -1344,6 +1393,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketPublicAccessBlock",
     "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
+    "cloudtrail:DescribeTrails",
 ]
 
 
@@ -1543,6 +1593,10 @@ def main():  # pragma: no cover
             return_results(execute_aws_command(command, args, params))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
+
+    except ClientError as client_err:
+        account_id = args.get("account_id", "")
+        AWSErrorHandler.handle_client_error(client_err, account_id)
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
