@@ -1,29 +1,11 @@
 import asyncio
 import hashlib
-import time
-import os
-import traceback
-from asyncio import Queue
-from typing import Any
-from urllib.parse import urlparse, urlencode, quote_plus
-from datetime import datetime, timedelta, timezone, tzinfo
-import re
-
-# Python 3.10 compatibility for UTC constant
-try:  # Python 3.11+
-    from datetime import UTC as _UTC  # type: ignore[attr-defined]
-
-    UTC = _UTC
-except Exception:  # pragma: no cover - fallback for Python <3.11
-    UTC = _UTC
-
-# Python 3.9+: zoneinfo module (use module import to avoid typing issues when missing)
-try:
-    import zoneinfo as zoneinfo_mod  # type: ignore[import-not-found]
-except Exception:  # pragma: no cover - zoneinfo should exist in supported runtimes
-    zoneinfo_mod = None  # type: ignore[assignment]
-
 import httpx
+from datetime import UTC as _UTC  # type: ignore[attr-defined]
+from datetime import tzinfo
+from urllib.parse import urlparse, urlencode, quote_plus
+
+UTC = _UTC
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -81,7 +63,7 @@ def parse_iso_to_utc(s: str) -> datetime:
         return set_dt_to_utc(dt)
     except Exception as e:
         demisto.debug(f"parse_iso_to_utc: failed to parse '{s}': {e}; falling back to now(UTC)")
-        return set_dt_to_utc(datetime.utcnow())
+        return set_dt_to_utc(datetime.now())
 
 
 def parse_timezone_param(tz_param: str | None) -> tuple[tzinfo, str]:
@@ -99,14 +81,6 @@ def parse_timezone_param(tz_param: str | None) -> tuple[tzinfo, str]:
     # Common UTC indicators
     if tz_param.upper() in {"UTC", "Z", "GMT", "UTC+0", "UTC-0", "Etc/UTC"}:
         return UTC, "UTC"
-
-    # Try IANA database name first
-    if zoneinfo_mod is not None:
-        try:
-            tz = zoneinfo_mod.ZoneInfo(tz_param)
-            return tz, tz_param
-        except Exception:
-            pass
 
     # Try to parse fixed offset formats
     m = re.fullmatch(r"(?i)(?:UTC)?\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?$", tz_param)
@@ -579,7 +553,7 @@ class _ConcurrentEventFetcher:
         self.max_events = max_events
         self.query = query
         self.initial_queries = initial_queries or []
-        self.queue: Queue = asyncio.Queue()
+        self.queue: asyncio.Queue = asyncio.Queue()
         self.collected_events: list[dict[str, Any]] = []
         self.has_more_available = False
         self._lock = asyncio.Lock()
