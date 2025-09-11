@@ -115,3 +115,4 @@ pipeline_jobs_folder/
 
 # DELETE BEFORE MARGE
 aws_proxydome_test.py
+azure_proxydome_test.py
