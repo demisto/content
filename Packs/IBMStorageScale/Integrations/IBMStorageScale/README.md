@@ -48,6 +48,7 @@ This can typically be done during user creation or by modifying the user's prope
     | **Credentials** | The username and password for the dedicated service account. | True |
     | **Fetch events** | Select this checkbox to enable scheduled, automatic event collection. | False |
     | **Maximum number of events per fetch** | The maximum number of events to pull in a single collection cycle. The default is 10,000. | False |
+    | **Server Timezone** | Timezone of the IBM Storage Scale server. Accepts IANA names (e.g., `UTC`, `America/New_York`) or fixed offsets (e.g., `+03:00`, `-0500`, `UTC-7`). Used to build time filters with the correct local time when querying the API. Defaults to `UTC`. | False |
     | **Trust any certificate (not secure)** | This option bypasses SSL certificate validation. Only select this if your API server uses a self-signed certificate. Not recommended for production. | False |
     | **Use system proxy settings** | Select this to route traffic from the integration through the system's configured proxy server. | False |
 
@@ -73,6 +74,16 @@ To achieve high throughput, the integration does not fetch event pages sequentia
 * A pool of **consumer** tasks concurrently fetches the data from those URLs.
 
 This allows the integration to overlap network requests, significantly reducing the time it takes to collect a large volume of events compared to traditional, one-at-a-time fetching.
+
+### Timezone Handling
+
+IBM Storage Scale's `entryTime` values are matched using a regular-expression filter constructed by the integration. To ensure the filter aligns with how timestamps are stored on the server, you can set the "Server Timezone" parameter. The integration:
+
+* Stores all internal timestamps (like last run) in UTC.
+* Converts the fetch time window into the configured server timezone when constructing the `entryTime` regex filter.
+* Supports both IANA timezone names and fixed numeric offsets.
+
+If no timezone is provided, the integration defaults to UTC.
 
 ---
 

@@ -6,7 +6,21 @@ import traceback
 from asyncio import Queue
 from typing import Any
 from urllib.parse import urlparse, urlencode, quote_plus
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
+import re
+
+# Python 3.10 compatibility for UTC constant
+try:  # Python 3.11+
+    from datetime import UTC as _UTC  # type: ignore[attr-defined]
+    UTC = _UTC
+except Exception:  # pragma: no cover - fallback for Python <3.11
+    UTC = timezone.utc
+
+try:
+    # Python 3.9+
+    from zoneinfo import ZoneInfo  # type: ignore[attr-defined]
+except Exception:  # pragma: no cover - zoneinfo should exist in supported runtimes
+    ZoneInfo = None  # type: ignore[assignment]
 
 import httpx
 
@@ -18,7 +32,7 @@ API_ENDPOINT = "/scalemgmt/v2/cliauditlog"
 PRODUCT = "StorageScale"
 VENDOR = "IBM"
 
-DEDUPLICATION_WINDOW_MINUTES = 1
+DEDUPLICATION_WINDOW_MINUTES = 2
 MAX_STORED_HASHES = 10000  # Cap dedup cache to 10k: handles short high-EPS bursts (1-min window) while bounding memory
 
 DEFAULT_PAGE_SIZE = 1000  # Default page size for IBM Storage Scale API
@@ -67,6 +81,48 @@ def parse_iso_to_utc(s: str) -> datetime:
     except Exception as e:
         demisto.debug(f"parse_iso_to_utc: failed to parse '{s}': {e}; falling back to now(UTC)")
         return set_dt_to_utc(datetime.utcnow())
+
+
+def parse_timezone_param(tz_param: str | None) -> tuple[timezone, str]:
+    """
+    Parse a timezone parameter into a tzinfo. Supports:
+    - IANA names (e.g., "UTC", "America/New_York") via zoneinfo
+    - Fixed offsets like "+03:00", "-0500", "UTC+2", "-7"
+
+    Returns a tuple of (tzinfo, normalized_name)
+    """
+    if not tz_param:
+        return UTC, "UTC"
+
+    tz_param = tz_param.strip()
+    # Common UTC indicators
+    if tz_param.upper() in {"UTC", "Z", "GMT", "UTC+0", "UTC-0", "Etc/UTC"}:
+        return UTC, "UTC"
+
+    # Try IANA database name first
+    if ZoneInfo is not None:
+        try:
+            tz = ZoneInfo(tz_param)
+            return tz, tz_param
+        except Exception:
+            pass
+
+    # Try to parse fixed offset formats
+    m = re.fullmatch(r"(?i)(?:UTC)?\s*([+-])\s*(\d{1,2})(?::?(\d{2}))?$", tz_param)
+    if m:
+        sign, hh, mm = m.group(1), m.group(2), m.group(3)
+        hours = int(hh)
+        minutes = int(mm) if mm is not None else 0
+        if hours > 23 or minutes > 59:
+            demisto.debug(f"parse_timezone_param: invalid offset values in '{tz_param}', defaulting to UTC")
+            return UTC, "UTC"
+        delta = timedelta(hours=hours, minutes=minutes)
+        if sign == "-":
+            delta = -delta
+        return timezone(delta), f"UTC{sign}{hours:02d}:{minutes:02d}"
+
+    demisto.debug(f"parse_timezone_param: could not parse '{tz_param}', defaulting to UTC")
+    return UTC, "UTC"
 
 
 # --- UTILITY FUNCTIONS ---
@@ -205,7 +261,7 @@ def update_last_run_time(new_fetch_time: datetime) -> None:
     demisto.debug(f"Updated last run with fetch time: {last_run['last_fetch_time']}")
 
 
-def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
+def generate_time_filter_regex(start_time: datetime, end_time: datetime, *, server_tz: timezone = UTC) -> str:
     """
     Generates a regex for the 'entryTime' field to cover the given time window.
     The regex covers full minutes (seconds wildcard), relying on deduplication to handle overlaps.
@@ -216,9 +272,9 @@ def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
         >>> generate_time_filter_regex(s, e)
         '2025-08-07T14:30:[0-5][0-9]|2025-08-07T14:31:[0-5][0-9]|2025-08-07T14:32:[0-5][0-9]'
     """
-    # Normalize to UTC and floor the start time to the beginning of the minute
-    start_time = set_dt_to_utc(start_time)
-    end_time = set_dt_to_utc(end_time)
+    # Normalize to server local time and floor the start time to the beginning of the minute
+    start_time = set_dt_to_utc(start_time).astimezone(server_tz)
+    end_time = set_dt_to_utc(end_time).astimezone(server_tz)
 
     current_minute = start_time.replace(second=0, microsecond=0)
     regex_parts: list[str] = []
@@ -239,18 +295,57 @@ def generate_time_filter_regex(start_time: datetime, end_time: datetime) -> str:
     return "|".join(regex_parts)
 
 
-def build_fetch_query(limit: int, start_time: datetime, end_time: datetime) -> str:
+def build_fetch_query(limit: int, start_time: datetime, end_time: datetime, *, server_tz: timezone = UTC) -> str:
     """
     Build API query string with regex filtering for time.
     Uses urllib.parse.urlencode to avoid manual concatenation and stray ampersands.
     """
-    regex_filter = generate_time_filter_regex(start_time, end_time)
+    regex_filter = generate_time_filter_regex(start_time, end_time, server_tz=server_tz)
     params: dict[str, str | int] = {"fields": ":all:", "limit": limit}
     if regex_filter:
         # The API expects triple-quoted regex value: entryTime='''<regex>'''
         params["filter"] = f"entryTime='''{regex_filter}'''"
     # Preserve characters we intend to send verbatim (quotes, brackets, colon, pipe)
-    return urlencode(params, safe=":'|[]", quote_via=quote_plus)
+    # IMPORTANT: keep '=' unencoded inside the filter value. IBM Storage Scale filter parser
+    # requires a literal '=' in the expression (entryTime='''<regex>'''). If encoded as '%3D',
+    # the server returns empty results. Therefore, include '=' in the safe set.
+    return urlencode(params, safe=":'|[]=", quote_via=quote_plus)
+
+
+def build_minute_fetch_queries(
+    limit: int, start_time: datetime, end_time: datetime, *, server_tz: timezone = UTC
+) -> list[str]:
+    """
+    Build a list of API query strings, one per minute between start_time and end_time inclusive.
+
+    Rationale: Some IBM Storage Scale deployments do not accept alternation ('|') in regex filters.
+    To ensure compatibility, we avoid using '|' entirely and instead send multiple requests,
+    each matching a single minute using the seconds wildcard.
+
+    Example single-minute filter: entryTime='''2025-06-19T13:17:[0-5][0-9]'''
+    """
+    # Convert the window to the server's local time for building the regex filters
+    start_time = set_dt_to_utc(start_time).astimezone(server_tz).replace(second=0, microsecond=0)
+    end_time = set_dt_to_utc(end_time).astimezone(server_tz).replace(second=0, microsecond=0)
+
+    queries: list[str] = []
+    current = start_time
+    while current <= end_time:
+        minute_prefix = current.strftime(ISO_MINUTE_FORMAT)
+        regex_filter = f"{minute_prefix}:{SECOND_WILDCARD_REGEX}"
+        params: dict[str, str | int] = {"fields": ":all:", "limit": limit}
+        params["filter"] = f"entryTime='''{regex_filter}'''"
+        queries.append(urlencode(params, safe=":'|[]=", quote_via=quote_plus))
+        current += timedelta(minutes=TIME_BUCKET_MINUTES)
+
+    # Ensure at least one query exists (edge case if start > end due to clock issues)
+    if not queries:
+        minute_prefix = start_time.strftime(ISO_MINUTE_FORMAT)
+        regex_filter = f"{minute_prefix}:{SECOND_WILDCARD_REGEX}"
+        params = {"fields": ":all:", "limit": limit, "filter": f"entryTime='''{regex_filter}'''"}
+        queries.append(urlencode(params, safe=":'|[]=", quote_via=quote_plus))
+
+    return queries
 
 
 class Client:
@@ -262,13 +357,22 @@ class Client:
     """
 
     def __init__(
-        self, server_url: str, auth: tuple[str | bytes, str | bytes], verify: bool, proxy: str | None, concurrency: int = 5
+        self,
+        server_url: str,
+        auth: tuple[str | bytes, str | bytes],
+        verify: bool,
+        proxy: str | None,
+        concurrency: int = 5,
+        server_tz: timezone = UTC,
+        server_tz_name: str = "UTC",
     ):
         self.base_url = server_url
         self.auth = auth
         self.verify = verify
         self.proxy = proxy
         self.concurrency = concurrency
+        self.server_tz = server_tz
+        self.server_tz_name = server_tz_name
 
     async def test_connection(self):
         """
@@ -303,14 +407,22 @@ class Client:
         demisto.info("Starting fetch-events cycle.")
         start_time_mono = time.monotonic()
 
-        # Define the fetch window using the regex method
+        # Define the fetch window using the regex method (with small overlap to avoid boundary misses)
         fetch_window_end_time = set_dt_to_utc(datetime.utcnow())
-        fetch_window_start_time = get_fetch_start_time()
-        demisto.info(f"Fetching events from {to_iso_z(fetch_window_start_time)} to {to_iso_z(fetch_window_end_time)}")
+        base_start_time = get_fetch_start_time()
+        overlap_seconds = 30
+        fetch_window_start_time = base_start_time - timedelta(seconds=overlap_seconds)
+        demisto.info(
+            f"Fetching events from {to_iso_z(fetch_window_start_time)} to {to_iso_z(fetch_window_end_time)} "
+            f"(overlap={overlap_seconds}s)"
+        )
 
-        query = build_fetch_query(max_events or DEFAULT_PAGE_SIZE, fetch_window_start_time, fetch_window_end_time)
+        # Build minute-scoped queries to avoid unsupported '|' alternation in regex filters
+        queries = build_minute_fetch_queries(
+            max_events or DEFAULT_PAGE_SIZE, fetch_window_start_time, fetch_window_end_time, server_tz=self.server_tz
+        )
 
-        fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE, query)
+        fetcher = _ConcurrentEventFetcher(self, max_events or DEFAULT_PAGE_SIZE, initial_queries=queries)
         events, has_more = await fetcher.run()
 
         # Apply deduplication
@@ -322,6 +434,21 @@ class Client:
 
         # Update last run time to the end of the window we just fetched
         update_last_run_time(fetch_window_end_time)
+
+        # Update fetch health metrics in last run without altering last_fetch_time
+        try:
+            last_run = demisto.getLastRun()
+            last_run["last_fetch_attempt_time"] = to_iso_z(fetch_window_end_time)
+            if dedup_stats.get("unique_events", 0) > 0:
+                last_run["last_successful_fetch_time"] = to_iso_z(fetch_window_end_time)
+                last_run["consecutive_empty_runs"] = 0
+                demisto.info("This fetch cycle ingested events; resetting consecutive_empty_runs to 0.")
+            else:
+                last_run["consecutive_empty_runs"] = int(last_run.get("consecutive_empty_runs", 0)) + 1
+                demisto.info(f"No new events ingested. consecutive_empty_runs={last_run['consecutive_empty_runs']}")
+            demisto.setLastRun(last_run)
+        except Exception as e:
+            demisto.debug(f"Failed to update fetch health metrics: {e}")
 
         end_time_mono = time.monotonic()
         duration = end_time_mono - start_time_mono
@@ -388,6 +515,9 @@ class Client:
             last_run = demisto.getLastRun()
             debug_info["last_run_info"] = {
                 "last_fetch_time": last_run.get("last_fetch_time", "None (first run)"),
+                "last_fetch_attempt_time": last_run.get("last_fetch_attempt_time"),
+                "last_successful_fetch_time": last_run.get("last_successful_fetch_time"),
+                "consecutive_empty_runs": last_run.get("consecutive_empty_runs", 0),
                 "stored_event_hashes": len(last_run.get("event_hashes", {})),
                 "last_run_raw": last_run,
             }
@@ -398,12 +528,17 @@ class Client:
         try:
             start_time = get_fetch_start_time()
             end_time = set_dt_to_utc(datetime.utcnow())
-            query = build_fetch_query(10, start_time, end_time)
+            queries = build_minute_fetch_queries(10, start_time, end_time, server_tz=self.server_tz)
             debug_info["time_filter_info"] = {
                 "fetch_window_start": to_iso_z(start_time),
                 "fetch_window_end": to_iso_z(end_time),
-                "constructed_query": query,
-                "full_url": f"{self.base_url}{API_ENDPOINT}?{query}",
+                "server_timezone": self.server_tz_name,
+                "fetch_window_start_local": set_dt_to_utc(start_time).astimezone(self.server_tz).isoformat(timespec="seconds"),
+                "fetch_window_end_local": set_dt_to_utc(end_time).astimezone(self.server_tz).isoformat(timespec="seconds"),
+                "overlap_window_seconds": 30,
+                "constructed_query": queries[0] if queries else None,
+                "constructed_queries_total": len(queries),
+                "full_url": f"{self.base_url}{API_ENDPOINT}?{queries[0]}" if queries else None,
             }
         except Exception as e:
             debug_info["time_filter_info"] = {"error": str(e)}
@@ -427,6 +562,7 @@ class Client:
             "proxy_configured": bool(self.proxy),
             "auth_configured": bool(self.auth and self.auth[0]),
             "concurrency_level": self.concurrency,
+            "server_timezone": self.server_tz_name,
         }
 
         return debug_info
@@ -439,10 +575,11 @@ class _ConcurrentEventFetcher:
     can queue the next page of work.
     """
 
-    def __init__(self, client: Client, max_events: int, query: str = ""):
+    def __init__(self, client: Client, max_events: int, query: str = "", initial_queries: list[str] | None = None):
         self.client = client
         self.max_events = max_events
         self.query = query
+        self.initial_queries = initial_queries or []
         self.queue: Queue = asyncio.Queue()
         self.collected_events: list[dict[str, Any]] = []
         self.has_more_available = False
@@ -500,13 +637,16 @@ class _ConcurrentEventFetcher:
     async def run(self) -> tuple[list[dict[str, Any]], bool]:
         """Orchestrates the workers to fetch all events."""
         # Seed the queue with the first page
-        if self.query:
-            initial_url = f"{API_ENDPOINT}?{self.query}"
+        if self.initial_queries:
+            for q in self.initial_queries:
+                self.queue.put_nowait(f"{API_ENDPOINT}?{q}")
         else:
-            params = {"fields": ":all:", "limit": self.max_events}
-            initial_url = f"{API_ENDPOINT}?{urlencode(params, safe=':', quote_via=quote_plus)}"
-
-        self.queue.put_nowait(initial_url)
+            if self.query:
+                initial_url = f"{API_ENDPOINT}?{self.query}"
+            else:
+                params = {"fields": ":all:", "limit": self.max_events}
+                initial_url = f"{API_ENDPOINT}?{urlencode(params, safe=':', quote_via=quote_plus)}"
+            self.queue.put_nowait(initial_url)
 
         async with httpx.AsyncClient(
             base_url=self.client.base_url, auth=self.client.auth, verify=self.client.verify, proxy=self.client.proxy
@@ -547,11 +687,16 @@ async def main() -> None:
     proxy_url = proxies.get("https") or proxies.get("http") or None
 
     try:
+        # Parse server timezone parameter (defaults to UTC)
+        tzinfo, tzname = parse_timezone_param(params.get("server_timezone"))
+
         client = Client(
             server_url=params.get("server_url"),
             auth=(params.get("credentials", {}).get("identifier"), params.get("credentials", {}).get("password")),
             verify=not params.get("insecure", False),
             proxy=proxy_url,
+            server_tz=tzinfo,
+            server_tz_name=tzname,
         )
 
         if command == "test-module":
@@ -596,7 +741,7 @@ async def main() -> None:
                     [debug_info],
                     headers=["connection_status", "server_url", "current_time", "api_endpoint"],
                     removeNull=True,
-                    headerTransform=pascalToSpace,
+                    headerTransform=string_to_table_header,
                 ),
             )
             return_results(command_results)

@@ -1,8 +1,8 @@
 import asyncio
 import hashlib
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta, timezone
 from typing import Any
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, ANY
 
 import httpx
 import pytest
@@ -17,15 +17,21 @@ from IBMStorageScale import (
     CommandResults,
     _ConcurrentEventFetcher,
     build_fetch_query,
+    build_minute_fetch_queries,
     deduplicate_events,
     generate_event_hash,
     generate_time_filter_regex,
     get_fetch_start_time,
+    parse_timezone_param,
     main,
     update_last_run_time,
 )
 
-UTC = UTC
+try:  # Python 3.11+
+    from datetime import UTC as _UTC  # type: ignore[attr-defined]
+    UTC = _UTC
+except Exception:
+    UTC = timezone.utc
 
 pytestmark = pytest.mark.asyncio
 
@@ -244,7 +250,9 @@ class TestRegexFetchLogic:
         mocker.patch("IBMStorageScale.datetime").utcnow.return_value = end_dt
 
         # Mock dependencies
-        mock_build_query = mocker.patch("IBMStorageScale.build_fetch_query", return_value="fake_query_string")
+        mock_build_queries = mocker.patch(
+            "IBMStorageScale.build_minute_fetch_queries", return_value=["fake_query_string"]
+        )
         mock_update_last_run = mocker.patch("IBMStorageScale.update_last_run_time")
         mocker.patch("IBMStorageScale._ConcurrentEventFetcher.run", return_value=([], False))
         mocker.patch(
@@ -259,7 +267,8 @@ class TestRegexFetchLogic:
             await client.fetch_events(max_events=1000)
 
         # Assertions
-        mock_build_query.assert_called_once_with(1000, start_dt, end_dt)
+        expected_start = start_dt - timedelta(seconds=30)
+        mock_build_queries.assert_called_once_with(1000, expected_start, end_dt, server_tz=ANY)
         mock_update_last_run.assert_called_once_with(end_dt)
 
 
@@ -429,7 +438,30 @@ class TestUtilityFunctions:
 
         assert "fields=:all:" in result
         assert "limit=500" in result
-        assert "filter=entryTime%3D'''2025-08-10T10:15:[0-5][0-9]'''" in result
+        # '=' in the filter must NOT be percent-encoded; expect a literal '=' in the query param
+        assert "filter=entryTime='''2025-08-10T10:15:[0-5][0-9]'''" in result
+
+    def test_generate_time_filter_regex_with_server_tz(self):
+        """Tests regex generation uses the server timezone when provided."""
+        # UTC times 10:15:30 -> 10:17:10; with UTC+3 server tz, expect 13:15..13:17
+        start_time = datetime(2025, 8, 10, 10, 15, 30, tzinfo=UTC)
+        end_time = datetime(2025, 8, 10, 10, 17, 10, tzinfo=UTC)
+        server_tz = timezone(timedelta(hours=3))
+        expected_regex = (
+            "2025-08-10T13:15:[0-5][0-9]|2025-08-10T13:16:[0-5][0-9]|2025-08-10T13:17:[0-5][0-9]"
+        )
+        assert generate_time_filter_regex(start_time, end_time, server_tz=server_tz) == expected_regex
+
+    def test_build_minute_fetch_queries_server_tz_boundary(self):
+        """Ensures per-minute queries reflect server local time, even across day boundaries."""
+        start_time = datetime(2025, 8, 10, 23, 59, 30, tzinfo=UTC)
+        end_time = datetime(2025, 8, 11, 0, 0, 30, tzinfo=UTC)
+        server_tz = timezone(timedelta(hours=2))
+        queries = build_minute_fetch_queries(100, start_time, end_time, server_tz=server_tz)
+        assert len(queries) == 2
+        # Expect local minutes 01:59 and 02:00 on 2025-08-11
+        assert "filter=entryTime='''2025-08-11T01:59:[0-5][0-9]'''" in queries[0]
+        assert "filter=entryTime='''2025-08-11T02:00:[0-5][0-9]'''" in queries[1]
 
     def test_deduplicate_events_with_duplicates(self, mocker: MockerFixture):
         """
@@ -528,9 +560,9 @@ class TestDebugCommand:
         mock_async_client.get.return_value = mock_response
         mocker.patch("httpx.AsyncClient", return_value=mock_async_client)
 
-        # Mock new time functions
+        # Mock time functions and query builder
         mocker.patch("IBMStorageScale.get_fetch_start_time")
-        mocker.patch("IBMStorageScale.build_fetch_query")
+        mocker.patch("IBMStorageScale.build_minute_fetch_queries", return_value=["q1", "q2"]) 
         mocker.patch("IBMStorageScale.demisto.debug")
 
         with capfd.disabled():
@@ -538,3 +570,37 @@ class TestDebugCommand:
 
         assert result["connection_status"] == "success"
         assert "time_filter_info" in result
+        assert result["time_filter_info"]["server_timezone"] == "UTC"
+        assert "fetch_window_start_local" in result["time_filter_info"]
+        assert "constructed_queries_total" in result["time_filter_info"]
+
+
+class TestParseTimezoneParam:
+    def test_parse_timezone_param_utc_aliases(self):
+        tz, name = parse_timezone_param("UTC")
+        assert tz is UTC and name == "UTC"
+        tz, name = parse_timezone_param("Z")
+        assert tz is UTC and name == "UTC"
+        tz, name = parse_timezone_param("GMT")
+        assert tz is UTC and name == "UTC"
+
+    def test_parse_timezone_param_fixed_offsets(self):
+        tz, name = parse_timezone_param("+03:00")
+        assert tz.utcoffset(None) == timedelta(hours=3)
+        assert name == "UTC+03:00"
+
+        tz, name = parse_timezone_param("-0500")
+        assert tz.utcoffset(None) == timedelta(hours=-5)
+        assert name == "UTC-05:00"
+
+        tz, name = parse_timezone_param("UTC+2")
+        assert tz.utcoffset(None) == timedelta(hours=2)
+        assert name == "UTC+02:00"
+
+        tz, name = parse_timezone_param("-7")
+        assert tz.utcoffset(None) == timedelta(hours=-7)
+        assert name == "UTC-07:00"
+
+    def test_parse_timezone_param_invalid_defaults_to_utc(self):
+        tz, name = parse_timezone_param("Not/AZone")
+        assert tz is UTC and name == "UTC"
