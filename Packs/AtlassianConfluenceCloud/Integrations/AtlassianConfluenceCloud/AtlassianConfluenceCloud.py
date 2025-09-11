@@ -1390,7 +1390,6 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
     response_json = response.json()
     context = remove_empty_elements(response_json)
     readable_hr = prepare_hr_for_content_create(response_json, "Content")
-    
 
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX.get("CONTENT"),
