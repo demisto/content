@@ -538,3 +538,11 @@ fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
 - Test_SlackV3_NonCaching
+supportedModules:
+  - cloud_posture
+  - cloud
+  - cloud_runtime_security
+  - edr
+  - xsiam
+  - agentix
+  - agentix_xsiam
