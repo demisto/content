@@ -29,7 +29,7 @@ API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
 
-FEDRAMP_HOSTNAME_SUFFIX = ".federal.paloaltonetworks.com"
+FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
 STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
 FEDRAMP_TOKEN_URL = (
