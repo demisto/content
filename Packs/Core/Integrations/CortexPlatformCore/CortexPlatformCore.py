@@ -69,11 +69,11 @@ def preprocess_get_cases_outputs(outputs: list | dict):
 
 def preprocess_get_case_extra_data_outputs(outputs: list | dict):
     def process(output: dict | str):
-        if isinstance(output, dict) and "incident" in output:
-            output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
         if isinstance(output, dict):
+            if "incident" in output:
+                output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
             alerts_data = output.get("alerts", {}).get("data", {})
-            modified_alerts_data = alert_to_issue(incident_to_case(alerts_data))
+            modified_alerts_data = [alert_to_issue(incident_to_case(alert)) for alert in alerts_data]
             if "alerts" in output and isinstance(output["alerts"], dict):
                 output["alerts"]["data"] = modified_alerts_data
         return alert_to_issue(incident_to_case(output))
