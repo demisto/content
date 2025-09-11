@@ -17,9 +17,8 @@ configuration:
 - display: Server URL
   name: url
   type: 0
-  required: false
-  defaultvalue: ""
-  additionalinfo: "The base URL of the Criminal IP API. (Default: api.criminalip.io)"
+  required: true
+  additionalinfo: "The base URL of the Criminal IP API."
   section: Connect
 
 - display: Trust any certificate (not secure)
@@ -60,9 +59,8 @@ script:
   isfetch: false
   commands:
 
-  # --- IP Report ---
   - name: criminal-ip-ip-report
-    description: Provides detailed information about IP addresses through Criminal IP's API.
+    description: Provides detailed information about an IP address using Criminal IP's API.
     arguments:
     - name: ip
       description: The IP address to search.
@@ -70,21 +68,57 @@ script:
       default: true
       type: String
     outputs:
-    - contextPath: CriminalIP.IP.ip
-      description: Queried IP Address.
+    - contextPath: CriminalIP.IP.IP
+      description: Queried IP address.
       type: String
-    - contextPath: CriminalIP.IP.score.inbound
-      description: Inbound Score.
+    - contextPath: CriminalIP.IP.InboundScore
+      description: Inbound reputation score.
       type: String
-    - contextPath: CriminalIP.IP.score.outbound
-      description: Outbound Score.
+    - contextPath: CriminalIP.IP.OutboundScore
+      description: Outbound reputation score.
       type: String
-    - contextPath: CriminalIP.IP.issues
-      description: Detected Issues (VPN, Proxy, Tor, etc.)
-      type: Unknown
-    - contextPath: CriminalIP.IP.vulnerability
-      description: Vulnerabilities detected on the IP.
-      type: Unknown
+    - contextPath: CriminalIP.IP.Issues
+      description: Detected issues (VPN, Proxy, Tor, Hosting, Cloud, etc.)
+      type: String
+    - contextPath: CriminalIP.IP.ProtectedIPs
+      description: Number of protected IPs related to this IP.
+      type: Number
+    - contextPath: CriminalIP.IP.RelatedDomains
+      description: Number of domains related to this IP.
+      type: Number
+    - contextPath: CriminalIP.IP.ASN
+      description: Autonomous System Number (ASN).
+      type: Number
+    - contextPath: CriminalIP.IP.ASName
+      description: Autonomous System Name.
+      type: String
+    - contextPath: CriminalIP.IP.Org
+      description: Organization name from Whois.
+      type: String
+    - contextPath: CriminalIP.IP.Country
+      description: Country code from Whois.
+      type: String
+    - contextPath: CriminalIP.IP.Hostname
+      description: Resolved hostname.
+      type: String
+    - contextPath: CriminalIP.IP.OpenPorts
+      description: Number of open ports detected.
+      type: Number
+    - contextPath: CriminalIP.IP.TopPort
+      description: Example open port number.
+      type: Number
+    - contextPath: CriminalIP.IP.TopService
+      description: Example service detected on an open port.
+      type: String
+    - contextPath: CriminalIP.IP.Vulnerabilities
+      description: Number of vulnerabilities detected on the IP.
+      type: Number
+    - contextPath: CriminalIP.IP.TopCVE
+      description: Example CVE ID detected on the IP.
+      type: String
+    - contextPath: CriminalIP.IP.TopCVSS
+      description: Example CVSS v3 score of detected vulnerability.
+      type: Number
     - contextPath: CriminalIP.IP.raw
       description: Full raw response from Criminal IP API.
       type: Unknown

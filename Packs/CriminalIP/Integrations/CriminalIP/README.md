@@ -37,11 +37,23 @@ Provides detailed information about IP addresses through Criminal IP's API.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CriminalIP.IP.ip | String | Queried IP Address |
-| CriminalIP.IP.score.inbound | String | Inbound Score |
-| CriminalIP.IP.score.outbound | String | Outbound Score |
-| CriminalIP.IP.issues | Unknown | Detected Issues \(VPN, Proxy, Tor, etc.\) |
-| CriminalIP.IP.vulnerability | Unknown | Vulnerabilities detected on the IP |
+| CriminalIP.IP.IP | String | Queried IP Address |
+| CriminalIP.IP.InboundScore | String | Inbound reputation score |
+| CriminalIP.IP.OutboundScore | String | Outbound reputation score |
+| CriminalIP.IP.Issues | String | Detected issues (VPN, Proxy, Tor, Hosting, Cloud, etc.) |
+| CriminalIP.IP.ProtectedIPs | Number | Number of protected IPs related to this IP |
+| CriminalIP.IP.RelatedDomains | Number | Number of domains related to this IP |
+| CriminalIP.IP.ASN | Number | Autonomous System Number (ASN) |
+| CriminalIP.IP.ASName | String | Autonomous System Name |
+| CriminalIP.IP.Org | String | Organization name from Whois |
+| CriminalIP.IP.Country | String | Country code from Whois |
+| CriminalIP.IP.Hostname | String | Resolved hostname |
+| CriminalIP.IP.OpenPorts | Number | Number of open ports detected |
+| CriminalIP.IP.TopPort | Number | Example open port number |
+| CriminalIP.IP.TopService | String | Example service detected on an open port |
+| CriminalIP.IP.Vulnerabilities | Number | Number of vulnerabilities detected on the IP |
+| CriminalIP.IP.TopCVE | String | Example CVE ID detected on the IP |
+| CriminalIP.IP.TopCVSS | Number | Example CVSS v3 score of detected vulnerability |
 | CriminalIP.IP.raw | Unknown | Full raw response from Criminal IP API |
 
 ### criminal-ip-check-malicious-ip

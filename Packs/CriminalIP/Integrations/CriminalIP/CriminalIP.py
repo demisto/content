@@ -32,7 +32,7 @@ class Client(BaseClient):
         return self._http_request(
             "GET",
             "/v1/asset/ip/report",
-            params={"ip": ip, "full": "true"},
+            params={"ip": ip},
             timeout=self.timeout,
         )
 
@@ -102,13 +102,46 @@ def get_ip_report(client: Client, args: dict[str, Any]) -> CommandResults:
     ip = args.get("ip")
     if not ip:
         raise ValueError("ip argument is required")
+
     raw = client.ip_lookup(ip)
+
+    first_whois = (raw.get("whois", {}).get("data") or [{}])[0]
+    first_hostname = (raw.get("hostname", {}).get("data") or [{}])[0]
+    first_port = (raw.get("port", {}).get("data") or [{}])[0]
+    first_vuln = (raw.get("vulnerability", {}).get("data") or [{}])[0]
+
+    summary = {
+        "IP": raw.get("ip"),
+        "Inbound Score": raw.get("score", {}).get("inbound"),
+        "Outbound Score": raw.get("score", {}).get("outbound"),
+        "Issues": ", ".join([k for k, v in (raw.get("issues") or {}).items() if v]) or "None",
+        "Protected IPs": raw.get("protected_ip", {}).get("count", 0),
+        "Related Domains": raw.get("domain", {}).get("count", 0),
+        "ASN": first_whois.get("as_no"),
+        "AS Name": first_whois.get("as_name"),
+        "Org": first_whois.get("org_name"),
+        "Country": first_whois.get("org_country_code"),
+        "Hostname": first_hostname.get("domain_name_full"),
+        "Open Ports": len(raw.get("port", {}).get("data", [])),
+        "Top Port": first_port.get("open_port_no"),
+        "Top Service": first_port.get("app_name"),
+        "Vulnerabilities": len(raw.get("vulnerability", {}).get("data", [])),
+        "Top CVE": first_vuln.get("cve_id"),
+        "Top CVSS": first_vuln.get("cvssv3_score"),
+    }
+
     return CommandResults(
-        readable_output=tableToMarkdown("Criminal IP - IP Report", [raw]),
+        readable_output=tableToMarkdown("Criminal IP - IP Report (Extended Summary)", [summary]),
         outputs_prefix="CriminalIP.IP",
-        outputs_key_field="ip",
-        outputs=raw,
+        outputs_key_field="IP",
+        outputs=summary,
         raw_response=raw,
+    )
+    return CommandResults(
+        readable_output=tableToMarkdown("Criminal IP - IP Report (Summary)", [summary]),
+        outputs_prefix="CriminalIP.IP",
+        outputs_key_field="IP",
+        outputs=summary,
     )
 
 
@@ -296,11 +329,17 @@ def main() -> None:
 
     base_url = params.get("url")
 
+    api_key = (params.get("credentials") or {}).get("password")
+    headers: dict[str, str] = {}
+
+    if api_key:
+        headers["x-api-key"] = api_key
+
     client = Client(
         base_url=base_url,
         verify=not params.get("insecure", False),
         proxy=params.get("proxy", False),
-        headers={"x-api-key": (params.get("credentials") or {}).get("password") or ""},
+        headers=headers,
         timeout=float(params.get("request_timeout", 30)),
     )
 
