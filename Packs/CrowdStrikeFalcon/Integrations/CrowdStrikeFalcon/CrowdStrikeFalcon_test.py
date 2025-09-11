@@ -22,6 +22,24 @@ RETURN_ERROR_TARGET = "CrowdStrikeFalcon.return_error"
 SERVER_URL = "https://4.4.4.4"
 
 
+def test_remove_old_incidents_ids():
+    """
+    Test that the remove_old_incidents_ids function removes old incident IDs from the last run object.
+    Given:
+        A last run object with incident IDs and their addition times.
+    When:
+        Calling remove_old_incidents_ids with the last run object and a look back period.
+    Then:
+        Make sure that the old incident IDs are removed from the last run object and the latest incident IDs is returned.
+    """
+    from CrowdStrikeFalcon import remove_old_incidents_ids
+
+    assert remove_old_incidents_ids(
+        {"inc1": 1, "inc2": 2, "inc3": 3}, 1800000000, 1) == {"inc3": 3}
+    assert remove_old_incidents_ids(
+        {"inc1": 1, "inc2": 2, "inc3": 2}, 1800000000, 2) == {"inc2": 2, "inc3": 2}
+
+
 def create_empty_last_run(length: int) -> list[dict]:
     """
     Creates an empty last_run data structure for fetch operations.
