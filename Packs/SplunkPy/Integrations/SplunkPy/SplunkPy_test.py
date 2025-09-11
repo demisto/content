@@ -3826,11 +3826,9 @@ def test_parse_fields(fields, expected):
 )
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")
-@patch("SplunkPy.extract_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
-    mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
     event,
@@ -3854,18 +3852,11 @@ def test_splunk_submit_event_hec(
     # Mocks
     mock_parse_fields.return_value = parsed_fields
 
-    if event:
-        # Single event
-        mock_extract_indexes.return_value = ["some index"]
-    elif batch_event_data:
-        # Batch event data
-        mock_extract_indexes.return_value = ["some index1", "some index2"]
-    elif entry_id:
+    if entry_id:
         # Entry ID
         mock_get_events_from_file.return_value = (
             "{'event': 'some event', 'index': 'some index'} {'event': 'some event', 'index': 'some index'}"
         )
-        mock_extract_indexes.return_value = ["some index1", "some index2"]
 
     # Act
     splunk_submit_event_hec(
@@ -3908,32 +3899,6 @@ def test_splunk_submit_event_hec_command_no_required_arguments():
         match=r"Invalid input: Please specify one of the following arguments: `event`, `batch_event_data`, or `entry_id`.",
     ):
         splunk_submit_event_hec_command({"hec_url": "hec_url"}, None, {})
-
-
-@pytest.mark.parametrize(
-    "events, expected_result",
-    [
-        (
-            "{'index': 'index1', 'event': 'Something happend '} {'index': 'index 2', 'event': 'Something's happend'}",
-            ["index1", "index 2"],
-        ),
-        ({"index": "index1", "value": "123"}, ["index1"]),
-        ("{'event': 'value'}", []),
-        (
-            '{"index": "index: 3", "event": "Something happend"}, {"index": "index: 3", "event": "Something happend"}',
-            ["index: 3", "index: 3"],
-        ),
-        ("{'key': 'value'}, {'key': 'value'}", []),
-        (
-            """{"index": "index_3", "event": "Something` happend"}, {"index": "index-4", "event": "Something' happend"}""",
-            ["index_3", "index-4"],
-        ),
-    ],
-)
-def test_extract_indexes(events, expected_result):
-    from SplunkPy import extract_indexes
-
-    assert extract_indexes(events) == expected_result
 
 
 @pytest.mark.parametrize(argnames="should_map_user", argvalues=[True, False])
