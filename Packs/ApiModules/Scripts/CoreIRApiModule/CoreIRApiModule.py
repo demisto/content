@@ -311,6 +311,7 @@ class CoreClient(BaseClient):
         :param lte_modification_time_milliseconds: greater than modification time in milliseconds
         :return:
         """
+
         search_from = page_number * limit
         search_to = search_from + limit
 
@@ -395,6 +396,7 @@ class CoreClient(BaseClient):
 
         if len(filters) > 0:
             request_data["filters"] = filters
+
         res = self._http_request(
             method="POST",
             url_suffix="/incidents/get_incidents/",
@@ -405,6 +407,34 @@ class CoreClient(BaseClient):
         incidents = res.get("reply", {}).get("incidents", [])
 
         return incidents
+
+    def get_incident_data(
+        self, incident_id: str, alerts_limit: int, full_alert_fields: bool = False, remove_nulls_from_alerts: bool = True
+    ) -> dict:
+        """
+        Returns incident extra data by id
+        :param incident_id: The id of case
+        :param alerts_limit: Maximum number issues to get
+        :param full_alert_fields: Whether to return full alert fields
+        :return:
+        """
+        request_data = {
+            "incident_id": incident_id,
+            "alerts_limit": alerts_limit,
+            "full_alert_fields": full_alert_fields,
+            "drop_nulls": remove_nulls_from_alerts,
+        }
+
+        demisto.debug(f"Calling get_incident_extra_data with {request_data=}.")
+        response = self._http_request(
+            method="POST",
+            url_suffix="/incidents/get_incident_extra_data/",
+            json_data={"request_data": request_data},
+            headers=self._headers,
+            timeout=self.timeout,
+        )
+        demisto.debug(f"The response of get_incident_extra_data is: {response}.")
+        return response.get("reply", {})
 
     def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: Dict[Any, Any]) -> List[Any]:
         """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
@@ -1420,7 +1450,6 @@ STATUS_PROGRESS = {"New": "STATUS_010_NEW", "In Progress": "STATUS_020_UNDER_INV
 STATUS_PROGRESS_REVERSE = {value: key for key, value in STATUS_PROGRESS.items()}
 SEVERITY_STATUSES = {"low": "SEV_020_LOW", "medium": "SEV_030_MEDIUM", "high": "SEV_040_HIGH", "critical": "SEV_050_CRITICAL"}
 SEVERITY_STATUSES_REVERSE = {value: key for key, value in SEVERITY_STATUSES.items()}
-
 
 ALERT_DOMAIN = {
     "Security": "DOMAIN_SECURITY",

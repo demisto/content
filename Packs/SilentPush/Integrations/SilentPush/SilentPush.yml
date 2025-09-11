@@ -3,9 +3,6 @@ description: The Silent Push Platform uses first-party data and a proprietary sc
 commonfields:
   id: SilentPush
   version: -1
-sectionOrder:
-- Connect
-- Collect
 name: SilentPush
 display: SilentPush
 configuration:
@@ -34,6 +31,146 @@ configuration:
   section: Connect
 script:
   commands:
+  - deprecated: false
+    description: This command add the new feed
+    name: silentpush-add-feed
+    arguments:
+    - name: name
+      isArray: false
+      description: Name of the feed.
+      required: true
+      secret: false
+      default: false
+    - auto: PREDEFINED
+      default: false
+      description: Feed Type.
+      name: type
+      required: true
+      predefined:
+      - domain
+      - ip
+      - URL
+    - name: category
+      isArray: false
+      description: Feed Category.
+      required: false
+      secret: false
+      default: false
+    - name: vendor
+      isArray: false
+      description: Vendor.
+      required: false
+      secret: false
+      default: false
+    - name: feed_description
+      isArray: false
+      description: URL for the screenshot.
+      required: false
+      secret: false
+      default: false
+    - name: tags
+      isArray: false
+      description: Tags that should be attached with the feed.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.Feed.name
+      description: The name of the feed.
+      type: String
+    - contextPath: SilentPush.Feed.type
+      description: The type of the feed.
+      type: String
+    - contextPath: SilentPush.Feed.vendor
+      description: The vendor of the feed.
+      type: String
+    - contextPath: SilentPush.Feed.feed_description
+      description: A description of the feed.
+      type: String
+    - contextPath: SilentPush.Feed.category
+      description: The category of the feed.
+      type: String
+    - contextPath: SilentPush.Feed.tags
+      description: Tags associated with the feed.
+      type: Unknown
+  - deprecated: false
+    description: This command add indicators to the feed
+    name: silentpush-add-feed-tags
+    arguments:
+    - name: feed_uuid
+      isArray: false
+      description: Never return query metadata, even if original request did include metadata.
+      required: true
+      secret: false
+      default: false
+    - name: tags
+      isArray: false
+      description: Comma separated tags to be updated to the feed.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.AddFeedTags.created_or_updated
+      description: List of indicator names that were created or updated in the feed.
+      type: Unknown
+    - contextPath: SilentPush.AddFeedTags.invalid_indicators
+      description: List of indicators that were considered invalid and not added to the feed.
+      type: Unknown
+  - deprecated: false
+    description: This command add indicators to the feed
+    name: silentpush-add-indicators
+    arguments:
+    - name: feed_uuid
+      isArray: false
+      description: UUID of the feed.
+      required: true
+      secret: false
+      default: false
+    - name: indicators
+      isArray: false
+      description: Indicators for the feed.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.AddIndicators.created_or_updated
+      description: List of indicator names that were created or updated in the feed.
+      type: Unknown
+    - contextPath: SilentPush.AddIndicators.invalid_indicators
+      description: List of indicators that were considered invalid and not added to the feed.
+      type: Unknown
+  - deprecated: false
+    description: This command updates tags to the indicators
+    name: silentpush-add-indicator-tags
+    arguments:
+    - name: feed_uuid
+      isArray: false
+      description: UUID of the feed.
+      required: true
+      secret: false
+      default: false
+    - name: indicator_name
+      isArray: false
+      description: The name of the indicator to tag.
+      required: true
+      secret: false
+      default: false
+    - name: tags
+      isArray: false
+      description: Tags to be added to the indicator.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.AddIndicatorTags.uuid
+      description: The UUID of the indicator.
+      type: String
+    - contextPath: SilentPush.AddIndicatorTags.name
+      description: The name of the indicator.
+      type: String
+    - contextPath: SilentPush.AddIndicatorTags.tags
+      description: The tags assigned to the indicator.
+      type: String
   - deprecated: false
     description: This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
     name: silentpush-density-lookup
@@ -324,6 +461,35 @@ script:
       description: Dictionary of Autonomous System Numbers (ASNs) associated with the domain.
       type: Unknown
   - deprecated: false
+    description: 'This command runs the threat check on the specified '
+    name: silentpush-get-data-exports
+    arguments:
+    - name: feed_url
+      isArray: false
+      description: The URL from which to export the feed data.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.GetDataExports.EntryID
+      description: The EntryID of the report file.
+      type: Unknown
+    - contextPath: SilentPush.GetDataExports.Extension
+      description: The extension of the report file.
+      type: String
+    - contextPath: SilentPush.GetDataExports.Name
+      description: The name of the report file.
+      type: String
+    - contextPath: SilentPush.GetDataExports.Info
+      description: The info of the report file.
+      type: String
+    - contextPath: SilentPush.GetDataExports.Size
+      description: The size of the report file.
+      type: Number
+    - contextPath: SilentPush.GetDataExports.Type
+      description: The type of the report file.
+      type: String
+  - deprecated: false
     description: This command get certificate data collected from domain scanning.
     name: silentpush-get-domain-certificates
     arguments:
@@ -475,7 +641,7 @@ script:
       default: false
     - name: value
       isArray: false
-      description: Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}.
+      description: Value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}.
       required: true
       secret: false
       default: false
@@ -517,7 +683,7 @@ script:
       description: Indicates if the domain is in the Alexa top 10k.
       type: Boolean
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.alexa_top10k_score
-      description: Score indicating domain’s Alexa top 10k ranking.
+      description: Score indicating domain's Alexa top 10k ranking.
       type: Number
     - contextPath: SilentPush.Enrichment.domain_urls.results_summary.dynamic_domain_score
       description: Score indicating likelihood of domain being dynamically generated.
@@ -586,19 +752,19 @@ script:
       description: The number of distinct IP groups (e.g., IPs belonging to different ranges or providers).
       type: String
     - contextPath: SilentPush.Enrichment.ns_reputation.is_expired
-      description: Indicates if the domain’s nameserver is expired.
+      description: Indicates if the domain`s nameserver is expired.
       type: Boolean
     - contextPath: SilentPush.Enrichment.ns_reputation.is_parked
       description: ' The domain is not parked (a parked domain is one without active content).'
       type: Boolean
     - contextPath: SilentPush.Enrichment.ns_reputation.is_sinkholed
-      description: The domain is not sinkholed (not forcibly redirected to a security researcher’s trap).
+      description: The domain is not sinkholed (not forcibly redirected to a security researcher`s trap).
       type: Boolean
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_reputation_max
       description: Maximum reputation score for nameservers.
       type: Number
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_reputation_score
-      description: Reputation score of the domain’s nameservers.
+      description: Reputation score of the domain`s nameservers.
       type: Number
     - contextPath: SilentPush.Enrichment.ns_reputation.ns_srv_reputation.domain
       description: The nameservers of domain.
@@ -1251,7 +1417,7 @@ script:
       description: Explanation of the geographic spread of the indicator as provided by the source.
       type: Unknown
   - deprecated: false
-    description: This command retrieve the reputation information for an IPv4.
+    description: This command retrieves the reputation information for an IPv4.
     name: silentpush-get-ipv4-reputation
     arguments:
     - name: ipv4
@@ -1333,7 +1499,7 @@ script:
       description: Current status of the job.
       type: String
   - deprecated: false
-    description: This command retrieve historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.
+    description: This command retrieves historical reputation data for a specified nameserver,including reputation scores and optional detailed calculation information.
     name: silentpush-get-nameserver-reputation
     arguments:
     - name: nameserver
@@ -1733,7 +1899,7 @@ script:
       description: List of VPN-related tags or null if not a VPN.
       type: Unknown
   - deprecated: false
-    description: This command scan a URL to retrieve hosting metadata..
+    description: This command scan a URL to retrieve hosting metadata.
     name: silentpush-live-url-scan
     arguments:
     - name: url
@@ -2184,6 +2350,44 @@ script:
       description: The type of DNS record (e.g., NS).
       type: String
   - deprecated: false
+    description: 'This command runs the threat check on the specified '
+    name: silentpush-run-threat-check
+    arguments:
+    - name: data
+      isArray: false
+      description: The name of the data source to query.
+      required: true
+      secret: false
+      default: false
+    - name: query
+      isArray: false
+      description: The value to check for threats (e.g., IP or domain).
+      required: true
+      secret: false
+      default: false
+    - name: type
+      isArray: false
+      description: The type of the value being queried (e.g., ip, domain).
+      required: true
+      secret: false
+      default: false
+    - name: user_identifier
+      isArray: false
+      description: A unique identifier for the user making the request.
+      required: true
+      secret: false
+      default: false
+    outputs:
+    - contextPath: SilentPush.RunThreatCheck.is_listed
+      description: Indicates whether the queried value is listed as a threat.
+      type: Boolean
+    - contextPath: SilentPush.RunThreatCheck.listed_txt
+      description: Textual description of the listing status.
+      type: String
+    - contextPath: SilentPush.RunThreatCheck.query
+      description: The original value that was checked.
+      type: String
+  - deprecated: false
     description: This commandGenerate screenshot of a URL.
     name: silentpush-screenshot-url
     arguments:
@@ -2537,12 +2741,16 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.3982393
   feed: false
   isfetch: false
   runonce: false
   longRunning: false
   longRunningPort: false
 fromversion: 6.10.0
+sectionorder:
+  - Connect
+  - Collect
+  - Optimize
 tests:
 - No tests

@@ -444,7 +444,7 @@ This command retrieves comprehensive enrichment information for a given resource
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource | Type of resource for which information needs to be retrieved {e.g. domain}. | Required |
-| value | Value corresponding to the selected "resource" for which information needs to be retrieved{e.g. silentpush.com}. | Required |
+| value | Value corresponding to the selected "resource" for which information needs to be retrieved {e.g. silentpush.com}. | Required |
 | explain | Include explanation of data calculations. | Optional |
 | scan_data | Include scan data (IPv4 only). | Optional |
 
@@ -452,7 +452,7 @@ This command retrieves comprehensive enrichment information for a given resource
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.Enrichment.value | String | Queried value |
+| SilentPush.Enrichment.value | String | Queried value. |
 | SilentPush.Enrichment.domain_string_frequency_probability.avg_probability | Number | Average probability score of the domain string. |
 | SilentPush.Enrichment.domain_string_frequency_probability.dga_probability_score | Number | Probability score indicating likelihood of being a DGA domain. |
 | SilentPush.Enrichment.domain_string_frequency_probability.domain | String | Domain name analyzed. |
@@ -465,7 +465,7 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.domain_urls.results_summary.is_dynamic_domain | Boolean | Indicates if the domain is dynamic. |
 | SilentPush.Enrichment.domain_urls.results_summary.is_url_shortener | Boolean | Indicates if the domain is a known URL shortener. |
 | SilentPush.Enrichment.domain_urls.results_summary.results | Number | Number of results found for the domain. |
-| SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score | Number | Score of the shortned URL |
+| SilentPush.Enrichment.domain_urls.results_summary.url_shortner_score | Number | Score of the shortned URL. |
 | SilentPush.Enrichment.domaininfo.domain | String | Domain name analyzed. |
 | SilentPush.Enrichment.domaininfo.error | String | Error message if no data is available for the domain. |
 | SilentPush.Enrichment.domaininfo.zone | String | TLD zone of the domain. |
@@ -490,9 +490,9 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.ns_reputation.ns_reputation_score | Number | Reputation score of the domain’s nameservers. |
 | SilentPush.Enrichment.ns_reputation.ns_srv_reputation.domain | String | The nameservers of domain. |
 | SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server | String | Provided nameserver. |
-| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density | Number | Number of domains sharing this NS |
+| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domain_density | Number | Number of domains sharing this NS. |
 | SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_domains_listed | Number | Number of listed domains using this NS. |
-| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation | Number | Reputation score for this NS |
+| SilentPush.Enrichment.ns_reputation.ns_srv_reputation.ns_server_reputation | Number | Reputation score for this NS. |
 | SilentPush.Enrichment.scan_data.certificates.domain | String | Domain for which the SSL certificate was issued. |
 | SilentPush.Enrichment.scan_data.certificates.domains | Unknown | Other Domains for which the SSL certificate was issued. |
 | SilentPush.Enrichment.scan_data.certificates.issuer_organization | String | Issuer organization of the SSL certificate. |
@@ -508,13 +508,13 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.scan_data.headers.hostname | String | The hostname that sent this response. |
 | SilentPush.Enrichment.scan_data.headers.ip | String | The IP address responding to the request. |
 | SilentPush.Enrichment.scan_data.headers.scan_date | String | The date when the headers were scanned. |
-| SilentPush.Enrichment.scan_data.headers.headers.cache-control | String | HTTP cache-control |
+| SilentPush.Enrichment.scan_data.headers.headers.cache-control | String | HTTP cache-control. |
 | SilentPush.Enrichment.scan_data.headers.headers.content-length" | String | Content lenght of the HTTP response. |
 | SilentPush.Enrichment.scan_data.headers.headers.date | String | The date/time of the response. |
 | SilentPush.Enrichment.scan_data.headers.headers.expires | String | Indicates an already expired response. |
 | SilentPush.Enrichment.scan_data.headers.headers.server | String | The web server handling the request \(Cloudflare proxy\). |
 | SilentPush.Enrichment.scan_data.html.hostname | String | HTTP response code for the domain scan. |
-| SilentPush.Enrichment.scan_data.html.html_body_murmur3 | String | hash of the page content |
+| SilentPush.Enrichment.scan_data.html.html_body_murmur3 | String | hash of the page content. |
 | SilentPush.Enrichment.scan_data.html.html_body_ssdeep | String | SSDEEP hash \(used for fuzzy matching similar HTML content\). |
 | SilentPush.Enrichment.scan_data.html.html_title | String | The page title \(suggests a Cloudflare challenge page, likely due to bot protection\). |
 | SilentPush.Enrichment.scan_data.html.ip | String | The IP address responding to the request. |
@@ -614,7 +614,7 @@ This command retrieves comprehensive enrichment information for a given resource
 ### **Command Example**  
 
 ```bash
-!silentpush-get-enrichment-data resource="ipv4" value="142.251.188.102"
+!silentpush-get-enrichment-data resource="ipv4" value="0.0.0.0"
 ```
 
 ### **Context Example**  
@@ -622,7 +622,7 @@ This command retrieves comprehensive enrichment information for a given resource
 ```json
 {
  "resource": "ipv4",
- "value": "142.251.188.102",
+ "value": "0.0.0.0",
  "enrichment_data": {
   "asn": "15169",
   "asn_allocation_age": 9140,
@@ -641,7 +641,7 @@ This command retrieves comprehensive enrichment information for a given resource
   "tags": [],
   "date": "2025-04-08",
   "density": 0,
-  "ip": "142.251.188.102",
+  "ip": "0.0.0.0",
   "ip_flags": {
    "is_proxy": false,
    "is_sinkhole": false,
@@ -1296,14 +1296,14 @@ This command get IP information for multiple IPv4s and IPv6s.
 ### **Command Example**  
 
 ```bash
-!silentpush-list-ip-information ips="142.251.188.102"
+!silentpush-list-ip-information ips="0.0.0.0"
 ```
 
 ### **Context Example**  
 
 ```json
 {
- "ips": ["142.251.188.102"],
+ "ips": ["0.0.0.0"],
  "ip_information": {
   "asn": "15169",
   "asn_allocation_age": 9140,
@@ -1323,7 +1323,7 @@ This command get IP information for multiple IPv4s and IPv6s.
   "tags": [],
   "date": "2025-04-08",
   "density": 0,
-  "ip": "142.251.188.102",
+  "ip": "0.0.0.0",
   "ip_flags": {
    "is_proxy": false,
    "is_sinkhole": false,
@@ -1483,17 +1483,17 @@ This command scan a URL to retrieve hosting metadata..
 ### **Command Example**  
 
 ```bash
-!silentpush-live-url-scan url="https://silentpush.com"
+!silentpush-live-url-scan url="https://example.com"
 ```
 
 ### **Context Example**  
 
 ```json
 {
- "url": "https://silentpush.com",
+ "url": "https://example.com",
  "scan_results": {
   "status": "No scan results found",
-  "url": "https://silentpush.com"
+  "url": "https://example.com"
  }
 }
 ```
@@ -1504,7 +1504,7 @@ This command scan a URL to retrieve hosting metadata..
 >
 >| Field          | Value                      |
 >|----------------|----------------------------|
->| URL            | <https://silentpush.com>     |
+>| URL            | <https://example.com>     |
 >| Scan Status    | No scan results found      |
 
 ### silentpush-reverse-padns-lookup
@@ -1816,7 +1816,7 @@ This command search Silent Push scan data repositories using SPQL queries.
  "scan_data": [
   {
    "domain": "volunteering.cool",
-   "ip": "44.227.65.245",
+   "ip": "0.0.0.0",
    "asn": "16509",
    "asn_org": "AMAZON-02",
    "city": "Boardman",
@@ -1827,8 +1827,8 @@ This command search Silent Push scan data repositories using SPQL queries.
    "timezone": "America/Los_Angeles",
    "server": "openresty",
    "ssl": "http",
-   "favicon": "http://volunteering.cool/favicon.ico",
-   "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.3",
+   "favicon": "http://example.cool/favicon.ico",
+   "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/0.0.0.0 Safari/537.3",
    "scan_date": "2025-04-08T09:12:45Z",
    "status_code": 200
   }
@@ -1842,8 +1842,8 @@ This command search Silent Push scan data repositories using SPQL queries.
 >
 >| Field                   | Value                                      |
 >|-------------------------|--------------------------------------------|
->| Domain                  | [volunteering.cool](http://volunteering.cool) |
->| IP Address              | 44.227.65.245                              |
+>| Domain                  | [volunteering.cool](http://example.cool) |
+>| IP Address              | 0.0.0.0                           |
 >| ASN                     | 16509                                      |
 >| ASN Organization        | AMAZON-02                                  |
 >| City                    | Boardman                                  |
@@ -1854,7 +1854,161 @@ This command search Silent Push scan data repositories using SPQL queries.
 >| Timezone                | America/Los_Angeles                       |
 >| Server                  | openresty                                 |
 >| SSL/TLS Status          | HTTP (No SSL)                             |
->| Favicon                 | ![Favicon](http://volunteering.cool/favicon.ico) |
+>| Favicon                 | ![Favicon](http://example.cool/favicon.ico) |
 >| User Agent              | Mozilla/5.0 (Linux x86_64)                |
 >| Scan Date               | 2025-04-08T09:12:45Z                      |
 >| HTTP Status Code        | 200                                        |
+
+### silentpush-run-threat-check
+
+***
+This command runs the threat check on the specified
+
+#### Base Command
+
+`silentpush-run-threat-check`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| data | The name of the data source to query. | Required |
+| query | The value to check for threats (e.g., IP or domain). | Required |
+| type | The type of the value being queried (e.g., ip, domain). | Required |
+| user_identifier | A unique identifier for the user making the request. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.RunThreatCheck.is_listed | Boolean | Indicates whether the queried value is listed as a threat. |
+| SilentPush.RunThreatCheck.listed_txt | String | Textual description of the listing status. |
+| SilentPush.RunThreatCheck.query | String | The original value that was checked. |
+
+### silentpush-add-indicators
+
+***
+This command add indicators to the feed
+
+#### Base Command
+
+`silentpush-add-indicators`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_uuid | UUID of the feed. | Required |
+| indicators | Indicators for the feed. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddIndicators.created_or_updated | Unknown | List of indicator names that were created or updated in the feed. |
+| SilentPush.AddIndicators.invalid_indicators | Unknown | List of indicators that were considered invalid and not added to the feed. |
+
+### silentpush-add-feed
+
+***
+This command add the new feed
+
+#### Base Command
+
+`silentpush-add-feed`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the feed. | Required |
+| type | Feed Type. | Required |
+| category | Feed Category. | Optional |
+| vendor | Vendor. | Optional |
+| feed_description | URL for the screenshot. | Optional |
+| tags | Tags that should be attached with the feed. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.Feed.name | String | The name of the feed. |
+| SilentPush.Feed.type | String | The type of the feed. |
+| SilentPush.Feed.vendor | String | The vendor of the feed. |
+| SilentPush.Feed.feed_description | String | A description of the feed. |
+| SilentPush.Feed.category | String | The category of the feed. |
+| SilentPush.Feed.tags | Unknown | Tags associated with the feed. |
+
+### silentpush-add-feed-tags
+
+***
+This command add indicators to the feed
+
+#### Base Command
+
+`silentpush-add-feed-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_uuid | Never return query metadata, even if original request did include metadata. | Optional |
+| tags | Comma separated tags to be updated to the feed. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddFeedTags.created_or_updated | Unknown | List of indicator names that were created or updated in the feed. |
+| SilentPush.AddFeedTags.invalid_indicators | Unknown | List of indicators that were considered invalid and not added to the feed. |
+
+### silentpush-get-data-exports
+
+***
+This command runs the threat check on the specified
+
+#### Base Command
+
+`silentpush-get-data-exports`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_url | The URL from which to export the feed data. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.GetDataExports.EntryID | Unknown | The EntryID of the report file. |
+| SilentPush.GetDataExports.Extension | String | The extension of the report file. |
+| SilentPush.GetDataExports.Name | String | The name of the report file. |
+| SilentPush.GetDataExports.Info | String | The info of the report file. |
+| SilentPush.GetDataExports.Size | Number | The size of the report file. |
+| SilentPush.GetDataExports.Type | String | The type of the report file. |
+
+### silentpush-add-indicator-tags
+
+***
+This command updates tags to the indicators
+
+#### Base Command
+
+`silentpush-add-indicator-tags`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| feed_uuid | UUID of the feed. | Required |
+| indicator_name | The name of the indicator to tag. | Required |
+| tags | Tags to be added to the indicator. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SilentPush.AddIndicatorTags.uuid | String | The UUID of the indicator. |
+| SilentPush.AddIndicatorTags.name | String | The name of the indicator. |
+| SilentPush.AddIndicatorTags.tags | String | The tags assigned to the indicator. |

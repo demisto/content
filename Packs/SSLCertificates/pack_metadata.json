@@ -2,7 +2,7 @@
     "name": "SSL Certificates",
     "description": "SSL Certificate Content Pack for performing SSL Certificate validation.",
     "support": "community",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Josh Levine",
     "url": "",
     "email": "",
