@@ -967,8 +967,6 @@ class EC2:
             kwargs.update({"TagSpecifications": [{"ResourceType": "snapshot", "Tags": parse_tag_field(args.get("tags", ""))}]})
 
         response = client.create_snapshot(**kwargs)
-        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         try:
             start_time = datetime.strftime(response["StartTime"], "%Y-%m-%dT%H:%M:%SZ")
@@ -1013,15 +1011,13 @@ class EC2:
 
         accounts = assign_params(GroupNames=group_names, UserIds=user_ids)
         operation_type = args.get("operation_type")
-        response = client.modify_snapshot_attribute(
+        client.modify_snapshot_attribute(
             Attribute="createVolumePermission",
             SnapshotId=args.get("snapshot_id"),
             OperationType=operation_type,
             DryRun=argToBoolean(args.get("dry_run", False)),
             **accounts,
         )
-        if response["ResponseMetadata"]["HTTPStatusCode"] != 200:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
 
 
@@ -1122,8 +1118,6 @@ class EKS:
 
         print_debug_logs(client, f"Describing clusters with parameters: {cluster_name}")
         response = client.describe_cluster(name=cluster_name)
-        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         response_data = response.get("cluster", {})
         response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
         activation_expiry = response_data.get("connectorConfig", {}).get("activationExpiry")
@@ -1174,8 +1168,6 @@ class EKS:
         response = client.associate_access_policy(
             clusterName=cluster_name, principalArn=principal_arn, policyArn=policy_arn, accessScope=access_scope
         )
-        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         response_data = response.get("associatedAccessPolicy", {})
         response_data["clusterName"] = response.get("clusterName")
         response_data["principalArn"] = response.get("principalArn")
