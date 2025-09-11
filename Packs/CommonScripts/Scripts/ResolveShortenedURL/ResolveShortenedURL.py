@@ -8,7 +8,7 @@ from requests import Response
 
 urllib3.disable_warnings()  # Disable insecure warnings
 
-DEFAULT_SERVICE = "unshorten.me"
+DEFAULT_SERVICE = "Built-In"
 DEFAULT_REDIRECT_LIMIT = "0"
 
 
@@ -157,128 +157,6 @@ class URLUnshortingService(BaseClient, metaclass=ABCMeta):
         """
 
 
-class LongurlInService(URLUnshortingService):
-    """
-    A class for unshortening URLs using longurl.in.
-
-    Note:
-        If the URL is invalid, the API returns {"status": "Failed", "message": "url is invalid"} with a 404 status_code.
-    """
-
-    base_url = "https://longurl.in/api/expand-url"
-    service_name = "longurl.in"
-
-    def resolve_url(self, url: str) -> URLUnshorteningData:
-        encountered_error: bool = False
-        original_url: str = url
-
-        response: dict = self._http_request(
-            method="POST",
-            full_url=self.base_url,
-            resp_type="json",
-            data={"shortURL": url},
-            error_handler=lambda _: None,  # Disable exception raising if API returns a 404
-        )
-
-        raw_data: list[dict] = [response]
-        redirect_history: list[str] = []
-
-        # Assure API's `status` key exists and equals "OK", and that `data` key exists with at least one element.
-        while (
-            (response.get("status") == "OK")
-            and len(response.get("data", [])) > 0
-            and response["data"][0] is not None
-            and (not self.hit_redirect_limit(redirect_history))
-        ):
-            url = response["data"][0]
-
-            response = self._http_request(
-                method="POST",
-                full_url=self.base_url,
-                resp_type="json",
-                data={"shortURL": url},
-                error_handler=lambda _: None,  # Disable exception raising if API returns a 404
-            )
-
-            raw_data.append(response)
-            redirect_history.append(url)
-
-        # Stopped because of an error, without hitting `redirect_limit` (which would mean we don't care about the error)
-        if response.get("status") != "OK" and (not self.hit_redirect_limit(redirect_history)):
-            encountered_error = True
-
-        return URLUnshorteningData(
-            original_url=original_url,
-            resolved_url=url,
-            service_name=self.service_name,
-            redirect_history=[original_url] + redirect_history,
-            raw_data=raw_data,
-            encountered_error=encountered_error,
-        )
-
-
-class UnshortenMeSservice(URLUnshortingService):
-    """A class for unshortening URLs using unshorten.me."""
-
-    base_url = "https://unshorten.me/json/"
-    service_name = "unshorten.me"
-    service_rate_limit = 10
-
-    def resolve_url(self, url: str) -> URLUnshorteningData:
-        encountered_error: bool = False
-        original_url: str = url
-
-        response: dict = self._http_request(
-            method="GET",
-            url_suffix=url,
-            resp_type="json",
-        )
-
-        usage_count = response.get("usage_count", 0)
-
-        raw_data: list[dict] = [response]
-        redirect_history: list[str] = []
-        previous_resolved_url: str | None = None
-
-        while (previous_resolved_url != url) and response.get("success") and (not self.hit_redirect_limit(redirect_history)):
-            previous_resolved_url = url
-            url = response.get("resolved_url", "")
-
-            response = self._http_request(
-                method="GET",
-                url_suffix=url,
-                resp_type="json",
-            )
-
-            raw_data.append(response)
-            redirect_history.append(url)
-
-            if response.get("usage_count"):
-                usage_count = response["usage_count"]
-
-        # Stopped because of an error, without hitting `redirect_limit` (which would mean we don't care about the error)
-        if (not response.get("success")) and (not self.hit_redirect_limit(redirect_history)):
-            encountered_error = True
-
-        # If the last URL in the redirect history is the same as the resolved URL,
-        # or if the resolved URL is the same as the original URL, remove it from `redirect_history`.
-        if (len(redirect_history) >= 2 and redirect_history[-1] == redirect_history[-2]) or (
-            len(redirect_history) == 1 and redirect_history[0] == original_url
-        ):
-            redirect_history.pop()
-
-        return URLUnshorteningData(
-            original_url=original_url,
-            resolved_url=url,
-            service_name=self.service_name,
-            redirect_history=[original_url] + redirect_history,
-            raw_data=raw_data,
-            encountered_error=encountered_error,
-            api_usage=usage_count,
-            api_rate_limit=self.service_rate_limit,
-        )
-
-
 class BuiltInShortener(URLUnshortingService):
     """A class for unshortening URLs using Python requests."""
 
@@ -288,6 +166,7 @@ class BuiltInShortener(URLUnshortingService):
     def resolve_url(self, url: str) -> URLUnshorteningData:
         encountered_error = False
         original_url = url
+        url = url if url.startswith("http") else f"https://{url}"
 
         try:
             response: Response = self._http_request(
@@ -389,7 +268,6 @@ def main():  # pragma: no cover
 
     try:
         url: str = args["url"]
-        service: str = args.get("service", DEFAULT_SERVICE)
         use_system_proxy = argToBoolean(args.get("use_system_proxy", "False"))
         redirect_limit = arg_to_number(args.get("redirect_limit", DEFAULT_REDIRECT_LIMIT))
 
@@ -400,7 +278,7 @@ def main():  # pragma: no cover
         session_verify = not argToBoolean(args.get("insecure", "False"))
 
         result = unshorten_url(
-            service_name=service,
+            service_name=DEFAULT_SERVICE,
             url=url,
             use_system_proxy=use_system_proxy,
             redirect_limit=redirect_limit,
