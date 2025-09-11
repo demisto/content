@@ -7,6 +7,7 @@ from SpyCloudEnterpriseProtectionFeed import (
     create_spycloud_args,
     fetch_incident,
     remove_duplicate,
+    fetch_domain_or_watchlist_data,
 )
 
 
@@ -64,6 +65,18 @@ def test_query_spy_cloud_api_success(requests_mock):
     requests_mock.get(req_url, json=WATCHLIST_DATA)
     response = client.query_spy_cloud_api(endpoint, {})
     assert response == WATCHLIST_DATA
+
+
+@pytest.mark.parametrize(
+    "raw_response, modified",
+    [
+        (WATCHLIST_DATA, MODIFIED_RESPONSE),
+    ],
+)
+def test_fetch_domain_or_watchlist_data(mocker, raw_response, modified):
+    mocker.patch.object(client, "query_spy_cloud_api", return_value=raw_response)
+    response = fetch_domain_or_watchlist_data(client, {}, {})
+    assert response == modified.get("results")[:6]
 
 
 @pytest.mark.parametrize(

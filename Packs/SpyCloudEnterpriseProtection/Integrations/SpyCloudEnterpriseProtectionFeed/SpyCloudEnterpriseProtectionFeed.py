@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from json import dumps
 from typing import Any
 
@@ -118,7 +118,7 @@ class Client(BaseClient):
 
     @staticmethod
     def set_last_run():
-        current_date = datetime.utcnow()
+        current_date = datetime.now(UTC)
         demisto.setLastRun({"lastRun": current_date.strftime(DATE_TIME_FORMAT)})
 
     @staticmethod
@@ -127,7 +127,7 @@ class Client(BaseClient):
 
 
 def create_spycloud_args(args: dict, client: Client) -> dict:
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     last_run = client.get_last_run()
 
     if last_run:
@@ -208,7 +208,6 @@ def fetch_domain_or_watchlist_data(client: Client, args: dict, base_args: dict) 
             except Exception as e:
                 demisto.error(f"[SpyCloud] Failed to fetch data from watchlist: {str(e)}")
                 break
-
     return results
 
 
