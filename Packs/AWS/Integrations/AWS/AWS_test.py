@@ -1594,3 +1594,757 @@ def test_cloudtrail_describe_trails_command_default_include_shadow_trails(mocker
     mock_client.describe_trails.assert_called_once()
     call_kwargs = mock_client.describe_trails.call_args[1]
     assert call_kwargs["includeShadowTrails"] is True
+
+
+def test_s3_get_bucket_policy_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: get_bucket_policy_command is called successfully.
+    Then: It should return CommandResults with policy data and outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    policy_document = {
+        "Version": "2012-10-17",
+        "Statement": [{"Effect": "Allow", "Principal": "*", "Action": "s3:GetObject", "Resource": "Resource"}],
+    }
+    mock_client.get_bucket_policy.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Policy": json.dumps(policy_document),
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_key_field == "BucketName"
+    assert result.outputs["BucketName"] == "test-bucket"
+    assert result.outputs["Policy"] == policy_document
+
+
+def test_s3_get_bucket_policy_command_with_expected_bucket_owner(mocker):
+    """
+    Given: A mocked boto3 S3 client and bucket name with expected bucket owner.
+    When: get_bucket_policy_command is called with expected_bucket_owner parameter.
+    Then: It should return CommandResults and pass the expected_bucket_owner to the API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    policy_document = {"Version": "2012-10-17", "Statement": []}
+    mock_client.get_bucket_policy.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Policy": json.dumps(policy_document),
+    }
+
+    args = {"bucket": "test-bucket", "expected_bucket_owner": "expected_bucket_owner"}
+
+    result = S3.get_bucket_policy_command(mock_client, args)
+    mock_client.get_bucket_policy.assert_called_once_with(Bucket="test-bucket", ExpectedBucketOwner="expected_bucket_owner")
+    assert isinstance(result, CommandResults)
+    assert result.outputs["BucketName"] == "test-bucket"
+
+
+def test_s3_get_bucket_policy_command_empty_policy(mocker):
+    """
+    Given: A mocked boto3 S3 client returning empty policy.
+    When: get_bucket_policy_command is called with successful response but empty policy.
+    Then: It should return CommandResults with empty policy object.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Policy": "{}"}
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Policy"] == {}
+
+
+def test_s3_get_bucket_policy_command_complex_policy(mocker):
+    """
+    Given: A mocked boto3 S3 client returning complex policy with multiple statements.
+    When: get_bucket_policy_command is called successfully.
+    Then: It should return CommandResults with properly parsed complex policy.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    complex_policy = {
+        "Version": "2012-10-17",
+        "Statement": [
+            {"Sid": "AllowPublicRead", "Effect": "Allow", "Principal": "*", "Action": "s3:GetObject", "Resource": "Resource"},
+            {
+                "Sid": "DenyInsecureConnections",
+                "Effect": "Deny",
+                "Principal": "*",
+                "Action": "s3:*",
+                "Resource": ["Resource_1", "Resource_2"],
+                "Condition": {"Bool": {"aws:SecureTransport": "false"}},
+            },
+        ],
+    }
+    mock_client.get_bucket_policy.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Policy": json.dumps(complex_policy),
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Policy"] == complex_policy
+    assert len(result.outputs["Policy"]["Statement"]) == 2
+
+
+def test_s3_get_bucket_policy_command_failure_response(mocker):
+    """
+    Given: A mocked boto3 S3 client returning non-OK status code.
+    When: get_bucket_policy_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.get_bucket_policy_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_s3_get_bucket_policy_command_malformed_json_policy(mocker):
+    """
+    Given: A mocked boto3 S3 client returning malformed JSON policy.
+    When: get_bucket_policy_command is called with invalid JSON in policy.
+    Then: It should raise a JSON decode error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_policy.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Policy": "invalid json content",
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    with pytest.raises(json.JSONDecodeError):
+        S3.get_bucket_policy_command(mock_client, args)
+
+
+def test_s3_get_bucket_policy_command_missing_policy_key(mocker):
+    """
+    Given: A mocked boto3 S3 client returning response without Policy key.
+    When: get_bucket_policy_command is called with missing Policy in response.
+    Then: It should handle the missing Policy key gracefully.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["Policy"] == {}
+
+
+def test_s3_get_bucket_policy_command_null_expected_bucket_owner(mocker):
+    """
+    Given: A mocked boto3 S3 client and args with null expected_bucket_owner.
+    When: get_bucket_policy_command is called with None expected_bucket_owner.
+    Then: It should remove the null value and not include it in API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Policy": "{}"}
+
+    args = {"bucket": "test-bucket", "expected_bucket_owner": None}
+
+    S3.get_bucket_policy_command(mock_client, args)
+    mock_client.get_bucket_policy.assert_called_once_with(Bucket="test-bucket")
+
+
+def test_s3_get_bucket_policy_command_table_markdown_output(mocker):
+    """
+    Given: A mocked boto3 S3 client returning a policy.
+    When: get_bucket_policy_command is called successfully.
+    Then: It should generate readable_output with proper table markdown formatting.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    policy_document = {"Version": "2012-10-17", "Id": "ExamplePolicy"}
+    mock_client.get_bucket_policy.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Policy": json.dumps(policy_document),
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Bucket Policy" in result.readable_output
+    assert "Version" in result.readable_output
+    assert "2012-10-17" in result.readable_output
+
+
+def test_s3_get_bucket_encryption_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: get_bucket_encryption_command is called successfully.
+    Then: It should return CommandResults with encryption configuration and proper outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_encryption.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ServerSideEncryptionConfiguration": {
+            "Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "SSEAlgorithm"}}]
+        },
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_encryption_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_key_field == "BucketName"
+    assert result.outputs["BucketName"] == "test-bucket"
+    assert "ServerSideEncryptionConfiguration" in result.outputs
+
+
+def test_s3_get_bucket_encryption_command_with_expected_bucket_owner(mocker):
+    """
+    Given: A mocked boto3 S3 client with bucket name and expected bucket owner.
+    When: get_bucket_encryption_command is called with expected_bucket_owner parameter.
+    Then: It should return CommandResults and include expected_bucket_owner in API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_encryption.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ServerSideEncryptionConfiguration": {
+            "Rules": [
+                {"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "SSEAlgorithm", "KMSMasterKeyID": "KMSMasterKeyID"}}
+            ]
+        },
+    }
+
+    args = {"bucket": "test-bucket", "expected_bucket_owner": "expected_bucket_owner"}
+
+    result = S3.get_bucket_encryption_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.get_bucket_encryption.assert_called_once_with(Bucket="test-bucket", ExpectedBucketOwner="expected_bucket_owner")
+    assert result.outputs["BucketName"] == "test-bucket"
+
+
+def test_s3_get_bucket_encryption_command_empty_encryption_config(mocker):
+    """
+    Given: A mocked boto3 S3 client returning empty encryption configuration.
+    When: get_bucket_encryption_command is called with successful response but no encryption.
+    Then: It should return CommandResults with empty ServerSideEncryptionConfiguration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_encryption.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_encryption_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["ServerSideEncryptionConfiguration"] == {}
+    assert "Server Side Encryption Configuration" in result.readable_output
+
+
+def test_s3_get_bucket_encryption_command_failure(mocker):
+    """
+    Given: A mocked boto3 S3 client returning non-OK status code.
+    When: get_bucket_encryption_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_encryption.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.get_bucket_encryption_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_s3_get_bucket_encryption_command_none_expected_bucket_owner(mocker):
+    """
+    Given: A mocked boto3 S3 client with None expected_bucket_owner.
+    When: get_bucket_encryption_command is called with None expected_bucket_owner.
+    Then: It should remove None values and call API without expected_bucket_owner parameter.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_encryption.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ServerSideEncryptionConfiguration": {"Rules": []},
+    }
+
+    args = {"bucket": "test-bucket", "expected_bucket_owner": None}
+
+    result = S3.get_bucket_encryption_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    mock_client.get_bucket_encryption.assert_called_once_with(Bucket="test-bucket")
+
+
+def test_s3_get_bucket_encryption_command_complex_encryption_config(mocker):
+    """
+    Given: A mocked boto3 S3 client returning complex encryption configuration with multiple rules.
+    When: get_bucket_encryption_command is called successfully.
+    Then: It should return CommandResults with complete encryption configuration in outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    complex_config = {
+        "Rules": [
+            {
+                "ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "SSEAlgorithm", "KMSMasterKeyID": "KMSMasterKeyID"},
+                "BucketKeyEnabled": True,
+            },
+            {"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "SSEAlgorithm"}},
+        ]
+    }
+    mock_client.get_bucket_encryption.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "ServerSideEncryptionConfiguration": complex_config,
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_bucket_encryption_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["ServerSideEncryptionConfiguration"] == complex_config
+    assert len(result.outputs["ServerSideEncryptionConfiguration"]["Rules"]) == 2
+
+
+def test_s3_get_bucket_encryption_command_missing_response_metadata(mocker):
+    """
+    Given: A mocked boto3 S3 client returning response without ResponseMetadata.
+    When: get_bucket_encryption_command is called with malformed response.
+    Then: It should call AWSErrorHandler.handle_response_error due to missing metadata.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_bucket_encryption.return_value = {"ServerSideEncryptionConfiguration": {"Rules": []}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.get_bucket_encryption_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_s3_get_public_access_block_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: get_public_access_block_command is called successfully.
+    Then: It should return CommandResults with public access block configuration and outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    public_access_block_config = {
+        "BlockPublicAcls": True,
+        "IgnorePublicAcls": True,
+        "BlockPublicPolicy": False,
+        "RestrictPublicBuckets": False,
+    }
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": public_access_block_config,
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_key_field == "BucketName"
+    assert result.outputs["BucketName"] == "test-bucket"
+    assert result.outputs["PublicAccessBlock"] == public_access_block_config
+
+
+def test_s3_get_public_access_block_command_with_expected_bucket_owner(mocker):
+    """
+    Given: A mocked boto3 S3 client and bucket name with expected bucket owner.
+    When: get_public_access_block_command is called with expected_bucket_owner parameter.
+    Then: It should return CommandResults and pass the expected_bucket_owner to the API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    public_access_block_config = {
+        "BlockPublicAcls": False,
+        "IgnorePublicAcls": False,
+        "BlockPublicPolicy": True,
+        "RestrictPublicBuckets": True,
+    }
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": public_access_block_config,
+    }
+
+    args = {"bucket": "test-bucket", "expected_bucket_owner": "expected_bucket_owner"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    mock_client.get_public_access_block.assert_called_once_with(Bucket="test-bucket", ExpectedBucketOwner="expected_bucket_owner")
+    assert isinstance(result, CommandResults)
+    assert result.outputs["BucketName"] == "test-bucket"
+
+
+def test_s3_get_public_access_block_command_empty_configuration(mocker):
+    """
+    Given: A mocked boto3 S3 client returning empty public access block configuration.
+    When: get_public_access_block_command is called with successful response but empty configuration.
+    Then: It should return CommandResults with empty public access block object.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": {},
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["PublicAccessBlock"] == {}
+
+
+def test_s3_get_public_access_block_command_partial_configuration(mocker):
+    """
+    Given: A mocked boto3 S3 client returning partial public access block configuration.
+    When: get_public_access_block_command is called successfully.
+    Then: It should return CommandResults with properly parsed partial configuration.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    partial_config = {"BlockPublicAcls": True, "IgnorePublicAcls": True}
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": partial_config,
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["PublicAccessBlock"] == partial_config
+    assert len(result.outputs["PublicAccessBlock"]) == 2
+
+
+def test_s3_get_public_access_block_command_failure_response(mocker):
+    """
+    Given: A mocked boto3 S3 client returning non-OK status code.
+    When: get_public_access_block_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.get_public_access_block.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NOT_FOUND}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.get_public_access_block_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_s3_get_public_access_block_command_missing_configuration_key(mocker):
+    """
+    Given: A mocked boto3 S3 client returning response without PublicAccessBlockConfiguration key.
+    When: get_public_access_block_command is called with missing configuration in response.
+    Then: It should handle the missing configuration key gracefully.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_public_access_block.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["PublicAccessBlock"] == {}
+
+
+def test_s3_get_public_access_block_command_null_expected_bucket_owner(mocker):
+    """
+    Given: A mocked boto3 S3 client and args with null expected_bucket_owner.
+    When: get_public_access_block_command is called with None expected_bucket_owner.
+    Then: It should remove the null value and not include it in API call.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": {},
+    }
+
+    args = {"bucket": "test-bucket", "expected_bucket_owner": None}
+
+    S3.get_public_access_block_command(mock_client, args)
+    mock_client.get_public_access_block.assert_called_once_with(Bucket="test-bucket")
+
+
+def test_s3_get_public_access_block_command_table_markdown_output(mocker):
+    """
+    Given: A mocked boto3 S3 client returning a public access block configuration.
+    When: get_public_access_block_command is called successfully.
+    Then: It should generate readable_output with proper table markdown formatting.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    public_access_block_config = {
+        "BlockPublicAcls": True,
+        "IgnorePublicAcls": False,
+        "BlockPublicPolicy": True,
+        "RestrictPublicBuckets": False,
+    }
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": public_access_block_config,
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Public Access Block configuration" in result.readable_output
+    assert "Block Public Acls" in result.readable_output
+    assert "true" in result.readable_output
+
+
+def test_s3_get_public_access_block_command_all_settings_enabled(mocker):
+    """
+    Given: A mocked boto3 S3 client returning all public access block settings enabled.
+    When: get_public_access_block_command is called successfully.
+    Then: It should return CommandResults with all settings set to True.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    all_enabled_config = {
+        "BlockPublicAcls": True,
+        "IgnorePublicAcls": True,
+        "BlockPublicPolicy": True,
+        "RestrictPublicBuckets": True,
+    }
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": all_enabled_config,
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["PublicAccessBlock"] == all_enabled_config
+    assert all(result.outputs["PublicAccessBlock"].values())
+
+
+def test_s3_get_public_access_block_command_all_settings_disabled(mocker):
+    """
+    Given: A mocked boto3 S3 client returning all public access block settings disabled.
+    When: get_public_access_block_command is called successfully.
+    Then: It should return CommandResults with all settings set to False.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    all_disabled_config = {
+        "BlockPublicAcls": False,
+        "IgnorePublicAcls": False,
+        "BlockPublicPolicy": False,
+        "RestrictPublicBuckets": False,
+    }
+    mock_client.get_public_access_block.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "PublicAccessBlockConfiguration": all_disabled_config,
+    }
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.get_public_access_block_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert result.outputs["PublicAccessBlock"] == all_disabled_config
+    assert not any(result.outputs["PublicAccessBlock"].values())
+
+
+def test_s3_get_public_access_block_command_missing_response_metadata(mocker):
+    """
+    Given: A mocked boto3 S3 client returning response without ResponseMetadata.
+    When: get_public_access_block_command is called with missing metadata.
+    Then: It should handle the missing ResponseMetadata gracefully.
+    """
+    from AWS import S3, AWSErrorHandler
+
+    mock_client = mocker.Mock()
+    mock_client.get_public_access_block.return_value = {"PublicAccessBlockConfiguration": {"BlockPublicAcls": True}}
+    mock_handle_error = mocker.patch.object(AWSErrorHandler, "handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.get_public_access_block_command(mock_client, args)
+    mock_handle_error.assert_called_once()
+
+
+def test_s3_delete_bucket_policy_command_success(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: delete_bucket_policy_command is called successfully.
+    Then: It should return CommandResults with success message about policy deletion.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NO_CONTENT}}
+
+    args = {"bucket": "test-bucket"}
+
+    result = S3.delete_bucket_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert "Successfully deleted bucket policy from bucket 'test-bucket'" in result.readable_output
+
+
+def test_s3_delete_bucket_policy_command_failure_response(mocker):
+    """
+    Given: A mocked boto3 S3 client returning non-NO_CONTENT status code.
+    When: delete_bucket_policy_command is called with failed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.delete_bucket_policy_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_s3_delete_bucket_policy_command_ok_status_code(mocker):
+    """
+    Given: A mocked boto3 S3 client returning OK status instead of NO_CONTENT.
+    When: delete_bucket_policy_command is called with OK response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.delete_bucket_policy_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_s3_delete_bucket_policy_command_missing_response_metadata(mocker):
+    """
+    Given: A mocked boto3 S3 client returning response without ResponseMetadata.
+    When: delete_bucket_policy_command is called with malformed response.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.delete_bucket_policy_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_s3_delete_bucket_policy_command_missing_http_status_code(mocker):
+    """
+    Given: A mocked boto3 S3 client returning ResponseMetadata without HTTPStatusCode.
+    When: delete_bucket_policy_command is called with incomplete response metadata.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {"ResponseMetadata": {}}
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.delete_bucket_policy_command(mock_client, args)
+    mock_error_handler.assert_called_once()
+
+
+def test_s3_delete_bucket_policy_command_verify_api_call_parameters(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: delete_bucket_policy_command is called successfully.
+    Then: It should call delete_bucket_policy with correct parameters.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NO_CONTENT}}
+
+    args = {"bucket": "my-test-bucket"}
+
+    S3.delete_bucket_policy_command(mock_client, args)
+    mock_client.delete_bucket_policy.assert_called_once_with(Bucket="my-test-bucket")
+
+
+def test_s3_delete_bucket_policy_command_debug_logging(mocker):
+    """
+    Given: A mocked boto3 S3 client and valid bucket name.
+    When: delete_bucket_policy_command is called successfully.
+    Then: It should call print_debug_logs with appropriate message.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.delete_bucket_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.NO_CONTENT}}
+
+    mock_print_debug_logs = mocker.patch("AWS.print_debug_logs")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.delete_bucket_policy_command(mock_client, args)
+    mock_print_debug_logs.assert_called_once_with(mock_client, "Deleting bucket policy for bucket: test-bucket")
