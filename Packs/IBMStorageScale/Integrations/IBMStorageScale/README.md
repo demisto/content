@@ -93,7 +93,7 @@ You can execute these commands from the Cortex XSIAM CLI, as part of an automati
 
 #### 1. ibm-storage-scale-get-events
 
-Gets a limited number of the most recent audit log events for interactive investigation.
+Gets a limited number of the most recent audit log events for interactive investigation. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
 
 ```
 !ibm-storage-scale-get-events limit=10

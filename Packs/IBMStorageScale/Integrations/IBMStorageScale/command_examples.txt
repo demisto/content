@@ -1,1 +1,1 @@
-!ibm-storage-scale-get-events
+!ibm-storage-scale-get-events limit=2 should_push=false```

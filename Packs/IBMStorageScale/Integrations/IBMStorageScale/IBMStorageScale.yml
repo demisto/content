@@ -66,7 +66,7 @@ script:
     description: Gets audit log events for interactive investigation.
     arguments:
     - name: limit
-      default: false
+      default: 10
       description: The maximum number of events to return. Default is 50.
       required: false
     - name: should_push_events
