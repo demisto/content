@@ -34,7 +34,7 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
     return data
 
 
-def issue_to_alert(args: dict) -> dict | str:
+def issue_to_alert(args: dict | str) -> dict | str:
     return replace_substring(args, "issue", "alert")
 
 
@@ -46,14 +46,14 @@ def incident_to_case(output: dict | str) -> dict | str:
     return replace_substring(output, "incident", "case")
 
 
-def case_to_incident(args: dict) -> dict | str:
+def case_to_incident(args: dict | str) -> dict | str:
     return replace_substring(args, "case", "incident")
 
 
-def preprocess_get_cases_args(args):
+def preprocess_get_cases_args(args : dict):
     demisto.debug(f"original args: {args}")
-    args = issue_to_alert(case_to_incident(args))
     args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
+    args = issue_to_alert(case_to_incident(args))
     demisto.debug(f"after preprocess_get_cases_args args: {args}")
     return args
 
