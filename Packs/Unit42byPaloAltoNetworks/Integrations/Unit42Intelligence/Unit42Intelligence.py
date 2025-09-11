@@ -28,6 +28,7 @@ INDICATOR_TYPE_MAPPING = {
     "domain": FeedIndicatorType.Domain,
     "url": FeedIndicatorType.URL,
     "file": FeedIndicatorType.File,
+    "filehash_sha256": FeedIndicatorType.File,
     "exploit": FeedIndicatorType.CVE,
     "malware_family": ThreatIntel.ObjectsNames.MALWARE,
     "actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,

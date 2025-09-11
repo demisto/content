@@ -12,13 +12,6 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: The base URL for the Unit 42 Intelligence API
-- display: API Key
-  name: credentials
-  displaypassword: API Key
-  hiddenusername: true
-  type: 9
-  section: Connect
-  additionalinfo: API key for authentication with Unit 42 Intelligence service
 - display: Source Reliability
   name: integration_reliability
   additionalinfo: Reliability of the source providing the intelligence data.
@@ -100,15 +93,21 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-    - contextPath: Unit42.IP.Address
+    - contextPath: Unit42.IP.Value
       description: The IP address.
       type: String
+    - contextPath: Unit42.IP.Type
+      description: The indicator type.
+      type: String
+    - contextPath: Unit42.IP.Counts
+      description: Counts.
+      type: Unknown
     - contextPath: Unit42.IP.Verdict
       description: The verdict for the IP.
       type: String
     - contextPath: Unit42.IP.VerdictCategory
       description: The verdict category.
-      type: String
+      type: Unknown
     - contextPath: Unit42.IP.FirstSeen
       description: First seen date.
       type: Date
@@ -117,10 +116,10 @@ script:
       type: Date
     - contextPath: Unit42.IP.SeenBy
       description: Sources that have seen this IP.
-      type: String
-    - contextPath: Unit42.IP.Tags
-      description: Associated threat tags.
-      type: String
+      type: Unknown
+    - contextPath: Unit42.IP.EnrichedThreatObjectAssociation
+      description: Enriched threat object association.
+      type: Unknown
   - arguments:
     - description: Domain to enrich.
       name: domain
@@ -153,15 +152,21 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-    - contextPath: Unit42.Domain.Name
+    - contextPath: Unit42.Domain.Value
       description: The domain name.
       type: String
+    - contextPath: Unit42.Domain.Type
+      description: The indicator type.
+      type: String
+    - contextPath: Unit42.Domain.Counts
+      description: Counts.
+      type: Unknown
     - contextPath: Unit42.Domain.Verdict
       description: The verdict for the domain.
       type: String
     - contextPath: Unit42.Domain.VerdictCategory
       description: The verdict category.
-      type: String
+      type: Unknown
     - contextPath: Unit42.Domain.FirstSeen
       description: First seen date.
       type: Date
@@ -170,10 +175,10 @@ script:
       type: Date
     - contextPath: Unit42.Domain.SeenBy
       description: Sources that have seen this domain.
-      type: String
-    - contextPath: Unit42.Domain.Tags
-      description: Associated threat tags.
-      type: String
+      type: Unknown
+    - contextPath: Unit42.Domain.EnrichedThreatObjectAssociation
+      description: Enriched threat object association.
+      type: Unknown
   - arguments:
     - description: URL to enrich.
       name: url
@@ -206,15 +211,21 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-    - contextPath: Unit42.URL.Data
+    - contextPath: Unit42.URL.Value
       description: The URL.
       type: String
+    - contextPath: Unit42.URL.Type
+      description: The indicator type.
+      type: String
+    - contextPath: Unit42.URL.Counts
+      description: Counts.
+      type: Unknown
     - contextPath: Unit42.URL.Verdict
       description: The verdict for the URL.
       type: String
     - contextPath: Unit42.URL.VerdictCategory
       description: The verdict category.
-      type: String
+      type: Unknown
     - contextPath: Unit42.URL.FirstSeen
       description: First seen date.
       type: Date
@@ -223,10 +234,10 @@ script:
       type: Date
     - contextPath: Unit42.URL.SeenBy
       description: Sources that have seen this URL.
-      type: String
-    - contextPath: Unit42.URL.Tags
-      description: Associated threat tags.
-      type: String
+      type: Unknown
+    - contextPath: Unit42.URL.EnrichedThreatObjectAssociation
+      description: Enriched threat object association.
+      type: Unknown
   - arguments:
     - description: File hash to enrich (MD5, SHA1, or SHA256).
       name: file
@@ -265,15 +276,21 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-    - contextPath: Unit42.File.Hash
+    - contextPath: Unit42.File.Value
       description: The file hash.
       type: String
+    - contextPath: Unit42.File.Type
+      description: The indicator type.
+      type: String
+    - contextPath: Unit42.File.Counts
+      description: Counts.
+      type: Unknown
     - contextPath: Unit42.File.Verdict
       description: The verdict for the file.
       type: String
     - contextPath: Unit42.File.VerdictCategory
       description: The verdict category.
-      type: String
+      type: Unknown
     - contextPath: Unit42.File.FirstSeen
       description: First seen date.
       type: Date
@@ -282,10 +299,10 @@ script:
       type: Date
     - contextPath: Unit42.File.SeenBy
       description: Sources that have seen this file.
-      type: String
-    - contextPath: Unit42.File.Tags
-      description: Associated threat tags.
-      type: String
+      type: Unknown
+    - contextPath: Unit42.File.EnrichedThreatObjectAssociation
+      description: Enriched threat object association.
+      type: Unknown
   dockerimage: demisto/python3:3.12.11.4508456
   runonce: false
   script: '-'

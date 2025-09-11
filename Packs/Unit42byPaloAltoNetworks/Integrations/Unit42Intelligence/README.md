@@ -5,7 +5,6 @@ Enrich indicators with Unit 42 threat intelligence data including verdicts, tags
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The base URL for the Unit 42 Intelligence API | True |
-| Password | API key for authentication with Unit 42 Intelligence service | True |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Create relationships | Create relationships between indicators and threat objects | False |
 | Create indicators from relationships | Whether to create indicators from relationships, When selected, the relationships will be created as indicators | False |
@@ -44,13 +43,15 @@ Enrich an IP address with Unit 42 threat intelligence.
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| Unit42.IP.Address | String | The IP address. |
+| Unit42.IP.Value | String | The IP address. |
+| Unit42.IP.Type | String | The indicator type. |
+| Unit42.IP.Counts | Unknown | Counts. |
 | Unit42.IP.Verdict | String | The verdict for the IP. |
-| Unit42.IP.VerdictCategory | String | The verdict category. |
+| Unit42.IP.VerdictCategory | Unknown | The verdict category. |
 | Unit42.IP.FirstSeen | Date | First seen date. |
 | Unit42.IP.LastSeen | Date | Last seen date. |
-| Unit42.IP.SeenBy | String | Sources that have seen this IP. |
-| Unit42.IP.Tags | String | Associated threat tags. |
+| Unit42.IP.SeenBy | Unknown | Sources that have seen this IP. |
+| Unit42.IP.EnrichedThreatObjectAssociation | Unknown | Enriched threat object association. |
 
 #### Command example
 
@@ -77,7 +78,7 @@ Enrich an IP address with Unit 42 threat intelligence.
         "SeenBy": [
             "wf_sample"
         ],
-        "Type": "ip",
+        "Type": "IP",
         "Value": "8.8.8.8",
         "Verdict": "malicious",
         "VerdictCategory": null
@@ -120,13 +121,15 @@ Enrich a domain with Unit 42 threat intelligence.
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| Unit42.Domain.Name | String | The domain name. |
+| Unit42.Domain.Value | String | The domain name. |
+| Unit42.Domain.Type | String | The indicator type. |
+| Unit42.Domain.Counts | Unknown | Counts. |
 | Unit42.Domain.Verdict | String | The verdict for the domain. |
-| Unit42.Domain.VerdictCategory | String | The verdict category. |
+| Unit42.Domain.VerdictCategory | Unknown | The verdict category. |
 | Unit42.Domain.FirstSeen | Date | First seen date. |
 | Unit42.Domain.LastSeen | Date | Last seen date. |
-| Unit42.Domain.SeenBy | String | Sources that have seen this domain. |
-| Unit42.Domain.Tags | String | Associated threat tags. |
+| Unit42.Domain.SeenBy | Unknown | Sources that have seen this domain. |
+| Unit42.Domain.EnrichedThreatObjectAssociation | Unknown | Enriched threat object association. |
 
 #### Command example
 
@@ -142,7 +145,7 @@ Enrich a domain with Unit 42 threat intelligence.
         "FirstSeen": "",
         "LastSeen": "",
         "SeenBy": null,
-        "Type": "domain",
+        "Type": "Domain",
         "Value": "example.com",
         "Verdict": "benign",
         "VerdictCategory": [
@@ -187,13 +190,15 @@ Enrich a URL with Unit 42 threat intelligence.
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| Unit42.URL.Data | String | The URL. |
+| Unit42.URL.Value | String | The URL. |
+| Unit42.URL.Type | String | The indicator type. |
+| Unit42.URL.Counts | Unknown | Counts. |
 | Unit42.URL.Verdict | String | The verdict for the URL. |
-| Unit42.URL.VerdictCategory | String | The verdict category. |
+| Unit42.URL.VerdictCategory | Unknown | The verdict category. |
 | Unit42.URL.FirstSeen | Date | First seen date. |
 | Unit42.URL.LastSeen | Date | Last seen date. |
-| Unit42.URL.SeenBy | String | Sources that have seen this URL. |
-| Unit42.URL.Tags | String | Associated threat tags. |
+| Unit42.URL.SeenBy | Unknown | Sources that have seen this URL. |
+| Unit42.URL.EnrichedThreatObjectAssociation | Unknown | Enriched threat object association. |
 
 #### Command example
 
@@ -220,7 +225,7 @@ Enrich a URL with Unit 42 threat intelligence.
         "SeenBy": [
             "wf_sample"
         ],
-        "Type": "url",
+        "Type": "URL",
         "Value": "https://en.wikipedia.org/wiki/URL",
         "Verdict": "unknown",
         "VerdictCategory": null
@@ -265,13 +270,15 @@ Enrich a file hash with Unit 42 threat intelligence.
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-| Unit42.File.Hash | String | The file hash. |
+| Unit42.File.Value | String | The file hash. |
+| Unit42.File.Type | String | The indicator type. |
+| Unit42.File.Counts | Unknown | Counts. |
 | Unit42.File.Verdict | String | The verdict for the file. |
-| Unit42.File.VerdictCategory | String | The verdict category. |
+| Unit42.File.VerdictCategory | Unknown | The verdict category. |
 | Unit42.File.FirstSeen | Date | First seen date. |
 | Unit42.File.LastSeen | Date | Last seen date. |
-| Unit42.File.SeenBy | String | Sources that have seen this file. |
-| Unit42.File.Tags | String | Associated threat tags. |
+| Unit42.File.SeenBy | Unknown | Sources that have seen this file. |
+| Unit42.File.EnrichedThreatObjectAssociation | Unknown | Enriched threat object association. |
 
 #### Command example
 
@@ -298,7 +305,7 @@ Enrich a file hash with Unit 42 threat intelligence.
         "SeenBy": [
             "wf_sample"
         ],
-        "Type": "filehash_sha256",
+        "Type": "File",
         "Value": "123456abcdef",
         "Verdict": "malicious",
         "VerdictCategory": null

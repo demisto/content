@@ -4,12 +4,11 @@ Use the Unit 42 Intelligence integration to enrich indicators with threat intell
 
 ### Authentication
 
-This integration requires a Unit 42 Intelligence API key. Contact your Palo Alto Networks representative to obtain access credentials.
+This integration requires a Unit 42 Intelligence license. Contact your Palo Alto Networks representative to obtain a permit.
 
 ### Configuration Parameters
 
 - **Server URL**: The base URL for the Unit 42 Intelligence API service
-- **API Key**: Your Unit 42 Intelligence API authentication key
 - **Source Reliability**: Configure the reliability level for threat intelligence data (default: A - Completely reliable)
 - **Create Relationships**: Enable automatic creation of relationships between indicators and threat objects
 - **Create Indicators from Relationships**: Enable automatic creation of indicators from relationships
