@@ -1345,10 +1345,8 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     demisto.debug(f"Active Directory restore_user {entries=}")
     try:
         if entries.get("flat"):
-            demisto.debug(f"Active Directory restore_user flat={entries.get('flat')}")
             flat = entries.get("flat")[0]
             if flat.get("userAccountControl"):
-                demisto.debug(f"Active Directory restore_user userAccountControl={flat.get('userAccountControl')}")
                 return flat.get("userAccountControl")[0]
     except IndexError as e:
         demisto.debug(f"raised an error: {e}")
