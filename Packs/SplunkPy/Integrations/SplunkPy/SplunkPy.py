@@ -3366,27 +3366,6 @@ def splunk_submit_event_hec(
         events = assign_params(
             event=event, host=host, fields=parsed_fields, index=index, sourcetype=source_type, source=source, time=time_
         )
-    # indexes = [index] if index else extract_indexes(events)
-
-    # invalid_indexes = get_invalid_indexes(indexes, service)
-    # if invalid_indexes is None:
-    #     # An error occurred while trying to get the indexes from Splunk.
-    #     # A descriptive error is logged within get_invalid_indexes.
-    #     # We issue a warning and proceed, as the index might exist but not be returned by the API.
-    #     return_warning(
-    #         "Could not verify the existence of Splunk indexes due to an API error. "
-    #         "Proceeding with event submission. Check the logs for more details. "
-    #         "If submission fails, contact Splunk support."
-    #     )
-    # elif invalid_indexes:
-    #     # Some indexes were confirmed to be invalid.
-    #     raise DemistoException(
-    #         f"The following Splunk indexes do not exist: {', '.join(invalid_indexes)}. "
-    #         f"Please ensure they are spelled correctly. If you believe an index exists but is not found, "
-    #         f"it may be due to a Splunk API issue. In that case, please contact Splunk support."
-    #     )
-
-    # demisto.debug("All indexes are valid, sending events to Splunk.")
 
     headers = {
         "Authorization": f"Splunk {hec_token}",
