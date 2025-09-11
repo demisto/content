@@ -57,6 +57,3 @@ fromversion: 6.10.0
 polling: true
 tests:
 - QuarantineFile-Test
-dependson:
-  must:
-  - get-endpoint-data

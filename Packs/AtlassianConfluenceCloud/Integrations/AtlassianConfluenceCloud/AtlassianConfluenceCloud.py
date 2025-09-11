@@ -67,6 +67,7 @@ MESSAGES = {
     "INVALID_SPACE_NAME_LENGTH": "Space name cannot be longer than 200 characters.",
     "INVALID_SPACE_KEY": "Space Key cannot be longer than 255 characters and should contain alphanumeric characters only.",
     "PRIVATE_SPACE_PERMISSION": "Permission can not be granted for a private space.",
+    "MISSING_CONTENT_ID": "Argument 'content_id' is required for this command.",
 }
 OUTPUT_PREFIX = {
     "GROUP": "ConfluenceCloud.Group",
@@ -1366,6 +1367,39 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     )
 
 
+def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Execute the confluence-cloud-content-get command. Fetches content details from Confluence Cloud by content ID.
+
+    :type client: ``Client``
+    :param client: The client used to send HTTP requests to the Confluence Cloud API.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: ``CommandResults`` containing the content details.
+    :rtype: ``CommandResults``
+    """
+
+    content_id = args.get("content_id")
+    if not content_id:
+        raise ValueError(MESSAGES["MISSING_CONTENT_ID"])
+    params = {"expand": "body.storage"}
+    request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
+    response = client.http_request(method="GET", url_suffix=request_url, params=params)
+    response_json = response.json()
+    context = remove_empty_elements(response_json)
+    readable_hr = prepare_hr_for_content_create(response_json, "Content")
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX.get("CONTENT"),
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -1404,6 +1438,7 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-comment-create": confluence_cloud_comment_create_command,
             "confluence-cloud-content-create": confluence_cloud_content_create_command,
             "confluence-cloud-space-create": confluence_cloud_space_create_command,
+            "confluence-cloud-content-get": confluence_cloud_content_get_command,
         }
         command = demisto.command()
         args = demisto.args()
