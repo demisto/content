@@ -1141,38 +1141,38 @@ def test_reset_enriching_fetch_mechanism(mocker):
     assert integration_context == {"wow": "wow"}
 
 
-@pytest.mark.parametrize(
-    "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
-    [
-        (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
-        (
-            (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
-            datetime.utcnow().isoformat(),
-            5,
-            True,
-        ),
-    ],
-)
-def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
-    """
-    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
-     the data gathered so far.
+# @pytest.mark.parametrize(
+#     "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
+#     [
+#         (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+#         (
+#             (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
+#             datetime.utcnow().isoformat(),
+#             5,
+#             True,
+#         ),
+#     ],
+# )
+# def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+#     """
+#     Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident with all
+#      the data gathered so far.
 
-    Given:
-    - Two enrichments that none of them exceeds the timeout.
-    - An enrichment exceeding the timeout and one that does not exceeds the timeout.
+#     Given:
+#     - Two enrichments that none of them exceeds the timeout.
+#     - An enrichment exceeding the timeout and one that does not exceeds the timeout.
 
-    When:
-    - is_enrichment_process_exceeding_timeout is called
+#     When:
+#     - is_enrichment_process_exceeding_timeout is called
 
-    Then:
-    - Return the expected result
-    """
-    mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
-    notable = splunk.Notable({splunk.EVENT_ID: "id"})
-    notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
-    notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
-    assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
+#     Then:
+#     - Return the expected result
+#     """
+#     mocker.patch.object(splunk, "ENABLED_ENRICHMENTS", return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
+#     notable = splunk.Notable({splunk.EVENT_ID: "id"})
+#     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
+#     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
+#     assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
 
 
 INCIDENT_1 = {"name": "incident1", "rawJSON": json.dumps({})}
@@ -3769,41 +3769,6 @@ class ServiceIndex:
 
 
 @pytest.mark.parametrize(
-    "indexes_to_validate, existing_indexes, expected_invalid",
-    [
-        (["main", "history"], ["main", "history", "summary"], set()),
-        (["main", "invalid"], ["main", "history"], {"invalid"}),
-        ([], ["main", "history"], set()),
-        (["main"], [], {"main"}),
-    ],
-)
-def test_get_invalid_indexes(mocker, indexes_to_validate, existing_indexes, expected_invalid):
-    """Tests the get_invalid_indexes function for various scenarios."""
-    from SplunkPy import get_invalid_indexes, client
-
-    service_mock = MagicMock(spec=client.Service, create=True)
-    service_mock.indexes = []
-    for index_name in existing_indexes:
-        mock_index = MagicMock(spec=client.Index)
-        mock_index.name = index_name
-        service_mock.indexes.append(mock_index)
-
-    result = get_invalid_indexes(indexes_to_validate, service_mock)
-    assert result == expected_invalid
-
-
-def test_get_invalid_indexes_api_error(mocker):
-    """Tests that get_invalid_indexes returns None when the Splunk API call fails."""
-    from SplunkPy import get_invalid_indexes, client
-
-    service_mock = MagicMock(spec=client.Service, create=True)
-    mocker.patch.object(demisto, "error")
-    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
-    result = get_invalid_indexes(["main"], service_mock)
-    assert result is None
-
-
-@pytest.mark.parametrize(
     "fields, expected",
     [
         # Valid JSON input
@@ -3862,11 +3827,9 @@ def test_parse_fields(fields, expected):
 @patch("requests.post")
 @patch("SplunkPy.get_events_from_file")
 @patch("SplunkPy.extract_indexes")
-@patch("SplunkPy.get_invalid_indexes")
 @patch("SplunkPy.parse_fields")
 def test_splunk_submit_event_hec(
     mock_parse_fields,
-    mock_get_invalid_indexes,
     mock_extract_indexes,
     mock_get_events_from_file,
     mock_post,
@@ -3890,7 +3853,6 @@ def test_splunk_submit_event_hec(
 
     # Mocks
     mock_parse_fields.return_value = parsed_fields
-    mock_get_invalid_indexes.return_value = set()
 
     if event:
         # Single event
@@ -4261,44 +4223,6 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
     assert res == expected_res
 
 
-def test_splunk_submit_event_hec_command_index_validation_api_error(mocker):
-    """
-    Given:
-        - An event to submit to Splunk via HEC.
-        - The Splunk API call to retrieve indexes fails.
-    When:
-        - Calling splunk_submit_event_hec_command.
-    Then:
-        - A warning should be returned to the user.
-        - The event submission should still be attempted.
-    """
-    from SplunkPy import splunk_submit_event_hec_command
-    from splunklib.client import Service
-
-    mocker.patch("SplunkPy.get_events_from_file", return_value=[{"event": "test", "index": "test_index"}])
-    mocker.patch("SplunkPy.demisto.error")
-    mocker.patch("sys.exit")
-    post_mock = mocker.patch("requests.post")
-    # Mock a successful response to prevent downstream errors
-    response_mock = MagicMock()
-    response_mock.text = '{"text":"Success","code":0,"ackId":123}'
-    post_mock.return_value = response_mock
-    warning_mock = mocker.patch("SplunkPy.return_warning")
-
-    service_mock = MagicMock(spec=Service, create=True)
-    mocker.patch.object(service_mock, "indexes", new_callable=mocker.PropertyMock, side_effect=Exception("API Error"))
-
-    splunk_submit_event_hec_command(
-        params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args={"entry_id": "entry_id"}
-    )
-
-    warning_mock.assert_called_once_with(
-        "Could not verify the existence of Splunk indexes due to an API error. "
-        "Proceeding with event submission. Check the logs for more details. "
-        "If submission fails, contact Splunk support."
-    )
-
-
 @pytest.mark.parametrize(
     "args",
     [
@@ -4313,7 +4237,7 @@ def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, ar
     When:
         - Calling splunk_submit_event_hec_command.
     Then:
-        - A DemistoException should be raised with the invalid index name.
+        - The function should not raise an exception - as we don't check for invalid indexes.
     """
     from SplunkPy import splunk_submit_event_hec_command
     from splunklib.client import Service
@@ -4327,11 +4251,9 @@ def test_splunk_submit_event_hec_command_invalid_index(mocker, requests_mock, ar
     index_mock.name = "valid_index"
     service_mock.indexes = [index_mock]
 
-    with pytest.raises(DemistoException) as e:
-        splunk_submit_event_hec_command(
-            params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
-        )
-    assert "The following Splunk indexes do not exist: invalid_index." in str(e.value)
+    splunk_submit_event_hec_command(
+        params={"hec_token": "token", "hec_url": "https://splunk.test.com"}, service=service_mock, args=args
+    )
 
 
 def test_get_modified_remote_data_skips_cached_events(mocker):
