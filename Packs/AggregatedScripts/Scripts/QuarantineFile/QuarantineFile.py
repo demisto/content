@@ -997,7 +997,7 @@ class QuarantineOrchestrator:
                 self._sanitize_and_validate_args()
             except Exception as e:
                 self.completed_results = []
-
+                demisto.debug("[Orchestrator] Failed to sanitize and validate script arguments. Failing the script")
                 for endpoint_id in argToList(self.args.get(self.ENDPOINT_IDS_ARG)):
                     self.completed_results.append(
                         QuarantineResult.create(
@@ -1012,7 +1012,7 @@ class QuarantineOrchestrator:
                         )
                     )
 
-                return self._get_final_results()
+                return self._get_final_results(fatal_error_msg = str(e))
             self._initiate_jobs()
         else:
             demisto.debug("[Orchestrator] Detected polling run.")
@@ -1131,12 +1131,25 @@ class QuarantineOrchestrator:
 
         self.pending_jobs = remaining_jobs
 
-    def _get_final_results(self) -> PollResult:
+    def _all_jobs_have_failed(self) -> bool:
+        """
+        Checks if all jobs in the completed results have failed.
+
+        Returns:
+            bool: True if all jobs have failed, False otherwise.
+        """
+        return all(
+            result.Status == QuarantineResult.Statuses.FAILED
+            for result in self.completed_results
+        )
+
+
+    def _get_final_results(self, fatal_error_msg = None) -> PollResult:
         """
         Formats and returns the final report after all jobs are complete.
 
         This method cleans up the working data from the incident context, builds
-        a markdown table for the war room, and constructs the final CommandResults object.
+        a Markdown table for the war room, and constructs the final CommandResults object.
 
         Returns:
             PollResult: A PollResult object with `continue_to_poll=False` and the final results.
@@ -1153,7 +1166,7 @@ class QuarantineOrchestrator:
         results_list = QuarantineResult.to_context_entry(self.completed_results)
         # Build final report
         final_readable_output = tableToMarkdown(
-            name=f"Quarantine File Results for: {self.args.get(self.FILE_PATH_ARG)}",
+            name=f"Quarantine Results for Hash: {self.args.get(self.FILE_HASH_ARG)}",
             headers=["EndpointID", "Status", "Message", "Brand"],
             t=results_list,
             removeNull=True,
@@ -1165,6 +1178,9 @@ class QuarantineOrchestrator:
             readable_output=final_readable_output,
             outputs=results_list,
         )
+
+        if fatal_error_msg or self._all_jobs_have_failed():
+            return_error(fatal_error_msg or "Could not quarantine file on all endpoints.")
 
         # Prepend verbose results if the flag is set
         if self.verbose:
