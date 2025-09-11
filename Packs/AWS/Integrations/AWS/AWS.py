@@ -1010,6 +1010,22 @@ class EC2:
 
     @staticmethod
     def modify_snapshot_permission_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """Modifies the permissions of a snapshot.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including:
+                - snapshot_id (str): The ID of the snapshot to modify
+                - group_names (str, optional): The names of the security groups to add or remove permissions for
+                - user_ids (str, optional): The IDs of the AWS accounts to add or remove permissions for
+                - operation_type (str): The type of operation to perform (add | remove)
+
+        Raises:
+            DemistoException: If both group_names and user_ids are provided or if neither is provided
+
+        Returns:
+            CommandResults: _description_
+        """
         group_names = argToList(args.get("group_names"))
         user_ids = argToList(args.get("user_ids"))
         if (group_names and user_ids) or not (group_names or user_ids):

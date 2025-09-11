@@ -1839,3 +1839,124 @@ def test_cloudtrail_describe_trails_command_default_include_shadow_trails(mocker
     mock_client.describe_trails.assert_called_once()
     call_kwargs = mock_client.describe_trails.call_args[1]
     assert call_kwargs["includeShadowTrails"] is True
+
+
+def test_parse_tag_field_single_valid_tag():
+    """
+    Given: A string containing a single valid tag in the format "key=name,value=content".
+    When: parse_tag_field function processes the input.
+    Then: It should return a list with one dictionary containing the parsed Key and Value.
+    """
+    from AWS import parse_tag_field
+
+    result = parse_tag_field("key=Environment,value=Production")
+    expected = [{"Key": "Environment", "Value": "Production"}]
+    assert result == expected
+
+
+def test_parse_tag_field_multiple_valid_tags():
+    """
+    Given: A string containing multiple valid tags separated by semicolons.
+    When: parse_tag_field function processes the input.
+    Then: It should return a list of dictionaries with all parsed tags.
+    """
+    from AWS import parse_tag_field
+
+    result = parse_tag_field("key=Environment,value=Production;key=Team,value=DevOps;key=Project,value=WebApp")
+    expected = [
+        {"Key": "Environment", "Value": "Production"},
+        {"Key": "Team", "Value": "DevOps"},
+        {"Key": "Project", "Value": "WebApp"}
+    ]
+    assert result == expected
+
+
+def test_parse_tag_field_with_special_characters():
+    """
+    Given: A string containing tags with special characters in keys and values.
+    When: parse_tag_field function processes the input with special characters.
+    Then: It should correctly parse tags containing underscores, dots, colons, hyphens, spaces, and other allowed characters.
+    """
+    from AWS import parse_tag_field
+
+    result = parse_tag_field("key=app_name.version,value=my-app@v1.0;key=cost:center,value=IT/DevOps Team")
+    expected = [
+        {"Key": "app_name.version", "Value": "my-app@v1.0"},
+        {"Key": "cost:center", "Value": "IT/DevOps Team"}
+    ]
+    assert result == expected
+
+
+def test_parse_tag_field_with_invalid_format(mocker):
+    """
+    Given: A string containing tags with invalid format that don't match the regex pattern.
+    When: parse_tag_field function processes the input with invalid tags.
+    Then: It should skip invalid tags, log debug messages, and return only valid parsed tags.
+    """
+    from AWS import parse_tag_field
+
+    mock_debug = mocker.patch("demistomock.debug")
+    
+    result = parse_tag_field("key=Valid,value=Tag;invalid_format;key=Another,value=ValidTag;malformed=tag")
+    expected = [
+        {"Key": "Valid", "Value": "Tag"},
+        {"Key": "Another", "Value": "ValidTag"}
+    ]
+    assert result == expected
+    
+    # Verify debug was called for invalid formats
+    assert mock_debug.call_count == 2
+    mock_debug.assert_any_call("could not parse field: invalid_format")
+    mock_debug.assert_any_call("could not parse field: malformed=tag")
+
+
+def test_parse_tag_field_only_invalid_tags(mocker):
+    """
+    Given: A string containing only invalid tag formats.
+    When: parse_tag_field function processes the input with no valid tags.
+    Then: It should return an empty list and log debug messages for each invalid tag.
+    """
+    from AWS import parse_tag_field
+
+    mock_debug = mocker.patch("demistomock.debug")
+    
+    result = parse_tag_field("invalid_format;another_bad_format;missing_equal_sign")
+    assert result == []
+    
+    # Verify debug was called for each invalid format
+    assert mock_debug.call_count == 3
+    mock_debug.assert_any_call("could not parse field: invalid_format")
+    mock_debug.assert_any_call("could not parse field: another_bad_format")
+    mock_debug.assert_any_call("could not parse field: missing_equal_sign")
+
+
+def test_parse_tag_field_case_insensitive_matching():
+    """
+    Given: A string containing tags with mixed case in 'key' and 'value' keywords.
+    When: parse_tag_field function processes the input (regex has re.I flag for case insensitive).
+    Then: It should correctly parse tags regardless of the case of 'key' and 'value' keywords.
+    """
+    from AWS import parse_tag_field
+
+    result = parse_tag_field("KEY=Environment,VALUE=Production;Key=Team,Value=DevOps")
+    expected = [
+        {"Key": "Environment", "Value": "Production"},
+        {"Key": "Team", "Value": "DevOps"}
+    ]
+    assert result == expected
+
+
+def test_parse_tag_field_with_numeric_values():
+    """
+    Given: A string containing tags with numeric and alphanumeric values.
+    When: parse_tag_field function processes the input with numbers.
+    Then: It should correctly parse tags containing numeric characters in both keys and values.
+    """
+    from AWS import parse_tag_field
+
+    result = parse_tag_field("key=version2,value=1.5.0;key=port8080,value=8080")
+    expected = [
+        {"Key": "version2", "Value": "1.5.0"},
+        {"Key": "port8080", "Value": "8080"}
+    ]
+    assert result == expected
