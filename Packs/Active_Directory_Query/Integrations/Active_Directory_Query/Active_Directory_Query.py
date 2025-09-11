@@ -1341,7 +1341,6 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     attributes = list(set(DEFAULT_PERSON_ATTRIBUTES))
 
     entries = search_with_paging(query, default_base_dn, attributes=attributes, size_limit=0, page_size=page_size)
-    demisto.debug(f"Active Directory restore_user {entries=}")
     if entries.get("flat"):
         return entries.get("flat")[0].get("userAccountControl")[0]
     return 0
