@@ -43,6 +43,3 @@ dockerimage: demisto/python3:3.12.11.4284848
 fromversion: 6.10.0
 tests:
 - IsolateEndpoint - Testplaybook
-dependson:
-  must:
-  - get-endpoint-data
