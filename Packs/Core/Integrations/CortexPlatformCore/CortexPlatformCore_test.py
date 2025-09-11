@@ -518,8 +518,8 @@ def test_preprocess_get_case_extra_data_outputs_list():
     from CortexPlatformCore import preprocess_get_case_extra_data_outputs
     data = [{"incident": {"incident_id": 1}}, {"incident": {"incident_id": 2}}]
     out = preprocess_get_case_extra_data_outputs(data.copy())
-    assert out[0]["case_id"] == 1
-    assert out[1]["case_id"] == 2
+    assert out[0]["case"]["case_id"] == 1
+    assert out[1]["case"]["case_id"] == 2
 
 
 def test_preprocess_get_case_extra_data_outputs_edge_cases():
