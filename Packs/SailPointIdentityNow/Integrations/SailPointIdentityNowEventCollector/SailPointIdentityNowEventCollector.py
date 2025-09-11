@@ -238,24 +238,22 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
         time_field_name="prev_date",
     )
     
-    # Handle backward compatibility and get deduplication cache
+    # Handle backward compatibility for deduplication
     if "last_fetched_id_timestamps" in last_run:
-        # New format: use existing timestamped IDs
-        last_fetched_ids_and_timestamps = last_run["last_fetched_id_timestamps"]
-        demisto.debug(f"Using new timestamped format with {len(last_fetched_ids_and_timestamps)} cached IDs")
+        # New format: use timestamped IDs
+        cached_ids_for_dedup = list(last_run["last_fetched_id_timestamps"].keys())
+        demisto.debug(f"Using new timestamped format with {len(cached_ids_for_dedup)} cached IDs")
     elif "last_fetched_ids" in last_run:
-        # Legacy format: migrate old IDs using prev_date as timestamp
-        old_ids = last_run["last_fetched_ids"]
-        old_prev_date = last_run.get("prev_date", last_fetched_creation_date)
-        last_fetched_ids_and_timestamps = {old_id: old_prev_date for old_id in old_ids}
-        demisto.debug(f"Migrated {len(old_ids)} IDs from legacy format using date: {old_prev_date}")
+        # Legacy format: use old IDs as-is for this cycle
+        cached_ids_for_dedup = last_run["last_fetched_ids"]
+        demisto.debug(f"Using legacy format with {len(cached_ids_for_dedup)} cached IDs")
     else:
         # First run: no previous IDs
-        last_fetched_ids_and_timestamps = {}
+        cached_ids_for_dedup = []
         demisto.debug("First run: no previous IDs to cache")
     
     # Fetch events in batches with deduplication
-    all_events, updated_dedup_cache = _fetch_events_batch(client, limit, last_fetched_creation_date, last_fetched_ids_and_timestamps)
+    all_events, updated_dedup_cache = _fetch_events_batch(client, limit, last_fetched_creation_date, cached_ids_for_dedup)
     
     # Build next_run with filtered deduplication cache
     next_run = _build_next_run(all_events, updated_dedup_cache, last_fetched_creation_date, look_back)
@@ -268,7 +266,7 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
 
 
 
-def _fetch_events_batch(client: Client, limit: int, from_date: str, dedup_cache: dict) -> tuple[List[Dict], dict]:
+def _fetch_events_batch(client: Client, limit: int, from_date: str, cached_ids: list) -> tuple[List[Dict], dict]:
     """
     Fetches events in batches with deduplication until limit is reached or no more events.
     
@@ -276,13 +274,14 @@ def _fetch_events_batch(client: Client, limit: int, from_date: str, dedup_cache:
         client: API client for fetching events
         limit: Maximum number of events to fetch total
         from_date: Start date for fetching events
-        dedup_cache: Cache of event IDs to timestamps for deduplication
+        cached_ids: List of cached event IDs for deduplication
         
     Returns:
-        Tuple of (deduplicated events list, updated dedup_cache dict)
+        Tuple of (deduplicated events list, updated dedup_cache dict with timestamps)
     """
     all_events = []
     remaining_events_to_fetch = limit
+    dedup_cache = {}  # Build new timestamp cache from fetched events
     
     while remaining_events_to_fetch > 0:
         current_batch_to_fetch = min(remaining_events_to_fetch, MAX_EVENTS_PER_API_CALL)
@@ -295,7 +294,7 @@ def _fetch_events_batch(client: Client, limit: int, from_date: str, dedup_cache:
             demisto.debug("No events fetched. Exiting the loop.")
             break
         
-        events = dedup_events(events, list(dedup_cache.keys()))
+        events = dedup_events(events, cached_ids)
         if events:
             # Store ID-to-timestamp mappings from current cycle
             for event in events:
