@@ -5602,6 +5602,29 @@ def get_dbot_score(determination_type):
     return verdict
 
 
+def build_file_error_output(error_message, file_hash):
+    dbot_score = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=Common.DBotScore.NONE,
+    )
+
+    indicator = get_dbot_indicator(
+        dbot_type=DBotScoreType.FILE,
+        dbot_score=dbot_score,
+        value=file_hash
+    )
+
+    readable_output = f"Something went wrong: {error_message}"
+
+    result = CommandResults(
+        readable_output=readable_output,
+        indicator=indicator
+    )
+    return result
+
+
 def build_file_output(raw_response, file_hash):
     dbot_score = Common.DBotScore(
         indicator=file_hash,
@@ -5640,12 +5663,9 @@ def file_command(client: MsClient, args: dict) -> list[CommandResults]:
         try:
             file_info_response = client.get_file_data(file_hash)
             results.append(build_file_output(get_file_data(file_info_response), file_hash))
-        except DemistoException:
-            result = create_indicator_result_with_dbotscore_unknown(
-                indicator=file_hash,
-                indicator_type=DBotScoreType.FILE,
-            )
-            results.append(result)
+        except DemistoException as f:
+            error_message = f.res.json().get("error", {}).get("message", "")
+            results.append(build_file_error_output(error_message, file_hash))
     return results
 
 
