@@ -274,7 +274,9 @@ def _migrate_legacy_ids(last_run: dict, fallback_date: str) -> dict:
         # Migrate old IDs by assigning them the previous fetch date as timestamp
         for old_id in old_ids:
             last_fetched_ids_and_timestamps[old_id] = old_prev_date
-        demisto.debug(f"Migrated {len(old_ids)} IDs from old format to new timestamp format")
+        demisto.debug(f"Migrated {len(old_ids)} IDs from old format to new timestamp format using date: {old_prev_date}")
+    else:
+        demisto.debug(f"Using existing timestamped format with {len(last_fetched_ids_and_timestamps)} cached IDs")
     
     return last_fetched_ids_and_timestamps
 
@@ -343,13 +345,17 @@ def _build_next_run(all_events: List[Dict], dedup_cache: dict, fallback_date: st
     # Determine the most recent timestamp for next_run
     if all_events:
         most_recent_timestamp = max(dedup_cache.values())
+        demisto.debug(f"Most recent timestamp from {len(all_events)} events: {most_recent_timestamp}")
     else:
         most_recent_timestamp = fallback_date  # Keep original start time if no events
+        demisto.debug(f"No events fetched, using fallback date: {most_recent_timestamp}")
     
     # Filter ID timestamps to maintain only those within the lookback window
     filtered_id_timestamps = _filter_dedup_cache(
         dedup_cache, most_recent_timestamp, look_back, bool(all_events)
     )
+    
+    demisto.debug(f"Filtered dedup cache: {len(dedup_cache)} -> {len(filtered_id_timestamps)} IDs within lookback window")
     
     return {"prev_date": most_recent_timestamp, "last_fetched_id_timestamps": filtered_id_timestamps}
 
@@ -368,16 +374,20 @@ def _filter_dedup_cache(id_timestamps: dict, most_recent_timestamp: str, look_ba
         Filtered dict of IDs within the appropriate time window
     """
     if look_back > 0:
+        demisto.debug(f"Applying lookback window of {look_back} minutes from timestamp {most_recent_timestamp}")
         return filter_id_timestamps_by_lookback_window(id_timestamps, most_recent_timestamp, look_back)
     
     # When no lookback, only keep IDs from the most recent timestamp
     if has_events and id_timestamps:
-        return {
+        filtered_same_timestamp = {
             event_id: timestamp
             for event_id, timestamp in id_timestamps.items()
             if timestamp == most_recent_timestamp
         }
+        demisto.debug(f"No lookback configured, keeping {len(filtered_same_timestamp)} IDs from most recent timestamp")
+        return filtered_same_timestamp
     
+    demisto.debug("No events or no lookback, returning all cached IDs")
     return id_timestamps
 
 
@@ -427,13 +437,19 @@ def filter_id_timestamps_by_lookback_window(id_timestamps: dict, current_date: s
 
     current_datetime = arg_to_datetime(current_date, required=True)
     lookback_cutoff = current_datetime - timedelta(minutes=look_back)  # type: ignore
+    
+    demisto.debug(f"Lookback window: {lookback_cutoff.strftime(DATE_FORMAT)} to {current_datetime.strftime(DATE_FORMAT)}")
 
     filtered_id_timestamps = {}
+    removed_count = 0
     for event_id, timestamp in id_timestamps.items():
         event_datetime = arg_to_datetime(timestamp, required=True)
         if event_datetime >= lookback_cutoff:  # type: ignore
             filtered_id_timestamps[event_id] = timestamp
-
+        else:
+            removed_count += 1
+    
+    demisto.debug(f"Lookback filtering: kept {len(filtered_id_timestamps)} IDs, removed {removed_count} older IDs")
     return filtered_id_timestamps
 
 
