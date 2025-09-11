@@ -29,9 +29,10 @@ from IBMStorageScale import (
 
 try:  # Python 3.11+
     from datetime import UTC as _UTC  # type: ignore[attr-defined]
+
     UTC = _UTC
 except Exception:
-    UTC = timezone.utc
+    UTC = _UTC
 
 pytestmark = pytest.mark.asyncio
 
@@ -250,9 +251,7 @@ class TestRegexFetchLogic:
         mocker.patch("IBMStorageScale.datetime").utcnow.return_value = end_dt
 
         # Mock dependencies
-        mock_build_queries = mocker.patch(
-            "IBMStorageScale.build_minute_fetch_queries", return_value=["fake_query_string"]
-        )
+        mock_build_queries = mocker.patch("IBMStorageScale.build_minute_fetch_queries", return_value=["fake_query_string"])
         mock_update_last_run = mocker.patch("IBMStorageScale.update_last_run_time")
         mocker.patch("IBMStorageScale._ConcurrentEventFetcher.run", return_value=([], False))
         mocker.patch(
@@ -447,9 +446,7 @@ class TestUtilityFunctions:
         start_time = datetime(2025, 8, 10, 10, 15, 30, tzinfo=UTC)
         end_time = datetime(2025, 8, 10, 10, 17, 10, tzinfo=UTC)
         server_tz = timezone(timedelta(hours=3))
-        expected_regex = (
-            "2025-08-10T13:15:[0-5][0-9]|2025-08-10T13:16:[0-5][0-9]|2025-08-10T13:17:[0-5][0-9]"
-        )
+        expected_regex = "2025-08-10T13:15:[0-5][0-9]|2025-08-10T13:16:[0-5][0-9]|2025-08-10T13:17:[0-5][0-9]"
         assert generate_time_filter_regex(start_time, end_time, server_tz=server_tz) == expected_regex
 
     def test_build_minute_fetch_queries_server_tz_boundary(self):
@@ -562,7 +559,7 @@ class TestDebugCommand:
 
         # Mock time functions and query builder
         mocker.patch("IBMStorageScale.get_fetch_start_time")
-        mocker.patch("IBMStorageScale.build_minute_fetch_queries", return_value=["q1", "q2"]) 
+        mocker.patch("IBMStorageScale.build_minute_fetch_queries", return_value=["q1", "q2"])
         mocker.patch("IBMStorageScale.demisto.debug")
 
         with capfd.disabled():
@@ -578,11 +575,14 @@ class TestDebugCommand:
 class TestParseTimezoneParam:
     def test_parse_timezone_param_utc_aliases(self):
         tz, name = parse_timezone_param("UTC")
-        assert tz is UTC and name == "UTC"
+        assert tz is UTC
+        assert name == "UTC"
         tz, name = parse_timezone_param("Z")
-        assert tz is UTC and name == "UTC"
+        assert tz is UTC
+        assert name == "UTC"
         tz, name = parse_timezone_param("GMT")
-        assert tz is UTC and name == "UTC"
+        assert tz is UTC
+        assert name == "UTC"
 
     def test_parse_timezone_param_fixed_offsets(self):
         tz, name = parse_timezone_param("+03:00")
@@ -603,4 +603,5 @@ class TestParseTimezoneParam:
 
     def test_parse_timezone_param_invalid_defaults_to_utc(self):
         tz, name = parse_timezone_param("Not/AZone")
-        assert tz is UTC and name == "UTC"
+        assert tz is UTC
+        assert name == "UTC"

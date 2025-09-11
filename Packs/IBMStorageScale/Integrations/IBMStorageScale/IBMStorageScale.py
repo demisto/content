@@ -6,21 +6,22 @@ import traceback
 from asyncio import Queue
 from typing import Any
 from urllib.parse import urlparse, urlencode, quote_plus
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, tzinfo
 import re
 
 # Python 3.10 compatibility for UTC constant
 try:  # Python 3.11+
     from datetime import UTC as _UTC  # type: ignore[attr-defined]
+
     UTC = _UTC
 except Exception:  # pragma: no cover - fallback for Python <3.11
-    UTC = timezone.utc
+    UTC = _UTC
 
+# Python 3.9+: zoneinfo module (use module import to avoid typing issues when missing)
 try:
-    # Python 3.9+
-    from zoneinfo import ZoneInfo  # type: ignore[attr-defined]
+    import zoneinfo as zoneinfo_mod  # type: ignore[import-not-found]
 except Exception:  # pragma: no cover - zoneinfo should exist in supported runtimes
-    ZoneInfo = None  # type: ignore[assignment]
+    zoneinfo_mod = None  # type: ignore[assignment]
 
 import httpx
 
@@ -83,7 +84,7 @@ def parse_iso_to_utc(s: str) -> datetime:
         return set_dt_to_utc(datetime.utcnow())
 
 
-def parse_timezone_param(tz_param: str | None) -> tuple[timezone, str]:
+def parse_timezone_param(tz_param: str | None) -> tuple[tzinfo, str]:
     """
     Parse a timezone parameter into a tzinfo. Supports:
     - IANA names (e.g., "UTC", "America/New_York") via zoneinfo
@@ -100,9 +101,9 @@ def parse_timezone_param(tz_param: str | None) -> tuple[timezone, str]:
         return UTC, "UTC"
 
     # Try IANA database name first
-    if ZoneInfo is not None:
+    if zoneinfo_mod is not None:
         try:
-            tz = ZoneInfo(tz_param)
+            tz = zoneinfo_mod.ZoneInfo(tz_param)
             return tz, tz_param
         except Exception:
             pass
@@ -261,7 +262,7 @@ def update_last_run_time(new_fetch_time: datetime) -> None:
     demisto.debug(f"Updated last run with fetch time: {last_run['last_fetch_time']}")
 
 
-def generate_time_filter_regex(start_time: datetime, end_time: datetime, *, server_tz: timezone = UTC) -> str:
+def generate_time_filter_regex(start_time: datetime, end_time: datetime, *, server_tz: tzinfo = UTC) -> str:
     """
     Generates a regex for the 'entryTime' field to cover the given time window.
     The regex covers full minutes (seconds wildcard), relying on deduplication to handle overlaps.
@@ -295,7 +296,7 @@ def generate_time_filter_regex(start_time: datetime, end_time: datetime, *, serv
     return "|".join(regex_parts)
 
 
-def build_fetch_query(limit: int, start_time: datetime, end_time: datetime, *, server_tz: timezone = UTC) -> str:
+def build_fetch_query(limit: int, start_time: datetime, end_time: datetime, *, server_tz: tzinfo = UTC) -> str:
     """
     Build API query string with regex filtering for time.
     Uses urllib.parse.urlencode to avoid manual concatenation and stray ampersands.
@@ -312,9 +313,7 @@ def build_fetch_query(limit: int, start_time: datetime, end_time: datetime, *, s
     return urlencode(params, safe=":'|[]=", quote_via=quote_plus)
 
 
-def build_minute_fetch_queries(
-    limit: int, start_time: datetime, end_time: datetime, *, server_tz: timezone = UTC
-) -> list[str]:
+def build_minute_fetch_queries(limit: int, start_time: datetime, end_time: datetime, *, server_tz: tzinfo = UTC) -> list[str]:
     """
     Build a list of API query strings, one per minute between start_time and end_time inclusive.
 
@@ -363,7 +362,7 @@ class Client:
         verify: bool,
         proxy: str | None,
         concurrency: int = 5,
-        server_tz: timezone = UTC,
+        server_tz: tzinfo = UTC,
         server_tz_name: str = "UTC",
     ):
         self.base_url = server_url
