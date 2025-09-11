@@ -63,7 +63,7 @@ script:
   isfetchevents: true
   commands:
   - name: ibm-storage-scale-get-events
-    description: Gets audit log events for interactive investigation.
+    description: Gets audit log events for interactive investigation. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     arguments:
     - name: limit
       default: 10
