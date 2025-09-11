@@ -446,3 +446,107 @@ def test_get_cases_command_conflicting_time_filters(mocker):
     args = {"since_modification_time": "1 day", "gte_modification_time": "2022-01-01"}
     with pytest.raises(ValueError):
         get_cases_command(client, args)
+
+
+def test_replace_substring_string():
+    """
+    GIVEN a string containing or not containing the substring 'issue'.
+    WHEN replace_substring is called with 'issue' and 'alert'.
+    THEN it replaces all occurrences of 'issue' with 'alert' in the string, or leaves unchanged if not present.
+    """
+    from CortexPlatformCore import replace_substring
+    assert replace_substring("foo_issue_bar", "issue", "alert") == "foo_alert_bar"
+    assert replace_substring("nochange", "issue", "alert") == "nochange"
+
+def test_replace_substring_dict():
+    """
+    GIVEN a dict with keys containing 'issue' and other keys.
+    WHEN replace_substring is called with 'issue' and 'alert'.
+    THEN it replaces all occurrences of 'issue' in keys with 'alert', values are preserved, and other keys unchanged.
+    """
+    from CortexPlatformCore import replace_substring
+    d = {"issue_id": 1, "other": 2}
+    out = replace_substring(d.copy(), "issue", "alert")
+    assert out["alert_id"] == 1
+    assert "issue_id" not in out
+    assert out["other"] == 2
+
+
+def test_preprocess_get_cases_outputs_list_and_single():
+    """
+    GIVEN a dict or list of dicts with 'incident_id' and/or 'alert_field'.
+    WHEN preprocess_get_cases_outputs is called.
+    THEN it returns dict(s) with 'incident' replaced by 'case' and 'alert' replaced by 'issue'.
+    """
+    from CortexPlatformCore import preprocess_get_cases_outputs
+    # Single dict
+    data = {"incident_id": 1, "alert_field": "foo"}
+    out = preprocess_get_cases_outputs(data.copy())
+    assert out["issue_id"] == 1
+    # List
+    data_list = [{"incident_id": 2}, {"incident_id": 3}]
+    out_list = preprocess_get_cases_outputs(data_list.copy())
+    assert out_list[0]["issue_id"] == 2
+    assert out_list[1]["issue_id"] == 3
+
+
+def test_preprocess_get_case_extra_data_outputs_basic():
+    """
+    GIVEN a dict with 'incident' or 'alerts' keys containing dicts with 'incident_id'.
+    WHEN preprocess_get_case_extra_data_outputs is called.
+    THEN it returns dict(s) with 'incident' replaced by 'case' and 'alert' replaced by 'issue' in all nested dicts.
+    """
+    from CortexPlatformCore import preprocess_get_case_extra_data_outputs
+    # Only incident
+    data = {"incident": {"incident_id": 1}}
+    out = preprocess_get_case_extra_data_outputs(data.copy())
+    assert out["case_id"] == 1
+    # With alerts
+    data = {"alerts": {"data": [{"incident_id": 2}, {"incident_id": 3}]} }
+    out = preprocess_get_case_extra_data_outputs(data.copy())
+    assert out["issues"]["data"][0]["case_id"] == 2
+    assert out["issues"]["data"][1]["case_id"] == 3
+
+
+def test_preprocess_get_case_extra_data_outputs_list():
+    """
+    GIVEN a list of dicts with 'incident' key.
+    WHEN preprocess_get_case_extra_data_outputs is called.
+    THEN it returns a list with 'incident' replaced by 'case' in each dict.
+    """
+    from CortexPlatformCore import preprocess_get_case_extra_data_outputs
+    data = [{"incident": {"incident_id": 1}}, {"incident": {"incident_id": 2}}]
+    out = preprocess_get_case_extra_data_outputs(data.copy())
+    assert out[0]["case_id"] == 1
+    assert out[1]["case_id"] == 2
+
+
+def test_preprocess_get_case_extra_data_outputs_edge_cases():
+    """
+    GIVEN a non-dict/list input, or a dict without 'incident'/'alerts' keys.
+    WHEN preprocess_get_case_extra_data_outputs is called.
+    THEN it returns the input unchanged or with only top-level keys transformed if possible.
+    """
+    from CortexPlatformCore import preprocess_get_case_extra_data_outputs
+    # Not a dict/list
+    assert preprocess_get_case_extra_data_outputs("foo") == "foo"
+    # Dict without incident/alerts
+    d = {"other": 1}
+    out = preprocess_get_case_extra_data_outputs(d.copy())
+    assert out["other"] == 1
+
+
+def test_preprocess_get_cases_args_limit_enforced():
+    """
+    GIVEN an args dict with 'limit' above and below MAX_GET_INCIDENTS_LIMIT.
+    WHEN preprocess_get_cases_args is called.
+    THEN it enforces the limit not to exceed MAX_GET_INCIDENTS_LIMIT.
+    """
+    from CortexPlatformCore import preprocess_get_cases_args
+    args = {"limit": 500}
+    out = preprocess_get_cases_args(args.copy())
+    assert out["limit"] == 100
+    args = {"limit": 50}
+    out = preprocess_get_cases_args(args.copy())
+    assert out["limit"] == 50
+
