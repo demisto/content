@@ -1388,7 +1388,6 @@ def enable_user(default_base_dn, default_page_size):
 
 
 def disable_user(default_base_dn, default_page_size):
-    demisto.debug("Active Directory disable_user")
     args = demisto.args()
 
     # get user DN
