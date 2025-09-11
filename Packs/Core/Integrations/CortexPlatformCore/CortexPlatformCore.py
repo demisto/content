@@ -62,6 +62,8 @@ def preprocess_get_cases_outputs(outputs: list | dict):
     def process(output: dict | str):
         if isinstance(output, dict) and "incident" in output:
             output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
+        if isinstance(output, dict) and "alerts" in output:
+            output["alerts"] = alert_to_issue(incident_to_case(output.get("alerts", {})))
         return alert_to_issue(incident_to_case(output))
 
     if isinstance(outputs, (list, tuple)):
