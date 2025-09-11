@@ -1656,12 +1656,16 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
 
 def get_rule_name_from_sources(rule: dict, rules_id_name_dict: dict) -> tuple[str, bool]:
     """
-    Decide the best rule name to use for an offense rule item, preferring an existing valid string name,
-    then a mapping lookup, and finally falling back to the numeric ID. Returns the chosen name and a flag
-    indicating whether we had to fall back to the ID.
+    Decide the best rule name to use for an offense rule item, preferring an existing valid string name, then a mapping lookup,
+    and finally falling back to the numeric ID. A "valid" name is any non-empty string that is not numerically equal to the rule
+    ID (to avoid cases where the API or enrichment sets name to the same numeric ID).
 
-    A "valid" name is any non-empty string that is not numerically equal to the rule id (to avoid cases where
-    the API or enrichment sets name to the same numeric id).
+    Args:
+        rule (dict): The rule dictionary in an offense.
+        rules_id_name_dict (dict): The {rule_id: rule_name} mapping.
+
+    Returns:
+        tuple[str,bool]: The chosen rule name and a boolean flag indicating whether we had to fall back to the ID.
     """
 
     def _is_same_numeric(val: Any, rule_id_val: Any) -> bool:
@@ -1675,14 +1679,17 @@ def get_rule_name_from_sources(rule: dict, rules_id_name_dict: dict) -> tuple[st
 
     # Prefer existing original name if it looks valid
     if isinstance(original_name, str) and original_name.strip() and not _is_same_numeric(original_name, rule_id):
+        print_debug_msg(f"Using {original_name=} for {rule_id=}.")
         return original_name, False
 
     # Try mapping from API lookup
     mapped_name = rules_id_name_dict.get(rule_id)
     if isinstance(mapped_name, str) and mapped_name.strip() and not _is_same_numeric(mapped_name, rule_id):
+        print_debug_msg(f"Using {mapped_name=} for {rule_id=}.")
         return mapped_name, False
 
     # Fallback to the id as string (last resort)
+    print_debug_msg(f"Falling back on using {rule_id=} as name.")
     return (str(rule_id) if rule_id is not None else ""), True
 
 
