@@ -95,6 +95,7 @@ ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS = {
 COMMENT_MIRRORED_FROM_XSOAR = "Mirrored from Cortex XSOAR"
 USER_RELATED_FIELDS = ["user", "src_user"]
 ES_APP_NAME = "SplunkEnterpriseSecuritySuite"
+SPLUNK_ES_NEW_COMMENT_MECHANISM_VERSION = "8.0.0"
 
 # =========== Not Missing Events Mechanism Globals ===========
 CUSTOM_ID = "custom_id"
@@ -496,7 +497,7 @@ def fetch_notables(
                 error_message = f"{error_message}\n{item.message}"
             continue
         fetched_items.append(item)
-    if fetched_items and is_splunk_es_version_or_higher(service, "8.0.0"):
+    if fetched_items and is_splunk_es_version_or_higher(service, SPLUNK_ES_NEW_COMMENT_MECHANISM_VERSION):
         # enrich the fetched items with comments as they are not available in the notable event in Splunk ES 8.0.0+
         notable_id_to_item = {item.get(EVENT_ID, ""): item for item in fetched_items if item.get(EVENT_ID)}
         get_comments_data_new(service, notable_id_to_item, comment_tag_to_splunk, None, is_fetch=True)
@@ -2029,7 +2030,7 @@ def get_modified_remote_data_command(
     integration_context["processed_mirror_in_events_cache"] = list(current_run_processed_events)
     set_integration_context(integration_context)
 
-    is_new_splunk_es_version = is_splunk_es_version_or_higher(service, "8.0.0")
+    is_new_splunk_es_version = is_splunk_es_version_or_higher(service, SPLUNK_ES_NEW_COMMENT_MECHANISM_VERSION)
     if modified_notables_map:
         # In older Splunk ES versions (below 8.0.0), comments were part of the `incident_review` event itself.
         # Therefore, any comment update would also update the notable's modification time, causing it to appear in our search.
