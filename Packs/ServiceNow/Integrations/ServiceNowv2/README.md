@@ -901,7 +901,7 @@ Deletes a ticket from ServiceNow.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required |
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. | Optional |
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 #### Context Output
 
