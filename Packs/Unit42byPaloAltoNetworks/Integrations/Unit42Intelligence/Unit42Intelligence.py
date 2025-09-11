@@ -35,8 +35,8 @@ INDICATOR_TYPE_MAPPING = {
     "threat_actor": ThreatIntel.ObjectsNames.THREAT_ACTOR,
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "attack pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-    "malicious_behavior": "",  # Todo add the correct type
-    "malicious behavior": "",  # Todo add the correct type
+    "malicious_behavior": Common.Indicator,
+    "malicious behavior": Common.Indicator,
 }
 
 
@@ -46,7 +46,6 @@ class Client(BaseClient):
     def __init__(
         self,
         base_url: str,
-        api_key: str,
         verify: bool,
         proxy: bool,
         reliability: str,
@@ -493,7 +492,6 @@ def main() -> None:
 
     # Get parameters
     base_url = params.get("url", "").rstrip("/")
-    api_key = params.get("credentials", {}).get("password", "")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     reliability = params.get("integration_reliability", "A - Completely reliable")
@@ -509,7 +507,6 @@ def main() -> None:
     try:
         client = Client(
             base_url=base_url,
-            api_key=api_key,
             verify=verify_certificate,
             proxy=proxy,
             reliability=reliability,

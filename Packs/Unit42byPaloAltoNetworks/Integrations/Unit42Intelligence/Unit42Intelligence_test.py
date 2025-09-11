@@ -71,7 +71,7 @@ def test_ip_command_malicious(client, mocker):
     result = ip_command(client, args)
 
     assert result.outputs["Value"] == "1.2.3.4"
-    assert result.outputs["Verdict"] == "malicious"
+    assert result.outputs["Verdict"] == "Malicious"
     assert len(result.outputs["VerdictCategory"]) == 1
     assert result.indicator.ip == "1.2.3.4"
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
@@ -111,7 +111,7 @@ def test_domain_command_benign(client, mocker):
     result = domain_command(client, args)
 
     assert result.outputs["Value"] == "example.com"
-    assert result.outputs["Verdict"] == "benign"
+    assert result.outputs["Verdict"] == "Benign"
     assert result.indicator.domain == "example.com"
     assert result.indicator.dbot_score.score == Common.DBotScore.GOOD
     assert result.indicator.dbot_score.malicious_description is None
@@ -150,7 +150,7 @@ def test_url_command_suspicious(client, mocker):
     result = url_command(client, args)
 
     assert result.outputs["Value"] == "http://malicious.example.com"
-    assert result.outputs["Verdict"] == "suspicious"
+    assert result.outputs["Verdict"] == "Suspicious"
     assert result.indicator.url == "http://malicious.example.com"
     assert result.indicator.dbot_score.score == Common.DBotScore.SUSPICIOUS
     assert result.indicator.dbot_score.malicious_description is None
@@ -191,7 +191,7 @@ def test_file_command_malicious(client, mocker):
     result = file_command(client, args)
 
     assert result.outputs["Value"] == test_hash
-    assert result.outputs["Verdict"] == "malicious"
+    assert result.outputs["Verdict"] == "Malicious"
     assert result.indicator.sha256 == test_hash
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
     assert result.indicator.dbot_score.malicious_description == "Unit 42 Intelligence classified this file as malicious"
@@ -324,7 +324,6 @@ def test_client_initialization():
     """
     client = Client(
         base_url="https://api.unit42.paloaltonetworks.com",
-        api_key="test_key",
         verify=True,
         proxy=False,
         reliability="B - Usually reliable",
@@ -484,12 +483,12 @@ def test_create_context_data():
     result = create_context_data(response_data)
 
     assert result["Value"] == "1.2.3.4"
-    assert result["Type"] == "ip"
-    assert result["Verdict"] == "malicious"
-    assert result["VerdictCategory"] == ["malware"]
+    assert result["Type"] == "IP"
+    assert result["Verdict"] == "Malicious"
+    assert result["VerdictCategory"] == ["Malware"]
     assert result["FirstSeen"] == "2023-01-01T00:00:00Z"
     assert result["LastSeen"] == "2023-12-31T23:59:59Z"
-    assert result["SeenBy"] == ["source1", "source2"]
+    assert result["SeenBy"] == ["Source1", "Source2"]
     assert result["Counts"] == [1, 2, 3]
     assert len(result["EnrichedThreatObjectAssociation"]) == 2
     assert result["EnrichedThreatObjectAssociation"][0]["name"] == "APT29"
@@ -821,7 +820,7 @@ def test_create_context_data_empty_threat_objects():
     result = create_context_data(response_data)
 
     assert result["Value"] == "1.2.3.4"
-    assert result["Type"] == "ip"
-    assert result["Verdict"] == "benign"
-    assert result["VerdictCategory"] == ["legitimate"]
+    assert result["Type"] == "IP"
+    assert result["Verdict"] == "Benign"
+    assert result["VerdictCategory"] == ["Legitimate"]
     assert result["EnrichedThreatObjectAssociation"] == []
