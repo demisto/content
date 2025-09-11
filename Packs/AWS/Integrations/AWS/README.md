@@ -741,6 +741,112 @@ Retrieves settings for the specified trail or returns information about all trai
 | AWS.CloudTrail.HasInsightSelectors | boolean | Specifies whether a trail has insight types specified in an InsightSelector list. |
 | AWS.CloudTrail.IsOrganizationTrail | boolean | Specifies whether the trail is an organization trail. |
 
+### aws-s3-bucket-policy-delete
+
+***
+Deletes the bucket policy from an Amazon S3 bucket. This operation removes all policy-based access controls from the bucket, potentially changing access permissions.
+
+#### Base Command
+
+`aws-s3-bucket-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket from which to delete the bucket policy. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-s3-public-access-block-get
+
+***
+Retrieves the public access block configuration for an Amazon S3 bucket. Shows the current settings that control public access to the bucket and its objects.
+
+#### Base Command
+
+`aws-s3-public-access-block-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the Amazon S3 bucket to retrieve public access block configuration from. | Required |
+| expected_bucket_owner | The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls | boolean | Whether Amazon S3 blocks public access control lists \(ACLs\) for this bucket and objects in this bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls | boolean | Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
+| AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets | boolean | Whether Amazon S3 restricts public bucket policies for this bucket. |
+
+### aws-s3-bucket-encryption-get
+
+***
+Retrieves the default encryption configuration for an Amazon S3 bucket. Shows the server-side encryption settings that are applied to new objects stored in the bucket.
+
+#### Base Command
+
+`aws-s3-bucket-encryption-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | Name of the S3 bucket to retrieve encryption configuration from. Must follow S3 naming conventions. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+
+### aws-s3-bucket-policy-get
+
+***
+Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document in JSON format if one exists.
+
+#### Base Command
+
+`aws-s3-bucket-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1. | Required |
+| bucket | The name of the S3 bucket whose policy you want to retrieve. Must follow S3 naming conventions. | Required |
+| expected_bucket_owner | The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
+| AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
+| AWS.S3-Buckets.Policy.Statement.Sid | string | Statement identifier. |
+| AWS.S3-Buckets.Policy.Statement.Effect | string | Allow or Deny. |
+| AWS.S3-Buckets.Policy.Statement.Principal | string | Principal to whom the statement applies. |
+| AWS.S3-Buckets.Policy.Statement.Action | Array | List of actions the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Resource | Array | List of actions the statement applies to. |
+| AWS.S3-Buckets.Policy.Statement.Condition | string | Conditions for when the statement applies. |
+| AWS.S3-Buckets.PolicyExists | boolean | Whether a bucket policy exists. |
+
 ### aws-ec2-instances-describe
 
 ***

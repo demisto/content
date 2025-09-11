@@ -540,6 +540,148 @@ class S3:
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
 
+    @staticmethod
+    def delete_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Delete the bucket policy from an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+
+        Returns:
+            CommandResults: Results of the delete operation with success/failure message
+        """
+        bucket = args.get("bucket")
+
+        print_debug_logs(client, f"Deleting bucket policy for bucket: {bucket}")
+
+        response = client.delete_bucket_policy(Bucket=bucket)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.NO_CONTENT:
+            return CommandResults(readable_output=f"Successfully deleted bucket policy from bucket '{bucket}'")
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def get_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Get the Public Access Block configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the Public Access Block configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Gets public access block for bucket: {bucket_name}")
+
+        response = client.get_public_access_block(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                outputs_prefix="AWS.S3-Buckets",
+                outputs_key_field="BucketName",
+                outputs={"BucketName": bucket_name, "PublicAccessBlock": response.get("PublicAccessBlockConfiguration", {})},
+                readable_output=tableToMarkdown(
+                    "Public Access Block configuration",
+                    t=response.get("PublicAccessBlockConfiguration", {}),
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def get_bucket_encryption_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Get the encryption configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket encryption configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Gets encryption configuration for an Amazon S3 bucket: {bucket_name}")
+
+        response = client.get_bucket_encryption(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            server_side_encryption_rules = response.get("ServerSideEncryptionConfiguration", {}).get("Rules", [])
+            outputs = {
+                "BucketName": bucket_name,
+                "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
+            }
+            return CommandResults(
+                outputs_prefix="AWS.S3-Buckets",
+                outputs_key_field="BucketName",
+                outputs=outputs,
+                readable_output=tableToMarkdown(
+                    f"Server Side Encryption Configuration for Bucket '{bucket_name}'",
+                    t=server_side_encryption_rules,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def get_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Get the policy configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket policy configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Gets bucket policy for an Amazon S3 bucket: {bucket_name}")
+
+        response = client.get_bucket_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            json_response = json.loads(response.get("Policy", "{}"))
+            json_stetment = json_response.get("Statement", [])
+            return CommandResults(
+                outputs_prefix="AWS.S3-Buckets",
+                outputs_key_field="BucketName",
+                outputs={
+                    "BucketName": bucket_name,
+                    "Policy": json_response,
+                },
+                readable_output=tableToMarkdown(
+                    f"Bucket Policy ID: {json_response.get('Id','N/A')} Version: {json_response.get('Version','N/A')}",
+                    t=json_stetment,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
 
 class IAM:
     service = AWSServices.IAM
@@ -1810,6 +1952,7 @@ class CloudTrail:
 
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
+COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
@@ -1841,6 +1984,10 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instances-stop": EC2.stop_instances_command,
     "aws-ec2-instances-terminate": EC2.terminate_instances_command,
     "aws-ec2-instances-run": EC2.run_instances_command,
+    "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
+    "aws-s3-public-access-block-get": S3.get_public_access_block_command,
+    "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
+    "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
 }
 
@@ -1890,6 +2037,10 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:GetAccountPasswordPolicy",
     "iam:UpdateAccountPasswordPolicy",
     "iam:GetAccountAuthorizationDetails",
+    "s3:GetBucketPolicy",
+    "s3:GetBucketPublicAccessBlock",
+    "s3:GetEncryptionConfiguration",
+    "s3:DeleteBucketPolicy",
     "cloudtrail:DescribeTrails",
 ]
 
