@@ -1345,8 +1345,8 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     try:
         if entries.get("flat"):
             flat = entries.get("flat")[0]
-            if flat.get("userAccountControl"):
-                return flat.get("userAccountControl")[0]
+            if user_account_control:=flat.get("userAccountControl"):
+                return user_account_control[0]
     except IndexError as e:
         demisto.debug(f"raised an error: {e}")
     return 0
