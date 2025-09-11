@@ -1,0 +1,588 @@
+category: Endpoint
+commonfields:
+  id: WithSecure Elements
+  version: -1
+configuration:
+- defaultvalue: https://api.connect.withsecure.com
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: Client ID
+  name: client_id
+  required: true
+  section: Connect
+  type: 0
+- display: Client Secret
+  name: client_secret
+  required: true
+  section: Connect
+  type: 4
+- defaultvalue: connect.api.read connect.api.write
+  display: API Scope
+  name: scope
+  required: true
+  section: Connect
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Collect
+  type: 13
+- defaultvalue: security-events
+  display: Fetch incidents from type
+  name: fetch_type
+  options:
+  - security-events
+  - incidents
+  - both
+  required: false
+  section: Collect
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: epp
+  display: Engine Group
+  name: engine_group
+  options:
+  - epp
+  - edr
+  - ecp
+  - xm
+  required: false
+  section: Collect
+  type: 15
+- defaultvalue: '50'
+  display: Fetch limit (maximum 200)
+  name: fetch_limit
+  required: false
+  section: Collect
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: WithSecure Elements API integration for endpoint protection, security events, and device management.
+display: WithSecure Elements
+name: WithSecure Elements
+script:
+  commands:
+  - arguments: []
+    description: Get current user information.
+    name: withsecure-whoami
+    outputs:
+    - contextPath: WithSecure.Whoami.clientId
+      description: Client ID.
+      type: String
+    - contextPath: WithSecure.Whoami.organizationId
+      description: Organization ID.
+      type: String
+  - arguments:
+    - description: Organization ID (UUID format).
+      name: organization_id
+    - auto: PREDEFINED
+      description: Engine group to filter by.
+      name: engine_group
+      predefined:
+      - epp
+      - edr
+      - ecp
+      - xm
+    - description: Start timestamp (ISO format), e.g., 2025-07-15T14:00:00Z.
+      name: persistence_timestamp_start
+    - description: End timestamp (ISO format).
+      name: persistence_timestamp_end
+    - description: Specific engines to filter by. Mutually exclusive with engine_group.
+      isArray: true
+      name: engine
+    - auto: PREDEFINED
+      description: Event severity levels.
+      isArray: true
+      name: severity
+      predefined:
+      - critical
+      - warning
+      - info
+    - defaultValue: '200'
+      description: Maximum number of events to return (1-200).
+      name: limit
+    - description: Pagination anchor.
+      name: anchor
+    description: 'Query security events. Note: A time range (start or end) and an engine scope (engine or engine group) are required.'
+    name: withsecure-get-security-events
+    outputs:
+    - contextPath: WithSecure.SecurityEvent.id
+      description: Event ID.
+      type: String
+    - contextPath: WithSecure.SecurityEvent.severity
+      description: Event severity.
+      type: String
+    - contextPath: WithSecure.SecurityEvent.engine
+      description: Engine that triggered the event.
+      type: String
+    - contextPath: WithSecure.SecurityEvent.action
+      description: Action taken.
+      type: String
+    - contextPath: WithSecure.SecurityEvent.serverTimestamp
+      description: Server timestamp.
+      type: Date
+    - contextPath: WithSecure.SecurityEvent.NextAnchor
+      description: Next page anchor.
+      type: String
+  - arguments:
+    - description: Organization ID (UUID format).
+      name: organization_id
+    - description: Pagination anchor.
+      name: anchor
+    - description: Start timestamp for creation date.
+      name: created_timestamp_start
+    - description: End timestamp for creation date.
+      name: created_timestamp_end
+    - auto: PREDEFINED
+      description: Incident status.
+      isArray: true
+      name: status
+      predefined:
+      - new
+      - acknowledged
+      - inProgress
+      - monitoring
+      - closed
+      - waitingForCustomer
+    - auto: PREDEFINED
+      description: Incident resolution.
+      isArray: true
+      name: resolution
+      predefined:
+      - unconfirmed
+      - confirmed
+      - falsePositive
+      - merged
+      - autoUnconfirmed
+      - autoFalsePositive
+      - securityTest
+      - acceptedRisk
+      - acceptedBehavior
+    - auto: PREDEFINED
+      description: Risk level.
+      isArray: true
+      name: risk_level
+      predefined:
+      - info
+      - low
+      - medium
+      - high
+      - severe
+    - auto: PREDEFINED
+      description: Include archived incidents.
+      name: archived
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '20'
+      description: Maximum number of incidents to return (1-50).
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: Sort order.
+      name: order
+      predefined:
+      - asc
+      - desc
+    - auto: PREDEFINED
+      description: Incident source.
+      isArray: true
+      name: source
+      predefined:
+      - endpoint
+      - cloud
+      - customer
+      - endpointExpert
+      - identityAzure
+      - workloadAzure
+      - workloadAws
+    description: Get Broad Context Detections (BCDs).
+    name: withsecure-get-incidents
+    outputs:
+    - contextPath: WithSecure.Incident.incidentId
+      description: Incident ID.
+      type: String
+    - contextPath: WithSecure.Incident.incidentPublicId
+      description: Public incident ID.
+      type: String
+    - contextPath: WithSecure.Incident.name
+      description: Incident name.
+      type: String
+    - contextPath: WithSecure.Incident.status
+      description: Incident status.
+      type: String
+    - contextPath: WithSecure.Incident.severity
+      description: Incident severity.
+      type: String
+    - contextPath: WithSecure.Incident.riskLevel
+      description: Risk level.
+      type: String
+    - contextPath: WithSecure.Incident.createdTimestamp
+      description: Creation timestamp.
+      type: Date
+    - contextPath: WithSecure.Incident.NextAnchor
+      description: Next page anchor.
+      type: String
+  - arguments:
+    - description: List of incident IDs to update.
+      isArray: true
+      name: incident_ids
+      required: true
+    - auto: PREDEFINED
+      description: New status.
+      name: status
+      predefined:
+      - new
+      - acknowledged
+      - inProgress
+      - monitoring
+      - closed
+      - waitingForCustomer
+      required: true
+    - auto: PREDEFINED
+      description: Resolution (required when status is closed).
+      name: resolution
+      predefined:
+      - unconfirmed
+      - confirmed
+      - falsePositive
+    description: Update incident status.
+    name: withsecure-update-incident-status
+    outputs:
+    - contextPath: WithSecure.IncidentUpdate.target
+      description: Target incident ID.
+      type: String
+    - contextPath: WithSecure.IncidentUpdate.status
+      description: Operation status code.
+      type: Number
+    - contextPath: WithSecure.IncidentUpdate.details
+      description: Operation details.
+      type: String
+  - arguments:
+    - description: List of incident IDs.
+      isArray: true
+      name: incident_ids
+      required: true
+    - description: Comment text.
+      name: comment
+      required: true
+    description: Add comment to incidents.
+    name: withsecure-add-comment-to-incident
+    outputs:
+    - contextPath: WithSecure.IncidentComment.incidentId
+      description: Incident ID.
+      type: String
+    - contextPath: WithSecure.IncidentComment.comment
+      description: Added comment.
+      type: String
+  - arguments:
+    - description: Organization ID.
+      name: organization_id
+    - description: Incident ID.
+      name: incident_id
+      required: true
+    - description: Pagination anchor.
+      name: anchor
+    - description: Start timestamp.
+      name: created_timestamp_start
+    - description: End timestamp.
+      name: created_timestamp_end
+    - defaultValue: '100'
+      description: Maximum results (1-100).
+      name: limit
+    description: Get detections for an incident.
+    name: withsecure-get-detections
+    outputs:
+    - contextPath: WithSecure.Detection.detectionId
+      description: Detection ID.
+      type: String
+    - contextPath: WithSecure.Detection.incidentId
+      description: Incident ID.
+      type: String
+    - contextPath: WithSecure.Detection.deviceId
+      description: Device ID.
+      type: String
+    - contextPath: WithSecure.Detection.name
+      description: Detection name.
+      type: String
+    - contextPath: WithSecure.Detection.severity
+      description: Detection severity.
+      type: String
+    - contextPath: WithSecure.Detection.createdTimestamp
+      description: Creation timestamp.
+      type: Date
+    - contextPath: WithSecure.Detection.NextAnchor
+      description: Next page anchor.
+      type: String
+  - arguments:
+    - description: Organization ID.
+      name: organization_id
+    - description: Specific device ID.
+      name: device_id
+    - auto: PREDEFINED
+      description: Device type.
+      name: type
+      predefined:
+      - computer
+      - connector
+      - mobile
+    - auto: PREDEFINED
+      description: Device state.
+      name: state
+      predefined:
+      - active
+      - blocked
+      - inactive
+    - description: Device name (exact match).
+      name: name
+    - auto: PREDEFINED
+      description: Online status.
+      name: online
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Protection status overview filter.
+      name: protection_status_overview
+    - auto: PREDEFINED
+      description: Patch overall state filter.
+      name: patch_overall_state
+      predefined:
+      - missingCriticalUpdates
+      - upToDate
+      - missingUpdates
+    - defaultValue: '200'
+      description: Maximum results (1-200).
+      name: limit
+    - description: Pagination anchor.
+      name: anchor
+    description: Query devices.
+    name: withsecure-get-devices
+    outputs:
+    - contextPath: WithSecure.Device.id
+      description: Device ID.
+      type: String
+    - contextPath: WithSecure.Device.name
+      description: Device name.
+      type: String
+    - contextPath: WithSecure.Device.type
+      description: Device type.
+      type: String
+    - contextPath: WithSecure.Device.state
+      description: Device state.
+      type: String
+    - contextPath: WithSecure.Device.online
+      description: Online status.
+      type: Boolean
+    - contextPath: WithSecure.Device.protectionStatus
+      description: Protection status.
+      type: String
+    - contextPath: WithSecure.Device.NextAnchor
+      description: Next page anchor.
+      type: String
+  - arguments:
+    - description: List of device IDs.
+      isArray: true
+      name: device_ids
+      required: true
+    - auto: PREDEFINED
+      description: New state.
+      name: state
+      predefined:
+      - blocked
+      - inactive
+      required: true
+    description: Update device state.
+    name: withsecure-update-device-state
+    outputs:
+    - contextPath: WithSecure.DeviceUpdate.target
+      description: Target device ID.
+      type: String
+    - contextPath: WithSecure.DeviceUpdate.status
+      description: Operation status code.
+      type: Number
+    - contextPath: WithSecure.DeviceUpdate.details
+      description: Operation details.
+      type: String
+  - arguments:
+    - description: Organization ID.
+      name: organization_id
+      required: true
+    - auto: PREDEFINED
+      description: Operation type.
+      name: operation
+      predefined:
+      - isolateFromNetwork
+      - releaseFromNetworkIsolation
+      - assignProfile
+      - scanForMalware
+      - showMessage
+      - turnOnFeature
+      - collectDiagnosticFile
+      required: true
+    - description: List of device IDs.
+      isArray: true
+      name: device_ids
+      required: true
+    - description: Operation parameters (JSON format).
+      name: parameters
+    - description: Operation comment.
+      name: comment
+    description: Trigger remote operation on devices.
+    name: withsecure-trigger-device-operation
+    outputs:
+    - contextPath: WithSecure.DeviceOperation.target
+      description: Target device ID.
+      type: String
+    - contextPath: WithSecure.DeviceOperation.status
+      description: Operation status code.
+      type: Number
+    - contextPath: WithSecure.DeviceOperation.operationId
+      description: Operation ID.
+      type: String
+    - contextPath: WithSecure.DeviceOperation.details
+      description: Operation details.
+      type: String
+  - arguments:
+    - description: Device ID.
+      name: device_id
+      required: true
+    description: Get device operations.
+    name: withsecure-get-device-operations
+    outputs:
+    - contextPath: WithSecure.DeviceOperationStatus.id
+      description: Operation ID.
+      type: String
+    - contextPath: WithSecure.DeviceOperationStatus.status
+      description: Operation status.
+      type: String
+    - contextPath: WithSecure.DeviceOperationStatus.operationName
+      description: Operation name.
+      type: String
+    - contextPath: WithSecure.DeviceOperationStatus.startedTimestamp
+      description: Start timestamp.
+      type: Date
+    - contextPath: WithSecure.DeviceOperationStatus.lastUpdatedTimestamp
+      description: Last update timestamp.
+      type: Date
+  - arguments:
+    - description: Organization ID.
+      name: organization_id
+    - description: Pagination anchor.
+      name: anchor
+    - auto: PREDEFINED
+      defaultValue: company
+      description: Organization type.
+      name: type
+      predefined:
+      - company
+      - partner
+    - defaultValue: '200'
+      description: Maximum results (1-1000).
+      name: limit
+    description: Get organizations.
+    name: withsecure-get-organizations
+    outputs:
+    - contextPath: WithSecure.Organization.id
+      description: Organization ID.
+      type: String
+    - contextPath: WithSecure.Organization.name
+      description: Organization name.
+      type: String
+    - contextPath: WithSecure.Organization.type
+      description: Organization type.
+      type: String
+    - contextPath: WithSecure.Organization.NextAnchor
+      description: Next page anchor.
+      type: String
+  - arguments:
+    - description: Organization ID.
+      name: organization_id
+    - description: Pagination anchor.
+      name: anchor
+    - defaultValue: '200'
+      description: Maximum results (1-200).
+      name: limit
+    description: Get device invitations.
+    name: withsecure-get-invitations
+    outputs:
+    - contextPath: WithSecure.Invitation.id
+      description: Invitation ID.
+      type: String
+    - contextPath: WithSecure.Invitation.email
+      description: Invitation email.
+      type: String
+    - contextPath: WithSecure.Invitation.deviceType
+      description: Device type.
+      type: String
+    - contextPath: WithSecure.Invitation.status
+      description: Invitation status.
+      type: String
+    - contextPath: WithSecure.Invitation.createdTimestamp
+      description: Creation timestamp.
+      type: Date
+    - contextPath: WithSecure.Invitation.NextAnchor
+      description: Next page anchor.
+      type: String
+  - arguments:
+    - description: Email address of the user to invite.
+      name: email
+      required: true
+    - description: Subscription key under which the invitation is to be created.
+      name: subscription_key
+      required: true
+    - defaultValue: en
+      description: Language code for the invitation email (default is "en").
+      name: language_code
+    description: Sends an invitation to a user to join the WithSecure Elements portal.
+    name: withsecure-create-invitation
+    outputs:
+    - contextPath: WithSecure.Invitation.email
+      description: The email of the invited user.
+      type: String
+    - contextPath: WithSecure.Invitation.status
+      description: Status of the invitation request.
+      type: String
+    - contextPath: WithSecure.Invitation.details
+      description: Details or metadata of the invitation process.
+      type: String
+  - arguments:
+    - description: Invitation ID to delete.
+      name: invitation_id
+      required: true
+    description: Delete device invitation.
+    name: withsecure-delete-invitation
+  dockerimage: demisto/python3:3.12.11.4819260
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
