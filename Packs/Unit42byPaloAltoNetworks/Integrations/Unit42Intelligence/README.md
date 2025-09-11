@@ -1,5 +1,4 @@
 Enrich indicators with Unit 42 threat intelligence data including verdicts, tags, and relationships.
-This integration was integrated and tested with version xx of Unit 42 Intelligence.
 
 ## Configure Unit 42 Intelligence in Cortex
 

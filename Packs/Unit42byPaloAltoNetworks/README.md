@@ -1,10 +1,11 @@
+
 # Unit 42 by Palo Alto Networks
 
 This pack provides integrations for Palo Alto Networks Unit 42 threat intelligence services, enabling enrichment of indicators with high-quality threat intelligence data.
 
 ## What does this pack do?
 
-The Unit 42 by Palo Alto Networks pack includes integrations that allow you to:
+The Unit 42 by Palo Alto Networks content pack includes integrations that allow you to:
 
 - **Enrich indicators** with threat intelligence data from Unit 42 research team
 - **Get verdicts** for IP addresses, domains, URLs, and file hashes
@@ -23,7 +24,7 @@ An enrichment integration that provides threat intelligence lookups for indicato
 - `!ip` - Enrich IP addresses
 - `!domain` - Enrich domain names  
 - `!url` - Enrich URLs
-- `!file` - Enrich file hashes (MD5, SHA1, SHA256)
+- `!file` - Enrich file hashes (SHA256)
 
 **Key Features:**
 
@@ -37,25 +38,15 @@ An enrichment integration that provides threat intelligence lookups for indicato
 
 A feed integration that fetches threat intelligence indicators and associated threat objects from Unit 42 data sources.
 
-## Migration from Legacy Integrations
-
-This pack serves as a replacement for the following deprecated integrations:
-
-- **AutoFocus V2** → Use Unit 42 Intelligence for enrichment
-- **AutoFocus Feed** → Use Unit 42 Feed for indicator feeds
-- **Unit 42 Intel Objects Feed** → Functionality merged into Unit 42 Feed
-
-## Configuration
-
 ### Prerequisites
 
-- Unit 42 Intelligence API access credentials
+- Unit 42 Intelligence license
 - Network connectivity to Unit 42 Intelligence API endpoints
 
 ### Setup
 
-1. Install the Unit 42 by Palo Alto Networks pack
-2. Configure the Unit 42 Intelligence integration with your API credentials
+1. Install the Unit 42 by Palo Alto Networks content pack
+2. Configure the Unit 42 Intelligence integration
 3. Configure the Unit 42 Feed integration if you need indicator feeds
 4. Test the integrations using the test commands
 
@@ -69,7 +60,3 @@ This pack serves as a replacement for the following deprecated integrations:
 ## Support
 
 This pack is supported by Cortex XSOAR. For technical support, please contact Palo Alto Networks support.
-
-## Version History
-
-- **1.0.0**: Initial release with Unit 42 Intelligence integration

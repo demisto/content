@@ -1,6 +1,6 @@
 ## Unit 42 Intelligence
 
-Use the Unit 42 Intelligence integration to enrich indicators with threat intelligence data from Palo Alto Networks Unit 42 research team.
+Use the Unit 42 Intelligence integration to enrich indicators with threat intelligence data from Palo Alto Networks Unit 42's research team.
 
 ### Authentication
 
