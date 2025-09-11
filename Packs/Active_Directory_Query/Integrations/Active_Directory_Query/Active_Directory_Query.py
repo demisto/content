@@ -1395,7 +1395,6 @@ def disable_user(default_base_dn, default_page_size):
     search_base = args.get("base-dn") or default_base_dn
     dn = user_dn(sam_account_name, search_base)
     account_options = restore_user(search_base, default_page_size)
-    demisto.debug(f"Active Directory disable_user {account_options=}")
 
     # modify user
     modification = {"userAccountControl": [("MODIFY_REPLACE", (account_options | DISABLED_ACCOUNT))]}
