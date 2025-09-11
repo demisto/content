@@ -50,7 +50,7 @@ def case_to_incident(args: dict | str) -> dict | str:
     return replace_substring(args, "case", "incident")
 
 
-def preprocess_get_cases_args(args : dict):
+def preprocess_get_cases_args(args: dict):
     demisto.debug(f"original args: {args}")
     args["limit"] = min(int(args.get("limit", MAX_GET_INCIDENTS_LIMIT)), MAX_GET_INCIDENTS_LIMIT)
     args = issue_to_alert(case_to_incident(args))
