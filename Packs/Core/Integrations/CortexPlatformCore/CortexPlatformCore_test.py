@@ -458,6 +458,7 @@ def test_replace_substring_string():
     assert replace_substring("foo_issue_bar", "issue", "alert") == "foo_alert_bar"
     assert replace_substring("nochange", "issue", "alert") == "nochange"
 
+
 def test_replace_substring_dict():
     """
     GIVEN a dict with keys containing 'issue' and other keys.
@@ -482,12 +483,12 @@ def test_preprocess_get_cases_outputs_list_and_single():
     # Single dict
     data = {"incident_id": 1, "alert_field": "foo"}
     out = preprocess_get_cases_outputs(data.copy())
-    assert out["issue_id"] == 1
+    assert out["case_id"] == 1
     # List
     data_list = [{"incident_id": 2}, {"incident_id": 3}]
     out_list = preprocess_get_cases_outputs(data_list.copy())
-    assert out_list[0]["issue_id"] == 2
-    assert out_list[1]["issue_id"] == 3
+    assert out_list[0]["case_id"] == 2
+    assert out_list[1]["case_id"] == 3
 
 
 def test_preprocess_get_case_extra_data_outputs_basic():
@@ -502,7 +503,7 @@ def test_preprocess_get_case_extra_data_outputs_basic():
     out = preprocess_get_case_extra_data_outputs(data.copy())
     assert out["case_id"] == 1
     # With alerts
-    data = {"alerts": {"data": [{"incident_id": 2}, {"incident_id": 3}]} }
+    data = {"incident": {"incident_id": 1}, "alerts": {"data": [{"incident_id": 2}, {"incident_id": 3}]}}
     out = preprocess_get_case_extra_data_outputs(data.copy())
     assert out["issues"]["data"][0]["case_id"] == 2
     assert out["issues"]["data"][1]["case_id"] == 3
@@ -549,4 +550,3 @@ def test_preprocess_get_cases_args_limit_enforced():
     args = {"limit": 50}
     out = preprocess_get_cases_args(args.copy())
     assert out["limit"] == 50
-
