@@ -24,6 +24,9 @@ def set_indicator_if_exist(args: dict):
 
     success_results = ""
     error_result = ""
+    
+    related_issues = argToList(args.pop("related_issues", ''))
+    
     # Set indicator with provided properties
     if any(key in args for key in ["type", "verdict", "tags"]):
         demisto.debug("running setIndicator command.")
@@ -31,7 +34,7 @@ def set_indicator_if_exist(args: dict):
         success_results += "Successfully set indicator properties.\n"
 
     # Associate the indicator to the provided related issues and alert if don't exist.
-    if related_issues := argToList(args.get("related_issues")):
+    if related_issues:
         issues_found = execute_command("core-get-issues", {"issue_id": related_issues}).get("alerts", [])
         existing_issues_ids = []
         for existing_issue in issues_found:
@@ -62,14 +65,12 @@ def set_indicator_if_exist(args: dict):
     if success_results:
         final_results.append(
             CommandResults(
-                readable_output=success_results, outputs=outputs, outputs_key_field="Value", outputs_prefix="Indicator"
+                readable_output=success_results, outputs=outputs, outputs_key_field="Value", outputs_prefix="SetIndicator"
             )
         )
     if error_result:
         final_results.append(
-            CommandResults(
-                readable_output=error_result, entry_type=4, outputs=outputs, outputs_key_field="Value", outputs_prefix="Indicator"
-            )
+            CommandResults(readable_output=error_result, entry_type=4)
         )
 
     return final_results
