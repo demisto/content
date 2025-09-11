@@ -1840,6 +1840,7 @@ def test_cloudtrail_describe_trails_command_default_include_shadow_trails(mocker
     call_kwargs = mock_client.describe_trails.call_args[1]
     assert call_kwargs["includeShadowTrails"] is True
 
+
 def test_s3_get_bucket_policy_command_success(mocker):
     """
     Given: A mocked boto3 S3 client and valid bucket name.

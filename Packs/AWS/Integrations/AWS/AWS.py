@@ -1330,6 +1330,8 @@ class EC2:
             **accounts,
         )
         return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
+
+    @staticmethod
     def describe_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Retrieves detailed information about EC2 instances including status, configuration, and metadata.
@@ -2177,7 +2179,7 @@ class ECS:
             )
 
 
-COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
+COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults | None]] = {
     "aws-s3-public-access-block-update": S3.put_public_access_block_command,
     "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-s3-bucket-logging-put": S3.put_bucket_logging_command,
