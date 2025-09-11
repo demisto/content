@@ -5225,13 +5225,13 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### Connector Information
+### Connector Information
 >
 >|Number of connectors registered|Number of connectors seen in the last 30 days|
 >|---|---|
 >| 2075 | 1930 |
 >
->### License Summary
+### License Summary
 >
 >|Licensed seats count|Start date|End date|Tier|
 >|---|---|---|---|
