@@ -125,8 +125,15 @@ def parse_detection_field(rule: SigmaRule) -> list:
     for selection, value in rule.detection.detections.items():
         for fields in value.detection_items:
             try:
-                for field in fields.detection_items:
-                    row = build_row(selection, field)
+                # Check if fields has detection_items attribute (SigmaDetection case)
+                if hasattr(fields, 'detection_items'):
+                    for field in fields.detection_items:
+                        row = build_row(selection, field)
+                        grid.append(row)
+                        row = {}
+                else:
+                    # Handle SigmaDetectionItem case
+                    row = build_row(selection, fields)
                     grid.append(row)
                     row = {}
 
@@ -194,9 +201,9 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         "value": rule.title,
         "creationdate": f"{rule.date}",
         "sigmaruleid": f"{rule.id}",
-        "sigmarulestatus": rule.status.name,
+        "sigmarulestatus": rule.status.name if rule.status else None,
         "author": rule.author,
-        "sigmarulelevel": rule.level.name,
+        "sigmarulelevel": rule.level.name if rule.level else None,
         "description": rule.description,
         "category": rule.logsource.category,
         "product": rule.logsource.product,
@@ -210,8 +217,8 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
         ],
     }
 
-    if hasattr(rule.logsource, "custom_attributes"):
-        indicator["definition"] = rule.logsource.custom_attributes["definition"]
+    if hasattr(rule.logsource, "custom_attributes") and rule.logsource.custom_attributes:
+        indicator["definition"] = rule.logsource.custom_attributes.get("definition")
 
     if rule.custom_attributes:
         indicator["sigmarulelicense"] = rule.custom_attributes.get("license", None)
@@ -220,7 +227,8 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
     indicator["tags"] = tags
     indicator["tlp"] = tlp
 
-    if indicator["sigmarulelevel"].lower() in ("high", "critical"):
+    level = indicator.get("sigmarulelevel")
+    if level and isinstance(level, str) and level.lower() in ("high", "critical"):
         indicator["verdict"] = "Malicious"
 
     indicator = {key: value for key, value in indicator.items() if value is not None}
