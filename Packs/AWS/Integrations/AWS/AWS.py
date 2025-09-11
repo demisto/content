@@ -8,6 +8,7 @@ from botocore.client import BaseClient as BotoClient
 from botocore.config import Config
 from botocore.exceptions import ClientError
 from boto3 import Session
+import re
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -15,6 +16,106 @@ DEFAULT_PROXYDOME_CERTFICATE_PATH = os.getenv("EGRESSPROXY_CA_PATH") or "/etc/ce
 DEFAULT_PROXYDOME = os.getenv("CRTX_HTTP_PROXY") or "10.181.0.100:11117"
 TIMEOUT_CONFIG = Config(connect_timeout=60, read_timeout=60)
 DEFAULT_REGION = "us-east-1"
+MAX_FILTERS = 50
+MAX_TAGS = 50
+MAX_FILTER_VALUES = 200
+MAX_CHAR_LENGTH_FOR_FILTER_VALUE = 255
+MAX_LIMIT_VALUE = 1000
+DEFAULT_LIMIT_VALUE = 50
+
+
+def serialize_response_with_datetime_encoding(response: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Serialize AWS API response with proper datetime encoding for JSON compatibility.
+
+    Args:
+        response (Dict[str, Any]): Raw AWS API response containing datetime objects
+
+    Returns:
+        Dict[str, Any]: Serialized response with datetime objects converted to strings
+
+    Raises:
+        DemistoException: If serialization fails
+    """
+    try:
+        # Use DatetimeEncoder to handle datetime objects
+        serialized_json = json.dumps(response, cls=DatetimeEncoder)
+        return json.loads(serialized_json)
+    except (ValueError, TypeError) as e:
+        demisto.error(f"Failed to serialize response with datetime encoding: {str(e)}")
+    except Exception as e:
+        demisto.error(f"Unexpected error during response serialization: {str(e)}")
+    return response
+
+
+def process_instance_data(instance: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Process and extract relevant data from a single EC2 instance.
+
+    Args:
+        instance (Dict[str, Any]): Raw instance data from AWS API
+
+    Returns:
+        Dict[str, Any]: Processed instance data
+    """
+    instance_data = {
+        "InstanceId": instance.get("InstanceId"),
+        "ImageId": instance.get("ImageId"),
+        "State": instance.get("State", {}).get("Name"),
+        "PublicIPAddress": instance.get("PublicIpAddress"),
+        "PrivateIpAddress": instance.get("PrivateIpAddress"),
+        "Type": instance.get("InstanceType"),
+        "LaunchDate": instance.get("LaunchTime"),
+        "PublicDNSName": instance.get("PublicDnsName"),
+        "Monitoring": instance.get("Monitoring", {}).get("State"),
+        "AvailabilityZone": instance.get("Placement", {}).get("AvailabilityZone"),
+    }
+    instance_data = remove_empty_elements(instance_data)
+    return instance_data
+
+
+def build_pagination_kwargs(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Build pagination parameters for AWS API calls with proper validation and limits.
+
+    Args:
+        args (Dict[str, Any]): Command arguments containing pagination parameters
+
+    Returns:
+        Dict[str, Any]: Validated pagination parameters for AWS API
+
+    Raises:
+        ValueError: If limit exceeds maximum allowed value or is invalid
+    """
+    kwargs: Dict[str, Any] = {}
+
+    limit_arg = args.get("limit")
+
+    # Parse and validate limit
+    try:
+        if limit_arg is not None:
+            limit = arg_to_number(limit_arg)
+        else:
+            limit = DEFAULT_LIMIT_VALUE  # Default limit
+    except (ValueError, TypeError) as e:
+        raise ValueError(f"Invalid limit parameter: {limit_arg}. Must be a valid number.") from e
+
+    # Validate limit constraints
+    if limit is not None and limit <= 0:
+        raise ValueError("Limit must be greater than 0")
+
+    # AWS API constraints - most services have a max of 1000 items per request
+    if limit is not None and limit > MAX_LIMIT_VALUE:
+        demisto.debug(f"Requested limit {limit} exceeds maximum {MAX_LIMIT_VALUE}, using {MAX_LIMIT_VALUE}")
+        limit = MAX_LIMIT_VALUE
+
+    # Handle pagination with next_token (for continuing previous requests)
+    if next_token := args.get("next_token"):
+        if (not isinstance(next_token, str)) or (len(next_token.strip()) == 0):
+            raise ValueError("next_token must be a non-empty string")
+        kwargs["NextToken"] = next_token.strip()
+    kwargs.update({"MaxResults": limit})
+    return kwargs
 
 
 def parse_resource_ids(resource_id: str | None) -> list[str]:
@@ -25,19 +126,65 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     return resource_ids
 
 
-def parse_tag_field(tags_str: str) -> list[dict[str, str]]:
+def parse_filter_field(filter_string: str | None):
     """
-    Parse tag field from string to list of dictionaries.
+    Parses a list representation of name and values with the form of 'name=<name>,values=<values>.
+    You can specify up to 50 filters and up to 200 values per filter in a single request.
+    Filter strings can be up to 255 characters in length.
+    Args:
+        filter_list: The name and values list
+    Returns:
+        A list of dicts with the form {"Name": <key>, "Values": [<value>]}
+    """
+    filters = []
+    list_filters = argToList(filter_string, separator=";")
+    if len(list_filters) > MAX_FILTERS:
+        list_filters = list_filters[0:50]
+        demisto.debug("Number of filter is larger then 50, parsing only first 50 filters.")
+    regex = re.compile(
+        r"^name=([\w:.-]+),values=([ \w@,.*-\/:]+)",
+        flags=re.I,
+    )
+    for filter in list_filters:
+        match_filter = regex.match(filter)
+        if match_filter is None:
+            raise ValueError(
+                f"Could not parse field: {filter}. Please make sure you provided "
+                "like so: name=<name>,values=<values>;name=<name>,values=<value1>,<value2>..."
+            )
+        demisto.debug(
+            f'Number of filter values for filter {match_filter.group(1)} is {len(match_filter.group(2).split(","))}'
+            f' if larger than {MAX_FILTER_VALUES},'
+            f' parsing only first {MAX_FILTER_VALUES} values.'
+        )
+        filters.append({"Name": match_filter.group(1), "Values": match_filter.group(2).split(",")[0:MAX_FILTER_VALUES]})
+
+    return filters
+
+
+def parse_tag_field(tags_string: str | None):
+    """
+    Parses a list representation of key and value with the form of 'key=<name>,value=<value>.
+    You can specify up to 50 tags per resource.
+    Args:
+        tags_string: The name and value list
+    Returns:
+        A list of dicts with the form {"key": <key>, "value": <value>}
     """
     tags = []
-    regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
-    for f in tags_str.split(";"):
-        match = regex.match(f)
-        if match is None:
-            demisto.debug(f"could not parse field: {f}")
-            continue
-
-        tags.append({"Key": match.group(1), "Value": match.group(2)})
+    list_tags = argToList(tags_string, separator=";")
+    if len(list_tags) > MAX_TAGS:
+        list_tags = list_tags[0:50]
+        demisto.debug("Number of tags is larger then 50, parsing only first 50 tags.")
+    # According to the AWS Tag restrictions docs.
+    regex = re.compile(r"^key=([a-zA-Z0-9\s+\-=._:/@]{1,128}),value=(.{0,256})$", flags=re.UNICODE)
+    for tag in list_tags:
+        match_tag = regex.match(tag)
+        if match_tag is None:
+            raise ValueError(
+                f"Could not parse field: {tag}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
+            )
+        tags.append({"Key": match_tag.group(1), "Value": match_tag.group(2)})
 
     return tags
 
@@ -393,6 +540,148 @@ class S3:
             )
         except Exception as e:
             raise DemistoException(f"Couldn't apply bucket policy to {args.get('bucket')} bucket. Error: {str(e)}")
+
+    @staticmethod
+    def delete_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Delete the bucket policy from an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+
+        Returns:
+            CommandResults: Results of the delete operation with success/failure message
+        """
+        bucket = args.get("bucket")
+
+        print_debug_logs(client, f"Deleting bucket policy for bucket: {bucket}")
+
+        response = client.delete_bucket_policy(Bucket=bucket)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.NO_CONTENT:
+            return CommandResults(readable_output=f"Successfully deleted bucket policy from bucket '{bucket}'")
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def get_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Get the Public Access Block configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the Public Access Block configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Gets public access block for bucket: {bucket_name}")
+
+        response = client.get_public_access_block(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            return CommandResults(
+                outputs_prefix="AWS.S3-Buckets",
+                outputs_key_field="BucketName",
+                outputs={"BucketName": bucket_name, "PublicAccessBlock": response.get("PublicAccessBlockConfiguration", {})},
+                readable_output=tableToMarkdown(
+                    "Public Access Block configuration",
+                    t=response.get("PublicAccessBlockConfiguration", {}),
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def get_bucket_encryption_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Get the encryption configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket encryption configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Gets encryption configuration for an Amazon S3 bucket: {bucket_name}")
+
+        response = client.get_bucket_encryption(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            server_side_encryption_rules = response.get("ServerSideEncryptionConfiguration", {}).get("Rules", [])
+            outputs = {
+                "BucketName": bucket_name,
+                "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
+            }
+            return CommandResults(
+                outputs_prefix="AWS.S3-Buckets",
+                outputs_key_field="BucketName",
+                outputs=outputs,
+                readable_output=tableToMarkdown(
+                    f"Server Side Encryption Configuration for Bucket '{bucket_name}'",
+                    t=server_side_encryption_rules,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def get_bucket_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Get the policy configuration for an Amazon S3 bucket.
+
+        Args:
+            client (BotoClient): The boto3 client for S3 service
+            args (Dict[str, Any]): Command arguments including:
+                - bucket (str): The name of the S3 bucket
+                - expected_bucket_owner (Str): TThe account ID of the expected bucket owner.
+
+        Returns:
+            CommandResults: Results containing the bucket policy configuration
+        """
+        bucket_name = args.get("bucket")
+        kwargs = {"Bucket": bucket_name, "ExpectedBucketOwner": args.get("expected_bucket_owner")}
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Gets bucket policy for an Amazon S3 bucket: {bucket_name}")
+
+        response = client.get_bucket_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            json_response = json.loads(response.get("Policy", "{}"))
+            json_stetment = json_response.get("Statement", [])
+            return CommandResults(
+                outputs_prefix="AWS.S3-Buckets",
+                outputs_key_field="BucketName",
+                outputs={
+                    "BucketName": bucket_name,
+                    "Policy": json_response,
+                },
+                readable_output=tableToMarkdown(
+                    f"Bucket Policy ID: {json_response.get('Id','N/A')} Version: {json_response.get('Version','N/A')}",
+                    t=json_stetment,
+                    removeNull=True,
+                    headerTransform=pascalToSpace,
+                ),
+            )
+        else:
+            return AWSErrorHandler.handle_response_error(response)
 
 
 class IAM:
@@ -1041,6 +1330,320 @@ class EC2:
             **accounts,
         )
         return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
+    def describe_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves detailed information about EC2 instances including status, configuration, and metadata.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing account_id, region, instance_ids, filters, etc.
+
+        Returns:
+            CommandResults: Formatted results with instance information
+        """
+
+        # Build API parameters
+        kwargs = {}
+        # Add instance IDs if provided
+        if instance_ids := args.get("instance_ids"):
+            kwargs["InstanceIds"] = argToList(instance_ids)
+
+        # Add filters if provided
+        if filters_arg := args.get("filters"):
+            kwargs["Filters"] = parse_filter_field(filters_arg)
+
+        if not instance_ids:
+            pagination_kwargs = build_pagination_kwargs(args)
+            kwargs.update(pagination_kwargs)
+
+        print_debug_logs(client, f"Describing instances with parameters: {kwargs}")
+        remove_nulls_from_dictionary(kwargs)
+        response = client.describe_instances(**kwargs)
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        # Extract instances from reservations
+        reservations = response.get("Reservations", [])
+        if not reservations:
+            return CommandResults(
+                readable_output="No instances found matching the specified criteria.",
+            )
+        readable_outputs = []
+        instances_list = []
+        for reservation in reservations:
+            instances_list.extend(reservation.get("Instances", []))
+            for instance in reservation.get("Instances", []):
+                readable_outputs.append(process_instance_data(instance))
+        outputs = {
+            "AWS.EC2.Instances(val.InstanceId && val.InstanceId == obj.InstanceId)": instances_list,
+            "AWS.EC2(true)": {"InstancesNextToken": response.get("NextToken")},
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown("AWS EC2 Instances", readable_outputs, removeNull=True),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def run_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Runs one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance configuration parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance launch information
+
+        Raises:
+            DemistoException: If required parameters are missing or API call fails
+        """
+
+        # Validate required parameters
+        count = arg_to_number(args.get("count", 1))
+        if not count or count <= 0:
+            raise DemistoException("count parameter must be a positive integer")
+
+        # Build base parameters
+        kwargs: Dict[str, Any] = {"MinCount": count, "MaxCount": count}
+        # Handle image specification - either direct AMI ID or launch template
+        image_id = args.get("image_id")
+        launch_template_id = args.get("launch_template_id")
+        launch_template_name = args.get("launch_template_name")
+
+        if launch_template_id or launch_template_name:
+            # Using launch template
+            launch_template = {}
+            if launch_template_id:
+                launch_template["LaunchTemplateId"] = launch_template_id
+            elif launch_template_name:
+                launch_template["LaunchTemplateName"] = launch_template_name
+
+            if launch_template_version := args.get("launch_template_version"):
+                launch_template["Version"] = launch_template_version
+
+            kwargs["LaunchTemplate"] = launch_template
+
+            # Image ID is optional when using launch template
+            if image_id:
+                kwargs["ImageId"] = image_id
+        else:
+            # Direct AMI specification
+            kwargs["ImageId"] = image_id
+
+        # Add optional basic parameters
+        if instance_type := args.get("instance_type"):
+            kwargs["InstanceType"] = instance_type
+
+        if key_name := args.get("key_name"):
+            kwargs["KeyName"] = key_name
+
+        if subnet_id := args.get("subnet_id"):
+            kwargs["SubnetId"] = subnet_id
+
+        # Handle security groups
+        if security_group_ids := args.get("security_group_ids"):
+            kwargs["SecurityGroupIds"] = argToList(security_group_ids)
+
+        if security_groups_names := args.get("security_groups_names"):
+            kwargs["SecurityGroups"] = argToList(security_groups_names)
+
+        # Handle user data with base64 encoding
+        if user_data := args.get("user_data"):
+            kwargs["UserData"] = user_data
+
+        # Handle boolean parameters
+        kwargs["DisableApiTermination"] = arg_to_bool_or_none(args.get("disable_api_termination"))
+        kwargs["EbsOptimized"] = arg_to_bool_or_none(args.get("ebs_optimized"))
+
+        # Handle IAM instance profile
+        kwargs["IamInstanceProfile"] = {
+            "Arn": args.get("iam_instance_profile_arn"),
+            "Name": args.get("iam_instance_profile_name"),
+        }
+
+        ebs_config = remove_empty_elements(
+            {
+                "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                "SnapshotId": args.get("ebs_snapshot_id"),
+                "VolumeType": args.get("ebs_volume_type"),
+                "Iops": arg_to_number(args.get("ebs_iops")),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                "KmsKeyId": args.get("ebs_kms_key_id"),
+                "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+            }
+        )
+
+        kwargs["BlockDeviceMappings"] = [{"DeviceName": args.get("device_name"), "Ebs": ebs_config}]
+        kwargs["Monitoring"] = {"Enabled": arg_to_bool_or_none(args.get("enabled_monitoring"))}
+        kwargs["Placement"] = {"HostId": args.get("host_id")}
+
+        tags = args.get("tags")
+        if tags:
+            kwargs["TagSpecifications"] = [{"ResourceType": "instance", "Tags": parse_tag_field(tags)}]
+
+        # Remove null values to clean up API call
+        kwargs = remove_empty_elements(kwargs)
+
+        response = client.run_instances(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+        response = serialize_response_with_datetime_encoding(response)
+        instances = response.get("Instances", [])
+        if not instances:
+            return CommandResults(readable_output="No instances were launched.")
+
+        # Format output data
+        instances_data = []
+        for instance in instances:
+            instances_data.append(process_instance_data(instance))
+        readable_output = tableToMarkdown(
+            f"Launched {len(instances)} EC2 Instance(s)",
+            instances_data,
+            headers=[
+                "InstanceId",
+                "ImageId",
+                "State",
+                "Type",
+                "PublicIPAddress",
+                "PrivateIpAddress",
+                "LaunchDate",
+                "AvailabilityZone",
+                "PublicDNSName",
+                "Monitoring",
+            ],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="AWS.EC2.Instances", outputs=instances, readable_output=readable_output, raw_response=response
+        )
+
+    @staticmethod
+    def _manage_instances_command(
+        client: BotoClient, args: Dict[str, Any], action: str, additional_params: Optional[Dict[str, str]] = None
+    ) -> CommandResults | None:
+        """
+        General function to manage EC2 instances (start, stop, terminate).
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+            action (str): The action to perform ('start', 'stop', 'terminate')
+            additional_params (Optional[Dict[str, str]]): Additional parameter names to extract from args
+
+        Returns:
+            CommandResults: Results of the operation with instance management information
+
+        Raises:
+            DemistoException: If instance_ids parameter is missing or invalid action provided
+        """
+        # Validate action
+        valid_actions = {"start", "stop", "terminate"}
+        if action not in valid_actions:
+            raise DemistoException(f"Invalid action '{action}'. Must be one of: {valid_actions}")
+
+        # Validate and extract instance IDs
+        instance_ids = argToList(args.get("instance_ids", []))
+        if not instance_ids:
+            raise DemistoException("instance_ids parameter is required")
+
+        # Build base parameters
+        base_params = {"InstanceIds": instance_ids}
+
+        # Add action-specific parameters
+        if additional_params:
+            for param_name, arg_key in additional_params.items():
+                if arg_key in args:
+                    base_params[param_name] = argToBoolean(args.get(arg_key, False))
+
+        base_params = remove_empty_elements(base_params)
+
+        # Define action configuration
+        action_config = {
+            "start": {
+                "method_name": "start_instances",
+                "response_key": "StartingInstances",
+                "success_message": "started",
+                "failure_message": "Failed to start instances",
+            },
+            "stop": {
+                "method_name": "stop_instances",
+                "response_key": "StoppingInstances",
+                "success_message": "stopped",
+                "failure_message": "Failed to stop instances",
+            },
+            "terminate": {
+                "method_name": "terminate_instances",
+                "response_key": "TerminatingInstances",
+                "success_message": "terminated",
+                "failure_message": "Failed to terminate instances",
+            },
+        }
+
+        config = action_config[action]
+
+        print_debug_logs(client, f"{action.title()}ing instances: {instance_ids}")
+
+        # Get the appropriate client method dynamically
+        client_method = getattr(client, config["method_name"])
+        response = client_method(**base_params)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
+            readable_output = (
+                f"The instances have been {config['success_message']} successfully."
+                if response.get(config["response_key"])
+                else f"No instances were {config['success_message']}."
+            )
+            return CommandResults(readable_output=readable_output, raw_response=response)
+        else:
+            return AWSErrorHandler.handle_response_error(response)
+
+    @staticmethod
+    def stop_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Stops one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance stop information
+        """
+        additional_params = {"Force": "force", "Hibernate": "hibernate"}
+        return EC2._manage_instances_command(client, args, "stop", additional_params)
+
+    @staticmethod
+    def terminate_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Terminates one or more Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance termination information
+        """
+        return EC2._manage_instances_command(client, args, "terminate")
+
+    @staticmethod
+    def start_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Starts one or more stopped Amazon EC2 instances.
+
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments containing instance_ids and other parameters
+
+        Returns:
+            CommandResults: Results of the operation with instance start information
+        """
+        return EC2._manage_instances_command(client, args, "start")
 
 
 class EKS:
@@ -1605,21 +2208,29 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
     "aws-cloudtrail-logging-start": CloudTrail.start_logging_command,
     "aws-cloudtrail-trail-update": CloudTrail.update_trail_command,
+    "aws-ec2-instances-describe": EC2.describe_instances_command,
+    "aws-ec2-instances-start": EC2.start_instances_command,
+    "aws-ec2-instances-stop": EC2.stop_instances_command,
+    "aws-ec2-instances-terminate": EC2.terminate_instances_command,
+    "aws-ec2-instances-run": EC2.run_instances_command,
+    "aws-s3-bucket-policy-delete": S3.delete_bucket_policy_command,
+    "aws-s3-public-access-block-get": S3.get_public_access_block_command,
+    "aws-s3-bucket-encryption-get": S3.get_bucket_encryption_command,
+    "aws-s3-bucket-policy-get": S3.get_bucket_policy_command,
     "aws-cloudtrail-trails-describe": CloudTrail.describe_trails_command,
     "aws-ecs-update-cluster-settings": ECS.update_cluster_settings_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
-    "iam:PassRole",
     "kms:CreateGrant",
     "kms:Decrypt",
     "kms:DescribeKey",
     "kms:GenerateDataKey",
-    "rds:AddTagsToResource",
-    "rds:CreateTenantDatabase",
     "secretsmanager:CreateSecret",
     "secretsmanager:RotateSecret",
     "secretsmanager:TagResource",
+    "rds:AddTagsToResource",
+    "rds:CreateTenantDatabase",
     "rds:ModifyDBCluster",
     "rds:ModifyDBClusterSnapshotAttribute",
     "rds:ModifyDBInstance",
@@ -1628,6 +2239,7 @@ REQUIRED_ACTIONS: list[str] = [
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",
     "s3:PutBucketPolicy",
+    "s3:PutBucketPublicAccessBlock",
     "ec2:RevokeSecurityGroupEgress",
     "ec2:ModifyImageAttribute",
     "ec2:ModifyInstanceAttribute",
@@ -1636,17 +2248,33 @@ REQUIRED_ACTIONS: list[str] = [
     "ec2:CreateSnapshot",
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
+    "ec2:CreateSecurityGroup",
+    "ec2:CreateTags",
+    "ec2:DeleteSecurityGroup",
+    "ec2:DescribeInstances",
+    "ec2:DescribeSecurityGroups",
+    "ec2:AuthorizeSecurityGroupEgress",
+    "ec2:AuthorizeSecurityGroupIngress",
+    "ec2:ModifyInstanceMetadataOptions",
+    "ec2:DescribeInstances",
+    "ec2:StartInstances",
+    "ec2:StopInstances",
+    "ec2:TerminateInstances",
+    "ec2:RunInstances",
     "eks:UpdateClusterConfig",
+    "iam:PassRole",
     "iam:DeleteLoginProfile",
     "iam:PutUserPolicy",
     "iam:RemoveRoleFromInstanceProfile",
     "iam:UpdateAccessKey",
     "iam:GetAccountPasswordPolicy",
     "iam:UpdateAccountPasswordPolicy",
-    "s3:PutBucketPublicAccessBlock",
-    "ec2:ModifyInstanceMetadataOptions",
     "iam:GetAccountAuthorizationDetails",
     "ecs:UpdateClusterSettings",
+    "s3:GetBucketPolicy",
+    "s3:GetBucketPublicAccessBlock",
+    "s3:GetEncryptionConfiguration",
+    "s3:DeleteBucketPolicy",
     "cloudtrail:DescribeTrails",
 ]
 
@@ -1801,7 +2429,7 @@ def get_service_client(
     return client, session
 
 
-def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults:
+def execute_aws_command(command: str, args: dict, params: dict) -> CommandResults | None:
     """
     Execute an AWS command by retrieving credentials, creating a service client,
     and routing to the appropriate service handler.
@@ -1828,7 +2456,6 @@ def main():  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
     handle_proxy()
