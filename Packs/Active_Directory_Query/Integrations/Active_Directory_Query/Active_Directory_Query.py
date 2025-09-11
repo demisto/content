@@ -1343,9 +1343,9 @@ def restore_user(default_base_dn: str, page_size: int) -> int:
     entries = search_with_paging(query, default_base_dn, attributes=attributes, size_limit=0, page_size=page_size)
     demisto.debug(f"Active Directory restore_user {entries=}")
     try:
-        if flat_entries:=entries.get("flat"):
+        if flat_entries := entries.get("flat"):
             flat = flat_entries[0]
-            if user_account_control:=flat.get("userAccountControl"):
+            if user_account_control := flat.get("userAccountControl"):
                 return user_account_control[0]
     except IndexError as e:
         demisto.debug(f"An error occurred: {e}")
