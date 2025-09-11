@@ -1575,28 +1575,22 @@ def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     ticket_type = client.get_table_name(str(args.get("ticket_type", "")))
 
     result = client.delete(ticket_type, ticket_id)
-    
+
     demisto.debug(f"Ticket deletion result: {result}")
-    
+
     # Determine success based on result
     is_success = result == ""
-    
+
     demisto.debug(f"Ticket deletion success status: {is_success}")
-    
+
     # Generate human readable message
     if is_success:
         human_readable = f"Ticket with ID {ticket_id} was successfully deleted from {ticket_type} table."
     else:
         human_readable = f"Failed to delete ticket {ticket_id} from {ticket_type} table. Record may not exist."
-    
+
     # Create entry context
-    entry_context = {
-        "ServiceNow.Ticket(val.ID===obj.ID)": {
-            "ID": ticket_id,
-            "DeleteMessage": human_readable
-        }
-    }
-    
+    entry_context = {"ServiceNow.Ticket(val.ID===obj.ID)": {"ID": ticket_id, "DeleteMessage": human_readable}}
     return human_readable, entry_context, result, is_success
 
 
