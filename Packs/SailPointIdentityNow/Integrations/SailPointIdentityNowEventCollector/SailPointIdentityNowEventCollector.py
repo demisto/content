@@ -239,7 +239,20 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
     )
     
     # Handle backward compatibility and get deduplication cache
-    last_fetched_ids_and_timestamps = _migrate_legacy_ids(last_run, last_fetched_creation_date)
+    if "last_fetched_id_timestamps" in last_run:
+        # New format: use existing timestamped IDs
+        last_fetched_ids_and_timestamps = last_run["last_fetched_id_timestamps"]
+        demisto.debug(f"Using new timestamped format with {len(last_fetched_ids_and_timestamps)} cached IDs")
+    elif "last_fetched_ids" in last_run:
+        # Legacy format: migrate old IDs using prev_date as timestamp
+        old_ids = last_run["last_fetched_ids"]
+        old_prev_date = last_run.get("prev_date", last_fetched_creation_date)
+        last_fetched_ids_and_timestamps = {old_id: old_prev_date for old_id in old_ids}
+        demisto.debug(f"Migrated {len(old_ids)} IDs from legacy format using date: {old_prev_date}")
+    else:
+        # First run: no previous IDs
+        last_fetched_ids_and_timestamps = {}
+        demisto.debug("First run: no previous IDs to cache")
     
     # Fetch events in batches with deduplication
     all_events, updated_dedup_cache = _fetch_events_batch(client, limit, last_fetched_creation_date, last_fetched_ids_and_timestamps)
@@ -253,32 +266,6 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
 
 """ HELPER FUNCTIONS """
 
-
-def _migrate_legacy_ids(last_run: dict, fallback_date: str) -> dict:
-    """
-    Handles backward compatibility by migrating old last_fetched_ids format to new timestamped format.
-    
-    Args:
-        last_run: The last run data containing legacy or new format IDs
-        fallback_date: Date to use for legacy IDs that don't have timestamps
-        
-    Returns:
-        Dict of event_id -> timestamp mappings
-    """
-    last_fetched_ids_and_timestamps: dict = last_run.get("last_fetched_id_timestamps", {})
-    
-    # Backward compatibility: migrate old format if exists and new format is empty
-    if not last_fetched_ids_and_timestamps and "last_fetched_ids" in last_run:
-        old_ids = last_run.get("last_fetched_ids", [])
-        old_prev_date = last_run.get("prev_date", fallback_date)
-        # Migrate old IDs by assigning them the previous fetch date as timestamp
-        for old_id in old_ids:
-            last_fetched_ids_and_timestamps[old_id] = old_prev_date
-        demisto.debug(f"Migrated {len(old_ids)} IDs from old format to new timestamp format using date: {old_prev_date}")
-    else:
-        demisto.debug(f"Using existing timestamped format with {len(last_fetched_ids_and_timestamps)} cached IDs")
-    
-    return last_fetched_ids_and_timestamps
 
 
 def _fetch_events_batch(client: Client, limit: int, from_date: str, dedup_cache: dict) -> tuple[List[Dict], dict]:
