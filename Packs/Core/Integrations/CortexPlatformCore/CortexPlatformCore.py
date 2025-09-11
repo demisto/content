@@ -60,10 +60,22 @@ def preprocess_get_cases_args(args):
 
 def preprocess_get_cases_outputs(outputs: list | dict):
     def process(output: dict | str):
+        return alert_to_issue(incident_to_case(output))
+
+    if isinstance(outputs, (list, tuple)):
+        return [process(o) for o in outputs]
+    return process(outputs)
+
+
+def preprocess_get_case_extra_data_outputs(outputs: list | dict):
+    def process(output: dict | str):
         if isinstance(output, dict) and "incident" in output:
             output["incident"] = alert_to_issue(incident_to_case(output.get("incident", {})))
-        if isinstance(output, dict) and "alerts" in output:
-            output["alerts"] = alert_to_issue(incident_to_case(output.get("alerts", {})))
+        if isinstance(output, dict):
+            alerts_data = output.get("alerts", {}).get("data", {})
+            modified_alerts_data = alert_to_issue(incident_to_case(alerts_data))
+            if "alerts" in output and isinstance(output["alerts"], dict):
+                output["alerts"]["data"] = modified_alerts_data
         return alert_to_issue(incident_to_case(output))
 
     if isinstance(outputs, (list, tuple)):
@@ -172,7 +184,7 @@ def get_extra_data_for_case_id_command(client, args):
     case_id = args.get("case_id")
     issues_limit = min(int(args.get("issues_limit", 1000)), 1000)
     response = client.get_incident_data(case_id, issues_limit)
-    mapped_response = preprocess_get_cases_outputs(response)
+    mapped_response = preprocess_get_case_extra_data_outputs(response)
     return CommandResults(
         readable_output=tableToMarkdown("Case", mapped_response, headerTransform=string_to_table_header),
         outputs_prefix="Core.CaseExtraData",
