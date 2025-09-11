@@ -472,7 +472,7 @@ def test_create_alert_comment_command(mocker, test_case):
         ("param", "providers_param", "service_sources_param", "param", API_V1),
         ("param", "providers_param", "service_sources_param", "param", API_V2),
         ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", API_V1),
-        ("", "providers_param", "service_sources_param", "serviceSource eq 'service_sources_param'", API_V2),
+        ("", "providers_param", "service_sources_param", "serviceSource in ('service_sources_param')", API_V2),
         (
             "",
             "providers_param",

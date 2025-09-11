@@ -630,15 +630,10 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
         elif API_VER == API_V2 and service_sources_param:
             demisto.debug("In API V2 and service sources param")
             service_sources_lst = [source.strip() for source in service_sources_param.split(",")]
-            if len(service_sources_lst) == 1:
-                # If there's only one source, use a simple 'eq'
-                filter_query = f"serviceSource eq '{service_sources_lst[0]}'"
-            else:
-                # If there are multiple sources, use the 'in' operator
-                # This creates a string like: "serviceSource in ('source1','source2')"
-                # see docs: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
-                quoted_sources = [f"'{source}'" for source in service_sources_lst]
-                filter_query = f"serviceSource in ({','.join(quoted_sources)})"
+            # This creates a string like: "serviceSource in ('source1','source2')"
+            # see docs supporting this operation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http
+            quoted_sources = [f"'{source}'" for source in service_sources_lst]
+            filter_query = f"serviceSource in ({','.join(quoted_sources)})"
     demisto.debug("filter query: " + str(filter_query))
     return filter_query
 
