@@ -1,35 +1,36 @@
 import json
+from pathlib import Path
 from typing import Any
 
 import demistomock as demisto
 import pytest
 import SigmaButtonConvert
 from SigmaButtonConvert import main
+from pytest_mock import MockerFixture
 
 
 def load_file(path: str, json_file: bool) -> dict[str, Any] | str:
-    with open(path) as f:
-        if json_file:
-            return json.load(f)
-        else:
-            return f.read()
+    file_path = Path(path)
+    if json_file:
+        return json.loads(file_path.read_text())
+    else:
+        return file_path.read_text()
 
 
-rule_example = json.dumps(load_file("test_data/sigma_rule.json", json_file=True))
 
-xql_query = load_file("test_data/xql_query.txt", json_file=False)
-
-splunk_query = load_file("test_data/splunk_query.txt", json_file=False)
+RULE_EXAMPLE = json.dumps(load_file("test_data/sigma_rule.json", json_file=True))
+XQL_QUERY = load_file("test_data/xql_query.txt", json_file=False)
+SPLUNK_QUERY = load_file("test_data/splunk_query.txt", json_file=False)
 
 
 @pytest.mark.parametrize(
     "siem_name, expected_query",
     [
-        pytest.param("xql", xql_query, id="xql"),
-        pytest.param("splunk", splunk_query, id="splunk"),
+        pytest.param("xql", XQL_QUERY, id="xql"),
+        pytest.param("splunk", SPLUNK_QUERY, id="splunk"),
     ],
 )
-def test_main_successful_conversion(mocker, siem_name, expected_query):
+def test_main_successful_conversion(mocker: MockerFixture, siem_name: str, expected_query: str):
     """
     Test successful Sigma rule conversion to different SIEM queries.
     
@@ -41,7 +42,7 @@ def test_main_successful_conversion(mocker, siem_name, expected_query):
     mock_executeCommand = mocker.patch.object(demisto, "executeCommand")
     
     mock_callingContext = {
-        "args": {"indicator": {"value": "sigma", "CustomFields": {"sigmaruleraw": rule_example}}, "SIEM": siem_name}
+        "args": {"indicator": {"value": "sigma", "CustomFields": {"sigmaruleraw": RULE_EXAMPLE}}, "SIEM": siem_name}
     }
 
     mocker.patch.dict(demisto.callingContext, mock_callingContext)
@@ -51,7 +52,7 @@ def test_main_successful_conversion(mocker, siem_name, expected_query):
     assert mock_executeCommand.call_args.args[1]["sigmaconvertedquery"] == expected_query
 
 
-def test_main_unsupported_siem(mocker):
+def test_main_unsupported_siem(mocker: MockerFixture):
     """
     Test error handling for unsupported SIEM types.
     
@@ -63,7 +64,7 @@ def test_main_unsupported_siem(mocker):
     mock_return_error = mocker.patch.object(SigmaButtonConvert, "return_error")
     
     mock_callingContext = {
-        "args": {"indicator": {"value": "sigma", "CustomFields": {"sigmaruleraw": rule_example}}, "SIEM": "bad_siem"}
+        "args": {"indicator": {"value": "sigma", "CustomFields": {"sigmaruleraw": RULE_EXAMPLE}}, "SIEM": "bad_siem"}
     }
 
     mocker.patch.dict(demisto.callingContext, mock_callingContext)
@@ -74,7 +75,7 @@ def test_main_unsupported_siem(mocker):
         main()
 
 
-def test_main_transform_error(mocker):
+def test_main_transform_error(mocker: MockerFixture):
     """
     Test error handling when Sigma rule transformation fails.
     
