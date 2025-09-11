@@ -455,6 +455,7 @@ def test_replace_substring_string():
     THEN it replaces all occurrences of 'issue' with 'alert' in the string, or leaves unchanged if not present.
     """
     from CortexPlatformCore import replace_substring
+
     assert replace_substring("foo_issue_bar", "issue", "alert") == "foo_alert_bar"
     assert replace_substring("nochange", "issue", "alert") == "nochange"
 
@@ -466,6 +467,7 @@ def test_replace_substring_dict():
     THEN it replaces all occurrences of 'issue' in keys with 'alert', values are preserved, and other keys unchanged.
     """
     from CortexPlatformCore import replace_substring
+
     d = {"issue_id": 1, "other": 2}
     out = replace_substring(d.copy(), "issue", "alert")
     assert out["alert_id"] == 1
@@ -480,6 +482,7 @@ def test_preprocess_get_cases_outputs_list_and_single():
     THEN it returns dict(s) with 'incident' replaced by 'case' and 'alert' replaced by 'issue'.
     """
     from CortexPlatformCore import preprocess_get_cases_outputs
+
     # Single dict
     data = {"incident_id": 1, "alert_field": "foo"}
     out = preprocess_get_cases_outputs(data.copy())
@@ -498,6 +501,7 @@ def test_preprocess_get_case_extra_data_outputs_basic():
     THEN it returns dict(s) with 'incident' replaced by 'case' and 'alert' replaced by 'issue' in all nested dicts.
     """
     from CortexPlatformCore import preprocess_get_case_extra_data_outputs
+
     # Only incident
     data = {"incident": {"incident_id": 1}}
     out = preprocess_get_case_extra_data_outputs(data.copy())
@@ -516,6 +520,7 @@ def test_preprocess_get_case_extra_data_outputs_list():
     THEN it returns a list with 'incident' replaced by 'case' in each dict.
     """
     from CortexPlatformCore import preprocess_get_case_extra_data_outputs
+
     data = [{"incident": {"incident_id": 1}}, {"incident": {"incident_id": 2}}]
     out = preprocess_get_case_extra_data_outputs(data.copy())
     assert out[0]["case"]["case_id"] == 1
@@ -529,6 +534,7 @@ def test_preprocess_get_case_extra_data_outputs_edge_cases():
     THEN it returns the input unchanged or with only top-level keys transformed if possible.
     """
     from CortexPlatformCore import preprocess_get_case_extra_data_outputs
+
     # Not a dict/list
     assert preprocess_get_case_extra_data_outputs("foo") == "foo"
     # Dict without incident/alerts
@@ -544,6 +550,7 @@ def test_preprocess_get_cases_args_limit_enforced():
     THEN it enforces the limit not to exceed MAX_GET_INCIDENTS_LIMIT.
     """
     from CortexPlatformCore import preprocess_get_cases_args
+
     args = {"limit": 500}
     out = preprocess_get_cases_args(args.copy())
     assert out["limit"] == 100

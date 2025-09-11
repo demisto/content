@@ -31,7 +31,7 @@ def replace_substring(data: dict | str, original: str, new: str) -> str | dict:
             if isinstance(key, str) and original in key:
                 new_key = key.replace(original, new)
                 data[new_key] = data.pop(key)
-        return data
+    return data
 
 
 def issue_to_alert(args: dict) -> dict | str:
@@ -62,7 +62,7 @@ def preprocess_get_cases_outputs(outputs: list | dict):
     def process(output: dict | str):
         return alert_to_issue(incident_to_case(output))
 
-    if isinstance(outputs, (list, tuple)):
+    if isinstance(outputs, list):
         return [process(o) for o in outputs]
     return process(outputs)
 
@@ -78,7 +78,7 @@ def preprocess_get_case_extra_data_outputs(outputs: list | dict):
                 output["alerts"]["data"] = modified_alerts_data
         return alert_to_issue(incident_to_case(output))
 
-    if isinstance(outputs, (list, tuple)):
+    if isinstance(outputs, list):
         return [process(o) for o in outputs]
     return process(outputs)
 
