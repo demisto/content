@@ -2,34 +2,41 @@ category: IT Services
 commonfields:
   id: Tidy
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: Endpoint IP/URL to be installed. (Can override in command)
   display: Hostname
   name: hostname
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Endpoint user to be installed. (Can override in command)
   display: User
   name: user
   type: 0
   hidden: true
+  section: Connect
   required: false
 - additionalinfo: User login password. (Can override in command)
   display: Password
   name: password
   type: 4
   hidden: true
+  section: Connect
   required: false
 - display: User
   name: user_creds
   type: 9
   displaypassword: Password
+  section: Connect
   required: false
 - additionalinfo: The ssh key is used to login to an AWS mac machine - for testing purposes.
   display: SSH Key
   name: ssh_key
   type: 14
-
+  section: Connect
   required: false
 description: Tidy integration handle endpoints environment installation.
 display: Tidy
