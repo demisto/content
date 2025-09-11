@@ -22,12 +22,15 @@ from urllib.parse import urlparse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL CONSTS """
+# Integration context fields
 ACCESS_TOKEN_CONST = "access_token"  # guardrails-disable-line
 EXPIRES_IN = "expires_in"
 INSTANCE_ID_CONST = "instance_id"
 API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
+REFRESH_TOKEN_CONST = "refresh_token"
+IS_FEDRAMP_CONST = "is_fedramp"
 
 FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
@@ -93,15 +96,17 @@ class Client(BaseClient):
             return
         demisto.debug(f"access token time: {valid_until} expired/none. Will call oproxy")
         access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
-        updated_integration_context = {
-            ACCESS_TOKEN_CONST: access_token,
-            EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
-            API_URL_CONST: api_url,
-            INSTANCE_ID_CONST: instance_id,
-        }
+        integration_context.update(
+            {
+                ACCESS_TOKEN_CONST: access_token,
+                EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
+                API_URL_CONST: api_url,
+                INSTANCE_ID_CONST: instance_id,
+            }
+        )
         if refresh_token:
-            updated_integration_context.update({"refresh_token": refresh_token})
-        demisto.setIntegrationContext(updated_integration_context)
+            integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+        demisto.setIntegrationContext(integration_context)
         self.access_token = access_token
         self.api_url = api_url
         self.instance_id = instance_id
@@ -110,7 +115,7 @@ class Client(BaseClient):
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get("url")
-        refresh_token = oproxy_response.get("refresh_token")
+        refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
@@ -1043,8 +1048,15 @@ def is_fedramp_tenant() -> bool:
     Returns:
         bool: True if FedRAMP tenant, False otherwise.
     """
-    # Get tenant URL
-    demisto.debug("Getting tenant URL from license custom field.")
+    # Try to get from integration context
+    integration_context = demisto.getIntegrationContext()
+    is_fedramp = integration_context.get(IS_FEDRAMP_CONST)
+    if is_fedramp is not None:
+        demisto.debug(f"Found FedRAMP status {is_fedramp=} in integration context.")
+        return is_fedramp
+
+    # If not in integration context, get tenant URL
+    demisto.debug("FedRAMP status not in integration context. Getting tenant URL from license custom field.")
     url = str(demisto.getLicenseCustomField("Http_Connector.url"))
     demisto.debug(f"Got tenant {url=} from license custom field.")
 
@@ -1059,7 +1071,13 @@ def is_fedramp_tenant() -> bool:
     hostname = parsed_url.hostname
     demisto.debug(f"Extracted {hostname=} from parsed tenant URL.")
 
-    return isinstance(hostname, str) and hostname.endswith(FEDRAMP_HOSTNAME_SUFFIX)
+    is_fedramp = isinstance(hostname, str) and hostname.endswith(FEDRAMP_HOSTNAME_SUFFIX)
+
+    # Set in integration context for use next time
+    integration_context[IS_FEDRAMP_CONST] = is_fedramp
+    demisto.debug(f"Setting tenant FedRAMP status {is_fedramp=} in integration context.")
+    demisto.setIntegrationContext(integration_context)
+    return is_fedramp
 
 
 def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str]:

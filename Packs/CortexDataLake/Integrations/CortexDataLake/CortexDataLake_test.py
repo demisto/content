@@ -5,7 +5,13 @@ from datetime import datetime, timedelta
 
 from pytest_mock import MockerFixture
 from CommonServerPython import parse_date_range, DemistoException
-from CortexDataLake import FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST, STANDARD_TOKEN_URL, FEDRAMP_TOKEN_URL
+from CortexDataLake import (
+    FIRST_FAILURE_TIME_CONST,
+    LAST_FAILURE_TIME_CONST,
+    STANDARD_TOKEN_URL,
+    IS_FEDRAMP_CONST,
+    FEDRAMP_TOKEN_URL,
+)
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
     (1582210145000000, False, "2020-02-20T14:49:05"),
@@ -508,41 +514,70 @@ def test_extract_client_args(
 
 
 @pytest.mark.parametrize(
-    "license_field_url, expected_is_fedramp",
+    "license_field_url, integration_context, expected_is_fedramp",
     [
         pytest.param(
             "https://tenant1.paloaltonetworks.com",
+            {IS_FEDRAMP_CONST: False},
             False,
-            id="Standard tenant with 'https' scheme",
+            id="Standard tenant with 'https' scheme and integration context",
+        ),
+        pytest.param(
+            "https://tenant1.paloaltonetworks.com",
+            {},
+            False,
+            id="Standard tenant with 'https' scheme and no integration context",
         ),
         pytest.param(
             "tenant2.paloaltonetworks.com",
+            {},
             False,
-            id="Standard tenant without 'https' scheme",
+            id="Standard tenant without 'https' scheme and no integration context",
         ),
         pytest.param(
             "https://fr-tenant1.federal.paloaltonetworks.com",
+            {IS_FEDRAMP_CONST: True},
             True,
-            id="FedRAMP tenant with 'https' scheme",
+            id="FedRAMP tenant with 'https' scheme and integration context",
+        ),
+        pytest.param(
+            "https://fr-tenant1.federal.paloaltonetworks.com",
+            {},
+            True,
+            id="FedRAMP tenant with 'https' scheme and no integration context",
         ),
         pytest.param(
             "fr-tenant2.federal.paloaltonetworks.com",
+            {},
             True,
-            id="FedRAMP tenant without 'https' scheme",
+            id="FedRAMP tenant without 'https' scheme and no integration context",
         ),
     ],
 )
-def test_is_fedramp_tenant(mocker: MockerFixture, license_field_url: str, expected_is_fedramp: bool):
+def test_is_fedramp_tenant(
+    mocker: MockerFixture,
+    integration_context,
+    license_field_url: str,
+    expected_is_fedramp: bool,
+):
     """
     Given:
-        - The domain name from `demisto.getLicenseCustomField`.
+        - The integration context and the domain name from `demisto.getLicenseCustomField`.
     When:
         - Calling `is_fedramp_tenant`.
     Then:
-        - Assert returned FedRAMP status is as expected.
+        - Assert function calls are as expected and returned FedRAMP status is correct.
     """
     from CortexDataLake import demisto, is_fedramp_tenant
 
-    mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    mock_get_integration_context = mocker.patch.object(demisto, "getIntegrationContext", return_value=integration_context)
+    mock_set_integration_context = mocker.patch.object(demisto, "setIntegrationContext")
+    mocker_get_license_custom_field = mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_field_url)
+    is_cached = IS_FEDRAMP_CONST in integration_context
+
     is_fedramp = is_fedramp_tenant()
+
+    assert mock_get_integration_context.call_count == 1
+    assert mocker_get_license_custom_field.call_count == 0 if is_cached else 1
+    assert mock_set_integration_context.call_count == 0 if is_cached else 1
     assert is_fedramp == expected_is_fedramp
