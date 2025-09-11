@@ -55,6 +55,9 @@ outputs:
 - contextPath: URLEnrichment.TIMScore
   description: the TIM score of the url.
   type: number
+- contextPath: URLEnrichment.Status
+  description: the status of the indicator.
+  type: string
 # URLEnrichment Main Keys
 - contextPath: URLEnrichment.Results.Brand
   description: the brand of the indicator.
@@ -62,12 +65,18 @@ outputs:
 - contextPath: URLEnrichment.Results.Score
   description: the score of the indicator.
   type: number
+- contextPath: URLEnrichment.Results.Verdict
+  description: the verdict of the indicator.
+  type: string
 - contextPath: URLEnrichment.Results.DetectionEngines
   description: the detection engines of the indicator.
   type: number
 - contextPath: URLEnrichment.Results.PositiveDetections
   description: the positive detections of the indicator.
   type: number
+- contextPath: URLEnrichment.Results.Data
+  description: the url it self.
+  type: string
 # URLEnrichment Additional Fields
 - contextPath: URLEnrichment.Results.AdditionalFields
   description: Secondary fields. Only available if the additional_fields argument is set to true.
@@ -204,4 +213,4 @@ marketplaces:
 - xsoar
 - marketplacev2
 tests:
-- No tests (auto formatted)
+- URLEnrichment-Test

@@ -51,6 +51,9 @@ outputs:
 - contextPath: CVEEnrichment.Results
   description: list of all indicators found for the cve.
   type: array
+- contextPath: CVEEnrichment.Status
+  description: the status of the indicator.
+  type: string
 # CVEEnrichment Main Keys
 - contextPath: CVEEnrichment.Results.Brand
   description: the brand of the indicator.
@@ -116,4 +119,4 @@ marketplaces:
 - xsoar
 - marketplacev2
 tests:
-- No tests (auto formatted)
+- CVEEnrichment-Test

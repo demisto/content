@@ -55,6 +55,9 @@ outputs:
 - contextPath: IPEnrichment.Results
   description: list of all indicators found for the ip.
   type: array
+- contextPath: IPEnrichment.Status
+  description: the status of the indicator.
+  type: string
 # IPEnrichment results main keys
 - contextPath: IPEnrichment.Results.Source
   description: the source of the indicator.
@@ -76,6 +79,9 @@ outputs:
   type: number
 - contextPath: IPEnrichment.Results.Verdict
   description: the verdict of the indicator.
+  type: string
+- contextPath: IPEnrichment.Results.Address
+  description: the ip address of the indicator.
   type: string
 # IPEnrichment results additional fields
 - contextPath: IPEnrichment.Results.AdditionalFields
@@ -364,4 +370,4 @@ marketplaces:
 - xsoar
 - marketplacev2
 tests:
-- No tests (auto formatted)
+- IPEnrichment-Test

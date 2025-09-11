@@ -55,6 +55,9 @@ outputs:
 - contextPath: DomainEnrichment.TIMScore
   description: the TIM score of the domain.
   type: number
+- contextPath: DomainEnrichment.Status
+  description: the status of the indicator.
+  type: string
 # DomainEnrichment Main Keys
 - contextPath: DomainEnrichment.Results.Brand
   description: the brand of the indicator.
@@ -62,12 +65,18 @@ outputs:
 - contextPath: DomainEnrichment.Results.Score
   description: the score of the indicator.
   type: number
+- contextPath: DomainEnrichment.Results.Verdict
+  description: the verdict of the indicator.
+  type: string
 - contextPath: DomainEnrichment.Results.DetectionEngines
   description: the detection engines of the indicator.
   type: number
 - contextPath: DomainEnrichment.Results.PositiveDetections
   description: the positive detections of the indicator.
   type: number
+- contextPath: DomainEnrichment.Results.Name
+  description: the domain it self.
+  type: string
 # DomainEnrichment Additional Fields
 - contextPath: DomainEnrichment.Results.AdditionalFields
   description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
@@ -309,4 +318,4 @@ marketplaces:
 - xsoar
 - marketplacev2
 tests:
-- No tests (auto formatted)
+- DomainEnrichment-Test
