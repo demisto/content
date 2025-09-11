@@ -6129,8 +6129,8 @@ def main():  # pragma: no cover
     params_endpoint_type = params.get("endpoint_type") or "Worldwide"
     params_url = params.get("url")
     is_gcc = params.get("is_gcc", False)
-    tenant_id = params.get("tenant_id") or params.get("_tenant_id")
-    auth_id = params.get("_auth_id") or params.get("auth_id")
+    tenant_id = params.get("tenant_id") or params.get("_tenant_id") or params.get("_tenant_id_encrypted", {}).get("password")
+    auth_id = params.get("_auth_id") or params.get("auth_id") or params.get("_auth_id_encrypted", {}).get("password")
     enc_key = (params.get("credentials") or {}).get("password") or params.get("enc_key")
     use_ssl: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
