@@ -2,7 +2,6 @@
     "name": "AWS",
     "description": "Amazon Web Services",
     "support": "xsoar",
-    "currentVersion": "2.1.3",
     "currentVersion": "2.1.0",
     "author": "Cortex",
     "url": "https://www.paloaltonetworks.com/cortex",

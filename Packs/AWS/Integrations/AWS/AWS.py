@@ -1168,8 +1168,6 @@ class EC2:
             raw_response=response,
         )
 
-        return CommandResults(readable_output="Failed to describe instances")
-
     @staticmethod
     def run_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -1249,15 +1247,18 @@ class EC2:
             "Name": args.get("iam_instance_profile_name"),
         }
 
-        ebs_config = {}
-        ebs_config["VolumeSize"] = arg_to_number(args.get("ebs_volume_size"))
-        ebs_config["SnapshotId"] = args.get("ebs_snapshot_id")
-        ebs_config["VolumeType"] = args.get("ebs_volume_type")
-        ebs_config["Iops"] = arg_to_number(args.get("ebs_iops"))
-        ebs_config["DeleteOnTermination"] = arg_to_bool_or_none(args.get("ebs_delete_on_termination"))
-        ebs_config["KmsKeyId"] = args.get("ebs_kms_key_id")
-        ebs_config["Encrypted"] = arg_to_bool_or_none(args.get("ebs_encrypted"))
-        remove_nulls_from_dictionary(ebs_config)
+        ebs_config = remove_empty_elements(
+            {
+                "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
+                "SnapshotId": args.get("ebs_snapshot_id"),
+                "VolumeType": args.get("ebs_volume_type"),
+                "Iops": arg_to_number(args.get("ebs_iops")),
+                "DeleteOnTermination": arg_to_bool_or_none(args.get("ebs_delete_on_termination")),
+                "KmsKeyId": args.get("ebs_kms_key_id"),
+                "Encrypted": arg_to_bool_or_none(args.get("ebs_encrypted")),
+            }
+        )
+
         kwargs["BlockDeviceMappings"] = [{"DeviceName": args.get("device_name"), "Ebs": ebs_config}]
         kwargs["Monitoring"] = {"Enabled": arg_to_bool_or_none(args.get("enabled_monitoring"))}
         kwargs["Placement"] = {"HostId": args.get("host_id")}
@@ -1904,7 +1905,19 @@ REQUIRED_ACTIONS: list[str] = [
     "iam:GetAccountPasswordPolicy",
     "iam:UpdateAccountPasswordPolicy",
     "iam:GetAccountAuthorizationDetails",
+    "cloudtrail:DescribeTrails",
 ]
+
+
+def print_debug_logs(client: BotoClient, message: str):
+    """
+    Print debug logs with service prefix and command context.
+    Args:
+        client (BotoClient): The AWS client object
+        message (str): The debug message to log
+    """
+    service_name = client.meta.service_model.service_name
+    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
 
 def test_module(params):
@@ -2005,10 +2018,10 @@ def get_service_client(
     params: dict = {},
     args: dict = {},
     command: str = "",
-    session: Session | None = None,
+    session: Optional[Session] = None,
     service_name: str = "",
-    config: Config | None = None,
-) -> tuple[BotoClient, Session | None]:
+    config: Optional[Config] = None,
+) -> tuple[BotoClient, Optional[Session]]:
     """
     Create and configure a boto3 client for the specified AWS service.
 
@@ -2066,18 +2079,6 @@ def execute_aws_command(command: str, args: dict, params: dict) -> CommandResult
 
     service_client, _ = get_service_client(credentials, params, args, command)
     return COMMANDS_MAPPING[command](service_client, args)
-
-
-def print_debug_logs(client: BotoClient, message: str):
-    """
-    Print debug logs with EC2 service prefix and command context.
-
-    Args:
-        client (BotoClient): The AWS client object
-        message (str): The debug message to log
-    """
-    service_name = client.meta.service_model.service_name
-    demisto.debug(f"[{service_name}] {demisto.command()}: {message}")
 
 
 def main():  # pragma: no cover
