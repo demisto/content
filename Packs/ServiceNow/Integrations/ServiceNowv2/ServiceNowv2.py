@@ -3832,17 +3832,19 @@ def normalize_custom_fields(custom_fields: dict):
 
 
 def validate_ticket_fields_updated(updated_ticket: dict, current_ticket: dict, fields: dict, custom_fields: dict):
-    missing_keys = []
+    # missing_keys = []
     non_matching = []
     matching_keys = []
     normalize_custom_fields(custom_fields)
     fields_that_should_be_updated = fields | custom_fields
-
+    demisto.debug(f"fields_that_should_be_updated: {fields_that_should_be_updated}")
     for k, expected in fields_that_should_be_updated.items():
-        if k not in updated_ticket and k in current_ticket:
-            missing_keys.append(k)
+        if k not in updated_ticket and k not in current_ticket:
             continue
-
+        # if k not in updated_ticket and k in current_ticket:
+        #     missing_keys.append(k)
+        #     continue
+        demisto.debug(f"current k: {k}, current expected: {expected}")
         ticket_entry = updated_ticket[k]
         demisto.debug(f"ticket_entry {ticket_entry}")
         if check_if_ticket_field_matches_expected_value(ticket_entry, expected):
@@ -3857,7 +3859,7 @@ def validate_ticket_fields_updated(updated_ticket: dict, current_ticket: dict, f
                 }
             )
 
-    demisto.debug(f"Missing keys: {missing_keys}")
+    # demisto.debug(f"Missing keys: {missing_keys}")
     demisto.debug(f"Non-matching keys: {non_matching}")
     demisto.debug(f"Matching keys: {matching_keys}")
 
