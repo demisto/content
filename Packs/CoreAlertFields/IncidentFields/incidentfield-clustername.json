@@ -54,5 +54,6 @@
             "type": "shortText",
             "name": "Rubrik Polaris CDM Cluster Name"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

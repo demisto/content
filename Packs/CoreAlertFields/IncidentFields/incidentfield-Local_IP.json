@@ -100,5 +100,6 @@
             "type": "shortText",
             "name": "Digital Guardian Source IP"
         }
-    ]
+    ],
+    "toVersion": "8.11.9"
 }

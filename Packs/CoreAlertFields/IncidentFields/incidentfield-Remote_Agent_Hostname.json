@@ -28,5 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "dst_agent_hostname"
+    "x2_fields": "dst_agent_hostname",
+    "toVersion": "8.11.9"
 }
