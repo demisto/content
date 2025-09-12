@@ -61,6 +61,7 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 
 * read:jql:jira
 * read:issue-details:jira
+* read:project:jira
 * write:board-scope:jira-software
 * read:board-scope:jira-software
 * read:sprint:jira-software
