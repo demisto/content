@@ -211,16 +211,20 @@ def generate_event_hash(event: dict[str, Any]) -> str:
     """
     excluded = {"_time", "event_hash"}
     event_for_hash = {k: v for k, v in event.items() if k not in excluded}
+    demisto.debug(
+        f"[generate_event_hash] included_fields={len(event_for_hash)}, total_fields={len(event)}, excluded={list(excluded)}"
+    )
     try:
         payload = json.dumps(event_for_hash, sort_keys=True, separators=(",", ":"))
-    except TypeError:
+    except TypeError as e:
+        demisto.debug(f"[generate_event_hash] encountered non-serializable value; falling back to default=str. error={e}")
         payload = json.dumps(event_for_hash, sort_keys=True, separators=(",", ":"), default=str)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    hash_hex = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    demisto.debug(f"[generate_event_hash] computed hash={hash_hex}")
+    return hash_hex
 
 
-def deduplicate_events_previous_run_only(
-    events: list[dict[str, Any]], last_run: dict[str, Any]
-) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """
     Previous-run-only policy:
     - Drop events whose hashes appeared in the immediately previous run.
@@ -259,8 +263,8 @@ def deduplicate_events_previous_run_only(
     new_last_run[LAST_RUN_EVENT_HASHES] = current_run_hashes_in_order
 
     demisto.debug(
-        f"Dedup prev-run-only: input={len(events)}, output={len(deduplicated_events)}, "
-        f"prev_cache={len(previous_run_hashes)}, next_cache={len(new_last_run[LAST_RUN_EVENT_HASHES])}"
+        f"[deduplicate_events] summary: input={len(events)}, output={len(deduplicated_events)}, "
+        f"previous_run_hashes={len(previous_run_hashes)}, next_run_hashes={len(new_last_run[LAST_RUN_EVENT_HASHES])}"
     )
 
     # Return order matches fetch_events: (next_run, events)
@@ -324,7 +328,7 @@ def fetch_events(
         events.extend(events_per_analytics_name)
 
     # Deduplicate by comparing to previous run's hashes and persist only current run's hashes
-    next_run, deduped_events = deduplicate_events_previous_run_only(events, last_run)
+    next_run, deduped_events = deduplicate_events(events, last_run)
 
     # Enrich deduped events with _time for XDM mapping/visibility
     add_time_to_events(deduped_events)
