@@ -1,0 +1,18 @@
+rule demoRuleCreatedFromAPIVersion2 {
+    meta:
+    author = "Crest Data Systems"
+    severity = "Medium"
+
+    events:
+    $event1.metadata.event_type = "PROCESS_LAUNCH"
+    $full_path = /.*cmd\\.exe$/ nocase
+
+    $event1.principal.hostname = $hostname
+    $event2.principal.hostname = $hostname
+
+    match:
+    $full_path over 5m
+
+    condition:
+    $event1 and $event2 and $full_path
+}

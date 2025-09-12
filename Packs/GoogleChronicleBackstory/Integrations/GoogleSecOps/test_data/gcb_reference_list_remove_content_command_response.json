@@ -1,0 +1,27 @@
+{
+    "name": "projects/dummy_project_id/locations/us/instances/dummy_instance_id/referenceLists/dummy",
+    "displayName": "dummy",
+    "description": "dummy_description",
+    "revisionCreateTime": "2025-06-09T12:07:30.863807Z",
+    "entries": [
+        {
+            "value": "L1"
+        },
+        {
+            "value": "L2"
+        },
+        {
+            "value": "L3"
+        },
+        {
+            "value": "L4"
+        },
+        {
+            "value": "L5"
+        },
+        {
+            "value": "L6"
+        }
+    ],
+    "syntaxType": "REFERENCE_LIST_SYNTAX_TYPE_PLAIN_TEXT_STRING"
+}
