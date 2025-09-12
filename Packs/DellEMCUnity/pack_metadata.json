@@ -7,17 +7,14 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "IT Services"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
-    "keywords": [
-        "Dell",
-        "EMC",
-        "Unity",
-        "Dell EMC",
-        "Dell EMC Unity"
-    ],
+    "keywords": [],
     "marketplaces": [
         "marketplacev2",
         "platform"
