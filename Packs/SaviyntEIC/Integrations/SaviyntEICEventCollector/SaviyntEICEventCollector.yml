@@ -11,11 +11,11 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: Credentials
+- display: Username
   name: credentials
   required: true
   type: 9
-  section: Collect
+  section: Connect
 - display: Analytics Name
   name: analytics_name
   required: true

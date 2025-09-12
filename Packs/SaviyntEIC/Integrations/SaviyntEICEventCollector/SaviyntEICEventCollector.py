@@ -1,5 +1,5 @@
+import json
 import time
-from ast import Raise
 from datetime import datetime, timedelta
 from typing import Any
 
@@ -50,7 +50,7 @@ class Client(BaseClient):
         """Create an access token using self._credentials and update integration context and headers."""
         demisto.debug("[Client._create_access_token] creating access token")
         data = {
-            "username": self._credentials["username"],
+            "username": self._credentials["identifier"],
             "password": self._credentials["password"],
         }
         res = self._http_request(
@@ -222,35 +222,6 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def command_get_events(
-    client: Client,
-    params: dict[str, Any],
-    args: dict[str, Any],
-) -> tuple[list[dict[str, Any]], CommandResults]:
-    """Implements 'get-events' command."""
-    # analytics_name = params.get("analytics_name")
-    # limit = int(args.get("limit", 50))
-    # time_frame = arg_to_number(args.get("time_frame"))  # minutes
-    # offset = arg_to_number(args.get("offset"))
-
-    # if time_frame is None:
-    #     # default to 60 minutes back if not provided
-    #     time_frame = 60
-
-    # response = client.fetch_events(
-    #     analytics_name=analytics_name,
-    #     time_frame_minutes=int(time_frame),
-    #     max_results=min(limit, 10000),
-    #     offset=int(offset) if offset is not None else None,
-    # )
-
-    # raw_results = response.get("results", []) if isinstance(response, dict) else []
-    # # events = normalize_events(raw_results)
-
-    # hr = tableToMarkdown(name="Saviynt EIC Events", t=events[:50])
-    # return events, CommandResults(readable_output=hr, raw_response=response)
-
-
 def fetch_events(
     client: Client,
     last_run: dict[str, Any],
@@ -287,7 +258,9 @@ def fetch_events(
 
         events.extend(events_per_analytics_name)
 
-    # TODO: ADD last_run logic
+    # Add dedup mechanism based on event hashing
+    # deduped_events = deduplicate_events(events, last_run)  # TODO: Implement deduplication
+    next_run = last_run
 
     add_time_to_events(events)
     return next_run, events
@@ -305,7 +278,7 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     credentials = params.get("credentials")
     analytics_name_list = argToList(params.get("analytics_name", []))
-    max_events = int(params.get("max_events", MAX_EVENTS_PER_FETCH))
+    max_events = int(params.get("max_fetch", MAX_EVENTS_PER_FETCH))
 
     client = Client(
         base_url=base_url,
@@ -317,26 +290,29 @@ def main():  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     try:
         if command == "test-module":
-            result = test_module(client, params)
+            result = test_module(client)
             return_results(result)
 
         elif command == "saviynt-eic-get-events":
-            # should_push_events = argToBoolean(args.pop("should_push_events"))
-            # events, results = command_get_events(client, params, args)
-            # return_results(results)
-            # if should_push_events:
-            #     # Ensure _time is set on events using helper
-            #     add_time_to_events(events)
-            #     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            ...
+            should_push_events = argToBoolean(args.pop("should_push_events", False))
+            _, events = fetch_events(
+                client=client,
+                last_run={},
+                analytics_name_list=analytics_name_list,
+                max_events=max_events,
+            )
+            if should_push_events and events:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+
+            hr = tableToMarkdown(name="Saviynt EIC Events", t=events)
+            return_results(CommandResults(readable_output=hr, raw_response=events))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
             next_run, events = fetch_events(
                 client=client,
-                params=params,
                 last_run=last_run,
-                analytics_name=analytics_name_list,
+                analytics_name_list=analytics_name_list,
                 max_events=max_events,
             )
             demisto.debug(f"Sending {len(events)} events to XSIAM.")
