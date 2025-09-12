@@ -271,7 +271,7 @@ def _fetch_events_batch(
         
         events_before_dedup = len(events)
         events = dedup_events(events, dedup_cache)
-        demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events, remaining: {remaining_events_to_fetch}")
+        demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events.")
         
         if events:
             # Add the batch of events to the total
