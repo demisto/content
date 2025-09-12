@@ -294,34 +294,63 @@ def _fetch_events_batch(
     dedup_cache = previous_id_timestamps.copy() if previous_id_timestamps else {}
     demisto.debug(f"Starting with {len(dedup_cache)} cached IDs from previous run")
     
-    while remaining_events_to_fetch > 0:
+    current_from_date = from_date
+    loop_count = 0
+    max_loops = 50  # Safety limit to prevent infinite loops
+    
+    while remaining_events_to_fetch > 0 and loop_count < max_loops:
+        loop_count += 1
         current_batch_to_fetch = min(remaining_events_to_fetch, MAX_EVENTS_PER_API_CALL)
-        demisto.debug(f"trying to fetch {current_batch_to_fetch} events.")
         
-        events = client.search_events(from_date=from_date, limit=current_batch_to_fetch)
-        demisto.debug(f"Successfully fetched {len(events)} events in this cycle.")
+        demisto.debug(f"Loop {loop_count}: API call with from_date: {current_from_date}, remaining: {remaining_events_to_fetch}")
+        events = client.search_events(from_date=current_from_date, limit=current_batch_to_fetch)
         
         if not events:
             demisto.debug("No events fetched. Exiting the loop.")
             break
         
-        events = dedup_events(events, cached_ids)
+        # If we got fewer events than requested, API has no more events
+        if len(events) < current_batch_to_fetch:
+            demisto.debug(f"Got {len(events)} events, requested {current_batch_to_fetch}. "
+                          f"API has no more events. Will process these and exit.")
+            should_break_after_processing = True
+        else:
+            should_break_after_processing = False
+        
+        events_before_dedup = len(events)
+        events = dedup_events(events, dedup_cache)
+        demisto.debug(f"After dedup: {events_before_dedup} -> {len(events)} events, remaining: {remaining_events_to_fetch}")
+        
         if events:
-            # Store ID-to-timestamp mappings from current cycle
-            for event in events:
-                dedup_cache[event["id"]] = event["created"]
+            # Add the batch of events to the total
             all_events.extend(events)
             
+            # Update dedup cache with these events
+            dedup_cache.update({event['id']: event['created'] for event in events})
+            
+            # Update the from_date to the last fetched event's creation date for next iteration
             last_fetched_event = events[-1]
-            demisto.debug(
-                f"information of the last event in this cycle: id: {last_fetched_event['id']}, created: {last_fetched_event['created']}."
-            )
+            current_from_date = last_fetched_event["created"]
+            demisto.debug(f"Updated from_date to: {current_from_date}")
+            
+            # Only decrease remaining by NEW events after dedup
             remaining_events_to_fetch -= len(events)
-            demisto.debug(f"{remaining_events_to_fetch} events are left to fetch in the next calls.")
+            demisto.debug(f"Fetched {len(events)} new events, {remaining_events_to_fetch} remaining")
         else:
-            # Avoid infinite loop if all events are duplicates
-            demisto.debug("No new events after deduplication. Exiting the loop.")
+            # All events are duplicates - exit loop like master version to avoid missing events
+            demisto.debug(f"Loop {loop_count}: All {events_before_dedup} events were duplicates. "
+                          f"Exiting loop to preserve timestamp.")
             break
+        
+        # Break if API returned fewer events than requested (no more events available)
+        if should_break_after_processing:
+            demisto.debug("API returned fewer events than requested. No more events available.")
+            break
+    
+    if loop_count >= max_loops:
+        demisto.debug(f"Hit safety limit of {max_loops} loops. Exiting to prevent infinite loop.")
+    
+    demisto.debug(f"_fetch_events_batch completed after {loop_count} loops, returning {len(all_events)} events")
     
     return all_events, dedup_cache
 
@@ -403,16 +432,12 @@ def dedup_events(events: List[Dict], last_fetched_ids: list) -> List[Dict]:
         demisto.debug("No last fetched ids. Skipping deduping.")
         return events
 
-    demisto.debug(f"Starting deduping. Number of events before deduping: {len(events)}, last fetched ids: {last_fetched_ids}")
+    demisto.debug(f"Starting deduping. Events before: {len(events)}, cached ids: {len(last_fetched_ids)}")
 
     last_fetched_ids_set = set(last_fetched_ids)
     deduped_events = [event for event in events if event["id"] not in last_fetched_ids_set]
 
     demisto.debug(f"Done deduping. Number of events after deduping: {len(deduped_events)}")
-    for number, event in enumerate(
-        deduped_events, start=1
-    ):  # TODO For debugging custom version, remove before marketplace release!
-        demisto.debug(f"New event {number} of {len(deduped_events)}: {event}")
     return deduped_events
 
 
