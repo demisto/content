@@ -715,11 +715,6 @@ Gets the comprehensive IP reputation and threat intelligence from Infoblox Threa
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | InfobloxCloud.IP.ip | String | The requested IP address. |
-| DBotScore.Indicator | String | The indicator that was tested. |
-| DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score. |
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | IP.Address | String | IP address. |
 | IP.Relationships.EntityA | String | The source of the relationship. |
 | IP.Relationships.EntityB | String | The destination of the relationship. |

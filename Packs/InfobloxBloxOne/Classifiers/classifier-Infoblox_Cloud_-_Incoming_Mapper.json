@@ -157,5 +157,5 @@
     "name": "Infoblox Cloud - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.5.0"
 }
