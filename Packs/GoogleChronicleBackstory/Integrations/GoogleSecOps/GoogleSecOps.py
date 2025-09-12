@@ -92,9 +92,9 @@ MESSAGES = {
 
 ASSET_IDENTIFIER_NAME_DICT = {
     "host name": "hostname",
-    "ip address": "asset_ip_address",
+    "ip address": "assetIpAddress",
     "mac address": "mac",
-    "product id": "product_id",
+    "product id": "productId",
 }
 
 CONTENT_TYPE_MAPPING = {
@@ -664,17 +664,17 @@ def get_artifact_type(value):
     :type value: string
     :param value: artifact value
 
-    :return: domain_name, hash_sha256, hash_sha1, hash_md5, destination_ip_address or raise ValueError
+    :return: domain, hashSha256, hashSha1, hashMd5, destinationIpAddress or raise ValueError
     :rtype: string or Exception
     """
     # checking value if is valid ip
     if is_ip_valid(value, True):
-        return "destination_ip_address"
+        return "destinationIpAddress"
     else:
         hash_type = get_hash_type(value)  # checking value if is MD5, SHA-1 or SHA-256
 
         if hash_type != "Unknown":
-            return "hash_" + hash_type
+            return "hash" + hash_type.capitalize()
 
         return "domain"  # if it's not IP or hash then it'll be considered as domain
 
@@ -1041,8 +1041,8 @@ def parse_list_ioc_response(ioc_matches: list) -> dict:
         first_seen_time = ioc_response.get("firstSeenTimestamp", "")
         last_seen_time = ioc_response.get("lastSeenTimestamp", "")
         sources_list = ioc_response.get("sources", [])
-        confidence = ioc_response.get("confidenceScore", "")
-        normalized_confidence = ioc_response.get("confidenceBucket", "")
+        confidence = ioc_response.get("confidenceScore", 0)
+        normalized_confidence = ioc_response.get("confidenceBucket", "unknown")
         severity = ioc_response.get("rawSeverity", "")
         categories = ioc_response.get("categories", [])
         category = categories[0] if categories else ioc_response.get("categorization", "")
@@ -1109,8 +1109,8 @@ def get_ioc_domain_matches(client_obj, start_time: str, end_time: str, max_fetch
     url_path = create_url_path(client_obj)
     # Adjust the endpoint and params as per Google SecOps API spec for IOC domain matches
     params = {
-        "timestampRange.start_time": start_time,
-        "timestampRange.end_time": end_time,
+        "timestampRange.startTime": start_time,
+        "timestampRange.endTime": end_time,
         "maxMatchesToReturn": max_fetch,
     }
     encoded_params = urllib.parse.urlencode(params)
@@ -1247,7 +1247,7 @@ def gcb_list_rules(client_obj, args: dict[str, str]) -> dict[str, Any]:
 
     # Append parameters if specified
     if page_token:
-        request_url += f"&page_token={page_token}"
+        request_url += f"&pageToken={page_token}"
 
     # get list of rules from Google SecOps
     json_data = validate_response(client_obj, request_url)
@@ -1520,7 +1520,7 @@ def gcb_verify_rule(client_obj, rule_text):
     :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
     :return: ec, json_data: Context data and raw response of the request.
     """
-    body = {"rule_text": rule_text}
+    body = {"ruleText": rule_text}
 
     url = create_url_path(client_obj)
     request_url = f"{url}:verifyRuleText"
@@ -1751,7 +1751,7 @@ def gcb_start_retrohunt(client_obj, rule_id: str, start_time: str, end_time: str
     url_path = create_url_path(client_obj)
     url = f"{url_path}/rules/{rule_id}/retrohunts"
 
-    body = {"process_interval": {"start_time": start_time, "end_time": end_time}}
+    body = {"processInterval": {"startTime": start_time, "endTime": end_time}}
 
     json_data = validate_response(client_obj, url, method="POST", body=json.dumps(body))
 
@@ -2001,8 +2001,8 @@ def gcb_list_events(
     url_path = create_url_path(client_obj)
     params = {
         f"assetIndicator.{asset_identifier_type}": asset_identifier,
-        "timeRange.start_time": start_time,
-        "timeRange.end_time": end_time,
+        "timeRange.startTime": start_time,
+        "timeRange.endTime": end_time,
         "maxResults": page_size,
         "referenceTime": reference_time,
     }
@@ -2768,10 +2768,10 @@ def gcb_test_rule_stream(client_obj, rule_text, start_time, end_time, max_result
     :return: ec, json_data: Context data and raw response for the created rule.
     """
     req_json_data = {
-        "rule_text": rule_text,
-        "start_time": start_time,
-        "end_time": end_time,
-        "max_detections": max_results,
+        "ruleText": rule_text,
+        "startTime": start_time,
+        "endTime": end_time,
+        "maxDetections": max_results,
     }
     url = create_url_path(client_obj)
     request_url = f"{url}/legacy:legacyTestRuleStreaming"
@@ -2929,7 +2929,7 @@ def gcb_udm_search(client_obj, start_time: str, end_time: str, limit: int, query
     url_path = create_url_path(client_obj)
 
     request_url = (
-        f"{url_path}:udmSearch?timeRange.start_time={start_time}&timeRange.end_time={end_time}&limit={limit}&query={query}"
+        f"{url_path}:udmSearch?timeRange.startTime={start_time}&timeRange.endTime={end_time}&limit={limit}&query={query}"
     )
 
     # get list of events from Google SecOps
@@ -3136,7 +3136,7 @@ def gcb_list_reference_list(client_obj, page_size, page_token, view):
     :rtype: Dict[str, Any]
     :return: json_data: raw response of the request
     """
-    encoded_params = urllib.parse.urlencode(assign_params(page_size=page_size, page_token=page_token, view=view))
+    encoded_params = urllib.parse.urlencode(assign_params(pageSize=page_size, pageToken=page_token, view=view))
 
     url = create_url_path(client_obj)
     request_url = f"{url}/referenceLists?{encoded_params}"
@@ -3198,7 +3198,7 @@ def gcb_verify_reference_list(client_obj, lines, syntax_type):
     """
     url = create_url_path(client_obj)
     request_url = f"{url}:verifyReferenceList"
-    body = {"entries": lines, "syntax_type": syntax_type}
+    body = {"entries": lines, "syntaxType": syntax_type}
     json_data = validate_response(client_obj, request_url, method="POST", body=json.dumps(body))
     json_data["command_name"] = "gcb-verify-reference-list"
     json_data["success"] = json_data.get("success", False)
@@ -3246,7 +3246,7 @@ def gcb_list_iocs(client_obj, start_time: str, end_time: str, page_size: int) ->
     :rtype: List[Dict[str, Any]]
     """
     url_path = create_url_path(client_obj)
-    params = f"timestampRange.start_time={start_time}&timestampRange.end_time={end_time}&maxMatchesToReturn={page_size}"
+    params = f"timestampRange.startTime={start_time}&timestampRange.endTime={end_time}&maxMatchesToReturn={page_size}"
     request_url = f"{url_path}/legacy:legacySearchEnterpriseWideIoCs?{params}"
 
     # get list of IoCs from Google SecOps
@@ -4036,7 +4036,7 @@ def test_function(client_obj, params: dict[str, Any]):
         fetch_incidents(client_obj, params, is_test=True)
     else:
         url_path = create_url_path(client_obj)
-        request_url = f"{url_path}/rules?page_size=1"
+        request_url = f"{url_path}/rules?pageSize=1"
 
         validate_response(client_obj, request_url)
     demisto.results("ok")
@@ -5247,7 +5247,7 @@ def gcb_ioc_details_command(client_obj, args: dict[str, str]):
     hr = ""
     if json_data and json_data.get("feeds"):
         normal_artifact_type = None
-        if artifact_type == "destination_ip_address":
+        if artifact_type == "destinationIpAddress":
             normal_artifact_type = "ip"
         elif artifact_type == "domain":
             normal_artifact_type = "domain"
@@ -5296,7 +5296,7 @@ def ip_command(client_obj, ip_address: str):
         raise ValueError(f"Invalid IP - {ip_address}")
 
     url = create_url_path(client_obj)
-    request_url = f"{url}/legacy:legacySearchArtifactIoCDetails?artifactIndicator.destination_ip_address={ip_address}"
+    request_url = f"{url}/legacy:legacySearchArtifactIoCDetails?artifactIndicator.destinationIpAddress={ip_address}"
 
     response = validate_response(client_obj, request_url)
 

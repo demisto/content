@@ -1,4 +1,4 @@
-Use the Google SecOps integration to retrieve IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
+Use the Google SecOps integration to retrieve IOC Domain matches as Incidents. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 This integration was integrated and tested with version v1 Alpha of GoogleSecOps.
 
 **Note:** The commands will do up to 3 internal retries with a gap of 15, 30, and 60 seconds (exponentially) between the retries.
@@ -2258,7 +2258,7 @@ Returns the specified list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Provide a unique name of the list to retrieve the result. | Required |
+| name | Provide the name of the list to retrieve the result. | Required |
 | view | Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything. Possible values are: FULL, BASIC. Default is FULL. | Optional |
 
 #### Context Output
@@ -2318,7 +2318,7 @@ Create a new reference list.
 | name | Provide a unique name of the list to create a reference list. | Required |
 | description | Description of the list. | Required |
 | lines | Enter the content to be added into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3". | Optional |
-| entry_id | Provide a unique file id consisting of lines to add.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
+| entry_id | Provide a unique file id consisting of lines to add.<br/><br/>Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID). | Optional |
 | delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is " , ". | Optional |
 | content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. Default is PLAIN_TEXT. | Optional |
 | use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
@@ -2378,9 +2378,9 @@ Updates an existing reference list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Provide a unique name of the list to update. | Required |
+| name | Provide the name of the list to update. | Required |
 | lines | Enter the content to be updated into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use gcb-get-reference-list to retrieve the content and description of the list. | Optional |
-| entry_id | Provide a unique file id consisting of lines to update.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
+| entry_id | Provide a unique file id consisting of lines to update.<br/><br/>Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID). | Optional |
 | description | Description to be updated of the list. | Optional |
 | delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is " , ". | Optional |
 | content_type | Select the content type for reference list. Possible values are: PLAIN_TEXT, CIDR, REGEX. | Optional |
@@ -4737,9 +4737,9 @@ Appends lines into an existing reference list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Provide a unique name of the list to append content. | Required |
+| name | Provide the name of the list to append content. | Required |
 | lines | Enter the content to be appended into the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use "gcb-get-reference-list" to retrieve the content of the list. | Optional |
-| entry_id | Provide a unique file id consisting of lines to append.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
+| entry_id | Provide a unique file id consisting of lines to append.<br/><br/>Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID). | Optional |
 | delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is " , ". | Optional |
 | use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
 | append_unique | A flag to determine whether to apply deduplication logic over new lines. Possible values are: True, False. Default is False. | Optional |
@@ -4799,9 +4799,9 @@ Removes lines from an existing reference list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Provide a unique name of the list to remove content. | Required |
+| name | Provide the name of the list to remove content. | Required |
 | lines | Enter the content to be removed from the reference list.<br/>Format accepted is: "Line 1, Line 2, Line 3".<br/><br/>Note: Use "gcb-get-reference-list" to retrieve the content of the list. | Optional |
-| entry_id | Provide a unique file id consisting of lines to remove.<br/><br/>Note: Please provide either one of "lines" or "entry_id". | Optional |
+| entry_id | Provide a unique file id consisting of lines to remove.<br/><br/>Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID). | Optional |
 | delimiter | Delimiter by which the content of the list is separated.<br/>Eg:  " , " , " : ", " ; ". Default is " , ". | Optional |
 | use_delimiter_for_file | Flag to control how the file content is split. If set to True, it uses the provided delimiter; otherwise it splits by new lines (\n). Possible values are: True, False. Default is False. | Optional |
 
@@ -5223,7 +5223,7 @@ Adds rows to a data table.
 | --- | --- | --- |
 | name | Provide the name of the data table. | Required |
 | rows | Provide the list of rows data that need to be added in the data table.<br/>Format accepted is: <br/>[{"columnName1": "value1","columnName2": "value2"},{"columnName1": "value3","columnName2": "value4"}]<br/><br/>Note: Use "gcb-get-data-table" to retrieve the column names of the data table. | Optional |
-| entry_id | Provide a unique file id of comma separated CSV file consisting of rows to add.<br/><br/>Note: Please provide either one of "rows" or "entry_id". A maximum of 1000 rows can be added in a single execution. | Optional |
+| entry_id | Provide a unique file id of comma separated CSV file consisting of rows to add.<br/><br/>Note: Please provide either one of "rows" or "entry_id". A maximum of 1000 rows can be added in a single execution. You can get the entry_id from the context path(File.EntryID). | Optional |
 
 #### Context Output
 
@@ -5287,7 +5287,7 @@ Note: This command only removes the first 1000 data table rows. To remove the ne
 | --- | --- | --- |
 | name | Provide the name of the data table. | Required |
 | rows | Provide the list of rows data that need to be removed from the data table.<br/>Format accepted is: <br/>[{"columnName1": "value1","columnName2": "value2"},{"columnName1": "value3","columnName2": "value4"}]<br/><br/>Example:<br/>If you provide [{"columnName1": "value1"}] then it will remove all the rows from the data table where column1 has value1.<br/>If you provide [{"columnName1": "value1", "columnName2": "value2"}] then it will remove all the rows from the data table where column1 has value1 and column2 has value2.<br/><br/>Note: Use "gcb-get-data-table" to retrieve the column names of the data table. | Optional |
-| entry_id | Provide a unique file id of comma separated CSV file consisting of row data for removal.<br/><br/>Note: Please provide either one of "rows" or "entry_id". | Optional |
+| entry_id | Provide a unique file id of comma separated CSV file consisting of row data for removal.<br/><br/>Note: Please provide either one of "rows" or "entry_id". You can get the entry_id from the context path(File.EntryID). | Optional |
 | page_token | The page token to search and remove the next set of data table rows. | Optional |
 
 #### Context Output

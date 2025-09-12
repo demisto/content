@@ -194,7 +194,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the Google SecOps integration to retrieve IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
+description: Use the Google SecOps integration to retrieve IOC Domain matches as Incidents. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 display: Google SecOps v1 Alpha
 name: GoogleSecOps
 script:
@@ -6982,7 +6982,7 @@ script:
       description: URL to direct you to the source product console for this security event.
       type: String
   - arguments:
-    - description: Provide a unique name of the list to retrieve the result.
+    - description: Provide the name of the list to retrieve the result.
       name: name
       required: true
     - auto: PREDEFINED
@@ -7026,7 +7026,7 @@ script:
     - description: |- 
         Provide a unique file id consisting of lines to add.
 
-        Note: Please provide either one of "lines" or "entry_id".
+        Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID).
       name: entry_id
       required: false
     - default: true
@@ -7067,7 +7067,7 @@ script:
       description: Content type of the reference list.
       type: String
   - arguments:
-    - description: Provide a unique name of the list to update.
+    - description: Provide the name of the list to update.
       name: name
       required: true
     - description: |-
@@ -7080,7 +7080,7 @@ script:
     - description: |- 
         Provide a unique file id consisting of lines to update.
 
-        Note: Please provide either one of "lines" or "entry_id".
+        Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID).
       name: entry_id
       required: false
     - description: Description to be updated of the list.
@@ -7232,7 +7232,7 @@ script:
       description: Whether value found in any reference list.
       type: String
   - arguments:
-    - description: Provide a unique name of the list to append content.
+    - description: Provide the name of the list to append content.
       name: name
       required: true
     - description: |-
@@ -7246,7 +7246,7 @@ script:
     - description: |- 
         Provide a unique file id consisting of lines to append.
 
-        Note: Please provide either one of "lines" or "entry_id".
+        Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID).
       name: entry_id
       required: false
     - defaultValue: ','
@@ -7289,7 +7289,7 @@ script:
       description: The content type of the reference list.
       type: String      
   - arguments:
-    - description: Provide a unique name of the list to remove content.
+    - description: Provide the name of the list to remove content.
       name: name
       required: true
     - description: |-
@@ -7303,7 +7303,7 @@ script:
     - description: |- 
         Provide a unique file id consisting of lines to remove.
 
-        Note: Please provide either one of "lines" or "entry_id".
+        Note: Please provide either one of "lines" or "entry_id". You can get the entry_id from the context path(File.EntryID).
       name: entry_id
       required: false
     - defaultValue: ','
@@ -7747,7 +7747,7 @@ script:
     - description: |-
         Provide a unique file id of comma separated CSV file consisting of rows to add.
 
-        Note: Please provide either one of "rows" or "entry_id". A maximum of 1000 rows can be added in a single execution.
+        Note: Please provide either one of "rows" or "entry_id". A maximum of 1000 rows can be added in a single execution. You can get the entry_id from the context path(File.EntryID).
       name: entry_id
       required: false
     description: Adds rows to a data table.
@@ -7780,7 +7780,7 @@ script:
     - description: |-
         Provide a unique file id of comma separated CSV file consisting of row data for removal.
 
-        Note: Please provide either one of "rows" or "entry_id".
+        Note: Please provide either one of "rows" or "entry_id". You can get the entry_id from the context path(File.EntryID).
       name: entry_id
       required: false
     - name: page_token
