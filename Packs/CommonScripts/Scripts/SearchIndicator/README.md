@@ -10,7 +10,7 @@ You can add additional fields from the indicators using the add_field_to_context
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Tags | Utility |
 
 ## Inputs

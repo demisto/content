@@ -11,11 +11,12 @@ This is the default integration for this content pack when configured by the Dat
 
 | **Parameter**                                                                    | **Description**                                                                                                                                                                                                   | **Required** |
 |----------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Your server URL                                                                  | The api endpoint to the trend micro vision one instance, see domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs                                                         | True         |
+| Your server URL                                                                  | The API endpoint to the Trend Micro Vision One instance, see domains list: https://automation.trendmicro.com/xdr/Guides/First-Steps-Toward-Using-the-APIs                                                         | True         |
 | Trend Micro Vision One API Key                                                   | The Trend Micro Vision One API Key. Refer to the help section or to the information below on how to retrieve the API key.                                                                                         | False        |
-| The maximum number of events per fetch                                           | The maximum number of events to fetch every time fetch is executed for a single log-type \(Workbench, Observed Attack Techniques, Search Detections and Audit logs\).                                             | False        |
-| Observed attack techniques and Search detections logs date-time range (hours)    | Defines the date-range (hours) in each api call that retrieves observed attack techniques and search detections logs. Used mainly to prevent timeouts by looping over large amount of logs.  Default is 24 hours. | False        |
+| The maximum number of events per fetch                                           | The maximum number of events to fetch every time fetch is executed for each specified log type \(Workbench, Observed Attack Techniques, Search Detections and Audit logs\).                                       | False        |
+| Observed attack techniques and Search detections logs date-time range (hours)    | Defines the date-range (hours) in each API call that retrieves observed attack techniques and search detections logs. Used mainly to prevent timeouts by looping over large amount of logs.  Default is 24 hours. | False        |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The first fetch time, since when to start fetching events                                                                                                                                                         | False        |
+| Log types to fetch                                                               | To maximize scalability, it is recommended to configure one type per instance. Default value is Workbench, Observed Attack Techniques, Search Detections, Audit.                                                  | False        |
 | Fetch events                                                                     |                                                                                                                                                                                                                   | False        |
 | Trust any certificate (not secure)                                               |                                                                                                                                                                                                                   | False        |
 | Use system proxy settings                                                        |                                                                                                                                                                                                                   | False        |
@@ -25,11 +26,11 @@ This is the default integration for this content pack when configured by the Dat
 ***
 This integration fetches the following logs/alerts from Trend Micro Vision One and requires the following permissions:
 
-| **Log Type**                    | **Action Role Permission Required** | **Api Documentation**                                                                                |
+| **Log Type**                    | **Action Role Permission Required** | **API Documentation**                                                                                |
 |---------------------------------|-------------------------------------|------------------------------------------------------------------------------------------------------|
 | Workbench Logs                  | Workbench                           | https://automation.trendmicro.com/xdr/api-v3#tag/Workbench                                           |
 | Observed Attack Techniques Logs | Observed Attack Techniques          | https://automation.trendmicro.com/xdr/api-v3#tag/Observed-Attack-Techniques                          |
-| Search Detection Logs           | Search                              | https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1detections/get |
+| Search Detection Logs           | Search                              | https://automation.trendmicro.com/xdr/api-v3#tag/Search/paths/~1v3.0~1search~1detections/get         |
 | Audit Logs                      | Audit Logs                          | https://automation.trendmicro.com/xdr/api-v3#tag/Audit-Logs                                          |
 
 ***
@@ -82,7 +83,7 @@ Returns a list of logs.
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
 | limit              | The maximum number of logs to retrieve. Default is 50.                                                                                                             | Optional    |
 | from_time          | From which time to retrieve the log(s) in ISO8601 format. For example yyyy-MM-ddThh:mm:ssZ in UTC.                                                                 | Required    |
-| to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided. For example yyyy-MM-ddThh:mm:ssZ in UTC.                                                             | Optional    |
+| to_time            | To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided. For example yyyy-MM-ddThh:mm:ssZ in UTC.                     | Optional    |
 | should_push_events | Whether to push the fetched events to Cortex XSIAM or not. Possible values are: false, true. Default is false.                                                     | Optional    |
 | log_type           | Comma-separated list of log-types to retrieve, options are audit, observed_attack_techniques, search_detections and workbench. Default is to retrieve all of them. | Optional    |
 
