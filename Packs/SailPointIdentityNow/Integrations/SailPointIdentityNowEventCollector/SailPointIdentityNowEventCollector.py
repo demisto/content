@@ -160,58 +160,6 @@ def get_events(client: Client, from_date: str, from_id: str | None, limit: int =
     return events, CommandResults(readable_output=hr)
 
 
-# TODO remove
-def get_fetch_run_time_range_dev(
-    last_run,
-    first_fetch,
-    look_back=0,
-    timezone=0,
-    date_format="%Y-%m-%dT%H:%M:%S",
-    time_field_name="time",
-):
-    """
-    Calculates the time range for fetch depending the look_back argument and the previous fetch start time
-    given from the last_run object.
-
-    :type last_run: ``dict``
-    :param last_run: The LastRun object
-
-    :type first_fetch: ``str``
-    :param first_fetch: The first time to fetch, used in the first fetch of an instance
-
-    :type look_back: ``int``
-    :param look_back: The time to look back in fetch in minutes
-
-    :type timezone: ``int``
-    :param timezone: The time zone offset in hours
-
-    :type date_format: ``str``
-    :param date_format: The date format
-
-    :type time_field_name: ``str``
-    :param time_field_name: The name of the time field in the LastRun dictionary
-
-    :return: The time range (start_time, end_time) of the creation date for the incidents to fetch in the current run.
-    :rtype: ``Tuple``
-    """
-    last_run_time = last_run and time_field_name in last_run and last_run[time_field_name]
-    now = get_current_time(timezone)
-    if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
-        if last_run_time:
-            last_run_time += timedelta(hours=timezone)
-    else:
-        last_run_time = dateparser.parse(last_run_time, settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
-
-    if look_back and look_back > 0:
-        if now - last_run_time < timedelta(minutes=look_back):
-            last_run_time = now - timedelta(minutes=look_back)
-
-    demisto.debug(
-        "lb: fetch start time: {}, fetch end time: {}".format(last_run_time.strftime(date_format), now.strftime(date_format))
-    )
-    return last_run_time.strftime(date_format), now.strftime(date_format)
-
 
 def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> tuple[Dict, List[Dict]]:
     """
@@ -229,14 +177,18 @@ def fetch_events(client: Client, limit: int, look_back: int, last_run: dict) -> 
     # all deduplication logic (dedup_events, _migrate_legacy_ids, etc.).
     demisto.debug(f"Starting fetch up to {limit} events with last_run: {last_run} and look_back: {look_back}.")
     
-    # Get fetch time range
-    last_fetched_creation_date, _ = get_fetch_run_time_range_dev(
-        last_run=last_run,
-        first_fetch=CURRENT_TIME_STR,
-        look_back=look_back,
-        date_format=DATE_FORMAT,
-        time_field_name="prev_date",
-    )
+    # Calculate fetch start time with lookback
+    if "prev_date" in last_run:
+        # Use prev_date from last run and apply lookback
+        prev_date = dateparser.parse(last_run["prev_date"], settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True})
+        fetch_start = prev_date - timedelta(minutes=look_back)
+        last_fetched_creation_date = fetch_start.strftime(DATE_FORMAT)
+        demisto.debug(f"Using prev_date '{last_run['prev_date']}' with {look_back} min lookback → "
+                      f"fetch from '{last_fetched_creation_date}'")
+    else:
+        # First run - use current time
+        last_fetched_creation_date = CURRENT_TIME_STR
+        demisto.debug(f"First run: fetching from current time '{last_fetched_creation_date}'")
     
     # Handle backward compatibility for deduplication
     if "last_fetched_id_timestamps" in last_run:
@@ -373,9 +325,14 @@ def _build_next_run(all_events: List[Dict], dedup_cache: dict, fallback_date: st
         most_recent_timestamp = max(dedup_cache.values())
         demisto.debug(f"Most recent timestamp from {len(all_events)} events: {most_recent_timestamp}")
     else:
-        most_recent_timestamp = fallback_date  # Keep original start time if no events
-        demisto.debug(f"No events fetched, using fallback date: {most_recent_timestamp}")
-    
+        # No new events this cycle - use most recent from existing cache if available
+        if dedup_cache:
+            most_recent_timestamp = max(dedup_cache.values())
+            demisto.debug(f"No new events, but using most recent from cache: {most_recent_timestamp}")
+        else:
+            most_recent_timestamp = fallback_date  # Truly first run with no events
+            demisto.debug(f"No events and no cache, using fallback date: {most_recent_timestamp}")
+
     # Filter ID timestamps to maintain only those within the lookback window
     filtered_id_timestamps = _filter_dedup_cache(
         dedup_cache, most_recent_timestamp, look_back, bool(all_events)

@@ -11519,14 +11519,7 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
     return CommandResults(readable_output=readable_output, indicator=indicator_)
 
 
-def get_fetch_run_time_range(
-    last_run,
-    first_fetch,
-    look_back=0,
-    timezone=0,
-    date_format='%Y-%m-%dT%H:%M:%S',
-    time_field_name='time',
-):
+def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, date_format='%Y-%m-%dT%H:%M:%S'):
     """
     Calculates the time range for fetch depending the look_back argument and the previous fetch start time
     given from the last_run object.
