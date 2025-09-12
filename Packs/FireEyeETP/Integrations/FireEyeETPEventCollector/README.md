@@ -1,16 +1,16 @@
-Use this integration to fetch email security incidents from FireEye ETP as XSIAM events.
+Use this integration to fetch email security incidents from Trellix Email Security - Cloud as XSIAM events.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure FireEye ETP Event Collector in Cortex
+## Configure Trellix Email Security - Cloud Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g., https://etp.us.fireeye.com) |  | True |
-| API Secret Key | The API Key allows you to integrate with the FireEye ETP. | True |
-| Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch from FireEye ETP. |  |
-| Maximum number of Email Trace to fetch. | The maximum number of Email Trace events to fetch from FireEye ETP. |  |
-| Maximum number of Activity Log fetch. | The maximum number of Activity Log events to fetch from FireEye ETP. |  |
+| API Secret Key | The API Key allows you to integrate with the Trellix Email Security - Cloud. | True |
+| Maximum number of Alerts to fetch. | The maximum number of Alert events to fetch from Trellix Email Security - Cloud. |  |
+| Maximum number of Email Trace to fetch. | The maximum number of Email Trace events to fetch from Trellix Email Security - Cloud. |  |
+| Maximum number of Activity Log fetch. | The maximum number of Activity Log events to fetch from Trellix Email Security - Cloud. |  |
 | Trust any certificate (not secure) |  |  |
 | Use system proxy settings |  |  |
 | Fetch outbound traffic | Outbound traffic will be fetched in addition to inbound traffic. |  |
@@ -41,7 +41,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### fireeye-etp-get-events
 
 ***
-Gets events from FireEye ETP.
+Gets events from Trellix Email Security - Cloud.
 
 #### Base Command
 

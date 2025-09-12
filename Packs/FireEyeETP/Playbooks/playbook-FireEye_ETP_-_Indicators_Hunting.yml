@@ -1,8 +1,8 @@
 id: FireEye ETP - Indicators Hunting
 version: -1
-name: FireEye ETP - Indicators Hunting
+name: Trellix Email Security Cloud - Indicators Hunting
 description: |-
-  This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, sender and recipient email addresses.
+  This playbook queries Trellix Email Security - Cloud for indicators such as domains, IP addresses, sender and recipient email addresses.
   Separate searches are conducted for each type of indicator in the playbook.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
@@ -1464,7 +1464,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP address to search for within FireEye ETP logs. Used for both source and destination IP addresses.
+    A single or multiple IP address to search for within Trellix Email Security - Cloud logs. Used for both source and destination IP addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1472,7 +1472,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple domains to search for within FireEye ETP logs.
+    Single or multiple domains to search for within Trellix Email Security - Cloud logs.
     By default, the 'contains' clause is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -1481,7 +1481,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple email addresses to search for within FireEye ETP logs. Used for both recipient and sender email addresses.
+    A single or multiple email addresses to search for within Trellix Email Security - Cloud logs. Used for both recipient and sender email addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1514,7 +1514,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Select the message size (in KB) based on which you wish to retrieve messages from the FireEye ETP server.
+    Select the message size (in KB) based on which you wish to retrieve messages from the Trellix Email Security - Cloud server.
 
     The default value is 20 and the maximum value is 100.
   playbookInputQuery:
@@ -1522,7 +1522,7 @@ inputs:
   value: {}
   required: true
   description: |-
-    The start date and time from which you would like to retrieve messages from the FireEye ETP server, e.g. 2017-10-24T10:48:51.000Z.
+    The start date and time from which you would like to retrieve messages from the Trellix Email Security - Cloud server, e.g. 2017-10-24T10:48:51.000Z.
 
     For a complete date range, specify 'to_accepted_date_time' as well.
   playbookInputQuery:
@@ -1530,20 +1530,20 @@ inputs:
   value: {}
   required: true
   description: |-
-    The end date and time specify the period of time in which messages should be retrieved from the FireEye ETP server, e.g. 2017-10-24T10:48:51.000Z.
+    The end date and time specify the period of time in which messages should be retrieved from the Trellix Email Security - Cloud server, e.g. 2017-10-24T10:48:51.000Z.
 
     For a complete date range, specify 'from_accepted_date_time' as well.
   playbookInputQuery:
 - key: last_modified_date_time
   value: {}
   required: false
-  description: "The last date and time messages were modified in order to retrieve them from the FireEye ETP server. \n\nDates and times should be accompanied by one of the following operators: \">\", \"<\", \">=\", \"<=\". \nE.g. use value \"<2017-10-24T18:00:00.000Z\" to search for messages that were last modified after the specified time stamp."
+  description: "The last date and time messages were modified in order to retrieve them from the Trellix Email Security - Cloud server. \n\nDates and times should be accompanied by one of the following operators: \">\", \"<\", \">=\", \"<=\". \nE.g. use value \"<2017-10-24T18:00:00.000Z\" to search for messages that were last modified after the specified time stamp."
   playbookInputQuery:
 - key: status
   value: {}
   required: false
   description: |-
-    Filter messages to be retrieved from the FireEye ETP server based on their email message status.
+    Filter messages to be retrieved from the Trellix Email Security - Cloud server based on their email message status.
 
     Possible values are: "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure".
 
@@ -1553,7 +1553,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Exclude messages from being retrieved from the FireEye ETP server based on the email message status.
+    Exclude messages from being retrieved from the Trellix Email Security - Cloud server based on the email message status.
 
     Possible values are: "accepted", "deleted", "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected", "temporary failure".
 
@@ -1563,7 +1563,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Filter messages that should be retrieved from the FireEye ETP server based on the email rejection reason.
+    Filter messages that should be retrieved from the Trellix Email Security - Cloud server based on the email rejection reason.
 
     Possible values are:  "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405".
 
@@ -1573,7 +1573,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Filter messages that should be retrieved from the FireEye ETP server based on the email subject (string).
+    Filter messages that should be retrieved from the Trellix Email Security - Cloud server based on the email subject (string).
 
     The max limit of entries is 10.
 
@@ -1581,7 +1581,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeETP.HuntingResults
-  description: Email message objects and fields that were retrieved from FireEye ETP.
+  description: Email message objects and fields that were retrieved from Trellix Email Security - Cloud.
   type: string
 - contextPath: FireEyeETP.HuntingResults.acceptedDateTime
   description: Message accepted date.
