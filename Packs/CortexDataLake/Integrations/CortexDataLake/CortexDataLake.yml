@@ -4046,9 +4046,6 @@ script:
       description: Identifies the origin of the data (the system that produced the data.
       type: String
     description: Searches the Cortex firewall.file_data table.
-  - name: sls-reset-authentication-timeout
-    arguments: []
-    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
   - name: sls-query-gp-logs
     arguments:
     - name: limit
