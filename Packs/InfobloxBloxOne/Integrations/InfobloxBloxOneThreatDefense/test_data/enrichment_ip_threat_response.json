@@ -1,0 +1,33 @@
+{
+    "threat": [
+        {
+            "id": "00000000-0000-0000-0000-000000000000",
+            "type": "IP",
+            "ip": "0.0.0.1",
+            "profile": "IID",
+            "property": "APT_Malware",
+            "class": "APT",
+            "threat_level": 100,
+            "expiration": "2042-11-01T09:29:18.721Z",
+            "detected": "2025-07-29T09:29:18.721Z",
+            "received": "2025-07-29T09:31:39.329Z",
+            "imported": "2025-07-29T09:31:39.329Z",
+            "up": "true",
+            "confidence": 100,
+            "batch_id": "00000000-0000-0000-0000-000000000000",
+            "threat_score": 10,
+            "threat_score_rating": "Critical",
+            "threat_score_vector": "simple_threat_vector",
+            "risk_score": 9.9,
+            "risk_score_rating": "Critical",
+            "risk_score_vector": "simple_risk_vector",
+            "confidence_score": 0.1,
+            "confidence_score_rating": "Unconfirmed",
+            "confidence_score_vector": "simple_confidence_vector",
+            "extended": {
+                "cyberint_guid": "simple_cyberint_guid",
+                "notes": "Malware Download associated with the APT group"
+            }
+        }
+    ]
+}

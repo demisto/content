@@ -1,0 +1,28 @@
+{
+    "results": [
+        {
+            "addresses": [
+                {
+                    "address": "0.0.0.1",
+                    "ref": "ipam/address/00000000-0000-0000-0000-000000000000",
+                    "space": "ipam/ip_space/00000000-0000-0000-0000-000000000000"
+                }
+            ],
+            "auto_generate_records": true,
+            "comment": "comment",
+            "created_at": "2025-07-22T05:26:46.834693Z",
+            "host_names": [
+                {
+                    "alias": false,
+                    "name": "test.com",
+                    "primary_name": true,
+                    "zone": "dns/auth_zone/8ce66502-8d4b-439e-8690-0c59d3122b9f"
+                }
+            ],
+            "id": "ipam/host/00000000-0000-0000-0000-000000000000",
+            "name": "test.com",
+            "tags": null,
+            "updated_at": "2025-07-22T05:26:57.219235Z"
+        }
+    ]
+}
