@@ -2174,6 +2174,54 @@ class TestFetch:
             assert '"incident_type": "detection"' in incident.get("rawJSON", "")
 
     @pytest.mark.parametrize(
+        "detection_type, expected_name",
+        [
+            ("ngsiem", "NGSIEM Detection"),
+            ("thirdparty", "Third Party Detection"),
+        ],
+    )
+    def test_fetch_type_no_legacy_version(self, requests_mock, mocker, detection_type, expected_name):
+        from CrowdStrikeFalcon import fetch_items, NGSIEM_DETECTION_FETCH_TYPE, THIRD_PARTY_DETECTION_FETCH_TYPE
+
+        # Get the actual constants based on the parameter
+        fetch_type = NGSIEM_DETECTION_FETCH_TYPE if detection_type == "ngsiem" else THIRD_PARTY_DETECTION_FETCH_TYPE
+
+        mocker.patch("CrowdStrikeFalcon.LEGACY_VERSION", False)
+        mocker.patch.object(
+            demisto, "params", return_value={"fetch_incidents_or_detections": [fetch_type], "legacy_version": False}
+        )
+
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        requests_mock.get(
+            f"{SERVER_URL}/alerts/queries/alerts/v2",
+            json={"resources": [f"a:{detection_type}:1", f"a:{detection_type}:2"], "meta": {"pagination": {"total": 2}}},
+        )
+        requests_mock.post(
+            f"{SERVER_URL}/alerts/entities/alerts/v2",
+            json={
+                "resources": [
+                    {
+                        "composite_id": f"a:{detection_type}:1",
+                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
+                        "start_time": "2025-03-11T15:46:00.426Z",
+                    },
+                    {
+                        "composite_id": f"a:{detection_type}:2",
+                        "created_timestamp": "2025-03-11T16:45:21.571614153Z",
+                        "start_time": "2025-03-11T15:46:00.426Z",
+                    },
+                ]
+            },
+        )
+
+        _, incidents = fetch_items()
+        assert len(incidents) == 2
+
+        for incident in incidents:
+            assert expected_name in incident.get("name", "")
+
+    @pytest.mark.parametrize(
         "expected_name, fetch_incidents_or_detections,incidents_len",
         [
             ("Incident ID:", ["Incidents"], 2),
