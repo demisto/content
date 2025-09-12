@@ -20,6 +20,7 @@ PRODUCT = "eic"
 TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
 MAX_EVENTS_PER_FETCH = 50000
 LAST_RUN_EVENT_HASHES = "recent_event_hashes"
+DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
 
 """ CLIENT CLASS """
 
@@ -296,6 +297,7 @@ def fetch_events(
     last_run: dict[str, Any],
     analytics_name_list: list[str],
     max_events: int,
+    time_frame_minutes: int = DEFAULT_FETCH_TIME_FRAME_MINUTES,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Fetch events for XSIAM ingest."""
     events = []
@@ -305,20 +307,20 @@ def fetch_events(
 
         response = client.fetch_events(
             analytics_name=analytics_name,
-            time_frame_minutes=1,
+            time_frame_minutes=time_frame_minutes,
             max_results=min(max_events, 10000),
             offset=None,
         )
 
         raw_results = response.get("results", [])
-        total_count = response.get("totalcount", 0)
+        total_count: int = response.get("totalcount", 0)
         events_per_analytics_name.extend(raw_results)
 
         while len(events_per_analytics_name) < total_count and len(events_per_analytics_name) < max_events:
             offset = len(events_per_analytics_name)
             response = client.fetch_events(
                 analytics_name=analytics_name,
-                time_frame_minutes=1,
+                time_frame_minutes=time_frame_minutes,
                 max_results=min(max_events, 10000),
                 offset=offset,
             )
@@ -349,26 +351,28 @@ def main():  # pragma: no cover
     analytics_name_list = argToList(params.get("analytics_name", []))
     max_events = int(params.get("max_fetch", MAX_EVENTS_PER_FETCH))
 
-    client = Client(
-        base_url=base_url,
-        verify=verify,
-        proxy=proxy,
-        credentials=credentials,
-    )
-
     demisto.debug(f"Command being called is {command}")
+
     try:
+        client = Client(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            credentials=credentials,
+        )
+
         if command == "test-module":
             result = test_module(client)
             return_results(result)
 
         elif command == "saviynt-eic-get-events":
-            should_push_events = argToBoolean(args.pop("should_push_events", False))
+            should_push_events = argToBoolean(args.get("should_push_events", False))
             _, events = fetch_events(
                 client=client,
                 last_run={},
                 analytics_name_list=analytics_name_list,
-                max_events=max_events,
+                max_events=arg_to_number(args.get("limit", MAX_EVENTS_PER_FETCH)),
+                time_frame_minutes=arg_to_number(args.get("time_frame", DEFAULT_FETCH_TIME_FRAME_MINUTES)),
             )
             if should_push_events and events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
