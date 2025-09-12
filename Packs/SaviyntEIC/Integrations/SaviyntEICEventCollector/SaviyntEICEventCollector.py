@@ -1,3 +1,4 @@
+import hashlib
 import json
 import time
 from datetime import datetime, timedelta
@@ -18,6 +19,7 @@ VENDOR = "saviynt"
 PRODUCT = "eic"
 TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
 MAX_EVENTS_PER_FETCH = 50000
+LAST_RUN_EVENT_HASHES = "recent_event_hashes"
 
 """ CLIENT CLASS """
 
@@ -202,6 +204,69 @@ def add_time_to_events(events: list[dict[str, Any]] | None) -> list[dict[str, An
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
+def generate_event_hash(event: dict[str, Any]) -> str:
+    """
+    Generate a stable SHA-256 hash for a single event from vendor content.
+    Excludes integration-only/transient fields so the hash remains stable across runs.
+    """
+    excluded = {"_time", "event_hash"}
+    event_for_hash = {k: v for k, v in event.items() if k not in excluded}
+    try:
+        payload = json.dumps(event_for_hash, sort_keys=True, separators=(",", ":"))
+    except TypeError:
+        payload = json.dumps(event_for_hash, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def deduplicate_events_previous_run_only(
+    events: list[dict[str, Any]], last_run: dict[str, Any]
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """
+    Previous-run-only policy:
+    - Drop events whose hashes appeared in the immediately previous run.
+    - Persist only this run's unique hashes to lastRun for the next fetch.
+    Also deduplicates within the same run.
+    """
+    previous_run_hashes = set(last_run.get(LAST_RUN_EVENT_HASHES, []))
+
+    deduplicated_events: list[dict[str, Any]] = []
+    seen_hashes_this_run: set[str] = set()
+
+    # Build the cache for the next run from all unique hashes seen in this run
+    current_run_hashes_in_order: list[str] = []
+    seen_hashes_for_cache: set[str] = set()
+
+    for event in events:
+        event_hash = generate_event_hash(event)
+
+        if event_hash not in seen_hashes_for_cache:
+            current_run_hashes_in_order.append(event_hash)
+            seen_hashes_for_cache.add(event_hash)
+
+        # Within-run dedup
+        if event_hash in seen_hashes_this_run:
+            continue
+        # Previous-run dedup
+        if event_hash in previous_run_hashes:
+            continue
+
+        # Note: generate_event_hash() excludes 'event_hash', so adding it does not affect hash stability.
+        event.setdefault("event_hash", event_hash)
+        deduplicated_events.append(event)
+        seen_hashes_this_run.add(event_hash)
+
+    new_last_run = dict(last_run)
+    new_last_run[LAST_RUN_EVENT_HASHES] = current_run_hashes_in_order
+
+    demisto.debug(
+        f"Dedup prev-run-only: input={len(events)}, output={len(deduplicated_events)}, "
+        f"prev_cache={len(previous_run_hashes)}, next_cache={len(new_last_run[LAST_RUN_EVENT_HASHES])}"
+    )
+
+    # Return order matches fetch_events: (next_run, events)
+    return new_last_run, deduplicated_events
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -258,12 +323,12 @@ def fetch_events(
 
         events.extend(events_per_analytics_name)
 
-    # Add dedup mechanism based on event hashing
-    # deduped_events = deduplicate_events(events, last_run)  # TODO: Implement deduplication
-    next_run = last_run
+    # Deduplicate by comparing to previous run's hashes and persist only current run's hashes
+    next_run, deduped_events = deduplicate_events_previous_run_only(events, last_run)
 
-    add_time_to_events(events)
-    return next_run, events
+    # Enrich deduped events with _time for XDM mapping/visibility
+    add_time_to_events(deduped_events)
+    return next_run, deduped_events
 
 
 """ MAIN FUNCTION """
