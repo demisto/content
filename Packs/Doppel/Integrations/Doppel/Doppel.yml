@@ -21,6 +21,14 @@ configuration:
   required: true
   type: 9
   section: Connect
+- additionalinfo: The User API Key (Optional) to use for connection with Doppel.
+  display: ""
+  displaypassword: User API Key
+  hiddenusername: true
+  name: user_credentials
+  required: false
+  type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
