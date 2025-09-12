@@ -32,3 +32,9 @@ for (var i=0;i<entryIDs.length;i++) {
 }
 
 return "Entry ID " + entryIDs + " added to evidence";
+
+
+// test
+function this_is_a_test() {
+    return "nothing";
+}
