@@ -19,10 +19,11 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "saviynt"
 PRODUCT = "eic"
 TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
-MAX_EVENTS_PER_FETCH = 50000
+MAX_EVENTS = 50000
 LAST_RUN_EVENT_HASHES = "recent_event_hashes"
 DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
 LAST_RUN_TIMESTAMP = "last_fetch_timestamp"
+MAX_EVENTS_PER_REQUEST = 10000
 
 """ CLIENT CLASS """
 
@@ -380,6 +381,7 @@ def fetch_events(
     for analytics_name in analytics_name_list:
         events_per_analytics_name = []
         collected_count = 0
+        max_results = min(max_events, MAX_EVENTS_PER_REQUEST)
 
         demisto.debug(
             f"[fetch_events] fetching analytics_name={analytics_name} offset=None "
@@ -388,13 +390,14 @@ def fetch_events(
         response = client.fetch_events(
             analytics_name=analytics_name,
             time_frame_minutes=effective_time_frame_minutes,
-            max_results=min(max_events, 10000),
+            max_results=max_results,
             offset=None,
         )
 
         raw_results = response.get("results", [])
-        total_count: int = response.get("totalcount", 0)
+        total_count = int(response.get("totalcount", 0))
         demisto.debug(f"[fetch_events] {analytics_name}: initial_page_size={len(raw_results)} total_count={total_count}")
+
         events_per_analytics_name.extend(raw_results)
         collected_count += len(raw_results)
 
@@ -406,20 +409,18 @@ def fetch_events(
             response = client.fetch_events(
                 analytics_name=analytics_name,
                 time_frame_minutes=effective_time_frame_minutes,
-                max_results=min(max_events, 10000),
+                max_results=max_results,
                 offset=offset,
             )
             raw_results = response.get("results", [])
             page_batch_size = len(raw_results)
             demisto.debug(
-                f"[fetch_events] {analytics_name}: page_batch_size={page_batch_size} total_collected={collected_count + page_batch_size}"  # noqa: E501
+                f"[fetch_events] {analytics_name}: page_batch_size={page_batch_size} total collected so far={collected_count + page_batch_size}"  # noqa: E501
             )
             events_per_analytics_name.extend(raw_results)
             collected_count += page_batch_size
 
-        demisto.debug(
-            f"[fetch_events] {analytics_name}: finished collection total_collected={collected_count}"
-        )
+        demisto.debug(f"[fetch_events] {analytics_name}: finished collection total collected={collected_count}")
         events.extend(events_per_analytics_name)
 
     demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
@@ -449,7 +450,7 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     credentials = params.get("credentials")
     analytics_name_list = argToList(params.get("analytics_name", []))
-    max_events = int(params.get("max_fetch", MAX_EVENTS_PER_FETCH))
+    max_events = int(params.get("max_fetch", MAX_EVENTS))
 
     demisto.debug(f"Command being called is {command}")
 
@@ -471,7 +472,7 @@ def main():  # pragma: no cover
                 client=client,
                 last_run={},
                 analytics_name_list=analytics_name_list,
-                max_events=arg_to_number(args.get("limit")) or MAX_EVENTS_PER_FETCH,
+                max_events=arg_to_number(args.get("limit")) or MAX_EVENTS,
                 time_frame_minutes=arg_to_number(args.get("time_frame")) or DEFAULT_FETCH_TIME_FRAME_MINUTES,
             )
             if should_push_events and events:
