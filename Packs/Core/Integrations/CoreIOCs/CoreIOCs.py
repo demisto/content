@@ -433,8 +433,9 @@ def get_sync_file():
 
 
 def upload_file_to_bucket(file_path: str) -> None:
-    gcpconf_project_id = None  # removed
-    gcpconf_papi_bucket = None  # removed
+    gcpconf_project_id = demisto.callingContext["context"]["ProjectID"]
+    gcpconf_papi_bucket = demisto.callingContext["context"]["PAPIBucket"]
+    return_results(f"{gcpconf_project_id=}, {gcpconf_papi_bucket=}")
     try:
         client = storage.Client(project=gcpconf_project_id)
         bucket = client.get_bucket(gcpconf_papi_bucket)
@@ -468,7 +469,7 @@ def main():
         elif command in commands:
             commands[command](client)
         elif command == "core-iocs-sync":
-            raise DemistoException("Command unavailable.")
+            core_iocs_sync_command(client, argToBoolean(demisto.getArg("firstTime")))
         else:
             raise NotImplementedError(command)
     except Exception as error:
