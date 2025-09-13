@@ -1,6 +1,8 @@
 import hashlib
 import json
+import math
 import time
+from datetime import UTC, datetime
 from typing import Any
 
 import urllib3
@@ -20,6 +22,7 @@ TOKEN_SAFETY_BUFFER = 300  # seconds to refresh token before actual expiry
 MAX_EVENTS_PER_FETCH = 50000
 LAST_RUN_EVENT_HASHES = "recent_event_hashes"
 DEFAULT_FETCH_TIME_FRAME_MINUTES = 1
+LAST_RUN_TIMESTAMP = "last_fetch_timestamp"
 
 """ CLIENT CLASS """
 
@@ -95,7 +98,6 @@ class Client(BaseClient):
             resp_type="json",
         )
         access_token = res.get("access_token")
-        # Some systems may also return a new refresh_token; fall back to existing one
         new_refresh = res.get("refresh_token") or refresh_token
         expires_in = int(res.get("expires_in", 3600))
         now_epoch = int(time.time())
@@ -190,17 +192,16 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def add_time_to_events(events: list[dict[str, Any]] | None):
+def add_time_to_events(events: list[dict[str, Any]]):
     """
     Adds the '_time' key to events based on their creation or occurrence timestamp.
 
     Args:
-        events (list[dict[str, Any]] | None): A list of events.
+        events (list[dict[str, Any]]): A list of events.
     """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get("Event Time"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+    for event in events:
+        create_time = arg_to_datetime(arg=event.get("Event Time"))
+        event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 
@@ -222,6 +223,38 @@ def generate_event_hash(event: dict[str, Any]) -> str:
     hash_hex = hashlib.sha256(payload.encode("utf-8")).hexdigest()
     demisto.debug(f"[generate_event_hash] computed hash={hash_hex}")
     return hash_hex
+
+
+def compute_effective_time_frame_minutes(time_frame_minutes: int | None, last_run: dict[str, Any]) -> int:
+    """
+    Compute the effective time frame in minutes to use in the fetch events request.
+
+    - If time_frame_minutes is an int, it means the saviynt-eic-get-events command was called with a time frame.
+    - If time_frame_minutes is None, it means the fetch-events command was called:
+      - First fetch run: return DEFAULT_FETCH_TIME_FRAME_MINUTES.
+      - Not first fetch run: If last_run has a valid LAST_RUN_TIMESTAMP, compute minutes between now (UTC) and that timestamp
+        using datetime arithmetic.
+    """
+    if time_frame_minutes is None:
+        previous_ts = last_run.get(LAST_RUN_TIMESTAMP)
+        if isinstance(previous_ts, int) and previous_ts > 0:  # if not first run
+            prev_dt = arg_to_datetime(previous_ts)  # UTC-aware
+            now_dt = datetime.now(UTC)
+            delta_seconds = (now_dt - prev_dt).total_seconds()
+            effective_minutes = max(1, math.ceil(delta_seconds / 60))
+            demisto.debug(
+                f"[compute_effective_time_frame_minutes] prev_dt={prev_dt}, now_dt={now_dt}, "
+                f"delta_seconds={delta_seconds}, effective_minutes={effective_minutes}"
+            )
+        else:
+            effective_minutes = DEFAULT_FETCH_TIME_FRAME_MINUTES
+            demisto.debug(
+                f"[compute_effective_time_frame_minutes] first run (no previous timestamp). "
+                f"Using default: {effective_minutes} minutes"
+            )
+    else:
+        effective_minutes = time_frame_minutes
+    return effective_minutes
 
 
 def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -271,6 +304,35 @@ def deduplicate_events(events: list[dict[str, Any]], last_run: dict[str, Any]) -
     return new_last_run, deduplicated_events
 
 
+def update_last_run_timestamp_from_events(next_run: dict[str, Any], events: list[dict[str, Any]]) -> None:
+    """
+    Update next_run[LAST_RUN_TIMESTAMP] based on the most recent event timestamp.
+
+    Prefers the enriched "_time" field (ISO string), falls back to vendor "Event Time".
+    Stores the timestamp as epoch seconds. If no timestamps exist, falls back to current time.
+    """
+    # Prefer enriched _time values
+    latest_time_str = max((e.get("_time") for e in events if e.get("_time")), default=None)
+    if not latest_time_str:
+        # Fallback: try vendor field if enrichment was not available
+        latest_time_str = max((e.get("Event Time") for e in events if e.get("Event Time")), default=None)
+
+    if latest_time_str:
+        latest_dt = arg_to_datetime(latest_time_str)
+        if latest_dt:
+            latest_epoch = int(latest_dt.timestamp())
+            next_run[LAST_RUN_TIMESTAMP] = latest_epoch
+            demisto.debug(
+                f"[update_last_run_timestamp_from_events] set last_run from latest event: {latest_time_str} ({latest_epoch})"
+            )
+            return
+
+    # Safe fallback: current time
+    now_epoch_end = int(time.time())
+    next_run[LAST_RUN_TIMESTAMP] = now_epoch_end
+    demisto.debug(f"[update_last_run_timestamp_from_events] no event timestamps found; using now={now_epoch_end}")
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -296,56 +358,67 @@ def fetch_events(
     last_run: dict[str, Any],
     analytics_name_list: list[str],
     max_events: int,
-    time_frame_minutes: int,
+    time_frame_minutes: int | None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    """Fetch events for XSIAM ingest."""
+    """Fetch events for XSIAM ingest.
+
+    If time_frame_minutes is None, the function will compute it based on last_run timestamp:
+    - First run (no timestamp): use DEFAULT_FETCH_TIME_FRAME_MINUTES
+    - Subsequent runs: compute minutes between now and last_run timestamp (ceil to minutes, min 1)
+    """
+    effective_time_frame_minutes = compute_effective_time_frame_minutes(time_frame_minutes, last_run)
+
+    prev_cache_size = len(last_run.get(LAST_RUN_EVENT_HASHES, []))
     demisto.debug(
         f"[fetch_events] start: analytics={analytics_name_list}, max_events={max_events}, "
-        f"time_frame_minutes={time_frame_minutes}, previous_run_cache_size={len(last_run.get(LAST_RUN_EVENT_HASHES, []))}"
+        f"time_frame_minutes_input={time_frame_minutes}, effective_time_frame_minutes={effective_time_frame_minutes}, "
+        f"previous_run_cache_size={prev_cache_size}"
     )
 
     events = []
 
     for analytics_name in analytics_name_list:
         events_per_analytics_name = []
+        collected_count = 0
 
         demisto.debug(
-            f"[fetch_events] fetching analytics_name={analytics_name} offset=None time_frame_minutes={time_frame_minutes}"
+            f"[fetch_events] fetching analytics_name={analytics_name} offset=None "
+            f"time_frame_minutes={effective_time_frame_minutes}"
         )
         response = client.fetch_events(
             analytics_name=analytics_name,
-            time_frame_minutes=time_frame_minutes,
+            time_frame_minutes=effective_time_frame_minutes,
             max_results=min(max_events, 10000),
             offset=None,
         )
 
         raw_results = response.get("results", [])
         total_count: int = response.get("totalcount", 0)
-        demisto.debug(
-            f"[fetch_events] {analytics_name}: initial_batch_size={len(raw_results)} total_count={total_count}"
-        )
+        demisto.debug(f"[fetch_events] {analytics_name}: initial_page_size={len(raw_results)} total_count={total_count}")
         events_per_analytics_name.extend(raw_results)
+        collected_count += len(raw_results)
 
-        while len(events_per_analytics_name) < total_count and len(events_per_analytics_name) < max_events:
-            offset = len(events_per_analytics_name)
+        while collected_count < total_count and collected_count < max_events:
+            offset = collected_count
             demisto.debug(
-                f"[fetch_events] {analytics_name}: paginating offset={offset} current_collected={len(events_per_analytics_name)}"
+                f"[fetch_events] {analytics_name}: paginating offset={offset} current_collected={collected_count}"
             )
             response = client.fetch_events(
                 analytics_name=analytics_name,
-                time_frame_minutes=time_frame_minutes,
+                time_frame_minutes=effective_time_frame_minutes,
                 max_results=min(max_events, 10000),
                 offset=offset,
             )
             raw_results = response.get("results", [])
-            total_collected = len(events_per_analytics_name) + len(raw_results)
+            page_batch_size = len(raw_results)
             demisto.debug(
-                f"[fetch_events] {analytics_name}: page_batch_size={len(raw_results)} total_collected={total_collected}"
+                f"[fetch_events] {analytics_name}: page_batch_size={page_batch_size} total_collected={collected_count + page_batch_size}"  # noqa: E501
             )
             events_per_analytics_name.extend(raw_results)
+            collected_count += page_batch_size
 
         demisto.debug(
-            f"[fetch_events] {analytics_name}: finished collection total_collected={len(events_per_analytics_name)}"
+            f"[fetch_events] {analytics_name}: finished collection total_collected={collected_count}"
         )
         events.extend(events_per_analytics_name)
 
@@ -355,8 +428,12 @@ def fetch_events(
     demisto.debug(f"[fetch_events] total events after dedup={len(deduped_events)}")
 
     # Enrich deduped events with _time for XDM mapping
-    add_time_to_events(deduped_events)
-    demisto.debug("[fetch_events] added _time to deduplicated events")
+    if deduped_events:
+        add_time_to_events(deduped_events)
+        demisto.debug("[fetch_events] added _time to deduplicated events")
+
+    # Update last run timestamp at the end of fetch logic
+    update_last_run_timestamp_from_events(next_run, deduped_events)
     return next_run, deduped_events
 
 
@@ -411,7 +488,7 @@ def main():  # pragma: no cover
                 last_run=last_run,
                 analytics_name_list=analytics_name_list,
                 max_events=max_events,
-                time_frame_minutes=DEFAULT_FETCH_TIME_FRAME_MINUTES,
+                time_frame_minutes=None,
             )
             demisto.debug(f"[fetch-events] Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
