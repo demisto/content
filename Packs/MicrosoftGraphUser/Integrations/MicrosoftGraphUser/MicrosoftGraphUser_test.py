@@ -155,7 +155,7 @@ def test_suppress_errors(mocker):
     from MicrosoftGraphUser import (
         MsGraphClient,
         assign_manager_command,
-        change_password_user_command,
+        change_password_user_saas_command,
         delete_user_command,
         disable_user_account_command,
         get_direct_reports_command,
@@ -191,8 +191,8 @@ def test_suppress_errors(mocker):
             "expected_result": "#### User -> 123456789 does not exist",
         },
         {
-            "fun": change_password_user_command,
-            "mock_fun": "password_change_user",
+            "fun": change_password_user_saas_command,
+            "mock_fun": "password_change_user_saas",
             "mock_value": NotFoundError("123456789"),
             "args": {"user": "123456789"},
             "expected_result": "#### User -> 123456789 does not exist",
@@ -782,3 +782,119 @@ def test_create_tap_policy_command_success(mocker):
     assert result.outputs_prefix == "MSGraphUser.TAPPolicy"
     assert result.outputs_key_field == "ID"
     assert result.outputs["ID"] == "987654321"
+
+
+@pytest.mark.parametrize("password_field", ("password", "nonsensitive_password"))
+def test_change_on_premise_password_success(requests_mock, password_field: str):
+    from MicrosoftGraphUser import change_password_user_on_premise_command, MsGraphClient
+
+    password = "new_password"
+    expected_output = "The password of user user has been changed successfully."
+
+    # authenticate
+    requests_mock.post("https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token", json={})
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
+    )
+    mocked_password_change_request = requests_mock.post(
+        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods/id/resetPassword", json={}, status_code=202
+    )
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+    other_password_field = {"password": "nonsensitive_password", "nonsensitive_password": "password"}[password_field]
+    output = change_password_user_on_premise_command(
+        client=client, args={"user": "user", password_field: password, other_password_field: ""}
+    )
+    assert mocked_password_change_request.call_count == 1
+    assert output.readable_output == expected_output
+
+
+@pytest.mark.parametrize(
+    "user,password,nonsensitive_password",
+    (
+        ("", "", ""),
+        ("user", "", ""),
+        ("", "password", ""),
+        ("", "", "nonsensitive_password"),
+    ),
+)
+def test_change_on_premise_password_missing_arg(requests_mock, user: str, password: str, nonsensitive_password: str):
+    """
+    Given
+            a MSGraphClient
+    When
+            calling change_password_user_on_premise
+    Then
+            make sure the user and password are not empty
+    """
+    from MicrosoftGraphUser import change_password_user_on_premise_command, MsGraphClient, DemistoException
+
+    requests_mock.post("https://login.microsoftonline.com/tenant_id/oauth2/v2.0/token", json={})
+    requests_mock.get(
+        "https://graph.microsoft.com/v1.0/users/user/authentication/passwordMethods", json={"value": [{"id": "id"}]}
+    )
+
+    client = MsGraphClient(
+        base_url="https://graph.microsoft.com/v1.0",
+        tenant_id="tenant-id",
+        auth_id="auth_and_token_url",
+        enc_key="enc_key",
+        app_name="ms-graph-groups",
+        verify="use_ssl",
+        proxy="proxies",
+        self_deployed="self_deployed",
+        handle_error=True,
+        auth_code="",
+        redirect_uri="",
+        azure_cloud=AZURE_WORLDWIDE_CLOUD,
+    )
+
+    with pytest.raises(DemistoException):
+        change_password_user_on_premise_command(
+            client=client, args={"user": user, "password": password, "nonsensitive_password": nonsensitive_password}
+        )
+
+
+@pytest.mark.parametrize(
+    "args", [{"password": "aa", "nonsensitive_password": "aa"}, {"password": "aa"}, {"nonsensitive_password": "aa"}]
+)
+def test_get_password_valid(args):
+    """
+    Given
+    - arguments for the script
+    When
+    - running the script on a password locked file
+    Then
+    - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
+    """
+    from MicrosoftGraphUser import validate_input_password
+
+    assert validate_input_password(args) == "aa"
+
+
+def test_get_password_invalid():
+    """
+    Given
+    - arguments for the script
+    When
+    - running the script on a password locked file
+    Then
+    - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
+    """
+    from MicrosoftGraphUser import validate_input_password
+
+    with pytest.raises(ValueError):
+        validate_input_password({"password": "aa", "nonsensitive_password": "bb"})
