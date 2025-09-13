@@ -75,7 +75,8 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = (
 )
 
 DEFAULT_LIMIT = 50
-FETCH_MAX_LIMIT = 20
+FETCH_MAX_LIMIT = 1000
+FETCH_DEFAULT_LIMIT = 20
 COMMAND_MAX_LIMIT = 200
 MAX_INCIDENT_COMMENT_LIMIT = 50
 
@@ -994,7 +995,11 @@ def list_incidents_command(
     """
     filter_expression = args.get("filter")
     next_link = args.get("next_link", "")
-    limit = min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
+    limit = (
+        min(arg_to_number(args.get("limit")) or FETCH_DEFAULT_LIMIT, FETCH_MAX_LIMIT)
+        if is_fetch_incidents
+        else min(arg_to_number(args.get("limit")) or DEFAULT_LIMIT, COMMAND_MAX_LIMIT)
+    )
 
     if next_link:
         next_link = next_link.replace("%20", " ")  # Next link syntax can't handle '%' character
