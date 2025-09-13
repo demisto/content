@@ -1,7 +1,6 @@
 import hashlib
 import json
 import time
-from datetime import datetime, timedelta
 from typing import Any
 
 import urllib3
@@ -192,7 +191,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def add_time_to_events(events: list[dict[str, Any]] | None) -> list[dict[str, Any]] | None:
+def add_time_to_events(events: list[dict[str, Any]] | None):
     """
     Adds the '_time' key to events based on their creation or occurrence timestamp.
 
@@ -203,6 +202,7 @@ def add_time_to_events(events: list[dict[str, Any]] | None) -> list[dict[str, An
         for event in events:
             create_time = arg_to_datetime(arg=event.get("Event Time"))
             event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
+
 
 
 def generate_event_hash(event: dict[str, Any]) -> str:
@@ -371,8 +371,8 @@ def main():  # pragma: no cover
                 client=client,
                 last_run={},
                 analytics_name_list=analytics_name_list,
-                max_events=arg_to_number(args.get("limit", MAX_EVENTS_PER_FETCH)),
-                time_frame_minutes=arg_to_number(args.get("time_frame", DEFAULT_FETCH_TIME_FRAME_MINUTES)),
+                max_events=arg_to_number(args.get("limit")) or MAX_EVENTS_PER_FETCH,
+                time_frame_minutes=arg_to_number(args.get("time_frame")) or DEFAULT_FETCH_TIME_FRAME_MINUTES,
             )
             if should_push_events and events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)

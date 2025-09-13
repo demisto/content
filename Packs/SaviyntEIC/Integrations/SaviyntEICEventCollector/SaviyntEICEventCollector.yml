@@ -48,7 +48,7 @@ configuration:
   type: 8
   section: Connect
 description: Collector for Saviynt Enterprise Identity Cloud (EIC) audit logs using Analytics Runtime Control V2.
-display: SaviyntEIC Event Collector
+display: Saviynt EIC Event Collector
 name: SaviyntEICEventCollector
 script:
   commands:
