@@ -187,6 +187,12 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint
+    supportedModules:
+    - C3
+    - X0
+    - X3
+    - X5
+    - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.Isolation.endpoint_id
@@ -222,6 +228,12 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Isolate Endpoint
     quickaction: true
     hidden: true
@@ -254,6 +266,12 @@ script:
     description: Reverses the isolation of an endpoint.
     execution: true
     name: core-unisolate-endpoint
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.UnIsolation.endpoint_id
@@ -897,6 +915,12 @@ script:
       - desc
     description: Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
     name: core-get-audit-agent-reports
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.AuditAgentReports.ENDPOINTID
       description: Endpoint ID.
@@ -961,6 +985,12 @@ script:
       - 'false'
     description: Block lists requested files which have not already been block listed or added to allow lists.
     name: core-blocklist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.added_hashes
       description: Added fileHash to blocklist.
@@ -986,6 +1016,12 @@ script:
       - 'false'
     description: Adds requested files to allow list if they are not already on block list or allow list.
     name: core-allowlist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.added_hashes
       description: Added fileHash to allowlist.
@@ -1016,6 +1052,12 @@ script:
       name: timeout_in_seconds
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1080,6 +1122,12 @@ script:
       name: timeout_in_seconds
     description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
     name: core-quarantine-files-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Quarantine File
     quickaction: true
     hidden: true
@@ -1124,6 +1172,12 @@ script:
       required: true
     description: Retrieves the quarantine status for a selected file.
     name: core-get-quarantine-status
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
   - arguments:
     - description: Links the response action to the incident that triggered it.
       name: incident_id
@@ -1142,6 +1196,12 @@ script:
       name: timeout_in_seconds
     description: Restores a quarantined file on requested endpoints.
     name: core-restore-file
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.GetActionStatus.ErrorReasons.bucket
@@ -1192,6 +1252,12 @@ script:
       name: timeout_in_seconds
     description: Restores a quarantined file on requested endpoints.
     name: core-restore-file-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Restore File From Quarantine
     quickaction: true
     hidden: true
@@ -1286,6 +1352,12 @@ script:
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: core-endpoint-scan
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.endpointScan.actionId
@@ -1388,6 +1460,12 @@ script:
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: core-endpoint-scan-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Run Malware Scan
     quickaction: true
     hidden: true
@@ -1480,6 +1558,12 @@ script:
     description: Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
     execution: true
     name: core-endpoint-scan-abort
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.endpointScan.actionId
       description: The action id of the abort scan request.
@@ -1703,6 +1787,12 @@ script:
       name: timeout_in_seconds
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
     name: core-retrieve-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.RetrievedFiles.action_id
@@ -1773,6 +1863,12 @@ script:
       name: timeout_in_seconds
     description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
     name: core-retrieve-files-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Retrieve File
     quickaction: true
     hidden: true
@@ -1815,6 +1911,12 @@ script:
       required: true
     description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
     name: core-retrieve-file-details
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: File
       description: The file details command results.
@@ -1918,6 +2020,12 @@ script:
       required: true
     description: Retrieves the status of the requested actions according to the action ID.
     name: core-action-status-get
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.GetActionStatus
       description: The action status command results.
@@ -1974,6 +2082,12 @@ script:
       name: timeout
     description: Deprecated. Use core-script-run instead.
     name: core-run-script
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     deprecated: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2001,6 +2115,12 @@ script:
       name: timeout_in_seconds
     description: Initiates a new endpoint script execution action using the provided snippet code.
     name: core-run-snippet-code-script
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2043,6 +2163,12 @@ script:
       required: true
     description: Retrieves the status of a script execution action.
     name: core-get-script-execution-status
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.ScriptStatus.general_status
       description: General status of the action, considering the status of all the endpoints.
@@ -2087,6 +2213,12 @@ script:
       required: true
     description: Retrieve the results of a script execution action.
     name: core-get-script-execution-results
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.ScriptResult.action_id
       description: ID of the action initiated.
@@ -2141,6 +2273,12 @@ script:
       required: true
     description: Gets the files retrieved from a specific endpoint during a script execution.
     name: core-get-script-execution-result-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -2208,6 +2346,12 @@ script:
       name: timeout_in_seconds
     description: Initiate a new endpoint script execution of shell commands.
     name: core-run-script-execute-commands
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2267,6 +2411,12 @@ script:
       name: timeout_in_seconds
     description: Initiates a new endpoint script execution to delete the specified file.
     name: core-run-script-delete-file
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2326,6 +2476,12 @@ script:
       name: timeout_in_seconds
     description: Initiates a new endpoint script execution to check if file exists.
     name: core-run-script-file-exists
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2385,6 +2541,12 @@ script:
       name: timeout_in_seconds
     description: Initiates a new endpoint script execution kill process.
     name: core-run-script-kill-process
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptRun.action_id
@@ -2433,6 +2595,12 @@ script:
       name: hostname
     description: Returns information about an endpoint.
     name: endpoint
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Endpoint.Hostname
       description: The endpoint's hostname.
@@ -2495,6 +2663,12 @@ script:
       name: comment
     description: Removes requested files from allow list.
     name: core-remove-allowlist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.allowlist.removed_hashes
       description: Removed file hash.
@@ -2510,6 +2684,12 @@ script:
       name: comment
     description: Removes requested files from block list.
     name: core-remove-blocklist-files
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Core.blocklist.removed_hashes
       description: Removed fileHash from blocklist.
@@ -3625,6 +3805,12 @@ script:
       defaultValue: true
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     name: core-script-run
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     polling: true
     outputs:
     - contextPath: Core.ScriptResult.action_id
@@ -3700,6 +3886,12 @@ script:
       defaultValue: true
     description: Initiates a new endpoint script execution action using a script from the script library and returns the results.
     name: core-script-run-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Run Endpoint Script
     quickaction: true
     hidden: true
@@ -3767,6 +3959,12 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-process
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     description: Terminate a process by its instance ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
@@ -3838,6 +4036,12 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     description: Terminate a process tree by its causality ID. Available only for XSIAM 2.4 and above.
     polling: true
     outputs:
@@ -3914,6 +4118,12 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     name: core-terminate-causality-quick-action
+    supportedModules:
+      - C3
+      - X0
+      - X3
+      - X5
+      - ENT_PLUS
     prettyname: Terminate CGO
     quickaction: true
     hidden: true
@@ -4301,7 +4511,7 @@ script:
       hidden: true
     polling: true
     name: core-block-ip
-    description: Block malicious or suspicious IP addresses.  
+    description: Block malicious or suspicious IP addresses.
     outputs:
     - contextPath: Core.ip_block_results
       description: List of Dictionaries, each containing ip_address, end_point, and reason (status and error message).
