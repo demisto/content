@@ -59,7 +59,6 @@ class Client(BaseClient):
             method="POST",
             url_suffix="api/login",
             json_data=data,
-            timeout=60,
         )
         # Expected keys: token_type, access_token, refresh_token, expires_in
         access_token = res.get("access_token")
@@ -297,14 +296,22 @@ def fetch_events(
     last_run: dict[str, Any],
     analytics_name_list: list[str],
     max_events: int,
-    time_frame_minutes: int = DEFAULT_FETCH_TIME_FRAME_MINUTES,
+    time_frame_minutes: int,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Fetch events for XSIAM ingest."""
+    demisto.debug(
+        f"[fetch_events] start: analytics={analytics_name_list}, max_events={max_events}, "
+        f"time_frame_minutes={time_frame_minutes}, previous_run_cache_size={len(last_run.get(LAST_RUN_EVENT_HASHES, []))}"
+    )
+
     events = []
 
     for analytics_name in analytics_name_list:
         events_per_analytics_name = []
 
+        demisto.debug(
+            f"[fetch_events] fetching analytics_name={analytics_name} offset=None time_frame_minutes={time_frame_minutes}"
+        )
         response = client.fetch_events(
             analytics_name=analytics_name,
             time_frame_minutes=time_frame_minutes,
@@ -314,10 +321,16 @@ def fetch_events(
 
         raw_results = response.get("results", [])
         total_count: int = response.get("totalcount", 0)
+        demisto.debug(
+            f"[fetch_events] {analytics_name}: initial_batch_size={len(raw_results)} total_count={total_count}"
+        )
         events_per_analytics_name.extend(raw_results)
 
         while len(events_per_analytics_name) < total_count and len(events_per_analytics_name) < max_events:
             offset = len(events_per_analytics_name)
+            demisto.debug(
+                f"[fetch_events] {analytics_name}: paginating offset={offset} current_collected={len(events_per_analytics_name)}"
+            )
             response = client.fetch_events(
                 analytics_name=analytics_name,
                 time_frame_minutes=time_frame_minutes,
@@ -325,15 +338,25 @@ def fetch_events(
                 offset=offset,
             )
             raw_results = response.get("results", [])
+            total_collected = len(events_per_analytics_name) + len(raw_results)
+            demisto.debug(
+                f"[fetch_events] {analytics_name}: page_batch_size={len(raw_results)} total_collected={total_collected}"
+            )
             events_per_analytics_name.extend(raw_results)
 
+        demisto.debug(
+            f"[fetch_events] {analytics_name}: finished collection total_collected={len(events_per_analytics_name)}"
+        )
         events.extend(events_per_analytics_name)
 
+    demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
     # Deduplicate by comparing to previous run's hashes and persist only current run's hashes
     next_run, deduped_events = deduplicate_events(events, last_run)
+    demisto.debug(f"[fetch_events] total events after dedup={len(deduped_events)}")
 
-    # Enrich deduped events with _time for XDM mapping/visibility
+    # Enrich deduped events with _time for XDM mapping
     add_time_to_events(deduped_events)
+    demisto.debug("[fetch_events] added _time to deduplicated events")
     return next_run, deduped_events
 
 
@@ -375,6 +398,7 @@ def main():  # pragma: no cover
                 time_frame_minutes=arg_to_number(args.get("time_frame")) or DEFAULT_FETCH_TIME_FRAME_MINUTES,
             )
             if should_push_events and events:
+                demisto.debug(f"[saviynt-eic-get-events] Sending {len(events)} events to XSIAM.")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             hr = tableToMarkdown(name="Saviynt EIC Events", t=events)
@@ -387,11 +411,12 @@ def main():  # pragma: no cover
                 last_run=last_run,
                 analytics_name_list=analytics_name_list,
                 max_events=max_events,
+                time_frame_minutes=DEFAULT_FETCH_TIME_FRAME_MINUTES,
             )
-            demisto.debug(f"Sending {len(events)} events to XSIAM.")
+            demisto.debug(f"[fetch-events] Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
-            demisto.debug(f"Setting next run to {next_run}.")
+            demisto.debug(f"[fetch-events] Setting next run to {next_run}.")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command. Error: {str(e)}")
