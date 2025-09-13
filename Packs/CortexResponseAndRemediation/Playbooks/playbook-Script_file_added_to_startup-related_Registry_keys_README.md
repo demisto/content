@@ -50,19 +50,18 @@ This playbook does not use any integrations.
 * SetAndHandleEmpty
 * SetMultipleValues
 * UnzipFile
+* file-enrichment
 
 ### Commands
 
 * closeInvestigation
 * core-blocklist-files
+* core-execute-command
 * core-get-cloud-original-alerts
-* core-get-script-execution-results
 * core-retrieve-file-details
 * core-retrieve-files
-* core-run-script-execute-commands
 * core-terminate-causality
 * extractIndicators
-* file
 * wildfire-get-verdict
 
 ## Playbook Inputs
