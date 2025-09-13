@@ -472,7 +472,14 @@ def test_create_alert_comment_command(mocker, test_case):
         ("param", "providers_param", "service_sources_param", "param", API_V1),
         ("param", "providers_param", "service_sources_param", "param", API_V2),
         ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", API_V1),
-        ("", "providers_param", "service_sources_param", "serviceSource eq 'service_sources_param'", API_V2),
+        ("", "providers_param", "service_sources_param", "serviceSource in ('service_sources_param')", API_V2),
+        (
+            "",
+            "providers_param",
+            "service_source1,service_source2",
+            "serviceSource in ('service_source1','service_source2')",
+            API_V2,
+        ),
         ("", "", "", "", API_V2),
     ],
 )
@@ -487,6 +494,7 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
     - Case 3: Only providers_param and service_sources_param function arguments filled, and API version flag is Legacy Alerts.
     - Case 4: Only providers_param and service_sources_param function arguments filled, and API version flag is Alerts v2.
     - Case 5: param, providers_param, and service_sources_param function arguments Empty, and API version flag is Alerts v2.
+    - Case 6: Multiple service sources are provided, and API version flag is Alerts v2.
     When:
     - Running create_filter_query.
 
@@ -497,6 +505,7 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
     - Case 3: Should return providers_param.
     - Case 4: Should return service_sources_param.
     - Case 5: Should return an empty string.
+    - Case 6: Should return service_sources_param as query operator $in and not $eq.
     """
     mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
     filter_query = create_filter_query(param, providers_param, service_sources_param)
