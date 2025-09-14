@@ -704,6 +704,7 @@ Fetches information for a single user. You must enter one or more parameters for
 | --- | --- | --- |
 | username | Okta username for which to get information. | Optional |
 | userId | User ID of the user for which to get information. | Optional |
+| userEmail | Email of the user for which to get information. | Optional |
 | verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
