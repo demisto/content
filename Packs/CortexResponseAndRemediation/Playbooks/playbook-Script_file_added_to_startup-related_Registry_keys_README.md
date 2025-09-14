@@ -33,7 +33,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Quarantine File
 * Wildfire Sandbox - Detonate and Analyze File
 
 ### Integrations
@@ -51,6 +50,7 @@ This playbook does not use any integrations.
 * SetMultipleValues
 * UnzipFile
 * file-enrichment
+* quarantine-file
 
 ### Commands
 
