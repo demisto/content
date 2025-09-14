@@ -526,6 +526,34 @@ def parse_date_for_api_3_digits(date_to_parse: datetime) -> str:
     return f"{iso_start_time_splitted[0]}.{micro_sec}"
 
 
+def dedupe_events_by_id(events: list[dict]) -> list[dict]:
+    """
+    Deduplication by 'id' before shipping to XSIAM.
+    - Keeps the first event for each seen 'id'
+    - Events without an 'id' are always kept
+    - Logs each drop and a final summary
+    """
+    seen: set[str] = set()
+    out: list[dict] = []
+    drops = 0
+
+    for ev in events:
+        eid = ev.get("id")
+        if eid is None:
+            out.append(ev)
+            continue
+        if eid in seen:
+            drops += 1
+            demisto.debug(f"{LOG_LINE} duplicate dropped id={eid!r}, type={ev.get('event_type', 'unknown')}")
+            continue
+        seen.add(eid)
+        out.append(ev)
+
+    if drops:
+        demisto.info(f"{LOG_LINE} dropped {drops} duplicate events by id prior to export")
+    return out
+
+
 """ FORMAT FUNCTION """
 
 
@@ -692,6 +720,7 @@ def main() -> None:  # pragma: no cover
             assert isinstance(first_fetch_time, datetime)
 
             events, results = collector.get_events_command(start_time=first_fetch_time)
+            events = dedupe_events_by_id(events)
             return_results(results)
 
             if should_push_events:
@@ -700,6 +729,7 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = collector.fetch_command(demisto_last_run=last_run)
+            events = dedupe_events_by_id(events)
             demisto.debug(f"{events=}")
             send_events_to_xsiam(events, VENDOR, PRODUCT)
             demisto.setLastRun(next_run)
