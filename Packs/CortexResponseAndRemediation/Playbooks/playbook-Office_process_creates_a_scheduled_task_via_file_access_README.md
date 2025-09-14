@@ -1,4 +1,3 @@
-Deprecated. No available replacement. 
 This playbook handles "Office process creates a scheduled task via file access" alerts.
 
 Playbook Stages:
