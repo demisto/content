@@ -753,7 +753,7 @@ def test_generate_refresh_token_with_regional_oauth_url(mocker, region, expected
     oauth_url = OAUTH_URL[region]
     client = Client(
         url="https://test.com/api/v3/",
-        outh_url=expected_oauth_url,
+        outh_url=oauth_url,
         use_ssl=True,
         use_proxy=False,
         client_id="test_client_id",
@@ -768,7 +768,7 @@ def test_generate_refresh_token_with_regional_oauth_url(mocker, region, expected
 
     mock_http_request.assert_called_once()
     call_args = mock_http_request.call_args
-    assert call_args[1]["full_url"] == oauth_url
+    assert call_args[1]["full_url"] == expected_oauth_url
     assert call_args[0][0] == "POST"
     assert call_args[1]["url_suffix"] == ""
 
