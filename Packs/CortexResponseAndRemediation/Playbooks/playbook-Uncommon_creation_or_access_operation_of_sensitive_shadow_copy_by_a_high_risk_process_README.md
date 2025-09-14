@@ -1,15 +1,15 @@
 This playbook addresses the following alerts:
- 
+
 - Uncommon creation or access operation of sensitive shadow copy by a high-risk process
- 
+
 Playbook Stages:
-  
-Triage: 
- 
+
+Triage:
+
 - Check if the causality process image (CGO) is signed or not
- 
+
 Investigation:
- 
+
 - If CGO is unsigned:
   - Check the CGO process prevalence
   - Check if the process image path is common
@@ -19,9 +19,9 @@ Investigation:
   - Check if username is SYSTEM
   - Check if host is a server
   - Check for previous similar alert closed as False Positive
- 
+
 Containment:
- 
+
 - Terminate causality process (CGO) process - when a signed high-risk process or an unsigned process from an uncommon path attempting to create or access sensitive shadow copy data.
 
 ## Dependencies
