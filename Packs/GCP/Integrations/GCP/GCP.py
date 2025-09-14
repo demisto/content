@@ -158,7 +158,6 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
     "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
-    "gcp-compute-project-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
     "gcp-storage-bucket-policy-delete": (GCPServices.STORAGE, ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"]),
     "gcp-storage-bucket-metadata-update": (GCPServices.STORAGE, ["storage.buckets.update"]),
     "gcp-container-cluster-security-update": (
@@ -1181,49 +1180,6 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     headers = ["id", "name", "kind", "status", "progress", "operationType"]
 
     readable_output = tableToMarkdown(f"GCP instance {instance} labels update", data_res, headers=headers, removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="GCP.Compute.Operations",
-        outputs_key_field="id",
-        outputs=response,
-        raw_response=response,
-    )
-
-
-def gcp_compute_project_metadata_set_command(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Sets labels on an instance.
-    Args:
-        creds (Credentials): GCP credentials with admin directory security scope.
-        args (dict[str, Any]): Must include 'resource_name'.
-
-    Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
-    """
-    project_id = args.get("project_id", "")
-    zone = extract_zone_name(args.get("zone"))
-    instance = args.get("instance", "")
-    fingerprint = args.get("fingerprint", "")
-    metadata_items = parse_metadata_items(args.get("metadata_items", ""))
-
-    body = {"kind": "compute#metadata", "fingerprint": fingerprint, "items": metadata_items}
-
-    compute = GCPServices.COMPUTE.build(creds)
-    response = compute.instances().setMetadata(project=project_id, zone=zone, instance=instance, body=body).execute()
-
-    data_res = {
-        "status": response.get("status"),
-        "kind": response.get("kind"),
-        "name": response.get("name"),
-        "id": response.get("id"),
-        "progress": response.get("progress"),
-        "operationType": response.get("operationType"),
-    }
-
-    headers = ["id", "name", "kind", "status", "progress", "operationType"]
-
-    readable_output = tableToMarkdown(f"GCP instance {instance} metadata update", data_res, headers=headers, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
