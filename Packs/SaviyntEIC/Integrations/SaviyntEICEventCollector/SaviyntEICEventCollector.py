@@ -118,12 +118,12 @@ class Client(BaseClient):
 
     def obtain_token(self, force_refresh: bool = False) -> None:
         """
-        Ensure a valid access token using the integration context cache.
-        If force_refresh is True, attempt a refresh (or create) regardless of current cache state.
-        Sets self._headers and updates integration context.
+        Ensure a valid access token using the integration context cache, Sets request headers and updates integration context.
+        - If force_refresh is True, attempt a refresh (or create) regardless of current cache state.
         - If no integration context is found, create a new access token.
         - If the access token is expired or is about to expire, refresh it using refresh token.
         """
+        demisto.debug(f"[Client.obtain_token] start (force_refresh={force_refresh})")
         try:
             if context := demisto.getIntegrationContext():
                 now_epoch = int(time.time())
@@ -161,6 +161,21 @@ class Client(BaseClient):
         max_results: int,
         offset: int | None = None,
     ) -> dict[str, Any]:
+        """
+        Fetch events for a single Analytics Runtime Control.
+
+        Args:
+            analytics_name: event type to fetch (e.g., "SIEMAuditLogs").
+            time_frame_minutes: Time frame in minutes to fetch events from.
+            max_results: Maximum number of results to request in this call (capped by server to 10,000).
+            offset: Optional paging offset.
+
+        Returns:
+            A dict JSON response from the API.
+
+        Behavior:
+            On authentication failure (401/Forbidden/invalid token), forces a token refresh and retries once.
+        """
         body: dict[str, Any] = {
             "analyticsname": analytics_name,
             "attributes": {"timeFrame": str(time_frame_minutes)},
@@ -178,7 +193,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             # Attempt one retry on auth failure
-            if any(x in str(e) for x in ("401", "Forbidden", "invalid token", "expired")):
+            if any(x in str(e) for x in ("401", "Forbidden", "invalid token")):
                 demisto.debug(f"Access token may be invalid/expired. Attempting to refresh and retry fetch. Error: {e}")
                 # Force refresh token and retry
                 self.obtain_token(force_refresh=True)
@@ -196,7 +211,7 @@ class Client(BaseClient):
 
 def add_time_to_events(events: list[dict[str, Any]]):
     """
-    Adds the '_time' key to events based on their creation or occurrence timestamp.
+    Add the '_time' key to events based on their creation or occurrence timestamp.
 
     Args:
         events (list[dict[str, Any]]): A list of events.
@@ -214,16 +229,12 @@ def generate_event_hash(event: dict[str, Any]) -> str:
     """
     excluded = {"_time", "event_hash"}
     event_for_hash = {k: v for k, v in event.items() if k not in excluded}
-    demisto.debug(
-        f"[generate_event_hash] included_fields={len(event_for_hash)}, total_fields={len(event)}, excluded={list(excluded)}"
-    )
     try:
         payload = json.dumps(event_for_hash, sort_keys=True, separators=(",", ":"))
     except TypeError as e:
         demisto.debug(f"[generate_event_hash] encountered non-serializable value; falling back to default=str. error={e}")
         payload = json.dumps(event_for_hash, sort_keys=True, separators=(",", ":"), default=str)
     hash_hex = hashlib.sha256(payload.encode("utf-8")).hexdigest()
-    demisto.debug(f"[generate_event_hash] computed hash={hash_hex}")
     return hash_hex
 
 
@@ -344,12 +355,12 @@ def test_module(client: Client) -> str:
         # example fetch
         client.fetch_events(
             analytics_name="SIEMAuditLogs",
-            time_frame_minutes=60,
+            time_frame_minutes=1,
             max_results=1,
         )
     except Exception as e:
         if "Forbidden" in str(e) or "401" in str(e):
-            raise DemistoException("Authorization Error: make sure Username and Password are correctly set. Error: {e}")
+            raise DemistoException(f"Authorization Error: make sure Username and Password are correctly set. Error: {e}")
         else:
             raise DemistoException(f"Failed to fetch events. Error: {e}")
     return "ok"
@@ -478,7 +489,7 @@ def main():  # pragma: no cover
                 time_frame_minutes=arg_to_number(args.get("time_frame")) or DEFAULT_FETCH_TIME_FRAME_MINUTES,
             )
             if should_push_events and events:
-                demisto.debug(f"[saviynt-eic-get-events] Sending {len(events)} events to XSIAM.")
+                demisto.debug(f"[saviynt-eic-get-events] Sending {len(events)} events to XSIAM")
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
             hr = tableToMarkdown(name="Saviynt EIC Events", t=events)
@@ -493,7 +504,7 @@ def main():  # pragma: no cover
                 max_events=max_events,
                 time_frame_minutes=None,
             )
-            demisto.debug(f"[fetch-events] Sending {len(events)} events to XSIAM.")
+            demisto.debug(f"[fetch-events] Sending {len(events)} events to XSIAM")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f"[fetch-events] Setting next run to {next_run}.")
