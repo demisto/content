@@ -24,9 +24,9 @@ configuration:
   options:
   - SIEMAuditLogs
   section: Collect
-- defaultvalue: '10000'
+- defaultvalue: '50000'
   section: Collect
-  display: Maximum number of events per fetch.
+  display: Maximum number of events per fetch
   name: max_fetch
   required: false
   type: 0
@@ -84,7 +84,7 @@ script:
     description: Gets events from Saviynt EIC.
     execution: false
     name: saviynt-eic-get-events
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.11.4819260
   isfetchevents: true
   runonce: false
   script: '-'
