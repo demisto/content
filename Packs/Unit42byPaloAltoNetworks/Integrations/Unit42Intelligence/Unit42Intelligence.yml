@@ -17,13 +17,14 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data.
   type: 15
   options:
+  - A+ - 3rd party enrichment
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  defaultvalue: A - Completely reliable
+  defaultvalue: A+ - 3rd party enrichment
   required: false
   section: Collect
   advanced: true
