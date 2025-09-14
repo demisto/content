@@ -1,5 +1,5 @@
 id: DomainEnrichment-Test
-version: 8
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: DomainEnrichment-Test
 starttaskid: "0"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 695,
           "y": 50
         }
       }
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 695,
           "y": 370
         }
       }
@@ -108,7 +108,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 695,
           "y": 540
         }
       }
@@ -161,7 +161,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 50,
           "y": 1050
         }
       }
@@ -191,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 1220
         }
       }
@@ -221,7 +221,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 695,
           "y": 210
         }
       }
@@ -265,7 +265,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1452.5,
           "y": 710
         }
       }
@@ -339,7 +339,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 480,
           "y": 1050
         }
       }
@@ -378,7 +378,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 910,
           "y": 1050
         }
       }
@@ -408,7 +408,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 3740
         }
       }
@@ -448,7 +448,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 3900
         }
       }
@@ -496,7 +496,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 4070
         }
       }
@@ -526,7 +526,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 4410
         }
       }
@@ -566,7 +566,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 4570
         }
       }
@@ -611,7 +611,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 4740
         }
       }
@@ -641,7 +641,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 910,
           "y": 5080
         }
       }
@@ -676,7 +676,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 1340,
           "y": 880
         }
       }
@@ -714,7 +714,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 1340,
           "y": 1050
         }
       }
@@ -784,7 +784,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 592.5,
           "y": 4240
         }
       }
@@ -858,7 +858,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 4240
         }
       }
@@ -897,7 +897,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1022.5,
           "y": 4240
         }
       }
@@ -935,7 +935,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1452.5,
           "y": 4240
         }
       }
@@ -1005,7 +1005,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 807.5,
           "y": 4910
         }
       }
@@ -1079,7 +1079,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 377.5,
           "y": 4910
         }
       }
@@ -1118,7 +1118,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 1237.5,
           "y": 4910
         }
       }
@@ -1158,7 +1158,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 1380
         }
       }
@@ -1191,7 +1191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 1550
         }
       }
@@ -1243,7 +1243,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 1720
         }
       }
@@ -1321,7 +1321,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 695,
           "y": 1890
         }
       }
@@ -1359,7 +1359,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1217.5,
+          "x": 1125,
           "y": 1890
         }
       }
@@ -1389,7 +1389,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 2060
         }
       }
@@ -1429,7 +1429,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 2220
         }
       }
@@ -1462,7 +1462,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 2390
         }
       }
@@ -1517,7 +1517,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 2560
         }
       }
@@ -1595,7 +1595,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 572.5,
+          "x": 480,
           "y": 2730
         }
       }
@@ -1633,7 +1633,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1002.5,
+          "x": 910,
           "y": 2730
         }
       }
@@ -1734,7 +1734,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1432.5,
+          "x": 1340,
           "y": 2730
         }
       }
@@ -1764,7 +1764,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 2900
         }
       }
@@ -1804,7 +1804,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 3060
         }
       }
@@ -1837,7 +1837,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 3230
         }
       }
@@ -1891,7 +1891,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 787.5,
+          "x": 807.5,
           "y": 3400
         }
       }
@@ -1969,7 +1969,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 265,
           "y": 3570
         }
       }
@@ -2007,7 +2007,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 582.5,
+          "x": 695,
           "y": 3570
         }
       }
@@ -2100,7 +2100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1125,
           "y": 3570
         }
       }
@@ -2193,7 +2193,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1442.5,
+          "x": 1555,
           "y": 3570
         }
       }
@@ -2233,8 +2233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 6110
+          "x": 910,
+          "y": 6070
         }
       }
     note: false
@@ -2279,8 +2279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 6280
+          "x": 910,
+          "y": 6240
         }
       }
     note: false
@@ -2309,8 +2309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 5950
+          "x": 910,
+          "y": 5910
         }
       }
     note: false
@@ -2346,8 +2346,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 675,
-          "y": 6950
+          "x": 1022.5,
+          "y": 6910
         }
       }
     note: false
@@ -2376,8 +2376,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 6450
+          "x": 612.5,
+          "y": 6410
         }
       }
     note: false
@@ -2416,8 +2416,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 6610
+          "x": 612.5,
+          "y": 6570
         }
       }
     note: false
@@ -2464,8 +2464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 6780
+          "x": 612.5,
+          "y": 6740
         }
       }
     note: false
@@ -2491,8 +2491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1105,
-          "y": 6955
+          "x": 592.5,
+          "y": 6915
         }
       }
     note: false
@@ -2531,8 +2531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 918.333251953125,
-          "y": 5270
+          "x": 910,
+          "y": 5240
         }
       }
     note: false
@@ -2576,8 +2576,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 918.333251953125,
-          "y": 5440
+          "x": 910,
+          "y": 5410
         }
       }
     note: false
@@ -2661,8 +2661,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 273.333251953125,
-          "y": 5610
+          "x": 377.5,
+          "y": 5580
         }
       }
     note: false
@@ -2700,8 +2700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1133.333251953125,
-          "y": 5610
+          "x": 807.5,
+          "y": 5580
         }
       }
     note: false
@@ -2730,8 +2730,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 5800
+          "x": 910,
+          "y": 5750
         }
       }
     note: false
@@ -2743,10 +2743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 70044e99-8613-4a43-b6a9-f9e51d91d587
+    taskid: 25751654-1794-402b-bd55-72b9ca32ad5e
     type: condition
     task:
-      id: 70044e99-8613-4a43-b6a9-f9e51d91d587
+      id: 25751654-1794-402b-bd55-72b9ca32ad5e
       version: -1
       name: Google exists
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -2814,8 +2814,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 693.333251953125,
-          "y": 5610
+          "x": 1237.5,
+          "y": 5580
         }
       }
     note: false
@@ -2830,7 +2830,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6970,
+        "height": 6930,
         "width": 1885,
         "x": 50,
         "y": 50

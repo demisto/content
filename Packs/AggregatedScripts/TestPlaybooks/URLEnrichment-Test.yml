@@ -1,5 +1,5 @@
 id: URLEnrichment-Test
-version: 29
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: URLEnrichment-Test
 starttaskid: "0"
@@ -1571,7 +1571,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 4570
         }
       }
@@ -1611,7 +1611,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 4730
         }
       }
@@ -1669,7 +1669,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 4900
         }
       }
@@ -1699,7 +1699,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 490,
           "y": 5070
         }
       }
@@ -1739,7 +1739,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 490,
           "y": 5230
         }
       }
@@ -1785,7 +1785,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 490,
           "y": 5400
         }
       }
@@ -1822,7 +1822,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 910,
           "y": 5570
         }
       }
@@ -1849,7 +1849,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 480,
           "y": 5575
         }
       }
@@ -1958,7 +1958,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "64"
+      - "63"
     scriptarguments:
       all:
         simple: "yes"
@@ -2022,39 +2022,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: 67bdb754-c78f-45a5-8de5-f03bebe0914e
-    type: regular
-    task:
-      id: 67bdb754-c78f-45a5-8de5-f03bebe0914e
-      version: -1
-      name: Get Time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "63"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 3900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "69":
     id: "69"
     taskid: e19e7724-09fd-4bb3-ab00-77ae12f44fb5
@@ -2074,7 +2041,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 4410
         }
       }
@@ -2173,8 +2140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 4270
+          "x": 480,
+          "y": 4240
         }
       }
     note: false
@@ -2272,8 +2239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 4270
+          "x": 910,
+          "y": 4240
         }
       }
     note: false

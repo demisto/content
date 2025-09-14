@@ -1,5 +1,5 @@
 id: IPEnrichment-Test
-version: 17
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: IPEnrichment-Test
 starttaskid: "0"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1022.5,
           "y": 50
         }
       }
@@ -62,7 +62,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1022.5,
           "y": 370
         }
       }
@@ -108,7 +108,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1022.5,
           "y": 710
         }
       }
@@ -192,7 +192,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1115,
           "y": 1390
         }
       }
@@ -222,7 +222,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1022.5,
           "y": 210
         }
       }
@@ -429,7 +429,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1115,
           "y": 2570
         }
       }
@@ -459,7 +459,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1237.5,
           "y": 3410
         }
       }
@@ -489,7 +489,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1237.5,
           "y": 4250
         }
       }
@@ -521,7 +521,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1022.5,
           "y": 540
         }
       }
@@ -567,7 +567,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1115,
           "y": 1890
         }
       }
@@ -599,7 +599,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1115,
           "y": 1720
         }
       }
@@ -812,7 +812,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1115,
           "y": 3070
         }
       }
@@ -844,7 +844,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1115,
           "y": 2900
         }
       }
@@ -1029,7 +1029,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
+          "x": 1115,
           "y": 1550
         }
       }
@@ -1069,7 +1069,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1115,
           "y": 2730
         }
       }
@@ -1114,7 +1114,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1237.5,
           "y": 3910
         }
       }
@@ -1146,7 +1146,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1237.5,
           "y": 3740
         }
       }
@@ -1329,7 +1329,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1237.5,
           "y": 3570
         }
       }
@@ -1889,8 +1889,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 5250
+          "x": 1237.5,
+          "y": 5080
         }
       }
     note: false
@@ -1929,8 +1929,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 5410
+          "x": 1237.5,
+          "y": 5240
         }
       }
     note: false
@@ -1974,8 +1974,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 5580
+          "x": 1237.5,
+          "y": 5410
         }
       }
     note: false
@@ -2004,8 +2004,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 5750
+          "x": 827.5,
+          "y": 5580
         }
       }
     note: false
@@ -2041,8 +2041,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1882.5,
-          "y": 6250
+          "x": 1237.5,
+          "y": 6080
         }
       }
     note: false
@@ -2081,8 +2081,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 5910
+          "x": 827.5,
+          "y": 5740
         }
       }
     note: false
@@ -2128,8 +2128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 6080
+          "x": 827.5,
+          "y": 5910
         }
       }
     note: false
@@ -2155,8 +2155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 6255
+          "x": 807.5,
+          "y": 6085
         }
       }
     note: false
@@ -2199,8 +2199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 4750
+          "x": 1237.5,
+          "y": 4580
         }
       }
     note: false
@@ -2238,8 +2238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1237.5,
-          "y": 4920
+          "x": 592.5,
+          "y": 4750
         }
       }
     note: false
@@ -2278,7 +2278,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
+          "x": 1237.5,
           "y": 4410
         }
       }
@@ -2394,8 +2394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 4920
+          "x": 1022.5,
+          "y": 4750
         }
       }
     note: false
@@ -2424,8 +2424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1667.5,
-          "y": 5090
+          "x": 1237.5,
+          "y": 4920
         }
       }
     note: false
@@ -2437,10 +2437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: e84adb7c-0605-4df8-8ba6-26e69b16cff6
+    taskid: a28594ec-7d61-4fa1-8fc6-22ef5bc7d98b
     type: condition
     task:
-      id: e84adb7c-0605-4df8-8ba6-26e69b16cff6
+      id: a28594ec-7d61-4fa1-8fc6-22ef5bc7d98b
       version: -1
       name: Main Keys For 8.8.8.8
       description: MaxScore And MaxVerdict enriched for https://google.com
@@ -2540,8 +2540,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2090,
-          "y": 4910
+          "x": 1452.5,
+          "y": 4750
         }
       }
     note: false
@@ -2558,8 +2558,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6270,
-        "width": 2420,
+        "height": 6100,
+        "width": 2325,
         "x": 50,
         "y": 50
       }

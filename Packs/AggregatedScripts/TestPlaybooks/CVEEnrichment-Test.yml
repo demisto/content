@@ -1,5 +1,5 @@
 id: CVEEnrichment-Test
-version: 19
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: CVEEnrichment-Test
 starttaskid: "0"
@@ -1034,7 +1034,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 695,
           "y": 3890
         }
       }
@@ -1064,7 +1064,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 275,
           "y": 3390
         }
       }
@@ -1104,7 +1104,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 275,
           "y": 3550
         }
       }
@@ -1152,7 +1152,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 685,
+          "x": 275,
           "y": 3720
         }
       }
@@ -1179,7 +1179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 265,
           "y": 3895
         }
       }
@@ -1313,7 +1313,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2740
+          "y": 2720
         }
       }
     note: false
