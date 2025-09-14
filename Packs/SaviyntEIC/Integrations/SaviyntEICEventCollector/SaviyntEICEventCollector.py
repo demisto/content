@@ -133,6 +133,11 @@ class Client(BaseClient):
 
                 if not force_refresh and token and (now_epoch + TOKEN_SAFETY_BUFFER) < expires_at:
                     demisto.debug(f"[Client.obtain_token] using cached token (expires_at={expires_at})")
+                    # Ensure headers are applied for the current client instance when using a cached token
+                    self._headers = {
+                        "Authorization": f"Bearer {token}",
+                        "Content-Type": "application/json",
+                    }
                     return
 
                 # Try to refresh if possible
@@ -156,8 +161,6 @@ class Client(BaseClient):
         max_results: int,
         offset: int | None = None,
     ) -> dict[str, Any]:
-        # Ensure headers/token are ready
-        self.obtain_token()
         body: dict[str, Any] = {
             "analyticsname": analytics_name,
             "attributes": {"timeFrame": str(time_frame_minutes)},
@@ -172,12 +175,11 @@ class Client(BaseClient):
                 url_suffix="api/v5/fetchRuntimeControlsDataV2",
                 headers=self._headers,
                 json_data=body,
-                timeout=120,
             )
         except Exception as e:
             # Attempt one retry on auth failure
             if any(x in str(e) for x in ("401", "Forbidden", "invalid token", "expired")):
-                demisto.debug("Access token may be invalid/expired. Attempting to refresh and retry fetch.")
+                demisto.debug(f"Access token may be invalid/expired. Attempting to refresh and retry fetch. Error: {e}")
                 # Force refresh token and retry
                 self.obtain_token(force_refresh=True)
                 return self._http_request(
@@ -185,7 +187,6 @@ class Client(BaseClient):
                     url_suffix="api/v5/fetchRuntimeControlsDataV2",
                     headers=self._headers,
                     json_data=body,
-                    timeout=120,
                 )
             raise
 
@@ -369,18 +370,18 @@ def fetch_events(
     """
     effective_time_frame_minutes = compute_effective_time_frame_minutes(time_frame_minutes, last_run)
 
-    prev_cache_size = len(last_run.get(LAST_RUN_EVENT_HASHES, []))
+    previous_run_event_hash_count = len(last_run.get(LAST_RUN_EVENT_HASHES, []))
     demisto.debug(
         f"[fetch_events] start: analytics={analytics_name_list}, max_events={max_events}, "
         f"time_frame_minutes_input={time_frame_minutes}, effective_time_frame_minutes={effective_time_frame_minutes}, "
-        f"previous_run_cache_size={prev_cache_size}"
+        f"previous_run_event_hash_count={previous_run_event_hash_count}"
     )
 
     events = []
 
     for analytics_name in analytics_name_list:
         events_per_analytics_name = []
-        collected_count = 0
+        collected_count = 0  # total number of events collected so far
         max_results = min(max_events, MAX_EVENTS_PER_REQUEST)
 
         demisto.debug(
@@ -395,6 +396,7 @@ def fetch_events(
         )
 
         raw_results = response.get("results", [])
+        # total number of available events in the time frame, provided by the API
         total_count = int(response.get("totalcount", 0))
         demisto.debug(f"[fetch_events] {analytics_name}: initial_page_size={len(raw_results)} total_count={total_count}")
 
@@ -420,7 +422,7 @@ def fetch_events(
             events_per_analytics_name.extend(raw_results)
             collected_count += page_batch_size
 
-        demisto.debug(f"[fetch_events] {analytics_name}: finished collection total collected={collected_count}")
+        demisto.debug(f"[fetch_events] {analytics_name}: finished collection. total collected={collected_count}")
         events.extend(events_per_analytics_name)
 
     demisto.debug(f"[fetch_events] total events collected before dedup={len(events)}")
