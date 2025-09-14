@@ -399,3 +399,99 @@ def test_client_get_activity_log(mocker):
         "url_suffix": "/api/v1/users/activitylogs/search",
         "json_data": {"size": size, "attributes": {"time": {"from": from_time, "to": expected_to_time}}},
     }
+
+
+@pytest.mark.parametrize(
+    "events, expected",
+    [
+        pytest.param(
+            # Keeps first by id, preserves order; no-id events always kept
+            [
+                {"id": "A", "event_type": "trace", "n": 1},
+                {"id": "A", "event_type": "trace", "n": 2},  # dup
+                {"id": "B", "event_type": "alert", "n": 3},
+                {"misc": 4},  # no id -> keep
+                {"id": "B", "event_type": "alert", "n": 5},  # dup
+                {"misc": 6},  # no id -> keep
+                {"id": "C", "event_type": "activity", "n": 7},
+            ],
+            [
+                {"id": "A", "event_type": "trace", "n": 1},
+                {"id": "B", "event_type": "alert", "n": 3},
+                {"misc": 4},
+                {"misc": 6},
+                {"id": "C", "event_type": "activity", "n": 7},
+            ],
+            id="basic-dedup-with-no-id-events",
+        ),
+        pytest.param(
+            # All without id -> all kept (content equality does not matter)
+            [{"x": 1}, {"x": 1}, {"y": 2}],
+            [{"x": 1}, {"x": 1}, {"y": 2}],
+            id="no-id-events-all-kept",
+        ),
+        pytest.param(
+            # Empty input
+            [],
+            [],
+            id="empty-input",
+        ),
+        pytest.param(
+            # None id is treated as "no id" -> kept
+            [{"id": None, "n": 1}, {"id": None, "n": 2}],
+            [{"id": None, "n": 1}, {"id": None, "n": 2}],
+            id="none-id-treated-as-no-id",
+        ),
+        pytest.param(
+            # Mixed ordering; ensure stability (first-seen order retained)
+            [
+                {"id": "C", "n": 1},
+                {"id": "A", "n": 2},
+                {"id": "B", "n": 3},
+                {"id": "A", "n": 4},  # dup
+                {"id": "B", "n": 5},  # dup
+                {"id": "C", "n": 6},  # dup
+            ],
+            [
+                {"id": "C", "n": 1},
+                {"id": "A", "n": 2},
+                {"id": "B", "n": 3},
+            ],
+            id="stable-ordering",
+        ),
+    ],
+)
+def test_dedupe_events_by_id_functional(events, expected):
+    """
+    Given:
+        - A list of event dicts with a mix of duplicate ids and id-less entries.
+    When:
+        - Calling dedupe_events_by_id
+    Then:
+        - Only the first event for each duplicate id remains.
+        - All events without 'id' remain.
+        - Original ordering among kept events is preserved.
+    """
+    out = FireEyeETPEventCollector.dedupe_events_by_id(events)
+    assert out == expected
+
+
+def test_dedupe_events_by_id_scales_to_10k():
+    """
+    Given:
+        - 10,000 unique events (first pass) followed by 10,000 duplicates (second pass).
+    When:
+        - Calling dedupe_events_by_id
+    Then:
+        - Exactly the 10,000 first-pass events remain and order is preserved.
+    """
+    # Build 10,000 unique events
+    unique = [{"id": f"evt-{i}", "n": i} for i in range(10_000)]
+    # Append duplicates with the same ids
+    dupes = [{"id": f"evt-{i}", "n": i + 10_000} for i in range(10_000)]
+    events = unique + dupes
+
+    out = FireEyeETPEventCollector.dedupe_events_by_id(events)
+    assert len(out) == 10_000
+    # Must equal the first-seen (unique) sequence
+    assert out == unique
