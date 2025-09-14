@@ -1,0 +1,122 @@
+args:
+- description: A comma-separated list of CVEs to enrich.
+  name: cve_list
+  required: true
+- name: external_enrichment
+  description: When set to 'true', the script runs reputation commands using all available external integrations. This is ignored if the 'brands' argument is used, as 'brands' provides an explicit list of integrations to run.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: verbose
+  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result and suppress error entries from commands.
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+  required: false
+- name: brands
+  description: |-
+    A comma-separated list of specific integration brands to use for enrichment, e.g., "VirusTotal,CrowdStrike". If left empty, the script runs on all enabled integrations according to the 'external_enrichment' flag. 
+    Run !ProvidesCommand command=cve to see available integrations.
+  isArray: true
+  required: false
+- name: additional_fields
+  description: Whether to return secondary fields to the context output under "AdditionalFields".
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+comment: This script gathers CVE reputation data from multiple integrations and returns a "CVEEnrichment" object with consolidated information to the context output.
+commonfields:
+  id: cve-enrichment
+  version: -1
+enabled: false
+name: cve-enrichment
+outputs:
+# CVEEnrichment
+- contextPath: CVEEnrichment.Value
+  description: the cve it self.
+  type: string
+- contextPath: CVEEnrichment.MaxCVSS
+  description: the max CVSS of the indicator.
+  type: number
+- contextPath: CVEEnrichment.MaxCVSSRating
+  description: the max CVSS rating of the indicator.
+  type: string
+- contextPath: CVEEnrichment.Results
+  description: list of all indicators found for the cve.
+  type: array
+- contextPath: CVEEnrichment.Status
+  description: the status of the indicator.
+  type: string
+# CVEEnrichment Main Keys
+- contextPath: CVEEnrichment.Results.Brand
+  description: the brand of the indicator.
+  type: string
+- contextPath: CVEEnrichment.Results.CVSS
+  description: the CVSS of the indicator.
+  type: number
+- contextPath: CVEEnrichment.Results.Description
+  description: the description of the indicator.
+  type: string
+- contextPath: CVEEnrichment.Results.Published
+  description: the published date of the indicator.
+  type: string
+  
+# CVEEnrichment Additional Fields
+- contextPath: CVEEnrichment.Results.AdditionalFields
+  description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
+  type: Object
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityA
+  description: The source of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityB
+  description: The destination of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.Relationship
+  description: The name of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityAType
+  description: The type of the source of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Relationships.EntityBType
+  description: The type of the destination of the relationship.
+  type: string
+- contextPath: CVEEnrichment.Results.AdditionalFields.Modified
+  description: The timestamp of when the CVE was last modified.
+  type: Date
+# DBotScore
+- contextPath: DBotScore.Indicator
+  description: The indicator value.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: DBotScore.Reliability
+  description: The reliability of the score.
+  type: string
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.11.4819260
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- CVEEnrichment-Test

@@ -1,0 +1,33 @@
+{
+    "wildfire": [
+      {
+        "EntryContext": {
+          "WildFire.Verdicts(val.url && val.url == obj.url)": [
+            {"url": "https://example.com", "verdict": 1},
+            {"url": "https://example2.com", "verdict": 2}
+          ]
+        },
+        "Type": 1
+      }
+    ],
+    "enrichIndicators": [
+      {
+        "EntryContext": {
+          "DBotScore(val.Indicator && val.Vendor)": [
+            {"Indicator": "https://example.com", "Vendor": "brand1", "Score": 2}
+          ]
+        },
+        "Type": 1,
+        "Metadata": {"brand": "brand1"}
+      },
+      {
+        "EntryContext": {},
+        "Type": 1
+      }
+    ],
+    "createNewIndicator": [
+      {"EntryContext": {}, "Type": 1},
+      {"EntryContext": {}, "Type": 1}
+    ]
+  }
+  
