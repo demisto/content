@@ -6594,14 +6594,26 @@ def panorama_check_latest_dynamic_update_command(args: dict):
     target = args.get("target")
     outdated_item_count = 0
     outputs = {}
+    
+    if not VSYS and not target:
+        # When the VSYS param is not set it meams that this is a panorama instance -> user must specify a target FW 
+        raise DemistoException(
+                f"When running from a Panorama instance, you must specify the target argument. "
+                F"Set target to the serial number of the Panorama-managed firewall you want to check updates for."
+                )
 
     for update_type in DynamicUpdateType:
         # Call firewall API to check for the latest available update of each type
         result = panorama_check_latest_dynamic_update_content(update_type, target)
 
         if "result" in result["response"] and result["response"]["@status"] == "success":
-            versions = result["response"]["result"]["content-updates"]["entry"]
-
+            versions = result.get("response", {}).get("result", {}).get("content-updates", {}).get("entry",{})
+            if not versions: # firewall probably doesn't have any app/threat installed 
+                command_results = CommandResults(
+                    readable_output="No available updates (firewall probably doesn't have any app/threat installed).",
+                    )
+                return_results(command_results)
+                
             # Ensure versions is a list even if there's only one entry
             if not isinstance(versions, list):
                 versions = [versions]
