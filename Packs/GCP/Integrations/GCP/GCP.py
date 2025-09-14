@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 import urllib3
 from COOCApiModule import *
+from googleapiclient.errors import HttpError
 
 urllib3.disable_warnings()
 
@@ -264,9 +265,6 @@ def extract_zone_name(zone_input: str | None) -> str:
 def parse_labels(labels_str: str) -> dict:
     """
     Transforms a string of multiple inputs to a dictionary
-    parameter: (string) labels_str
-
-    Return labels as a dictionary.
     Args:
         labels_str (str): The actual string to parse to a key & value pair.
 
@@ -284,6 +282,42 @@ def parse_labels(labels_str: str) -> dict:
 
             labels.update({match.group(1).lower(): match.group(2).lower()})
     return labels
+
+
+def handle_permission_error(e: HttpError, project_id: str, command_name: str):
+    """
+    Given an error, extract the relevant information (account_id & message & permission name) to report to the backend.
+    Args:
+        e (HttpError): The error object.
+        project_id (str): The project identifier.
+        command_name (str): The name of the command that was executed.
+
+    Returns:
+        Returns the labels dictionary with the extracted key & value pairs.
+    """
+    demisto.debug(f"{e.resp=}")
+    status_code = e.resp.status
+    if e.resp.get('content-type', '').startswith('application/json'):
+        content = json.loads(e.content)
+        reason = json.loads(e.content).get('error').get('errors')[0].get('reason')
+        message = f"{reason=}, {content.get('error', {}).get('message', '')}"
+        possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name)[1]
+
+        permission_names = []
+        for permission in possible_permissions_list:
+            if permission.lower() in message.lower():
+                permission_names.append(permission)
+        if not permission_names:
+            permission_names.append("N/A")
+
+        demisto.debug(f"The info {status_code=} {message=} {permission_names=} {content=}")
+        error_entries = []
+        for perm in permission_names:
+            error_entries.append({"account_id": project_id, "message": message, "name": perm})
+
+        return_multiple_permissions_error(error_entries)
+    else:
+        raise e
 
 
 ##########
@@ -1078,15 +1112,17 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
         .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
         .execute()
     )
-    demisto.debug(f"{response=}")
 
     next_page_token = response.get("nextPageToken", "")
     metadata = (
         "Run the following command to retrieve the next batch of instances:\n"
-        f"!gcp-compute-instances-list project_id={project_id} zone={zone} page_token={next_page_token}"
+        f"!gcp-compute-instances-list {project_id=} {zone=} page_token={next_page_token}"
         if next_page_token
         else None
     )
+    if limit < 500:
+        metadata = f"{metadata} {limit=}"
+
     if next_page_token:
         response["InstancesNextPageToken"] = response.pop("nextPageToken")
     response["Instances"] = response.pop("items")
@@ -1113,11 +1149,17 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
         removeNull=True,
         metadata=metadata,
     )
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": response["Instances"],
+        "GCP.Compute(true)": {"InstancesNextPageToken": response.get("InstancesNextPageToken"),
+                              "InstancesSelfLink": response.get("selfLink"),
+                              "InstancesWarning": response.get("warning")}
+    }
+    demisto.debug(f"{outputs=}")
+    remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="GCP.Compute",
-        outputs_key_field="id",
-        outputs=response,
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -1547,10 +1589,11 @@ def main():  # pragma: no cover
     This function processes the incoming command, sets up the appropriate credentials,
     and routes the execution to the corresponding handler function.
     """
+    command = demisto.command()
+    args = demisto.args()
+    params = demisto.params()
+
     try:
-        command = demisto.command()
-        args = demisto.args()
-        params = demisto.params()
 
         command_map = {
             "test-module": test_module,
@@ -1597,6 +1640,14 @@ def main():  # pragma: no cover
             return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
+
+    except HttpError as e:
+        demisto.info(f"The error is {e}")
+        if e.resp.status in [403, 401]:
+            project_id = args.get('project_id') or args.get('folder_id') or "N/A"
+            handle_permission_error(e, project_id, command)
+        else:
+            return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
 
     except Exception as e:
         return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")

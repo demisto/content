@@ -905,12 +905,6 @@ script:
     description: Retrieves the list of instances contained within the specified zone.
     name: gcp-compute-instances-list
     outputs:
-      - contextPath: GCP.Compute.kind
-        description: Type of resource. Always compute#instanceList for lists of Instance resources.
-        type: String
-      - contextPath: GCP.Compute.id
-        description: Unique identifier for the resource.
-        type: String
       - contextPath: GCP.Compute.Instances.kind
         description: Type of the resource.Always compute#instance for instances.
         type: String
@@ -1046,10 +1040,10 @@ script:
       - contextPath: GCP.Compute.InstancesNextPageToken
         description: This token allows you to get the next page of results for list requests.
         type: String
-      - contextPath: GCP.Compute.selfLink
+      - contextPath: GCP.Compute.InstancesSelfLink
         description: Server-defined URL for this resource.
         type: String
-      - contextPath: GCP.Compute.warning
+      - contextPath: GCP.Compute.InstancesWarning
         description: Informational warning message.
         type: Object
   - arguments:
