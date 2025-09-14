@@ -2,6 +2,9 @@ import random
 
 from CommonServerPython import *
 
+a = 5
+demisto.debug(a)
+
 
 def main():
     # check if we have any users on call to assign to
