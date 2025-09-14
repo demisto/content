@@ -90,7 +90,7 @@
         ]
     },
     "group": "indicator",
-    "id": "Campaign",
+    "id": "CampaignXSIAM",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -586,7 +586,7 @@
             }
         ]
     },
-    "name": "Campaign",
+    "name": "CampaignXSIAM",
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
