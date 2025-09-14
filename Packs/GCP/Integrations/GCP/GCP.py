@@ -168,7 +168,6 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
-    "gcp-iam-folder-iam-policy-get": (GCPServices.RESOURCE_MANAGER, ["resourcemanager.folders.getIamPolicy"]),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
     #     GCPServices.COMPUTE,
@@ -1032,9 +1031,9 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     order_by = args.get("order_by")
     page_token = args.get("page_token")
 
-    if limit and (limit > 500 or limit < 0):
+    if limit and (limit > 500 or limit < 1):
         raise DemistoException(
-            f"The acceptable values of the argument limit are 0 to 500, inclusive. Currently the value is {limit}"
+            f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
         )
 
     compute = GCPServices.COMPUTE.build(creds)
@@ -1053,10 +1052,6 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     )
     if limit < 500:
         metadata = f"{metadata} {limit=}"
-
-    if next_page_token:
-        response["InstancesNextPageToken"] = response.pop("nextPageToken")
-    response["Instances"] = response.pop("items")
 
     hr_data = []
     for instance in response["Instances"]:
@@ -1080,6 +1075,10 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
         removeNull=True,
         metadata=metadata,
     )
+
+    if next_page_token:
+        response["InstancesNextPageToken"] = response.pop("nextPageToken")
+    response["Instances"] = response.pop("items")
     outputs = {
         "GCP.Compute.Instances(val.id && val.id == obj.id)": response["Instances"],
         "GCP.Compute(true)": {
@@ -1088,7 +1087,6 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
             "InstancesWarning": response.get("warning"),
         },
     }
-    demisto.debug(f"{outputs=}")
     remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
@@ -1153,14 +1151,11 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     instance = args.get("instance")
-    label_fingerprint = args.get("label_fingerprint")
+    label_fingerprint = args.get("label_fingerprint", "")
     labels = parse_labels(args.get("labels", ""))
     demisto.debug(f"The parsed {labels=}")
 
-    body = {"labels": labels}
-
-    if label_fingerprint:
-        body.update({"labelFingerprint": label_fingerprint})
+    body = {"labels": labels, "labelFingerprint": label_fingerprint}
 
     demisto.debug(f"The {body=}")
 
