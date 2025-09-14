@@ -1899,7 +1899,6 @@ def handle_enriching_notables(modified_notables: dict[str, dict]):
                     updated_notable = modified_notables[notable.id]
                     delta = delta_map.get(notable.id, {})
                     delta |= {k: v for k, v in updated_notable.items() if notable.data.get(k) != v}
-                    demisto.debug(f"mirror-in: delta for the enriching notables: {delta}")
                     delta_map[notable.id] = delta
                     # delete it from the modified_notables as it still not exist in the server as incident
                     del modified_notables[notable.id]
