@@ -125,7 +125,7 @@ class GCPServices(Enum):
 
 
 # Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
-COMMAND_REQUIREMENTS: dict[str: tuple[Any, list[str]]] = {
+COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-firewall-patch": (
         GCPServices.COMPUTE,
         [
@@ -301,7 +301,9 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
         content = json.loads(e.content)
         reason = json.loads(e.content).get("error").get("errors")[0].get("reason")
         message = f"{reason=}, {content.get('error', {}).get('message', '')}"
-        _, possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name)
+
+        possible_permissions_list: list[str]
+        _, possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name) or None, []
 
         permission_names = []
         for permission in possible_permissions_list:
