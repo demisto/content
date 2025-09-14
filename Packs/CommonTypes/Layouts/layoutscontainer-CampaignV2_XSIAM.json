@@ -255,19 +255,6 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {},
-                                "buttonClass": "secondary",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 22,
-                                "id": "fcadbfd0-33b0-11ee-83bf-674adb4bd869",
-                                "index": 8,
-                                "name": "Execute Campaign Hunt",
-                                "scriptId": "HuntingFromIndicatorLayout",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
                                 "args": {
                                     "field": {
                                         "simple": "tags"
