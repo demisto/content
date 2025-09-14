@@ -250,14 +250,21 @@ def compute_effective_time_frame_minutes(time_frame_minutes: int | None, last_ru
     if time_frame_minutes is None:
         previous_ts = last_run.get(LAST_RUN_TIMESTAMP)
         if isinstance(previous_ts, int) and previous_ts > 0:  # if not first run
-            prev_dt = arg_to_datetime(previous_ts)  # UTC-aware
-            now_dt = datetime.now(UTC)
-            delta_seconds = (now_dt - prev_dt).total_seconds()
-            effective_minutes = max(1, math.ceil(delta_seconds / 60))
-            demisto.debug(
-                f"[compute_effective_time_frame_minutes] prev_dt={prev_dt}, now_dt={now_dt}, "
-                f"delta_seconds={delta_seconds}, effective_minutes={effective_minutes}"
-            )
+            if (prev_dt := arg_to_datetime(previous_ts)) is None:
+                # Defensive: if parsing failed, fall back to default
+                effective_minutes = DEFAULT_FETCH_TIME_FRAME_MINUTES
+                demisto.debug(
+                    "[compute_effective_time_frame_minutes] previous_ts present but parsing failed; "
+                    f"using default: {effective_minutes} minutes"
+                )
+            else:
+                now_dt = datetime.now(UTC)
+                delta_seconds = (now_dt - prev_dt).total_seconds()
+                effective_minutes = max(1, math.ceil(delta_seconds / 60))
+                demisto.debug(
+                    f"[compute_effective_time_frame_minutes] prev_dt={prev_dt}, now_dt={now_dt}, "
+                    f"delta_seconds={delta_seconds}, effective_minutes={effective_minutes}"
+                )
         else:
             effective_minutes = DEFAULT_FETCH_TIME_FRAME_MINUTES
             demisto.debug(
@@ -323,13 +330,13 @@ def update_last_run_timestamp_from_events(next_run: dict[str, Any], events: list
     Prefers the enriched "_time" field (ISO string), falls back to vendor "Event Time".
     Stores the timestamp as epoch seconds. If no timestamps exist, falls back to current time.
     """
-    # Prefer enriched _time values
-    latest_time_str = max((e.get("_time") for e in events if e.get("_time")), default=None)
-    if not latest_time_str:
-        # Fallback: try vendor field if enrichment was not available
-        latest_time_str = max((e.get("Event Time") for e in events if e.get("Event Time")), default=None)
+    # Prefer enriched _time values, fallback to vendor 'Event Time'
+    candidates: list[str] = [str(t) for e in events if (t := e.get("_time"))] or [
+        str(t) for e in events if (t := e.get("Event Time"))
+    ]
+    latest_time_str: str | None = max(candidates) if candidates else None
 
-    if latest_time_str:
+    if latest_time_str is not None:
         latest_dt = arg_to_datetime(latest_time_str)
         if latest_dt:
             latest_epoch = int(latest_dt.timestamp())

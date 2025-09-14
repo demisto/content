@@ -7,6 +7,7 @@ from SaviyntEICEventCollector import (
     LAST_RUN_EVENT_HASHES,
     LAST_RUN_TIMESTAMP,
     add_time_to_events,
+    generate_event_hash,
     compute_effective_time_frame_minutes,
     deduplicate_events,
     update_last_run_timestamp_from_events,
@@ -47,7 +48,6 @@ class TestHelperFunctions:
     )
     def test_compute_effective_time_frame_cases(self, case, time_frame_minutes, last_run, frozen_now, expected_minutes):
         """
-        Given / When / Then (per case):
         - first run uses default:
           - Given: No LAST_RUN timestamp
           - When: Computing effective timeframe
@@ -86,13 +86,12 @@ class TestHelperFunctions:
                 [],
                 "2023-01-01T01:00:00Z",
                 "2023-01-01T01:00:00Z",
-                id="no timestamps -> use now",
+                id="no timestamps, use now",
             ),
         ],
     )
     def test_update_last_run_timestamp_cases(self, events, frozen_now, expected_iso):
         """
-        Given / When / Then (per case):
         - use enriched _time:
           - Given: Events include _time values
           - When: Updating last run timestamp
@@ -101,7 +100,7 @@ class TestHelperFunctions:
           - Given: Events include only vendor 'Event Time'
           - When: Updating last run timestamp
           - Then: The latest vendor time is used
-        - no timestamps -> use now:
+        - no timestamps, use now:
           - Given: No timestamps in events
           - When: Updating last run timestamp
           - Then: Current time is used
@@ -124,7 +123,6 @@ class TestHelperFunctions:
     )
     def test_add_time_to_events_cases(self, event_time, expected_iso):
         """
-        Given / When / Then:
         - space-separated datetime:
           - Given: Vendor 'Event Time' is 'YYYY-MM-DD HH:MM:SS'
           - When: Enriching events
@@ -161,7 +159,9 @@ class TestDeduplicateEvents:
                     {"Event Time": "2023-01-01T01:00:00Z", "a": 1},
                     {"Event Time": "2023-01-01T01:01:00Z", "a": 2},
                 ],
-                "PREV_FIRST",  # placeholder, will be replaced with actual hash below
+                [
+                    generate_event_hash({"Event Time": "2023-01-01T01:00:00Z", "a": 1})
+                ],
                 [2],
                 id="filter out events seen in previous run",
             ),
@@ -175,7 +175,6 @@ class TestDeduplicateEvents:
     )
     def test_dedup_cases(self, events, previous_hashes, expected_remaining_a_values):
         """
-        Given / When / Then (per case):
         - within-run duplicates -> retain unique order:
           - Given: Duplicate events within the same batch
           - When: Deduplicating
@@ -189,11 +188,6 @@ class TestDeduplicateEvents:
           - When: Deduplicating
           - Then: Empty result
         """
-        # Prepare previous hashes: if sentinel provided, compute from the first event
-        if previous_hashes == "PREV_FIRST" and events:
-            prev_run, first_only = deduplicate_events([events[0]], {LAST_RUN_EVENT_HASHES: []})
-            previous_hashes = prev_run[LAST_RUN_EVENT_HASHES]
-
         last_run = {LAST_RUN_EVENT_HASHES: previous_hashes or []}
         _, deduped = deduplicate_events(events, last_run)
         assert [e.get("a") for e in deduped if "a" in e] == expected_remaining_a_values
@@ -231,10 +225,9 @@ class TestClientBehavior:
 
 class TestFetchUseCases:
     @pytest.mark.parametrize(
-        "case_name,totalcount,server_page_size,max_events,expected_count,latest_time",
+        "totalcount,server_page_size,max_events,expected_count,latest_time",
         [
             pytest.param(
-                "multi-page: totalcount=9, page-size=4",
                 9,
                 4,
                 50,
@@ -243,7 +236,6 @@ class TestFetchUseCases:
                 id="multi-page: totalcount=9, page-size=4",
             ),
             pytest.param(
-                "limit to max_events=5",
                 12,
                 10,
                 5,
@@ -251,19 +243,30 @@ class TestFetchUseCases:
                 "2025-08-06 00:04:00",
                 id="limit to max_events=5",
             ),
+            pytest.param(
+                0,
+                10,
+                50,
+                0,
+                "1970-01-01 00:00:00",
+                id="empty response: totalcount=0",
+            ),
         ],
     )
-    def test_fetch_use_cases(self, mocker, case_name, totalcount, server_page_size, max_events, expected_count, latest_time):
+    def test_fetch_use_cases(self, mocker, totalcount, server_page_size, max_events, expected_count, latest_time):
         """
-        Given / When / Then (per case):
         - multi-page: totalcount=9, page-size=4
           - Given: Server returns 4 + 4 + 1 items across pages (total 9)
           - When: Module-level fetch_events paginates by offset
-          - Then: 9 events are collected and watermark reaches latest time
+          - Then: 9 events are collected
         - limit to max_events=5
           - Given: totalcount=12 and server page-size=10
           - When: max_events=5 is configured
-          - Then: Only 5 events are collected and watermark reflects the 5th item
+          - Then: Only 5 events are collected
+        - empty response: totalcount=0
+          - Given: Server returns no events
+          - When: Running fetch_events
+          - Then: 0 events are collected
         """
         from SaviyntEICEventCollector import fetch_events as module_fetch_events
 
