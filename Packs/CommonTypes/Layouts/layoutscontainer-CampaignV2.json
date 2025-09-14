@@ -262,6 +262,7 @@
                                 "height": 22,
                                 "id": "fcadbfd0-33b0-11ee-83bf-674adb4bd869",
                                 "index": 8,
+                                "marketplaces": ["xsoar"],
                                 "name": "Execute Campaign Hunt",
                                 "scriptId": "HuntingFromIndicatorLayout",
                                 "sectionItemType": "button",
