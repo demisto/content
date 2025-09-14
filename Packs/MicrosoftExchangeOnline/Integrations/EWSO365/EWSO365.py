@@ -957,7 +957,7 @@ def handle_template_params(template_params):  # pragma: no cover
 def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance):
     """Creates the message object according to the existence of additional custom headers."""
     if additional_headers:
-        demisto.debug(f"create_message_object: received additional headers")
+        demisto.debug("create_message_object: received additional headers")
         return Message(
             to_recipients=to,
             author=from_address,
@@ -970,7 +970,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
             **additional_headers,
         )
 
-    demisto.debug(f"create_message_object: received no additional headers")
+    demisto.debug("create_message_object: received no additional headers")
     return Message(
         to_recipients=to,
         author=from_address,
@@ -1017,20 +1017,20 @@ def create_message(
     demisto.debug(f"create_message: Received {len(attachments)} attachments, {handle_inline_image=}")
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
-        demisto.debug(f"create_message: received no html body")
+        demisto.debug("create_message: received no html body")
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
         demisto.debug(f"create_message: created message object: {message}")
-        demisto.debug(f"Itertating over {len(attachments)} attachments")")
+        demisto.debug(f"Itertating over {len(attachments)} attachments")
         for attachment in attachments:
             if not attachment.get("cid"):
                 new_attachment = FileAttachment(name=attachment.get("name"), content=attachment.get("data"))
                 message.attach(new_attachment)
 
     else:
-        demisto.debug(f"create_message: received html body")
+        demisto.debug("create_message: received html body")
         html_attachments: list = []
         if handle_inline_image:
-            demisto.debug(f"create_message: received handle_inline_image")ß
+            demisto.debug("create_message: received handle_inline_image")
             html_body, html_attachments = handle_html(html_body)
             attachments += html_attachments
             demisto.debug(f"create_message: Processed HTML body with {len(attachments)} attachments")
@@ -1127,13 +1127,16 @@ def send_email(
         f"EWS_SEND_MAIL_VALIDATION: Raw 'to' is {to!r}, Raw 'cc' is {cc!r}, "
         f"Raw 'bcc' is {bcc!r}, Raw 'from_address' is {from_address!r}, Raw 'reply_to' is {reply_to!r}"
     )
-    demisto.debug(f"send_email: \nReceived to: {to}\nReceived cc: {cc}\nReceived bcc: {bcc}\nReceived reply_to: {reply_to}\nReceived importance: {importance}")
+    demisto.debug(
+        f"send_email: \nReceived to: {to}\nReceived cc: {cc}\nReceived bcc: "
+        f"{bcc}\nReceived reply_to: {reply_to}\nReceived importance: {importance}"
+    )
     if not to and not cc and not bcc:
         return_error("You must have at least one recipient")
 
     if raw_message:
         try:
-            demisto.debug(f"[send_email]Inside the 'if raw_message' block")
+            demisto.debug("[send_email]Inside the 'if raw_message' block")
             message = Message(
                 to_recipients=to,
                 cc_recipients=cc,
@@ -1148,7 +1151,7 @@ def send_email(
             raise
 
     else:
-        demisto.debug(f"[send_email]Inside the else for the 'if raw_message' block")
+        demisto.debug("[send_email]Inside the else for the 'if raw_message' block")
         try:
             if additionalHeader:
                 additionalHeader = add_additional_headers(additionalHeader)
