@@ -245,15 +245,15 @@ class Client(BaseClient):
     def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
 
-    def http_request(self, method: str, url_suffix: str, params: dict, data: dict) -> dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict, data: Any | None, headers: Any | None) -> dict[str, Any]:
         if not params:
             params = {}
 
         if data and method in ["POST", "PUT", "PATCH"]:
             # If data is provided, we use json_data to send it as JSON
-            return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=data)
+            return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=data, headers=headers)
 
-        return self._http_request(method=method, url_suffix=url_suffix, params=params)
+        return self._http_request(method=method, url_suffix=url_suffix, params=params, headers=headers)
 
 
 """ HELPER FUNCTIONS """
@@ -1399,8 +1399,16 @@ def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults
         args.get("parameters", {}),
         args.get("data", {}),
     )
+    
+    if data:
+        data = json.loads(data)
+    else:
+        data = ""
 
-    request = client.http_request(method=method, params=params, url_suffix=url_suffix, data=data)
+    request = client.http_request(
+        method=method, params=params, url_suffix=url_suffix, data=data, headers={"Content-Type": "application/json"}
+    )
+
     readable_output = tableToMarkdown(
         f"The HTTP {method} request with params {params} returned the following information:",
         request["items"] if request["items"] else request,
