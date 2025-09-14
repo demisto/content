@@ -1024,9 +1024,6 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tu
         max_fetch (int): The maximum number of cases to fetch as events. Must not be greater than `MAX_EVENTS_LIMIT.`
         last_run (dict[str, Any]): Last run object from previous fetch.
 
-    Raises:
-        DemistoException: If `max_fetch` is higher than `MAX_EVENTS_LIMIT`.
-
     Returns:
         tuple[list[dict], dict]: List of cases formatted as events, updated last run object.
     """
@@ -1034,7 +1031,8 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict[str, Any]) -> tu
 
     # Validate max fetch
     if max_fetch > MAX_EVENTS_LIMIT:
-        raise DemistoException(f"The maximum number of events per fetch cannot exceed {MAX_EVENTS_LIMIT}.")
+        demisto.debug(f"The {max_fetch=} exceeds {MAX_EVENTS_LIMIT}. Using {MAX_EVENTS_LIMIT} instead.")
+        max_fetch = MAX_EVENTS_LIMIT
 
     start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch="1 minute ago", date_format=DATE_FORMAT)
     last_fetched_ids = last_run.get("last_ids", [])

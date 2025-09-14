@@ -720,19 +720,6 @@ def test_fetch_events_success(mocker: MockerFixture):
     }
 
 
-def test_fetch_events_max_fetch_exceeded():
-    from ExabeamSecOpsPlatform import MAX_EVENTS_LIMIT, fetch_events
-
-    mock_client = MockClient("example.com", "", "", False, False)
-    max_fetch = MAX_EVENTS_LIMIT + 2000
-    last_run = {}
-
-    expected_error_message = f"The maximum number of events per fetch cannot exceed {MAX_EVENTS_LIMIT}."
-    # Assert that the function call raises the correct exception
-    with pytest.raises(DemistoException, match=expected_error_message):
-        fetch_events(mock_client, max_fetch, last_run)
-
-
 @pytest.mark.parametrize(
     "test_data_file_name",
     [
@@ -743,6 +730,14 @@ def test_fetch_events_max_fetch_exceeded():
     ],
 )
 def test_get_cases_in_batches(mocker: MockerFixture, test_data_file_name: str):
+    """
+    GIVEN:
+        - Responses from Exabeam API for case search.
+    WHEN:
+        - The `get_cases_in_batches` function is called.
+    THEN:
+        - Ensure the function returns the expected events and the correct start time and last fetched IDs.
+    """
     from ExabeamSecOpsPlatform import get_cases_in_batches
 
     test_data = util_load_json(f"test_data/{test_data_file_name}")
@@ -761,3 +756,49 @@ def test_get_cases_in_batches(mocker: MockerFixture, test_data_file_name: str):
     assert events == test_data["expected_events"]
     assert start_time == test_data["expected_new_start_time"]
     assert sorted(last_fetched_ids) == sorted(test_data["expected_new_last_fetched_ids"])
+
+
+@freeze_time("2025-01-01T01:10:00Z")
+def test_get_events_command(mocker: MockerFixture):
+    """
+    GIVEN:
+        - A mock client and arguments for the get_events function.
+    WHEN:
+        - The `get_events_command` function is called.
+    THEN:
+        - Ensure get_cases_in_batches is called with the correct arguments.
+        - Ensure tableToMarkdown is called with the correct arguments.
+        - Ensure the function returns the expected events and CommandResults.
+    """
+    from ExabeamSecOpsPlatform import get_events_command
+
+    mock_client = MockClient("example.com", "", "", False, False)
+    mock_events_data = [{"caseId": "123", "name": "Test Event", "_time": "2025-01-02T00:00:00Z"}]
+
+    mock_get_cases_in_batches = mocker.patch(
+        "ExabeamSecOpsPlatform.get_cases_in_batches",
+        return_value=(mock_events_data, "2025-01-02T00:00:00Z", ["123"]),
+    )
+    mock_table_to_markdown = mocker.patch("ExabeamSecOpsPlatform.tableToMarkdown")
+
+    args = {
+        "start_time": "1 day ago",
+        "end_time": "now",
+        "limit": "100",
+    }
+
+    events, results = get_events_command(mock_client, args)
+
+    assert events == mock_events_data
+    assert isinstance(results, CommandResults)
+
+    assert mock_get_cases_in_batches.call_count == 1
+    assert mock_get_cases_in_batches.call_args_list[0][1] == {
+        "client": mock_client,
+        "start_time": "2024-12-31T01:10:00Z",  # 1 day ago compared to frozen time
+        "end_time": "2025-01-01T01:10:00Z",  # current frozen time
+        "last_fetched_ids": [],
+        "max_fetch": 100,
+    }
+
+    assert mock_table_to_markdown.call_args_list[0][0] == ("Events", mock_events_data)
