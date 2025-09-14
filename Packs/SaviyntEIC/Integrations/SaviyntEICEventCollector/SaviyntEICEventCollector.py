@@ -2,7 +2,7 @@ import hashlib
 import json
 import math
 import time
-from datetime import UTC, datetime
+from datetime import datetime, UTC
 from typing import Any
 
 import urllib3
@@ -221,7 +221,6 @@ def add_time_to_events(events: list[dict[str, Any]]):
         event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-
 def generate_event_hash(event: dict[str, Any]) -> str:
     """
     Generate a stable SHA-256 hash for a single event from vendor content.
@@ -416,9 +415,7 @@ def fetch_events(
 
         while collected_count < total_count and collected_count < max_events:
             offset = collected_count
-            demisto.debug(
-                f"[fetch_events] {analytics_name}: paginating offset={offset} current_collected={collected_count}"
-            )
+            demisto.debug(f"[fetch_events] {analytics_name}: paginating offset={offset} current_collected={collected_count}")
             response = client.fetch_events(
                 analytics_name=analytics_name,
                 time_frame_minutes=effective_time_frame_minutes,
