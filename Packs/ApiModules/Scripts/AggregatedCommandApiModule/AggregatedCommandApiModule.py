@@ -396,12 +396,11 @@ class ContextBuilder:
         for indicator_value, tim_context_result in self.tim_context.items():
             current_indicator: dict[str, Any] = {"Value": indicator_value}
             if tim_indicator := [indicator for indicator in tim_context_result if indicator.get("Brand") == "TIM"]:
-                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), 
-                                          "Status": tim_indicator[0].get("Status")})
+                current_indicator.update({"TIMScore": tim_indicator[0].get("Score"), "Status": tim_indicator[0].get("Status")})
             indicators = [indicator for indicator in tim_context_result if indicator.get("Brand") != "TIM"]
             current_indicator["Results"] = indicators
             results.append(current_indicator)
-            
+
         return results
 
     def enrich_final_indicator(self, indicator_list: list[dict]):
