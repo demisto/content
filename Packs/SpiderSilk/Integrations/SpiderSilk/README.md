@@ -20,23 +20,6 @@ Fetches dark web credentials, threats, assets, and other threat intelligence fro
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### test-module
-
-***
-Tests API connectivity and authentication using the /stats endpoint.
-
-#### Base Command
-
-`test-module`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
 ### fetch-incidents
 
 ***
