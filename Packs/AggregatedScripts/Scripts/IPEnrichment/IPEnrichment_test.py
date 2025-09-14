@@ -65,35 +65,56 @@ def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
     )
 
     # Wrap raw entries into processed tuples: [(entry, hr, err)]
-    def _wrap(entries, hr=""):
+    # helpers
+    def _wrap_each_as_command(entries, hr=""):
+        # returns N commands, each with 1 entry
         return [[(e, hr, "")] for e in entries]
+
+    def _wrap_all_in_one_command(entries, hr=""):
+        # returns 1 command, with N entries
+        return [[(e, hr, "") for e in entries]]
 
     # Batch executor -> map fixtures to command batches
     def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
         out = []
 
-        # Batch 1: createNewIndicator (one per IP)
-        b1_expected = len(list_of_batches[0])
+        # ----- Batch 1: createNewIndicator -----
+        b1_cmds = list_of_batches[0]
         b1_entries = batch_data["batch1_createNewIndicator"]
-        assert len(b1_entries) == b1_expected, "batch1 size mismatch vs fixture"
-        out.append(_wrap(b1_entries))
 
-        # Batch 2: get-endpoint-data, prevalence, then enrichIndicators per IP
+        if len(b1_cmds) == 1:
+            # aggregated: one command that yields both entries
+            out.append(_wrap_all_in_one_command(b1_entries))
+        else:
+            # per-IP: one command per entry
+            assert len(b1_entries) == len(b1_cmds), "batch1 size mismatch vs fixture"
+            out.append(_wrap_each_as_command(b1_entries))
+
+        # ----- Batch 2: endpoint, prevalence, enrichIndicators -----
         b2_cmds = list_of_batches[1]
         assert b2_cmds[0].name == "get-endpoint-data"
         assert b2_cmds[1].name == "core-get-IP-analytics-prevalence"
 
+        batch2_results = []
+
         endpoint_entries = batch_data["batch2_core_endpoint_data"]
         assert len(endpoint_entries) == 1, "expected one get-endpoint-data entry"
-        batch2_results = _wrap(endpoint_entries, hr="endpoint-hr")
+        batch2_results.extend(_wrap_each_as_command(endpoint_entries, hr="endpoint-hr"))
 
         prevalence_entries = batch_data["batch2_core_prevalence"]
         assert len(prevalence_entries) == 1, "expected one prevalence entry"
-        batch2_results.extend(_wrap(prevalence_entries, hr="prevalence-hr"))
+        batch2_results.extend(_wrap_each_as_command(prevalence_entries, hr="prevalence-hr"))
 
         enrich_entries = batch_data["batch2_enrichIndicators"]
-        assert len(enrich_entries) == (len(b2_cmds) - 2), "enrichIndicators size mismatch vs fixture"
-        batch2_results.extend(_wrap(enrich_entries))
+        enrich_cmds_count = sum(1 for c in b2_cmds if c.name == "enrichIndicators")
+
+        if enrich_cmds_count == 1:
+            # aggregated: one enrichIndicators command with multiple entries
+            batch2_results.extend(_wrap_all_in_one_command(enrich_entries))
+        else:
+            # per-IP: one enrichIndicators command per entry
+            assert len(enrich_entries) == enrich_cmds_count, "enrichIndicators size mismatch vs fixture"
+            batch2_results.extend(_wrap_each_as_command(enrich_entries))
 
         out.append(batch2_results)
         return out
@@ -130,7 +151,8 @@ def test_ip_enrichment_script_end_to_end_with_batch_file(mocker):
 
     # EndpointData passthrough
     endpoint_ctx = outputs.get(
-        "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID && val.Hostname && val.Hostname == obj.Hostname)",
+        "EndpointData(val.Brand && val.Brand == obj.Brand && val.ID && val.ID == obj.ID "
+        "&& val.Hostname && val.Hostname == obj.Hostname)",
         [],
     )
     assert isinstance(endpoint_ctx, list)

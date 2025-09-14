@@ -62,25 +62,46 @@ def test_cve_enrichment_script_end_to_end_with_batch_file(mocker):
     )
 
     # Helper: wrap raw entries into processed tuples [(entry, hr, err)]
-    def _wrap(entries, hr=""):
+    def _wrap_each_as_command(entries, hr=""):
+    # N commands, each with one entry
         return [[(e, hr, "")] for e in entries]
+
+    def _wrap_all_in_one_command(entries, hr=""):
+        # 1 command that yields N entries
+        return [[(e, hr, "") for e in entries]]
+
 
     # Batch executor mock → map fixtures to command batches
     def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
         out = []
 
-        # Batch 1: createNewIndicator per CVE
-        b1_expected = len(list_of_batches[0])
+        # ----- Batch 1: createNewIndicator -----
+        b1_cmds = list_of_batches[0]
         b1_entries = batch_data["batch1_createNewIndicator"]
-        assert len(b1_entries) == b1_expected, "batch1 size mismatch vs fixture"
-        out.append(_wrap(b1_entries))
 
-        # Batch 2: enrichIndicators per CVE
+        if len(b1_cmds) == 1:
+            # aggregated: one command returns both entries
+            out.append(_wrap_all_in_one_command(b1_entries))
+        else:
+            # per-CVE: N commands, each returns one entry
+            assert len(b1_entries) == len(b1_cmds), "batch1 size mismatch vs fixture"
+            out.append(_wrap_each_as_command(b1_entries))
+
+        # ----- Batch 2: enrichIndicators -----
         b2_cmds = list_of_batches[1]
         enrich_entries = batch_data["batch2_enrichIndicators"]
-        assert len(enrich_entries) == len(b2_cmds), "enrichIndicators size mismatch vs fixture"
-        out.append(_wrap(enrich_entries))
+        enrich_cmds_count = sum(1 for c in b2_cmds if c.name == "enrichIndicators")
+
+        if enrich_cmds_count == 1:
+            # aggregated: one enrichIndicators command yields multiple entries
+            out.append(_wrap_all_in_one_command(enrich_entries))
+        else:
+            # per-CVE: one enrichIndicators command per entry
+            assert len(enrich_entries) == enrich_cmds_count, "enrichIndicators size mismatch vs fixture"
+            out.append(_wrap_each_as_command(enrich_entries))
+
         return out
+
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)
 

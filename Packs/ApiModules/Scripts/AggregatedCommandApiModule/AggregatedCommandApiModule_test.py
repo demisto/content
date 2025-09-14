@@ -1316,7 +1316,7 @@ def test_search_indicators_in_tim_success(module_factory, mocker, data, pages, e
         captured["query"] = kwargs.get("query")
 
         class _Searcher:
-            def __iter__(self_inner):
+            def __iter__(self):
                 return iter(pages)
 
         return _Searcher()

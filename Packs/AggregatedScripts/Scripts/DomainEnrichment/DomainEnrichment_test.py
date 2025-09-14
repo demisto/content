@@ -60,31 +60,50 @@ def test_domain_enrichment_script_end_to_end_with_batch_file(mocker):
     )
 
     # Helper: wrap raw entries into processed tuples: [(entry, hr, err)]
-    def _wrap(entries, hr=""):
+    def _wrap_each_as_command(entries, hr=""):
+    # N commands, each with 1 entry
         return [[(e, hr, "")] for e in entries]
+
+    def _wrap_all_in_one_command(entries, hr=""):
+        # 1 command that yields N entries
+        return [[(e, hr, "") for e in entries]]
 
     # Batch executor -> map fixtures to command batches
     def _fake_execute_list_of_batches(self, list_of_batches, brands_to_run=None, verbose=False):
         out = []
 
-        # Batch 1: createNewIndicator (one per domain)
-        b1_expected = len(list_of_batches[0])
+        # ----- Batch 1: createNewIndicator -----
+        b1_cmds = list_of_batches[0]
         b1_entries = batch_data["batch1_createNewIndicator"]
-        assert len(b1_entries) == b1_expected, "batch1 size mismatch vs fixture"
-        out.append(_wrap(b1_entries))
 
-        # Batch 2: core prevalence (single), then enrichIndicators per domain
+        if len(b1_cmds) == 1:
+            # aggregated: one command returns two entries
+            out.append(_wrap_all_in_one_command(b1_entries))
+        else:
+            # per-domain: N commands, each returns one entry
+            assert len(b1_entries) == len(b1_cmds), "batch1 size mismatch vs fixture"
+            out.append(_wrap_each_as_command(b1_entries))
+
+        # ----- Batch 2: core prevalence then enrichIndicators -----
         b2_cmds = list_of_batches[1]
         assert b2_cmds[0].name == "core-get-domain-analytics-prevalence"
+
         core_entries = batch_data["batch2_core"]
         assert len(core_entries) == 1, "expected one core analytics entry"
-        batch2_results = _wrap(core_entries, hr="core-hr")
+        batch2_results = _wrap_each_as_command(core_entries, hr="core-hr")
 
         enrich_entries = batch_data["batch2_enrichIndicators"]
-        assert len(enrich_entries) == (len(b2_cmds) - 1), "enrichIndicators size mismatch vs fixture"
-        batch2_results.extend(_wrap(enrich_entries))
-        out.append(batch2_results)
+        enrich_cmds_count = sum(1 for c in b2_cmds if c.name == "enrichIndicators")
 
+        if enrich_cmds_count == 1:
+            # aggregated: one enrichIndicators command yields multiple entries
+            batch2_results.extend(_wrap_all_in_one_command(enrich_entries))
+        else:
+            # per-domain: one command per entry
+            assert len(enrich_entries) == enrich_cmds_count, "enrichIndicators size mismatch vs fixture"
+            batch2_results.extend(_wrap_each_as_command(enrich_entries))
+
+        out.append(batch2_results)
         return out
 
     mocker.patch("AggregatedCommandApiModule.BatchExecutor.execute_list_of_batches", _fake_execute_list_of_batches)

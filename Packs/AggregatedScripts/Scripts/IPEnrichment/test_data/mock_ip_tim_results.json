@@ -6,10 +6,8 @@
             "value": "1.1.1.1",
             "score": 3,
             "CustomFields": {
-              "address": "1.1.1.1",
               "detectionengines": 70,
-              "positivedetections": 37,
-              "score": 3
+              "positivedetections": 37
             },
             "insightCache": {
               "scores": {
