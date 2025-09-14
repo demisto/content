@@ -26,10 +26,6 @@
             "mandatory": false,
             "display_name": "Palo Alto Networks WildFire"
         },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
         "Active_Directory_Query": {
             "mandatory": false,
             "display_name": "Active Directory Query"

@@ -44,10 +44,6 @@
             "mandatory": false,
             "display_name": "Carbon Black"
         },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Cortex XDR"
-        },
         "Elasticsearch": {
             "mandatory": false,
             "display_name": "Elasticsearch"

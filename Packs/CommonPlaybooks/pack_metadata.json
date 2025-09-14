@@ -146,10 +146,6 @@
             "mandatory": false,
             "display_name": "Proofpoint Threat Response (Beta)"
         },
-        "CortexXDR": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
-        },
         "Rapid7_Nexpose": {
             "mandatory": false,
             "display_name": "Rapid7 Nexpose"
@@ -339,7 +335,6 @@
         "SplunkPy",
         "CrowdStrikeHost",
         "ProofpointThreatResponse",
-        "CortexXDR",
         "Rapid7_Nexpose",
         "Active_Directory_Query",
         "CrowdStrikeFalcon",
