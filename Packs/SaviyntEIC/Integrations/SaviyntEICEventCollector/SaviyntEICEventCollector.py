@@ -2,7 +2,7 @@ import hashlib
 import json
 import math
 import time
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 import urllib3
@@ -455,9 +455,6 @@ def fetch_events(
     return next_run, deduped_events
 
 
-""" MAIN FUNCTION """
-
-
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -512,6 +509,9 @@ def main():  # pragma: no cover
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
             demisto.debug(f"[fetch-events] Setting next run to {next_run}.")
+
+        else:
+            raise NotImplementedError(f"Command '{command}' is not implemented")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command. Error: {str(e)}")

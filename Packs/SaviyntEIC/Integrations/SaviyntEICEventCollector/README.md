@@ -1,8 +1,7 @@
 Collector for Saviynt Enterprise Identity Cloud (EIC) audit logs using Analytics Runtime Control V2.
-This integration was integrated and tested with version xx of SaviyntEICEventCollector.
+This integration was tested with Saviynt EIC [API Reference for Amsterdam GA Release](https://documenter.getpostman.com/view/40843358/2sAYdctCto) (API v5).
 
 ## Configure Saviynt EIC Event Collector in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
