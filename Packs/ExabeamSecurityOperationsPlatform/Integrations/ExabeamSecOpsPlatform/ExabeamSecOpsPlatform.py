@@ -1126,20 +1126,20 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client, params))
 
-        elif (command == "fetch-incidents") and (is_xsiam() or is_platform()):
+        elif (command == "fetch-incidents") and is_xsoar():
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif (command == "fetch-events") and is_xsoar():
+        elif (command == "fetch-events") and (is_xsiam() or is_platform()):
             max_fetch = arg_to_number(params.get("max_events_fetch")) or MAX_EVENTS_LIMIT
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, max_fetch, last_run)
             send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)
             demisto.setLastRun(next_run)
 
-        elif (command == "exabeam-platform-get-events") and is_xsiam():
+        elif (command == "exabeam-platform-get-events") and (is_xsiam() or is_platform()):
             should_push_events = argToBoolean(args.pop("should_push_events", "false"))
             events, results = get_events_command(client, args)
             return_results(results)
