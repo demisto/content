@@ -301,7 +301,7 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
         content = json.loads(e.content)
         reason = json.loads(e.content).get("error").get("errors")[0].get("reason")
         message = f"{reason=}, {content.get('error', {}).get('message', '')}"
-        possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name)[1]
+        _, possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name)
 
         permission_names = []
         for permission in possible_permissions_list:
@@ -1026,7 +1026,7 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
-    limit = int(args.get("limit"))
+    limit = arg_to_number(args.get("limit")) or 500
     filters = args.get("filters")
     order_by = args.get("order_by")
     page_token = args.get("page_token")
@@ -1153,7 +1153,7 @@ def gcp_compute_instance_label_set_command(creds: Credentials, args: dict[str, A
     zone = extract_zone_name(args.get("zone"))
     instance = args.get("instance")
     label_fingerprint = args.get("label_fingerprint")
-    labels = parse_labels(args.get("labels"))
+    labels = parse_labels(args.get("labels", ""))
     demisto.debug(f"The parsed {labels=}")
 
     body = {"labels": labels}
