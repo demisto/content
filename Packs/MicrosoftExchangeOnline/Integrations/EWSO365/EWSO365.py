@@ -957,6 +957,7 @@ def handle_template_params(template_params):  # pragma: no cover
 def create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance):
     """Creates the message object according to the existence of additional custom headers."""
     if additional_headers:
+        demisto.debug(f"create_message_object: received additional headers")
         return Message(
             to_recipients=to,
             author=from_address,
@@ -969,6 +970,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
             **additional_headers,
         )
 
+    demisto.debug(f"create_message_object: received no additional headers")
     return Message(
         to_recipients=to,
         author=from_address,
@@ -1015,23 +1017,29 @@ def create_message(
     demisto.debug(f"create_message: Received {len(attachments)} attachments, {handle_inline_image=}")
     if not html_body:
         # This is a simple text message - we cannot have CIDs here
+        demisto.debug(f"create_message: received no html body")
         message = create_message_object(to, cc, bcc, subject, body, additional_headers, from_address, reply_to, importance)
-
+        demisto.debug(f"create_message: created message object: {message}")
+        demisto.debug(f"Itertating over {len(attachments)} attachments")")
         for attachment in attachments:
             if not attachment.get("cid"):
                 new_attachment = FileAttachment(name=attachment.get("name"), content=attachment.get("data"))
                 message.attach(new_attachment)
 
     else:
+        demisto.debug(f"create_message: received html body")
         html_attachments: list = []
         if handle_inline_image:
+            demisto.debug(f"create_message: received handle_inline_image")ß
             html_body, html_attachments = handle_html(html_body)
             attachments += html_attachments
             demisto.debug(f"create_message: Processed HTML body with {len(attachments)} attachments")
         message = create_message_object(
             to, cc, bcc, subject, HTMLBody(html_body), additional_headers, from_address, reply_to, importance
         )
+        demisto.debug(f"create_message: created message object: {message}")
 
+        demisto.debug(f"Itertating over {len(attachments)} attachments")
         for attachment in attachments:
             if not isinstance(attachment, FileAttachment):
                 if not attachment.get("cid"):
@@ -1115,52 +1123,66 @@ def send_email(
 
     # Basic validation - we allow pretty much everything but you have to have at least a recipient
     # We allow messages without subject and also without body
+    demisto.debug(
+        f"EWS_SEND_MAIL_VALIDATION: Raw 'to' is {to!r}, Raw 'cc' is {cc!r}, "
+        f"Raw 'bcc' is {bcc!r}, Raw 'from_address' is {from_address!r}, Raw 'reply_to' is {reply_to!r}"
+    )
+    demisto.debug(f"send_email: \nReceived to: {to}\nReceived cc: {cc}\nReceived bcc: {bcc}\nReceived reply_to: {reply_to}\nReceived importance: {importance}")
     if not to and not cc and not bcc:
         return_error("You must have at least one recipient")
 
     if raw_message:
-        message = Message(
-            to_recipients=to,
-            cc_recipients=cc,
-            bcc_recipients=bcc,
-            body=raw_message,
-            author=from_address,
-            reply_to=reply_to,
-            importance=importance,
-        )
+        try:
+            demisto.debug(f"[send_email]Inside the 'if raw_message' block")
+            message = Message(
+                to_recipients=to,
+                cc_recipients=cc,
+                bcc_recipients=bcc,
+                body=raw_message,
+                author=from_address,
+                reply_to=reply_to,
+                importance=importance,
+            )
+        except Exception as e:
+            demisto.error(f"[send_email]Failed inside the 'if raw_message' block to create message object: {e}")
+            raise
 
     else:
-        if additionalHeader:
-            additionalHeader = add_additional_headers(additionalHeader)
+        demisto.debug(f"[send_email]Inside the else for the 'if raw_message' block")
+        try:
+            if additionalHeader:
+                additionalHeader = add_additional_headers(additionalHeader)
 
-        # collect all types of attachments
-        attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
-        attachments.extend(collect_manual_attachments(manualAttachObj))
-        attachments.extend(handle_transient_files(transientFile, transientFileContent, transientFileCID))
+            # collect all types of attachments
+            attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
+            attachments.extend(collect_manual_attachments(manualAttachObj))
+            attachments.extend(handle_transient_files(transientFile, transientFileContent, transientFileCID))
 
-        # update body and html_body with the templated params, if exists
-        template_params = handle_template_params(templateParams)
-        if template_params:
-            body = body.format(**template_params)
-            if htmlBody:
-                htmlBody = htmlBody.format(**template_params)
+            # update body and html_body with the templated params, if exists
+            template_params = handle_template_params(templateParams)
+            if template_params:
+                body = body.format(**template_params)
+                if htmlBody:
+                    htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(
-            to,
-            handle_inline_image,
-            subject,
-            body,
-            bcc,
-            cc,
-            htmlBody,
-            attachments,
-            additionalHeader,
-            from_address,
-            reply_to,
-            importance,
-        )
-
-    client.send_email(message)
+            message = create_message(
+                to,
+                handle_inline_image,
+                subject,
+                body,
+                bcc,
+                cc,
+                htmlBody,
+                attachments,
+                additionalHeader,
+                from_address,
+                reply_to,
+                importance,
+            )
+            demisto.debug(f"[send_email]Created message object: {message}. Sending to client")
+            client.send_email(message)
+        except Exception as e:
+            demisto.error(f"[send_email]Failed inside the 'else' block to create message object: {e}")
 
     results = [CommandResults(entry_type=EntryType.NOTE, raw_response="Mail sent successfully")]
     if render_body:
@@ -1844,6 +1866,7 @@ def sub_main():  # pragma: no cover
 
         add_sensitive_log_strs(client.credentials.access_token.get("access_token", ""))
         command = demisto.command()
+        demisto.debug(f"Comamnd requested: {command}")
         # commands that return a single note result
         normal_commands = {
             "ews-get-searchable-mailboxes": get_searchable_mailboxes,
@@ -1875,10 +1898,14 @@ def sub_main():  # pragma: no cover
             is_test_module = True
             demisto.results(test_module(client, params.get("max_fetch")))
         elif command == "fetch-incidents":
+            demisto.debug("fetch-incidents being called")
             last_run = demisto.getLastRun()
+            demisto.debug(f"{last_run=}")
             incident_filter = params.get("incidentFilter", RECEIVED_FILTER)
+
             if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
                 incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
+            demisto.debug(f"{incident_filter=}")
             skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
             demisto.debug(f"{incident_filter=}, {skip_unparsable_emails=}")
             incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
@@ -1886,6 +1913,7 @@ def sub_main():  # pragma: no cover
             demisto.incidents(incidents)
 
         elif command == "send-mail":
+            demisto.debug(f"send-mail being called: received args: {args}")
             commands_res = send_email(client, **args)
             return_results(commands_res)
 
@@ -2004,6 +2032,9 @@ def main():  # pragma: no cover
     # When running big queries, like 'ews-search-mailbox' the memory might not be freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
+    demisto.debug(f"Running EWS065 with command: {demisto.command()}")
+    demisto.debug(f"Running EWS065 with params: {demisto.params()}")
+    demisto.debug(f"Running EWS065 with args: {demisto.args()}")
     separate_process = demisto.params().get("separate_process", False)
     demisto.debug(f"Running as separate_process: {separate_process}")
     if separate_process:
