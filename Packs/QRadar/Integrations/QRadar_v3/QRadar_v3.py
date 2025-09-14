@@ -1181,62 +1181,6 @@ def update_user_query(user_query: str) -> str:
     return f" AND ({user_query})" if user_query else ""
 
 
-def insert_to_updated_context(
-    context_data: dict,
-    offense_ids: list | None = None,
-    should_update_last_fetch: bool = False,
-    should_update_last_mirror: bool = False,
-    should_add_reset_key: bool = False,
-    should_force_update: bool = False,
-):
-    """When we have a race condition, insert the changed data from context_data to the updated context data
-
-    Args:
-        context_data (dict): Context data with relevant changes.
-        updated_context_data (dict): Context data that was updated before.
-        offense_ids (list, optional): Offense ids that were changed. Defaults to None.
-        should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
-        should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
-        should_add_reset_key (bool, optional): If we should add reset key. Defaults to False
-        should_force_update (bool, optional): If we should force update the current context. Defaults to False
-
-    """
-    if offense_ids is None:
-        offense_ids = []
-    updated_context_data, version = get_integration_context_with_version()
-    new_context_data = updated_context_data.copy()
-    if should_force_update:
-        return context_data, version
-
-    if should_add_reset_key:
-        new_context_data[RESET_KEY] = True
-    for id_ in offense_ids:
-        # Those are "trusted ids" from the changed context_data, we will keep the data (either update or delete it)
-        for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, MIRRORED_OFFENSES_FETCHED_CTX_KEY):
-            if id_ in context_data[key]:
-                new_context_data[key][id_] = context_data[key][id_]
-            else:
-                new_context_data[key].pop(id_, None)
-
-    if should_update_last_fetch:
-        # Last fetch is updated with the samples that were fetched
-        new_context_data.update(
-            {
-                LAST_FETCH_KEY: int(context_data.get(LAST_FETCH_KEY, 0)),
-                SAMPLE_INCIDENTS_KEY: context_data.get(SAMPLE_INCIDENTS_KEY, [])[:SAMPLE_SIZE],
-            }
-        )
-
-    if should_update_last_mirror:
-        new_context_data.update(
-            {
-                LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
-                LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0)),
-            }
-        )
-    return new_context_data, version
-
-
 def merge_samples(current_ctx: dict, changes: dict) -> None:
     """Merges samples from `changes` into `current_ctx`.
 
@@ -4529,7 +4473,10 @@ def add_modified_remote_offenses(
         partial_changes[MIRRORED_OFFENSES_FINISHED_CTX_KEY] = finished_offenses_queue
 
     # Now safely merge these partial changes.
-    safely_update_context_data_partial(partial_changes)
+    safely_update_context_data_partial(
+        partial_changes,
+        override_keys=[MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY],
+    )
 
     # Do final logging for debugging if desired
     print_context_data_stats(context_data, "Get Modified Remote Data - After update")
