@@ -297,9 +297,9 @@ def handle_permission_error(e: HttpError, project_id: str, command_name: str):
     """
     demisto.debug(f"{e.resp=}")
     status_code = e.resp.status
-    if e.resp.get('content-type', '').startswith('application/json'):
+    if e.resp.get("content-type", "").startswith("application/json"):
         content = json.loads(e.content)
-        reason = json.loads(e.content).get('error').get('errors')[0].get('reason')
+        reason = json.loads(e.content).get("error").get("errors")[0].get("reason")
         message = f"{reason=}, {content.get('error', {}).get('message', '')}"
         possible_permissions_list = COMMAND_REQUIREMENTS.get(command_name)[1]
 
@@ -1151,9 +1151,11 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     )
     outputs = {
         "GCP.Compute.Instances(val.id && val.id == obj.id)": response["Instances"],
-        "GCP.Compute(true)": {"InstancesNextPageToken": response.get("InstancesNextPageToken"),
-                              "InstancesSelfLink": response.get("selfLink"),
-                              "InstancesWarning": response.get("warning")}
+        "GCP.Compute(true)": {
+            "InstancesNextPageToken": response.get("InstancesNextPageToken"),
+            "InstancesSelfLink": response.get("selfLink"),
+            "InstancesWarning": response.get("warning"),
+        },
     }
     demisto.debug(f"{outputs=}")
     remove_empty_elements(outputs)
@@ -1594,7 +1596,6 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-
         command_map = {
             "test-module": test_module,
             # Compute Engine commands
@@ -1644,7 +1645,7 @@ def main():  # pragma: no cover
     except HttpError as e:
         demisto.info(f"The error is {e}")
         if e.resp.status in [403, 401]:
-            project_id = args.get('project_id') or args.get('folder_id') or "N/A"
+            project_id = args.get("project_id") or args.get("folder_id") or "N/A"
             handle_permission_error(e, project_id, command)
         else:
             return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")
