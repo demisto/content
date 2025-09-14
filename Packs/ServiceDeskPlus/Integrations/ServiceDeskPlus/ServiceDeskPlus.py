@@ -842,12 +842,12 @@ def generate_refresh_token(client: Client, args: dict) -> tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
-    server_url = params.get("server_url")
+    region = params.get("server_url")
     technician_key = params.get("credentials_technician_key", {}).get("password") or params.get("technician_key")
     client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id")
     client_secret = params.get("credentials_client", {}).get("password") or params.get("client_secret")
     refresh_token = params.get("credentials_refresh_token", {}).get("password") or params.get("refresh_token")
-    if server_url == "On-Premise":
+    if region == "On-Premise":
         client = Client(
             url=params.get("server_url_on_premise") + API_VERSION,
             outh_url=OAUTH_URL["United States"],
@@ -861,10 +861,10 @@ def main():
             on_premise=True,
         )
     else:
-        server_url = SERVER_URL[params.get("server_url")]
+        server_url = SERVER_URL[region]
         client = Client(
             url=server_url + API_VERSION,
-            outh_url=OAUTH_URL[params.get("server_url")],
+            outh_url=OAUTH_URL[region],
             use_ssl=not params.get("insecure", False),
             use_proxy=params.get("proxy", False),
             client_id=client_id,
