@@ -1218,7 +1218,7 @@ def remove_context_keys(
         if key in current_ctx and key in changes:
             current_ctx.pop(key, None)
             removed_keys.add(key)
-    demisto.debug(f"Removed {len(removed_keys)} from current integration context: {', '.join(removed_keys)}.")
+    demisto.debug(f"Removed keys from current integration context for overriding: {', '.join(removed_keys)}.")
 
 
 def deep_merge_context_changes(
